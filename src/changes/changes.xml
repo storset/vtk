@@ -11,8 +11,18 @@
     <release version="0.3.8-SNAPSHOT" date="In SVN" description="Release 0.3.8">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Property framework: added support for evaluating property
+        values based on the resource name
+      </action>
+      <action type="add">
+        Query syntax: added support for inverted prefix queries
+      </action>
       <action type="update">
         Library update: Updgraded iBATIS to version 2.3.0
+      </action>
+      <action type="update">
+        Library update: Updgraded Spring to version 2.0.5
       </action>
     </release>
 

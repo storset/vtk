@@ -46,13 +46,13 @@ public interface PropertySet {
 
     public String getResourceType();
 
-    public List getProperties();
+    public List<Property> getProperties();
 
     public Property getProperty(Namespace namespace, String name);
 
     public Property getProperty(PropertyTypeDefinition type);
 
-    public List getProperties(Namespace namespace);
+    public List<Property> getProperties(Namespace namespace);
 
     public Property getPropertyByPrefix(String prefix, String name);
 }

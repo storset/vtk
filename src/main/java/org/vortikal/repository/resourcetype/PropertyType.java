@@ -86,6 +86,10 @@ public final class PropertyType {
     public static final RepositoryAction PROTECTION_LEVEL_UNEDITABLE =
         RepositoryAction.UNEDITABLE_ACTION;
  
+
+    /* Known evaluated prop */
+    public static final String TITLE_PROP_NAME = "title";
+
     
     /*
      * Special properties

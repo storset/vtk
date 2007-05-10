@@ -214,6 +214,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return getPropValue(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME);
     }
 
+    public String getTitle() {
+        return getPropValue(PropertyType.TITLE_PROP_NAME);
+    }
+
     public boolean isCollection() {
         return getBooleanPropValue(PropertyType.COLLECTION_PROP_NAME);
     }

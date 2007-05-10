@@ -16,7 +16,7 @@
     </property>    
     <property name="propertyTypeDefinitions">
       <list>
-        <!--ref bean="titlePropDef" /-->
+        <ref bean="userTitlePropDef" />
         <ref bean="ownerPropDef" />
         <ref bean="createdByPropDef" />
         <ref bean="collectionPropDef" />
@@ -40,21 +40,32 @@
       <list>
         <ref bean="lastModifiedPropDef" />
         <ref bean="modifiedByPropDef" />
+        <ref bean="titlePropDef" />
       </list>
     </property>
   </bean>
 
   
   <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="newTitle" />
+    <property name="name" value="title" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="titleEvaluator" />
     <property name="nameModificationEvaluator" ref="titleEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="titleEvaluator" />
   </bean>
 
-  <bean id="titleEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultTitleEvaluator" />
+  <bean id="titleEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultTitleEvaluator">
+    <property name="propertyDefinition" ref="userTitlePropDef" />
+  </bean>
+
+  <bean id="userTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="userTitle"/>
+    <property name="type" ref="TYPE_STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
 
   <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="createdBy" />

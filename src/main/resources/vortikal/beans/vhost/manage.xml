@@ -856,7 +856,7 @@
         <ref bean="contentLocalePropDef" />
         <ref bean="contentLengthPropDef" />
 
-        <ref bean="collectionTitlePropDef" />
+        <ref bean="userTitlePropDef" />
         <ref bean="skipInPathPropDef" />
 
         <ref bean="keywordsPropDef" />

@@ -32,22 +32,27 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
 
 /**
  * Evaluate name....
  */
-public class DefaultTitleEvaluator implements NameChangePropertyEvaluator, CreatePropertyEvaluator {
+public class DefaultTitleEvaluator implements NameChangePropertyEvaluator, 
+    CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator {
 
+    private PropertyTypeDefinition propertyDefinition;
+    
     public boolean nameModification(Principal principal, Property property,
-                                    Resource newResource, Date time) {
-        property.setStringValue(newResource.getName());
-        return true;
+                                    PropertySet ancestorPropertySet, Date time) {
+        return evaluateProp(property, ancestorPropertySet);
     }
 
     public boolean create(Principal principal, Property property,
@@ -56,4 +61,26 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator, Creat
         property.setStringValue(ancestorPropertySet.getName());
         return true;
     }
+
+    public boolean propertiesModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
+        return evaluateProp(property, ancestorPropertySet);
+    }
+
+    public void setPropertyDefinition(PropertyTypeDefinition propertyDefinition) {
+        this.propertyDefinition = propertyDefinition;
+    }
+
+    private boolean evaluateProp(Property property, PropertySet ancestorPropertySet) 
+        throws ValueFormatException, IllegalOperationException {
+
+        Property prop = ancestorPropertySet.getProperty(propertyDefinition);
+        
+        if (prop == null)
+            property.setStringValue(ancestorPropertySet.getName());
+        else
+            property.setStringValue(prop.getStringValue());
+
+        return true;
+    }
+
 }

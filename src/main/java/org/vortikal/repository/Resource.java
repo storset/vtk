@@ -264,6 +264,9 @@ public interface Resource extends PropertySet, Cloneable {
      */
     public String getGuessedCharacterEncoding();
 
+    public String getTitle();
+
+    
     /**
      * Gets the character encoding. This value is only relevant if the
      * resource type is 'textResource'. It depends on the value of

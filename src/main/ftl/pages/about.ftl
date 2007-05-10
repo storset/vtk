@@ -171,6 +171,26 @@
                       'content:authorURL' ] / -->
 
   <table class="resourceInfo">
+    <!-- title -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'title' />
+
+    <#if shouldDisplayForm('userTitle')>
+      <@propList.propertyForm
+         item=aboutItems['userTitle']
+         formValue=resource.title />
+    <#else>
+      <#assign editURL>
+        <@propList.propertyEditURL modelName='aboutItems'
+                                   propertyName='userTitle' />
+      </#assign>
+      <@propList.defaultPropertyDisplay
+             name = vrtx.getMsg("property.title", "Title")
+             value = resource.title
+             editURL = editURL />
+
+    </#if>
+
+
     <!-- content:keywords -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />
 
@@ -200,9 +220,6 @@
   <table class="resourceInfo">
 
   <#if resource.collection>
-    <!-- title -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'title' />
-
     <!-- skipInPath -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'skipInPath' />
   <#else>

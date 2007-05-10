@@ -44,6 +44,8 @@ import org.vortikal.repository.Resource;
 public class URIUtil {
     
     private static Log logger = LogFactory.getLog(URIUtil.class);
+
+
     /**
      * Makes an absolute path of <code>path</code> relative to
      * <code>resource</code>.  If resource is a collection, the path
@@ -170,8 +172,8 @@ public class URIUtil {
      * @param uri Absolute URI to get ancestors of.
      * @return List of all ancestor URIs for given URI.
      */
-    public static List getAncestorURIs(String uri) {
-        List ancestorUris = new ArrayList();
+    public static List<String> getAncestorURIs(String uri) {
+        List<String> ancestorUris = new ArrayList<String>();
 
         if (uri.equals("/")) {
             return ancestorUris;

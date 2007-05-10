@@ -111,6 +111,10 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
             PropertyTypeDefinition def = this.resourceTypeTree
                     .getPropertyDefinitionByPrefix(prefix, name);
 
+            if (def == null) {
+                return;
+            }
+
             Property prop = resource.getProperty(def);
 
             if (prop == null) {

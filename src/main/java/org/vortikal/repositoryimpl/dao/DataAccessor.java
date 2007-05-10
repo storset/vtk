@@ -135,10 +135,12 @@ public interface DataAccessor {
      * resource, or to inherit from the new parent resource
      * @param fixedProperties a set of properties to set on the new
      * resource(s) instead of copying from the existing
+     * @param newResource the newly created resource
      */
     public void copy(ResourceImpl resource, ResourceImpl dest,
                      String destURI, boolean copyACLs,
-                     PropertySet fixedProperties) throws IOException;
+                     PropertySet fixedProperties,
+                     PropertySet newResource) throws IOException;
 
 
     //public void move(Resource resource, String destURI);

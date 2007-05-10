@@ -278,9 +278,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(
                 src, principal, destUri);
 
+
+            ResourceImpl newResource = src.createCopy(destUri);
+            newResource = this.resourceHelper.nameChange(newResource, principal);
+
             destParent = this.resourceHelper.contentModification(destParent, principal);
             
-            this.dao.copy(src, destParent, destUri, preserveACL, fixedProps);
+            this.dao.copy(src, destParent, destUri, preserveACL, fixedProps, newResource);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
 
@@ -347,7 +351,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         
         try {
             destParent = this.resourceHelper.contentModification(destParent, principal);
-            this.dao.copy(src, destParent, destUri, true, null);
+
+            ResourceImpl newResource = src.createCopy(destUri);
+            newResource = this.resourceHelper.nameChange(newResource, principal);
+
+            this.dao.copy(src, destParent, destUri, true, null, newResource);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
         } catch (CloneNotSupportedException e) {
@@ -577,7 +585,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             
             if (tempFile != null) tempFile.delete();
         }
-
     }
 
 

@@ -153,39 +153,19 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     }
 
 
+    
+
     public ResourceImpl load(String uri) throws IOException {
 
         try {
             this.sqlMapClient.startTransaction();
-            String sqlMap = getSqlMap("loadResourceByUri");
-            Map resourceMap = (Map)
-                this.sqlMapClient.queryForObject(sqlMap, uri);
-            if (resourceMap == null) {
+
+            ResourceImpl resource = loadResourceInternal(uri);
+            if (resource == null) {
                 return null;
             }
-            ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
-                                                     this.authorizationManager);
-            Map locks = loadLocks(new String[] {resource.getURI()});
-            if (locks.containsKey(resource.getURI())) {
-                resource.setLock((Lock) locks.get(resource.getURI()));
-            }
-
-            populateStandardProperties(this.propertyManager, this.principalFactory,
-                                       resource, resourceMap);
-            Integer resourceId = new Integer(resource.getID());
-            sqlMap = getSqlMap("loadPropertiesForResource");
-            List propertyList = this.sqlMapClient.queryForList(sqlMap, resourceId);
-            populateCustomProperties(new ResourceImpl[] {resource}, propertyList);
-
-            Integer aclInheritedFrom = (Integer) resourceMap.get("aclInheritedFrom");
-            boolean aclInherited = aclInheritedFrom != null;
-            resource.setInheritedAcl(aclInherited);
-            resource.setAclInheritedFrom(aclInherited ?
-                                         aclInheritedFrom.intValue() :
-                                         PropertySetImpl.NULL_RESOURCE_ID);
 
             loadACLs(new ResourceImpl[] {resource});
-
             loadChildUris(resource);
 
             this.sqlMapClient.commitTransaction();
@@ -203,6 +183,36 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         }
     }
 
+
+    private ResourceImpl loadResourceInternal(String uri) throws SQLException {
+        String sqlMap = getSqlMap("loadResourceByUri");
+        Map resourceMap = (Map)
+            this.sqlMapClient.queryForObject(sqlMap, uri);
+        if (resourceMap == null) {
+            return null;
+        }
+        ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
+                                                 this.authorizationManager);
+        Map locks = loadLocks(new String[] {resource.getURI()});
+        if (locks.containsKey(resource.getURI())) {
+            resource.setLock((Lock) locks.get(resource.getURI()));
+        }
+
+        populateStandardProperties(this.propertyManager, this.principalFactory,
+                                   resource, resourceMap);
+        Integer resourceId = new Integer(resource.getID());
+        sqlMap = getSqlMap("loadPropertiesForResource");
+        List propertyList = this.sqlMapClient.queryForList(sqlMap, resourceId);
+        populateCustomProperties(new ResourceImpl[] {resource}, propertyList);
+
+        Integer aclInheritedFrom = (Integer) resourceMap.get("aclInheritedFrom");
+        boolean aclInherited = aclInheritedFrom != null;
+        resource.setInheritedAcl(aclInherited);
+        resource.setAclInheritedFrom(aclInherited ?
+                                     aclInheritedFrom.intValue() :
+                                     PropertySetImpl.NULL_RESOURCE_ID);
+        return resource;
+    }
 
 
     public InputStream getInputStream(String uri) throws IOException {
@@ -600,10 +610,9 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
 
     }
     
-    private void supplyFixedProperties(Map<String, Object> parameters, PropertySet properties) {
-        List propertyList = properties.getProperties(Namespace.DEFAULT_NAMESPACE);
-        for (Iterator i = propertyList.iterator(); i.hasNext();) {
-            Property property = (Property) i.next();
+    private void supplyFixedProperties(Map<String, Object> parameters, PropertySet fixedProperties) {
+        List<Property> propertyList = fixedProperties.getProperties(Namespace.DEFAULT_NAMESPACE);
+        for (Property property: propertyList) {
             if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
                 Object value = property.getValue().getObjectValue();
                 if (property.getValue().getType() == PropertyType.TYPE_PRINCIPAL) {
@@ -620,7 +629,7 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     
     public void copy(ResourceImpl resource, ResourceImpl dest,
                      String destURI, boolean copyACLs,
-                     PropertySet fixedProperties) throws IOException {
+                     PropertySet fixedProperties, PropertySet newResource) throws IOException {
         try {
             this.sqlMapClient.startTransaction();
 
@@ -704,6 +713,17 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             parameters = getResourceAsMap(dest);
             sqlMap = getSqlMap("updateResource");
             this.sqlMapClient.update(sqlMap, parameters);
+
+            ResourceImpl created = loadResourceInternal(newResource.getURI());
+            for (Property prop: newResource.getProperties()) {
+                created.addProperty(prop);
+                Property fixedProp = fixedProperties != null ?
+                    fixedProperties.getProperty(prop.getNamespace(), prop.getName()) : null;
+                if (fixedProp != null) {
+                    created.addProperty(fixedProp);
+                }
+            }
+            storeProperties(created);
 
             this.sqlMapClient.commitTransaction();
         } catch (SQLException e) {

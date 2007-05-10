@@ -99,6 +99,7 @@ public class RepositoryResourceHelperImpl
         return resource;
     }
 
+
     private boolean create(Principal principal, 
             ResourceImpl newResource, Date time, boolean isCollection, 
             PrimaryResourceTypeDefinition rt) {

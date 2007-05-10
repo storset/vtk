@@ -266,15 +266,27 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public Object clone() throws CloneNotSupportedException {
-
         ResourceImpl clone = cloneWithoutProperties(); 
-        for (Iterator iter = getProperties().iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
+        for (Property prop: getProperties()) {
             clone.addProperty((Property) prop.clone());
         }
-
         return clone;
     }
+
+    
+    public ResourceImpl createCopy(String newUri) {
+        ResourceImpl resource = new ResourceImpl(newUri, this.propertyManager,
+                                                 this.authorizationManager);
+        resource.setResourceType(getResourceType());
+        for (Property prop: getProperties()) {
+            resource.addProperty(prop);
+        }
+        resource.setAcl(new AclImpl());
+        return resource;
+    }
+    
+
+
 
     /**
      * Temp. way of getting a "clean" resource clone

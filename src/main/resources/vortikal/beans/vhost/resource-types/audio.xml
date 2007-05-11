@@ -3,19 +3,23 @@
 
 <beans>
 
+  <bean id="abstractAudioResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="abstractAudio"/>
+    <property name="namespace" ref="AUDIO_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="assertions" ref="contentTypeMatchesAudio" />
+    <property name="propertyTypeDefinitions" ref="audioTitlePropDef" />
+  </bean>
+
   <!-- Audio resource -->
 
   <bean id="audioResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="audio"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
-    <property name="assertions">
-      <list>
-        <ref bean="contentTypeMatchesAudio" />
-      </list>
-    </property>
-
+    <property name="namespace" ref="AUDIO_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="abstractAudioResourceTypeDefinition" />
+    <property name="overriddenPropertyTypeDefinitions" ref="audioOverriddenTitlePropDef" />
     <property name="propertyTypeDefinitions">
       <list>
         <!--
@@ -27,7 +31,6 @@
         -->
         <ref bean="audioAuthorPropDef" />
         <ref bean="audioAlbumPropDef" />
-        <ref bean="audioTitlePropDef" />
         <ref bean="audioTrackPropDef" />
         <ref bean="audioGenrePropDef" />
       </list>
@@ -73,9 +76,24 @@
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="audioTitlePropertyEvaluator" />
   </bean>
+
   <bean id="audioTitlePropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
     <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.title}" />
+  </bean>
+
+  <bean id="audioOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinition">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="contentModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="audioOverriddenTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.AudioTitlePropertyEvaluator"
+        parent="titleEvaluator">
+        <property name="audioTitlePropDef" ref="audioTitlePropDef"/>
   </bean>
 
   <bean id="audioTrackPropDef"
@@ -102,6 +120,10 @@
     <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.genre}" />
   </bean>
 
+  <bean id="AUDIO_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="audio" />
+    <constructor-arg value="audio" />
+  </bean>
 
 </beans>
 

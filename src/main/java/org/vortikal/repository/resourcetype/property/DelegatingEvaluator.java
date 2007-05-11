@@ -47,8 +47,8 @@ import org.vortikal.security.Principal;
 /**
  * Evaluate name....
  */
-public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
-        CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
+public class DelegatingEvaluator implements NameChangePropertyEvaluator, 
+    CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
         ContentModificationPropertyEvaluator {
 
     private PropertyTypeDefinition propertyDefinition;
@@ -88,12 +88,12 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
         if (prop != null)
             property.setStringValue(prop.getStringValue());
         else
-            property.setStringValue(getFallback(ancestorPropertySet));
+            property.setStringValue(getFallback(property, ancestorPropertySet));
 
         return true;
     }
 
-    protected String getFallback(PropertySet ancestorPropertySet) throws ValueFormatException {
+    protected String getFallback(Property property, PropertySet ancestorPropertySet) throws ValueFormatException {
         return ancestorPropertySet.getName();
     }
 

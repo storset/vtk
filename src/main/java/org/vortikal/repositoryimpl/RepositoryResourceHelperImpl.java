@@ -31,18 +31,17 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.InternalRepositoryException;
@@ -110,12 +109,18 @@ public class RepositoryResourceHelperImpl
         
         newResource.setResourceType(rt.getName());
         
-        List<Property> newProps = new ArrayList<Property>();
+        Set<Property> newProps = new HashSet<Property>();
 
         // Evaluating resource type properties
         PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
         
-        evalCreateProperty(principal, newResource, time, isCollection, rt, def, newProps);
+        evalCreateProperty(principal, newResource, time, isCollection, def, newProps);
+
+        // Evaluating overridden properties
+        PropertyTypeDefinition[] overrides = rt.getOverriddenPropertyTypeDefinitions();
+        
+        if (overrides != null && overrides.length > 0)
+            evalCreateProperty(principal, newResource, time, isCollection, overrides, newProps);
 
         // Evaluating mixin resource type properties
         MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
@@ -123,32 +128,29 @@ public class RepositoryResourceHelperImpl
         for (int i = 0; i < mixinTypes.length; i++) {
 
             PropertyTypeDefinition[] mixinDefs = mixinTypes[i].getPropertyTypeDefinitions();
-            evalCreateProperty(principal, newResource, time, isCollection, mixinTypes[i],
+            evalCreateProperty(principal, newResource, time, isCollection, 
                        mixinDefs, newProps);
         }
 
 
-        for (Iterator iter = newProps.iterator(); iter.hasNext();) {
-            Property prop = (Property) iter.next();
+        for (Iterator<Property> iter = newProps.iterator(); iter.hasNext();) {
+            Property prop = iter.next();
             newResource.addProperty(prop);
         }
 
 
         // Checking child resource types by delegating
-        List children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
-        for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-            PrimaryResourceTypeDefinition child =
-                (PrimaryResourceTypeDefinition) iterator.next();
-
-            if (create(principal, newResource, time, isCollection, child))
+        List<PrimaryResourceTypeDefinition> children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
+        for (Iterator<PrimaryResourceTypeDefinition> childIterator = children.iterator(); childIterator.hasNext();) {
+            if (create(principal, newResource, time, isCollection, childIterator.next()))
                 break;
         }
         return true;
     }
     
     private void evalCreateProperty(Principal principal, ResourceImpl newResource,
-                            Date time, boolean isCollection, ResourceTypeDefinition rt,
-                            PropertyTypeDefinition[] definitions, List<Property> newProps) {
+                            Date time, boolean isCollection, 
+                            PropertyTypeDefinition[] definitions, Set<Property> newProps) {
         for (int i = 0; i < definitions.length; i++) {
             PropertyTypeDefinition propertyDef = definitions[i];
             
@@ -348,6 +350,15 @@ public class RepositoryResourceHelperImpl
             evaluateManagedProperty(ctx, def, time);
         }
 
+        // Evaluating overridden properties
+        PropertyTypeDefinition[] overrides = rt.getOverriddenPropertyTypeDefinitions();
+        
+        if (overrides != null && overrides.length > 0)
+            for (int i = 0; i < overrides.length; i++) {
+                evaluateManagedProperty(ctx, overrides[i], time);
+            }
+
+        
         // For all prop defs in mixin types, also do evaluation
         MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
         for (int i = 0; i < mixinTypes.length; i++) {

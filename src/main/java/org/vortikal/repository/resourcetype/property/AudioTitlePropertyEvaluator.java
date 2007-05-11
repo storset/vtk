@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,17 +28,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.repository.resourcetype.property;
 
-import org.vortikal.web.service.RepositoryAssertion;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 
+/**
+ * Evaluate name....
+ */
+public class AudioTitlePropertyEvaluator extends DefaultTitleEvaluator {
 
-public interface PrimaryResourceTypeDefinition extends ResourceTypeDefinition {
+    private PropertyTypeDefinition audioTitlePropDef;
 
-    public PrimaryResourceTypeDefinition getParentTypeDefinition();
+    protected String getFallback(PropertySet ancestorPropertySet) throws ValueFormatException {
+        Property prop = ancestorPropertySet.getProperty(audioTitlePropDef);
 
-    public OverridingPropertyTypeDefinition[] getOverriddenPropertyTypeDefinitions();
+        if (prop != null) {
+            return prop.getStringValue();
+        }
+        return super.getFallback(ancestorPropertySet);
+    }
 
-    public RepositoryAssertion[] getAssertions();
+    public void setAudioTitlePropDef(PropertyTypeDefinition audioTitlePropDef) {
+        this.audioTitlePropDef = audioTitlePropDef;
+    }
 
 }

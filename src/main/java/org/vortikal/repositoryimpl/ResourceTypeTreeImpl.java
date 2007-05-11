@@ -43,14 +43,12 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
@@ -77,13 +75,15 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * XXX: Resource type definitions that have no children are _not_
      *      represented as keys in this map. Beware if using key set iteration.
      */
-    private Map resourceTypeDefinitions = new HashMap();
+    private Map<PrimaryResourceTypeDefinition, PrimaryResourceTypeDefinition[]> resourceTypeDefinitions = 
+        new HashMap<PrimaryResourceTypeDefinition, PrimaryResourceTypeDefinition[]>();
     
 
     /**
      * Maps resource type names to resource type objects
      */
-    private Map resourceTypeNameMap = new HashMap();
+    private Map<String, ResourceTypeDefinition> resourceTypeNameMap = 
+        new HashMap<String, ResourceTypeDefinition>();
 
 
     /**
@@ -143,7 +143,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * Map resource type name to flat list of _all_ descendant resource type names.
      * (Supports fast lookup for 'IN'-resource-type queries)
      */
-    private Map resourceTypeDescendantNames;
+    private Map<String, List<String>> resourceTypeDescendantNames;
 
 
     public PropertyTypeDefinition findPropertyTypeDefinition(
@@ -184,8 +184,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
     }
     
-    public List getPrimaryResourceTypeDefinitions() {
-        return new ArrayList(
+    public List<PrimaryResourceTypeDefinition> getPrimaryResourceTypeDefinitions() {
+        return new ArrayList<PrimaryResourceTypeDefinition>(
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     PrimaryResourceTypeDefinition.class, false, false).values());
     }
@@ -194,18 +194,15 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         PrimaryResourceTypeDefinition[] children = 
             getResourceTypeDefinitionChildrenInternal(def);
         
-        ArrayList childList = new ArrayList();
         if (children != null) {
-            for (int i=0; i<children.length; i++) {
-                childList.add(children[i]);
-            }
+            return Arrays.asList(children);
         }
         
-        return childList;
+        return new ArrayList<PrimaryResourceTypeDefinition>();
     }
     
-    public List getResourceTypeDescendantNames(String resourceTypeName) {
-        return (List) this.resourceTypeDescendantNames.get(resourceTypeName);
+    public List<String> getResourceTypeDescendantNames(String resourceTypeName) {
+        return (List<String>) this.resourceTypeDescendantNames.get(resourceTypeName);
     }
 
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
@@ -556,13 +553,13 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * Build map of resource type names to names of all descendants
      */
     private Map buildResourceTypeDescendantsMap() {
-        List definitions = getPrimaryResourceTypeDefinitions();
+        List<PrimaryResourceTypeDefinition> definitions = getPrimaryResourceTypeDefinitions();
         
-        Map resourceTypeDescendantNames = new HashMap();
+        Map<String, List<String>> resourceTypeDescendantNames = new HashMap<String, List<String>>();
         
         for (Iterator i = definitions.iterator(); i.hasNext();) {
             PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
-            List descendantNames = new LinkedList();
+            List<String> descendantNames = new LinkedList<String>();
             getAllDescendantNames(descendantNames, def);
             resourceTypeDescendantNames.put(def.getName(), descendantNames);
         }
@@ -591,11 +588,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * Recursively get all descendant names for a given resource type 
      */
     private void getAllDescendantNames(List names, PrimaryResourceTypeDefinition def) {
-        List children = getResourceTypeDefinitionChildren(def);
+        List<PrimaryResourceTypeDefinition> children = getResourceTypeDefinitionChildren(def);
         
-        for (Iterator i=children.iterator();i.hasNext();) {
-            PrimaryResourceTypeDefinition child = 
-                (PrimaryResourceTypeDefinition)i.next();
+        for (Iterator<PrimaryResourceTypeDefinition> childIterator=children.iterator();childIterator.hasNext();) {
+            PrimaryResourceTypeDefinition child = childIterator.next();
             names.add(child.getName());
             getAllDescendantNames(names, child);
         }

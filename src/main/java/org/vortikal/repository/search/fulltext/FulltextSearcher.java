@@ -35,6 +35,6 @@ import org.vortikal.repository.search.ResultSet;
 
 public interface FulltextSearcher {
 
-    public SearchResultSet execute(String token, String query) throws QueryException;
+    public ResultSet execute(String token, String query) throws QueryException;
 
 }

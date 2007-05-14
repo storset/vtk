@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -38,9 +37,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.html.HtmlPage;
-import org.vortikal.web.view.decorating.html.HtmlPageParser;
-import org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.htmlparser.HtmlPageParserImpl;
 
 
 public class MockStringDecoratorRequest implements DecoratorRequest {

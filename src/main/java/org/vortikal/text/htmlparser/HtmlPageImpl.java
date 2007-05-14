@@ -28,75 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.html;
+package org.vortikal.text.htmlparser;
+
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
 
 
-public interface HtmlElement extends EnclosingHtmlContent {
+public class HtmlPageImpl implements HtmlPage {
 
-    /**
-     * Gets the name of this element.
-     */
-    public String getName();
+    private String doctype;
 
-
-    /**
-     * Gets the attributes of this element.
-     */
-    public HtmlAttribute[] getAttributes();
-
-
-    /**
-     * Sets the attributes of this element.
-     */
-    public void setAttributes(HtmlAttribute[] attributes);
+    private HtmlElement root;
     
+    public HtmlPageImpl(HtmlElement root, String doctype) {
+        this.root = root;
+        this.doctype = doctype;
+    }
 
-    /**
-     * Gets the child elements of this element.
-     */
-    public HtmlElement[] getChildElements();
+    public HtmlElement getRootElement() {
+        return this.root;
+    }
 
+    public String getDoctype() {
+        return this.doctype;
+    }
 
-    /**
-     * Gets named child elements of this element.
-     *
-     * @parameter name the element name 
-     */
-    public HtmlElement[] getChildElements(String name);
-
-
-    /**
-     * Gets the child nodes of this node. A filter is applied to
-     * decide inclusion of child nodes.
-     * 
-     * @param filter the node filter to apply
-     */
-    public HtmlContent[] getChildNodes(HtmlNodeFilter filter);
-
-
-    /**
-     * Sets the child nodes of this node.
-     */
-    public void setChildNodes(HtmlContent[] childNodes);
+    public String getStringRepresentation() {
+        return "<" + this.getDoctype() + ">\n" + this.root.getEnclosedContent();
+    }
     
-
-    /**
-     * Gets the contents of this node as a string. A filter is applied
-     * to decide inclusion of child content.
-     *
-     * @param filter the node filter to apply
-     */
-    public String getContent(HtmlNodeFilter filter);
-
-
-    /**
-     * Gets the contents of this node (including child nodes) with the
-     * enclosing tag and attributes as a string. A filter is applied
-     * to decide inclusion of child content.
-     * 
-     * @param filter the node filter to apply
-     */
-    public String getEnclosedContent(HtmlNodeFilter filter);
-
-
 }

@@ -39,8 +39,8 @@ import java.util.Set;
 
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
-import org.vortikal.web.view.decorating.html.HtmlAttribute;
-import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.text.html.HtmlAttribute;
+import org.vortikal.text.html.HtmlElement;
 
 public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
 

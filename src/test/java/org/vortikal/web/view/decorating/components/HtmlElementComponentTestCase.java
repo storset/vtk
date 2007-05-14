@@ -33,7 +33,7 @@ package org.vortikal.web.view.decorating.components;
 
 import java.util.Map;
 import junit.framework.TestCase;
-import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.text.html.HtmlElement;
 import java.util.HashMap;
 
 

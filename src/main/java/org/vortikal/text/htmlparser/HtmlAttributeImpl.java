@@ -28,26 +28,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.htmlparser;
 
-public class CompositeTag extends org.htmlparser.tags.CompositeTag {
+import org.vortikal.text.html.HtmlAttribute;
 
-    private String[] ids;
 
-    public CompositeTag (String[] ids) {
-        this.ids = ids;
+public class HtmlAttributeImpl implements HtmlAttribute {
+    private String name;
+    private String value;
+        
+    public HtmlAttributeImpl(String name, String value) {
+        this.name = name.toLowerCase();
+        this.value = value;
+    }
+        
+    public String getName() {
+        return this.name;
     }
 
-    public String[] getIds() {
-        return(this.ids);
+    public void setName(String name) {
+        this.name = name;
     }
 
-
-    public String[] getEnders() {
-        return (this.ids);
+    public String getValue() {
+        return this.value;
     }
 
-    public String[] getEndTagEnders() {
-        return new String[0];
+    public void setValue(String value) {
+        this.value = value;
     }
+    
+    public boolean hasValue() {
+        return this.value != null;
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        sb.append(": name=").append(this.name).append(", value=").append(this.value);
+        return sb.toString();
+    }
+    
 }
+
+

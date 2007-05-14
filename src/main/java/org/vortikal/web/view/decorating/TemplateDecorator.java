@@ -41,10 +41,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
-import org.vortikal.web.view.decorating.html.HtmlPage;
-import org.vortikal.web.view.decorating.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
 
 public class TemplateDecorator implements Decorator {
 

@@ -46,12 +46,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.view.decorating.html.HtmlAttribute;
-import org.vortikal.web.view.decorating.html.HtmlComment;
-import org.vortikal.web.view.decorating.html.HtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
-import org.vortikal.web.view.decorating.html.HtmlText;
+import org.vortikal.text.html.HtmlAttribute;
+import org.vortikal.text.html.HtmlComment;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlText;
 
 
 public class ComponentHandlingNodeFilter implements HtmlNodeFilter, InitializingBean {

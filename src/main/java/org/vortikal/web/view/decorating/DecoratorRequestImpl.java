@@ -38,7 +38,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.text.html.HtmlPage;
 
 public class DecoratorRequestImpl implements DecoratorRequest {
 

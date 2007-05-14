@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.htmlparser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,11 +36,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.web.view.decorating.html.EnclosingHtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlAttribute;
-import org.vortikal.web.view.decorating.html.HtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
+import org.vortikal.text.html.EnclosingHtmlContent;
+import org.vortikal.text.html.HtmlAttribute;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlNodeFilter;
 
 
 public class HtmlElementImpl implements HtmlElement {

@@ -28,37 +28,18 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.html;
 
-import org.vortikal.web.view.decorating.html.HtmlComment;
-import org.vortikal.web.view.decorating.html.HtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlText;
 
-public class HtmlCommentImpl implements HtmlComment {
+/**
+ * Simple HTML page interface.
+ *
+ */
+public interface HtmlPage {
 
-    private HtmlText content;
-    private String completeContent;
-    private HtmlContent[] contentList;
-
-    public HtmlCommentImpl(HtmlText content) {
-        this.content = content;
-        this.contentList = new HtmlContent[] {this.content};
-    }
-
-    public String getContent() {
-        return this.content.getContent();
-    }
+    public String getDoctype();
     
-    public String getEnclosedContent() {
-        return "<!--" + this.completeContent + "-->";
-    }
+    public HtmlElement getRootElement();
     
-    public void setContent(HtmlText content) {
-        this.content = content;
-    }
-    
-    public HtmlContent[] getChildNodes() {
-        return this.contentList;
-    }
-    
+    public String getStringRepresentation();
 }

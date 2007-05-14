@@ -28,9 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.html;
+package org.vortikal.text.html;
 
 
-public interface HtmlText extends HtmlContent {
-    
+public interface HtmlContent {
+
+    /**
+     * Gets the contents of this node as a string.
+     */
+    public String getContent();
+
 }

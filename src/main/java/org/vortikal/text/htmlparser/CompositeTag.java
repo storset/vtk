@@ -28,33 +28,26 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.htmlparser;
 
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlPage;
+public class CompositeTag extends org.htmlparser.tags.CompositeTag {
 
+    private String[] ids;
 
-public class HtmlPageImpl implements HtmlPage {
-
-    private String doctype;
-
-    private HtmlElement root;
-    
-    public HtmlPageImpl(HtmlElement root, String doctype) {
-        this.root = root;
-        this.doctype = doctype;
+    public CompositeTag (String[] ids) {
+        this.ids = ids;
     }
 
-    public HtmlElement getRootElement() {
-        return this.root;
+    public String[] getIds() {
+        return(this.ids);
     }
 
-    public String getDoctype() {
-        return this.doctype;
+
+    public String[] getEnders() {
+        return (this.ids);
     }
 
-    public String getStringRepresentation() {
-        return "<" + this.getDoctype() + ">\n" + this.root.getEnclosedContent();
+    public String[] getEndTagEnders() {
+        return new String[0];
     }
-    
 }

@@ -28,14 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.html;
+package org.vortikal.text.htmlparser;
 
+import org.vortikal.text.html.HtmlText;
 
-public interface HtmlContent {
+public class HtmlTextImpl implements HtmlText {
 
-    /**
-     * Gets the contents of this node as a string.
-     */
-    public String getContent();
+    private String content;
 
+    public HtmlTextImpl(String content) {
+        this.content = content;
+    }
+
+    public String getContent() {
+        return this.content;
+    }
+    
+    
 }

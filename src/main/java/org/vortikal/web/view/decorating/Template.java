@@ -34,7 +34,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.text.html.HtmlPage;
 
 public interface Template {
 

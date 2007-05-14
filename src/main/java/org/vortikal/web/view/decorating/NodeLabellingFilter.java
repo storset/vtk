@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.web.view.decorating.html.HtmlAttribute;
-import org.vortikal.web.view.decorating.html.HtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlAttribute;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlNodeFilter;
 
 
 public class NodeLabellingFilter implements HtmlNodeFilter, InitializingBean {

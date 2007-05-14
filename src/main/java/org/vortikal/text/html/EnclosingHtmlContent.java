@@ -28,21 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.html;
 
-import org.vortikal.web.view.decorating.html.HtmlText;
 
-public class HtmlTextImpl implements HtmlText {
+public interface EnclosingHtmlContent extends HtmlContent {
 
-    private String content;
+    /**
+     * Gets the contents of this node (including child nodes) with the
+     * enclosing tag and attributes as a string.
+     */
+    public String getEnclosedContent();
 
-    public HtmlTextImpl(String content) {
-        this.content = content;
-    }
 
-    public String getContent() {
-        return this.content;
-    }
-    
+    /**
+     * Gets the child nodes of this node.
+     */
+    public HtmlContent[] getChildNodes();
     
 }

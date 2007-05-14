@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.htmlparser;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,12 +50,12 @@ import org.htmlparser.tags.DoctypeTag;
 import org.htmlparser.tags.ProcessingInstructionTag;
 import org.htmlparser.util.NodeList;
 
-import org.vortikal.web.view.decorating.html.HtmlContent;
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlNodeFilter;
-import org.vortikal.web.view.decorating.html.HtmlPage;
-import org.vortikal.web.view.decorating.html.HtmlPageParser;
-import org.vortikal.web.view.decorating.html.HtmlPageParserException;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlPageParserException;
 
 
 public class HtmlPageParserImpl implements HtmlPageParser {

@@ -28,9 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.htmlparser;
+package org.vortikal.text.htmlparser;
 
-import org.vortikal.web.view.decorating.html.HtmlElement;
+import org.vortikal.text.html.HtmlElement;
 
 import junit.framework.TestCase;
 

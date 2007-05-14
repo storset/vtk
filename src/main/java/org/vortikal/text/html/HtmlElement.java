@@ -28,21 +28,75 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.html;
+package org.vortikal.text.html;
 
 
-public interface EnclosingHtmlContent extends HtmlContent {
+public interface HtmlElement extends EnclosingHtmlContent {
+
+    /**
+     * Gets the name of this element.
+     */
+    public String getName();
+
+
+    /**
+     * Gets the attributes of this element.
+     */
+    public HtmlAttribute[] getAttributes();
+
+
+    /**
+     * Sets the attributes of this element.
+     */
+    public void setAttributes(HtmlAttribute[] attributes);
+    
+
+    /**
+     * Gets the child elements of this element.
+     */
+    public HtmlElement[] getChildElements();
+
+
+    /**
+     * Gets named child elements of this element.
+     *
+     * @parameter name the element name 
+     */
+    public HtmlElement[] getChildElements(String name);
+
+
+    /**
+     * Gets the child nodes of this node. A filter is applied to
+     * decide inclusion of child nodes.
+     * 
+     * @param filter the node filter to apply
+     */
+    public HtmlContent[] getChildNodes(HtmlNodeFilter filter);
+
+
+    /**
+     * Sets the child nodes of this node.
+     */
+    public void setChildNodes(HtmlContent[] childNodes);
+    
+
+    /**
+     * Gets the contents of this node as a string. A filter is applied
+     * to decide inclusion of child content.
+     *
+     * @param filter the node filter to apply
+     */
+    public String getContent(HtmlNodeFilter filter);
+
 
     /**
      * Gets the contents of this node (including child nodes) with the
-     * enclosing tag and attributes as a string.
+     * enclosing tag and attributes as a string. A filter is applied
+     * to decide inclusion of child content.
+     * 
+     * @param filter the node filter to apply
      */
-    public String getEnclosedContent();
+    public String getEnclosedContent(HtmlNodeFilter filter);
 
 
-    /**
-     * Gets the child nodes of this node.
-     */
-    public HtmlContent[] getChildNodes();
-    
 }

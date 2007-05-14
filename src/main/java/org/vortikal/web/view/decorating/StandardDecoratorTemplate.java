@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.web.view.decorating.html.HtmlPage;
+import org.vortikal.text.html.HtmlPage;
 
 
 public class StandardDecoratorTemplate implements Template {

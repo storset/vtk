@@ -28,18 +28,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.html;
+package org.vortikal.text.html;
 
 
-public interface HtmlAttribute {
+public interface HtmlComment extends EnclosingHtmlContent {
+    
+    public void setContent(HtmlText content);
 
-    public String getName();
-
-    public void setName(String name);
-
-    public String getValue();
-
-    public void setValue(String value);
-
-    public boolean hasValue();
 }

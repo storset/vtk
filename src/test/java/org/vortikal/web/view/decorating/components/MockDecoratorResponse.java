@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -39,10 +38,10 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 
 import org.vortikal.web.view.decorating.DecoratorResponse;
-import org.vortikal.web.view.decorating.html.HtmlElement;
-import org.vortikal.web.view.decorating.html.HtmlPage;
-import org.vortikal.web.view.decorating.html.HtmlPageParser;
-import org.vortikal.web.view.decorating.htmlparser.HtmlPageParserImpl;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.htmlparser.HtmlPageParserImpl;
 
 
 public class MockDecoratorResponse implements DecoratorResponse {

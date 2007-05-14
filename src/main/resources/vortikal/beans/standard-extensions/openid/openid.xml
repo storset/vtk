@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+  <!--
+      Flow:
+
+      1a) user requests a restricted page: redirect to 2)
+      1b) user wants to log in: go to 2)
+
+      2) Present Form (openid.formService)
+      POST /resource/?vrtx=openid-auth , goto 3)
+
+      3a) Challenge
+      redirect to 2)
+
+      3b) Handle response from OP: if successful, redirect to view,
+      otherwise, goto 3a)
+      
+      Implementation:
+
+      - new service: openid.authenticationForm
+      - POSTS from this service are captured by openid.authHandler
+      - if successful, redirect to viewService
+      - if not, perform challenge (redirect to authenticationForm)
+      - challenge redirects to openid.authenticationForm
+      - new decorator component: openid.auth: displays login name if
+        logged in, otherwise a form that acts as openid.authenticationForm
+  -->
+
+
+
+  <bean id="openid.authenticationFormService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="openid.vrtxParameterEqualsOpenIDAuthForm" />
+      </list>
+    </property>
+    <property name="handler" ref="openid.authenticationFormHandler" />
+    <!--property name="authenticationChallenge" ref="openid.authHandler" /-->
+  </bean>
+
+  <bean id="openid.authenticationFormHandler"
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="viewService" />
+    <property name="viewName" value="openid.authenticationForm" />
+  </bean>
+  
+  <bean id="openid.viewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="openid.authenticationForm" value-ref="openid.authenticationFormView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="decoratingViewWrapper" />
+  </bean>
+
+
+  <bean id="openid.authenticationFormView" parent="freemarkerView">
+    <property name="url" value="pages/openid-auth-form.ftl" />
+  </bean>
+
+
+  <alias alias="openid.authenticationChallenge" name="openid.authenticationHandler" />
+
+  <bean id="openid.authenticationHandler"
+        class="org.vortikal.security.web.openid.OpenIDAuthenticationHandler">
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="consumerManager">
+      <bean class="org.openid4java.consumer.ConsumerManager" />
+    </property>
+    <property name="openIDAuthenticationService" ref="webService" />
+    <property name="formService" ref="openid.authenticationFormService" />
+    <property name="finalRedirectService" ref="webService" />
+  </bean>
+
+
+  <bean id="openid.vrtxParameterEqualsOpenIDAuthForm"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="openid-auth-form" />
+  </bean>
+
+</beans>

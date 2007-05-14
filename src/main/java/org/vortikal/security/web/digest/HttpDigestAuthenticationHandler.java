@@ -1,5 +1,4 @@
-/*
- * Copyright (c) 2005, University of Oslo, Norway All rights reserved.
+/* Copyright (c) 2005, University of Oslo, Norway All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -24,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security.web;
+package org.vortikal.security.web.digest;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,6 +49,9 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.store.MD5PasswordStore;
+import org.vortikal.security.web.AuthenticationChallenge;
+import org.vortikal.security.web.AuthenticationHandler;
+import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.util.codec.MD5;
@@ -198,11 +200,6 @@ public class HttpDigestAuthenticationHandler
         return false;
     }
 
-
-
-    
-
-
     public Principal authenticate(HttpServletRequest request)
         throws AuthenticationException {
 
@@ -249,9 +246,6 @@ public class HttpDigestAuthenticationHandler
     }
 
 
-
-
-
     public boolean postAuthentication(HttpServletRequest req,
                                       HttpServletResponse resp) {
         
@@ -293,7 +287,6 @@ public class HttpDigestAuthenticationHandler
 
         return false;
     }
-
 
 
     public void challenge(HttpServletRequest req, HttpServletResponse resp) {
@@ -344,8 +337,6 @@ public class HttpDigestAuthenticationHandler
                 "Unable to present authentication challenge to user", e);
         }
     }
-
-
 
     private Principal doAuthenticate(HttpServletRequest request, String uri,
                                      String response, String nc, String nonce, String cnonce,
@@ -441,8 +432,6 @@ public class HttpDigestAuthenticationHandler
         }
         return principal;
     }
-
-
 
     private String generateNonce() {
         String timestamp = getTimestamp();

@@ -28,15 +28,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security.web;
+package org.vortikal.security.web.basic;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.store.MD5PasswordStore;
+import org.vortikal.security.web.AuthenticationChallenge;
 
 
 public class HttpBasicAuthenticationChallenge

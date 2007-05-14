@@ -79,7 +79,7 @@
 
 
   <bean id="httpBasicAuthenticationChallenge" 
-        class="org.vortikal.security.web.HttpBasicAuthenticationChallenge">
+        class="org.vortikal.security.web.basic.HttpBasicAuthenticationChallenge">
     <description>A HTTP/Basic authentication challenge</description>
     <property name="principalStore" ref="localPrincipalStore" />
   </bean>
@@ -88,7 +88,7 @@
 
 
   <bean id="httpBasicAuthenticationHandler" 
-        class="org.vortikal.security.web.HttpBasicAuthenticationHandler">
+        class="org.vortikal.security.web.basic.HttpBasicAuthenticationHandler">
     <description>
       A HTTP/Basic authentication manager running against a
       principal store of "local" users and groups
@@ -106,7 +106,7 @@
   </bean>
 
   <bean id="httpDigestAuthenticationHandler" 
-        class="org.vortikal.security.web.HttpDigestAuthenticationHandler">
+        class="org.vortikal.security.web.digest.HttpDigestAuthenticationHandler">
     <description>
       A HTTP/Digest authentication manager running against a
       principal store of "local" users and groups

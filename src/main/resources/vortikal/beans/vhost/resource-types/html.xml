@@ -17,10 +17,10 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="htmlGuessedCharacterEncodingPropDef" />
+        <ref bean="htmlTitlePropDef" />
       </list>
     </property>
   </bean>
-
 
   <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="html"/>
@@ -38,6 +38,7 @@
         <ref bean="htmlCharacterEncodingPropDef" />
       </list>
     </property>
+    <property name="overriddenPropertyTypeDefinitions" ref="htmlOverriddenTitlePropDef" />
   </bean>
 
   <bean id="htmlDocTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -50,6 +51,33 @@
 
   <bean id="docTypeEvaluator" 
         class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
+
+  <bean id="htmlTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="htmlTitle" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="htmlTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="htmlTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
+  </bean>
+
+  <bean id="htmlOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinition">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="contentModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="htmlOverriddenTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.HtmlTitlePropertyEvaluator"
+        parent="titleEvaluator">
+        <property name="htmlTitlePropDef" ref="htmlTitlePropDef"/>
+  </bean>
+
 
 
 

@@ -326,6 +326,18 @@ VALUES (
 );
 
 
+-- Insert title property for root resource:
+
+INSERT INTO extra_prop_entry 
+SELECT extra_prop_entry_seq_pk.nextval,
+       resource_id,
+       0,
+       null,
+       'title',
+       '/'
+from vortex_resource where uri = '/';
+
+
 -- (pseudo:all (read))
 
 INSERT INTO ACL_ENTRY (

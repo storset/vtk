@@ -16,6 +16,7 @@
                 <ref bean="nyhetIngressPropDef" />
                 <ref bean="nyhetIngressbildePropDef" />
                 <ref bean="nyhetDatoPropDef" />
+                <ref bean="nyhetMediaPropDef" />
             </list>
         </property>
         <property name="assertions">
@@ -88,6 +89,19 @@
         
     <bean id="nyhetDatoEvaluator" parent="abstractXPathEvaluator">
       <property name="expression" value="concat(/nyhet/dato/dag, '.', /nyhet/dato/maaned, '.', /nyhet/dato/aar, ' ', /nyhet/dato/time, ':', /nyhet/dato/minutt)"  />
+    </bean>
+
+    <bean id="nyhetMediaPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="media" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="nyhetMediaEvaluator" />
+    </bean>
+    
+    <bean id="nyhetMediaEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/nyhet/media" />
     </bean>
     
 </beans>

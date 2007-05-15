@@ -243,11 +243,24 @@ CREATE UNIQUE INDEX changelog_entry_index1
 -- initial application data
 -----------------------------------------------------------------------------
 
+-- Action types
+
 INSERT INTO action_type (action_type_id, name) VALUES (1, 'read');
 INSERT INTO action_type (action_type_id, name) VALUES (2, 'write');
 INSERT INTO action_type (action_type_id, name) VALUES (3, 'all');
 INSERT INTO action_type (action_type_id, name) VALUES (4, 'read-processed');
 INSERT INTO action_type (action_type_id, name) VALUES (5, 'bind');
+
+-- Property value types
+-- This data currently corresponds to definitions in 
+-- org.vortikal.repository.resourcetype.PropertyType
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
+
 
 -- root resource
 
@@ -295,6 +308,17 @@ VALUES (
     'collection'
 );
 
+-- Insert title property for root resource:
+
+INSERT INTO extra_prop_entry 
+SELECT next value for extra_prop_entry_seq_pk,
+       resource_id,
+       0,
+       null,
+       'title',
+       '/'
+from vortex_resource where uri = '/';
+
 
 -- (pseudo:all, read)
 
@@ -308,9 +332,7 @@ INSERT INTO ACL_ENTRY (
     granted_date)
 VALUES (
     next value for acl_entry_seq_pk,
-    --nextval('acl_entry_seq_pk'),
     1000,
-    --currval('vortex_resource_seq_pk'),
     1,
     'pseudo:all',
     'Y',
@@ -341,12 +363,3 @@ VALUES (
     current_timestamp
 );    
 
--- Property value types
--- This data currently corresponds to definitions in 
--- org.vortikal.repository.resourcetype.PropertyType
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');

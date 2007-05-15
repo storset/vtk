@@ -269,11 +269,23 @@ CREATE UNIQUE INDEX changelog_entry_index1
 -- initial application data
 -----------------------------------------------------------------------------
 
+-- Action types
+
 INSERT INTO action_type (action_type_id, name) VALUES (1, 'read');
 INSERT INTO action_type (action_type_id, name) VALUES (2, 'write');
 INSERT INTO action_type (action_type_id, name) VALUES (3, 'all');
 INSERT INTO action_type (action_type_id, name) VALUES (4, 'read-processed');
 INSERT INTO action_type (action_type_id, name) VALUES (5, 'bind');
+
+-- Property value types
+-- This data currently corresponds to definitions in 
+-- org.vortikal.repository.resourcetype.PropertyType
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
+INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
 
 -- root resource
 
@@ -375,10 +387,3 @@ VALUES (
     current_timestamp
 );    
 
--- Property value types
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');

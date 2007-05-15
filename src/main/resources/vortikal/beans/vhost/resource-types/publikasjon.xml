@@ -15,6 +15,7 @@
                 <ref bean="publikasjonTittelPropDef" />
                 <ref bean="publikasjonForfatterePropDef" />
                 <ref bean="publikasjonDatoPropDef" />
+                <ref bean="publikasjonSerienummerPropDef" />
                 <ref bean="publikasjonSammendragPropDef" />
                 <ref bean="publikasjonFulltekstPropDef" />
             </list>
@@ -77,6 +78,19 @@
         
     <bean id="publikasjonDatoEvaluator" parent="abstractXPathEvaluator">
       <property name="expression" value="concat(/publikasjon/dato/dag,'.', /publikasjon/dato/maaned,'.', /publikasjon/dato/aar)"  />
+    </bean>
+
+    <bean id="publikasjonSerienummerPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="serienummer" />
+        <property name="type" ref="TYPE_STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="publikasjonSerienummerEvaluator" />
+    </bean>
+    
+    <bean id="publikasjonSerienummerEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/publikasjon/serienummer" />
     </bean>
 
     <bean id="publikasjonSammendragPropDef"

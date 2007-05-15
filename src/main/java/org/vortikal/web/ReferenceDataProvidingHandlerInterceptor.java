@@ -52,11 +52,9 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  *   to be invoked on the model.
  * </ul>
  */
-public class ReferenceDataProvidingHandlerInterceptor
-  implements HandlerInterceptor {
+public class ReferenceDataProvidingHandlerInterceptor implements HandlerInterceptor {
 
-    private static Log logger = LogFactory.getLog(
-        ReferenceDataProvidingHandlerInterceptor.class);
+    private static Log logger = LogFactory.getLog(ReferenceDataProvidingHandlerInterceptor.class);
 
     
     private ReferenceDataProvider[] providers;

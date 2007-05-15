@@ -53,6 +53,7 @@ public class RequestContext {
     private final String resourceURI;
     private final String currentCollection;
     private final String indexFileURI;
+    private final boolean isIndexFile;
     
     /**
      * Creates a new request context.
@@ -66,10 +67,11 @@ public class RequestContext {
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, Resource resource, String uri,
-                          String indexFileURI) {
+                          String indexFileURI, boolean isIndexFile) {
         this.servletRequest = servletRequest;
         this.indexFileURI = indexFileURI;
         this.service = service;
+        this.isIndexFile = isIndexFile;
         if (resource != null) {
             this.resourceURI = resource.getURI();
             if (resource.isCollection()) {
@@ -84,19 +86,11 @@ public class RequestContext {
     }
     
     /**
-     * Creates a new request context without an index file URI.
-     */
-    public RequestContext(HttpServletRequest servletRequest,
-                          Service service, Resource resource, String uri) {
-        this(servletRequest, service, resource, uri, null);
-    }
-
-    /**
      * Creates a new request context without a resource object.
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, String uri) {
-        this(servletRequest, service, null, uri, null);
+        this(servletRequest, service, null, uri, null, false);
     }
 
     public static void setRequestContext(RequestContext requestContext) {
@@ -180,6 +174,10 @@ public class RequestContext {
         sb.append(", servletRequest = ").append(this.servletRequest);
         sb.append("]");
         return sb.toString();
+    }
+
+    public boolean isIndexFile() {
+        return isIndexFile;
     }
     
 }

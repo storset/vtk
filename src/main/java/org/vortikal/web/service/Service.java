@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.Ordered;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.context.Categorizable;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -66,7 +67,7 @@ public interface Service extends  Ordered, Categorizable {
      * @return a <code>List</code> of {@link Assertion} objects.
      * @see org.vortikal.web.service.ServiceHandlerMapping
      */
-    public List getAssertions();
+    public List<Assertion> getAssertions();
 
 
     /**
@@ -74,7 +75,7 @@ public interface Service extends  Ordered, Categorizable {
      *
      * @return a <code>List</code> of Service objects.
      */
-    public List getChildren();
+    public List<Service> getChildren();
 
     /**
      * Gets this service's controller, if it has one.
@@ -209,7 +210,7 @@ public interface Service extends  Ordered, Categorizable {
      * @return a <code>List</code> of {@link
      * org.springframework.web.servlet.HandlerInterceptor} objects.
      */
-    public List getHandlerInterceptors();
+    public List<HandlerInterceptor> getHandlerInterceptors();
     
 
     /**
@@ -236,6 +237,6 @@ public interface Service extends  Ordered, Categorizable {
      *
      * @param services a list of {@link Service services}
      */
-    public void addServices(List services);
+    public void addServices(List<Service> services);
 
 }

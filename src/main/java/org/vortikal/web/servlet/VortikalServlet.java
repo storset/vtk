@@ -31,7 +31,6 @@
 package org.vortikal.web.servlet;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,14 +43,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
-
 import org.vortikal.context.BaseContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
@@ -83,10 +81,9 @@ import org.vortikal.web.service.Service;
  * StandardRequestFilter} is invoked.
  *
  * <p>The servlet is also responsible for creating and disposing of
- * mapping and request contexts implementing the {@link
- * org.vortikal.web.ContextInitializer} interface.  Currently, there
- * are two such context initializers: the {@link SecurityInitializer}
- * and the {@link RequestContextInitializer} classes.
+ * the request contexts through the {@link SecurityInitializer},
+ * {@link RequestContextInitializer} and the optional 
+ * {@link RepositoryContextInitializer} classes.
  *
  * <p>The security innitializer takes care of checking requests for
  * authentication credentials, and if present, authenticating users,
@@ -99,6 +96,9 @@ import org.vortikal.web.service.Service;
  * request, along with the requested resource URI (and the {@link
  * org.vortikal.repository.Resource} that this URI maps to, if it
  * exists and is readable for the current user).
+ * 
+ * <p>The repository initializer initializes a request scoped holder 
+ * used for caching repository access.
  *
  * <p>After context initialization, the servlet calls
  * <code>super.doService()</code>, in the standard DispatcherServlet
@@ -141,7 +141,7 @@ public class VortikalServlet extends DispatcherServlet {
     private Log requestLogger = LogFactory.getLog(this.getClass().getName() + ".Request");
     private Log errorLogger = LogFactory.getLog(this.getClass().getName() + ".Error");
 
-    private RequestFilter[] requestFilters;
+    private RequestFilter[] requestFilters = new RequestFilter[0];
     private SecurityInitializer securityInitializer;
     private RepositoryContextInitializer repositoryContextInitializer;
     private RequestContextInitializer requestContextInitializer;
@@ -187,82 +187,46 @@ public class VortikalServlet extends DispatcherServlet {
     
 
     private void initSecurityInitializer() {
-        Object bean = getWebApplicationContext().getBean(SECURITY_INITIALIZER_BEAN_NAME);
-        if (bean != null && ! (bean instanceof SecurityInitializer)) {
-            throw new BeanNotOfRequiredTypeException("The bean name '" + 
-                    SECURITY_INITIALIZER_BEAN_NAME + "' is reserved", 
-                    SecurityInitializer.class, bean.getClass());
-        }
-        this.logger.info("Security initializer set up successfully: " + bean);
-        this.securityInitializer = (SecurityInitializer) bean;
+        this.securityInitializer = (SecurityInitializer)
+            getWebApplicationContext().getBean(SECURITY_INITIALIZER_BEAN_NAME, SecurityInitializer.class);
+
+        this.logger.info("Security initializer set up successfully: " + this.securityInitializer);
     }
 
 
     private void initRequestContextInitializer() {
-        Object bean = getWebApplicationContext().getBean(
-            REQUEST_CONTEXT_INITIALIZER_BEAN_NAME);
+        this.requestContextInitializer = (RequestContextInitializer) 
+            getWebApplicationContext().getBean(REQUEST_CONTEXT_INITIALIZER_BEAN_NAME, RequestContextInitializer.class);
         
-        if (bean != null && ! (bean instanceof RequestContextInitializer)) {
-            throw new BeanNotOfRequiredTypeException("The bean name '" + 
-                    REQUEST_CONTEXT_INITIALIZER_BEAN_NAME + "' is reserved", 
-                    RequestContextInitializer.class, bean.getClass());
-        }
-        this.logger.info("Request context initializer " + bean + " set up successfully");
-        this.requestContextInitializer = (RequestContextInitializer) bean;
+        this.logger.info("Request context initializer " + 
+                this.requestContextInitializer + " set up successfully");
     }
     
     
     private void initRepositoryContextInitializer() {
-        Object bean = getWebApplicationContext().getBean(
-            REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME);
-        
-        if (bean != null && ! (bean instanceof RepositoryContextInitializer)) {
-            throw new BeanNotOfRequiredTypeException(
-                REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME, 
-                    RepositoryContextInitializer.class, bean.getClass());
+        try {
+            this.repositoryContextInitializer = (RepositoryContextInitializer) 
+                getWebApplicationContext().getBean(REPOSITORY_CONTEXT_INITIALIZER_BEAN_NAME, 
+                        RepositoryContextInitializer.class);
+            this.logger.info("Repository context initializer " + 
+                    this.repositoryContextInitializer + " set up successfully");
+        } catch (NoSuchBeanDefinitionException e) {
+            // Ok
         }
-        this.logger.info("Repository context initializer " + bean + " set up successfully");
-        this.repositoryContextInitializer = (RepositoryContextInitializer) bean;
     }
     
     
 
 
     private void initRequestFilters() {
-        Object o = getWebApplicationContext().getBean(REQUEST_FILTERS_BEAN_NAME);
-        if (o != null && o instanceof List) {
-            boolean filters = true;
-            List list = (List) o;
-            for (Object elem: list) {
-                if (!(elem instanceof RequestFilter)) {
-                    filters = false;
-                    break;
-                }
-            }
-            if (filters) {
-                this.requestFilters = (RequestFilter[]) list.toArray(
-                    new RequestFilter[list.size()]);
-                this.logger.info("Request filters: " + list + " set up successfully");
-            }
-        } else if (o != null && o instanceof Object[]) {
-            boolean filters = true;
-            Object[] list = (Object[]) o;
-            RequestFilter[] result = new RequestFilter[list.length];
-            int i = 0;
-            for (Object elem: list) {
-                if (!(elem instanceof RequestFilter)) {
-                    filters = false;
-                    break;
-                } else {
-                    result[i++] = (RequestFilter) elem;
-                }
-            }
-            if (filters) {
-                this.requestFilters = result;
-                this.logger.info("Request filters: " + java.util.Arrays.asList(list)
-                                 + " set up successfully");
-            }
+        RequestFilter[] filterArray = 
+            (RequestFilter[]) getWebApplicationContext().getBean(REQUEST_FILTERS_BEAN_NAME, RequestFilter[].class);
+        if (filterArray == null || filterArray.length == 0) {
+            this.logger.info("No request filters found under name " + REQUEST_FILTERS_BEAN_NAME);
         }
+        
+        this.requestFilters = filterArray;
+        this.logger.info("Request filters: " + filterArray + " set up successfully");
     }
     
 
@@ -358,101 +322,51 @@ public class VortikalServlet extends DispatcherServlet {
         synchronized(this) {
             this.requests++;
             number = this.requests;
-        }                        
+        }
 
         boolean proceedService = true;
 
         try {
 
             request.setAttribute(SERVLET_NAME_REQUEST_ATTRIBUTE, getServletName());
-            
             BaseContext.pushContext();
-            Thread.currentThread().setName(
-                    this.getServletName() + "." + String.valueOf(number));
+            Thread.currentThread().setName(this.getServletName() + "." + String.valueOf(number));
 
-            try {
+            request = filterRequest(request);
 
-                if (this.requestFilters != null) {
-                    for (int i = 0; i < this.requestFilters.length; i++) {
-                        if (this.logger.isDebugEnabled()) {
-                            this.logger.debug("Running request filter: " + this.requestFilters[i]);
-                        }
-                        request = this.requestFilters[i].filterRequest(request);
-                    }
-                }
-
+            if (this.repositoryContextInitializer != null) {
                 this.repositoryContextInitializer.createContext(request);
-
-                if (this.securityInitializer != null
-                    && !this.securityInitializer.createContext(request, responseWrapper)) {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Request " + request + " handled by " +
-                                "security initializer (authentication challenge)");
-                    }
-                    return;
-                }
-
-                if (this.requestContextInitializer != null) {
-                    this.requestContextInitializer.createContext(request);
-                }
-                
-                proceedService = checkLastModified(request, responseWrapper);
-
-                if (proceedService) {
-                    
-                    super.doService(request, responseWrapper);
-                }
-
-            } catch (AuthenticationException ex) {
-                Service service = RequestContext.getRequestContext()
-                        .getService();
-                AuthenticationChallenge challenge = getAuthenticationChallenge(service);
-
+            }
+            
+            if (!this.securityInitializer.createContext(request, responseWrapper)) {
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Authentication required for request "
-                                 + request + ", service " + service + ". "
-                                 + "Using challenge " + challenge, ex);
+                    this.logger.debug("Request " + request + " handled by " + 
+                            "security initializer (authentication challenge)");
                 }
-                if (challenge == null) {
-                    throw new ServletException(
-                        "Authentication challenge for service " + service
-                        + " (or any of its ancestors) is not specified.");
-                }
-
-                try {
-                    challenge.challenge(request, responseWrapper);
-                } catch (AuthenticationProcessingException e) {
-                    logError(request, e);
-                    throw new ServletException(
-                        "Fatal processing error while performing " +
-                        "authentication challenge", e);
-                }
-
-            } catch (Throwable t) {
-                if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
-                    responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
-                failureCause = t;
-                handleError(request, responseWrapper, t);
+                return;
             }
 
+            this.requestContextInitializer.createContext(request);
+
+            proceedService = checkLastModified(request, responseWrapper);
+
+            if (proceedService) {
+                super.doService(request, responseWrapper);
+            }
+
+        } catch (AuthenticationException ex) {
+            authenticationChallenge(request, responseWrapper, ex);
         } catch (AuthenticationProcessingException e) {
-            if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
-                responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-
-            logError(request, e);
-            throw new ServletException(
-                "Fatal processing error while performing authentication", e);
-
+            handleAuthenticationProcessingError(request, responseWrapper, e);
         } catch (InvalidAuthenticationRequestException e) {
             responseWrapper.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logError(request, e);
-
         } catch (Throwable t) {
-            logError(request, t);
-            throw new ServletException(t);
-
+            if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
+                responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+            failureCause = t;
+            handleError(request, responseWrapper, t);
         } finally {
 
             long processingTime = System.currentTimeMillis() - startTime;
@@ -473,6 +387,55 @@ public class VortikalServlet extends DispatcherServlet {
             this.requestContextInitializer.destroyContext();
             Thread.currentThread().setName(threadName);
             BaseContext.popContext();
+        }
+    }
+
+    private void handleAuthenticationProcessingError(HttpServletRequest request, StatusAwareResponseWrapper responseWrapper, AuthenticationProcessingException e) throws ServletException {
+        if (HttpServletResponse.SC_OK == responseWrapper.getStatus()) {
+            responseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+
+        logError(request, e);
+        throw new ServletException("Fatal processing error while " +
+                "performing authentication", e);
+    }
+
+    private HttpServletRequest filterRequest(HttpServletRequest request) {
+        for (int i = 0; i < this.requestFilters.length; i++) {
+            RequestFilter filter = this.requestFilters[i];
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Running request filter: " + filter);
+            }
+            request = filter.filterRequest(request);
+        }
+        
+        return request;
+    }
+
+    private void authenticationChallenge(HttpServletRequest request, HttpServletResponse response, 
+            AuthenticationException ex) throws ServletException {
+        Service service = RequestContext.getRequestContext()
+                .getService();
+        AuthenticationChallenge challenge = getAuthenticationChallenge(service);
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Authentication required for request "
+                         + request + ", service " + service + ". "
+                         + "Using challenge " + challenge, ex);
+        }
+        if (challenge == null) {
+            throw new ServletException(
+                "Authentication challenge for service " + service
+                + " (or any of its ancestors) is not specified.");
+        }
+
+        try {
+            challenge.challenge(request, response);
+        } catch (AuthenticationProcessingException e) {
+            logError(request, e);
+            throw new ServletException(
+                "Fatal processing error while performing " +
+                "authentication challenge", e);
         }
     }
 

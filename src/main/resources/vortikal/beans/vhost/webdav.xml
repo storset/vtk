@@ -623,6 +623,7 @@
     </description>
     <property name="service" ref="webdavService"/>
     <property name="skipCurrentResource" value="true" />
+    <property name="skipIndexFile" value="true" />
   </bean>
 
 

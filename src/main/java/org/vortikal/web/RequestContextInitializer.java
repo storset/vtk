@@ -32,17 +32,15 @@ package org.vortikal.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -83,14 +81,13 @@ public class RequestContextInitializer
   implements ContextInitializer, ApplicationContextAware, InitializingBean {
 
 
+    private IndexFileResolver indexFileResolver;
     private static Log logger = LogFactory.getLog(RequestContextInitializer.class);
     private ApplicationContext context = null;
-    private List rootServices = null;
+    private List<Service> rootServices = new ArrayList<Service>();
 
     private String trustedToken;
     private Repository repository;
-    private String[] indexFileList = new String[0];
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -103,10 +100,6 @@ public class RequestContextInitializer
         this.context = context;
     }
     
-    public void setIndexFileList(String[] indexFileList) {
-        this.indexFileList = indexFileList;
-    }
-
 
     public void afterPropertiesSet() {
         if (this.trustedToken == null) {
@@ -119,25 +112,22 @@ public class RequestContextInitializer
                 "Required property 'repository' not set");
         }
 
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+        Map<String, Service> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.context, Service.class, true, false);
         
-        List rootServices = new ArrayList(matchingBeans.values());
-        List list = new ArrayList(rootServices);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
-            if (service.getParent() != null) 
-                rootServices.remove(service);
+        for (Iterator<Service> iter = matchingBeans.values().iterator(); iter.hasNext();) {
+            Service service = iter.next();
+            if (service.getParent() == null) 
+                this.rootServices.add(service);
         }
-        Collections.sort(rootServices, new OrderComparator());
 
-        if (rootServices.isEmpty()) {
+        if (this.rootServices.isEmpty()) {
             throw new BeanInitializationException(
                     "No services defined in context.");
         }
         
-        this.rootServices = rootServices;
-        
+        Collections.sort(this.rootServices, new OrderComparator());
+
         if (logger.isInfoEnabled()) {
             logger.info("Registered service tree root services in the following order: " 
                         + rootServices);
@@ -154,7 +144,6 @@ public class RequestContextInitializer
 
         try {
             resource = this.repository.retrieve(this.trustedToken, uri, false);
-            
         } catch (ResourceNotFoundException e) {
             // Ignore, this is not an error
         } catch (ResourceLockedException e) {
@@ -166,31 +155,28 @@ public class RequestContextInitializer
             throw new ServletException(msg, e);
         }
 
-        String indexFileURI = null;
-
-        // XXX: optimize:
-        if (resource != null && resource.isCollection()) {
-            String[] childURIs = resource.getChildURIs();
-            for (int i = 0; i < this.indexFileList.length; i++) {
-                for (int j = 0; j < childURIs.length; j++) {
-                    String name = childURIs[j].substring(childURIs[j].lastIndexOf("/") + 1);
-                    if (this.indexFileList[i].equals(name)) {
-                        indexFileURI = childURIs[j];
-                        break;
-                    }
+        String indexFileUri = null;
+        boolean isIndexFile = false;
+        if (indexFileResolver != null && resource != null) {
+            if (resource.isCollection())
+                indexFileUri = indexFileResolver.getIndexFile(resource);
+            else {
+                try {
+                    Resource parent = this.repository.retrieve(this.trustedToken, resource.getParent(), false);
+                    isIndexFile = uri.equals(indexFileResolver.getIndexFile(parent));
+                } catch (Exception e) {
+                    // Ignore
                 }
-                if (indexFileURI != null) {
-                    break;
-                }
+                
             }
         }
-
         for (Iterator iter = this.rootServices.iterator(); iter.hasNext();) {
             Service service = (Service) iter.next();
+
             // Set an initial request context (with the resource, but
             // without the matched service)
             RequestContext.setRequestContext(
-                new RequestContext(request, service, resource, uri, indexFileURI));
+                new RequestContext(request, service, resource, uri, indexFileUri, isIndexFile));
             
             // Resolve the request to a service:
             if (resolveService(service, request, resource)) {
@@ -205,8 +191,6 @@ public class RequestContextInitializer
                 "Unable to map request " + request + " to a valid service", request);
         }
     }
-
-
 
     public void destroyContext() {
         RequestContext.setRequestContext(null);
@@ -241,30 +225,26 @@ public class RequestContextInitializer
         RequestContext requestContext = RequestContext.getRequestContext();
 
         try {
-            for (Iterator iter = service.getAssertions().iterator(); iter.hasNext();) {
-                Assertion assertion = (Assertion) iter.next();
+            for (Iterator<Assertion> iter = service.getAssertions().iterator(); iter.hasNext();) {
+                Assertion assertion = iter.next();
 
-                boolean match = true;
-
-                if (!assertion.matches(request,resource,securityContext.getPrincipal()))
-                    match = false;
-
-                if (logger.isTraceEnabled()) {
-                    if (match) {
-                        logger.trace("Matched assertion: " + assertion +
-                                     " for service " + service.getName());
-                    } else {
+                if (!assertion.matches(request,resource,securityContext.getPrincipal())) {
+                    if (logger.isTraceEnabled()) {
                         logger.trace("Unmatched assertion: " + assertion +
-                                     " for service " + service.getName());
+                            " for service " + service.getName());
                     }
+                    return false;
                 }
-                if (!match) return false;
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Matched assertion: " + assertion +
+                            " for service " + service.getName());
+                } 
             }
         } catch (AuthenticationException e) {
             RequestContext.setRequestContext(
                 new RequestContext(request, service, resource,
                                    requestContext.getResourceURI(),
-                                   requestContext.getIndexFileURI()));
+                                   requestContext.getIndexFileURI(), requestContext.isIndexFile()));
             throw(e);
         }
 
@@ -273,9 +253,8 @@ public class RequestContextInitializer
                          ", will check for child services: " + service.getChildren());
         }
 
-        for (Iterator iter = service.getChildren().iterator(); iter.hasNext();) {
-            Service child = (Service) iter.next();
-            if (resolveService(child, request, resource))
+        for (Iterator<Service> iter = service.getChildren().iterator(); iter.hasNext();) {
+            if (resolveService(iter.next(), request, resource))
                 return true;
         }
         
@@ -286,7 +265,7 @@ public class RequestContextInitializer
         RequestContext.setRequestContext(
             new RequestContext(request, service, resource,
                                requestContext.getResourceURI(),
-                               requestContext.getIndexFileURI()));
+                               requestContext.getIndexFileURI(), requestContext.isIndexFile()));
         return true;
     }
 
@@ -333,6 +312,10 @@ public class RequestContextInitializer
             buffer.append(lineSeparator);
             printServiceList(service.getChildren(), buffer, "  " + indent, lineSeparator);
         }
+    }
+
+    public void setIndexFileResolver(IndexFileResolver indexFileResolver) {
+        this.indexFileResolver = indexFileResolver;
     }
     
 

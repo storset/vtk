@@ -45,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.OrderComparator;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -82,12 +83,12 @@ public class ServiceImpl
 
     private AuthenticationChallenge authenticationChallenge;
     private Object handler;
-    private List assertions = new ArrayList();
-    private List services = new ArrayList();
+    private List<Assertion> assertions = new ArrayList<Assertion>();
+    private List<Service> services = new ArrayList<Service>();
     private Service parent;
     private String name;
-    private Map attributes = new HashMap();
-    private List handlerInterceptors;
+    private Map<String, Object> attributes = new HashMap<String, Object>();
+    private List<HandlerInterceptor> handlerInterceptors;
     private int order = 0;
     private Set categories = null;
     private ApplicationContext applicationContext;
@@ -100,17 +101,17 @@ public class ServiceImpl
     }
 	
 
-    public void setAssertions(List assertions) {
+    public void setAssertions(List<Assertion> assertions) {
         this.assertions = assertions;
     }
 	
 
-    public void setServices(List services) {
+    public void setServices(List<Service> services) {
         this.services = services;
     }
 
 
-    public void addServices(List services) {
+    public void addServices(List<Service> services) {
         this.services.addAll(services);
     }
     
@@ -120,7 +121,7 @@ public class ServiceImpl
     }
     
 
-    public List getChildren() {
+    public List<Service> getChildren() {
         return this.services;
     }
 
@@ -130,7 +131,7 @@ public class ServiceImpl
     }
 	
 
-    public void setAttributes(Map attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
     
@@ -164,16 +165,17 @@ public class ServiceImpl
     }
 	
 
-    public List getAssertions() {
+    public List<Assertion> getAssertions() {
         return this.assertions;
     }
 	
 
-    private static List getAllAssertions(Service service) {
-        ArrayList assertions = new ArrayList();
+    private static List<Assertion> getAllAssertions(Service service) {
+        List<Assertion> assertions = new ArrayList<Assertion>();
         do {
             assertions.addAll(0, service.getAssertions());
         } while ((service = service.getParent()) != null);
+
         return assertions;
     }
 
@@ -363,12 +365,12 @@ public class ServiceImpl
     }
 
     
-    public void setHandlerInterceptors(List handlerInterceptors) {
+    public void setHandlerInterceptors(List<HandlerInterceptor> handlerInterceptors) {
         this.handlerInterceptors = handlerInterceptors;
     }
     
 
-    public List getHandlerInterceptors() {
+    public List<HandlerInterceptor> getHandlerInterceptors() {
         return this.handlerInterceptors;
     }
 

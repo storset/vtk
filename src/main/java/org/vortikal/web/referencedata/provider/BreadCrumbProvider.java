@@ -31,19 +31,15 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -54,7 +50,6 @@ import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.servlet.VortikalServlet;
 
 
 /**
@@ -71,10 +66,6 @@ import org.vortikal.web.servlet.VortikalServlet;
  *   <li><code>service</code> - the service for which to construct breadcrumb URLs
  *   <li><code>breadcrumbName</code> - the name to publish the
  *   breadcrumb under (default <code>breadcrumb</code>
- *   <li><code>skippedURLs</code> - a list of resource URIs for which
- *   to skip URL generation. That is, {@link BreadcrumbElement#getURL}
- *   will return <code>null</code> for the resources included in this
- *   list.
  *   <li><code>ignoreProperty</code> - a resource property definition specifying
  *   whether to not include a given resource in the breadcrumb data model. 
  *   Resources are ignored when the property exists.
@@ -102,10 +93,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private String breadcrumbName = "breadcrumb";
     private PropertyTypeDefinition ignoreProperty = null;
     private PropertyTypeDefinition[] titleOverrideProperties = null;
-    private String[] skippedURLs = null;
-    private Set skippedURLSet = null;
     private boolean skipCurrentResource = false;
-    private String delimiter = ">";
+    private boolean skipIndexFile = false;
     
     
     public final void setRepository(final Repository newRepository) {
@@ -134,11 +123,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
     
     
-    public void setSkippedURLs(String[] skippedURLs) {
-        this.skippedURLs = skippedURLs;
-    }
-    
-
     public void setSkipCurrentResource(boolean skipCurrentResource) {
         this.skipCurrentResource = skipCurrentResource;
     }
@@ -157,13 +141,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             throw new BeanInitializationException(
                 "Property 'breadcrumbName' cannot be null");
         }
-
-        if (this.skippedURLs != null) {
-            this.skippedURLSet = new HashSet();
-            for (int i = 0; i < this.skippedURLs.length; i++) {
-                this.skippedURLSet.add(this.skippedURLs[i]);
-            }
-        }
     }
 
 
@@ -175,51 +152,60 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
+        List<BreadcrumbElement> breadCrumb = 
+            generateBreadcrumb(token, principal, uri, requestContext.isIndexFile());
+
+        model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
+
+    }
+
+
+    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, String uri, boolean isIndexFile) {
+        
+        List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
+
+        if ("/".equals(uri)) {
+            return breadCrumb;
+        }
+        
         String[] path = URLUtil.splitUri(uri);
         String[] incrementalPath = URLUtil.splitUriIncrementally(uri);
-        
-        List breadCrumb = new ArrayList();
-
+            
         int length = path.length;
-        if (request.getAttribute(VortikalServlet.INDEX_FILE_REQUEST_ATTRIBUTE) != null) {
+        if (this.skipIndexFile && isIndexFile) {
             length--;
         }
         if (this.skipCurrentResource) {
             length--;
         }
 
-        if (!"/".equals(uri)) {
-            for (int i = 0; i < length; i++) {
-                try {
-                    Resource r = this.repository.retrieve(
-                        token, incrementalPath[i], true);
+        for (int i = 0; i < length; i++) {
+            try {
+                Resource r = this.repository.retrieve(token, incrementalPath[i], true);
 
-                    if (checkIgnore(r)) {
-                        continue;
-                    }
-                    String title = getTitle(r);
-                    String url = null;
-                    if ((this.skippedURLSet == null
-                         || !this.skippedURLSet.contains(incrementalPath[i]))
-                        && (i < length - 1 || this.skipCurrentResource)) {
-                        url = this.service.constructLink(r, principal, false);
-                    }
-
-                    if (i == length - 1 && !this.skipCurrentResource) {
-                        breadCrumb.add(new BreadcrumbElement(url, title, null));
-                    } else {
-                        breadCrumb.add(new BreadcrumbElement(url, title));
-                    }
-                } catch (Exception e) {
-                    breadCrumb.add(new BreadcrumbElement(null, path[i]));
-                    String msg = e.getMessage();
-                    if (msg == null) {
-                        msg = e.getClass().getName();
-                    }
-
-                    logger.warn("Unable to generate breadcrumb path element '"
-                                + incrementalPath[i] + "': " + msg);
+                if (checkIgnore(r)) {
+                    continue;
                 }
+                String title = getTitle(r);
+                String url = null;
+                if (i < length - 1 || this.skipCurrentResource) {
+                    url = this.service.constructLink(r, principal, false);
+                }
+
+                if (i == length - 1 && !this.skipCurrentResource) {
+                    breadCrumb.add(new BreadcrumbElement(url, title, null));
+                } else {
+                    breadCrumb.add(new BreadcrumbElement(url, title));
+                }
+            } catch (Exception e) {
+                breadCrumb.add(new BreadcrumbElement(null, path[i]));
+                String msg = e.getMessage();
+                if (msg == null) {
+                    msg = e.getClass().getName();
+                }
+
+                logger.debug("Unable to generate breadcrumb path element '"
+                            + incrementalPath[i] + "': " + msg);
             }
         }
 
@@ -227,8 +213,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             logger.debug("Generated breadcrumb path: " + breadCrumb);
         }
 
-        model.put(this.breadcrumbName, breadCrumb.toArray(
-                      (new BreadcrumbElement[breadCrumb.size()])));
+        return breadCrumb;
     }
 
 
@@ -267,6 +252,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         sb.append("breadcrumbName = ").append(this.breadcrumbName);
         sb.append(" ]");
         return sb.toString();
+    }
+
+
+    public void setSkipIndexFile(boolean skipIndexFile) {
+        this.skipIndexFile = skipIndexFile;
     }
 
 }

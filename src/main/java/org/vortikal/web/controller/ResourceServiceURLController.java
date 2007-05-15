@@ -57,11 +57,6 @@ import org.vortikal.web.service.Service;
  *   <li><code>repository</code> - the content repository
  *   <li><code>service</code> - the service used to construct the URL</li>
  *   <li><code>viewName</code> - the name of the returned view</li>
- *   <li><code>childNames</code> - a list of resource names. If this
- *   optional property is set, instead of creating a URL to the
- *   requested resource, the list of child names are traversed, and
- *   the first child resource whose name matches in the list will be
- *   used for the URL construction.
  * </ul>
  * </p>
  *
@@ -77,9 +72,7 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
     
     private Service service = null;
     private String viewName = DEFAULT_VIEW_NAME;
-    private String[] childNames = null;
     private Repository repository = null;
-
 
     public void setService(Service service) {
         this.service = service;
@@ -88,15 +81,6 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
-    }
-    
-
-    public void setChildName(String childName) {
-        this.childNames = new String[] {childName};
-    }
-    
-    public void setChildNames(String[] childNames) {
-        this.childNames = childNames;
     }
     
 
@@ -126,39 +110,15 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
         String token = securityContext.getToken();
 
         String uri = requestContext.getResourceURI();
-
         Resource resource = this.repository.retrieve(token, uri, false);
-        Resource childResource = null;
-
-        if (this.childNames != null && this.childNames.length > 0) {
-            String[] children = resource.getChildURIs();
-            for (int i = 0; i < children.length; i++) {
-                String childName = children[i].substring(children[i].lastIndexOf("/") + 1);
-                for (int j = 0; j < this.childNames.length; j++) {
-                    if (this.childNames[j].equals(childName)) {
-                        try {
-                            childResource = this.repository.retrieve(token, children[i], true);
-                            break;
-                        } catch (Exception e) { }
-                    }
-                }
-            }
-        } 
-        Map model = new HashMap();
         String resourceURL = this.service.constructLink(resource, principal, false);
-        String childResourceURL = null;
-        if (childResource != null) {
-            childResourceURL = this.service.constructLink(childResource, principal, false);
-        }
 
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);
         model.put("resourceReference", resourceURL);
 
-        model.put("childResource", childResource);
-        model.put("childResourceReference", childResourceURL);
-        
-
         return new ModelAndView(this.viewName, model);
     }
+
 }
 

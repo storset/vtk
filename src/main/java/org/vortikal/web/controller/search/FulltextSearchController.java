@@ -93,23 +93,65 @@ public class FulltextSearchController implements Controller {
         Map<String, Object> subModel = new HashMap<String, Object>();
         
         String query = request.getParameter("query");
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Service currentService = requestContext.getService();
+        URL searchURL = currentService.constructURL(requestContext.getResourceURI());
+        subModel.put("url", searchURL);
+
         if (query != null) {
             subModel.put("query", query);
 
             String token = SecurityContext.getSecurityContext().getToken();
-        
+            
+            int startIdx = 0;
+            int page = 0;
+
+            String pageParam = request.getParameter("page");
+
+            if (pageParam != null) {
+                try {
+                    page = Integer.parseInt(pageParam);
+                    page--;
+                    startIdx = page * this.pageSize;
+                } catch (NumberFormatException e) { }
+            }
+            int endIdx = startIdx + this.pageSize;
+
             ResultSet resultSet = searcher.execute(token, query);
-            List<PropertySet> results = resultSet.getResults(this.pageSize);
+            List<PropertySet> allResults = resultSet.getAllResults();
+            if (endIdx > allResults.size()) {
+                endIdx = allResults.size();
+            }
+
+            List<PropertySet> results = allResults.subList(startIdx, endIdx);
+
+            if (endIdx == allResults.size()) {
+                int nextPage = page + 1;
+                URL nextURL = currentService.constructURL(requestContext.getResourceURI());
+                nextURL.removeParameter("query");
+                nextURL.addParameter("query", query);
+                nextURL.removeParameter("page");
+                nextURL.addParameter("page", String.valueOf(nextPage + 1));
+                subModel.put("next", nextURL);
+            }
+
+            if (page > 0) {
+                int prevPage = page - 1;
+                URL nextURL = currentService.constructURL(requestContext.getResourceURI());
+                nextURL.removeParameter("query");
+                nextURL.addParameter("query", query);
+                nextURL.removeParameter("page");
+                nextURL.addParameter("page", String.valueOf(prevPage + 1));
+                subModel.put("prev", nextURL);
+            }
+
+
             subModel.put("results", results);
             subModel.put("start", new Integer(0));
             subModel.put("end", new Integer(results.size()));
         }
         
-        RequestContext requestContext = RequestContext.getRequestContext();
-
-        Service currentService = requestContext.getService();
-        URL searchURL = currentService.constructURL(requestContext.getResourceURI());
-        subModel.put("url", searchURL);
         
         mainModel.put("search", subModel);
         return new ModelAndView(this.viewName, mainModel);

@@ -235,10 +235,20 @@ public class ServiceImpl
         return constructLink(resource, principal, null, true);
     }
 
+    public URL constructURL(Resource resource, Principal principal) {
+        return constructURL(resource, principal, null, true);
+    }
+
 
     public String constructLink(Resource resource, Principal principal,
                                 boolean matchAssertions) {
         return constructLink(resource, principal, null, matchAssertions);
+    }
+
+
+    public URL constructURL(Resource resource, Principal principal,
+                                boolean matchAssertions) {
+        return constructURL(resource, principal, null, matchAssertions);
     }
 
 	
@@ -247,7 +257,17 @@ public class ServiceImpl
         return constructLink(resource, principal, parameters, true);
     }
 
+    public URL constructURL(Resource resource, Principal principal,
+                               Map parameters) {
+        return constructURL(resource, principal, parameters, true);
+    }
+
     public String constructLink(Resource resource, Principal principal,
+                                Map parameters, boolean matchAssertions) {
+        return constructURL(resource, principal, parameters, matchAssertions).toString();
+    }
+	
+    public URL constructURL(Resource resource, Principal principal,
                                 Map parameters, boolean matchAssertions) {
         List assertions = getAllAssertions(this);
         URL urlObject = 
@@ -256,10 +276,14 @@ public class ServiceImpl
 
         postProcess(urlObject);
 
-        return urlObject.toString();
+        return urlObject;
     }
-	
+
     public String constructLink(String uri) {
+        return constructURL(uri).toString();
+    }
+
+    public URL constructURL(String uri) {
         List assertions = getAllAssertions(this);
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
@@ -270,10 +294,14 @@ public class ServiceImpl
        
         postProcess(urlObject);
         
-        return urlObject.toString();
+        return urlObject;
     }
 
     public String constructLink(String uri, Map parameters) {
+        return constructURL(uri, parameters).toString();
+    }
+
+    public URL constructURL(String uri, Map parameters) {
         List assertions = getAllAssertions(this);
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
         if (parameters != null) {
@@ -295,9 +323,8 @@ public class ServiceImpl
        
         postProcess(urlObject);
         
-        return urlObject.toString();
+        return urlObject;
     }
-
     
     
     public void afterPropertiesSet() throws Exception {

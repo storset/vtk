@@ -31,14 +31,14 @@
 package org.vortikal.web.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.vortikal.util.web.URLUtil;
+import java.util.HashMap;
 
 
 /**
@@ -181,6 +181,10 @@ public class URL {
         return null;
     }
     
+    public List<String> getParameterNames() {
+        return Collections.unmodifiableList(this.parameterNames);
+    }
+
 
     public String getRef() {
         return this.ref;
@@ -278,6 +282,44 @@ public class URL {
     }
     
 
+//     public static URL parse(String url) {
+//         if (url == null || "".equals(url.trim())) {
+//             throw new IllegalArgumentException("Illegal URL: " + url);
+//         }
+//         if (url.indexOf("://") < 1) {
+//             throw new IllegalArgumentException("Illegal URL: " + url);
+//         }
+//         String protocol = url.substring(0, url.indexOf("://"));
 
+//         String host = url.substring(url.indexOf("://") + 3);
+//         host = host.substring(0, host.indexOf("/"));
+//         if (host.indexOf(":") > 0) {
+//             host = host.substring(0, host.indexOf(":"));
+//         }
+        
+//         int pathStartIdx = 0;
+//         pathStartIdx = url.indexOf("://");
+//         pathStartIdx = url.indexOf("/", pathStartIdx + 1);
+//         int pathEndIdx = url.indexOf("?");
+//         if (pathEndIdx > 0) {
+//             pathEndIdx = url.length();
+//         }
+//         String path = url.substring(pathStartIdx, pathEndIdx);
+
+//         URL resultURL = new URL(protocol, host, path);
+
+//         Map<String, String[]> queryParams = new HashMap<String, String[]>();
+//         if (url.indexOf("?") > 0) {
+//             queryParams = URLUtil.splitQueryString(url.substring(url.indexOf("?")));
+//         }
+//         for (String param: queryParams.keySet()) {
+//             String[] values = queryParams.get(param);
+//             for (String value: values) {
+//                 resultURL.addParameter(param, value);
+//             }
+//         }
+//         return resultURL;
+//     }
+    
 
 }

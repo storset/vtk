@@ -113,20 +113,28 @@ public class FulltextSearchController implements Controller {
                 try {
                     page = Integer.parseInt(pageParam);
                     page--;
+                    if (page < 0) {
+                        page = 0;
+                    }
                     startIdx = page * this.pageSize;
                 } catch (NumberFormatException e) { }
             }
             int endIdx = startIdx + this.pageSize;
 
             ResultSet resultSet = searcher.execute(token, query);
+
             List<PropertySet> allResults = resultSet.getAllResults();
             if (endIdx > allResults.size()) {
                 endIdx = allResults.size();
             }
 
+            if (startIdx >= allResults.size()) {
+                startIdx = endIdx - this.pageSize;
+            }
+
             List<PropertySet> results = allResults.subList(startIdx, endIdx);
 
-            if (endIdx == allResults.size()) {
+            if (endIdx < allResults.size()) {
                 int nextPage = page + 1;
                 URL nextURL = currentService.constructURL(requestContext.getResourceURI());
                 nextURL.removeParameter("query");
@@ -138,18 +146,17 @@ public class FulltextSearchController implements Controller {
 
             if (page > 0) {
                 int prevPage = page - 1;
-                URL nextURL = currentService.constructURL(requestContext.getResourceURI());
-                nextURL.removeParameter("query");
-                nextURL.addParameter("query", query);
-                nextURL.removeParameter("page");
-                nextURL.addParameter("page", String.valueOf(prevPage + 1));
-                subModel.put("prev", nextURL);
+                URL prevURL = currentService.constructURL(requestContext.getResourceURI());
+                prevURL.removeParameter("query");
+                prevURL.addParameter("query", query);
+                prevURL.removeParameter("page");
+                prevURL.addParameter("page", String.valueOf(prevPage + 1));
+                subModel.put("prev", prevURL);
             }
 
-
             subModel.put("results", results);
-            subModel.put("start", new Integer(0));
-            subModel.put("end", new Integer(results.size()));
+            subModel.put("start", new Integer(startIdx + 1));
+            subModel.put("end", new Integer(endIdx));
         }
         
         

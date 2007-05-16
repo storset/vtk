@@ -382,7 +382,7 @@
           <div>
             <div class="kupu-toolbox-label" i18n:translate="">Tittel p&aring; dokumentet:</div>
             <input class="wide" id="kupu-properties-title"/>
-            <span class="vortikal-kupu-link"><a target="new_window" href="http://kupu.oscom.org/">Kupu</a> er under utprøving, husk <a target="new_window" href="http://www.usit.uio.no/it/vortex/hjelp/admin/kupu/">å lagre ofte!</a></span>
+            <span class="vortikal-kupu-link"><a target="new_window" href="http://www.usit.uio.no/it/vortex/hjelp/admin/kupu/">Hjelp til redigering</a> med <a target="new_window" href="http://kupu.oscom.org/">Kupu</a>.</span>
             <div class="kupu-toolbox-label" style="display:none" i18n:translate="">Description:</div>
             <textarea class="wide" id="kupu-properties-description"> </textarea>
             <!-- <div style="clear: both; height: 1px" /> -->

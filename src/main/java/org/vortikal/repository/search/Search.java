@@ -58,7 +58,7 @@ import org.vortikal.repository.search.query.Query;
  * 
  * @return      A <code>ResultSet</code> containing a subset of the results.
  * 
- * @throws QueryException If the query could not be executed.
+ * @throws org.vortikal.repository.search.QueryException If the query could not be executed.
  * 
  * @see Query, ResultSet
  */

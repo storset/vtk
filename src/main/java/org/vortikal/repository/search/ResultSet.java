@@ -56,6 +56,21 @@ public interface ResultSet {
     public PropertySet getResult(int index);
     
     /**
+     * Returns <code>true</code> if a result is available for the given index,
+     *         <code>false</code> otherwise. 
+     *
+     *         This can be used to determine if there are more results 
+     *         in paging logic (i.e. test if "endIdx" + 1 exists without having
+     *         to call {@link #getAllResults()}).
+     * 
+     * @param index
+     * @return <code>true</code> if a result is available for the given index
+     *      
+     * @throws QueryException
+     */
+    public boolean hasResult(int index);
+    
+    /**
      * Get all the results up to, but not including, the result
      * at position <code>maxIndex</code>. 
      * Example:

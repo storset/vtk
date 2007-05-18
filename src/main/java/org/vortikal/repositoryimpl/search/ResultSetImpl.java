@@ -61,6 +61,10 @@ public class ResultSetImpl implements ResultSet {
     public PropertySet getResult(int index) {
         return this.results.get(index);
     }
+    
+    public boolean hasResult(int index) {
+        return (this.results.size() >= index + 1);
+    }
 
     public List<PropertySet> getResults(int maxIndex) {
         int max = Math.min(maxIndex, this.results.size());

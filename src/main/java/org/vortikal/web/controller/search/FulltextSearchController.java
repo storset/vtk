@@ -129,7 +129,7 @@ public class FulltextSearchController implements Controller {
             }
 
             if (startIdx >= allResults.size()) {
-                startIdx = endIdx - this.pageSize;
+                startIdx = Math.max(endIdx - this.pageSize, 0);
             }
 
             List<PropertySet> results = allResults.subList(startIdx, endIdx);

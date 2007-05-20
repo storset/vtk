@@ -81,7 +81,7 @@ public class StylesheetTemplatesRegistry {
 
 
     public Templates getTemplates(String stylesheetPath) {
-        Item item = (Item) this.cachedItems.get(stylesheetPath);
+        Item item = this.cachedItems.get(stylesheetPath);
         if (item == null) return null;
         return item.getTemplates();
     }
@@ -89,7 +89,7 @@ public class StylesheetTemplatesRegistry {
 
 
     public Date getLastModified(String stylesheetPath) {
-        Item item = (Item) this.cachedItems.get(stylesheetPath);
+        Item item = this.cachedItems.get(stylesheetPath);
         if (item == null) return null;
         return item.getLastModified();
     }

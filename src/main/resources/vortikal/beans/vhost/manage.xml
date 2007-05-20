@@ -1728,7 +1728,7 @@
    <!-- Locale resolver for manage service  -->
 
    <bean id="manageLocaleResolver"
-         class="org.vortikal.web.servlet.CookieLocaleResolver" >
+         class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
      <property name="cookieMaxAge" value="315360000" />
      <property name="defaultLocale"> 
        <bean class="java.util.Locale">

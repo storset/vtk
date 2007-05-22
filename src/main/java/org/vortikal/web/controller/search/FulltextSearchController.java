@@ -134,11 +134,11 @@ public class FulltextSearchController implements Controller {
             // Since endIdx might have been repositioned above, we need to make sure
             // startIdx is sane.
             if (startIdx >= endIdx) {
-                if (endIdx == this.pageSize) {
-                    startIdx = 0;
+                // In case of insane page number, don't roll back startIdx a 
+                // whole page, just roll back to start of the last result page.
+                if (endIdx % this.pageSize == 0) {
+                    startIdx = Math.max(endIdx - this.pageSize, 0);
                 } else {
-                    // In case of insane page number, don't roll back startIdx a 
-                    // whole page, just roll back to start of the last result page.
                     startIdx = endIdx - endIdx % this.pageSize;
                 }
             }

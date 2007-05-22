@@ -81,21 +81,6 @@
         </bean>
       </list>
     </property>
-    <property name="services">
-      <list>
-        <ref bean="collectionRedirectService" />
-        <ref bean="authenticateService" />
-        <ref bean="logoutService" />
-        <ref bean="httpOptionsService" />
-
-        <!-- These are located in their own files: -->
-        <!--ref bean="editService" /-->               <!-- 400 -->
-        <!--ref bean="manageService" /-->             <!-- 500 -->
-        <!--ref bean="browseService" /-->             <!-- 600 -->
-        <!--ref bean="viewService" /-->               <!-- 700 -->
-        <!--         <ref bean="searchService" /> -->
-      </list>
-    </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
@@ -113,6 +98,7 @@
   <!-- Collection redirect service -->
 
   <bean id="collectionRedirectService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="0" />
     <property name="assertions">
       <list>
@@ -134,6 +120,7 @@
   <!-- Logout service -->
   
   <bean id="logoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="200" />
     <property name="assertions">
       <list>
@@ -157,6 +144,7 @@
        Digest challenge.
   -->
   <bean id="authenticateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="100"/>
     <property name="assertions">
       <list>
@@ -167,17 +155,12 @@
           <property name="invert" value="true" />
         </bean>
       </list>
-    </property>
-    <property name="services">
-      <list>
-        <ref bean="authenticateBasicSSLService"/>
-        <ref bean="authenticateDigestService"/>
-      </list>
     </property>    
   </bean>
   
   <!-- Explicit authentication with HTTP Basic if the connection is SSL-secured -->
   <bean id="authenticateBasicSSLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="authenticateService" />
     <property name="order" value="100" />
     
     <property name="authenticationChallenge" 
@@ -197,6 +180,7 @@
 
   <!-- Explicit HTTP Digest authentication over unsecured connection -->
   <bean id="authenticateDigestService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="authenticateService" />
     <property name="order" value="200" />
     <property name="authenticationChallenge" 
               ref="httpDigestAuthenticationChallenge" />
@@ -215,6 +199,7 @@
 
 
   <bean id="httpOptionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="300" />
     <property name="assertions">
       <list>
@@ -227,9 +212,7 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <ref bean="httpOptionsHandler" />
-    </property>
+    <property name="handler" ref="httpOptionsHandler" />
   </bean>
 
 
@@ -276,11 +259,6 @@
       </list>
     </property>
     <property name="handler" ref="collectionListingHandler" />
-    <property name="services">
-      <list>
-        <ref bean="displayIndexFileService" />
-      </list>    
-    </property>
   </bean>
 
 
@@ -297,6 +275,7 @@
 
 
   <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListingService" />
     <property name="assertions">
       <list>
         <ref bean="hasIndexFileAssertion" />
@@ -326,11 +305,6 @@
         <ref bean="displayResourceHandlerInterceptor" />
       </list>
     </property>
-    <property name="services">
-      <list>
-        <ref bean="displayHTMLResourceService" />
-      </list>    
-    </property>
   </bean>
 
 
@@ -341,6 +315,7 @@
       content wrappers are applied to the response, and this should
       not be done on e.g. PDF resources, etc.
     </description>
+    <property name="parent" ref="displayResourceService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesHtml" />

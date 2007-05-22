@@ -71,13 +71,6 @@ public interface Service extends Ordered, Categorizable {
 
 
     /**
-     * Gets this service's children.
-     *
-     * @return a <code>List</code> of Service objects.
-     */
-    public List<Service> getChildren();
-
-    /**
      * Gets this service's controller, if it has one.
      *
      * @return a {@link
@@ -248,11 +241,5 @@ public interface Service extends Ordered, Categorizable {
     public void setParent(Service service);
 
     
-    /**
-     * Add a service to the children of this service.
-     *
-     * @param service A {@link Service}
-     */
-    public void addService(Service service);
 
 }

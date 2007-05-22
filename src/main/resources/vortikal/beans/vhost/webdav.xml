@@ -22,13 +22,6 @@
       </list>
     </property>
     <property name="urlPostProcessors" ref="webdavServiceUrlPostProcessors" />
-    <property name="services">
-      <list>
-        <ref bean="webdavCollectionListingService" />
-        <ref bean="webdavCollectionListingHeadService" />
-        <ref bean="realWebdavClientService" />
-      </list>
-    </property>
     <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
   </bean>
   
@@ -40,36 +33,11 @@
   </bean>
 
   <bean id="realWebdavClientService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webdavService" />
     <property name="assertions">
       <list>
         <ref bean="emptyQueryStringAssertion" />
         <ref bean="isAuthenticatedAssertion" />
-      </list>
-    </property>
-    <property name="services">
-      <list>
-        <ref bean="webdavOptionsService" />
-        <ref bean="webdavGetService" />
-        <ref bean="webdavHeadService" />
-        <ref bean="webdavPropfindService" />
-        <ref bean="webdavLockService" />
-        <ref bean="webdavUnlockService" />
-        <ref bean="webdavPutService" />
-        <ref bean="webdavPostService" />
-        <ref bean="webdavMkColService" />
-        <ref bean="webdavCopyService" />
-        <ref bean="webdavMoveService" />
-        <ref bean="webdavDeleteService" />
-        <ref bean="webdavProppatchService" />
-        <!-- These controllers are not yet implemented: -->
-        <ref bean="webdavSearchService" />
-        <ref bean="webdavReportService" />
-        <ref bean="webdavACLService" />
-        <ref bean="webdavVersionControlService" />
-        <ref bean="webdavCheckoutService" />
-        <ref bean="webdavUncheckoutService" />
-        <ref bean="webdavLabelService" />
-        <ref bean="webdavUpdateService" />
       </list>
     </property>
   </bean>
@@ -98,6 +66,7 @@
   <!-- DAV handler services: -->
 
   <bean id="webdavCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webdavService" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
@@ -110,6 +79,7 @@
   </bean>
 
   <bean id="webdavCollectionListingHeadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webdavService" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
@@ -122,6 +92,7 @@
   </bean>
 
   <bean id="webdavOptionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="options" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -133,6 +104,7 @@
   </bean>
 
   <bean id="webdavGetService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="get" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -149,6 +121,7 @@
   </bean>
 
   <bean id="webdavHeadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="head" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -160,6 +133,7 @@
   </bean>
 
   <bean id="webdavPropfindService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="propfind" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -171,6 +145,7 @@
   </bean>
 
   <bean id="webdavLockService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="lock" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -182,6 +157,7 @@
   </bean>
 
   <bean id="webdavUnlockService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="unlock" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -193,6 +169,7 @@
   </bean>
 
   <bean id="webdavPutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="put" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -204,6 +181,7 @@
   </bean>
 
   <bean id="webdavMkColService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="MkCol" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -215,6 +193,7 @@
   </bean>
 
   <bean id="webdavPostService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Post" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -226,6 +205,7 @@
   </bean>
 
   <bean id="webdavCopyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Copy" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -237,6 +217,7 @@
   </bean>
 
   <bean id="webdavMoveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Move" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -248,6 +229,7 @@
   </bean>
 
   <bean id="webdavDeleteService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Delete" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -259,6 +241,7 @@
   </bean>
 
   <bean id="webdavProppatchService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Proppatch" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -272,6 +255,7 @@
   <!-- The following are not implemented yet: -->
 
   <bean id="webdavSearchService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Search" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -283,6 +267,7 @@
   </bean>
 
   <bean id="webdavReportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Report" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -294,6 +279,7 @@
   </bean>
 
   <bean id="webdavACLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="ACL" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -305,6 +291,7 @@
   </bean>
 
   <bean id="webdavVersionControlService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="VersionControl" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -316,6 +303,7 @@
   </bean>
 
   <bean id="webdavCheckoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Checkout" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -327,6 +315,7 @@
   </bean>
 
   <bean id="webdavUncheckoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Uncheckout" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -338,6 +327,7 @@
   </bean>
 
   <bean id="webdavLabelService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Label" class="org.vortikal.web.service.RequestMethodAssertion">
@@ -349,6 +339,7 @@
   </bean>
 
   <bean id="webdavUpdateService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="realWebdavClientService" />
     <property name="assertions">
       <list>
         <bean id="Update" class="org.vortikal.web.service.RequestMethodAssertion">

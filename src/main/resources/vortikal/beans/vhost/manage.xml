@@ -64,65 +64,45 @@
         <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
-    <property name="services">
-      <list>
-        <ref bean="setNorwegianNBLocaleService" />
-        <ref bean="setNorwegianNNLocaleService" />
-        <ref bean="setEnglishLocaleService" />
-        <!--ref bean="deleteResourceService" /-->
-        <ref bean="lockResourceService" />
-        <ref bean="unlockResourceService" />
-        <ref bean="previewCollectionListingService" />
-        <ref bean="aboutResourceService" />
-        <ref bean="permissionsService" />
-        <ref bean="manageCollectionListingService" />
-        <ref bean="previewService"/>
-      </list>
-    </property>        
   </bean>
 
-  <bean id="setNorwegianNBLocaleService"
-        class="org.vortikal.web.service.ServiceImpl">
+  <bean id="setNorwegianNBLocaleService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
         <ref bean="requestLocaleNotNorwegianNB"/>
         <ref bean="localeParameterEqualsNO" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="setNorwegianNBLocaleController"/>
-    </property>
+    <property name="handler" ref="setNorwegianNBLocaleController"/>
   </bean>
 
 
-  <bean id="setNorwegianNNLocaleService"
-        class="org.vortikal.web.service.ServiceImpl">
+  <bean id="setNorwegianNNLocaleService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
         <ref bean="requestLocaleNotNorwegianNN"/>
         <ref bean="localeParameterEqualsNN" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="setNorwegianNNLocaleController"/>
-    </property>
+    <property name="handler" ref="setNorwegianNNLocaleController"/>
   </bean>
 
 
-  <bean id="setEnglishLocaleService"
-        class="org.vortikal.web.service.ServiceImpl">
+  <bean id="setEnglishLocaleService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <property name="assertions">
       <list>
         <ref bean="requestLocaleNotEnglish" />
         <ref bean="localeParameterEqualsEN" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="setEnglishLocaleController"/>
-    </property>
+    <property name="handler" ref="setEnglishLocaleController"/>
   </bean>
 
   <bean id="permissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <!--property name="order"><value>-9550</value></property-->
     <property name="categories">
       <set>
@@ -135,36 +115,18 @@
       </map>
     </property>
     <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>mode</value>
-          </property>
-          <property name="parameterValue">
-            <value>permissions</value>
-          </property>
-        </bean>      
-      </list>
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="mode" />
+        <property name="parameterValue" value="permissions" />
+      </bean>      
     </property>
-    <property name="services">
-      <list>
-        <ref bean="aclInheritanceService" />
-        <ref bean="editWritePermissionsService" />
-        <ref bean="editReadPermissionsService" />
-        <ref bean="editAdminPermissionsService" />
-        <ref bean="editBindPermissionsService" />
-        <ref bean="editReadProcessedPermissionsService" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="permissionsHandler" />
-    </property>
+    <property name="handler" ref="permissionsHandler" />
   </bean>        
 
 
 
   <bean id="aboutResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <!--property name="parent" ref="manageService" /-->
+    <property name="parent" ref="manageService" />
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -183,22 +145,12 @@
         </bean>      
       </list>
     </property>
-    <property name="services">
-      <list>
-        <ref bean="renameService" />
-        <ref bean="ownershipService" />
-        <ref bean="setContentTypeService" />
-        <ref bean="setContentLanguageService" />
-        <ref bean="setCharacterEncodingService" />
-        <ref bean="setResourcePropertyService" />
-        <ref bean="deleteResourcePropertyService" />      
-      </list>
-    </property>
     <property name="handler" ref="aboutResourceHandler" />
   </bean>        
 
   
   <bean id="manageCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <!--property name="order"><value>-10000</value></property-->
     <property name="categories">
       <set>
@@ -211,20 +163,9 @@
       </map>
     </property>
     <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
-      </list>
+      <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
     </property>
-    <property name="handler">
-      <ref bean="manageCollectionListingHandler" />
-    </property>
-    <property name="services">
-      <list>
-        <ref bean="createDocumentService" />
-        <ref bean="createCollectionService" />
-        <ref bean="fileUploadService" />
-      </list>        
-    </property>
+    <property name="handler" ref="manageCollectionListingHandler" />
   </bean>        
   
 
@@ -232,6 +173,7 @@
 
 
   <bean id="lockResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <property name="categories">
       <set>
         <value>lockUnlockAction</value>
@@ -241,22 +183,17 @@
       <list>
         <ref bean="lockPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>lock</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="lock" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="lockResourceHandler" />
-    </property>
+    <property name="handler" ref="lockResourceHandler" />
   </bean>
 
 
   <bean id="unlockResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <property name="categories">
       <set>
         <value>lockUnlockAction</value>
@@ -266,24 +203,19 @@
       <list>
         <ref bean="unlockPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>unlock</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="unlock" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="unlockResourceHandler" />
-    </property>
+    <property name="handler" ref="unlockResourceHandler" />
   </bean>
 
 
 
 
   <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-1000" />
     <property name="categories">
       <set>
@@ -294,21 +226,18 @@
       <list>
         <ref bean="bindPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>upload-file</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="upload-file" />
         </bean>
         <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="fileUploadHandler" />
-    </property>
+    <property name="handler" ref="fileUploadHandler" />
   </bean>        
+
+
   <bean id="createDocumentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-999" />
     <property name="categories">
       <set>
@@ -329,7 +258,8 @@
   </bean>
 
   <bean id="createCollectionService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-1001" />
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-995" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>
@@ -349,6 +279,7 @@
   </bean>
 
   <bean id="renameService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="order" value="-1000" />
     <property name="categories">
       <set>
@@ -365,40 +296,30 @@
         <ref local="deleteResourcePermissionAssertion" />
         <ref local="resourceNotRootAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>rename</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="rename" />
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <ref bean="renameHandler" />
-    </property>
+    <property name="handler" ref="renameHandler" />
   </bean>
   
   <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
       <list>
         <ref local="delegateOwnershipPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>delegate-ownership</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="delegate-ownership" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="ownershipHandler" />
-    </property>
+    <property name="handler" ref="ownershipHandler" />
   </bean>
 
   <bean id="aclInheritanceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="resourceNotRootAssertion" />
@@ -413,6 +334,7 @@
   </bean>
 
   <bean id="editWritePermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
@@ -426,6 +348,7 @@
   </bean>
 
   <bean id="editReadPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
@@ -439,6 +362,7 @@
   </bean>
 
   <bean id="editAdminPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
@@ -453,6 +377,7 @@
 
 
   <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
@@ -467,6 +392,7 @@
 
 
   <bean id="editReadProcessedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
         <ref local="writeACLPermissionAssertion" />
@@ -481,103 +407,77 @@
 
 
   <bean id="setContentTypeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-content-type</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-content-type" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="setContentTypeController" />
-    </property>
+    <property name="handler" ref="setContentTypeController" />
   </bean>
 
   <bean id="setContentLanguageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-language-type</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-language-type" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="setContentLanguageController" />
-    </property>
+    <property name="handler" ref="setContentLanguageController" />
   </bean>
 
   <bean id="setCharacterEncodingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>edit-character-encoding</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-character-encoding" />
         </bean>
         <ref bean="contentTypeMatchesText" />
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="setCharacterEncodingController" />
-    </property>
+    <property name="handler" ref="setCharacterEncodingController" />
   </bean>
 
 
-  <bean id="setResourcePropertyService"
-        class="org.vortikal.web.service.ServiceImpl">
+  <bean id="setResourcePropertyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>set-property</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="set-property" />
         </bean>
       </list>    
     </property>
-    <property name="handler">
-      <ref bean="setResourcePropertyController" />
-    </property>
+    <property name="handler" ref="setResourcePropertyController" />
   </bean>
 
 
   <bean id="deleteResourcePropertyService"
         class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
       <list>
         <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>delete-property</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="delete-property" />
         </bean>
       </list>    
     </property>
-    <property name="handler">
-      <ref bean="deleteResourcePropertyController" />
-    </property>
+    <property name="handler" ref="deleteResourcePropertyController" />
   </bean>
   
   
@@ -683,6 +583,7 @@
   <!-- preview services -->
   
   <bean id="previewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
     <!--property name="order"><value>-9900</value></property-->
     <property name="categories" value="tabMenu" />
     <property name="attributes">
@@ -701,17 +602,11 @@
       </list>
     </property>
     <property name="handler" ref="previewFallbackHandler" />
-    <property name="services">
-      <list>
-        <ref bean="previewHTMLService" />
-        <ref bean="previewImageService" />
-        <ref bean="previewTextService" />
-      </list>    
-    </property>
   </bean>
 
 
   <bean id="previewHTMLService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesHtml" />
@@ -724,31 +619,30 @@
 
 
   <bean id="previewImageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesImage" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="previewImageHandler" />
-    </property>
+    <property name="handler" ref="previewImageHandler" />
   </bean>
 
 
   <bean id="previewTextService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesAnyText" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="previewTextHandler" />
-    </property>
+    <property name="handler" ref="previewTextHandler" />
   </bean>
 
 
   <bean id="previewCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
-    <!--property name="order" value="-9900" /-->
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-1" />
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -1460,8 +1354,7 @@
 
 
   <bean id="collectionMenuProvider" 
-    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider"
-lazy-init="true">
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider" lazy-init="true">
     <constructor-arg ref="collectionActionServicesFactory" />
     <constructor-arg value="tabMenu2" />
     <constructor-arg ref="repository.requestLocal" />

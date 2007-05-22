@@ -19,15 +19,11 @@
       </list>
     </property>
     <property name="handler" ref="defaultBrowseHandler" />
-    <property name="services">
-      <list>
-        <ref bean="createLinkToResourceService" />
-      </list>
-    </property>
   </bean>
 
   <bean id="createLinkToResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-998</value></property>
+    <property name="parent" ref="browseService" />
+    <property name="order" value="-998" />
     <property name="categories">
       <set>
         <value>browseMenu</value>

@@ -36,16 +36,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.OrderComparator;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -58,11 +52,7 @@ import org.vortikal.util.net.NetUtils;
  *
  * <p>Configurable properties:
  * <ul>
- *   <lI><code>services</code> a set of {@link ServiceImpl} objects:
- *   explicit definition of child services
- *   <li><code>assertions</code> - a list of {@link Assertion
- *   assertions}; the conditions that must hold for this service to
- *   match
+ *   <li><code>parent</code> - the parent {@link Service} in the service tree
  *   <li><code>handler</code> - a {@link
  *   org.springframework.web.servlet.mvc.Controller} that is executed
  *   when this service matches (see {@link ServiceHandlerMapping}).
@@ -78,20 +68,18 @@ import org.vortikal.util.net.NetUtils;
  * </ul>
  *
  */
-public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
-             ApplicationContextAware {
+public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
 
+    List<Assertion> allAssertions = new ArrayList<Assertion>();
     private AuthenticationChallenge authenticationChallenge;
     private Object handler;
     private List<Assertion> assertions = new ArrayList<Assertion>();
-    private List<Service> services = new ArrayList<Service>();
     private Service parent;
     private String name;
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private List<HandlerInterceptor> handlerInterceptors;
     private int order = 0;
     private Set categories = null;
-    private ApplicationContext applicationContext;
     private List urlPostProcessors = new ArrayList();
     private List accumulatedUrlPostProcessors = null;
     	
@@ -105,21 +93,6 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
         this.assertions = assertions;
     }
 	
-
-    public void setServices(List<Service> services) {
-        this.services = services;
-    }
-
-
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-    
-
-    public List<Service> getChildren() {
-        return this.services;
-    }
-
 
     public Object getHandler() {
         return this.handler;
@@ -145,17 +118,17 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
     
 
     public void setParent(Service parent) {
-        /**
-         * Mapping the service tree:
-         */
-        if (this.parent != null && this.parent != parent) 
-            throw new BeanInitializationException(
-                "Service '" + getName() +  "' has at least two parents ('"
-                + parent.getName() + "' and '" + this.parent.getName() + "')");
-        if (parent == this) {
-            throw new BeanInitializationException(
-                "Trying to set parent of service to itself");
+        // Looking for infinite loops
+        Service service = parent;
+        while (service != null) {
+            if (service == this) {
+                throw new BeanInitializationException(
+                "Trying to set parent service " + parent.getName() + " on service " 
+                + getName() + " resulting in a infinite loop");
+            }
+            service = service.getParent();
         }
+        
         this.parent = parent;
     }
 	
@@ -165,16 +138,6 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
     }
 	
 
-    private static List<Assertion> getAllAssertions(Service service) {
-        List<Assertion> assertions = new ArrayList<Assertion>();
-        do {
-            assertions.addAll(0, service.getAssertions());
-        } while ((service = service.getParent()) != null);
-
-        return assertions;
-    }
-
-    
     private List getAllURLPostProcessors() {
         if (this.accumulatedUrlPostProcessors != null) {
             return this.accumulatedUrlPostProcessors;
@@ -265,9 +228,8 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
 	
     public URL constructURL(Resource resource, Principal principal,
                                 Map parameters, boolean matchAssertions) {
-        List assertions = getAllAssertions(this);
         URL urlObject = 
-            constructInternal(resource, principal, parameters, assertions, 
+            constructInternal(resource, principal, parameters, this.allAssertions, 
                     matchAssertions);
 
         postProcess(urlObject);
@@ -280,10 +242,9 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
     }
 
     public URL constructURL(String uri) {
-        List assertions = getAllAssertions(this);
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
-        for (Iterator i = assertions.iterator(); i.hasNext();) {
+        for (Iterator i = this.allAssertions.iterator(); i.hasNext();) {
             Assertion assertion = (Assertion) i.next();
             assertion.processURL(urlObject);
         }
@@ -298,7 +259,6 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
     }
 
     public URL constructURL(String uri, Map parameters) {
-        List assertions = getAllAssertions(this);
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
         if (parameters != null) {
             for (Iterator iter = parameters.entrySet().iterator(); iter
@@ -312,7 +272,7 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
             }
         }
 
-        for (Iterator i = assertions.iterator(); i.hasNext();) {
+        for (Iterator i = this.allAssertions.iterator(); i.hasNext();) {
             Assertion assertion = (Assertion) i.next();
             assertion.processURL(urlObject);
         }
@@ -424,15 +384,12 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
     }
 
 
-    public void addService(Service service) {
-        if (!this.services.contains(service))
-            this.services.add(service);
-    }
-
-
     public void afterPropertiesSet() throws Exception {
-        // XXX Auto-generated method stub
-        
+        Service service = this;
+        do {
+            allAssertions.addAll(0, service.getAssertions());
+        } while ((service = service.getParent()) != null);
     }
+        
 
 }

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.core.OrderComparator;
@@ -61,7 +62,7 @@ import org.springframework.core.Ordered;
  *   of the default {@link OrderComparator}.
  * </ul>
  */
-public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
+public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements InitializingBean {
     
     private String category;
     private Class clazz;
@@ -80,7 +81,7 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
         Map<String, Categorizable> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             (ListableBeanFactory) getBeanFactory(), this.clazz, true, false);
     
-        List result = new ArrayList();
+        List<Categorizable> result = new ArrayList<Categorizable>();
         for (Categorizable categorizable: matchingBeans.values()) {
             if (categorizable.getCategories() != null
                 && categorizable.getCategories().contains(this.category)) {
@@ -93,6 +94,7 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
         } else if (this.ordered) {
             Collections.sort(result, new OrderComparator());
         }
+
         Object array = Array.newInstance(this.clazz, result.size());
         int n = 0;
         for (Object o: result) {
@@ -124,8 +126,7 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
     
 
     public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-       if (this.category == null) 
+        if (this.category == null) 
             throw new BeanInitializationException("Property 'category' must be specified");
         if (this.clazz == null)
             throw new BeanInitializationException("Property 'clazz' must be specified");
@@ -133,5 +134,7 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
             throw new BeanInitializationException(
                 "Property 'clazz' must be a class implementing Categorizable");
         this.ordered = Ordered.class.isAssignableFrom(this.clazz);
+
+        super.afterPropertiesSet();
     }
 }

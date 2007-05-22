@@ -32,6 +32,7 @@ package org.vortikal.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,9 @@ import org.vortikal.web.service.Service;
 public class RequestContextInitializer
   implements ContextInitializer, ApplicationContextAware, InitializingBean {
 
-
+    // Map containing parent -> children mapping, effectively representing top-down graph of the service trees.
+    private Map<Service, List<Service>> childServices = new HashMap<Service, List<Service>>();
+    
     private IndexFileResolver indexFileResolver;
     private static Log logger = LogFactory.getLog(RequestContextInitializer.class);
     private ApplicationContext context = null;
@@ -118,42 +121,41 @@ public class RequestContextInitializer
         
         for (Service service : matchingBeans.values()) {
             Service parent = service.getParent();
-            if (parent != null) {
-                parent.addService(service);
-            }
-            List<Service> children = service.getChildren();
-            if (children != null) {
-                for (Service child : children) {
-                    if (child.getParent() != null && child.getParent() != service) {
-                        throw new BeanInitializationException("Service " + child.getName() + " has multiple parents: "
-                                + child.getParent() + " and " + service.getName());
-                    }
-                    child.setParent(service);
+            if (parent == null) {
+                this.rootServices.add(service);
+            } else {
+                List<Service> children = this.childServices.get(parent);
+                if (children == null) {
+                    children = new ArrayList<Service>();
+                    this.childServices.put(parent, children);
+                }
+                if (!children.contains(service)) {
+                    children.add(service);
                 }
             }
         }
         
-        for (Service service: matchingBeans.values()) {
-            if (service.getParent() == null) 
-                this.rootServices.add(service);
-            if (service.getChildren() != null) {
-                Collections.sort(service.getChildren(), new OrderComparator());
-            }
-        }
-
         if (this.rootServices.isEmpty()) {
             throw new BeanInitializationException(
                     "No services defined in context.");
         }
         
-        for (Service root: this.rootServices) {
-            List<Assertion> assertions = root.getAssertions();
-            for (Service child : root.getChildren()) {
-                validateAssertions(child, assertions);
-            }
+        Collections.sort(this.rootServices, new OrderComparator());
+
+        OrderComparator orderComparator = new OrderComparator();
+        for (List<Service> children: this.childServices.values()) {
+            Collections.sort(children, orderComparator);
         }
 
-        Collections.sort(this.rootServices, new OrderComparator());
+        for (Service root: this.rootServices) {
+            List<Service> children = this.childServices.get(root);
+            if (children != null) {
+                List<Assertion> assertions = root.getAssertions();
+                for (Service child : children) {
+                    validateAssertions(child, assertions);
+                }
+            }
+        }
 
         if (logger.isInfoEnabled()) {
             logger.info("Registered service tree root services in the following order: " 
@@ -275,14 +277,17 @@ public class RequestContextInitializer
             throw(e);
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("Currently matched service: " + service.getName() +
-                         ", will check for child services: " + service.getChildren());
-        }
+        List<Service> children = this.childServices.get(service);
+        if (children != null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Currently matched service: " + service.getName() +
+                        ", will check for child services: " + children);
+            }
 
-        for (Iterator<Service> iter = service.getChildren().iterator(); iter.hasNext();) {
-            if (resolveService(iter.next(), request, resource))
-                return true;
+            for (Service child : children) {
+                if (resolveService(child, request, resource))
+                    return true;
+            }
         }
         
         if (logger.isDebugEnabled()) {
@@ -327,8 +332,10 @@ public class RequestContextInitializer
 
     private void printServiceList(List<Service> services, StringBuffer buffer,
                                   String indent, String lineSeparator) {
-        for (Iterator iter = services.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
+        if (services == null)
+            return;
+        
+        for (Service service : services) {
             buffer.append(indent);
             buffer.append(service.getName());
             if (service.getOrder() == Integer.MAX_VALUE) {
@@ -337,7 +344,7 @@ public class RequestContextInitializer
                 buffer.append(" (").append(service.getOrder()).append(")");
             }
             buffer.append(lineSeparator);
-            printServiceList(service.getChildren(), buffer, "  " + indent, lineSeparator);
+            printServiceList(this.childServices.get(service), buffer, "  " + indent, lineSeparator);
         }
     }
 
@@ -361,8 +368,8 @@ public class RequestContextInitializer
             }
         }
 
-        List<Service> myChildren = child.getChildren();
-        if (myChildren.isEmpty()) {
+        List<Service> myChildren = this.childServices.get(child);
+        if (myChildren == null) {
             return;
         }
         

@@ -96,7 +96,7 @@ public class URLUtil {
          }
  
          list.add(0, "/");
-         return (String[]) list.toArray(new String[0]);
+         return list.toArray(new String[0]);
      }
 
 
@@ -131,7 +131,7 @@ public class URLUtil {
         
         incremental.add(0, "/");
 
-        return (String[]) incremental.toArray(new String[]{});
+        return incremental.toArray(new String[]{});
     }
 
 

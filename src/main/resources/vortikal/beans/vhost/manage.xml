@@ -228,33 +228,6 @@
   </bean>        
   
 
-
-  <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-1000</value></property>
-    <property name="categories">
-      <set>
-        <value>collectionMenu</value>
-      </set>
-    </property>
-    <property name="assertions">
-      <list>
-        <ref bean="bindPermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>upload-file</value>
-          </property>
-        </bean>
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
-      </list>
-    </property>
-    <property name="handler">
-      <ref bean="fileUploadHandler" />
-    </property>
-  </bean>        
-
   
 
 
@@ -308,8 +281,35 @@
   </bean>
 
 
+
+
+  <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1000" />
+    <property name="categories">
+      <set>
+        <value>collectionMenu</value>
+      </set>
+    </property>
+    <property name="assertions">
+      <list>
+        <ref bean="bindPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName">
+            <value>action</value>
+          </property>
+          <property name="parameterValue">
+            <value>upload-file</value>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="fileUploadHandler" />
+    </property>
+  </bean>        
   <bean id="createDocumentService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-999</value></property>
+    <property name="order" value="-999" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>
@@ -320,22 +320,16 @@
         <ref bean="bindPermissionAssertion" />
         <ref bean="resourceIsCollectionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>create-document</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="create-document" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="createDocumentHandler" />
-    </property>
+    <property name="handler" ref="createDocumentHandler" />
   </bean>
 
   <bean id="createCollectionService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>0</value></property>
+    <property name="order" value="-1001" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>
@@ -346,22 +340,16 @@
         <ref bean="bindPermissionAssertion" />
         <ref bean="resourceIsCollectionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName">
-            <value>action</value>
-          </property>
-          <property name="parameterValue">
-            <value>create-directory</value>
-          </property>
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="create-directory" />
         </bean>
       </list>
     </property>  
-    <property name="handler">
-      <ref bean="createCollectionHandler" />
-    </property>
+    <property name="handler" ref="createCollectionHandler" />
   </bean>
 
   <bean id="renameService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order"><value>-1000</value></property>
+    <property name="order" value="-1000" />
     <property name="categories">
       <set>
         <value>resourceMenu</value>
@@ -1472,14 +1460,16 @@
 
 
   <bean id="collectionMenuProvider" 
-    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider"
+lazy-init="true">
     <constructor-arg ref="collectionActionServicesFactory" />
     <constructor-arg value="tabMenu2" />
     <constructor-arg ref="repository.requestLocal" />
   </bean>
 
   <bean id="collectionActionServicesFactory"
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    class="org.vortikal.context.CategoryResolvingFactoryBean"
+        lazy-init="true">
     <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="collectionMenu" />
   </bean>
@@ -1727,6 +1717,8 @@
 
    <!-- Locale resolver for manage service  -->
 
+   <!-- Note: A bug in spring pre 2.0.6, means this cannot be reset
+     with setLocale(null) (which there's currently no reason to do :).  -->
    <bean id="manageLocaleResolver"
          class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
      <property name="cookieMaxAge" value="315360000" />

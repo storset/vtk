@@ -31,12 +31,13 @@
 package org.vortikal.web.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -57,7 +58,7 @@ import org.vortikal.util.net.NetUtils;
  *
  * <p>Configurable properties:
  * <ul>
- *   <lI><code>services</code> a list of {@link ServiceImpl} objects:
+ *   <lI><code>services</code> a set of {@link ServiceImpl} objects:
  *   explicit definition of child services
  *   <li><code>assertions</code> - a list of {@link Assertion
  *   assertions}; the conditions that must hold for this service to
@@ -77,8 +78,7 @@ import org.vortikal.util.net.NetUtils;
  * </ul>
  *
  */
-public class ServiceImpl
-  implements Service, BeanNameAware, InitializingBean,
+public class ServiceImpl implements Service, BeanNameAware, InitializingBean,
              ApplicationContextAware {
 
     private AuthenticationChallenge authenticationChallenge;
@@ -110,11 +110,6 @@ public class ServiceImpl
         this.services = services;
     }
 
-
-    public void addServices(List<Service> services) {
-        this.services.addAll(services);
-    }
-    
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -188,6 +183,7 @@ public class ServiceImpl
         List allPostProcessors = new ArrayList();
         Service s = this;
         while (s != null) {
+            
             if ((s instanceof ServiceImpl) && ((ServiceImpl) s).urlPostProcessors != null) {
                 allPostProcessors.addAll(((ServiceImpl) s).urlPostProcessors);
             }
@@ -326,72 +322,6 @@ public class ServiceImpl
         return urlObject;
     }
     
-    
-    public void afterPropertiesSet() throws Exception {
-
-        // Look up services that are of category <code>this.getName()</code>
-        List childServices = getUnknownServiceChildren();
-
-        for (int i = childServices.size() - 1; i > -1; i--) {
-            Service child = (Service) childServices.get(i);
-            if (!this.services.contains(child)) {
-                
-                if (child.getOrder() == Integer.MAX_VALUE) {
-                    this.services.add(child);
-                } else {
-                    int index = Math.max(child.getOrder(), 0);
-                    index = Math.min(index, this.services.size());
-                    this.services.add(index, child);
-                }
-            }
-        }
-
-        for (Iterator iter = this.services.iterator(); iter.hasNext();) {
-            Object o = iter.next();
-
-            if (! (o instanceof Service)) {
-                throw new BeanInitializationException(
-                    "Only 'ServiceImpl' implementations of Service " +
-                    "is supported ( check " + getName() +
-                    "'s child services )");
-            }
-
-            Service child = (Service) o;
-            validateAssertions(child);
-            child.setParent(this);
-        }
-
-        // Sort all children:
-        Collections.sort(this.services, new OrderComparator());
-
-        
-        
-
-    }
-
-    
-    private void validateAssertions(Service child) {
-        List childAssertions = getAllAssertions(child);
-		
-        for (Iterator iter = getAssertions().iterator(); iter.hasNext();) {
-            Assertion assertion = (Assertion) iter.next();
-			
-            for (Iterator iterator = childAssertions.iterator(); iterator
-                     .hasNext();) {
-                Assertion childAssertion = (Assertion) iterator.next();
-				
-                if (childAssertion.conflicts(assertion)) {
-                    throw new BeanInitializationException(
-                        "Assertion " +  assertion + " for service " +
-                        getName() + " is conflicting with assertion " +
-                        childAssertion + " in descendant node of child " 
-                        + child.getName());
-                }
-            }
-        }
-    }
-
-    
     public void setHandlerInterceptors(List<HandlerInterceptor> handlerInterceptors) {
         this.handlerInterceptors = handlerInterceptors;
     }
@@ -441,24 +371,6 @@ public class ServiceImpl
     }
   
     
-    private List<Service> getUnknownServiceChildren() {
-        // find all services, and sort out those who declare this
-        // service as their parent:
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-            this.applicationContext, Service.class, true, false);
-
-        List<Service> allServices = new ArrayList<Service>();
-        for (Object key: matchingBeans.keySet()) {
-            Object o = matchingBeans.get(key);
-            Service service = (Service) o;
-            if (service.getParent() == this) {
-                allServices.add(service);
-            }
-        }
-        Collections.sort(allServices, new OrderComparator());
-        return allServices;
-    }
-
     private void postProcess(URL urlObject) {
         List urlPostProcessors = getAllURLPostProcessors();
 
@@ -509,6 +421,18 @@ public class ServiceImpl
         }
 
         return urlObject;
+    }
+
+
+    public void addService(Service service) {
+        if (!this.services.contains(service))
+            this.services.add(service);
+    }
+
+
+    public void afterPropertiesSet() throws Exception {
+        // XXX Auto-generated method stub
+        
     }
 
 }

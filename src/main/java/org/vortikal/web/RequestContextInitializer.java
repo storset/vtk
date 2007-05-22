@@ -92,6 +92,7 @@ public class RequestContextInitializer
         this.repository = repository;
     }
  
+    
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }
@@ -115,10 +116,29 @@ public class RequestContextInitializer
         Map<String, Service> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.context, Service.class, true, false);
         
-        for (Iterator<Service> iter = matchingBeans.values().iterator(); iter.hasNext();) {
-            Service service = iter.next();
+        for (Service service : matchingBeans.values()) {
+            Service parent = service.getParent();
+            if (parent != null) {
+                parent.addService(service);
+            }
+            List<Service> children = service.getChildren();
+            if (children != null) {
+                for (Service child : children) {
+                    if (child.getParent() != null && child.getParent() != service) {
+                        throw new BeanInitializationException("Service " + child.getName() + " has multiple parents: "
+                                + child.getParent() + " and " + service.getName());
+                    }
+                    child.setParent(service);
+                }
+            }
+        }
+        
+        for (Service service: matchingBeans.values()) {
             if (service.getParent() == null) 
                 this.rootServices.add(service);
+            if (service.getChildren() != null) {
+                Collections.sort(service.getChildren(), new OrderComparator());
+            }
         }
 
         if (this.rootServices.isEmpty()) {
@@ -126,6 +146,13 @@ public class RequestContextInitializer
                     "No services defined in context.");
         }
         
+        for (Service root: this.rootServices) {
+            List<Assertion> assertions = root.getAssertions();
+            for (Service child : root.getChildren()) {
+                validateAssertions(child, assertions);
+            }
+        }
+
         Collections.sort(this.rootServices, new OrderComparator());
 
         if (logger.isInfoEnabled()) {
@@ -298,7 +325,7 @@ public class RequestContextInitializer
         return buffer;
     }
 
-    private void printServiceList(List services, StringBuffer buffer,
+    private void printServiceList(List<Service> services, StringBuffer buffer,
                                   String indent, String lineSeparator) {
         for (Iterator iter = services.iterator(); iter.hasNext();) {
             Service service = (Service) iter.next();
@@ -318,5 +345,43 @@ public class RequestContextInitializer
         this.indexFileResolver = indexFileResolver;
     }
     
+    private void validateAssertions(Service child, 
+            List<Assertion> parentAssertions) throws BeanInitializationException {
+
+        for (Assertion assertion : child.getAssertions()) {
+        
+            for (Assertion parentAssertion : parentAssertions) {
+            
+                if (assertion.conflicts(parentAssertion)) {
+                    throw new BeanInitializationException(
+                        "Assertion " +  assertion + " for service " +
+                        child.getName() + " is conflicting with assertion " +
+                        parentAssertion + " in parent node list:" + getParentNames(child));
+                }
+            }
+        }
+
+        List<Service> myChildren = child.getChildren();
+        if (myChildren.isEmpty()) {
+            return;
+        }
+        
+        List<Assertion> assertions = new ArrayList<Assertion>(parentAssertions);
+        assertions.addAll(child.getAssertions());
+        for (Service myChild : myChildren) {
+            validateAssertions(myChild, assertions);
+        }
+        
+    }
+
+
+    private String getParentNames(Service service) {
+        String parents = "";
+        Service s = service;
+        while ((s = s.getParent()) != null) {
+            parents += " " + s.getName();
+        }
+        return parents;
+    }
 
 }

@@ -165,12 +165,10 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             this.retrieveForProcessing);
         Service currentService = requestContext.getService();
         
-        List items = new ArrayList();
+        List<MenuItem> items = new ArrayList<MenuItem>();
         MenuItem activeItem = null;
         
-        for (int i = 0; i < this.services.length; i++) {
-            Service service = this.services[i];
-
+        for (Service service : this.services) {
             String label = service.getName();
             String title = getTitle(resource, service, request);
             String url = null;
@@ -193,7 +191,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             items.add(item);
         }
         
-        menu.setItems((MenuItem[]) items.toArray(new MenuItem[items.size()]));
+        menu.setItems(items.toArray(new MenuItem[items.size()]));
         menu.setActiveItem(activeItem);
         model.put(this.modelName, menu);
     }

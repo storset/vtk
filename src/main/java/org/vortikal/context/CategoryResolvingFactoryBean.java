@@ -77,12 +77,11 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean {
      * question. If no such objects exist, an empty list is returned.
      */
     protected Object createInstance() {
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+        Map<String, Categorizable> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             (ListableBeanFactory) getBeanFactory(), this.clazz, true, false);
     
         List result = new ArrayList();
-        for (Object o: matchingBeans.values()) {
-            Categorizable categorizable = (Categorizable) o;
+        for (Categorizable categorizable: matchingBeans.values()) {
             if (categorizable.getCategories() != null
                 && categorizable.getCategories().contains(this.category)) {
                 result.add(categorizable);

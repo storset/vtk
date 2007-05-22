@@ -6,7 +6,7 @@
    <!-- Context Initializers -->
 
    <bean id="requestContextInitializer"
-         class="org.vortikal.web.RequestContextInitializer">
+         class="org.vortikal.web.RequestContextInitializer" lazy-init="true">
      <description>
        This bean is required in order to initialize requests with the
        request context. The request context contains the service and

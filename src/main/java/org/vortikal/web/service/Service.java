@@ -59,7 +59,7 @@ import org.vortikal.security.web.AuthenticationChallenge;
  * @see org.vortikal.web.service.ServiceHandlerMapping
  *  
  */
-public interface Service extends  Ordered, Categorizable {
+public interface Service extends Ordered, Categorizable {
 
     /**
      * Gets this service's list of assertions.
@@ -249,10 +249,10 @@ public interface Service extends  Ordered, Categorizable {
 
     
     /**
-     * Appends a list of services to the children of this service.
+     * Add a service to the children of this service.
      *
-     * @param services a list of {@link Service services}
+     * @param service A {@link Service}
      */
-    public void addServices(List<Service> services);
+    public void addService(Service service);
 
 }

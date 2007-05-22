@@ -177,7 +177,7 @@ public class URL {
 
     public String getParameter(String parameterName) {
         if (this.parameterNames.contains(parameterName))
-            return (String)this.parameterValues.get(this.parameterNames.indexOf(parameterName));
+            return this.parameterValues.get(this.parameterNames.indexOf(parameterName));
         return null;
     }
     

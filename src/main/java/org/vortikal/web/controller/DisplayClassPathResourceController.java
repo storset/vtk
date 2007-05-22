@@ -199,7 +199,7 @@ public class DisplayClassPathResourceController
         String resourceLocation = null;
         for (int i = incrementalPath.length - 1; i > 0; i--) {
             if (this.locationsMap.containsKey(incrementalPath[i])) {
-                resourceLocation = (String) this.locationsMap.get(incrementalPath[i]);
+                resourceLocation = this.locationsMap.get(incrementalPath[i]);
                 uriPrefix = incrementalPath[i];
             }
         }

@@ -31,16 +31,18 @@
 package org.vortikal.web.controller.search;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.fulltext.FulltextSearcher;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -101,7 +103,7 @@ public class FulltextSearchController implements Controller {
 
         if (query != null) {
             subModel.put("query", query);
-
+            
             String token = SecurityContext.getSecurityContext().getToken();
             
             int startIdx = 0;
@@ -123,18 +125,27 @@ public class FulltextSearchController implements Controller {
 
             ResultSet resultSet = searcher.execute(token, query);
 
-            List<PropertySet> allResults = resultSet.getAllResults();
-            if (endIdx > allResults.size()) {
-                endIdx = allResults.size();
+            // Check if last result of the current page exists 
+            if (! resultSet.hasResult(endIdx-1)) {
+                // Position endIdx one beyond the very last result (endIdx is exclusive)
+                endIdx = resultSet.getAllResults().size();
             }
 
-            if (startIdx >= allResults.size()) {
-                startIdx = Math.max(endIdx - this.pageSize, 0);
+            // Since endIdx might have been repositioned above, we need to make sure
+            // startIdx is sane.
+            if (startIdx >= endIdx) {
+                if (endIdx == this.pageSize) {
+                    startIdx = 0;
+                } else {
+                    // In case of insane page number, don't roll back startIdx a 
+                    // whole page, just roll back to start of the last result page.
+                    startIdx = endIdx - endIdx % this.pageSize;
+                }
             }
 
-            List<PropertySet> results = allResults.subList(startIdx, endIdx);
-
-            if (endIdx < allResults.size()) {
+            List<PropertySet> results = resultSet.getResults(startIdx, endIdx);
+            
+            if (resultSet.hasResult(endIdx)) { // Check if there is another page of results
                 int nextPage = page + 1;
                 URL nextURL = currentService.constructURL(requestContext.getResourceURI());
                 nextURL.removeParameter("query");
@@ -155,8 +166,9 @@ public class FulltextSearchController implements Controller {
             }
 
             subModel.put("results", results);
-            subModel.put("start", new Integer(startIdx + 1));
-            subModel.put("end", new Integer(endIdx));
+            subModel.put("totalHits", resultSet.getSize());
+            subModel.put("start", startIdx+1);
+            subModel.put("end", endIdx);
         }
         
         

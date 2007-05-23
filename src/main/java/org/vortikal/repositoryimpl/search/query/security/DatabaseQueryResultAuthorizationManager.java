@@ -43,6 +43,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.roles.RoleManager;
 import org.vortikal.security.token.TokenManager;
 
 /**
@@ -59,6 +60,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
     private PrincipalManager principalManager;
     private TokenManager tokenManager;
     private IndexDataAccessor indexDataAccessor;
+    private RoleManager roleManager;
     
     /**
      * Set of principal names for which all hits are automatically
@@ -76,30 +78,50 @@ public final class DatabaseQueryResultAuthorizationManager implements
                     "Bean property 'indexDataAccessor' not set (null).");
         } else if (this.tokenManager == null) {
             throw new BeanInitializationException("Bean property 'tokenManager' not set.");
+        } else if (this.roleManager == null) {
+            throw new BeanInitializationException("Bean property 'roleManager' not set.");
         }
         
     }
 
     public void authorizeQueryResults(String token, List<ResultSecurityInfo> rsiList) 
         throws QueryAuthorizationException {
+        
         Principal principal = this.tokenManager.getPrincipal(token);
         
-        if (this.noAuthorizationCheckForPrincipals != null
-            && principal != null 
-            && this.noAuthorizationCheckForPrincipals.contains(
-                                            principal.getQualifiedName())) {
-            this.logger.info("Unconditionally authorizing all results for principal '" + 
-                    principal + "'");
+        if (principal != null) {
+            // Check if auto-authorization is configured for principal 
+            if (isAuthorizedByConfig(principal)) {
+                this.logger.info("Unconditionally authorizing all results for principal '" + 
+                        principal + "'");
+                
+                for (ResultSecurityInfo rsi: rsiList) {
+                    rsi.setAuthorized(true);
+                }
             
-            for (Iterator<ResultSecurityInfo> i = rsiList.iterator(); i.hasNext();) {
-                i.next().setAuthorized(true);
+                return;
             }
             
-            return;
+            // Check if principal is authorized to view all results by its role
+            // (ROOT role or READ_EVERYTHING role)
+            if (isAuthorizedByRole(principal)) {
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Authorizing all results for principal '" 
+                            + principal.getQualifiedName() + "' by role");
+                }
+                
+                for (ResultSecurityInfo rsi: rsiList) {
+                    rsi.setAuthorized(true);
+                }
+                
+                return;
+            }
         }
+
         
         Set<String> principalNames = new HashSet<String>();
         if (principal != null) {
+            
             principalNames.add(principal.getQualifiedName());
             
             // Get principal's groups
@@ -108,7 +130,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
                 Principal group = (Principal)i.next();
                 principalNames.add(group.getQualifiedName());
             }
-        }
+        } 
         
         if (logger.isDebugEnabled()) {
             logger.debug("Qualified principal names: " + principalNames);
@@ -123,6 +145,20 @@ public final class DatabaseQueryResultAuthorizationManager implements
             throw new QueryAuthorizationException(io.getMessage());
         }
         
+    }
+    
+    private boolean isAuthorizedByConfig(Principal principal) {
+        if (this.noAuthorizationCheckForPrincipals != null) {
+            return (this.noAuthorizationCheckForPrincipals.contains(
+                                                    principal.getQualifiedName()));
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean isAuthorizedByRole(Principal principal) {
+        return (this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING)
+             || this.roleManager.hasRole(principal, RoleManager.ROOT));
     }
 
     public void setIndexDataAccessor(IndexDataAccessor indexDataAccessor) {
@@ -141,5 +177,8 @@ public final class DatabaseQueryResultAuthorizationManager implements
         this.noAuthorizationCheckForPrincipals = noAuthorizationCheckForPrincipals;
     }
 
+    public void setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
+    }
     
 }

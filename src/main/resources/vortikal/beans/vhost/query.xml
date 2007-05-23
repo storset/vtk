@@ -88,6 +88,7 @@
         class="org.vortikal.repositoryimpl.search.query.security.DatabaseQueryResultAuthorizationManager">
     <property name="principalManager" ref="principalManager"/>
     <property name="tokenManager" ref="tokenManager"/>
+    <property name="roleManager" ref="roleManager"/>
     <property name="indexDataAccessor" ref="repository.indexDataAccessor"/>
 
     <!-- A set of principals can be excluded from database 

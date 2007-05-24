@@ -37,7 +37,7 @@ public interface PrimaryResourceTypeDefinition extends ResourceTypeDefinition {
 
     public PrimaryResourceTypeDefinition getParentTypeDefinition();
 
-    public OverridingPropertyTypeDefinition[] getOverriddenPropertyTypeDefinitions();
+    public OverridablePropertyTypeDefinition[] getOverridablePropertyTypeDefinitions();
 
     public RepositoryAssertion[] getAssertions();
 

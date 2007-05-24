@@ -56,7 +56,7 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
-import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -118,7 +118,7 @@ public class RepositoryResourceHelperImpl
         evalCreateProperty(principal, newResource, time, isCollection, def, newProps);
 
         // Evaluating overridden properties
-        PropertyTypeDefinition[] overrides = rt.getOverriddenPropertyTypeDefinitions();
+        PropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
         
         if (overrides != null && overrides.length > 0)
             evalCreateProperty(principal, newResource, time, isCollection, overrides, newProps);
@@ -352,10 +352,10 @@ public class RepositoryResourceHelperImpl
         }
 
         // Evaluating overridden properties
-        OverridingPropertyTypeDefinition[] overrides = rt.getOverriddenPropertyTypeDefinitions();
+        OverridablePropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
         
         if (overrides != null)
-            for (OverridingPropertyTypeDefinition override: overrides) {
+            for (OverridablePropertyTypeDefinition override: overrides) {
                 evaluateManagedProperty(ctx, override, time);
             }
 
@@ -470,7 +470,7 @@ public class RepositoryResourceHelperImpl
                     + newResource.getURI() + "' returned not value initialized property " + 
                     propDef);
             }
-        } else if (propDef instanceof OverridingPropertyTypeDefinition) {
+        } else if (propDef instanceof OverridablePropertyTypeDefinition) {
             // Trying to fix overridden properties with default value that changes
             return null;
         }
@@ -495,7 +495,7 @@ public class RepositoryResourceHelperImpl
             propDef.getNameModificationEvaluator();
 
         if (evaluator == null) {
-            if (propDef instanceof OverridingPropertyTypeDefinition) {
+            if (propDef instanceof OverridablePropertyTypeDefinition) {
                 // Trying to fix overridden properties with default value that changes
                 return null;
             }
@@ -573,7 +573,7 @@ public class RepositoryResourceHelperImpl
             // On propchange we have to do contentchange on all props not having a 
             // previous value and not having a propchangeevaluator.
             property = evaluateContentChange(ctx, propDef, time);
-        } else if (propDef instanceof OverridingPropertyTypeDefinition) {
+        } else if (propDef instanceof OverridablePropertyTypeDefinition) {
             // Trying to fix overridden properties with default value that changes
             return null;
         }

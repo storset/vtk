@@ -35,9 +35,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
 
-public class OverridingPropertyTypeDefinitionImpl implements OverridingPropertyTypeDefinition, InitializingBean {
+public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
-    private OverridablePropertyTypeDefinitionImpl overriddenPropDef;
+    private OverridablePropertyTypeDefinition overriddenPropDef;
     
     private CreatePropertyEvaluator createEvaluator;
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
@@ -120,7 +120,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridingPropertyT
 
     
     
-    public void setOverriddenPropDef(OverridablePropertyTypeDefinitionImpl overriddenPropDef) {
+    public void setOverriddenPropDef(OverridablePropertyTypeDefinition overriddenPropDef) {
         this.overriddenPropDef = overriddenPropDef;
     }
 

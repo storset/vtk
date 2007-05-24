@@ -35,6 +35,6 @@ package org.vortikal.repository.resourcetype;
  * Marker inteface indicating a property that might be defined multiple 
  * places in the resource type tree.
  */
-public interface OverridingPropertyTypeDefinition extends PropertyTypeDefinition {
+public interface OverridablePropertyTypeDefinition extends PropertyTypeDefinition {
 
 }

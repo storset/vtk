@@ -14,9 +14,10 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
+    <property name="overriddenPropertyTypeDefinitions" ref="htmlOverriddenGuessedCharacterEncodingPropDef" />
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="htmlGuessedCharacterEncodingPropDef" />
+        <ref bean="htmlDocTypePropDef" />
         <ref bean="htmlTitlePropDef" />
       </list>
     </property>
@@ -32,13 +33,12 @@
         <ref bean="visualProfileMixinResourceTypeDef" />
       </list>
     </property>    
-    <property name="propertyTypeDefinitions">
+    <property name="overriddenPropertyTypeDefinitions">
       <list>
-        <ref bean="htmlDocTypePropDef" />
-        <ref bean="htmlCharacterEncodingPropDef" />
+        <ref bean="htmlOverriddenCharacterEncodingPropDef" />
+        <ref bean="htmlOverriddenTitlePropDef" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions" ref="htmlOverriddenTitlePropDef" />
   </bean>
 
   <bean id="htmlDocTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -65,7 +65,7 @@
   </bean>
 
   <bean id="htmlOverriddenTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinition">
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="contentModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
     <property name="nameModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
@@ -78,15 +78,9 @@
         <property name="htmlTitlePropDef" ref="htmlTitlePropDef"/>
   </bean>
 
-
-
-
-  <bean id="htmlGuessedCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="guessedCharacterEncoding" />
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
+  <bean id="htmlOverriddenGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
     <property name="contentModificationEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
@@ -110,28 +104,9 @@
 
 
   <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->
-  <bean id="htmlCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="characterEncoding" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="htmlCharacterEncodingEvaluator" />
-    <property name="contentModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="htmlCharacterEncodingEvaluator" />
+  <bean id="htmlOverriddenCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
   </bean>
-
-
-
-  <bean id="htmlCharacterEncodingEvaluator"
-        class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
-    <property name="propertyDefinitions">
-      <list>
-        <ref bean="userSpecifiedCharacterEncodingPropDef" />
-        <ref bean="htmlGuessedCharacterEncodingPropDef" />
-      </list>
-    </property>
-  </bean>
-
-
 
 </beans>

@@ -46,7 +46,7 @@
   </bean>
 
   
-  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition">
     <property name="name" value="title" />
     <property name="type" ref="TYPE_STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

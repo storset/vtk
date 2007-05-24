@@ -5,9 +5,9 @@
 
   <!-- PHP resource type -->
 
-  <bean id="phpResourceTypeDefinition"
+  <bean id="abstractPhpResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="php"/>
+    <property name="name" value="abstract-php" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
@@ -15,8 +15,34 @@
         <ref bean="contentTypeMatchesPhp" />
       </list>
     </property>
+    <property name="overriddenPropertyTypeDefinitions" ref="phpOverriddenGuessedCharacterEncodingPropDef" />
   </bean>
   
+  <bean id="phpResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="php"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="abstractPhpResourceTypeDefinition" />
+    <property name="overriddenPropertyTypeDefinitions" ref="phpOverriddenCharacterEncodingPropDef" />
+  </bean>
+
+  <bean id="phpOverriddenGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
+    <property name="defaultValue">
+      <bean class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="java.lang.String"
+                         value="${defaultPhpResourceCharacterEncoding}" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="phpOverriddenCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
+  </bean>
+
+
   <bean id="contentTypeMatchesPhp" 
         class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="(application/x-php)|(text/x-php)|(text/php)" />

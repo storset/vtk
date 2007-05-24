@@ -41,7 +41,7 @@ public class PrimaryResourceTypeDefinitionImpl
     private PrimaryResourceTypeDefinition parentTypeDefinition;
     private RepositoryAssertion[] assertions;
 
-    private OverridingPropertyTypeDefinition[] overriddenPropertyTypeDefinitions = new OverridingPropertyTypeDefinition[0];
+    private OverridingPropertyTypeDefinitionImpl[] overriddenPropertyTypeDefinitions = new OverridingPropertyTypeDefinitionImpl[0];
 
     public PrimaryResourceTypeDefinition getParentTypeDefinition() {
         return this.parentTypeDefinition;
@@ -79,12 +79,12 @@ public class PrimaryResourceTypeDefinitionImpl
         return sb.toString();
     }
 
-    public OverridingPropertyTypeDefinition[] getOverriddenPropertyTypeDefinitions() {
+    public OverridingPropertyTypeDefinitionImpl[] getOverriddenPropertyTypeDefinitions() {
         return overriddenPropertyTypeDefinitions;
     }
 
     public void setOverriddenPropertyTypeDefinitions(
-            OverridingPropertyTypeDefinition[] overriddenPropertyTypeDefinitions) {
+            OverridingPropertyTypeDefinitionImpl[] overriddenPropertyTypeDefinitions) {
         this.overriddenPropertyTypeDefinitions = overriddenPropertyTypeDefinitions;
     }
     

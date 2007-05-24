@@ -470,8 +470,10 @@ public class RepositoryResourceHelperImpl
                     + newResource.getURI() + "' returned not value initialized property " + 
                     propDef);
             }
-        } 
-        
+        } else if (propDef instanceof OverridingPropertyTypeDefinition) {
+            // Trying to fix overridden properties with default value that changes
+            return null;
+        }
         return prop;
     }
 
@@ -493,6 +495,10 @@ public class RepositoryResourceHelperImpl
             propDef.getNameModificationEvaluator();
 
         if (evaluator == null) {
+            if (propDef instanceof OverridingPropertyTypeDefinition) {
+                // Trying to fix overridden properties with default value that changes
+                return null;
+            }
             return property;
         }
         
@@ -567,6 +573,9 @@ public class RepositoryResourceHelperImpl
             // On propchange we have to do contentchange on all props not having a 
             // previous value and not having a propchangeevaluator.
             property = evaluateContentChange(ctx, propDef, time);
+        } else if (propDef instanceof OverridingPropertyTypeDefinition) {
+            // Trying to fix overridden properties with default value that changes
+            return null;
         }
 
         return property;

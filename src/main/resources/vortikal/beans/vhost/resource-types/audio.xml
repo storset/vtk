@@ -83,7 +83,7 @@
   </bean>
 
   <bean id="audioOverriddenTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinition">
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="contentModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
     <property name="nameModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />

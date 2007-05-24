@@ -30,12 +30,13 @@
  */
 package org.vortikal.util.web;
 
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.time.FastDateFormat;
 
 
@@ -49,6 +50,17 @@ public class HttpUtil {
         FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss z",
                                    java.util.TimeZone.getTimeZone("GMT"),
                                    java.util.Locale.US);
+    
+    private static final String HTTP_DATE_FORMAT_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    private static final String HTTP_DATE_FORMAT_RFC1036 = "EEEE, dd-MMM-yy HH:mm:ss zzz";
+    private static final String HTTP_DATE_FORMAT_ASCTIME = "EEE MMM d HH:mm:ss yyyy";
+
+    private static final String[] HTTP_DATE_PARSE_FORMATS = new String[] {
+        HTTP_DATE_FORMAT_RFC1123,
+        HTTP_DATE_FORMAT_RFC1036,
+        HTTP_DATE_FORMAT_ASCTIME
+    };
+
     
 
     /* HTTP status codes defined by WebDAV */
@@ -126,7 +138,22 @@ public class HttpUtil {
     }
 
 
+    public static Date parseHttpDate(String str) {
+        for (String format: HTTP_DATE_PARSE_FORMATS) {
+            try {
+                SimpleDateFormat parser =  new SimpleDateFormat(format);
+                return parser.parse(str);
+            } catch (Throwable t) { }
+        }
+        try {
+            return new Date(Long.parseLong(str));
+        } catch (Throwable t) { }
+        return null;
+    }
+
     
+
+
     /**
      * Gets the MIME type part from the header of a request possibly containing a
      * 'charset' parameter.

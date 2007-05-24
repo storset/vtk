@@ -39,16 +39,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
 
-/**
- * Request URI processor that translates the URI from one encoding to
- * another.
- *
- * <p>Configurable JavaBean properties:
- * <ul>
- *   <li><code>fromEncoding</code> - the encoding to translate from
- *   <li><code>toEncoding</code> - the encoding to translate to
- * </ul>
- */
 public class ForcedRequestHeaderValuesFilter extends AbstractRequestFilter
   implements InitializingBean {
 

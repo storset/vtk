@@ -39,7 +39,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 
 
 /**
@@ -120,7 +122,8 @@ public abstract class AbstractViewProcessingDecorator
 
     private String renderView(Map model, HttpServletRequest request) throws Exception {
 
-        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
+        requestWrapper.setMethod("GET");
         BufferedResponse tmpResponse = new BufferedResponse();
 
         this.view.render(model, requestWrapper, tmpResponse);

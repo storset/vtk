@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.vortikal.util.web.URLUtil;
-import java.util.HashMap;
 
 
 /**
@@ -46,23 +45,15 @@ import java.util.HashMap;
  * java.net.URL}, except that it has getters/setters for all URL
  * components to achieve easy "on-the-fly" manipulation when
  * constructing URLs.
- *
- * <p>TODO: possibly incorporate authentication information?
  */
 public class URL {
-
 
     private String protocol = null;
     private String host = null;
     private Integer port = null;
-    //private String authority = null;
-    //private String userInfo = null;
     private String path = null;
     private String characterEncoding = "utf-8";
-
-    private List<String> parameterNames = new ArrayList<String>();
-    private List<String> parameterValues = new ArrayList<String>();
-
+    private Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     private String ref = null;
     
     private static final Integer PORT_80 = new Integer(80);
@@ -154,37 +145,64 @@ public class URL {
     
     
     public void addParameter(String name, String value) {
-        this.parameterNames.add(name);
-        this.parameterValues.add(value);
+        List<String> values = this.parameters.get(name);
+        if (values == null) {
+            values = new ArrayList<String>();
+            this.parameters.put(name, values);
+        }
+        values.add(value);
     }
     
 
     public void removeParameter(String name) {
-        int index = this.parameterNames.indexOf(name);
-        while (index != -1) {
-            this.parameterNames.remove(index);
-            this.parameterValues.remove(index);
-            index = this.parameterNames.indexOf(name);
-        }
+        this.parameters.remove(name);
     }
     
 
     public void clearParameters() {
-        this.parameterNames.clear();
-        this.parameterValues.clear();
+        this.parameters = new LinkedHashMap<String, List<String>>();
     }
     
 
     public String getParameter(String parameterName) {
-        if (this.parameterNames.contains(parameterName))
-            return this.parameterValues.get(this.parameterNames.indexOf(parameterName));
-        return null;
+        List<String> values = this.parameters.get(parameterName);
+        if (values == null || values.size() == 0) {
+            return null;
+        }
+        return values.get(0);
     }
     
+    public List<String> getParameters(String parameterName) {
+        List<String> values = this.parameters.get(parameterName);
+        if (values == null || values.size() == 0) {
+            return null;
+        }
+        return Collections.list(Collections.enumeration(values));
+    }
+    
+
     public List<String> getParameterNames() {
-        return Collections.unmodifiableList(this.parameterNames);
+        return Collections.list(Collections.enumeration(this.parameters.keySet()));
     }
 
+    public String getQueryString() {
+        if (this.parameters.isEmpty()) {
+            return null;
+        }
+        StringBuilder qs = new StringBuilder();
+        for (Iterator<String> i = this.parameters.keySet().iterator(); i.hasNext();) {
+            String param = i.next();
+            List<String> values = this.parameters.get(param);
+            for (String val: values) {
+                qs.append(param).append("=").append(val);
+            }
+            if (i.hasNext()) {
+                qs.append("&");
+            }
+        }
+        return qs.toString();
+    }
+    
 
     public String getRef() {
         return this.ref;
@@ -209,7 +227,7 @@ public class URL {
 
 
     public String toString() {
-        StringBuffer url = new StringBuffer();
+        StringBuilder url = new StringBuilder();
         
         url.append(this.protocol).append("://");
         url.append(this.host);
@@ -225,20 +243,10 @@ public class URL {
             // Ignore, this.characterEncoding is supposed to be valid.
         }
         
-        if (!this.parameterNames.isEmpty()) {
-            Map<String, String> parameters = new LinkedHashMap<String, String>();
-            
-            for (int i = 0; i < this.parameterNames.size(); i++) {
-                parameters.put(this.parameterNames.get(i), this.parameterValues.get(i));
-            }
-
+        String qs = getQueryString();
+        if (qs != null) {
             url.append("?");
-
-            for (Iterator iter = parameters.entrySet().iterator(); iter.hasNext();) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                url.append(entry.getKey()).append("=").append(entry.getValue());
-                if (iter.hasNext()) url.append("&");
-            }
+            url.append(qs);
         }
 
         if (this.ref != null) {
@@ -248,6 +256,23 @@ public class URL {
         return url.toString();
     }
     
+
+    /**
+     * Utility method to create a URL from an existing URL. The newly
+     * created URL will contain the exact same data as the existing
+     * one.
+     *
+     * @param url the existing URL
+     * @return the generated URL
+     */
+    public static URL create(URL url) {
+        URL newURL = new URL(url.getProtocol(), url.getHost(), url.getPath());
+        newURL.port = url.port;
+        newURL.characterEncoding = url.characterEncoding;
+        newURL.parameters = new LinkedHashMap<String, List<String>>(url.parameters);
+        newURL.ref = url.ref;
+        return newURL;
+    }
 
 
     /**

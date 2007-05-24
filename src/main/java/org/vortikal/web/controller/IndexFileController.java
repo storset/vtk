@@ -31,25 +31,25 @@
 package org.vortikal.web.controller;
 
 import java.nio.charset.Charset;
-
+import java.util.Date;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
 
 
@@ -66,12 +66,14 @@ import org.vortikal.web.servlet.VortikalServlet;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>repository</code> - the content {@link Repository repository}
+ *   <li><code>uriCharacterEncoding</code> - the character encoding to
+ *   use when encoding the index file request URI. Default is
+ *   <code>utf-8</code>.
  * </ul>
  */
 public class IndexFileController
   implements Controller, LastModified, InitializingBean, ServletContextAware {
 
-    private Log logger = LogFactory.getLog(this.getClass());
     private Repository repository;
     private ServletContext servletContext;
     private String uriCharacterEncoding = "utf-8";
@@ -136,17 +138,33 @@ public class IndexFileController
             throw new IllegalStateException("No index file found under " + res, t);
         }
         if (indexFile.isCollection()) {
-            throw new IllegalStateException("Index file '" + indexFile.getURI()
+            throw new IllegalStateException("Index file '" + indexURI
                                             + "' not a regular file");
         }
 
         long collectionLastMod = res.getLastModified().getTime();
-        String encodedURI = new String(indexFile.getURI().getBytes("utf-8"),
+        long requestLastMod = request.getDateHeader("If-Modified-Since");
+        long ifModSince = -1;
+
+        if (requestLastMod != -1) {
+            ifModSince = Math.min(collectionLastMod, requestLastMod);
+        }
+
+        String encodedURI = new String(indexURI.getBytes("utf-8"),
                                        this.uriCharacterEncoding);
 
-        RequestWrapper requestWrapper = new RequestWrapper(request, encodedURI,
-                                                           collectionLastMod);
-        String servletName = (String)request.getAttribute(
+        System.out.println("__index_file_uri: " + encodedURI);
+
+        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
+        requestWrapper.setRequestURI(encodedURI);
+        System.out.println("__index_file_uri2: " + requestWrapper.getRequestURI());
+
+        if (ifModSince != -1) {
+            requestWrapper.setHeader(
+                "If-Modified-Since", HttpUtil.getHttpDateString(new Date(ifModSince)));
+        }
+
+        String servletName = (String) request.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
         RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
         
@@ -164,50 +182,4 @@ public class IndexFileController
         return null;
     }
     
-
-    private class RequestWrapper extends HttpServletRequestWrapper {
-
-        private String uri;
-        private HttpServletRequest request;
-        private long minLastMod = -1;
-        
-        public RequestWrapper(HttpServletRequest request, String uri, long minLastMod) {
-            super(request);
-            this.uri = uri;
-            this.request = request;
-            this.minLastMod = minLastMod;
-        }
-        
-        public String getRequestURI() {
-            return this.uri;
-        }
-
-        public String getHeader(String name) {
-            if ("If-Modified-Since".equals(name)) {
-                long lastMod = this.request.getDateHeader(name);
-                if (lastMod > -1) {
-                    if (lastMod > this.minLastMod) {
-                        return this.request.getHeader(name);
-                    }
-                    return null;
-                }
-            }
-            return this.request.getHeader(name);
-        }
-        
-        public long getDateHeader(String name) {
-            if ("If-Modified-Since".equals(name)) {
-                long lastMod = this.request.getDateHeader(name);
-                if (lastMod > -1) {
-                    if (lastMod > this.minLastMod) {
-                        return lastMod;
-                    }
-                }
-                return -1;
-            }
-            return this.request.getDateHeader(name);
-        }
-
-    }
-
 }

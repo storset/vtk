@@ -13,8 +13,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
+
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
+import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 
 /**
  * Wrapper class for view, running {@link ReferenceDataProvider referenceDataProviders}
@@ -71,7 +73,8 @@ public class WrappingView implements View, InitializingBean {
             method = "GET";
         }
 
-        RequestWrapper requestWrapper = new RequestWrapper(request, method);
+        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
+        requestWrapper.setMethod(method);
         
         if (this.viewWrapper != null) {
             this.viewWrapper.renderView(this.view, model, requestWrapper, response);

@@ -33,18 +33,15 @@ package org.vortikal.web.view.decorating.components;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.context.ServletContextAware;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -57,7 +54,9 @@ import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
+import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
@@ -201,9 +200,17 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         decodedURI = URLUtil.urlDecode(decodedURI);
         
-        RequestWrapper requestWrapper = new RequestWrapper(
-            servletRequest, decodedURI, queryMap, queryString);
-
+        URL url = URL.create(servletRequest);
+        url.setPath(decodedURI);
+        url.clearParameters();
+        for (String param: queryMap.keySet()) {
+            for (String value: queryMap.get(param)) {
+                url.addParameter(param, value);
+            }
+        }
+        
+        ConfigurableRequestWrapper requestWrapper =
+            new ConfigurableRequestWrapper(servletRequest, url);
         requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, new Object());
         String servletName = (String) servletRequest.getAttribute(
                 VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
@@ -245,76 +252,6 @@ public class IncludeComponent extends AbstractDecoratorComponent
         Writer writer = response.getWriter();
         writer.write(result);
         writer.close();
-    }
-
-
-
-    private class RequestWrapper extends HttpServletRequestWrapper {
-
-        private String uri;
-        private Map<String, String[]> parameters;
-        private String queryString;
-        
-        public RequestWrapper(HttpServletRequest request, String uri,
-                              Map<String, String[]> parameters, String queryString) {
-            super(request);
-            this.uri = uri;
-            this.parameters = parameters;
-            this.queryString = queryString;
-        }
-        
-        public String getRequestURI() {
-            return this.uri;
-        }
-        
-        @Override
-        public String getContextPath() {
-            return "";
-        }
-
-        @Override
-        public String getPathInfo() {
-            return this.uri;
-        }
-
-        @Override
-        public String getServletPath() {
-            return "";
-        }
-
-        @Override
-        public String getPathTranslated() {
-            return null;
-        }
-
-        @Override
-        public String getRealPath(String arg0) {
-            return null;
-        }
-
-        public String getQueryString() {
-            return this.queryString;
-        }
-
-        public String getParameter(String name) {
-            String[] values = this.parameters.get(name);
-            if (values == null || values.length <= 0) {
-                return null;
-            }
-            return values[0];
-        }
-
-        public String[] getParameterValues(String name) {
-            return this.parameters.get(name);
-        }
-
-        public Map getParameterMap() {
-            return Collections.unmodifiableMap(this.parameters);
-        }
-        
-        public Enumeration getParameterNames() {
-            return Collections.enumeration(this.parameters.keySet());
-        }
     }
 
 

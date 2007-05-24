@@ -37,19 +37,21 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.web.servlet.View;
+
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
+import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 
 /**
  * This view wrapper takes a view and decorates the output from that
@@ -157,7 +159,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             return;
         } 
 
-        RequestWrapper requestWrapper = new RequestWrapper(request, "GET");
+        ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
+        requestWrapper.setMethod("GET");
         BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
         
         view.render(model, requestWrapper, responseWrapper);

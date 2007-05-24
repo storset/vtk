@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Namespace;
@@ -54,7 +56,9 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private PropertyValidator validator;
     private Value[] allowedValues;
 
-    public void afterPropertiesSet() {}
+    public void afterPropertiesSet() {
+        
+    }
     
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
         return this.contentModificationEvaluator;
@@ -155,9 +159,17 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
     
     public void addAllowedValue(Value allowedValue) {
-        java.util.List l = new java.util.ArrayList(java.util.Arrays.asList(this.allowedValues));
+        if (allowedValue == null) {
+            return;
+        }
+        if (this.allowedValues == null) {
+            this.allowedValues = new Value[] { allowedValue };
+            return;
+        }
+        java.util.List<Value> l = 
+            new java.util.ArrayList<Value>(Arrays.asList(this.allowedValues));
         l.add(allowedValue);
-        this.allowedValues = (Value[]) l.toArray(new Value[l.size()]);
+        this.allowedValues = l.toArray(new Value[l.size()]);
     }
     
 

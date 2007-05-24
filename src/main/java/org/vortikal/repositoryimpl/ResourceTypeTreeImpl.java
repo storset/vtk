@@ -184,13 +184,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
     }
     
-    public List<PrimaryResourceTypeDefinition> getPrimaryResourceTypeDefinitions() {
-        return new ArrayList<PrimaryResourceTypeDefinition>(
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
-                    PrimaryResourceTypeDefinition.class, false, false).values());
-    }
-
-    public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
+    public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
         PrimaryResourceTypeDefinition[] children = 
             getResourceTypeDefinitionChildrenInternal(def);
         
@@ -616,6 +610,12 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 mapPropertyDefinitionsToPrimaryType(mixinPropDefs, mixin.getNamespace(), primaryTypeDef);
             }
         }
+    }
+
+    private List<PrimaryResourceTypeDefinition> getPrimaryResourceTypeDefinitions() {
+        return new ArrayList<PrimaryResourceTypeDefinition>(
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
+                    PrimaryResourceTypeDefinition.class, false, false).values());
     }
 
     private void mapPropertyDefinitionsToPrimaryType(PropertyTypeDefinition[] propDefs,

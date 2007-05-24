@@ -56,6 +56,7 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
+import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -351,11 +352,11 @@ public class RepositoryResourceHelperImpl
         }
 
         // Evaluating overridden properties
-        PropertyTypeDefinition[] overrides = rt.getOverriddenPropertyTypeDefinitions();
+        OverridingPropertyTypeDefinition[] overrides = rt.getOverriddenPropertyTypeDefinitions();
         
-        if (overrides != null && overrides.length > 0)
-            for (int i = 0; i < overrides.length; i++) {
-                evaluateManagedProperty(ctx, overrides[i], time);
+        if (overrides != null)
+            for (OverridingPropertyTypeDefinition override: overrides) {
+                evaluateManagedProperty(ctx, override, time);
             }
 
         
@@ -739,6 +740,5 @@ public class RepositoryResourceHelperImpl
         }
         
     }
-
 
 }

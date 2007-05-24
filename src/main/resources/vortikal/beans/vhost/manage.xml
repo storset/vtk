@@ -103,7 +103,6 @@
 
   <bean id="permissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--property name="order"><value>-9550</value></property-->
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -151,7 +150,7 @@
   
   <bean id="manageCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--property name="order"><value>-10000</value></property-->
+    <property name="order" value="1" />
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -584,7 +583,7 @@
   
   <bean id="previewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <!--property name="order"><value>-9900</value></property-->
+    <property name="order" value="1" />
     <property name="categories" value="tabMenu" />
     <property name="attributes">
       <map>
@@ -612,9 +611,7 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
-    <property name="handler">
-      <ref bean="previewHTMLHandler" />
-    </property>
+    <property name="handler" ref="previewHTMLHandler" />
   </bean>
 
 
@@ -630,6 +627,7 @@
 
 
   <bean id="previewTextService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="10" />
     <property name="parent" ref="previewService" />
     <property name="assertions">
       <list>
@@ -664,11 +662,6 @@
     </property>
     <property name="handler" ref="previewCollectionHandler" />
     <property name="handlerInterceptors" ref="previewCollectionListingServiceInterceptor" />
-<!--     <property name="services"> -->
-<!--       <list> -->
-<!--         <ref bean="previewIndexFileService" /> -->
-<!--       </list>     -->
-<!--     </property> -->
   </bean>
 
   <bean id="previewCollectionListingServiceInterceptor"
@@ -691,23 +684,6 @@
     <!--property name="repository" ref="repository" /-->
     <!--property name="assertions" -->
   </bean>
-
-
-
-  <!--bean id="previewIndexFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="assertions">
-      <list>
-        <ref bean="hasIndexFileAssertion" />
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="previewCollectionListingServiceInterceptor" />
-      </list>
-    </property>
-    <property name="handler" ref="previewIndexFileHandler" />
-    
-  </bean-->
 
   <!-- MANAGE controllers -->
 
@@ -936,45 +912,41 @@
   <bean id="setResourcePropertyController"
         class="org.vortikal.web.controller.properties.SetResourcePropertyController"
         parent="requestLocalRepositoryAware">
-    <property name="formView"><value>admin</value></property>
-    <property name="successView"><value>redirect</value></property>
-    <property name="commandName"><value>setResourcePropertyForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.ResourcePropertyCommand</value>
-    </property>
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirect" />
+    <property name="commandName" value="setResourcePropertyForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.properties.ResourcePropertyCommand" />
   </bean>
 
   <bean id="deleteResourcePropertyController"
         class="org.vortikal.web.controller.properties.DeleteResourcePropertyController"
         parent="requestLocalRepositoryAware">
-    <property name="formView"><value>admin</value></property>
-    <property name="successView"><value>redirect</value></property>
-    <property name="commandName"><value>deleteResourcePropertyForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.ResourcePropertyCommand</value>
-    </property>
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirect" />
+    <property name="commandName" value="deleteResourcePropertyForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.properties.ResourcePropertyCommand" />
   </bean>
 
   <bean id="setContentTypeController" 
         class="org.vortikal.web.controller.properties.ContentTypeController"
         parent="requestLocalRepositoryAware">
-    <property name="formView"><value>admin</value></property>
-    <property name="successView"><value>redirect</value></property>
-    <property name="commandName"><value>editContentTypeForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.ContentTypeCommand</value>
-    </property>
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirect" />
+    <property name="commandName" value="editContentTypeForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.properties.ContentTypeCommand" />
   </bean>
 
   <bean id="setContentLanguageController" 
         class="org.vortikal.web.controller.properties.ContentLanguageController"
         parent="requestLocalRepositoryAware">
-    <property name="formView"><value>admin</value></property>
-    <property name="successView"><value>redirect</value></property>
-    <property name="commandName"><value>editContentLanguageForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.ContentLanguageCommand</value>
-    </property>
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirect" />
+    <property name="commandName" value="editContentLanguageForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.properties.ContentLanguageCommand" />
     <!-- Using java locale codes to store language -->
     <property name="possibleLanguages">
       <list>
@@ -989,12 +961,11 @@
   <bean id="setCharacterEncodingController" 
         class="org.vortikal.web.controller.properties.CharacterEncodingController"
         parent="requestLocalRepositoryAware">
-    <property name="formView"><value>admin</value></property>
-    <property name="successView"><value>redirect</value></property>
-    <property name="commandName"><value>editCharacterEncodingForm</value></property>
-    <property name="commandClass">
-      <value>org.vortikal.web.controller.properties.CharacterEncodingCommand</value>
-    </property>
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirect" />
+    <property name="commandName" value="editCharacterEncodingForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.controller.properties.CharacterEncodingCommand" />
   </bean>
 
   <bean id="manageCollectionListingHandler" 
@@ -1009,15 +980,6 @@
     <property name="viewName" value="previewIframe" />
     <property name="service" ref="viewService"/>
   </bean>
-
-
-  <!--bean id="previewIndexFileHandler" 
-        class="org.vortikal.web.controller.ResourceServiceURLController"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="collectionListingService" />
-    <property name="viewName" value="previewIframe"/>
-    <property name="indexFileResolver" ref="indexFileResolver" />
-  </bean-->
 
   <bean id="previewHTMLHandler"
         class="org.vortikal.web.controller.ResourceServiceURLController"

@@ -73,11 +73,11 @@ public interface ResourceTypeTree {
      */
     public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName);
     
-    /**
-     * Return flat list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
-     * @return list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
-     */
-    public List getPrimaryResourceTypeDefinitions();
+//    /**
+//     * Return flat list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
+//     * @return list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
+//     */
+//    private List getPrimaryResourceTypeDefinitions();
 
     /**
      * Gets a resource type definition object by name.
@@ -106,7 +106,7 @@ public interface ResourceTypeTree {
      * @param def
      * @return
      */
-    public List getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
+    public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
 
     public List getResourceTypeDescendantNames(String resourceTypeName);
 

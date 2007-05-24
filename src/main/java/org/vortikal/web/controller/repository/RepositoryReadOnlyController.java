@@ -41,16 +41,15 @@ import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 
 /**
- * Controller that locks a resource (if it was previously unlocked).
+ * Controller that switches read only mode of a specified repository.
+ * Note that the principal needs to have root role to do this.
  */
 public class RepositoryReadOnlyController
   extends AbstractController implements InitializingBean {
 
-    public static final String DEFAULT_VIEW_NAME = "redirect";
-
     private Repository repository;
-    private String viewName = DEFAULT_VIEW_NAME;
-    private String parameterName = "read-only";
+    private String viewName;
+    private String parameterName;
 
     
     public void setRepository(Repository repository) {
@@ -92,19 +91,12 @@ public class RepositoryReadOnlyController
         String token = securityContext.getToken();
 
         String readOnlyStr = request.getParameter(this.parameterName);
-        if (null == readOnlyStr || "".equals(readOnlyStr.trim())
-            || ! ("true".equals(readOnlyStr.trim()) || "false".equals(readOnlyStr.trim()))) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("No action performed; value of parameter '"
-                             + this.parameterName + "' was '" + readOnlyStr
-                             + "'. 'true' or 'false' required.");
-            }
-            return new ModelAndView(this.viewName);
+
+        if ("true".equals(readOnlyStr)) {
+            boolean readOnly = !this.repository.isReadOnly();
+            this.repository.setReadOnly(token, readOnly);
         }
 
-        boolean readOnly = "true".equals(readOnlyStr.trim());
-        
-        this.repository.setReadOnly(token, readOnly);
         return new ModelAndView(this.viewName);
     }
 

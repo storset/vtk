@@ -154,6 +154,7 @@
     <property name="views">
       <map>
         <entry key="rootView" value-ref="rootView" />
+        <entry key="repositoryReadOnly" value-ref="repositoryReadOnlyView" />
       </map>
     </property>
     <property name="viewWrapper" ref="rootManageViewWrapper" />
@@ -215,6 +216,86 @@
         <property name="attributeName" value="tabOrder" />
       </bean>
     </property>
+  </bean>
+
+
+  <!-- repository read only -->
+
+  <bean id="repositoryReadOnlyService"
+        class="org.vortikal.web.service.ServiceImpl">
+    <description>
+      Service for bringing the repository in and out of read-only mode.
+      Request parameters: action=set-read-only&amp;read-only={true,false}
+    </description>
+    <property name="parent" ref="repositoryManageService" />
+    <property name="order" value="-1" />
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">0</value></entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="read-only" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="repositoryReadOnlyHandler" />
+  </bean>
+
+  <bean id="repositoryReadOnlyHandler"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="repositoryReadOnly" />
+  </bean>
+
+  <bean id="repositoryReadOnlyView" parent="freemarkerView">
+    <property name="url" value="pages/repository-read-only.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="adminCSSProvider" />
+        <bean id="repositoryReadOnlyMessageProvider"
+              class="org.vortikal.web.referencedata.provider.RepositoryReadOnlyMessageProvider">
+          <property name="modelName" value="message" />
+          <property name="repository" ref="repository" />
+          <property name="messageKey" value="repository.readOnlyMode" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="switchRepositoryReadOnlyService" />
+          <property name="modelName" value="readOnlySwitchUrl" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="switchRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryReadOnlyService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="switch-read-only" />
+          <property name="parameterValue" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="repositoryReadOnlyController" />
+  </bean>
+
+  <bean id="repositoryReadOnlyController"
+        class="org.vortikal.web.controller.repository.RepositoryReadOnlyController">
+    <property name="repository" ref="repository" />
+    <property name="viewName" value="repositoryReadOnly" />
+    <property name="parameterName" value="switch-read-only" />
   </bean>
 
 </beans>

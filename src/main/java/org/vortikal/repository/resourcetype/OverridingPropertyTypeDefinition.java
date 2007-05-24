@@ -43,6 +43,7 @@ public class OverridingPropertyTypeDefinition implements PropertyTypeDefinition,
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
     private NameChangePropertyEvaluator nameModificationEvaluator;
+    private Value defaultValue;
 
     public Value[] getAllowedValues() {
         return this.overriddenPropDef.getAllowedValues();
@@ -67,6 +68,10 @@ public class OverridingPropertyTypeDefinition implements PropertyTypeDefinition,
     }
 
     public Value getDefaultValue() {
+        
+        if (this.defaultValue != null) {
+            return this.defaultValue;
+        }
         return this.overriddenPropDef.getDefaultValue();
     }
 
@@ -144,8 +149,8 @@ public class OverridingPropertyTypeDefinition implements PropertyTypeDefinition,
         this.propertiesModificationEvaluator = propertiesModificationEvaluator;
     }
 
-    public PropertyTypeDefinition getOverriddenPropDef() {
-        return overriddenPropDef;
+    public void setDefaultValue(Value defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
 }

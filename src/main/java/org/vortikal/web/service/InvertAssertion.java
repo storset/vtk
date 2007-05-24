@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
@@ -47,58 +46,41 @@ import org.vortikal.security.Principal;
  * 
  * <ul>
  *   <li>assertion - the assertion to test the inverted value of</li>
- *   <li>repository (should usually be set in the bean using this assertion)</li>
  * </ul>
  */
 
 public class InvertAssertion extends AbstractAssertion implements InitializingBean {
     
     private Assertion assertion;
-    private Repository repository;
-    
   
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         
         return ! this.assertion.matches(request, resource, principal);
     }
     
-    
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof InvertAssertion)
             return true;
-
         return false;
     }
         
     public void processURL(URL url) {
         // Empty
-        
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
     
-    
     public void afterPropertiesSet() throws Exception {
         if (this.assertion == null) 
             throw new BeanInitializationException("Property 'assertion' required");
-        else if (this.repository == null) 
-            throw new BeanInitializationException("Property 'repository' required");
     }
     
-    
-    
-    /*
-     * Public setters for configurable parameters
-     */
     public void setAssertion(Assertion assertion) {
         this.assertion = assertion;
     }
     
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
 
-} // end class InvertAssertion
+}
 

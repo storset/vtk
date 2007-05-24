@@ -220,7 +220,7 @@ public class PutController extends AbstractWebdavController {
             boolean store = false;
             
             String contentType = getContentType(request, resource);
-            if (contentType != null && !contentType.equals(resource.getContentType())) {
+            if (contentType != null && !exists) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Setting content-type: " + contentType);
                 }

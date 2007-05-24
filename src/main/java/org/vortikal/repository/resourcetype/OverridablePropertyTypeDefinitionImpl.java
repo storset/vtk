@@ -30,11 +30,12 @@
  */
 package org.vortikal.repository.resourcetype;
 
-
 /**
- * Marker inteface indicating a property that might be defined multiple 
- * places in the resource type tree.
+ * Subclass of {@link PropertyTypeDefinitionImpl} inheriting all funcionality.
+ * Simply adds the marker interface {@link OverridingPropertyTypeDefinition}, indicating that
+ * this property is overridable.
  */
-public interface OverridingPropertyTypeDefinition extends PropertyTypeDefinition {
+public class OverridablePropertyTypeDefinitionImpl extends PropertyTypeDefinitionImpl implements
+        OverridingPropertyTypeDefinition {
 
 }

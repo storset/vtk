@@ -14,11 +14,7 @@
         <ref bean="contentTypeMatchesXml" />
       </list>
     </property>
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="xmlGuessedCharacterEncodingPropDef" />
-      </list>
-    </property>
+    <property name="overriddenPropertyTypeDefinitions" ref="xmlOverriddenGuessedCharacterEncodingPropDef" />
   </bean>
 
 
@@ -27,12 +23,8 @@
     <property name="name" value="xml-resource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="abstractXmlResource" />
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="xmlCharacterEncodingPropDef" />
-        <ref bean="schemaPropDef" />
-      </list>
-    </property>
+    <property name="overriddenPropertyTypeDefinitions" ref="xmlOverriddenCharacterEncodingPropDef" />
+    <property name="propertyTypeDefinitions" ref="schemaPropDef" />
   </bean>
 
 
@@ -54,13 +46,9 @@
         class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" />
 
 
-  <!-- Overrides 'guessedCharacterEncodingPropDef' in 'abstractTextResource' resource type -->
-  <bean id="xmlGuessedCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="guessedCharacterEncoding" />
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
+  <bean id="xmlOverriddenGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
     <property name="contentModificationEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
@@ -74,25 +62,9 @@
         class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
 
 
-  <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->
-  <bean id="xmlCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="characterEncoding" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="xmlCharacterEncodingEvaluator" />
-    <property name="contentModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="xmlCharacterEncodingEvaluator" />
-  </bean>
-
-  <bean id="xmlCharacterEncodingEvaluator"
-        class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
-    <property name="propertyDefinitions">
-      <list>
-        <ref bean="userSpecifiedCharacterEncodingPropDef" />
-        <ref bean="xmlGuessedCharacterEncodingPropDef" />
-      </list>
-    </property>
+  <bean id="xmlOverriddenCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
   </bean>
 
 </beans>

@@ -16,11 +16,8 @@
         <ref bean="docTypeIsXHtml10Transitional" />
       </list>
     </property>
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="xhtml10TransGuessedCharacterEncodingPropDef" />
-      </list>
-    </property>
+    <property name="overriddenPropertyTypeDefinitions" 
+              ref="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
   </bean>
 
 
@@ -29,22 +26,15 @@
     <property name="name" value="xhtml10trans"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="abstractXhtml10TransResourceTypeDefinition" />
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="xhtml10TransCharacterEncodingPropDef" />
-      </list>
-    </property>
+    <property name="overriddenPropertyTypeDefinitions" 
+              ref="xhtml10TransOverriddenCharacterEncodingPropDef" />
   </bean>
 
 
 
-  <bean id="xhtml10TransGuessedCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-
-    <property name="name" value="guessedCharacterEncoding" />
-    <property name="type" ref="TYPE_STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
+  <bean id="xhtml10TransOverriddenGuessedCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
     <property name="contentModificationEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
@@ -65,25 +55,9 @@
     </property>
   </bean>
 
-  <!-- Overrides 'characterEncodingPropDef' in 'text' resource type -->
-  <bean id="xhtml10TransCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="characterEncoding" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="characterEncodingEvaluator" />
-    <property name="contentModificationEvaluator" ref="xhtml10TransCharacterEncodingEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="xhtml10TransCharacterEncodingEvaluator" />
-  </bean>
-
-  <bean id="xhtml10TransCharacterEncodingEvaluator"
-        class="org.vortikal.repository.resourcetype.property.FirstMatchPropertyEvaluator">
-    <property name="propertyDefinitions">
-      <list>
-        <ref bean="userSpecifiedCharacterEncodingPropDef" />
-        <ref bean="xhtml10TransGuessedCharacterEncodingPropDef" />
-      </list>
-    </property>
+  <bean id="xhtml10TransOverriddenCharacterEncodingPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
   </bean>
 
   <bean id="docTypeIsXHtml10Transitional"

@@ -37,7 +37,7 @@ import org.vortikal.repository.RepositoryAction;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridingPropertyTypeDefinition, InitializingBean {
 
-    private OverridablePropertyTypeDefinition overriddenPropDef;
+    private OverridablePropertyTypeDefinitionImpl overriddenPropDef;
     
     private CreatePropertyEvaluator createEvaluator;
     private ContentModificationPropertyEvaluator contentModificationEvaluator;
@@ -120,7 +120,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridingPropertyT
 
     
     
-    public void setOverriddenPropDef(OverridablePropertyTypeDefinition overriddenPropDef) {
+    public void setOverriddenPropDef(OverridablePropertyTypeDefinitionImpl overriddenPropDef) {
         this.overriddenPropDef = overriddenPropDef;
     }
 

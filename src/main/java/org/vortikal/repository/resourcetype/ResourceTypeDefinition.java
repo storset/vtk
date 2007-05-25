@@ -41,8 +41,6 @@ public interface ResourceTypeDefinition {
 
     public Namespace getNamespace();
 
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions();
-
     public PropertyTypeDefinition[] getPropertyTypeDefinitions();
 
 }

@@ -46,7 +46,7 @@ public interface ResourceTypeTree {
 
     public PrimaryResourceTypeDefinition getRoot();
     
-    public MixinResourceTypeDefinition[] getMixinTypes(ResourceTypeDefinition def);
+    public List<MixinResourceTypeDefinition> getMixinTypes(ResourceTypeDefinition def);
     
     /**
      * Search upwards in resource type tree, collect property type definitions
@@ -60,7 +60,7 @@ public interface ResourceTypeTree {
      * @param def The <code>ResourceTypeDefinition</code> 
      * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
      */
-    public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
                                                     ResourceTypeDefinition def);
 
     /**
@@ -73,11 +73,6 @@ public interface ResourceTypeTree {
      */
     public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName);
     
-//    /**
-//     * Return flat list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
-//     * @return list of all registered <code>PrimaryResourceTypeDefinition</code> objects.
-//     */
-//    private List getPrimaryResourceTypeDefinitions();
 
     /**
      * Gets a resource type definition object by name.

@@ -33,7 +33,6 @@ package org.vortikal.repositoryimpl.index.mapping;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -162,15 +161,13 @@ public class DocumentMapper implements InitializingBean {
         //      Perhaps better to wait until we get a proper query interface for various aspects
         //      of the resource type tree and its properties. Caching would be done there, instead,
         //      obviously.
-        List propDefs = 
+        List<PropertyTypeDefinition> propDefs = 
             this.resourceTypeTree.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
         
         // Index only properties that satisfy both of the following conditions:
         // 1) Belongs to the resource type's definition
         // 2) Exists in the property set.
-        for (Iterator i = propDefs.iterator(); i.hasNext();) {
-            PropertyTypeDefinition propDef = (PropertyTypeDefinition)i.next();
-            
+        for (PropertyTypeDefinition propDef: propDefs) {
             Property property = propSet.getProperty(propDef);
             
             if (property == null) continue;

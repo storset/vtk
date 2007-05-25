@@ -71,11 +71,9 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     private PrimaryResourceTypeDefinition rootResourceTypeDefinition;
     
     /**
-     * Currently maps a parent resource type def. to its children (arrays)
-     * XXX: Resource type definitions that have no children are _not_
-     *      represented as keys in this map. Beware if using key set iteration.
+     * Maps a parent resource type def. to its children (arrays)
      */
-    private Map<PrimaryResourceTypeDefinition, PrimaryResourceTypeDefinition[]> resourceTypeDefinitions = 
+    private Map<PrimaryResourceTypeDefinition, PrimaryResourceTypeDefinition[]> parentChildMap = 
         new HashMap<PrimaryResourceTypeDefinition, PrimaryResourceTypeDefinition[]>();
     
 
@@ -89,14 +87,15 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     /**
      * Currently maps namespaceUris to maps which map property names to defs.
      */
-    private Map propertyTypeDefinitions = new HashMap();
+    private Map<Namespace, Map<String, PropertyTypeDefinition>> propertyTypeDefinitions = 
+        new HashMap<Namespace, Map<String, PropertyTypeDefinition>>();
     
 
     /**
      * A collection containing all {@link MixinResourceTypeDefinition
      * mixin} resource type definitions
      */
-    private Collection mixins;
+    private Collection<MixinResourceTypeDefinition> mixins;
 
 
     /**
@@ -104,39 +103,43 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * PrimaryResourceTypeDefinition primary} resource type
      * definitions
      */
-    private Collection primaryTypes;    
+    private Collection<PrimaryResourceTypeDefinition> primaryTypes;    
 
 
     /**
-     * Maps from primary resource types to a set (array) of mixin types:
+     * Maps from primary resource types to a list of mixin types:
      *
      */
-    private Map mixinTypeDefinitionMap = new HashMap();
+    private Map<PrimaryResourceTypeDefinition, List<MixinResourceTypeDefinition>> mixinTypeDefinitionMap = 
+        new HashMap<PrimaryResourceTypeDefinition, List<MixinResourceTypeDefinition>>();
 
     
     /**
      * Maps from mixin types to a {@link Set} of primary resource types:
+     * XXX: is this really only primary resource types? I'm not really sure...
      */
-    private Map mixinTypePrimaryTypesMap = new HashMap();
+    private Map<MixinResourceTypeDefinition, Set<PrimaryResourceTypeDefinition>> mixinTypePrimaryTypesMap = 
+        new HashMap<MixinResourceTypeDefinition, Set<PrimaryResourceTypeDefinition>>();
 
 
     /**
      * Maps from name space URIs to {@link Namespace} objects
      */
-    private Map namespaceUriMap = new HashMap();
+    private Map<String, Namespace> namespaceUriMap = new HashMap<String, Namespace>();
     
 
     /**
      * Maps from name space prefixes to {@link Namespace} objects
      */
-    private Map namespacePrefixMap = new HashMap();
+    private Map<String, Namespace> namespacePrefixMap = new HashMap<String, Namespace>();
 
     
     /**
      * Maps from namespaces to maps which map property names to a set
      * of primary resource types
      */
-    private Map propDefPrimaryTypesMap = new HashMap();
+    private Map<Namespace, Map<String, Set<PrimaryResourceTypeDefinition>>> propDefPrimaryTypesMap = 
+        new HashMap<Namespace, Map<String, Set<PrimaryResourceTypeDefinition>>>();
 
 
     /**
@@ -149,10 +152,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     public PropertyTypeDefinition findPropertyTypeDefinition(
             Namespace namespace, String name) {
         PropertyTypeDefinition propDef = null;
-        Map map = (Map) this.propertyTypeDefinitions.get(namespace);
+        Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
 
         if (map != null) {
-            propDef = (PropertyTypeDefinition) map.get(name);
+            propDef = map.get(name);
         }
 
         if (logger.isDebugEnabled() && propDef == null) {
@@ -180,8 +183,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return this.rootResourceTypeDefinition;
     }
 
-    public MixinResourceTypeDefinition[] getMixinTypes(ResourceTypeDefinition rt) {
-        return (MixinResourceTypeDefinition[]) this.mixinTypeDefinitionMap.get(rt);
+    public List<MixinResourceTypeDefinition> getMixinTypes(ResourceTypeDefinition rt) {
+        return this.mixinTypeDefinitionMap.get(rt);
     }
     
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def) {
@@ -196,12 +199,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
     
     public List<String> getResourceTypeDescendantNames(String resourceTypeName) {
-        return (List<String>) this.resourceTypeDescendantNames.get(resourceTypeName);
+        return this.resourceTypeDescendantNames.get(resourceTypeName);
     }
 
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
-        ResourceTypeDefinition type = (ResourceTypeDefinition)
-            this.resourceTypeNameMap.get(name);
+        ResourceTypeDefinition type = this.resourceTypeNameMap.get(name);
         if (type == null) {
             throw new IllegalArgumentException(
                 "No resource type of name '" + name + "' exists");
@@ -211,7 +213,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
     public PropertyTypeDefinition getPropertyDefinitionByPrefix(String prefix, String name) {
-        Namespace namespace = (Namespace) this.namespacePrefixMap.get(prefix);
+        Namespace namespace = this.namespacePrefixMap.get(prefix);
         if (namespace == null) {
             return null;
         }
@@ -230,10 +232,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * @param def The <code>ResourceTypeDefinition</code> 
      * @return A <code>Set</code> of <code>PropertyTypeDefinition</code> instances.
      */
-    public List getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(
                                                     ResourceTypeDefinition def) {
-        Set encounteredIds = new HashSet();
-        List propertyTypes = new ArrayList();
+        Set<String> encounteredIds = new HashSet<String>();
+        List<PropertyTypeDefinition> propertyTypes = new ArrayList<PropertyTypeDefinition>();
         
         if (def instanceof MixinResourceTypeDefinition) {
             MixinResourceTypeDefinition mixinDef = (MixinResourceTypeDefinition)def;
@@ -264,40 +266,36 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     
     public boolean isContainedType(ResourceTypeDefinition def, String resourceTypeName) {
 
-        ResourceTypeDefinition type = (ResourceTypeDefinition)
-            this.resourceTypeNameMap.get(resourceTypeName);
-        if (!(type instanceof PrimaryResourceTypeDefinition)) {
-            throw new IllegalArgumentException("Supplied argument '" + resourceTypeName
-                                               + "'not a primary resource type");
-        }
-
-        if (type == null) {
+        ResourceTypeDefinition type = this.resourceTypeNameMap.get(resourceTypeName);
+        if (type == null || !(type instanceof PrimaryResourceTypeDefinition)) {
             return false;
         }
 
-        ResourceTypeDefinition parent = type;
-        while (parent != null) {
+        PrimaryResourceTypeDefinition primaryDef = (PrimaryResourceTypeDefinition) type;
+
+        // recursive ascent on the parent axis
+        while (primaryDef != null) {
             if (def instanceof MixinResourceTypeDefinition) {
-                MixinResourceTypeDefinition[] mixins = parent.getMixinTypeDefinitions();
-                for (int i = 0; i < mixins.length; i++) {
-                    if (mixins[i].equals(def)) {
+                MixinResourceTypeDefinition[] mixins = primaryDef.getMixinTypeDefinitions();
+                for (MixinResourceTypeDefinition mixin: mixins) {
+                    if (mixin.equals(def)) {
                         return true;
                     }
                 }
-            } else if (parent.equals(def)) {
+            } else if (primaryDef.equals(def)) {
                 return true;
             }
-            parent = ((PrimaryResourceTypeDefinition) parent).getParentTypeDefinition();
+            primaryDef = primaryDef.getParentTypeDefinition();
         }
         return false;
     }
 
     
-    public List getPropertyTypeDefinitions() {
-        ArrayList definitions = new ArrayList();
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitions() {
+        ArrayList<PropertyTypeDefinition> definitions = 
+            new ArrayList<PropertyTypeDefinition>();
         
-        for (Iterator i = this.propertyTypeDefinitions.values().iterator(); i.hasNext();) {
-            Map propMap = (Map)i.next();
+        for (Map<String, PropertyTypeDefinition> propMap: this.propertyTypeDefinitions.values()) {
             definitions.addAll(propMap.values());
         }
         
@@ -305,7 +303,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
     public Namespace getNamespace(String namespaceUrl) {
-        Namespace namespace = (Namespace) this.namespaceUriMap.get(namespaceUrl);
+        Namespace namespace = this.namespaceUriMap.get(namespaceUrl);
         
         if (namespace == null) 
             namespace = new Namespace(namespaceUrl);
@@ -316,38 +314,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
             PropertyTypeDefinition definition) {
         
-        Map propDefMap = (Map) this.propDefPrimaryTypesMap.get(definition.getNamespace());
-        Set rts = (Set) propDefMap.get(definition.getName());
-        PrimaryResourceTypeDefinition[] defs = new PrimaryResourceTypeDefinition[rts.size()];
-        int n = 0;
-        for (Iterator i = rts.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition) i.next();
-            defs[n++] = def;
-        }
-        return defs;
+        Set<PrimaryResourceTypeDefinition> rts = 
+            this.propDefPrimaryTypesMap.get(definition.getNamespace()).get(definition.getName());
+        return rts.toArray(new PrimaryResourceTypeDefinition[rts.size()]);
     }
-
-    public ResourceTypeDefinition[] getPrimaryResourceTypesForPropDefOLD(
-            PropertyTypeDefinition definition) {
-        
-        ResourceTypeDefinition rt = (ResourceTypeDefinition) this.propDefPrimaryTypesMap.get(definition);
-        
-        if (rt instanceof PrimaryResourceTypeDefinition) {
-            return new ResourceTypeDefinition[] {rt};
-        }
-
-        MixinResourceTypeDefinition mixin = (MixinResourceTypeDefinition) rt;
-        Set primaryTypes = (Set) this.mixinTypePrimaryTypesMap.get(mixin);
-
-        ResourceTypeDefinition[] result = new ResourceTypeDefinition[primaryTypes.size()];
-        int n = 0;
-        for (Iterator i = primaryTypes.iterator(); i.hasNext();) {
-            ResourceTypeDefinition d = (ResourceTypeDefinition) i.next();
-            result[n++] = d;
-        }
-        return result;
-    }
-        
 
     public String getResourceTypeTreeAsString() {
         StringBuffer sb = new StringBuffer();
@@ -387,8 +357,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
         this.rootResourceTypeDefinition = rootDefinition;
         
-        for (Iterator i = this.primaryTypes.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
+        for (PrimaryResourceTypeDefinition def: this.primaryTypes) {
             
             this.resourceTypeNameMap.put(def.getName(), def);
             if (def.getNamespace() == null) {
@@ -402,7 +371,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             // Populate map of resourceTypeDefiniton parent -> children
             PrimaryResourceTypeDefinition parent = def.getParentTypeDefinition();
             PrimaryResourceTypeDefinition[] children = 
-                    (PrimaryResourceTypeDefinition[]) this.resourceTypeDefinitions.get(parent);
+                    this.parentChildMap.get(parent);
 
             // Array append (or create if not exists for given parent)
             PrimaryResourceTypeDefinition[] newChildren = null;
@@ -416,34 +385,28 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 newChildren[newChildren.length - 1] = def;
             }
 
-            this.resourceTypeDefinitions.put(parent, newChildren);
+            this.parentChildMap.put(parent, newChildren);
             this.mixinTypeDefinitionMap.put(def, buildMixinTypes(def));
-        }
 
-        // Remove null-key (which is the root resource type's "parent")
-        this.resourceTypeDefinitions.remove(null);
         
-
-        // Populate map from mixin types to all applicable primary types:
-        for (Iterator iter = this.resourceTypeNameMap.values().iterator(); iter.hasNext();) {
-            ResourceTypeDefinition def = (ResourceTypeDefinition) iter.next();
-            MixinResourceTypeDefinition[] mixins = (MixinResourceTypeDefinition[])
+            // Populate map from mixin types to all applicable primary types:
+            List<MixinResourceTypeDefinition> mixins = 
                 this.mixinTypeDefinitionMap.get(def);
-            for (int j = 0; j < mixins.length; j++) {
-                Set set = (Set) this.mixinTypePrimaryTypesMap.get(mixins[j]);
+            for (MixinResourceTypeDefinition mixin: mixins) {
+                Set<PrimaryResourceTypeDefinition> set = this.mixinTypePrimaryTypesMap.get(mixin);
                 if (set == null) {
-                    set = new HashSet();
-                    this.mixinTypePrimaryTypesMap.put(mixins[j], set);     
+                    set = new HashSet<PrimaryResourceTypeDefinition>();
+                    this.mixinTypePrimaryTypesMap.put(mixin, set);     
                 }
-                set.add(def);
-                if (def instanceof PrimaryResourceTypeDefinition) {
-                    set.addAll(getDescendants((PrimaryResourceTypeDefinition) def));
-                }
+                set.addAll(getDescendantsAndSelf(def));
             }
         }
 
-        for (Iterator iter = this.mixins.iterator(); iter.hasNext();) {
-            ResourceTypeDefinition def = (ResourceTypeDefinition) iter.next();
+        // Remove null-key (which is the root resource type's "parent")
+        this.parentChildMap.remove(null);
+        
+
+        for (MixinResourceTypeDefinition def: this.mixins) {
             this.resourceTypeNameMap.put(def.getName(), def);
             addNamespacesAndProperties(def);
         }
@@ -452,7 +415,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
     }
 
-    private void addPropertyTypeDefinitions(Set encounteredIds, List propertyTypes, 
+    private void addPropertyTypeDefinitions(Set<String> encounteredIds, List<PropertyTypeDefinition> propertyTypes, 
                                             PropertyTypeDefinition[] propDefs) {
         for (int i = 0; i < propDefs.length; i++) {
             String id = propDefs[i].getNamespace().getUri() + ":" + propDefs[i].getName();
@@ -466,8 +429,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     private PrimaryResourceTypeDefinition[] getResourceTypeDefinitionChildrenInternal(
             PrimaryResourceTypeDefinition rt) {
 
-            PrimaryResourceTypeDefinition[] children =
-                (PrimaryResourceTypeDefinition[])this.resourceTypeDefinitions.get(rt);
+            PrimaryResourceTypeDefinition[] children = this.parentChildMap.get(rt);
             if (children == null)
                 return new PrimaryResourceTypeDefinition[0];
             return children;
@@ -491,10 +453,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             this.namespacePrefixMap.put(def.getNamespace().getPrefix(), def.getNamespace());
         }
         
-        Map propDefMap = (Map) this.propertyTypeDefinitions.get(namespace);
+        Map<String, PropertyTypeDefinition> propDefMap = this.propertyTypeDefinitions.get(namespace);
         
         if (propDefMap == null) {
-            propDefMap = new HashMap();
+            propDefMap = new HashMap<String, PropertyTypeDefinition>();
             this.propertyTypeDefinitions.put(namespace, propDefMap);
         }
         for (int u = 0; u < definitions.length; u++) {
@@ -507,14 +469,13 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
 
-    private Set getDescendants(PrimaryResourceTypeDefinition def) {
-        Set s = new HashSet();
+    private Set<PrimaryResourceTypeDefinition> getDescendantsAndSelf(PrimaryResourceTypeDefinition def) {
+        Set<PrimaryResourceTypeDefinition> s = new HashSet<PrimaryResourceTypeDefinition>();
         s.add(def);
-        PrimaryResourceTypeDefinition[] children = (PrimaryResourceTypeDefinition[])
-            this.resourceTypeDefinitions.get(def);
+        PrimaryResourceTypeDefinition[] children = this.parentChildMap.get(def);
         if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                s.addAll(getDescendants(children[i]));
+            for (PrimaryResourceTypeDefinition child: children) {
+                s.addAll(getDescendantsAndSelf(child));
             }
         }
         return s;
@@ -522,40 +483,29 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     
     
 
-    private MixinResourceTypeDefinition[] buildMixinTypes(ResourceTypeDefinition rt) {
-        List mixinTypes = new ArrayList();
-        MixinResourceTypeDefinition[] directMixins = rt.getMixinTypeDefinitions();
-        if (directMixins != null) {
-            for (int i = 0; i < directMixins.length; i++) {
-                MixinResourceTypeDefinition mix = directMixins[i];
+    private List<MixinResourceTypeDefinition> buildMixinTypes(PrimaryResourceTypeDefinition rt) {
+        List<MixinResourceTypeDefinition> mixinTypes = new ArrayList<MixinResourceTypeDefinition>();
+        MixinResourceTypeDefinition[] mixins = rt.getMixinTypeDefinitions();
+        if (mixins != null) {
+            for (MixinResourceTypeDefinition mix: mixins) {
                 mixinTypes.add(mix);
                 if (!this.namespaceUriMap.containsKey(mix.getNamespace().getUri()))
                     this.namespaceUriMap.put(mix.getNamespace().getUri(), mix.getNamespace());                    
-
-                MixinResourceTypeDefinition[] indirectMixins =
-                    directMixins[i].getMixinTypeDefinitions();
-                if (indirectMixins != null && indirectMixins.length > 0) {
-                    mixinTypes.addAll(Arrays.asList(buildMixinTypes(indirectMixins[i])));
-                }
             }
         }        
-        return (MixinResourceTypeDefinition[]) mixinTypes.toArray(
-            new MixinResourceTypeDefinition[mixinTypes.size()]);
+        return mixinTypes;
     }
     
     /**
      * Build map of resource type names to names of all descendants
      */
-    private Map buildResourceTypeDescendantsMap() {
-        List<PrimaryResourceTypeDefinition> definitions = getPrimaryResourceTypeDefinitions();
-        
+    private Map<String, List<String>> buildResourceTypeDescendantsMap() {
         Map<String, List<String>> resourceTypeDescendantNames = new HashMap<String, List<String>>();
         
-        for (Iterator i = definitions.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
+        for (PrimaryResourceTypeDefinition def: getPrimaryResourceTypeDefinitions()) {
             List<String> descendantNames = new LinkedList<String>();
-            getAllDescendantNames(descendantNames, def);
             resourceTypeDescendantNames.put(def.getName(), descendantNames);
+            populateDescendantNamesRecursively(descendantNames, def);
         }
         
         if (logger.isDebugEnabled()) {
@@ -581,13 +531,12 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     /**
      * Recursively get all descendant names for a given resource type 
      */
-    private void getAllDescendantNames(List names, PrimaryResourceTypeDefinition def) {
+    private void populateDescendantNamesRecursively(List<String> names, PrimaryResourceTypeDefinition def) {
         List<PrimaryResourceTypeDefinition> children = getResourceTypeDefinitionChildren(def);
         
-        for (Iterator<PrimaryResourceTypeDefinition> childIterator=children.iterator();childIterator.hasNext();) {
-            PrimaryResourceTypeDefinition child = childIterator.next();
+        for (PrimaryResourceTypeDefinition child: children) {
             names.add(child.getName());
-            getAllDescendantNames(names, child);
+            populateDescendantNamesRecursively(names, child);
         }
     }
 
@@ -604,9 +553,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             MixinResourceTypeDefinition mixin = (MixinResourceTypeDefinition) i.next();
             PropertyTypeDefinition[] mixinPropDefs = mixin.getPropertyTypeDefinitions();
 
-            Set primaryTypes = (Set) mixinTypePrimaryTypesMap.get(mixin);
-            for (Iterator j = primaryTypes.iterator(); j.hasNext();) {
-                PrimaryResourceTypeDefinition primaryTypeDef = (PrimaryResourceTypeDefinition) j.next();
+            Set<PrimaryResourceTypeDefinition> primaryTypes = mixinTypePrimaryTypesMap.get(mixin);
+            for (PrimaryResourceTypeDefinition primaryTypeDef: primaryTypes) {
                 mapPropertyDefinitionsToPrimaryType(mixinPropDefs, mixin.getNamespace(), primaryTypeDef);
             }
         }
@@ -621,17 +569,17 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     private void mapPropertyDefinitionsToPrimaryType(PropertyTypeDefinition[] propDefs,
                                                      Namespace namespace,
                                                      PrimaryResourceTypeDefinition primaryTypeDef) {
-        Map propDefMap = (Map) this.propDefPrimaryTypesMap.get(namespace);
+        Map<String, Set<PrimaryResourceTypeDefinition>> propDefMap = 
+            this.propDefPrimaryTypesMap.get(namespace);
         if (propDefMap == null) {
-            propDefMap = new HashMap();
+            propDefMap = new HashMap<String, Set<PrimaryResourceTypeDefinition>>();
             this.propDefPrimaryTypesMap.put(namespace, propDefMap);
         }
             
-        for (int j = 0; j < propDefs.length; j++) {
-            PropertyTypeDefinition propDef = propDefs[j];
-            Set definitions = (Set) propDefMap.get(propDef.getName());
+        for (PropertyTypeDefinition propDef: propDefs) {
+            Set<PrimaryResourceTypeDefinition> definitions = propDefMap.get(propDef.getName());
             if (definitions == null) {
-                definitions = new HashSet();
+                definitions = new HashSet<PrimaryResourceTypeDefinition>();
                 propDefMap.put(propDef.getName(), definitions);
             }
             definitions.add(primaryTypeDef);
@@ -669,15 +617,14 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
         sb.append("\n");
 
-        MixinResourceTypeDefinition[] mixins = (MixinResourceTypeDefinition[])
-            this.mixinTypeDefinitionMap.get(def);
+        List<MixinResourceTypeDefinition> mixins = this.mixinTypeDefinitionMap.get(def);
         if (mixins != null) {
-            for (int i = 0; i < mixins.length; i++) {
+            for (MixinResourceTypeDefinition mixin: mixins) {
                 for (int j = 0; j < level; j++)
                     sb.append("  ");
                 sb.append("  mixin: [");
-                sb.append(mixins[i].getNamespace()).append("] ");
-                sb.append(mixins[i].getName()).append("\n");
+                sb.append(mixin.getNamespace()).append("] ");
+                sb.append(mixin.getName()).append("\n");
             }
         }
 
@@ -696,8 +643,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 sb.append("\n");
             }
         }
-        PrimaryResourceTypeDefinition[] children = (PrimaryResourceTypeDefinition[])
-            this.resourceTypeDefinitions.get(def);
+        PrimaryResourceTypeDefinition[] children = this.parentChildMap.get(def);
 
         if (children != null) {
             for (int i = 0; i < children.length; i++) {

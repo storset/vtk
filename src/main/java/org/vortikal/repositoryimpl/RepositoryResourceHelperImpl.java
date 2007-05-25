@@ -124,13 +124,10 @@ public class RepositoryResourceHelperImpl
             evalCreateProperty(principal, newResource, time, isCollection, overrides, newProps);
 
         // Evaluating mixin resource type properties
-        MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
-        
-        for (int i = 0; i < mixinTypes.length; i++) {
-
-            PropertyTypeDefinition[] mixinDefs = mixinTypes[i].getPropertyTypeDefinitions();
+        List <MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
+        for (MixinResourceTypeDefinition mixinType: mixinTypes) {
             evalCreateProperty(principal, newResource, time, isCollection, 
-                       mixinDefs, newProps);
+                    mixinType.getPropertyTypeDefinitions(), newProps);
         }
 
 
@@ -361,9 +358,8 @@ public class RepositoryResourceHelperImpl
 
         
         // For all prop defs in mixin types, also do evaluation
-        MixinResourceTypeDefinition[] mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
-        for (int i = 0; i < mixinTypes.length; i++) {
-            MixinResourceTypeDefinition mixinDef = mixinTypes[i];
+        List<MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
+        for (MixinResourceTypeDefinition mixinDef: mixinTypes) {
             PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
             for (int j = 0; j < mixinPropDefs.length; j++) {
                 evaluateManagedProperty(ctx, mixinPropDefs[j], time);
@@ -371,9 +367,8 @@ public class RepositoryResourceHelperImpl
         }
 
         // Trigger child evaluation
-        List childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
-        for (Iterator i = childTypes.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition childDef = (PrimaryResourceTypeDefinition) i.next();
+        List<PrimaryResourceTypeDefinition> childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
+        for (PrimaryResourceTypeDefinition childDef: childTypes) {
             if (recursiveTreeEvaluation(ctx, childDef, time)) {
                 break;
             }

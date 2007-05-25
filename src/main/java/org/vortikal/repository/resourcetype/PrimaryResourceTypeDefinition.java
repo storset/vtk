@@ -39,6 +39,8 @@ public interface PrimaryResourceTypeDefinition extends ResourceTypeDefinition {
 
     public OverridablePropertyTypeDefinition[] getOverridablePropertyTypeDefinitions();
 
+    public MixinResourceTypeDefinition[] getMixinTypeDefinitions();
+
     public RepositoryAssertion[] getAssertions();
 
 }

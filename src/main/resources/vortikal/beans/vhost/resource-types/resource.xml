@@ -52,6 +52,7 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="titleEvaluator" />
+    <property name="contentModificationEvaluator" ref="titleEvaluator" />
     <property name="nameModificationEvaluator" ref="titleEvaluator" />
     <property name="propertiesModificationEvaluator" ref="titleEvaluator" />
   </bean>

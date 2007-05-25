@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.vortikal.repository.Acl;
@@ -70,8 +69,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         this.authorizationManager = authorizationManager;
     }
 
-    public ResourceTypeDefinition getResourceTypeDefinition() {
-        return this.propertyManager.getResourceTypeTree().getResourceTypeDefinitionByName(this.resourceType);
+    public PrimaryResourceTypeDefinition getResourceTypeDefinition() {
+        return (PrimaryResourceTypeDefinition) this.propertyManager.getResourceTypeTree().getResourceTypeDefinitionByName(this.resourceType);
     }
     
 

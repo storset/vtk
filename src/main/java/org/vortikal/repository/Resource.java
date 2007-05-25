@@ -34,12 +34,13 @@ package org.vortikal.repository;
 import java.io.IOException;
 import java.util.Date;
 
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
 public interface Resource extends PropertySet, Cloneable {
 
-    public ResourceTypeDefinition getResourceTypeDefinition();
+    public PrimaryResourceTypeDefinition getResourceTypeDefinition();
 
     /**
      * Determines whether this resource is of a given resource type. 

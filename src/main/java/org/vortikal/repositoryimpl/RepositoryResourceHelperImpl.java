@@ -71,8 +71,6 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
 
 
-/**
- */
 public class RepositoryResourceHelperImpl 
     implements RepositoryResourceHelper, InitializingBean {
 
@@ -88,8 +86,8 @@ public class RepositoryResourceHelperImpl
     
     public ResourceImpl create(Principal principal, String uri, boolean collection) {
 
-        ResourceImpl resource = new ResourceImpl(uri, this.propertyManager,
-                                                 this.authorizationManager);
+        ResourceImpl resource = 
+            new ResourceImpl(uri, this.propertyManager, this.authorizationManager);
         create(principal, resource, 
                 new Date(), collection, this.resourceTypeTree.getRoot());
 
@@ -113,9 +111,9 @@ public class RepositoryResourceHelperImpl
         Set<Property> newProps = new HashSet<Property>();
 
         // Evaluating resource type properties
-        PropertyTypeDefinition[] def = rt.getPropertyTypeDefinitions();
+        PropertyTypeDefinition[] propDefs = rt.getPropertyTypeDefinitions();
         
-        evalCreateProperty(principal, newResource, time, isCollection, def, newProps);
+        evalCreateProperty(principal, newResource, time, isCollection, propDefs, newProps);
 
         // Evaluating overridden properties
         PropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
@@ -138,9 +136,8 @@ public class RepositoryResourceHelperImpl
 
 
         // Checking child resource types by delegating
-        List<PrimaryResourceTypeDefinition> children = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
-        for (Iterator<PrimaryResourceTypeDefinition> childIterator = children.iterator(); childIterator.hasNext();) {
-            if (create(principal, newResource, time, isCollection, childIterator.next()))
+        for (PrimaryResourceTypeDefinition child: this.resourceTypeTree.getResourceTypeDefinitionChildren(rt)) {
+            if (create(principal, newResource, time, isCollection, child))
                 break;
         }
         return true;
@@ -312,17 +309,12 @@ public class RepositoryResourceHelperImpl
                 ResourceTypeDefinition[] rts = 
                     resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
 
-                boolean isOfType = false;
-                for (int j = 0; j < rts.length; j++) {
-                    ResourceTypeDefinition definition = rts[j];
+                for (ResourceTypeDefinition definition: rts) {
                     if (newResource.isOfType(definition)) {
-                        isOfType = true;
+                        // Zombie prop, preserve
+                        newResource.addProperty(suppliedProp);
                         break;
                     }
-                }
-                if (!isOfType) {
-                    // Zombie prop, preserve
-                    newResource.addProperty(suppliedProp);
                 }
             }
         }
@@ -343,8 +335,7 @@ public class RepositoryResourceHelperImpl
         
         // For all prop defs, do evaluation
         PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
-        for (int i = 0; i < propertyDefinitions.length; i++) {
-            PropertyTypeDefinition def = propertyDefinitions[i];
+        for (PropertyTypeDefinition def: propertyDefinitions) {
             evaluateManagedProperty(ctx, def, time);
         }
 
@@ -361,13 +352,14 @@ public class RepositoryResourceHelperImpl
         List<MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
         for (MixinResourceTypeDefinition mixinDef: mixinTypes) {
             PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
-            for (int j = 0; j < mixinPropDefs.length; j++) {
-                evaluateManagedProperty(ctx, mixinPropDefs[j], time);
+            for (PropertyTypeDefinition def: mixinPropDefs) {
+                evaluateManagedProperty(ctx, def, time);
             }
         }
 
         // Trigger child evaluation
-        List<PrimaryResourceTypeDefinition> childTypes = this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
+        List<PrimaryResourceTypeDefinition> childTypes = 
+            this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
         for (PrimaryResourceTypeDefinition childDef: childTypes) {
             if (recursiveTreeEvaluation(ctx, childDef, time)) {
                 break;

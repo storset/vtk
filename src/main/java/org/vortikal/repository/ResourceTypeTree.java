@@ -46,7 +46,7 @@ public interface ResourceTypeTree {
 
     public PrimaryResourceTypeDefinition getRoot();
     
-    public List<MixinResourceTypeDefinition> getMixinTypes(ResourceTypeDefinition def);
+    public List<MixinResourceTypeDefinition> getMixinTypes(PrimaryResourceTypeDefinition def);
     
     /**
      * Search upwards in resource type tree, collect property type definitions
@@ -94,7 +94,7 @@ public interface ResourceTypeTree {
      * XXX: equivalent methods for resource-types, mixin-types, etc ?
      * @return Return flat list of all registered property type definitions.
      */
-    public List getPropertyTypeDefinitions();
+    public List<PropertyTypeDefinition> getPropertyTypeDefinitions();
 
     /**
      * Return a <code>List</code> of the immediate children of the given resource type.

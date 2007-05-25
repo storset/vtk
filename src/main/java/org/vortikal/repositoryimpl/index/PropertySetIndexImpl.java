@@ -85,7 +85,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     private PerFieldAnalyzerWrapper initializePerFieldAnalyzer() {
         
-        List propDefs = this.propertyManager.getResourceTypeTree().getPropertyTypeDefinitions();
+        List<PropertyTypeDefinition> propDefs = this.propertyManager.getResourceTypeTree().getPropertyTypeDefinitions();
         
         KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
         EscapedMultiValueFieldAnalyzer multiValueAnalyzer = 
@@ -93,8 +93,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         
         PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(keywordAnalyzer);
         
-        for (Iterator i = propDefs.iterator(); i.hasNext(); ) {
-            PropertyTypeDefinition def = (PropertyTypeDefinition)i.next();
+        for (PropertyTypeDefinition def: propDefs) {
             String fieldName;
             Namespace ns = def.getNamespace();
             if (ns != null && ns.getPrefix() != null) {

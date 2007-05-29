@@ -58,7 +58,6 @@ import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.PrincipalManager;
@@ -384,7 +383,7 @@ public class PropertyEditController extends SimpleFormController
     }
     
     private boolean isApplicableProperty(PropertyTypeDefinition def,
-                                         ResourceTypeDefinition resourceType) {
+                                         PrimaryResourceTypeDefinition resourceType) {
 
         PropertyTypeDefinition[] propDefs = resourceType.getPropertyTypeDefinitions();
         for (int i = 0; i < propDefs.length; i++) {

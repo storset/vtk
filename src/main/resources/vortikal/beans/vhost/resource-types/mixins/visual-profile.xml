@@ -280,6 +280,11 @@
         </bean>
         <bean class="org.vortikal.repository.resourcetype.Value">
           <constructor-arg type="java.lang.String">
+            <value>matrvit</value>
+          </constructor-arg>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
             <value>iri</value>
           </constructor-arg>
         </bean>

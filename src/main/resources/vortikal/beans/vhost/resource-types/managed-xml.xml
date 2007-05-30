@@ -23,8 +23,15 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="plaintextEditPropDef" />
+        <ref bean="managedXmlTitlePropDef" />
       </list>
     </property>
+    <property name="overriddenPropertyTypeDefinitions">
+      <list>
+        <ref bean="managedXmlOverriddenTitlePropDef" />
+      </list>
+    </property>
+
   </bean>
 
   <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">
@@ -48,11 +55,58 @@
     </property>
   </bean>
 
+  <bean id="managedXmlTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="managedXmlTitle" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="managedXmlTitlePropertyEvaluator" />
+  </bean>
+
+  <!--
+  <bean id="managedXmlOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="managedXmlTitle" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="managedXmlTitlePropertyEvaluator" />
+  </bean>
+  -->
+
+  <bean id="managedXmlOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="contentModificationEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="managedXmlOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="managedXmlTitlePropDef"/>
+  </bean>
+
+
   <bean id="schemaPropSet" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="schema" />    
     <property name="checkExistenceOnly" value="true" />
   </bean>
+
+  <bean id="managedXmlTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.PropertyValueConditionalEvaluator">
+    <property name="propertyDefinition" ref="schemaPropDef" />
+    <property name="conditionalValueEvaluatorMap">
+      <map>
+        <entry key="http://www.uio.no/xsd/admhb/dokumentindeks/v.../dokumentindeks.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression" value="/dokumentindeks/tittel" />
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+
 
 </beans>

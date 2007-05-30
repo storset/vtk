@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,22 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.jaxen.SimpleFunctionContext;
+import org.jaxen.SimpleNamespaceContext;
+import org.jaxen.SimpleVariableContext;
+import org.jaxen.XPath;
+import org.jaxen.XPathFunctionContext;
+import org.jaxen.jdom.JDOMXPath;
+
+import org.jdom.Attribute;
 import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.xpath.XPath;
 
 import org.springframework.beans.factory.BeanInitializationException;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
@@ -46,6 +55,8 @@ import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.security.Principal;
+import org.vortikal.xml.xpath.XPathFunction;
+
 
 /**
  * Evaluates XPath expressions on an XML document.
@@ -59,92 +70,147 @@ import org.vortikal.security.Principal;
  *   <li><code>trimValues</code> - whether or not to trim (remove
  *   leading and trailing whitespace) from (textual) evaluated
  *   values. Default is <code>true</code>.
+ *   <li><code>customFunctions</code> - a {@link Set<XPathFunction>
+ *   set of custom functions} that are made available to the XPath
+ *   evaluation
  * </ul>
  *
  */
 public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 
-    private ValueFactory valueFactory;
-    private XPath xPath;
-    private boolean trimValues = true;
+    private static final Log logger = LogFactory.getLog(XPathEvaluator.class);
     
 
+    private ValueFactory valueFactory;
+    private String expression;
+    private boolean trimValues = true;
+    private Set<XPathFunction> customFunctions;
+    
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }      
-    
 
-    public void setExpression(String value) throws JDOMException {
-        this.xPath = XPath.newInstance(value);
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
     
     public void setTrimValues(boolean trimValues) {
         this.trimValues = trimValues;
     }
-    
+
+    public void setCustomFunctions(Set<XPathFunction> customFunctions) {
+        this.customFunctions = customFunctions;
+    }
 
     public void afterPropertiesSet() {
-        if (this.xPath == null) {
+        if (this.expression == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'expression' not specified");
         }
     }
-    
 
     public boolean contentModification(Principal principal, 
                                        Property property, 
                                        PropertySet ancestorPropertySet, 
                                        Content content, 
                                        Date time) {
-        Document doc = null;
         try {
-
+            XPath xpath = createXPath(principal, property,
+                                      ancestorPropertySet, content, time);
+            Document doc = null;
             doc = (Document) content.getContentRepresentation(Document.class);
             if (doc == null) {
                 return false;
             }
-
+            
             if (property.getDefinition().isMultiple()) {
-                List list = this.xPath.selectNodes(doc);
+                List list = xpath.selectNodes(doc);
+                if (list.size() == 0) {
+                    return false;
+                }
+                
                 Value[] values = new Value[list.size()];
                 for (int i = 0; i < list.size(); i++) {
-                    org.jdom.Content c = (org.jdom.Content) list.get(i);
-                    String stringValue = c.getValue();
-                    Value value = null;
-
-                    if (this.trimValues && stringValue != null) {
-                        stringValue = stringValue.trim();
-                    }
-
-                    if (this.valueFactory != null) {
-                        int type = property.getDefinition().getType();
-                        value = this.valueFactory.createValue(stringValue, type);
-                    } else {
-                        value = new Value(stringValue);
+                    Object o = list.get(i);
+                    Value value = getValue(o, property.getDefinition().getType());
+                    if (value == null) {
+                        return false;
                     }
                     values[i] = value;
                 }
                 property.setValues(values);
             } else {
-                String stringVal = this.xPath.valueOf(doc);
-                if (this.trimValues && stringVal != null) {
-                    stringVal = stringVal.trim();
-                }
-
-                Value value = null;
-                if (this.valueFactory != null) {
-                    int type = property.getDefinition().getType();
-                    value = this.valueFactory.createValue(stringVal, type);
-
-                } else {
-                    value = new Value(stringVal);
+                Object o = xpath.selectSingleNode(doc);
+                Value value = getValue(o, property.getDefinition().getType());
+                if (value == null) {
+                    return false;
                 }
                 property.setValue(value);
             }
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            logger.warn("Unable to evaluate property " + property
+                        + " using XPath expression '" + this.expression + "'", e);
             return false;
         }
     }
+
+
+    private XPath createXPath(Principal principal,
+                              Property property,
+                              PropertySet ancestorPropertySet,
+                              Content content,
+                              Date time) throws Exception {
+
+        XPath xpath = new JDOMXPath(this.expression);
+
+        SimpleFunctionContext fc = new XPathFunctionContext();
+        SimpleNamespaceContext nc = new SimpleNamespaceContext();
+        for (XPathFunction func: this.customFunctions) {
+            fc.registerFunction(func.getNamespace(), func.getName(), func);
+            nc.addNamespace(func.getPrefix(), func.getNamespace());
+        }
+
+        xpath.setFunctionContext(fc);
+        xpath.setNamespaceContext(nc);
+
+        SimpleVariableContext vc = new SimpleVariableContext();
+        vc.setVariableValue("vrtx", "resource", ancestorPropertySet);
+        xpath.setVariableContext(vc);
+
+        return xpath;
+    }
+    
+
+    private Value getValue(Object o, int type) {
+        String stringVal = null;
+        
+         if (o instanceof org.jdom.Content) {
+             stringVal = ((org.jdom.Content) o).getValue();
+         } else if (o instanceof Attribute) {
+             stringVal = ((Attribute) o).getValue();
+         } else if (o instanceof String) {
+             stringVal = (String) o;
+         } else {
+             throw new IllegalArgumentException(
+                 "Unsupported class: " + o.getClass());
+         }
+
+         if (this.trimValues && stringVal != null) {
+             stringVal = stringVal.trim();
+         }
+         if ("".equals(stringVal.trim())) {
+             return null;
+         }
+         Value value = null;
+         if (this.valueFactory != null) {
+             value = this.valueFactory.createValue(stringVal, type);
+         } else {
+             value = new Value(stringVal);
+         }
+         
+         return value;
+     }
+    
 
 }

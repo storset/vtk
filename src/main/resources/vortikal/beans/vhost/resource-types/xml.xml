@@ -31,10 +31,33 @@
     <property name="contentModificationEvaluator" ref="schemaEvaluator" />
   </bean>
 
+
+
   <bean id="abstractXPathEvaluator"
         class="org.vortikal.repository.resourcetype.property.XPathEvaluator"
         abstract="true">
     <property name="valueFactory" ref="valueFactory" />
+    <property name="customFunctions">
+      <set>
+        <ref bean="xpath.localizerFunction" />
+      </set>
+    </property>
+  </bean>
+
+  <!--
+      Localization XPath function: 
+       vrtx:localize(/my/node/value) 
+       vrtx:localize('some text')
+  -->
+  <bean id="xpath.localizerFunction"
+        class="org.vortikal.repository.resourcetype.property.MessageLocalizerXPathFunction">
+    <property name="namespace" value="vrtx" />
+    <property name="prefix" value="vrtx" />
+    <property name="name" value="localize" />
+
+    <property name="messageSource" ref="messageSource" />
+    <property name="defaultLocale" value="${defaultLocale}" />
+    <property name="localePropertyDefinition" ref="contentLocalePropDef" />
   </bean>
 
 

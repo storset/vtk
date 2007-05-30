@@ -35,8 +35,15 @@ import org.vortikal.web.service.Assertion;
 
 
 /**
- * Standard request filter. Ensures that the URI is not empty or
- * <code>null</code>.
+ * Conditional request filter. Performs an {@link Assertion} match on
+ * the request before conditionally invoking a target request filter.
+ *
+ * <p>Configurable JavaBean properties:
+ * <ul>
+ *   <li><code>assertion</code> - the {@link Assertion} to match
+ *   <li><code>requestFilter</code> - the target {@link RequestFilter
+ *   request filter} which is invoked upon an assertion match
+ * </ul>
  */
 public class ConditionalRequestFilter extends AbstractRequestFilter {
 

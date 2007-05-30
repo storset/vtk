@@ -611,7 +611,7 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
-    <property name="handler" ref="previewHTMLHandler" />
+    <property name="handler" ref="previewIframeHandler" />
   </bean>
 
 
@@ -660,15 +660,13 @@
         </bean>
       </list>
     </property>
-    <property name="handler" ref="previewCollectionHandler" />
+    <property name="handler" ref="previewIframeHandler" />
     <property name="handlerInterceptors" ref="previewCollectionListingServiceInterceptor" />
   </bean>
 
   <bean id="previewCollectionListingServiceInterceptor"
         class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
-    <property name="providers">
-      <ref bean="indexFileMessageProvider" />
-    </property>
+    <property name="providers" ref="indexFileMessageProvider" />
   </bean>
 
 
@@ -681,8 +679,6 @@
     <property name="resourceInModelKey" value="childResource" />
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
-    <!--property name="repository" ref="repository" /-->
-    <!--property name="assertions" -->
   </bean>
 
   <!-- MANAGE controllers -->
@@ -974,18 +970,11 @@
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
-  <bean id="previewCollectionHandler"
+  <bean id="previewIframeHandler"
         class="org.vortikal.web.controller.ResourceServiceURLController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="previewIframe" />
     <property name="service" ref="viewService"/>
-  </bean>
-
-  <bean id="previewHTMLHandler"
-        class="org.vortikal.web.controller.ResourceServiceURLController"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="viewService" />
-    <property name="viewName" value="previewIframe" />
   </bean>
 
   <bean id="previewImageHandler"

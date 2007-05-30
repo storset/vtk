@@ -498,6 +498,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             throw new IllegalOperationException("Can't store nothing.");
         }
 
+        if (!(resource instanceof ResourceImpl)) {
+            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+        }
         String uri = resource.getURI();
 
         if (!this.uriValidator.validateURI(uri)) {
@@ -516,7 +519,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
             ResourceImpl newResource = 
-                this.resourceHelper.storeProperties(original, principal, resource);
+                this.resourceHelper.propertiesChange(original, principal, (ResourceImpl)resource);
             this.dao.store(newResource);
 
             newResource = (ResourceImpl)this.dao.load(uri).clone();

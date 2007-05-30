@@ -305,9 +305,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         ResourceImpl clone = new ResourceImpl(this.uri, this.propertyManager, this.authorizationManager);
         clone.setID(this.id);
 
-        Acl acl = (Acl) this.acl.clone();
-        clone.setAcl(acl);
-
+        if (this.acl != null) {
+            Acl acl = (Acl) this.acl.clone();
+            clone.setAcl(acl);
+        }
         clone.setInheritedAcl(this.aclInherited);
         clone.setAclInheritedFrom(this.getAclInheritedFrom());
         clone.setLock(lock);

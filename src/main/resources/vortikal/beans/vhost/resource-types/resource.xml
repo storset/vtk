@@ -3,10 +3,10 @@
 
 <beans>
 
-  <!-- Abstractresource - base resource type -->
+  <!-- Resource - base resource type -->
 
-  <bean id="abstractResourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="abstractResource"/>
+  <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="resource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="mixinTypeDefinitions">
       <list>
@@ -16,7 +16,6 @@
     </property>    
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="userTitlePropDef" />
         <ref bean="ownerPropDef" />
         <ref bean="createdByPropDef" />
         <ref bean="collectionPropDef" />
@@ -25,21 +24,9 @@
         <ref bean="contentModifiedByPropDef" />
         <ref bean="propertiesLastModifiedPropDef" />
         <ref bean="propertiesModifiedByPropDef" />
-      </list>
-    </property>
-  </bean>
-
-  <!-- Resource - base resource type -->
-
-  <bean id="resourceResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="parentTypeDefinition" 
-              ref="abstractResourceResourceTypeDefinition" />
-    <property name="name" value="resource"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="propertyTypeDefinitions">
-      <list>
         <ref bean="lastModifiedPropDef" />
         <ref bean="modifiedByPropDef" />
+        <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
       </list>
     </property>
@@ -54,7 +41,6 @@
     <property name="createEvaluator" ref="titleEvaluator" />
     <property name="contentModificationEvaluator" ref="titleEvaluator" />
     <property name="nameModificationEvaluator" ref="titleEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="titleEvaluator" />
   </bean>
 
   <bean id="titleEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultTitleEvaluator">

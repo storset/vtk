@@ -5,10 +5,9 @@
 
   <!-- XHTML 1.0 resource -->
 
-
-  <bean id="abstractXhtml10TransResourceTypeDefinition"
+  <bean id="xhtml10TransResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="abstractXhtml10trans"/>
+    <property name="name" value="xhtml10trans"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
     <property name="assertions">
@@ -16,18 +15,12 @@
         <ref bean="docTypeIsXHtml10Transitional" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions" 
-              ref="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
-  </bean>
-
-
-  <bean id="xhtml10TransResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="xhtml10trans"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="abstractXhtml10TransResourceTypeDefinition" />
-    <property name="overriddenPropertyTypeDefinitions" 
-              ref="xhtml10TransOverriddenCharacterEncodingPropDef" />
+    <property name="overriddenPropertyTypeDefinitions"> 
+      <list>
+        <ref bean="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
+        <ref bean="xhtml10TransOverriddenCharacterEncodingPropDef" />
+      </list>
+    </property>
   </bean>
 
 

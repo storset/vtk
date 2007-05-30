@@ -3,12 +3,12 @@
 
 <beans>
 
-  <!-- Abstract text resource -->
+  <!-- Text resource -->
 
-
-  <bean id="abstractTextResourceTypeDefinition"
+  
+  <bean id="textResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="abstractTextResource"/>
+    <property name="name" value="text"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions">
@@ -21,6 +21,7 @@
       <list>
         <ref bean="userSpecifiedCharacterEncodingPropDef" />
         <ref bean="guessedCharacterEncodingPropDef" />
+        <ref bean="characterEncodingPropDef" />
       </list>
     </property>
   </bean>
@@ -58,21 +59,6 @@
   <bean id="characterEncodingValidator"
         class="org.vortikal.repository.resourcetype.property.CharacterEncodingValidator" />
 
-
-  <!-- Text resource -->
-
-  
-  <bean id="textResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="text"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="abstractTextResourceTypeDefinition" />
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="characterEncodingPropDef" />
-      </list>
-    </property>
-  </bean>
 
   <bean id="characterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">

@@ -4,10 +4,10 @@
 <beans>
 
   <!-- PHP resource type -->
-
-  <bean id="abstractPhpResourceTypeDefinition"
+  
+  <bean id="phpResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="abstract-php" />
+    <property name="name" value="php"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
@@ -15,15 +15,12 @@
         <ref bean="contentTypeMatchesPhp" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions" ref="phpOverriddenGuessedCharacterEncodingPropDef" />
-  </bean>
-  
-  <bean id="phpResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="php"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="abstractPhpResourceTypeDefinition" />
-    <property name="overriddenPropertyTypeDefinitions" ref="phpOverriddenCharacterEncodingPropDef" />
+    <property name="overriddenPropertyTypeDefinitions">
+      <list> 
+        <ref bean="phpOverriddenGuessedCharacterEncodingPropDef" />
+        <ref bean="phpOverriddenCharacterEncodingPropDef" />
+      </list>
+    </property>
   </bean>
 
   <bean id="phpOverriddenGuessedCharacterEncodingPropDef"

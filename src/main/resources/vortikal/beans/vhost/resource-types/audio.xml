@@ -3,23 +3,14 @@
 
 <beans>
 
-  <bean id="abstractAudioResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="abstractAudio"/>
-    <property name="namespace" ref="AUDIO_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
-    <property name="assertions" ref="contentTypeMatchesAudio" />
-    <property name="propertyTypeDefinitions" ref="audioTitlePropDef" />
-  </bean>
-
   <!-- Audio resource -->
 
   <bean id="audioResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="audio"/>
     <property name="namespace" ref="AUDIO_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="abstractAudioResourceTypeDefinition" />
-    <property name="overriddenPropertyTypeDefinitions" ref="audioOverriddenTitlePropDef" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    <property name="assertions" ref="contentTypeMatchesAudio" />
     <property name="propertyTypeDefinitions">
       <list>
         <!--
@@ -29,13 +20,14 @@
         <ref bean="audioFrameSizePropDef" />
         <ref bean="audioSampleRatePropDef" />
         -->
+        <ref bean="audioTitlePropDef" />
         <ref bean="audioAuthorPropDef" />
         <ref bean="audioAlbumPropDef" />
         <ref bean="audioTrackPropDef" />
         <ref bean="audioGenrePropDef" />
       </list>
     </property>
-
+    <property name="overriddenPropertyTypeDefinitions" ref="audioOverriddenTitlePropDef" />
   </bean>
 
 
@@ -87,13 +79,11 @@
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="contentModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
     <property name="nameModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="audioOverriddenTitlePropertyEvaluator"
-        class="org.vortikal.repository.resourcetype.property.AudioTitlePropertyEvaluator"
         parent="titleEvaluator">
-        <property name="audioTitlePropDef" ref="audioTitlePropDef"/>
+        <property name="fallbackTitlePropDef" ref="audioTitlePropDef"/>
   </bean>
 
   <bean id="audioTrackPropDef"

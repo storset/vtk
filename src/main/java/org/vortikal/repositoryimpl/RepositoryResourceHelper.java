@@ -41,7 +41,7 @@ import org.vortikal.security.Principal;
 public interface RepositoryResourceHelper {
 
     public ResourceImpl create(Principal principal, String uri,
-            boolean collection);
+            boolean collection) throws IOException;
 
     /**
      * Evaluates and validates properties on a resource before
@@ -52,8 +52,8 @@ public interface RepositoryResourceHelper {
      * @param dto the user-supplied resource
      * @return the resulting resource after property evaluation
      */
-    public ResourceImpl storeProperties(ResourceImpl resource,
-            Principal principal, Resource dto) throws AuthenticationException,
+    public ResourceImpl propertiesChange(ResourceImpl resource,
+            Principal principal, ResourceImpl dto) throws AuthenticationException,
             AuthorizationException, CloneNotSupportedException, IOException;
 
     public ResourceImpl contentModification(ResourceImpl resource,

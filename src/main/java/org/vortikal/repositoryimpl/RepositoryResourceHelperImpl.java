@@ -33,10 +33,8 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,130 +82,46 @@ public class RepositoryResourceHelperImpl
     private ContentStore contentStore;
     private ContentRepresentationRegistry contentRepresentationRegistry;
     
-    public ResourceImpl create(Principal principal, String uri, boolean collection) {
+    public ResourceImpl create(Principal principal, String uri, boolean collection) throws IOException {
 
         ResourceImpl resource = 
             new ResourceImpl(uri, this.propertyManager, this.authorizationManager);
-        create(principal, resource, 
-                new Date(), collection, this.resourceTypeTree.getRoot());
 
-        if (collection)
+        if (collection) {
             resource.setChildURIs(new String[]{});
+        }
         
-        return resource;
+        EvaluationContext ctx = getCreateEvaluationContext(resource, principal, collection);
+
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        return ctx.getNewResource();
     }
 
-
-    private boolean create(Principal principal, 
-            ResourceImpl newResource, Date time, boolean isCollection, 
-            PrimaryResourceTypeDefinition rt) {
-
-        // Checking if resource type matches
-        if (!checkAssertions(rt, newResource, principal)) 
-            return false;
-        
-        newResource.setResourceType(rt.getName());
-        
-        Set<Property> newProps = new HashSet<Property>();
-
-        // Evaluating resource type properties
-        PropertyTypeDefinition[] propDefs = rt.getPropertyTypeDefinitions();
-        
-        evalCreateProperty(principal, newResource, time, isCollection, propDefs, newProps);
-
-        // Evaluating overridden properties
-        PropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
-        
-        if (overrides != null && overrides.length > 0)
-            evalCreateProperty(principal, newResource, time, isCollection, overrides, newProps);
-
-        // Evaluating mixin resource type properties
-        List <MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
-        for (MixinResourceTypeDefinition mixinType: mixinTypes) {
-            evalCreateProperty(principal, newResource, time, isCollection, 
-                    mixinType.getPropertyTypeDefinitions(), newProps);
-        }
-
-
-        for (Iterator<Property> iter = newProps.iterator(); iter.hasNext();) {
-            Property prop = iter.next();
-            newResource.addProperty(prop);
-        }
-
-
-        // Checking child resource types by delegating
-        for (PrimaryResourceTypeDefinition child: this.resourceTypeTree.getResourceTypeDefinitionChildren(rt)) {
-            if (create(principal, newResource, time, isCollection, child))
-                break;
-        }
-        return true;
-    }
     
-    private void evalCreateProperty(Principal principal, ResourceImpl newResource,
-                            Date time, boolean isCollection, 
-                            PropertyTypeDefinition[] definitions, Set<Property> newProps) {
-        for (int i = 0; i < definitions.length; i++) {
-            PropertyTypeDefinition propertyDef = definitions[i];
-            
-            CreatePropertyEvaluator evaluator = 
-                propertyDef.getCreateEvaluator();            
-
-            Property prop = null;            
-
-            if (evaluator != null) {
-                prop = this.propertyManager.createProperty(
-                        propertyDef.getNamespace(), propertyDef.getName());
-
-                boolean evaluated = evaluator.create(principal, prop, newResource,
-                        isCollection, time);
-                if (!evaluated) {
-                    prop = null;
-                } else if (!prop.isValueInitialized()) 
-                    throw new InternalRepositoryException("Property  " + prop
-                            + " not initialized");
-
-            }
-
-            if (prop == null && propertyDef.isMandatory()) {
-                Value defaultValue = propertyDef.getDefaultValue();
-                if (defaultValue == null) {
-                    throw new InternalRepositoryException(
-                        "Property " + propertyDef + "is " +
-                        "mandatory and evaluator returned false, but no default value is set." +
-                        "Resource " + newResource + " not evaluated.");
-                }
-                prop = this.propertyManager.createProperty(
-                    propertyDef.getNamespace(), propertyDef.getName());
-                prop.setValue(defaultValue);
-            } 
-
-            if (prop != null) {
-                newProps.add(prop);
-            }
-        }
-    }
-    
-
-    public ResourceImpl storeProperties(ResourceImpl originalResource, Principal principal,
-                                        Resource suppliedResource)
-        throws AuthenticationException, AuthorizationException,
+    public ResourceImpl propertiesChange(ResourceImpl originalResource, Principal principal,
+            ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
                InternalRepositoryException, IOException {
+        EvaluationContext ctx = getPropertiesChangeEvaluationContext(originalResource, suppliedResource, principal);
 
-        return (ResourceImpl) evaluateChange(originalResource, 
-                (ResourceImpl)suppliedResource, principal, EvaluationType.PropertiesChange, new Date());
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
     }    
     
-    public ResourceImpl contentModification(ResourceImpl resource,
-            Principal principal) throws IOException {
+    public ResourceImpl contentModification(ResourceImpl resource, Principal principal) throws IOException {
+        EvaluationContext ctx = getContentChangeEvaluationContext(resource, principal);
 
-        return (ResourceImpl)  
-            evaluateChange(resource, null, principal, EvaluationType.ContentChange, new Date());
-    
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
     }
     
     public ResourceImpl nameChange(ResourceImpl resource, Principal principal) throws IOException {
-        return (ResourceImpl)  
-        evaluateChange(resource, null, principal, EvaluationType.NameChange, new Date());
+        EvaluationContext ctx = getNameChangeEvaluationContext(resource, principal);
+
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
     }
     
     /**
@@ -276,20 +190,6 @@ public class RepositoryResourceHelperImpl
         return fixedProps;
     }
 
-    private Resource evaluateChange(ResourceImpl originalResource,
-                                    ResourceImpl suppliedResource,
-                                    Principal principal,
-                                    EvaluationType evaluationType,
-                                    Date time) throws IOException {
-
-        EvaluationContext ctx = new EvaluationContext(
-            originalResource, suppliedResource, principal, evaluationType);
-
-        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot(), time);
-        checkForDeadAndZombieProperties(ctx);
-        return ctx.getNewResource();
-    }
-    
     private void checkForDeadAndZombieProperties(EvaluationContext ctx) {
         ResourceImpl newResource = ctx.getNewResource();
 
@@ -321,9 +221,8 @@ public class RepositoryResourceHelperImpl
 
     }
     
-    private boolean recursiveTreeEvaluation(EvaluationContext ctx,
-                                            PrimaryResourceTypeDefinition rt,
-                                            Date time) throws IOException {
+    private boolean recursiveTreeEvaluation(EvaluationContext ctx, 
+            PrimaryResourceTypeDefinition rt) throws IOException {
 
         // Check resource type assertions
         if (!checkAssertions(rt, ctx.getNewResource(), ctx.getPrincipal())) {
@@ -336,7 +235,7 @@ public class RepositoryResourceHelperImpl
         // For all prop defs, do evaluation
         PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
         for (PropertyTypeDefinition def: propertyDefinitions) {
-            evaluateManagedProperty(ctx, def, time);
+            evaluateManagedProperty(ctx, def);
         }
 
         // Evaluating overridden properties
@@ -344,7 +243,7 @@ public class RepositoryResourceHelperImpl
         
         if (overrides != null)
             for (OverridablePropertyTypeDefinition override: overrides) {
-                evaluateManagedProperty(ctx, override, time);
+                evaluateManagedProperty(ctx, override);
             }
 
         
@@ -353,7 +252,7 @@ public class RepositoryResourceHelperImpl
         for (MixinResourceTypeDefinition mixinDef: mixinTypes) {
             PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
             for (PropertyTypeDefinition def: mixinPropDefs) {
-                evaluateManagedProperty(ctx, def, time);
+                evaluateManagedProperty(ctx, def);
             }
         }
 
@@ -361,7 +260,7 @@ public class RepositoryResourceHelperImpl
         List<PrimaryResourceTypeDefinition> childTypes = 
             this.resourceTypeTree.getResourceTypeDefinitionChildren(rt);
         for (PrimaryResourceTypeDefinition childDef: childTypes) {
-            if (recursiveTreeEvaluation(ctx, childDef, time)) {
+            if (recursiveTreeEvaluation(ctx, childDef)) {
                 break;
             }
         }
@@ -370,18 +269,21 @@ public class RepositoryResourceHelperImpl
     }
 
     private void evaluateManagedProperty(EvaluationContext ctx,
-                                         PropertyTypeDefinition propDef, Date time) {
+                                         PropertyTypeDefinition propDef) {
 
         Property evaluatedProp = null;
-        switch (ctx.evaluationType) {
+        switch (ctx.getEvaluationType()) {
+        case Create:
+            evaluatedProp = evaluateCreate(ctx, propDef);
+            break;
         case ContentChange:
-            evaluatedProp = evaluateContentChange(ctx, propDef, time);
+            evaluatedProp = evaluateContentChange(ctx, propDef);
             break;
         case PropertiesChange:
-            evaluatedProp = evaluatePropertiesChange(ctx, propDef, time);
+            evaluatedProp = evaluatePropertiesChange(ctx, propDef);
             break;
         default:
-            evaluatedProp = evaluateNameChange(ctx, propDef, time);
+            evaluatedProp = evaluateNameChange(ctx, propDef);
             break;
         }
         
@@ -406,6 +308,37 @@ public class RepositoryResourceHelperImpl
     }
 
 
+    private Property evaluateCreate(EvaluationContext ctx, 
+            PropertyTypeDefinition propDef) {
+    
+        CreatePropertyEvaluator evaluator = propDef.getCreateEvaluator();            
+
+        if (evaluator == null) {
+            return null;
+        }
+        
+        Property property = this.propertyManager.createProperty(
+                    propDef.getNamespace(), propDef.getName());
+
+        Resource newResource = ctx.getNewResource();
+
+        boolean evaluated = evaluator.create(ctx.getPrincipal(), property, newResource, ctx.isCollection(), ctx.getTime());
+
+        if (!evaluated) {
+            return null;
+        } 
+        
+        if (!property.isValueInitialized()) {
+            throw new InternalRepositoryException(
+                "Evaluator " + evaluator + " on resource '"
+                + newResource.getURI() + "' returned not value initialized property " + 
+                propDef);
+        } 
+
+        return property;
+    }
+        
+
     /**
      * The evaluator will be given a clone of the original property as input if it 
      * previously existed, or an uninitialized property otherwise.
@@ -415,7 +348,7 @@ public class RepositoryResourceHelperImpl
      * Otherwise return the original property, if it exists.
      */
     private Property evaluateContentChange(EvaluationContext ctx, 
-            PropertyTypeDefinition propDef, Date time) {
+            PropertyTypeDefinition propDef) {
 
         Resource newResource = ctx.getNewResource();
         Content content = null;
@@ -445,8 +378,7 @@ public class RepositoryResourceHelperImpl
                     propDef.getNamespace(), propDef.getName());
         
             boolean evaluated =
-                evaluator.contentModification(ctx.getPrincipal(), prop,
-                        newResource, content, time);
+                evaluator.contentModification(ctx.getPrincipal(), prop, newResource, content, ctx.getTime());
             if (!evaluated) {
                 return null;
             } 
@@ -465,7 +397,7 @@ public class RepositoryResourceHelperImpl
     }
 
     private Property evaluateNameChange(EvaluationContext ctx, 
-            PropertyTypeDefinition propDef, Date time) {
+            PropertyTypeDefinition propDef) {
     
         Property property = ctx.getOriginalResource().getProperty(propDef);
         if (property != null) {
@@ -496,7 +428,7 @@ public class RepositoryResourceHelperImpl
         Resource newResource = ctx.getNewResource();
 
         boolean evaluated = evaluator.nameModification(
-                ctx.getPrincipal(), property, newResource, time);
+                ctx.getPrincipal(), property, newResource, ctx.getTime());
 
         if (!evaluated) {
             return null;
@@ -513,7 +445,7 @@ public class RepositoryResourceHelperImpl
     }
     
     private Property evaluatePropertiesChange(EvaluationContext ctx, 
-            PropertyTypeDefinition propDef, Date time) {
+            PropertyTypeDefinition propDef) {
 
         // Check for user change or addition
         Property property = checkForUserAdditionOrChange(ctx, propDef);
@@ -544,7 +476,7 @@ public class RepositoryResourceHelperImpl
                         propDef.getNamespace(), propDef.getName());
 
             boolean evaluated = evaluator.propertiesModification(
-                    ctx.getPrincipal(), property, newResource, time);
+                    ctx.getPrincipal(), property, newResource, ctx.getTime());
 
             if (!evaluated) {
                 return null;
@@ -556,13 +488,10 @@ public class RepositoryResourceHelperImpl
                     + newResource.getURI() + "' returned not value initialized property " + 
                     propDef);
             } 
-        } else if (property == null) {
+        } else {
             // On propchange we have to do contentchange on all props not having a 
-            // previous value and not having a propchangeevaluator.
-            property = evaluateContentChange(ctx, propDef, time);
-        } else if (propDef instanceof OverridablePropertyTypeDefinition) {
-            // Trying to fix overridden properties with default value that changes
-            return null;
+            // propchangeevaluator.
+            property = evaluateContentChange(ctx, propDef);
         }
 
         return property;
@@ -596,13 +525,14 @@ public class RepositoryResourceHelperImpl
                     && !originalProp.equals(suppliedProp)) {
                 return (Property) suppliedProp.clone();
             }
-            return null;
-
         } catch (CloneNotSupportedException e) {
             throw new InternalRepositoryException(
                     "Couldn't clone property " + suppliedProp + "on resource '"
                             + ctx.getNewResource().getURI() + "'", e);
         }
+
+        return null;
+
     }
     
 
@@ -692,30 +622,55 @@ public class RepositoryResourceHelperImpl
         this.authorizationManager = authorizationManager;
     }
     
-    private enum EvaluationType {ContentChange, PropertiesChange, NameChange}
+    private enum EvaluationType {Create, ContentChange, PropertiesChange, NameChange}
+    
+    private EvaluationContext getPropertiesChangeEvaluationContext(ResourceImpl originalResource, 
+            ResourceImpl suppliedResource, Principal principal) throws InternalRepositoryException {
+        EvaluationContext ctx = new EvaluationContext(originalResource, principal, EvaluationType.PropertiesChange);    
+        ctx.suppliedResource = suppliedResource;
+        return ctx;
+    }
+
+    private EvaluationContext getCreateEvaluationContext(ResourceImpl originalResource, 
+            Principal principal, boolean collection) throws InternalRepositoryException {
+        EvaluationContext ctx = new EvaluationContext(originalResource, principal, EvaluationType.Create);    
+        ctx.collection = collection;
+        return ctx;
+    }
+    
+    private EvaluationContext getContentChangeEvaluationContext(ResourceImpl originalResource, 
+            Principal principal) throws InternalRepositoryException {
+        return new EvaluationContext(originalResource, principal, EvaluationType.ContentChange);    
+    }
+    
+    private EvaluationContext getNameChangeEvaluationContext(ResourceImpl originalResource, 
+            Principal principal) throws InternalRepositoryException {
+        return new EvaluationContext(originalResource, principal, EvaluationType.NameChange);    
+    }
     
     private class EvaluationContext {
         private EvaluationType evaluationType;
         private Resource originalResource;
-        private Resource suppliedResource; 
-        private Principal principal;
         private ResourceImpl newResource;
 
-        public EvaluationContext(ResourceImpl originalResource,
-                  ResourceImpl suppliedResource, Principal principal, EvaluationType evaluationType) throws InternalRepositoryException {
-                
+        private boolean collection;
+        private Date time = new Date();
+        private Resource suppliedResource; 
+        private Principal principal;
+
+        EvaluationContext(ResourceImpl originalResource, Principal principal, EvaluationType evaluationType) {
             this.originalResource = originalResource;
-            this.suppliedResource = suppliedResource;
             this.principal = principal;
             this.evaluationType = evaluationType;
-
             try {
                 newResource = originalResource.cloneWithoutProperties();
             } catch (CloneNotSupportedException e) {
                 throw new InternalRepositoryException(
                         "Unable to clone resource '" + originalResource.getURI() + "'", e);
             }
+            
         }
+
         public Resource getOriginalResource() {
             return this.originalResource;
         }
@@ -733,6 +688,12 @@ public class RepositoryResourceHelperImpl
         }
         public EvaluationType getEvaluationType() {
             return evaluationType;
+        }
+        public boolean isCollection() {
+            return collection;
+        }
+        public Date getTime() {
+            return time;
         }
         
     }

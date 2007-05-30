@@ -52,6 +52,7 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
         ContentModificationPropertyEvaluator {
 
     private PropertyTypeDefinition propertyDefinition;
+    private PropertyTypeDefinition fallbackTitlePropDef;
 
     public boolean nameModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Date time) {
@@ -93,8 +94,19 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
         return true;
     }
 
-    protected String getFallback(PropertySet ancestorPropertySet) throws ValueFormatException {
+    private String getFallback(PropertySet ancestorPropertySet) throws ValueFormatException {
+        if (this.fallbackTitlePropDef != null) {
+            Property prop = ancestorPropertySet.getProperty(this.fallbackTitlePropDef);
+
+            if (prop != null) {
+                return prop.getStringValue();
+            }
+        }
         return ancestorPropertySet.getName();
+    }
+
+    public void setFallbackTitlePropDef(PropertyTypeDefinition fallbackTitlePropDef) {
+        this.fallbackTitlePropDef = fallbackTitlePropDef;
     }
 
 }

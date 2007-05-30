@@ -52,6 +52,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -580,25 +582,40 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
 
         PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
-        if (definitions.length > 0) {
-            for (int i = 0; i < definitions.length; i++) {
-                sb.append("  ");
-                for (int j = 0; j < level; j++)
-                    sb.append("  ");
-                String type = PropertyType.PROPERTY_TYPE_NAMES[definitions[i]
-                        .getType()];
-                sb.append(type);
-                if (definitions[i].isMultiple())
-                    sb.append("[]");
-                sb.append(" ").append(definitions[i].getName());
-                sb.append("\n");
-            }
+        printPropertyDefinitions(sb, level, definitions);
+        if (def instanceof PrimaryResourceTypeDefinition) {
+            printPropertyDefinitions(sb, level, 
+                    ((PrimaryResourceTypeDefinition)def).getOverridablePropertyTypeDefinitions());
         }
+        
         List<PrimaryResourceTypeDefinition> children = this.parentChildMap.get(def);
 
         if (children != null) {
             for (PrimaryResourceTypeDefinition child: children) {
                 printResourceTypes(sb, level + 1, child);
+            }
+        }
+    }
+
+    private void printPropertyDefinitions(StringBuffer sb, int level, PropertyTypeDefinition[] definitions) {
+        if (definitions.length > 0) {
+            for (PropertyTypeDefinition definition: definitions) {
+                sb.append("  ");
+                for (int j = 0; j < level; j++)
+                    sb.append("  ");
+                String type = PropertyType.PROPERTY_TYPE_NAMES[definition.getType()];
+                sb.append(type);
+                if (definition.isMultiple())
+                    sb.append("[]");
+                sb.append(" ").append(definition.getName());
+                if (definition instanceof OverridablePropertyTypeDefinition) {
+                    if (definition instanceof OverridablePropertyTypeDefinitionImpl) {
+                        sb.append(" (overridable)");
+                    } else {
+                        sb.append(" (overriding)");
+                    }
+                }
+                sb.append("\n");
             }
         }
     }

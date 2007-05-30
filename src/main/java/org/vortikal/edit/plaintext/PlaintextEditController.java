@@ -284,14 +284,13 @@ public class PlaintextEditController extends SimpleFormController
     
 
     private List resolveTooltips(Resource resource, Principal principal) {
-        List tooltips = new ArrayList();
+        List<Map> tooltips = new ArrayList<Map>();
         if (this.tooltipServices != null) {
-            for (int i = 0; i < this.tooltipServices.length; i++) {
-                Service service = this.tooltipServices[i];
+            for (Service service: this.tooltipServices) {
                 String url = null;
                 try {
                     url = service.constructLink(resource, principal);
-                    Map tooltip = new HashMap();
+                    Map<String, String> tooltip = new HashMap<String, String>();
                     tooltip.put("url", url);
                     tooltip.put("messageKey", "plaintextEdit.tooltip." + service.getName());
                     tooltips.add(tooltip);
@@ -302,27 +301,5 @@ public class PlaintextEditController extends SimpleFormController
         }
         return tooltips;
     }
-    
-
-    private class Tooltip {
-
-        private String url;
-        private String messageKey;
-        
-        public Tooltip(String url, String messageKey) {
-            this.url = url;
-            this.messageKey = messageKey;
-        }
-
-        public String getUrl() {
-            return this.url;
-        }
-
-        public String getMessageKey() {
-            return this.messageKey;
-        }
-    }
-    
-
 }
 

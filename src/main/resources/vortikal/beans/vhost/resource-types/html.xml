@@ -5,8 +5,8 @@
 
   <!-- Html resource -->
 
-  <bean id="abstractHtmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="abstractHtmlResource"/>
+  <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="html"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
     <property name="assertions">
@@ -14,27 +14,21 @@
         <ref bean="contentTypeMatchesHtml" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions" ref="htmlOverriddenGuessedCharacterEncodingPropDef" />
-    <property name="propertyTypeDefinitions">
-      <list>
-        <ref bean="htmlDocTypePropDef" />
-        <ref bean="htmlTitlePropDef" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="htmlResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="html"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="abstractHtmlResourceTypeDefinition" />
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="ssiMixinResourceTypeDef" />
         <ref bean="visualProfileMixinResourceTypeDef" />
       </list>
     </property>    
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="htmlDocTypePropDef" />
+        <ref bean="htmlTitlePropDef" />
+      </list>
+    </property>
     <property name="overriddenPropertyTypeDefinitions">
       <list>
+        <ref bean="htmlOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="htmlOverriddenCharacterEncodingPropDef" />
         <ref bean="htmlOverriddenTitlePropDef" />
       </list>
@@ -69,13 +63,10 @@
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="contentModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
     <property name="nameModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
   </bean>
 
-  <bean id="htmlOverriddenTitlePropertyEvaluator"
-        class="org.vortikal.repository.resourcetype.property.HtmlTitlePropertyEvaluator"
-        parent="titleEvaluator">
-        <property name="htmlTitlePropDef" ref="htmlTitlePropDef"/>
+  <bean id="htmlOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="htmlTitlePropDef"/>
   </bean>
 
   <bean id="htmlOverriddenGuessedCharacterEncodingPropDef"

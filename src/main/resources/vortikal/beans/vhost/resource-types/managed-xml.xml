@@ -259,7 +259,7 @@
         <!-- romfortegnelse -->
         <entry key="http://www.uio.no/xsd/romfortegnelser/romskjema/v001/romskjema.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('romfortegnelse.rom'),' ',/romskjema/om-rommet/romnummer,' (',/romskjema/om-rommet/romtype,') ',vrtx:localize(romfortegnelse.i),' ',/romskjema/om-rommet/bygningsnavn,' (',/romskjema/om-rommet/bygningsnummer,')')" />
+            <property name="expression" value="concat(vrtx:localize('romfortegnelse.rom'),' ',/romskjema/om-rommet/romnummer,' (',/romskjema/om-rommet/romtype,') ',vrtx:localize('i'),' ',/romskjema/om-rommet/bygningsnavn,' (',/romskjema/om-rommet/bygningsnummer,')')" />
           </bean>
         </entry>
 

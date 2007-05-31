@@ -437,7 +437,7 @@
 
         <entry key="http://www.uio.no/xsd/studier/utvekslingsavtale/v001/utvekslingsavtale.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.utvekslingsavtale-mellom'), /utvekslingsavtale/universitet, ' ', vrtx:localize('og'), '', /utvekslingsavtale/avtaleeier)" /> 
+            <property name="expression" value="concat(vrtx:localize('studier.utvekslingsavtale-mellom'), ' ', /utvekslingsavtale/universitet, ' ', vrtx:localize('og'), ' ', /utvekslingsavtale/avtaleeier)" /> 
           </bean>
         </entry>
 

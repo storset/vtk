@@ -305,7 +305,7 @@
 
         <entry key="http://www.uio.no/xsd/studier/eksamen/v002/eksamen.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.eksamen'), ' (', /eksamen/emnekode, ' - ',vrtx:localize(/eksamen/semester),' ',/eksamen/aar,')')" /> 
+            <property name="expression" value="concat(vrtx:localize('studier.eksamen-tid-og-sted'), ' (', /eksamen/emnekode, ' - ',vrtx:localize(/eksamen/semester),' ',/eksamen/aar,')')" /> 
           </bean>
         </entry>
 
@@ -419,7 +419,7 @@
 
         <entry key="http://www.uio.no/xsd/studier/tid-og-sted-*/v001/tid-og-sted-*.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.tid-og-sted'), ' (', /tid-og-sted/emnekode, ' - ',vrtx:localize(/tid-og-sted/semester),' ',/tid-og-sted/aar,')')" /> 
+            <property name="expression" value="concat(vrtx:localize('studier.undervisning-tid-og-sted'), ' (', /tid-og-sted/emnekode, ' - ',vrtx:localize(/tid-og-sted/semester),' ',/tid-og-sted/aar,')')" /> 
           </bean>
         </entry>
 

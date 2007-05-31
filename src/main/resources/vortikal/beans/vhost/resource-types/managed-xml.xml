@@ -425,7 +425,7 @@
 
         <entry key="http://www.uio.no/xsd/studier/undervisningsplan/v001/undervisningsplan.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.undervisningsplan), ' (', /undervisningsplan/tittel/emnekode,' - ',vrtx:localize(/undervisningsplan/tittel/semester),' ',/undervisningsplan/tittel/aar, ')')" /> 
+            <property name="expression" value="concat(vrtx:localize('studier.undervisningsplan'), ' (', /undervisningsplan/tittel/emnekode,' - ',vrtx:localize(/undervisningsplan/tittel/semester),' ',/undervisningsplan/tittel/aar, ')')" /> 
           </bean>
         </entry>
 

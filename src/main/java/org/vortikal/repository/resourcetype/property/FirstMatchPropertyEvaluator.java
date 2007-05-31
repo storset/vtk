@@ -40,6 +40,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -48,7 +49,7 @@ import org.vortikal.security.Principal;
 
 public class FirstMatchPropertyEvaluator
   implements CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
-             ContentModificationPropertyEvaluator {
+             ContentModificationPropertyEvaluator, NameChangePropertyEvaluator {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -89,27 +90,33 @@ public class FirstMatchPropertyEvaluator
     private boolean evaluate(Property property, PropertySet ancestorPropertySet) 
         throws PropertyEvaluationException {
 
-        for (int i = 0; i < this.propertyDefinitions.length; i++) {
+        for (PropertyTypeDefinition propDef: this.propertyDefinitions) {
 
-            Property prop = ancestorPropertySet.getProperty(this.propertyDefinitions[i]);
+            Property prop = ancestorPropertySet.getProperty(propDef);
             if (prop != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for property definition '"
-                                 + this.propertyDefinitions[i] + "', "
-                                 + "setting value: " + prop.getValue());
+                            + propDef + "', "
+                            + "setting value: " + prop.getValue());
                 }
                 property.setValue(prop.getValue());
                 return true;
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("No match for property definition '"
-                             + this.propertyDefinitions[i] + "'");
+                             + propDef + "'");
             }
         }
         if (logger.isDebugEnabled()) {
             logger.debug("No match for any property definitions");
         }
         return false;
+    }
+
+
+
+    public boolean nameModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) {
+        return evaluate(property, ancestorPropertySet);
     }
     
 

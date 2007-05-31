@@ -67,7 +67,7 @@
     <property name="mandatory" value="true" />
     <property name="createEvaluator" ref="characterEncodingEvaluator" />
     <property name="contentModificationEvaluator" ref="characterEncodingEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="characterEncodingEvaluator" />
+    <property name="nameModificationEvaluator" ref="characterEncodingEvaluator" />
   </bean>
 
   <bean id="characterEncodingEvaluator"

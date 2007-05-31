@@ -30,22 +30,21 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import au.id.jericho.lib.html.CharacterReference;
-import au.id.jericho.lib.html.Element;
-import au.id.jericho.lib.html.HTMLElementName;
-import au.id.jericho.lib.html.Source;
-
 import java.io.InputStream;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.security.Principal;
+
+import au.id.jericho.lib.html.CharacterReference;
+import au.id.jericho.lib.html.Element;
+import au.id.jericho.lib.html.Source;
+import au.id.jericho.lib.html.Tag;
 
 
 public class HtmlTitleElementEvaluator implements ContentModificationPropertyEvaluator {
@@ -60,12 +59,12 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
         try {
             InputStream stream = (InputStream) content.getContentRepresentation(InputStream.class);
             Source source = new Source(stream);
-            source.fullSequentialParse();
-            
-            Element titleElement = source.findNextElement(0, HTMLElementName.TITLE);
-            if (titleElement == null) return false;
-            String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
 
+            Element titleElement = source.findNextElement(0, Tag.TITLE);
+            if (titleElement == null) {
+                return false;
+            }
+            String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
             property.setStringValue(title);
 
             return true;
@@ -75,6 +74,29 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
             return false;
         }
     }
+    
+//     public boolean contentModification(Principal principal, Property property,
+//             PropertySet ancestorPropertySet, Content content, Date time)
+//             throws PropertyEvaluationException {
+        
+//         try {
+//             InputStream stream = (InputStream) content.getContentRepresentation(InputStream.class);
+//             Source source = new Source(stream);
+//             source.fullSequentialParse();
+            
+//             Element titleElement = source.findNextElement(0, HTMLElementName.TITLE);
+//             if (titleElement == null) return false;
+//             String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
+
+//             property.setStringValue(title);
+
+//             return true;
+//         } catch (Exception e) {
+//             logger.warn("Unable to get InputStream representation of resource '"
+//                         + ancestorPropertySet.getURI() + "'", e);
+//             return false;
+//         }
+//     }
     
     
 }

@@ -271,20 +271,38 @@
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
-          <property name="service" ref="switchRepositoryReadOnlyService" />
-          <property name="modelName" value="readOnlySwitchUrl" />
+          <property name="service" ref="setRepositoryReadOnlyService" />
+          <property name="modelName" value="setReadOnlyUrl" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="unsetRepositoryReadOnlyService" />
+          <property name="modelName" value="unsetReadOnlyUrl" />
         </bean>
       </list>
     </property>
   </bean>
 
-  <bean id="switchRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="setRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="repositoryReadOnlyService" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="switch-read-only" />
+          <property name="parameterName" value="read-only" />
           <property name="parameterValue" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="repositoryReadOnlyController" />
+  </bean>
+
+  <bean id="unsetRepositoryReadOnlyService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryReadOnlyService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="read-only" />
+          <property name="parameterValue" value="false" />
         </bean>
       </list>
     </property>
@@ -295,7 +313,7 @@
         class="org.vortikal.web.controller.repository.RepositoryReadOnlyController">
     <property name="repository" ref="repository" />
     <property name="viewName" value="repositoryReadOnly" />
-    <property name="parameterName" value="switch-read-only" />
+    <property name="parameterName" value="read-only" />
   </bean>
 
 </beans>

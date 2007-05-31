@@ -93,8 +93,9 @@ public class RepositoryReadOnlyController
         String readOnlyStr = request.getParameter(this.parameterName);
 
         if ("true".equals(readOnlyStr)) {
-            boolean readOnly = !this.repository.isReadOnly();
-            this.repository.setReadOnly(token, readOnly);
+            this.repository.setReadOnly(token, true);
+        } else if ("false".equals(readOnlyStr)) {
+            this.repository.setReadOnly(token, false);
         }
 
         return new ModelAndView(this.viewName);

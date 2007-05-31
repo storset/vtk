@@ -20,12 +20,15 @@
     <h1>Read only status</h1>
     <p><#if message?exists>
           Repository is in read only mode
-        <#else> 
+          <#if unsetReadOnlyUrl?exists>
+            (<a href="${unsetReadOnlyUrl.url?html}">switch</a>)
+          </#if>
+       <#else> 
           Repository is not in read only mode
-        </#if>
-      <#if readOnlySwitchUrl?exists>
-        (<a href="${readOnlySwitchUrl.url?html}">switch</a>)
-      </#if>
+          <#if setReadOnlyUrl?exists>
+            (<a href="${setReadOnlyUrl.url?html}">switch</a>)
+          </#if>
+       </#if>
     </p>
   </body>
 </html>

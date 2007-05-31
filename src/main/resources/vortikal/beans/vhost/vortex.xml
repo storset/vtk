@@ -66,17 +66,4 @@
      </description>
    </bean>
 
-   <bean id="messageSource"
-         class="org.vortikal.web.context.ChildDelegatingMessageSource">
-   </bean>
-
-   <bean id="defaultMessageSource"
-         class="org.springframework.context.support.ResourceBundleMessageSource">
-     <property name="basenames">
-       <list>
-         <value>vortikal.i18n.messages</value>
-       </list>
-     </property>
-   </bean>
-
 </beans>

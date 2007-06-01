@@ -184,30 +184,33 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 
     private Value getValue(Object o, int type) {
         String stringVal = null;
-        
-         if (o instanceof org.jdom.Content) {
-             stringVal = ((org.jdom.Content) o).getValue();
-         } else if (o instanceof Attribute) {
-             stringVal = ((Attribute) o).getValue();
-         } else if (o instanceof String) {
-             stringVal = (String) o;
-         } else {
-             throw new IllegalArgumentException(
-                 "Unsupported class: " + o.getClass());
-         }
 
-         if (this.trimValues && stringVal != null) {
-             stringVal = stringVal.trim();
-         }
-         if ("".equals(stringVal.trim())) {
-             return null;
-         }
-         Value value = null;
-         if (this.valueFactory != null) {
-             value = this.valueFactory.createValue(stringVal, type);
-         } else {
-             value = new Value(stringVal);
-         }
+        if (o == null) {
+            return null;
+        }
+        if (o instanceof org.jdom.Content) {
+            stringVal = ((org.jdom.Content) o).getValue();
+        } else if (o instanceof Attribute) {
+            stringVal = ((Attribute) o).getValue();
+        } else if (o instanceof String) {
+            stringVal = (String) o;
+        } else {
+            throw new IllegalArgumentException(
+                "Unsupported class: " + o.getClass());
+        }
+
+        if (this.trimValues && stringVal != null) {
+            stringVal = stringVal.trim();
+        }
+        if ("".equals(stringVal.trim())) {
+            return null;
+        }
+        Value value = null;
+        if (this.valueFactory != null) {
+            value = this.valueFactory.createValue(stringVal, type);
+        } else {
+            value = new Value(stringVal);
+        }
          
          return value;
      }

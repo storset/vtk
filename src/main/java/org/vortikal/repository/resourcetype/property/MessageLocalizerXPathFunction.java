@@ -93,16 +93,12 @@ public class MessageLocalizerXPathFunction extends AbstractXPathFunction
 
             Locale locale = this.defaultLocale;
             PropertySet resource = (PropertySet) context.getVariableValue("vrtx", null, "resource");
-            System.out.println("____resource: " + resource);
             if (resource != null) {
                 Property localeProperty = resource.getProperty(this.localePropertyDefinition);
-            System.out.println("____ldef: " + localePropertyDefinition);
-            System.out.println("____prop: " + localeProperty);
                 if (localeProperty != null) {
                     locale = LocaleHelper.getLocale(localeProperty.getStringValue());
                 }
             }
-            System.out.println("____locale: " + locale);
             String localized = this.messageSource.getMessage(value, new Object[0], value, locale);
             return localized;
 

@@ -407,7 +407,7 @@
 
         <entry key="http://www.uio.no/xsd/studier/studieretning-hjemmeside/v002/studieretning-hjemmeside.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/studieretning-hjemmeside/studieretningsnavn, ' (', vrtx:localize(studier.studieretning), ')')" /> 
+            <property name="expression" value="concat(/studieretning-hjemmeside/studieretningsnavn, ' (', vrtx:localize('studier.studieretning'), ')')" /> 
           </bean>
         </entry>
 

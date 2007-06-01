@@ -134,7 +134,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
-        Map resourceContextModel = new HashMap();
+        Map<String, Object> resourceContextModel = new HashMap<String, Object>();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();

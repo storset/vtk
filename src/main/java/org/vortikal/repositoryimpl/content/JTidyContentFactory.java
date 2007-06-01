@@ -56,15 +56,21 @@ public class JTidyContentFactory implements ContentFactory {
         tidy.setShowWarnings(false);
         tidy.setErrout(NULL_WRITER);
         
-        Document document = tidy.parseDOM(content, null);
+        try {
+            Document document = tidy.parseDOM(content, null);
 
-        if (clazz == Document.class) {
-            return document;
-        } else if (clazz == Tidy.class) {
-            return tidy;
-        } else {
-            throw new UnsupportedContentRepresentationException(
-                "Class " + clazz.getName() + " not supported by this content factory");
+            if (clazz == Document.class) {
+                return document;
+            } else if (clazz == Tidy.class) {
+                return tidy;
+            } else {
+                throw new UnsupportedContentRepresentationException(
+                    "Class " + clazz.getName() + " not supported by this content factory");
+            }
+        } finally {
+            // Not sure whether JTidy closes the file correctly on
+            // errors
+            content.close();
         }
     }
     

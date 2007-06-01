@@ -232,12 +232,6 @@ public class RepositoryResourceHelperImpl
         // Set resource type
         ctx.getNewResource().setResourceType(rt.getName());
         
-        // For all prop defs, do evaluation
-        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
-        for (PropertyTypeDefinition def: propertyDefinitions) {
-            evaluateManagedProperty(ctx, def);
-        }
-
         // Evaluating overridden properties
         OverridablePropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
         
@@ -247,6 +241,12 @@ public class RepositoryResourceHelperImpl
             }
 
         
+        // For all prop defs, do evaluation
+        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
+        for (PropertyTypeDefinition def: propertyDefinitions) {
+            evaluateManagedProperty(ctx, def);
+        }
+
         // For all prop defs in mixin types, also do evaluation
         List<MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
         for (MixinResourceTypeDefinition mixinDef: mixinTypes) {

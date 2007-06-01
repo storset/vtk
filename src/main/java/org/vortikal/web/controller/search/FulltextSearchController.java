@@ -42,7 +42,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.fulltext.FulltextSearcher;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
@@ -59,6 +58,7 @@ import org.vortikal.web.service.URL;
  * <ul>
  *   <li><code>viewName</code> - the name of the view to return
  *   <li><code>searcher</code> - the {@link Searcher}
+ *   <li><code>redirectViewName</code> - the name of an optional redirect view
  * </ul>
  *
  * <p>Model data provided:
@@ -71,6 +71,7 @@ public class FulltextSearchController implements Controller {
 
     private FulltextSearcher searcher;
     private String viewName;
+    private String redirectViewName;
     private int pageSize = 20;
 
     public void setSearcher(FulltextSearcher searcher) {
@@ -92,25 +93,36 @@ public class FulltextSearchController implements Controller {
                                       HttpServletResponse response) 
 	throws Exception {
         
+        Map<String, Object> model = new HashMap<String, Object>();
+
         String token = SecurityContext.getSecurityContext().getToken();
 
-        if (token == null && request.getParameter("login") != null) {
-            // The user wants to login
-            throw new AuthenticationException();
+        if (request.getParameter("login") != null) {
+            if (token == null) {
+                // The user wants to login
+                throw new AuthenticationException();
+            } 
+            
+            if (this.redirectViewName != null) {
+                // Should send redirect without login parameter
+                URL url = URL.create(request);
+                url.removeParameter("login");
+                model.put("redirectURL", url.toString());
+                return new ModelAndView(this.redirectViewName, model);
+            }
         }
         
-        Map<String, Object> mainModel = new HashMap<String, Object>();
-        Map<String, Object> subModel = new HashMap<String, Object>();
+        Map<String, Object> searchModel = new HashMap<String, Object>();
         
         String query = request.getParameter("query");
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Service currentService = requestContext.getService();
         URL searchURL = currentService.constructURL(requestContext.getResourceURI());
-        subModel.put("url", searchURL);
+        searchModel.put("url", searchURL);
 
         if (query != null) {
-            subModel.put("query", query);
+            searchModel.put("query", query);
             
             
             int startIdx = 0;
@@ -159,7 +171,7 @@ public class FulltextSearchController implements Controller {
                 nextURL.addParameter("query", query);
                 nextURL.removeParameter("page");
                 nextURL.addParameter("page", String.valueOf(nextPage + 1));
-                subModel.put("next", nextURL);
+                searchModel.put("next", nextURL);
             }
 
             if (page > 0) {
@@ -169,18 +181,23 @@ public class FulltextSearchController implements Controller {
                 prevURL.addParameter("query", query);
                 prevURL.removeParameter("page");
                 prevURL.addParameter("page", String.valueOf(prevPage + 1));
-                subModel.put("prev", prevURL);
+                searchModel.put("prev", prevURL);
             }
 
-            subModel.put("results", results);
-            subModel.put("totalHits", resultSet.getSize());
-            subModel.put("start", startIdx+1);
-            subModel.put("end", endIdx);
+            searchModel.put("results", results);
+            searchModel.put("totalHits", resultSet.getSize());
+            searchModel.put("start", startIdx+1);
+            searchModel.put("end", endIdx);
         }
         
         
-        mainModel.put("search", subModel);
-        return new ModelAndView(this.viewName, mainModel);
+        model.put("search", searchModel);
+        return new ModelAndView(this.viewName, model);
+    }
+
+
+    public void setRedirectViewName(String redirectViewName) {
+        this.redirectViewName = redirectViewName;
     }
 
 }

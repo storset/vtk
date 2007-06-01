@@ -1,0 +1,6 @@
+.scope {list-style-type: none; padding-left: 0; padding-bottom: 0.25em;}
+.scope input {margin-right: 0.75em;}
+.result h2 {font-size: 130%;margin-bottom: 0.25em;} 
+.result .footer {margin-top: 0.25em; color: green; font-size: 90%;}
+.login {padding-bottom:1em;}
+.paging {white-space: nowrap; padding-top: 1em;}

@@ -31,6 +31,7 @@
 package org.vortikal.web.controller.search;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,13 +176,19 @@ public class FulltextSearchController implements Controller {
             }
 
             if (page > 0) {
-                int prevPage = page - 1;
+                List<String> previousUrls = new ArrayList<String>();
+                int prevPage = page;
+
                 URL prevURL = currentService.constructURL(requestContext.getResourceURI());
                 prevURL.removeParameter("query");
                 prevURL.addParameter("query", query);
-                prevURL.removeParameter("page");
-                prevURL.addParameter("page", String.valueOf(prevPage + 1));
-                searchModel.put("prev", prevURL);
+                while (prevPage > 0) {
+                    prevURL.removeParameter("page");
+                    prevURL.addParameter("page", String.valueOf(prevPage));
+                    previousUrls.add(0, prevURL.toString());
+                    prevPage--;
+                }
+                searchModel.put("previousPages", previousUrls);
             }
 
             searchModel.put("results", results);

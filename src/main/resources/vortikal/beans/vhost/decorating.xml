@@ -179,6 +179,7 @@
 
 
   <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="-200" />
     <property name="categories">
       <set>
@@ -187,7 +188,6 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="webServiceAssertion" />
         <bean class="org.vortikal.web.service.ResourceTypeAssertion">
           <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
         </bean>
@@ -200,15 +200,12 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <ref bean="listDecoratorComponentsHandler" />
-    </property>
-    <property name="authenticationChallenge">
-      <ref bean="${webAuthenticationChallenge}" />
-    </property>
+    <property name="handler" ref="listDecoratorComponentsHandler" />
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
   <bean id="listDocumentsComponentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
     <property name="order" value="-200" />
     <property name="categories">
       <set>
@@ -217,7 +214,6 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="webServiceAssertion" />
         <bean class="org.vortikal.web.service.ResourceTypeAssertion">
           <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
         </bean>
@@ -231,9 +227,7 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <ref bean="listDocumentComponentsHandler" />
-    </property>
+    <property name="handler" ref="listDocumentComponentsHandler" />
   </bean>
 
   <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">

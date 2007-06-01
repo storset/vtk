@@ -235,7 +235,6 @@ public class RepositoryResourceHelperImpl
         // For all prop defs, do evaluation
         PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
         for (PropertyTypeDefinition def: propertyDefinitions) {
-            System.out.println("__eval_regular_prop: " + rt.getName() + ":" + def.getName());
             evaluateManagedProperty(ctx, def);
         }
 
@@ -244,7 +243,6 @@ public class RepositoryResourceHelperImpl
         
         if (overrides != null)
             for (OverridablePropertyTypeDefinition override: overrides) {
-                System.out.println("__eval_overridden_prop: " + rt.getName() + ":" + override.getName());
                 evaluateManagedProperty(ctx, override);
             }
 

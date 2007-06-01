@@ -71,11 +71,9 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
         String encoding = determineCharacterEncoding(ancestorPropertySet);
 
         try {
-            
             Source source = null;
             stream = (InputStream) content.getContentRepresentation(InputStream.class);
             if (encoding != null) {
-                System.out.println("__encoding; " + encoding);
                 source = new Source(new InputStreamReader(stream, encoding));
             } else {
                 source = new Source(stream);

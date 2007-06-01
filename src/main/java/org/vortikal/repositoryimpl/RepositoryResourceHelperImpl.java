@@ -232,21 +232,23 @@ public class RepositoryResourceHelperImpl
         // Set resource type
         ctx.getNewResource().setResourceType(rt.getName());
         
+        // For all prop defs, do evaluation
+        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
+        for (PropertyTypeDefinition def: propertyDefinitions) {
+            System.out.println("__eval_regular_prop: " + rt.getName() + ":" + def.getName());
+            evaluateManagedProperty(ctx, def);
+        }
+
         // Evaluating overridden properties
         OverridablePropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
         
         if (overrides != null)
             for (OverridablePropertyTypeDefinition override: overrides) {
+                System.out.println("__eval_overridden_prop: " + rt.getName() + ":" + override.getName());
                 evaluateManagedProperty(ctx, override);
             }
 
         
-        // For all prop defs, do evaluation
-        PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
-        for (PropertyTypeDefinition def: propertyDefinitions) {
-            evaluateManagedProperty(ctx, def);
-        }
-
         // For all prop defs in mixin types, also do evaluation
         List<MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
         for (MixinResourceTypeDefinition mixinDef: mixinTypes) {
@@ -293,8 +295,8 @@ public class RepositoryResourceHelperImpl
             Value defaultValue = propDef.getDefaultValue();
             if (defaultValue == null) {
                 throw new InternalRepositoryException(
-                    "Property " + propDef + "is " +
-                    "mandatory and evaluator returned false, but no default value is set." +
+                    "Property " + propDef + " is " +
+                    "mandatory and evaluator returned false, but no default value is set. " +
                     "Resource " + newResource + " not evaluated.");
             }
             evaluatedProp = this.propertyManager.createProperty(

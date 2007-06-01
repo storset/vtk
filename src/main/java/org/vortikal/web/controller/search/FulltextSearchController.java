@@ -44,6 +44,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.fulltext.FulltextSearcher;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -91,6 +92,13 @@ public class FulltextSearchController implements Controller {
                                       HttpServletResponse response) 
 	throws Exception {
         
+        String token = SecurityContext.getSecurityContext().getToken();
+
+        if (token == null && request.getParameter("login") != null) {
+            // The user wants to login
+            throw new AuthenticationException();
+        }
+        
         Map<String, Object> mainModel = new HashMap<String, Object>();
         Map<String, Object> subModel = new HashMap<String, Object>();
         
@@ -104,7 +112,6 @@ public class FulltextSearchController implements Controller {
         if (query != null) {
             subModel.put("query", query);
             
-            String token = SecurityContext.getSecurityContext().getToken();
             
             int startIdx = 0;
             int page = 0;

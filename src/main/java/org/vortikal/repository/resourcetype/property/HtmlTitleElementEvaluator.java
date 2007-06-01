@@ -30,15 +30,19 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 
 import au.id.jericho.lib.html.CharacterReference;
@@ -49,54 +53,74 @@ import au.id.jericho.lib.html.Tag;
 
 public class HtmlTitleElementEvaluator implements ContentModificationPropertyEvaluator {
 
+    private PropertyTypeDefinition characterEncodingPropDef;
+
     private static Log logger = LogFactory.getLog(HtmlTitleElementEvaluator.class);
 
     
+    public void setCharacterEncodingPropertyDefinition(PropertyTypeDefinition characterEncodingPropDef) {
+        this.characterEncodingPropDef = characterEncodingPropDef;
+    }
+    
+
     public boolean contentModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Content content, Date time)
             throws PropertyEvaluationException {
         
+        InputStream stream = null;        
+        String encoding = determineCharacterEncoding(ancestorPropertySet);
+
         try {
-            InputStream stream = (InputStream) content.getContentRepresentation(InputStream.class);
-            Source source = new Source(stream);
+            
+            Source source = null;
+            stream = (InputStream) content.getContentRepresentation(InputStream.class);
+            if (encoding != null) {
+                System.out.println("__encoding; " + encoding);
+                source = new Source(new InputStreamReader(stream, encoding));
+            } else {
+                source = new Source(stream);
+            }
 
             Element titleElement = source.findNextElement(0, Tag.TITLE);
             if (titleElement == null) {
                 return false;
             }
             String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
+            if ("".equals(title.trim())) {
+                return false;
+            }
+
             property.setStringValue(title);
 
             return true;
         } catch (Exception e) {
-            logger.warn("Unable to get InputStream representation of resource '"
+            logger.warn("Unable to evaluate title of HTML resource '"
                         + ancestorPropertySet.getURI() + "'", e);
             return false;
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) { }
+            }
         }
     }
     
-//     public boolean contentModification(Principal principal, Property property,
-//             PropertySet ancestorPropertySet, Content content, Date time)
-//             throws PropertyEvaluationException {
-        
-//         try {
-//             InputStream stream = (InputStream) content.getContentRepresentation(InputStream.class);
-//             Source source = new Source(stream);
-//             source.fullSequentialParse();
-            
-//             Element titleElement = source.findNextElement(0, HTMLElementName.TITLE);
-//             if (titleElement == null) return false;
-//             String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
+    private String determineCharacterEncoding(PropertySet ancestorPropertySet) {
+        if (this.characterEncodingPropDef == null) {
+            return null;
+        }
 
-//             property.setStringValue(title);
+        String encoding = null;
 
-//             return true;
-//         } catch (Exception e) {
-//             logger.warn("Unable to get InputStream representation of resource '"
-//                         + ancestorPropertySet.getURI() + "'", e);
-//             return false;
-//         }
-//     }
-    
+        Property encProperty = ancestorPropertySet.getProperty(this.characterEncodingPropDef);
+        if (encProperty != null) {
+            try {
+                encoding = encProperty.getStringValue();
+                java.nio.charset.Charset.forName(encoding);
+            } catch (Exception e) { }
+        }
+        return encoding;
+    }
     
 }

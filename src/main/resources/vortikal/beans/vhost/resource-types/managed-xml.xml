@@ -63,16 +63,6 @@
     <property name="contentModificationEvaluator" ref="managedXmlTitlePropertyEvaluator" />
   </bean>
 
-  <!--
-  <bean id="managedXmlOverriddenTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="managedXmlTitle" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="managedXmlTitlePropertyEvaluator" />
-  </bean>
-  -->
-
   <bean id="managedXmlOverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
@@ -483,7 +473,7 @@
             <property name="expression" value="/generell/tittel/titteltekst" /> 
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/uio/generell/v002/generell.xsd/">
+        <entry key="http://www.uio.no/xsd/uio/generell/v002/generell.xsd">
           <bean parent="abstractXPathEvaluator">
             <property name="expression" value="/generell/tittel" /> 
           </bean>

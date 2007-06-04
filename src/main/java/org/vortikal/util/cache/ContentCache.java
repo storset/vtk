@@ -78,6 +78,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     
     private static Log logger = LogFactory.getLog(ContentCache.class);    
 
+    private String name;
     private ContentCacheLoader loader;
     private int cacheTimeout;
     private ConcurrentHashMap cache = new ConcurrentHashMap();
@@ -86,6 +87,10 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     private RefreshThread refreshThread;
     private int maxItems = -1;
     
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setCacheLoader(ContentCacheLoader loader) {
         this.loader = loader;
     }
@@ -112,6 +117,9 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     
 
     public void afterPropertiesSet() {
+        if (this.name == null) {
+            throw new BeanInitializationException("JavaBean property 'name' not set");
+        }
         if (this.loader == null) {
             throw new BeanInitializationException("JavaBean property 'loader' not set");
         }
@@ -194,7 +202,8 @@ public final class ContentCache implements InitializingBean, DisposableBean {
               }
            }
         };
-        new Thread(fetcher).start();
+
+        new Thread(fetcher, this.name).start();
     }
 
 

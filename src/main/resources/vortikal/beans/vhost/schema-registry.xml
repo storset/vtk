@@ -9,6 +9,7 @@
    </bean>
 
    <bean id="xmlSchemaRegistry.cache" class="org.vortikal.util.cache.ContentCache">
+     <property name="name" value="${repositoryID}.xmlSchemaCache" />
      <property name="cacheLoader" ref="xmlSchemaRegistry.cache.loader" />
      <property name="cacheSeconds" value="${xmlSchemaRegistry.cacheSeconds}" />
      <property name="refreshInterval" value="${xmlSchemaRegistry.cacheRefreshInterval}" />
@@ -19,30 +20,4 @@
      <property name="readTimeoutSeconds" value="5" />
    </bean>
 
-   <!--
-  <bean id="schemaRegistrySchedulerFactory"
-        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="triggers">
-      <list>
-        <ref local="refreshXMLSchemaTrigger"/>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="refreshXMLSchemaTrigger"
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail">
-      <ref bean="refreshXMLSchemaJobDetail"/>
-    </property>
-    <property name="startDelay" value="60000" />
-    <property name="repeatInterval" value="600000" />
-  </bean>
-
-  <bean id="refreshXMLSchemaJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="system" />
-    <property name="targetObject"><ref bean="schemaRegistry"/></property>
-    <property name="targetMethod"><value>refresh</value></property>
-  </bean>
--->
 </beans>

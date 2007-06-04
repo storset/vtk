@@ -8,7 +8,7 @@
 
   <body>
 
-    <release version="0.3.8-SNAPSHOT" date="In SVN" description="Release 0.3.8">
+    <release version="0.3.8" date="2007-06-04" description="Release 0.3.8">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 

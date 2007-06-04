@@ -47,7 +47,7 @@
         class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
 
   <bean id="htmlTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="htmlTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />

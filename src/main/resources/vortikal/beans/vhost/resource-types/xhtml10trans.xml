@@ -15,11 +15,15 @@
         <ref bean="docTypeIsXHtml10Transitional" />
       </list>
     </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="xhtmlTitlePropDef" />
+      </list>
+    </property>
     <property name="overriddenPropertyTypeDefinitions"> 
       <list>
         <ref bean="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="xhtml10TransOverriddenCharacterEncodingPropDef" />
-        <ref bean="xhtml10TransOverriddenHtmlTitlePropDef" />
         <ref bean="xhtml10TransOverriddenTitlePropDef" />
       </list>
     </property>
@@ -62,15 +66,16 @@
     <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
   </bean>
 
-  <!-- Override htmlTitlePropDef: -->
-  <bean id="xhtml10TransOverriddenHtmlTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="htmlTitlePropDef" />
-    <property name="contentModificationEvaluator" ref="xhtml10TransOverriddenHtmlTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="xhtml10TransOverriddenTitlePropertyEvaluator" />
+  <bean id="xhtmlTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="xhtmlTitle" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="contentModificationEvaluator" ref="xhtmlTitlePropertyEvaluator" />
   </bean>
 
-  <bean id="xhtml10TransOverriddenHtmlTitlePropertyEvaluator"
+
+  <bean id="xhtmlTitlePropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
     <property name="characterEncodingPropertyDefinition" ref="userSpecifiedCharacterEncodingPropDef" />
     <property name="characterEncodingEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
@@ -78,16 +83,14 @@
   </bean>
 
 
-  <!-- Override titlePropDef -->
-  <bean id="xhtml10TransOverriddenTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="titlePropDef" />
+  <!-- Override titlePropDef: -->
+  <bean id="xhtml10TransOverriddenTitlePropDef" parent="htmlOverriddenTitlePropDef">
     <property name="contentModificationEvaluator" ref="xhtml10TransOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="xhtml10TransOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="xhtml10TransOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
-    <property name="fallbackTitlePropDef" ref="htmlTitlePropDef"/>
+    <property name="fallbackTitlePropDef" ref="xhtmlTitlePropDef"/>
   </bean>
 
 </beans>

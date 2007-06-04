@@ -12,6 +12,9 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
 
+    </release>
+
+    <release version="0.3.8" date="2007-06-04" description="Release 0.3.8">
       <action type="add">
         All resources now have a 'title' property. For most resources
         this evaluates to the resource's name (the default). For HTML,

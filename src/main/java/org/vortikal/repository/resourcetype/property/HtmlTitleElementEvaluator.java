@@ -55,6 +55,10 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
 
     private PropertyTypeDefinition characterEncodingPropDef;
 
+    private ContentModificationPropertyEvaluator characterEncodingEvaluator;
+    private String defaultEncoding;
+    
+
     private static Log logger = LogFactory.getLog(HtmlTitleElementEvaluator.class);
 
     
@@ -63,21 +67,25 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
     }
     
 
+    public void setCharacterEncodingEvaluator(ContentModificationPropertyEvaluator characterEncodingEvaluator) {
+        this.characterEncodingEvaluator = characterEncodingEvaluator;
+    }
+    
+    public void setDefaultEncoding(String defaultEncoding) {
+        this.defaultEncoding = defaultEncoding;
+    }
+
     public boolean contentModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Content content, Date time)
             throws PropertyEvaluationException {
         
         InputStream stream = null;        
-        String encoding = determineCharacterEncoding(ancestorPropertySet);
+        String encoding = determineCharacterEncoding(principal, property, ancestorPropertySet, content, time);
 
         try {
             Source source = null;
             stream = (InputStream) content.getContentRepresentation(InputStream.class);
-            if (encoding != null) {
-                source = new Source(new InputStreamReader(stream, encoding));
-            } else {
-                source = new Source(stream);
-            }
+            source = new Source(new InputStreamReader(stream, encoding));
 
             Element titleElement = source.findNextElement(0, Tag.TITLE);
             if (titleElement == null) {
@@ -104,12 +112,26 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
         }
     }
     
-    private String determineCharacterEncoding(PropertySet ancestorPropertySet) {
-        if (this.characterEncodingPropDef == null) {
-            return null;
+    private String determineCharacterEncoding(Principal principal, Property property,
+                                              PropertySet ancestorPropertySet, Content content, Date time) {
+        
+        String encoding = null;
+        if (this.characterEncodingEvaluator != null) {            
+            
+            try {
+                Property dummyProp = (Property) property.clone();
+                boolean evaluated = this.characterEncodingEvaluator.contentModification(
+                    principal, dummyProp, ancestorPropertySet, content, time);
+                if (evaluated) {
+                    encoding = dummyProp.getStringValue();
+                }
+
+            } catch (Exception e) { }
         }
 
-        String encoding = null;
+        if (this.characterEncodingPropDef == null) {
+            return encodingValue(encoding);
+        }
 
         Property encProperty = ancestorPropertySet.getProperty(this.characterEncodingPropDef);
         if (encProperty != null) {
@@ -118,7 +140,17 @@ public class HtmlTitleElementEvaluator implements ContentModificationPropertyEva
                 java.nio.charset.Charset.forName(encoding);
             } catch (Exception e) { }
         }
-        return encoding;
+        return encodingValue(encoding);
+    }
+    
+    private String encodingValue(String encoding) {
+        if (encoding != null) {
+            return encoding;
+        }
+        if (this.defaultEncoding != null) {
+            return this.defaultEncoding;
+        }
+        return null;
     }
     
 }

@@ -47,7 +47,7 @@
         class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
 
   <bean id="htmlTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
     <property name="name" value="htmlTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -56,7 +56,9 @@
 
   <bean id="htmlTitlePropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
-    <property name="characterEncodingPropertyDefinition" ref="characterEncodingPropDef" />
+    <property name="characterEncodingPropertyDefinition" ref="userSpecifiedCharacterEncodingPropDef" />
+    <property name="characterEncodingEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
+    <property name="defaultEncoding" value="${defaultHtmlResourceCharacterEncoding}" />
   </bean>
 
   <bean id="htmlOverriddenTitlePropDef"

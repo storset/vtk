@@ -19,6 +19,8 @@
       <list>
         <ref bean="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="xhtml10TransOverriddenCharacterEncodingPropDef" />
+        <ref bean="xhtml10TransOverriddenHtmlTitlePropDef" />
+        <ref bean="xhtml10TransOverriddenTitlePropDef" />
       </list>
     </property>
   </bean>
@@ -58,6 +60,34 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="docType" />
     <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
+  </bean>
+
+  <!-- Override htmlTitlePropDef: -->
+  <bean id="xhtml10TransOverriddenHtmlTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="htmlTitlePropDef" />
+    <property name="contentModificationEvaluator" ref="xhtml10TransOverriddenHtmlTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="xhtml10TransOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="xhtml10TransOverriddenHtmlTitlePropertyEvaluator"
+        class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
+    <property name="characterEncodingPropertyDefinition" ref="userSpecifiedCharacterEncodingPropDef" />
+    <property name="characterEncodingEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
+    <property name="defaultEncoding" value="${defaultXHtml10TransitionalResourceCharacterEncoding}" />
+  </bean>
+
+
+  <!-- Override titlePropDef -->
+  <bean id="xhtml10TransOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="contentModificationEvaluator" ref="xhtml10TransOverriddenTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="xhtml10TransOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="htmlTitlePropDef"/>
   </bean>
 
 </beans>

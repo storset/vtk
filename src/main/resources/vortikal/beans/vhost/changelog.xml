@@ -32,7 +32,7 @@
     
     <property name="targetMethodName" value="pollChanges"/>
     <property name="targetObject" ref="repository.resourceChangeNotifier"/>
-    <property name="triggerThreadName" value="indexupdater"/>
+    <property name="triggerThreadName" value="${repositoryID}.indexupdater"/>
     <property name="startDelay" value="20000"/>
     <property name="repeatInterval" value="5000"/>
     <property name="startTriggerAfterInitialization" value="true"/>

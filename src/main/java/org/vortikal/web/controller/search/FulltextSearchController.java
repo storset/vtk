@@ -143,7 +143,7 @@ public class FulltextSearchController implements Controller {
             }
             int endIdx = startIdx + this.pageSize;
 
-            ResultSet resultSet = searcher.execute(token, query);
+            ResultSet resultSet = searcher.execute(token, query, requestContext.getResourceURI());
 
             // Check if last result of the current page exists 
             if (! resultSet.hasResult(endIdx-1)) {

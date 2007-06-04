@@ -15,30 +15,7 @@
         <ref bean="contentTypeMatchesPhp" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions">
-      <list> 
-        <ref bean="phpOverriddenGuessedCharacterEncodingPropDef" />
-        <ref bean="phpOverriddenCharacterEncodingPropDef" />
-      </list>
-    </property>
   </bean>
-
-  <bean id="phpOverriddenGuessedCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
-    <property name="defaultValue">
-      <bean class="org.vortikal.repository.resourcetype.Value">
-        <constructor-arg type="java.lang.String"
-                         value="${defaultPhpResourceCharacterEncoding}" />
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="phpOverriddenCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="characterEncodingPropDef" />
-  </bean>
-
 
   <bean id="contentTypeMatchesPhp" 
         class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">

@@ -149,8 +149,10 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
             }
             return true;
         } catch (Throwable e) {
-            logger.warn("Unable to evaluate property " + property
-                        + " using XPath expression '" + this.expression + "'", e);
+            if (logger.isDebugEnabled()) {
+                logger.warn("Unable to evaluate property " + property
+                            + " using XPath expression '" + this.expression + "'", e);
+            }
             return false;
         }
     }

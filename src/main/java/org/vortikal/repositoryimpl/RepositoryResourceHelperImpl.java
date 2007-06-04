@@ -92,7 +92,6 @@ public class RepositoryResourceHelperImpl
         }
         
         EvaluationContext ctx = getCreateEvaluationContext(resource, principal, collection);
-
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         return ctx.getNewResource();
     }
@@ -101,7 +100,8 @@ public class RepositoryResourceHelperImpl
     public ResourceImpl propertiesChange(ResourceImpl originalResource, Principal principal,
             ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
                InternalRepositoryException, IOException {
-        EvaluationContext ctx = getPropertiesChangeEvaluationContext(originalResource, suppliedResource, principal);
+        EvaluationContext ctx = getPropertiesChangeEvaluationContext(
+            originalResource, suppliedResource, principal);
 
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         checkForDeadAndZombieProperties(ctx);
@@ -197,8 +197,7 @@ public class RepositoryResourceHelperImpl
         if (resource == null)
             resource = ctx.getOriginalResource();
         
-        for (Iterator i = resource.getProperties().iterator(); i.hasNext();) {
-            Property suppliedProp = (Property) i.next();
+        for (Property suppliedProp: resource.getProperties()) {
             PropertyTypeDefinition propDef = suppliedProp.getDefinition();
             
             if (propDef == null) {
@@ -209,16 +208,19 @@ public class RepositoryResourceHelperImpl
                 ResourceTypeDefinition[] rts = 
                     resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
 
+                boolean zombie = true;
                 for (ResourceTypeDefinition definition: rts) {
                     if (newResource.isOfType(definition)) {
-                        // Zombie prop, preserve
-                        newResource.addProperty(suppliedProp);
+                        zombie = false;
                         break;
                     }
                 }
+                if (zombie) {
+                    // Zombie property, preserve
+                    newResource.addProperty(suppliedProp);
+                }
             }
         }
-
     }
     
     private boolean recursiveTreeEvaluation(EvaluationContext ctx, 
@@ -245,7 +247,6 @@ public class RepositoryResourceHelperImpl
             for (OverridablePropertyTypeDefinition override: overrides) {
                 evaluateManagedProperty(ctx, override);
             }
-
         
         // For all prop defs in mixin types, also do evaluation
         List<MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
@@ -322,7 +323,8 @@ public class RepositoryResourceHelperImpl
 
         Resource newResource = ctx.getNewResource();
 
-        boolean evaluated = evaluator.create(ctx.getPrincipal(), property, newResource, ctx.isCollection(), ctx.getTime());
+        boolean evaluated = evaluator.create(ctx.getPrincipal(), property,
+                                             newResource, ctx.isCollection(), ctx.getTime());
 
         if (!evaluated) {
             return null;
@@ -378,7 +380,8 @@ public class RepositoryResourceHelperImpl
                     propDef.getNamespace(), propDef.getName());
         
             boolean evaluated =
-                evaluator.contentModification(ctx.getPrincipal(), prop, newResource, content, ctx.getTime());
+                evaluator.contentModification(ctx.getPrincipal(), prop, newResource,
+                                              content, ctx.getTime());
             if (!evaluated) {
                 return null;
             } 
@@ -626,14 +629,16 @@ public class RepositoryResourceHelperImpl
     
     private EvaluationContext getPropertiesChangeEvaluationContext(ResourceImpl originalResource, 
             ResourceImpl suppliedResource, Principal principal) throws InternalRepositoryException {
-        EvaluationContext ctx = new EvaluationContext(originalResource, principal, EvaluationType.PropertiesChange);    
+        EvaluationContext ctx = new EvaluationContext(originalResource, principal,
+                                                      EvaluationType.PropertiesChange);    
         ctx.suppliedResource = suppliedResource;
         return ctx;
     }
 
     private EvaluationContext getCreateEvaluationContext(ResourceImpl originalResource, 
             Principal principal, boolean collection) throws InternalRepositoryException {
-        EvaluationContext ctx = new EvaluationContext(originalResource, principal, EvaluationType.Create);    
+        EvaluationContext ctx = new EvaluationContext(originalResource, principal,
+                                                      EvaluationType.Create);    
         ctx.collection = collection;
         return ctx;
     }
@@ -658,7 +663,8 @@ public class RepositoryResourceHelperImpl
         private Resource suppliedResource; 
         private Principal principal;
 
-        EvaluationContext(ResourceImpl originalResource, Principal principal, EvaluationType evaluationType) {
+        EvaluationContext(ResourceImpl originalResource, Principal principal,
+                          EvaluationType evaluationType) {
             this.originalResource = originalResource;
             this.principal = principal;
             this.evaluationType = evaluationType;

@@ -153,11 +153,8 @@ public class IndexFileController
         String encodedURI = new String(indexURI.getBytes("utf-8"),
                                        this.uriCharacterEncoding);
 
-        System.out.println("__index_file_uri: " + encodedURI);
-
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
         requestWrapper.setRequestURI(encodedURI);
-        System.out.println("__index_file_uri2: " + requestWrapper.getRequestURI());
 
         if (ifModSince != -1) {
             requestWrapper.setHeader(

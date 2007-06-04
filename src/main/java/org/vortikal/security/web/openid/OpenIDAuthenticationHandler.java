@@ -214,8 +214,9 @@ public class OpenIDAuthenticationHandler
         if (request.getParameter("openid_response") == null) {
             throw new AuthenticationException();
         }
-        System.out.println("___openid_response: " + request.getParameter("openid_response"));
-
+        if (logger.isDebugEnabled()) {
+            logger.debug("openid_response: " + request.getParameter("openid_response"));
+        }
 
         // extract the parameters from the authentication response
         // (which comes in as a HTTP request from the OpenID provider)
@@ -249,7 +250,9 @@ public class OpenIDAuthenticationHandler
             throw new AuthenticationException();
         }
         Principal principal = this.principalFactory.getUserPrincipal(verified.getIdentifier());
-        System.out.println("___authed_principal: " + principal);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Authenticated principal: " + principal);
+        }
         
 
         return principal;
@@ -262,8 +265,10 @@ public class OpenIDAuthenticationHandler
         String redirectURL = this.finalRedirectService.constructLink(request.getRequestURI());
         
         try {
-System.out.println("___redir_after_auth: " + redirectURL);
-            response.sendRedirect(redirectURL);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Redirect after authentication: " + redirectURL);
+        }
+        response.sendRedirect(redirectURL);
             return true;
         } catch (Exception e) {
             throw new AuthenticationProcessingException("Unable to redirect to URL: '"

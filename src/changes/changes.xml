@@ -11,12 +11,28 @@
     <release version="0.3.8-SNAPSHOT" date="In SVN" description="Release 0.3.8">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+
+      <action type="add">
+        All resources now have a 'title' property. For most resources
+        this evaluates to the resource's name (the default). For HTML,
+        audio and some XML documents specific evaluators are
+        implemented.
+      </action>
       <action type="add">
         Property framework: added support for evaluating property
         values based on the resource name
       </action>
       <action type="add">
         Query syntax: added support for inverted prefix queries
+      </action>
+      <action type="update">
+        Decorating: the breadcrumb component no longer includes the
+        parent folder when accessing an index file
+      </action>
+      <action type="update">
+        Query: name prefix searches now work properly. Inverted
+        queries for properties, URI and name prefixes also
+        implemented
       </action>
       <action type="update">
         Library update: Updgraded iBATIS to version 2.3.0

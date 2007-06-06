@@ -225,6 +225,7 @@ public class XmlEditController implements Controller, InitializingBean {
         Util.setXsltParameter(model, "DAY", date("dd"));
         Util.setXsltParameter(model, "MONTH", date("MM"));
         Util.setXsltParameter(model, "YEAR", date("yyyy"));
+        Util.setXsltParameter(model, "HOUR", date("HH"));
         Util.setXsltParameter(model, "TIMESTAMP", date("yyMMddHHmmss"));
         Util.setXsltParameter(model, "CMSURL", resource.getURI());
         if (principal != null)

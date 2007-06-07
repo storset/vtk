@@ -16,3 +16,6 @@ Dette fordi filene kalles dynamisk, og for å overstyre på vanlig måte endring
 I tillegg er 
  * /src/main/ext/kupu/v1.3.9/common/kupubasetools.js   (ca linje 580)
 også foreløpig endret direkte i Kupu (dette skal overstyres når vi ser at det virker i alle browsere og ikke gir noen utilsiktede feil)  
+
+
+Whitelist for tagger ligger i kupucontentfilters-vortikal.js

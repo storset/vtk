@@ -68,6 +68,7 @@ function VortikalNonXHTMLTagFilter() {
                             'p': 1,
                             'pre': 1,
                             'q': 1,
+                            's': 1,
                             'samp': 1,
                             'script': 1,
                             'small': 1,

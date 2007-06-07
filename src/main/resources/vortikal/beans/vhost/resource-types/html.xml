@@ -24,10 +24,6 @@
       <list>
         <ref bean="htmlDocTypePropDef" />
         <ref bean="htmlTitlePropDef" />
-      </list>
-    </property>
-    <property name="overriddenPropertyTypeDefinitions">
-      <list>
         <ref bean="htmlOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="htmlOverriddenCharacterEncodingPropDef" />
         <ref bean="htmlOverriddenTitlePropDef" />

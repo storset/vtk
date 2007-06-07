@@ -25,9 +25,9 @@
         <ref bean="audioAlbumPropDef" />
         <ref bean="audioTrackPropDef" />
         <ref bean="audioGenrePropDef" />
+        <ref bean="audioOverriddenTitlePropDef" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions" ref="audioOverriddenTitlePropDef" />
   </bean>
 
 

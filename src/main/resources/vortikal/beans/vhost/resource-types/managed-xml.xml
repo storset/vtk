@@ -24,14 +24,9 @@
       <list>
         <ref bean="plaintextEditPropDef" />
         <ref bean="managedXmlTitlePropDef" />
-      </list>
-    </property>
-    <property name="overriddenPropertyTypeDefinitions">
-      <list>
         <ref bean="managedXmlOverriddenTitlePropDef" />
       </list>
     </property>
-
   </bean>
 
   <bean id="resourceTypeIsManagedXml" class="org.vortikal.web.service.ResourceTypeAssertion">

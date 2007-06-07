@@ -18,10 +18,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="xhtmlTitlePropDef" />
-      </list>
-    </property>
-    <property name="overriddenPropertyTypeDefinitions"> 
-      <list>
         <ref bean="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="xhtml10TransOverriddenCharacterEncodingPropDef" />
         <ref bean="xhtml10TransOverriddenTitlePropDef" />

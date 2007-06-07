@@ -32,10 +32,5 @@ package org.vortikal.repository.resourcetype;
 
 public class MixinResourceTypeDefinitionImpl
   extends AbstractResourceTypeDefinitionImpl implements MixinResourceTypeDefinition {
-
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
-        // Mixin types should themselves never contain other mixin types.
-        return super.EMPTY_MIXIN_TYPE_LIST;
-    }
     
 }

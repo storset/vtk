@@ -385,31 +385,7 @@ public class PropertyEditController extends SimpleFormController
     private boolean isApplicableProperty(PropertyTypeDefinition def,
                                          PrimaryResourceTypeDefinition resourceType) {
 
-        PropertyTypeDefinition[] propDefs = resourceType.getPropertyTypeDefinitions();
-        for (int i = 0; i < propDefs.length; i++) {
-            if (propDefs[i].equals(def)) {
-                return true;
-            }
-        }
-        MixinResourceTypeDefinition[] mixins = resourceType.getMixinTypeDefinitions();
-        for (int i = 0; i < mixins.length; i++) {
-            PropertyTypeDefinition[] mixinPropDefs = mixins[i].getPropertyTypeDefinitions();
-            for (int j = 0; j < mixinPropDefs.length; j++) {
-                if (mixinPropDefs[j].equals(def)) {
-                    return true;
-                }
-            }
-        }
-
-        if (resourceType instanceof PrimaryResourceTypeDefinition) {
-            PrimaryResourceTypeDefinition primaryResourceType =
-                (PrimaryResourceTypeDefinition) resourceType;
-            if (primaryResourceType.getParentTypeDefinition() != null) {
-                return isApplicableProperty(def, primaryResourceType.getParentTypeDefinition());
-            }
-
-        }
-        return false;
+        return resourceType.hasPropertyDefinition(def);
     }
     
 

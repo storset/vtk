@@ -54,6 +54,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
+import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -219,7 +220,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     /**
      * Search upwards in resource type tree, collect property type definitions
      * from all encountered resource type definitions including mixin resource types.
-     * Assuming that mixin types can never have other mixin types attached.
+     * FIXME: Assuming that mixin types can never have mixin parent.
      * 
      * If there are more than one occurence of the same property type definition
      * for the given resource type, only the first occurence in the resource type
@@ -247,10 +248,9 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 addPropertyTypeDefinitions(encounteredIds, propertyTypes, propDefs);
                 
                 // Add any mixin resource types' property type defs
-                MixinResourceTypeDefinition[] mixinDefs = primaryDef.getMixinTypeDefinitions();
-                for (int i=0; i<mixinDefs.length; i++) {
+                for (MixinResourceTypeDefinition mixinDef: primaryDef.getMixinTypeDefinitions()) {
                     addPropertyTypeDefinitions(encounteredIds, propertyTypes, 
-                                                mixinDefs[i].getPropertyTypeDefinitions());
+                                                mixinDef.getPropertyTypeDefinitions());
                 }
 
                 primaryDef = primaryDef.getParentTypeDefinition();
@@ -418,11 +418,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
 
     private void addPropertyTypeDefinitions(Set<String> encounteredIds, List<PropertyTypeDefinition> propertyTypes, 
                                             PropertyTypeDefinition[] propDefs) {
-        for (int i = 0; i < propDefs.length; i++) {
-            String id = propDefs[i].getNamespace().getUri() + ":" + propDefs[i].getName();
+        for (PropertyTypeDefinition propDef: propDefs) {
+            String id = propDef.getNamespace().getUri() + ":" + propDef.getName();
             // Add only _first_ occurence of property type definition
             if (encounteredIds.add(id)) {
-                propertyTypes.add(propDefs[i]);
+                propertyTypes.add(propDef);
             }
         }
     }
@@ -439,6 +439,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         
         // Populate map of property type definitions
         for (PropertyTypeDefinition propDef : def.getPropertyTypeDefinitions()) {
+            // XXX: Should be removed
+            if (propDef instanceof OverridingPropertyTypeDefinitionImpl) {
+                continue;
+            }
             Namespace namespace = propDef.getNamespace();
             Map<String, PropertyTypeDefinition> propDefMap = 
                 this.propertyTypeDefinitions.get(namespace);
@@ -530,6 +534,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
             
         for (PropertyTypeDefinition propDef: propDefs) {
+            // FIXME: should be removed
+            if (propDef instanceof OverridingPropertyTypeDefinitionImpl) {
+                continue;
+            }
             Set<PrimaryResourceTypeDefinition> definitions = propDefMap.get(propDef.getName());
             if (definitions == null) {
                 definitions = new HashSet<PrimaryResourceTypeDefinition>();
@@ -583,10 +591,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
 
         PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
         printPropertyDefinitions(sb, level, definitions);
-        if (def instanceof PrimaryResourceTypeDefinition) {
-            printPropertyDefinitions(sb, level, 
-                    ((PrimaryResourceTypeDefinition)def).getOverridablePropertyTypeDefinitions());
-        }
         
         List<PrimaryResourceTypeDefinition> children = this.parentChildMap.get(def);
 

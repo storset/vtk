@@ -240,14 +240,6 @@ public class RepositoryResourceHelperImpl
             evaluateManagedProperty(ctx, def);
         }
 
-        // Evaluating overridden properties
-        OverridablePropertyTypeDefinition[] overrides = rt.getOverridablePropertyTypeDefinitions();
-        
-        if (overrides != null)
-            for (OverridablePropertyTypeDefinition override: overrides) {
-                evaluateManagedProperty(ctx, override);
-            }
-        
         // For all prop defs in mixin types, also do evaluation
         List<MixinResourceTypeDefinition> mixinTypes = this.resourceTypeTree.getMixinTypes(rt);
         for (MixinResourceTypeDefinition mixinDef: mixinTypes) {

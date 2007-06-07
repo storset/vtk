@@ -41,8 +41,6 @@ public class PrimaryResourceTypeDefinitionImpl
     private PrimaryResourceTypeDefinition parentTypeDefinition;
     private RepositoryAssertion[] assertions;
 
-    private OverridablePropertyTypeDefinition[] overriddenPropertyTypeDefinitions = new OverridablePropertyTypeDefinitionImpl[0];
-
     public PrimaryResourceTypeDefinition getParentTypeDefinition() {
         return this.parentTypeDefinition;
     }
@@ -61,7 +59,7 @@ public class PrimaryResourceTypeDefinitionImpl
 
     public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
         if (this.mixinTypeDefinitions == null) {
-            return super.EMPTY_MIXIN_TYPE_LIST;
+            return AbstractResourceTypeDefinitionImpl.EMPTY_MIXIN_TYPE_LIST;
         }
         return this.mixinTypeDefinitions;
     }
@@ -70,22 +68,35 @@ public class PrimaryResourceTypeDefinitionImpl
         this.mixinTypeDefinitions = mixinTypeDefinitions;
     }
 
- 
+    public boolean hasPropertyDefinition(PropertyTypeDefinition def) {
+        for (PropertyTypeDefinition propDef: getPropertyTypeDefinitions()) {
+            if (propDef.equals(def)) {
+                return true;
+            }
+        }
+
+        for (MixinResourceTypeDefinition mixin: getMixinTypeDefinitions()) {
+            for (PropertyTypeDefinition mixinPropDef: mixin.getPropertyTypeDefinitions()) {
+                if (mixinPropDef.equals(def)) {
+                    return true;
+                }
+            }
+        }
+
+        if (getParentTypeDefinition() != null) {
+            return getParentTypeDefinition().hasPropertyDefinition(def);
+        }
+        
+        return false;
+    }
+
+    
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());
         sb.append("[namespace = ").append(getNamespace());
         sb.append(", name = '").append(getName());
         sb.append("']");
         return sb.toString();
-    }
-
-    public OverridablePropertyTypeDefinition[] getOverridablePropertyTypeDefinitions() {
-        return overriddenPropertyTypeDefinitions;
-    }
-
-    public void setOverriddenPropertyTypeDefinitions(
-            OverridablePropertyTypeDefinition[] overriddenPropertyTypeDefinitions) {
-        this.overriddenPropertyTypeDefinitions = overriddenPropertyTypeDefinitions;
     }
     
 }

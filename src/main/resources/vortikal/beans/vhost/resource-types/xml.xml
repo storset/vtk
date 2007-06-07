@@ -14,13 +14,13 @@
         <ref bean="contentTypeMatchesXml" />
       </list>
     </property>
-    <property name="overriddenPropertyTypeDefinitions">
+    <property name="propertyTypeDefinitions">
       <list> 
+        <ref bean="schemaPropDef" />
         <ref bean="xmlOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="xmlOverriddenCharacterEncodingPropDef" />
       </list>
     </property>
-    <property name="propertyTypeDefinitions" ref="schemaPropDef" />
   </bean>
 
 

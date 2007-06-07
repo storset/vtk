@@ -44,7 +44,9 @@
   </bean>
 
   <bean id="docTypeEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
+        class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator">
+    <property name="defaultEncoding" value="${defaultHtmlResourceCharacterEncoding}" />
+  </bean>
 
   <bean id="htmlTitlePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

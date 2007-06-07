@@ -30,19 +30,10 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Date;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 
 import au.id.jericho.lib.html.CharacterReference;
@@ -51,106 +42,25 @@ import au.id.jericho.lib.html.Source;
 import au.id.jericho.lib.html.Tag;
 
 
-public class HtmlTitleElementEvaluator implements ContentModificationPropertyEvaluator {
+public class HtmlTitleElementEvaluator extends AbstractJerichoHtmlContentEvaluator {
 
-    private PropertyTypeDefinition characterEncodingPropDef;
-
-    private ContentModificationPropertyEvaluator characterEncodingEvaluator;
-    private String defaultEncoding;
-    
-
-    private static Log logger = LogFactory.getLog(HtmlTitleElementEvaluator.class);
-
-    
-    public void setCharacterEncodingPropertyDefinition(PropertyTypeDefinition characterEncodingPropDef) {
-        this.characterEncodingPropDef = characterEncodingPropDef;
-    }
-    
-
-    public void setCharacterEncodingEvaluator(ContentModificationPropertyEvaluator characterEncodingEvaluator) {
-        this.characterEncodingEvaluator = characterEncodingEvaluator;
-    }
-    
-    public void setDefaultEncoding(String defaultEncoding) {
-        this.defaultEncoding = defaultEncoding;
-    }
-
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    protected boolean doContentModification(
+        Principal principal, Property property, PropertySet ancestorPropertySet,
+        Date time, Source source) throws PropertyEvaluationException {
         
-        InputStream stream = null;        
-        String encoding = determineCharacterEncoding(principal, property, ancestorPropertySet, content, time);
-
-        try {
-            Source source = null;
-            stream = (InputStream) content.getContentRepresentation(InputStream.class);
-            source = new Source(new InputStreamReader(stream, encoding));
-
-            Element titleElement = source.findNextElement(0, Tag.TITLE);
-            if (titleElement == null) {
-                return false;
-            }
-            String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
-            if ("".equals(title.trim())) {
-                return false;
-            }
-
-            property.setStringValue(title);
-
-            return true;
-        } catch (Exception e) {
-            logger.warn("Unable to evaluate title of HTML resource '"
-                        + ancestorPropertySet.getURI() + "'", e);
+        Element titleElement = source.findNextElement(0, Tag.TITLE);
+        if (titleElement == null) {
             return false;
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) { }
-            }
         }
+        String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
+        if ("".equals(title.trim())) {
+            return false;
+        }
+
+        property.setStringValue(title);
+
+        return true;
     }
     
-    private String determineCharacterEncoding(Principal principal, Property property,
-                                              PropertySet ancestorPropertySet, Content content, Date time) {
-        
-        String encoding = null;
-        if (this.characterEncodingEvaluator != null) {            
-            
-            try {
-                Property dummyProp = (Property) property.clone();
-                boolean evaluated = this.characterEncodingEvaluator.contentModification(
-                    principal, dummyProp, ancestorPropertySet, content, time);
-                if (evaluated) {
-                    encoding = dummyProp.getStringValue();
-                }
-
-            } catch (Exception e) { }
-        }
-
-        if (this.characterEncodingPropDef == null) {
-            return encodingValue(encoding);
-        }
-
-        Property encProperty = ancestorPropertySet.getProperty(this.characterEncodingPropDef);
-        if (encProperty != null) {
-            try {
-                encoding = encProperty.getStringValue();
-                java.nio.charset.Charset.forName(encoding);
-            } catch (Exception e) { }
-        }
-        return encodingValue(encoding);
-    }
-    
-    private String encodingValue(String encoding) {
-        if (encoding != null) {
-            return encoding;
-        }
-        if (this.defaultEncoding != null) {
-            return this.defaultEncoding;
-        }
-        return null;
-    }
     
 }

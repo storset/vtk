@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,38 +34,64 @@ import java.util.Date;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.security.Principal;
 
-import org.w3c.dom.Document;
+import au.id.jericho.lib.html.Source;
+import au.id.jericho.lib.html.StartTagType;
+import au.id.jericho.lib.html.Tag;
 
 
+public class DocTypeEvaluator extends AbstractJerichoHtmlContentEvaluator {
 
-public class DocTypeEvaluator implements ContentModificationPropertyEvaluator {
-
+    private static final String DOCTYPE_START = "!DOCTYPE";
     
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    
+    protected boolean doContentModification(
+        Principal principal, Property property, PropertySet ancestorPropertySet,
+        Date time, Source source) throws PropertyEvaluationException {
 
-        try {
-            Document document = (Document) content.getContentRepresentation(Document.class);
-            
-            if (document.getDoctype() != null) {
-                String name = document.getDoctype().getName();
-
-                if (name != null) {
-                    property.setStringValue(name);
-                    return true;
-                }
-            }
+        String doctype = findDocType(source);
+        if (doctype == null) {
             return false;
-
-        } catch (Exception e) {
-            throw new PropertyEvaluationException(
-                    "Unable to get DOM representation of content", e);
         }
+        property.setStringValue(doctype);
+        return true;
     }
+
+    private String findDocType(Source source) {
+        Tag doctypeTag = source.findNextTag(0, StartTagType.DOCTYPE_DECLARATION);
+
+        if (doctypeTag == null) {
+            return null;
+        }
+        String doctype = doctypeTag.toString();
+        if (doctype == null || "".equals(doctype.trim())) {
+            return null;
+        }
+        doctype = doctype.trim();
+        
+        if (doctype.startsWith("<")) {
+            doctype = doctype.substring(1);
+        }
+
+        String compareString = doctype.toUpperCase();
+
+        if (compareString.contains(DOCTYPE_START)) {
+            doctype = doctype.substring(doctype.indexOf(DOCTYPE_START)
+                                              + DOCTYPE_START.length());
+        }
+        if (compareString.endsWith(">")) {
+            doctype = doctype.substring(0, doctype.length() - 1);
+        }
+        doctype = doctype.trim();
+        doctype = doctype.replaceAll("\r\n", " ");
+        doctype = doctype.replaceAll("\n", " ");
+
+        while (doctype.indexOf("  ") != -1) {
+            doctype = doctype.replaceAll("  ", " ");
+        }
+        return doctype;
+    }
+    
 
 }

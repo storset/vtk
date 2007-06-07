@@ -52,11 +52,13 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.w3c.dom.Document;
@@ -253,7 +255,7 @@ public class XmlSearcher implements InitializingBean {
 
         for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
             Property prop = (Property) i.next();
-            addPropertyToPropertySetElement(doc, propertySetElement, prop, envir);
+            addPropertyToPropertySetElement(propSet.getURI(), doc, propertySetElement, prop, envir);
         }
         
     }
@@ -267,7 +269,7 @@ public class XmlSearcher implements InitializingBean {
         return this.linkToService.constructLink(uri);
     }
     
-    private void addPropertyToPropertySetElement(Document doc, Element propSetElement,
+    private void addPropertyToPropertySetElement(String uri, Document doc, Element propSetElement,
                                                  Property prop, SearchEnvironment envir) {
         
         if (prop.getDefinition() == null) {
@@ -290,14 +292,13 @@ public class XmlSearcher implements InitializingBean {
         
         Locale locale = envir.getLocale();
 
-        Set formatSet = envir.getFormats().getFormats(prop.getDefinition());
+        Set<String> formatSet = envir.getFormats().getFormats(prop.getDefinition());
         if (!formatSet.contains(null)) {
             // Add default (null) format:
             formatSet.add(null);
         }
 
-        for (Iterator iter = formatSet.iterator(); iter.hasNext();) {
-            String format = (String) iter.next();
+        for (String format: formatSet) {
             if (prop.getDefinition().isMultiple()) {
                 Element valuesElement = doc.createElement("values");
                 if (format != null) {
@@ -305,13 +306,13 @@ public class XmlSearcher implements InitializingBean {
                 }
                 Value[] values = prop.getValues();
                 for (int i = 0; i < values.length; i++) {
-                    Element valueElement = valueElement(doc, values[i], format, locale);
+                    Element valueElement = valueElement(uri, doc, values[i], format, locale);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
             } else {
                 Value value = prop.getValue();
-                Element valueElement = valueElement(doc, value, format, locale);
+                Element valueElement = valueElement(uri, doc, value, format, locale);
                 if (format != null) {
                     valueElement.setAttribute("format", format);
                 }
@@ -323,9 +324,26 @@ public class XmlSearcher implements InitializingBean {
     }
 
     
-    private Element valueElement(Document doc, Value value, String format, Locale locale) {
+    private Element valueElement(String uri, Document doc, Value value, String format, Locale locale) {
             Element valueElement = doc.createElement("value");
-            Text text = doc.createTextNode(this.valueFormatter.valueToString(value, format, locale));
+            String valueString = this.valueFormatter.valueToString(value, format, locale);
+
+            // If string value and format is url, try to create url (if it doesn't start with http?)
+            if (format != null && value.getType() == PropertyType.TYPE_STRING) {
+
+                if (format.equals("url") && !valueString.startsWith("http")) {
+                    if (!valueString.startsWith("/")) {
+                        valueString = URIUtil.getParentURI(uri) + "/" + valueString;
+                    }
+                    try {
+                        valueString = this.linkToService.constructLink(valueString);
+                    } catch (Exception e) {
+                        logger.warn(valueString + " led to exception ", e);
+                        return null;
+                    }
+                }
+            }
+            Text text = doc.createTextNode(valueString);
             valueElement.appendChild(text);
             return valueElement;
     }
@@ -333,21 +351,22 @@ public class XmlSearcher implements InitializingBean {
 
     private class Formats {
 
-        private Map formats = new HashMap();
+        private Map<PropertyTypeDefinition, Set<String>> formats = 
+            new HashMap<PropertyTypeDefinition, Set<String>>();
 
         public void addFormat(PropertyTypeDefinition def, String format) {
-            Set s = (Set) this.formats.get(def);
+            Set<String> s = this.formats.get(def);
             if (s == null) {
-                s = new HashSet();
+                s = new HashSet<String>();
                 this.formats.put(def, s);
             }
             s.add(format);
         }
 
-        public Set getFormats(PropertyTypeDefinition def) {
-            Set set = (Set) this.formats.get(def);
+        public Set<String> getFormats(PropertyTypeDefinition def) {
+            Set<String> set = this.formats.get(def);
             if (set == null) {
-                set = new HashSet();
+                set = new HashSet<String>();
             }
             return set;
         }
@@ -411,12 +430,11 @@ public class XmlSearcher implements InitializingBean {
                 this.reportUrl = true;
                 return;
             }
-            String[] fieldsArray = splitFields(fields);
+            List<String> fieldsArray = splitFields(fields);
             ConfigurablePropertySelect selectedFields = new ConfigurablePropertySelect();
             this.select = selectedFields;
 
-            for (int i = 0; i < fieldsArray.length; i++) {
-                String fullyQualifiedName = fieldsArray[i];
+            for (String fullyQualifiedName: fieldsArray) {
                 if ("".equals(fullyQualifiedName.trim())) {
                     continue;
                 }
@@ -494,13 +512,14 @@ public class XmlSearcher implements InitializingBean {
 
         // Splits fields on ',' characters, allowing commas to appear
         // within (non-nested) brackets.
-        private String[] splitFields(String fields) {
-            List l = new ArrayList();
+        private List<String> splitFields(String fields) {
+            List<String> results = new ArrayList<String>();
+
             String s = new String();
             boolean insideBrackets = false;
             for (int i = 0; i < fields.length(); i++) {
                 if (',' == fields.charAt(i) && !insideBrackets) {
-                    l.add(s);
+                    results.add(s);
                     s = new String();
                 } else {
 
@@ -519,9 +538,10 @@ public class XmlSearcher implements InitializingBean {
 
             }
             if (!"".equals(s)) {
-                l.add(s);
+                results.add(s);
             }
-            return (String[]) l.toArray(new String[l.size()]);
+            
+            return results;
         }
         
         public boolean reportUri() {

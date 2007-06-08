@@ -48,13 +48,10 @@ import org.vortikal.security.Principal;
 import au.id.jericho.lib.html.Source;
 
 
-public abstract class AbstractJerichoHtmlContentEvaluator implements ContentModificationPropertyEvaluator {
+public abstract class AbstractJerichoHtmlContentEvaluator
+  implements ContentModificationPropertyEvaluator {
 
     private PropertyTypeDefinition characterEncodingPropDef;
-
-    private ContentModificationPropertyEvaluator characterEncodingEvaluator;
-    private String defaultEncoding;
-    
 
     private static Log logger = LogFactory.getLog(HtmlTitleElementEvaluator.class);
 
@@ -63,14 +60,6 @@ public abstract class AbstractJerichoHtmlContentEvaluator implements ContentModi
         this.characterEncodingPropDef = characterEncodingPropDef;
     }
     
-
-    public void setCharacterEncodingEvaluator(ContentModificationPropertyEvaluator characterEncodingEvaluator) {
-        this.characterEncodingEvaluator = characterEncodingEvaluator;
-    }
-    
-    public void setDefaultEncoding(String defaultEncoding) {
-        this.defaultEncoding = defaultEncoding;
-    }
 
     protected abstract boolean doContentModification(
         Principal principal, Property property, PropertySet ancestorPropertySet,
@@ -83,10 +72,7 @@ public abstract class AbstractJerichoHtmlContentEvaluator implements ContentModi
         
         InputStream stream = null;
         String encoding = determineCharacterEncoding(principal, property, ancestorPropertySet, content, time);
-        if (encoding == null) {
-            encoding = "utf-8";
-        }
-
+        
         try {
             Source source = null;
             stream = (InputStream) content.getContentRepresentation(InputStream.class);
@@ -112,21 +98,8 @@ public abstract class AbstractJerichoHtmlContentEvaluator implements ContentModi
                                               PropertySet ancestorPropertySet, Content content, Date time) {
         
         String encoding = null;
-        if (this.characterEncodingEvaluator != null) {
-            
-            try {
-                Property dummyProp = (Property) property.clone();
-                boolean evaluated = this.characterEncodingEvaluator.contentModification(
-                    principal, dummyProp, ancestorPropertySet, content, time);
-                if (evaluated) {
-                    encoding = dummyProp.getStringValue();
-                }
-
-            } catch (Exception e) { }
-        }
-
         if (this.characterEncodingPropDef == null) {
-            return encodingValue(encoding);
+            return java.nio.charset.Charset.defaultCharset().toString().toLowerCase();
         }
 
         Property encProperty = ancestorPropertySet.getProperty(this.characterEncodingPropDef);
@@ -136,17 +109,12 @@ public abstract class AbstractJerichoHtmlContentEvaluator implements ContentModi
                 java.nio.charset.Charset.forName(encoding);
             } catch (Exception e) { }
         }
-        return encodingValue(encoding);
+        if (encoding == null) {
+            return java.nio.charset.Charset.defaultCharset().toString().toLowerCase();
+        }
+
+        return encoding;
     }
     
-    private String encodingValue(String encoding) {
-        if (encoding != null) {
-            return encoding;
-        }
-        if (this.defaultEncoding != null) {
-            return this.defaultEncoding;
-        }
-        return null;
-    }
     
 }

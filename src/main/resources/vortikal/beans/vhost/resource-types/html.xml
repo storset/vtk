@@ -22,10 +22,10 @@
     </property>    
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="htmlDocTypePropDef" />
-        <ref bean="htmlTitlePropDef" />
         <ref bean="htmlOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="htmlOverriddenCharacterEncodingPropDef" />
+        <ref bean="htmlDocTypePropDef" />
+        <ref bean="htmlTitlePropDef" />
         <ref bean="htmlOverriddenTitlePropDef" />
       </list>
     </property>
@@ -39,13 +39,10 @@
     <property name="contentModificationEvaluator" ref="docTypeEvaluator" />
   </bean>
 
-  <bean id="docTypeEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator">
-    <property name="defaultEncoding" value="${defaultHtmlResourceCharacterEncoding}" />
-  </bean>
+  <bean id="docTypeEvaluator" class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
 
   <bean id="htmlTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
     <property name="name" value="htmlTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -54,9 +51,7 @@
 
   <bean id="htmlTitlePropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
-    <property name="characterEncodingPropertyDefinition" ref="userSpecifiedCharacterEncodingPropDef" />
-    <property name="characterEncodingEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
-    <property name="defaultEncoding" value="${defaultHtmlResourceCharacterEncoding}" />
+    <property name="characterEncodingPropertyDefinition" ref="characterEncodingPropDef" />
   </bean>
 
   <bean id="htmlOverriddenTitlePropDef"

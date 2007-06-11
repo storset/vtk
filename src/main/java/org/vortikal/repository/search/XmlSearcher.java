@@ -253,9 +253,8 @@ public class XmlSearcher implements InitializingBean {
         if (envir.reportUrl())
             propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet));
 
-        for (Iterator i = propSet.getProperties().iterator(); i.hasNext();) {
-            Property prop = (Property) i.next();
-            addPropertyToPropertySetElement(propSet.getURI(), doc, propertySetElement, prop, envir);
+        for (Property prop: propSet.getProperties()) {
+            addPropertyToPropertySetElement(propSet.getURI(), propertySetElement, prop, envir);
         }
         
     }
@@ -269,12 +268,14 @@ public class XmlSearcher implements InitializingBean {
         return this.linkToService.constructLink(uri);
     }
     
-    private void addPropertyToPropertySetElement(String uri, Document doc, Element propSetElement,
+    private void addPropertyToPropertySetElement(String uri, Element propSetElement,
                                                  Property prop, SearchEnvironment envir) {
         
         if (prop.getDefinition() == null) {
             return;
         }
+        
+        Document doc = propSetElement.getOwnerDocument();
         
         Element propertyElement = doc.createElement("property");
         
@@ -306,13 +307,15 @@ public class XmlSearcher implements InitializingBean {
                 }
                 Value[] values = prop.getValues();
                 for (int i = 0; i < values.length; i++) {
-                    Element valueElement = valueElement(uri, doc, values[i], format, locale);
+                    String valueString = getFormattedPropertyValue(uri, values[i], format, locale);
+                    Element valueElement = valueElement(doc, valueString);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
             } else {
                 Value value = prop.getValue();
-                Element valueElement = valueElement(uri, doc, value, format, locale);
+                String valueString = getFormattedPropertyValue(uri, value, format, locale);
+                Element valueElement = valueElement(doc, valueString);
                 if (format != null) {
                     valueElement.setAttribute("format", format);
                 }
@@ -324,28 +327,31 @@ public class XmlSearcher implements InitializingBean {
     }
 
     
-    private Element valueElement(String uri, Document doc, Value value, String format, Locale locale) {
+    private Element valueElement(Document doc, String formattedValue) {
             Element valueElement = doc.createElement("value");
-            String valueString = this.valueFormatter.valueToString(value, format, locale);
-
-            // If string value and format is url, try to create url (if it doesn't start with http?)
-            if (format != null && value.getType() == PropertyType.TYPE_STRING) {
-
-                if (format.equals("url") && !valueString.startsWith("http")) {
-                    if (!valueString.startsWith("/")) {
-                        valueString = URIUtil.getParentURI(uri) + "/" + valueString;
-                    }
-                    try {
-                        valueString = this.linkToService.constructLink(valueString);
-                    } catch (Exception e) {
-                        logger.warn(valueString + " led to exception ", e);
-                        return null;
-                    }
-                }
-            }
-            Text text = doc.createTextNode(valueString);
+            Text text = doc.createTextNode(formattedValue);
             valueElement.appendChild(text);
             return valueElement;
+    }
+
+    private String getFormattedPropertyValue(String uri, Value value, String format, Locale locale) {
+        String valueString = this.valueFormatter.valueToString(value, format, locale);
+
+        // If string value and format is url, try to create url (if it doesn't start with http?)
+        if (format != null && value.getType() == PropertyType.TYPE_STRING) {
+
+            if (format.equals("url") && !valueString.startsWith("http")) {
+                if (!valueString.startsWith("/")) {
+                    valueString = URIUtil.getParentURI(uri) + "/" + valueString;
+                }
+                try {
+                    valueString = this.linkToService.constructLink(valueString);
+                } catch (Exception e) {
+                    logger.warn(valueString + " led to exception ", e);
+                }
+            }
+        }
+        return valueString;
     }
     
 

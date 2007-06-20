@@ -1561,8 +1561,6 @@
 
    <!-- Locale resolver for manage service  -->
 
-   <!-- Note: A bug in spring pre 2.0.6, means this cannot be reset
-     with setLocale(null) (which there's currently no reason to do :).  -->
    <bean id="manageLocaleResolver"
          class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
      <property name="cookieMaxAge" value="315360000" />

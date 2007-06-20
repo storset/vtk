@@ -33,18 +33,18 @@ package org.vortikal.web.servlet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.servlet.http.Cookie;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.util.WebUtils;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
 public class ServiceDelegatingLocaleResolver implements LocaleResolver {
 
-    private Map serviceLocaleResolverMap = new HashMap();
+    private Map<Service, LocaleResolver> serviceLocaleResolverMap = new HashMap<Service, LocaleResolver>();
     private LocaleResolver defaultLocaleResolver;
     
 
@@ -52,7 +52,7 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
         this.defaultLocaleResolver = defaultLocaleResolver;
     }
 
-    public void setServiceLocaleResolverMap(Map serviceLocaleResolverMap) {
+    public void setServiceLocaleResolverMap(Map<Service, LocaleResolver> serviceLocaleResolverMap) {
         this.serviceLocaleResolverMap = serviceLocaleResolverMap;
     }
     
@@ -75,9 +75,7 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
         
         while (currentService != null) {
             if (this.serviceLocaleResolverMap.containsKey(currentService)) {
-                LocaleResolver resolver = (LocaleResolver)
-                    this.serviceLocaleResolverMap.get(currentService);
-                return resolver;
+                return this.serviceLocaleResolverMap.get(currentService);
             }
             currentService = currentService.getParent();
         }
@@ -86,4 +84,7 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
         
     }
     
+    public void addEntry(Service service, LocaleResolver localeResolver) {
+        this.serviceLocaleResolverMap.put(service, localeResolver);
+    }
 }

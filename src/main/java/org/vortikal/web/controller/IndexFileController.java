@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
 
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
@@ -134,6 +136,10 @@ public class IndexFileController
         Resource indexFile = null;
         try {
             indexFile = this.repository.retrieve(token, indexURI, true);
+        } catch (AuthenticationException e) { 
+            throw e;
+        } catch (AuthorizationException e) { 
+            throw e;
         } catch (Throwable t) { 
             throw new IllegalStateException("No index file found under " + res, t);
         }

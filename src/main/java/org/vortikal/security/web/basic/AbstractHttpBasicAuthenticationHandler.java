@@ -30,29 +30,15 @@
  */
 package org.vortikal.security.web.basic;
 
-import java.util.HashSet;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.Ordered;
-
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
-import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.web.AbstractAuthenticationHandler;
 import org.vortikal.security.web.AuthenticationChallenge;
-import org.vortikal.security.web.AuthenticationHandler;
-import org.vortikal.security.web.InvalidAuthenticationRequestException;
-import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.Base64;
-import org.vortikal.util.codec.MD5;
 
 /**
  * Abstract base class for performing HTTP/Basic
@@ -61,153 +47,42 @@ import org.vortikal.util.codec.MD5;
  * 
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>principalFactory</code> - a {@link PrincipalFactory} (required)
- *   <li><code>challenge</code> - an {@link
- *   HttpBasicAuthenticationChallenge authentication challenge}
- *   (required)
- *   <li><code>recognizedDomains</code> - a {@link Set} specifying the
- *     recognized principal {@link Principal#getDomain domains}. If
- *     this property is not specified, all domains are matched.
- *   <li><code>cache</code> - simple {@link SimpleCache cache} to
- *   allow for clients that don't send cookies (optional)
- *   <li><code>excludedPrincipals</code> - a {@link Set} of principal
- *     names to actively exclude when matching authentication
- *     requests. If the principal in an authentication request is
- *     present in this set, the authentication request is treated as if
- *     it were not recognized, even though it normally would.
- *   <li><code>order</code> - the bean order returned in {@link
- *   Ordered#getOrder}
- *  </ul>
+ *   <li><code>challenge</code> - an {@link HttpBasicAuthenticationChallenge authentication challenge} (required)
+ *   <li><code>requireSecureConnection</code> - defaults to <code>true</code>
+ * </ul>
  */
-public abstract class AbstractHttpBasicAuthenticationHandler 
-  implements AuthenticationHandler, Ordered, InitializingBean {
-
-    protected Log logger = LogFactory.getLog(this.getClass());
-
-    /* Simple cache to allow for clients that don't send cookies */
-    private SimpleCache cache = null;
-    private Set recognizedDomains = null;
-    private Set excludedPrincipals = new HashSet();
-    private int order = Integer.MAX_VALUE;
+public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAuthenticationHandler {
 
     protected HttpBasicAuthenticationChallenge challenge;
-    protected PrincipalFactory principalFactory;
-  
-    public void setCache(SimpleCache cache) {
-        this.cache = cache;
-    }
+    private boolean requireSecureConnection = true;
     
     public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
         this.challenge = challenge;
     }
     
-    public void setRecognizedDomains(Set recognizedDomains) {
-        this.recognizedDomains = recognizedDomains;
-    }
-
-    public void setExcludedPrincipals(Set excludedPrincipals) {
-        this.excludedPrincipals = excludedPrincipals;
-    }
-    
-    public void setOrder(int order) {
-        this.order = order;
-    }
-    
-    public int getOrder() {
-        return this.order;
-    }
-    
-
     public void afterPropertiesSet() {
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                "Property 'principalFactory' must be set");
-        }
+        super.afterPropertiesSet();
         
         if (this.challenge == null) {
-            throw new BeanInitializationException(
-                "Property 'challenge' must be set");
+            throw new BeanInitializationException("Property 'challenge' must be set");
         }
     }
 
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
     throws AuthenticationProcessingException {
 
+        if (this.requireSecureConnection  && !req.isSecure()) {
+            return false;
+        }
+        
         String authHeader = req.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Basic ")) 
-            return false;
-
-        String username = null;
-        Principal principal = null;
-        
-        try {
-            username = getUserName(req);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidAuthenticationRequestException(e);
-        }
-
-
-        try {
-            principal = this.principalFactory.getUserPrincipal(username);
-        } catch (InvalidPrincipalException e) {
+                
+        if (authHeader == null || !authHeader.startsWith("Basic ")) {
             return false;
         }
         
-        if (this.excludedPrincipals != null
-            && this.excludedPrincipals.contains(principal.getQualifiedName())) {
-            return false;
-        }
-
-        if (this.recognizedDomains == null
-            || this.recognizedDomains.contains(principal.getDomain()))
-            return true;
-    
-        return false;
+        return super.isRecognizedAuthenticationRequest(req);
     }
-
-
-    public Principal authenticate(HttpServletRequest request)
-        throws AuthenticationProcessingException, AuthenticationException {
-
-        String username = null;
-        String password = null;
-        try {
-
-            username = getUserName(request);
-            password = getPassword(request);
-
-        } catch (IllegalArgumentException e) {
-            throw new InvalidAuthenticationRequestException(e);
-        }
-
-        Principal principal = null;
-        
-        try {
-            principal = this.principalFactory.getUserPrincipal(username);
-        } catch (InvalidPrincipalException e) {
-            throw new AuthenticationException("Invalid principal '" + username + "'", e);
-        }
-
-        if (this.cache != null) {
-            Principal cachedPrincipal = (Principal) 
-                this.cache.get(MD5.md5sum(principal.getQualifiedName() + password));
-        
-            if (cachedPrincipal != null) {
-                if (this.logger.isDebugEnabled())
-                    this.logger.debug("Found authenticated principal '" + username + "' in cache.");
-                return cachedPrincipal;
-            }
-        }
-        
-        authenticateInternal(principal, password);
-        
-        if (this.cache != null)
-            /* add to cache */
-            this.cache.put(MD5.md5sum(principal.getQualifiedName() + password), principal);
-
-        return principal;
-    }
-    
 
     public boolean postAuthentication(HttpServletRequest req, HttpServletResponse resp)
         throws AuthenticationProcessingException {
@@ -219,7 +94,6 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         return false;
     }
 
-
     public boolean logout(Principal principal, HttpServletRequest req,
                           HttpServletResponse resp)
         throws AuthenticationProcessingException {
@@ -229,10 +103,6 @@ public abstract class AbstractHttpBasicAuthenticationHandler
     }
     
 
-
-    public abstract void authenticateInternal(Principal principal, String password)
-        throws AuthenticationProcessingException, AuthenticationException;
-    
 
     public AuthenticationChallenge getAuthenticationChallenge() {
         return this.challenge;
@@ -278,7 +148,9 @@ public abstract class AbstractHttpBasicAuthenticationHandler
         return password;
     }
 
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
+    public void setRequireSecureConnection(boolean requireSecureConnection) {
+        this.requireSecureConnection = requireSecureConnection;
     }
+
+    
 }

@@ -613,6 +613,9 @@ function VortikalXhtmlValidation(editor) {
         var permittedChildren = this.States[parentnode.tagName] || permitted;
 
         if (kids.length == 0) {
+        	/* IE workaround: IE includes contents of style with this line */ 
+        	if(nodename=='style') htmlnode.text = htmlnode.innerHTML;
+        	
             if (htmlnode.text && htmlnode.text != "" &&
                 (nostructure || permittedChildren['#PCDATA'])) {
                 var text = htmlnode.text;

@@ -202,7 +202,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="parser" ref="searchParser" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="defaultLocale" value="${defaultLocale}" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
 
     <property name="valueFormatter" ref="valueFormatter" />
 

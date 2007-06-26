@@ -56,7 +56,7 @@
     <property name="name" value="localize" />
 
     <property name="messageSource" ref="messageSource" />
-    <property name="defaultLocale" value="${defaultLocale}" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
     <property name="localePropertyDefinition" ref="contentLocalePropDef" />
   </bean>
 

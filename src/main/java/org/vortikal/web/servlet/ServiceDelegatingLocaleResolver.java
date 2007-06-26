@@ -64,7 +64,8 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
     public void setLocale(HttpServletRequest request,
                           HttpServletResponse response, Locale locale) {
         LocaleResolver resolver = mapLocaleResolver(request);
-        resolver.setLocale(request, response, locale);
+        if (resolver != null)
+            resolver.setLocale(request, response, locale);
         
     }
 

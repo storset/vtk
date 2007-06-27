@@ -53,7 +53,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * <ul>
  *  <li><code>repository</code> - the content repository
  *  <li><code>services</code> - required array of {@link Service}s to create ListMenu to 
- *  <li><code>label</code> - required MenyList type descriptor
+ *  <li><code>label</code> - required ListMenu type descriptor
  *  <li> <code>modelName</code> - the name to use as model key. The
  *  default is 'label', override if you have multiple list menus with
  *  the same label.

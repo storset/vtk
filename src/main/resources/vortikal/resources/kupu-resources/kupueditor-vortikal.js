@@ -230,6 +230,12 @@ function KupuEditor(document, config, logger) {
             };
         };
         
+        // This makes sure all links in tags and in attributes listed are the same as the original: The second argument to getAttribute gets the real value
+		var a_elements = this.getInnerDocument().getElementsByTagName('a');
+		for(var i=0;i<a_elements.length;i++){
+			a_elements[i].setAttribute('href', a_elements[i].getAttribute('href', 2));
+		}
+        
         // pass the content through the filters
         this.logMessage(_("Starting HTML cleanup"));
         var transform = this._filterContent(this.getInnerDocument().documentElement);

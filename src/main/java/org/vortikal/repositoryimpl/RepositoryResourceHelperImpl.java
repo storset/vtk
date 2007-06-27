@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,14 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.InternalRepositoryException;
@@ -288,7 +289,8 @@ public class RepositoryResourceHelperImpl
                 throw new InternalRepositoryException(
                     "Property " + propDef + " is " +
                     "mandatory and evaluator returned false, but no default value is set. " +
-                    "Resource " + newResource + " not evaluated.");
+                    "Resource " + newResource + " not evaluated (resource type: "
+                    + newResource.getResourceType() + ")");
             }
             evaluatedProp = this.propertyManager.createProperty(
                 propDef.getNamespace(), propDef.getName());
@@ -381,7 +383,7 @@ public class RepositoryResourceHelperImpl
             if (!prop.isValueInitialized()) {
                 throw new InternalRepositoryException(
                     "Evaluator " + evaluator + " on resource '"
-                    + newResource.getURI() + "' returned not value initialized property " + 
+                    + newResource.getURI() + "' returned un-initialized value: " + 
                     propDef);
             }
         } else if (propDef instanceof OverridablePropertyTypeDefinition) {
@@ -432,7 +434,7 @@ public class RepositoryResourceHelperImpl
         if (!property.isValueInitialized()) {
             throw new InternalRepositoryException(
                 "Evaluator " + evaluator + " on resource '"
-                + newResource.getURI() + "' returned not value initialized property " + 
+                + newResource.getURI() + "' returned un-initialized value: " + 
                 propDef);
         } 
 
@@ -480,7 +482,7 @@ public class RepositoryResourceHelperImpl
             if (!property.isValueInitialized()) {
                 throw new InternalRepositoryException(
                     "Evaluator " + evaluator + " on resource '"
-                    + newResource.getURI() + "' returned not value initialized property " + 
+                    + newResource.getURI() + "' returned un-initialized value: " + 
                     propDef);
             } 
         } else {

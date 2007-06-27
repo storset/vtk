@@ -56,6 +56,7 @@
   <import resource="mixins/ssi.xml" />
   <import resource="mixins/visual-profile.xml" />
   <import resource="mixins/content-description.xml" />
+  <import resource="mixins/scientific.xml" />
   
   
 </beans>

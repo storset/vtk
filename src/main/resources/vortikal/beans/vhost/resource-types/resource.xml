@@ -12,6 +12,7 @@
       <list>
         <ref bean="contentDescriptionMixinResourceTypeDef" />
         <ref bean="headerControlMixinResourceTypeDef" />
+        <ref bean="scientificDisciplinesMixinResourceTypeDef" />
       </list>
     </property>    
     <property name="propertyTypeDefinitions">

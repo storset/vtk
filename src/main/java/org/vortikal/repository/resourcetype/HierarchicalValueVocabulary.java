@@ -96,7 +96,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
         List<Value> values = new ArrayList<Value>();
 
         for (HierarchicalNode<Value> rootNode: this.nodes) {
-            values.addAll(this.descendantsAndSelfMap.get(rootNode));
+            values.addAll(this.descendantsAndSelfMap.get(rootNode.getEntry()));
         }
         
         this.allowedValues = values.toArray(new Value[values.size()]);

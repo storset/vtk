@@ -26,418 +26,1887 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="multiple" value="true" />
-    <property name="constraint" ref="disciplinesConstraint" />
+    <!--property name="constraint" ref="disciplinesConstraint" /-->
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.HierarchicalValueVocabulary">
+        <property name="stringNodes">
+          <list>
+            <ref bean="discipline.humaniora" />
+            <ref bean="discipline.samfunnsvitenskap" />
+            <ref bean="discipline.matnat" />
+            <ref bean="discipline.teknologi" />
+            <ref bean="discipline.med" />
+            <ref bean="discipline.landbruksfag" />
+          </list>
+        </property>
+      </bean>
+    </property>
   </bean>
 
-  <bean id="disciplinesConstraint" 
-        class="org.vortikal.repository.resourcetype.property.StringEnumerationConstraint">
-    <property name="allowedValues">
-      <set>
-        <value>HUMANIORA</value>
-        <value>SPRÅKVITENSKAPELIGE FAG</value>
-        <value>Allmenn språkvitenskap og fonetikk</value>
-        <value>Anvendt språkvitenskap</value>
-        <value>Tegnspråk</value>
-        <value>Nordiske språk</value>
-        <value>Norrøn filologi</value>
-        <value>Engelsk språk</value>
-        <value>Tysk språk</value>
-        <value>Nederlandsk språk</value>
-        <value>Andre germanske språk</value>
-        <value>Fransk språk</value>
-        <value>Italiensk språk</value>
-        <value>Spansk språk</value>
-        <value>Andre romanske språk</value>
-        <value>Russisk språk</value>
-        <value>Andre slaviske språk</value>
-        <value>Finsk-ugriske språk</value>
-        <value>Samisk språk</value>
-        <value>Klassisk filologi</value>
-        <value>Indoeuropeiske språk</value>
-        <value>Østasiatiske språk</value>
-        <value>Semittiske språk</value>
-        <value>Afrikanske språk</value>
-        <value>Stillehavsspråk</value>
-        <value>Tyrkiske språk</value>
-        <value>Andre språkvitenskapelige fag</value>
-        <value>LITTERATURVITENSKAPELIGE FAG</value>
-        <value>Allmenn litteraturvitenskap</value>
-        <value>Nordisk litteratur</value>
-        <value>Engelsk litteratur</value>
-        <value>Tysk litteratur</value>
-        <value>Annen germansk litteratur</value>
-        <value>Fransk litteratur</value>
-        <value>Italiensk litteratur</value>
-        <value>Spansk litteratur</value>
-        <value>Annen romansk litteratur</value>
-        <value>Russisk litteratur</value>
-        <value>Annen slavisk litteratur</value>
-        <value>Finsk litteratur</value>
-        <value>Samisk litteratur</value>
-        <value>Klassisk litteratur</value>
-        <value>Indoeuropeisk litteratur</value>
-        <value>Østasiatisk litteratur</value>
-        <value>Semittisk litteratur</value>
-        <value>Afrikansk litteratur</value>
-        <value>Andre litteraturvitenskapelige fag</value>
-        <value>KULTURVITENSKAP</value>
-        <value>Nordisk kulturvitenskap</value>
-        <value>Germansk kulturvitenskap</value>
-        <value>Romansk kulturvitenskap</value>
-        <value>Slavisk kulturvitenskap</value>
-        <value>Klassisk kulturvitenskap</value>
-        <value>Indoeuropeisk kulturvitenskap</value>
-        <value>Østasiatisk kulturvitenskap</value>
-        <value>Angloamerikansk kulturvitenskap</value>
-        <value>Annen kulturvitenskap</value>
-        <value>HISTORIE</value>
-        <value>Politisk historie</value>
-        <value>Sosialhistorie</value>
-        <value>Kvinnehistorie</value>
-        <value>Økonomisk historie</value>
-        <value>Kulturhistorie</value>
-        <value>Oldtidens historie</value>
-        <value>Middelalderhistorie</value>
-        <value>Nyere tids historie (før 1800)</value>
-        <value>Moderne historie (etter 1800)</value>
-        <value>Samtidshistorie (etter 1945)</value>
-        <value>Ikke-europeisk/-vestlig historie</value>
-        <value>Annen historie</value>
-        <value>ARKEOLOGI</value>
-        <value>Nordisk arkeologi</value>
-        <value>Klassisk arkeologi</value>
-        <value>Annen arkeologi</value>
-        <value>FOLKLORISTIKK, ETNOLOGI</value>
-        <value>Folkloristikk</value>
-        <value>Etnologi</value>
-        <value>MUSIKKVITENSKAP</value>
-        <value>Musikkhistorie</value>
-        <value>Musikkteori</value>
-        <value>Musikkterapi</value>
-        <value>Musikkpedagogikk</value>
-        <value>Annen musikkvitenskap</value>
-        <value>KUNSTHISTORIE</value>
-        <value>Skulptur</value>
-        <value>Maleri, tegning, grafikk</value>
-        <value>Folkekunst, kunsthåndverk</value>
-        <value>Konservering og restaurering</value>
-        <value>Antikkens kunsthistorie</value>
-        <value>Middelalderkunsthistorie</value>
-        <value>Fra renessanse‑ t.o.m. barokk</value>
-        <value>Nyere tids kunsthistorie</value>
-        <value>Moderne kunsthistorie</value>
-        <value>Ikke‑europeisk kunsthistorie</value>
-        <value>Annen kunsthistorie</value>
-        <value>ARKITEKTUR OG DESIGN</value>
-        <value>Arkitektur- og designhistorie</value>
-        <value>Arkitektur- og designteori</value>
-        <value>Prosjekterings‑ og formgivningsmetodikk</value>
-        <value>Landskapsarkitektur</value>
-        <value>TEOLOGI OG RELIGIONSVITENSKAP</value>
-        <value>Teologi</value>
-        <value>Kristendomskunnskap</value>
-        <value>Religionsvitenskap, religionshistorie</value>
-        <value>FILOSOFISKE FAG</value>
-        <value>Filosofi</value>
-        <value>Idéhistorie</value>
-        <value>Logikk</value>
-        <value>Etikk</value>
-        <value>Andre filosofiske fag</value>
-        <value>FILM- OG TEATERVITENSKAP</value>
-        <value>Filmvitenskap</value>
-        <value>Teatervitenskap</value>
-        <value>SAMFUNNSVITENSKAP</value>
-        <value>ØKONOMI</value>
-        <value>Samfunnsøkonomi</value>
-        <value>Bedriftsøkonomi</value>
-        <value>Økonometri</value>
-        <value>SOSIOLOGI</value>
-        <value>URBANISME OG FYSISK PLANLEGGING</value>
-        <value>Planleggingshistorie, -teori og -metodikk</value>
-        <value>Bebyggelses‑ og reguleringsplanlegging</value>
-        <value>Landskapsplanlegging</value>
-        <value>Urbanisme</value>
-        <value>Romlig, territoriell planlegging</value>
-        <value>STATSVITENSKAP OG ORGANISASJONSTEORI</value>
-        <value>Sammenlignende politikk</value>
-        <value>Offentlig og privat administrasjon</value>
-        <value>Internasjonal politikk</value>
-        <value>SOSIALANTROPOLOGI</value>
-        <value>PSYKOLOGI</value>
-        <value>Biologisk psykologi</value>
-        <value>Klinisk psykologi</value>
-        <value>Sosial- og arbeidspsykologi</value>
-        <value>Personlighetspsykologi</value>
-        <value>Utviklingspsykologi</value>
-        <value>Kognitiv psykologi</value>
-        <value>Organisasjonspsykologi</value>
-        <value>Andre psykologiske fag</value>
-        <value>PEDAGOGISKE FAG</value>
-        <value>Allmennpedagogikk</value>
-        <value>Spesialpedagogikk</value>
-        <value>Fagdidaktikk</value>
-        <value>Andre pedagogiske fag</value>
-        <value>SAMFUNNSGEOGRAFI</value>
-        <value>DEMOGRAFI</value>
-        <value>MEDIEVITENSKAP OG JOURNALISTIKK</value>
-        <value>BIBLIOTEK- OG INFORMASJONSVITENSKAP</value>
-        <value>Informasjons- og kommunikasjonssystemer</value>
-        <value>Informasjonspolitikk</value>
-        <value>Kunnskapsgjenfinning og organisering</value>
-        <value>Bibliometri</value>
-        <value>Dokumentasjonsvitenskap</value>
-        <value>Arkivistikk</value>
-        <value>SAMFUNNSVITENSKAPELIGE IDRETTSFAG</value>
-        <value>Integreringsfag</value>
-        <value>Aktivitetslære</value>
-        <value>Idrettspedagogikk og -psykologi</value>
-        <value>Andre idrettsfag</value>
-        <value>RETTSVITENSKAP</value>
-        <value>Allmenn rettsvitenskap</value>
-        <value>Privatrett</value>
-        <value>Offentlig rett</value>
-        <value>Folkerett</value>
-        <value>Rettsinformatikk</value>
-        <value>Miljørett</value>
-        <value>Fiskerirett</value>
-        <value>Andre rettsvitenskapelige fag</value>
-        <value>KRIMINOLOGI</value>
-        <value>SOSIALT ARBEID</value>
-        <value>KVINNE- OG KJØNNSSTUDIER</value>
-        <value>MATEMATIKK OG NATURVITENSKAP</value>
-        <value>MATEMATIKK</value>
-        <value>Analyse</value>
-        <value>Statistikk</value>
-        <value>Anvendt matematikk</value>
-        <value>Algebra/algebraisk analyse</value>
-        <value>Topologi/geometri</value>
-        <value>Logikk</value>
-        <value>Forsikringsmatematikk og risikoanalyse</value>
-        <value>INFORMASJONS- OG KOMMUNIKASJONSVITENSKAP</value>
-        <value>Teoretisk databehandling, programmeringsspråk og -teori</value>
-        <value>Algoritmer og beregnbarhetsteori</value>
-        <value>Kommunikasjon og distribuerte systemer</value>
-        <value>Sikkerhet og sårbarhet</value>
-        <value>Kunnskapsbaserte systemer</value>
-        <value>Systemutvikling og – arbeid</value>
-        <value>Matematisk modellering og numeriske metoder</value>
-        <value>Databaser og multimediasystemer</value>
-        <value>Simulering, visualisering, signalbehandling, bildeanalyse</value>
-        <value>FYSIKK</value>
-        <value>Kjerne- og elementærpartikkelfysikk</value>
-        <value>Atomfysikk, molekylfysikk</value>
-        <value>Elektromagnetisme, akustikk, optikk</value>
-        <value>Elektronikk</value>
-        <value>Kondenserte fasers fysikk</value>
-        <value>Rom- og plasmafysikk</value>
-        <value>Astrofysikk, astronomi</value>
-        <value>KJEMI</value>
-        <value>Organisk kjemi</value>
-        <value>Uorganisk kjemi</value>
-        <value>Fysikalsk kjemi</value>
-        <value>Teoretisk kjemi, kvantekjemi</value>
-        <value>Analytisk kjemi</value>
-        <value>Miljøkjemi, naturmiljøkjemi</value>
-        <value>Kjernekjemi</value>
-        <value>Legemiddelkjemi</value>
-        <value>GEOFAG</value>
-        <value>Faste jords fysikk</value>
-        <value>Oseanografi</value>
-        <value>Meteorologi</value>
-        <value>Hydrologi</value>
-        <value>Naturgeografi</value>
-        <value>Sedimentologi</value>
-        <value>Stratigrafi og paleontologi</value>
-        <value>Mineralogi, petrologi, geokjemi</value>
-        <value>Tektonikk</value>
-        <value>Petroleumsgeologi og -geofysikk</value>
-        <value>Kvartærgeologi, glasiologi</value>
-        <value>Marin geologi</value>
-        <value>Hydrogeologi</value>
-        <value>Geometrikk</value>
-        <value>Andre geofag</value>
-        <value>BASALE BIOFAG</value>
-        <value>Cellebiologi</value>
-        <value>Generell mikrobiologi</value>
-        <value>Molekylærbiologi</value>
-        <value>Genetikk og genomikk</value>
-        <value>Bioinformatikk</value>
-        <value>Biokjemi</value>
-        <value>Biofysikk</value>
-        <value>Generell immunologi</value>
-        <value>ZOOLOGISKE OG BOTANISKE FAG</value>
-        <value>Zoologisk anatomi</value>
-        <value>Embryologi</value>
-        <value>Zoofysiologi og komparativ fysiologi</value>
-        <value>Parasittologi</value>
-        <value>Etologi</value>
-        <value>Zoogeografi</value>
-        <value>Systematisk zoologi</value>
-        <value>Økologi</value>
-        <value>Økotoksikologi</value>
-        <value>Planteanatomi</value>
-        <value>Plantefysiologi</value>
-        <value>Systematisk botanikk</value>
-        <value>Vegetasjonshistorie</value>
-        <value>Plantegeografi</value>
-        <value>Marinbiologi</value>
-        <value>Limnologi</value>
-        <value>TEKNOLOGI</value>
-        <value>BERG‑ OG PETROLEUMSFAG</value>
-        <value>Bergteknologi</value>
-        <value>Petroleumsteknologi</value>
-        <value>Geoteknikk</value>
-        <value>Andre berg‑ og petroleumsfag</value>
-        <value>MATERIALTEKNOLOGI</value>
-        <value>Metallurgi</value>
-        <value>Funksjonelle materialer</value>
-        <value>Plast- og  komposittmaterialer</value>
-        <value>Bygningsmaterialer</value>
-        <value>Annen materialteknologi</value>
-        <value>BYGNINGSFAG</value>
-        <value>Arkitektur og bygningsteknologi</value>
-        <value>Bygg-, anleggs-  og transportteknologi</value>
-        <value>Konstruksjonsteknologi</value>
-        <value>Kart og oppmåling</value>
-        <value>Fysisk planlegging</value>
-        <value>Geoteknologi</value>
-        <value>Hydroteknologi</value>
-        <value>ELEKTROTEKNISKE FAG</value>
-        <value>Elektronikk</value>
-        <value>Elkraft</value>
-        <value>Andre elektrotekniske fag</value>
-        <value>INFORMASJONS- OG KOMMUNIKASJONSTEKNOLOGI</value>
-        <value>Datateknologi</value>
-        <value>Telekommunikasjon</value>
-        <value>Teknisk kybernetikk</value>
-        <value>Geografiske informasjonssystemer</value>
-        <value>Annen informasjonsteknologi</value>
-        <value>KJEMISK TEKNOLOGI</value>
-        <value>Elektrokjemi</value>
-        <value>Kjemisk prosessteknologi</value>
-        <value>Kjemiteknikk</value>
-        <value>Farmasøytisk formulering og teknologi</value>
-        <value>Annen kjemisk teknologi</value>
-        <value>MASKINFAG</value>
-        <value>Maskinkonstruksjon og materialteknologi</value>
-        <value>Produksjon og driftsteknologi</value>
-        <value>Maskinteknisk energi- og miljøteknologi</value>
-        <value>Mekaniske og strømningstekniske fag</value>
-        <value>Andre maskinfag</value>
-        <value>MARIN TEKNOLOGI</value>
-        <value>Offshoreteknologi</value>
-        <value>Skipsteknologi</value>
-        <value>Annen marin teknologi</value>
-        <value>BIOTEKNOLOGI</value>
-        <value>NÆRINGSMIDDELTEKNOLOGI</value>
-        <value>MILJØTEKNOLOGI</value>
-        <value>MEDISINSK TEKNOLOGI</value>
-        <value>NANOTEKNOLOGI</value>
-        <value>INDUSTRI- OG PRODUKTDESIGN</value>
-        <value>MEDISINSKE FAG</value>
-        <value>BASALE MEDISINSKE, ODONTOLOGISKE OG VETERINÆR MEDISINSKE FAG</value>
-        <value>Medisinsk molekylærbiologi</value>
-        <value>Medisinsk genetikk</value>
-        <value>Medisinsk mikrobiologi</value>
-        <value>Medisinsk immunologi</value>
-        <value>Anatomi, fysisk antropologi</value>
-        <value>Human og veterinærmedisinsk fysiologi</value>
-        <value>Generell patologi, patologisk anatomi</value>
-        <value>Rettsmedisin, rettsodontologi</value>
-        <value>Patofysiologi</value>
-        <value>Klinisk kjemi</value>
-        <value>Medisinsk biokjemi</value>
-        <value>Farmakologi</value>
-        <value>Toksikologi</value>
-        <value>Biofarmasi</value>
-        <value>Farmakognosi</value>
-        <value>Klinisk farmakologi</value>
-        <value>KLINISK MEDISINSKE FAG</value>
-        <value>Allmennmedisin</value>
-        <value>Nevrologi</value>
-        <value>Dermatologi og venerologi</value>
-        <value>Oftalmologi</value>
-        <value>Otorhinolaryngologi</value>
-        <value>Gynekologi og obstetrikk</value>
-        <value>Psykiatri, barnepsykiatri</value>
-        <value>Rettspsykiatri</value>
-        <value>Reumatologi</value>
-        <value>Pediatri</value>
-        <value>Tropemedisin</value>
-        <value>Onkologi</value>
-        <value>Radiologi og bildediagnostikk</value>
-        <value>Fysikalsk medisin og rehabilitering</value>
-        <value>Anestesiologi</value>
-        <value>Generell indremedisin</value>
-        <value>Kardiologi</value>
-        <value>Nefrologi, urologi</value>
-        <value>Gasteroenterologi</value>
-        <value>Endokrinologi</value>
-        <value>Hematologi</value>
-        <value>Infeksjonsmedisin</value>
-        <value>Lungesykdommer</value>
-        <value>Geriatri</value>
-        <value>Generell kirurgi</value>
-        <value>Gasteroenterologisk kirurgi</value>
-        <value>Kar- og thoraxkirurgi</value>
-        <value>Traumatologi</value>
-        <value>Ortopedisk kirurgi</value>
-        <value>Plastisk kirurgi</value>
-        <value>Nevrokirurgi</value>
-        <value>Kjevekirurgi</value>
-        <value>Endokrin kirurgi</value>
-        <value>Andre klinisk medisinske fag</value>
-        <value>HELSEFAG</value>
-        <value>Samfunnsmedisin, sosialmedisin</value>
-        <value>Samfunnsodontologi</value>
-        <value>Epidemiologi medisinsk og odontologisk statistikk</value>
-        <value>Forebyggende medisin</value>
-        <value>Medisinsk/odontologisk etikk, atferdsfag, historie</value>
-        <value>Helsetjeneste- og helseadministrasjonsforskning</value>
-        <value>Fysioterapi</value>
-        <value>Sykepleievitenskap</value>
-        <value>Yrkesmedisin</value>
-        <value>Bedriftsmedisin</value>
-        <value>Ernæring</value>
-        <value>Samfunnsfarmasi</value>
-        <value>Næringsmiddelhygiene</value>
-        <value>Andre helsefag</value>
-        <value>KLINISK ODONTOLOGISKE FAG</value>
-        <value>Konserverende tannpleie</value>
-        <value>Protetikk og bitt funksjon</value>
-        <value>Kjeveortopedi</value>
-        <value>Barnetannpleie og kariesprofylakse</value>
-        <value>Oral kirurgi</value>
-        <value>Oral medisin</value>
-        <value>Oral radiologi</value>
-        <value>Periodonti</value>
-        <value>Andre kliniske odontologiske fag</value>
-        <value>IDRETTSMEDISINSKE FAG</value>
-        <value>Treningslære</value>
-        <value>Bevegelseslære</value>
-        <value>Doping/idrettsfarmakologi</value>
-        <value>LANDBRUKS‑ OG FISKERIFAG</value>
-        <value>LANDBRUKSFAG</value>
-        <value>Planteforedling, hagebruk, plantevern, plantepatologi</value>
-        <value>Husdyravl, oppdrett, forplantning</value>
-        <value>Jordfag</value>
-        <value>Naturressursforvaltning</value>
-        <value>Skogbruk</value>
-        <value>Landbruksteknologi</value>
-        <value>Fôring</value>
-        <value>Andre landbruksfag</value>
-        <value>FISKERIFAG</value>
-        <value>Ressursbiologi</value>
-        <value>Akvakultur</value>
-        <value>Fiskehelse</value>
-        <value>Fiskeriteknologi</value>
-        <value>Fangst</value>
-        <value>Andre fiskerifag</value>
-        <value>KLINISK VETERINÆRMEDISINSKE FAG</value>
-        <value>Reproduksjon</value>
-        <value>Obstetrikk</value>
-        <value>Kirurgi</value>
-        <value>Indremedisin </value>
+  <bean id="discipline.humaniora" class="org.vortikal.repository.resourcetype.HierarchicalNode">
+    <property name="entry" value="HUMANIORA" />
+    <property name="children">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="SPRÅKVITENSKAPELIGE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Allmenn språkvitenskap og fonetikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Anvendt språkvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Tegnspråk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nordiske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Norrøn filologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Engelsk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Tysk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nederlandsk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre germanske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fransk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Italiensk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Spansk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre romanske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Russisk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre slaviske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Finsk-ugriske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samisk språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klassisk filologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Indoeuropeiske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Østasiatiske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Semittiske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Afrikanske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Stillehavsspråk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Tyrkiske språk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre språkvitenskapelige fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="LITTERATURVITENSKAPELIGE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Allmenn litteraturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nordisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Engelsk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Tysk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen germansk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fransk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Italiensk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Spansk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen romansk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Russisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen slavisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Finsk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klassisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Indoeuropeisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Østasiatisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Semittisk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Afrikansk litteratur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre litteraturvitenskapelige fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KULTURVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nordisk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Germansk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Romansk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Slavisk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klassisk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Indoeuropeisk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Østasiatisk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Angloamerikansk kulturvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen kulturvitenskap" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="HISTORIE" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Politisk historie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Sosialhistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kvinnehistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Økonomisk historie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kulturhistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Oldtidens historie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Middelalderhistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nyere tids historie (før 1800)" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Moderne historie (etter 1800)" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samtidshistorie (etter 1945)" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Ikke-europeisk/-vestlig historie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen historie" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="ARKEOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nordisk arkeologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klassisk arkeologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen arkeologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="FOLKLORISTIKK, ETNOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Folkloristikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Etnologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MUSIKKVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Musikkhistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Musikkteori" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Musikkterapi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Musikkpedagogikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen musikkvitenskap" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KUNSTHISTORIE" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Skulptur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Maleri, tegning, grafikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Folkekunst, kunsthåndverk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Konservering og restaurering" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Antikkens kunsthistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Middelalderkunsthistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fra renessanse‑ t.o.m. barokk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nyere tids kunsthistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Moderne kunsthistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Ikke‑europeisk kunsthistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen kunsthistorie" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="ARKITEKTUR OG DESIGN" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Arkitektur- og designhistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Arkitektur- og designteori" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Prosjekterings‑ og formgivningsmetodikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Landskapsarkitektur" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="TEOLOGI OG RELIGIONSVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Teologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kristendomskunnskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Religionsvitenskap, religionshistorie" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="FILOSOFISKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Filosofi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Idéhistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Logikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Etikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre filosofiske fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="FILM- OG TEATERVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Filmvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Teatervitenskap" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="discipline.samfunnsvitenskap" class="org.vortikal.repository.resourcetype.HierarchicalNode">
+    <property name="entry" value="SAMFUNNSVITENSKAP" />
+    <property name="children">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="ØKONOMI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samfunnsøkonomi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bedriftsøkonomi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Økonometri" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="SOSIOLOGI" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="URBANISME OG FYSISK PLANLEGGING" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Planleggingshistorie, -teori og -metodikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bebyggelses‑ og reguleringsplanlegging" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Landskapsplanlegging" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Urbanisme" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Romlig, territoriell planlegging" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="STATSVITENSKAP OG ORGANISASJONSTEORI"/>
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Sammenlignende politikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Offentlig og privat administrasjon" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Internasjonal politikk" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="SOSIALANTROPOLOGI" />
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="PSYKOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Biologisk psykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klinisk psykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Sosial- og arbeidspsykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Personlighetspsykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Utviklingspsykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kognitiv psykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Organisasjonspsykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre psykologiske fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="PEDAGOGISKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Allmennpedagogikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Spesialpedagogikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fagdidaktikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre pedagogiske fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="SAMFUNNSGEOGRAFI" />
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="DEMOGRAFI" />
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MEDIEVITENSKAP OG JOURNALISTIKK" />
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="BIBLIOTEK- OG INFORMASJONSVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Informasjons- og kommunikasjonssystemer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Informasjonspolitikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kunnskapsgjenfinning og organisering" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bibliometri" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Dokumentasjonsvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Arkivistikk" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="SAMFUNNSVITENSKAPELIGE IDRETTSFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Integreringsfag" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Aktivitetslære" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Idrettspedagogikk og -psykologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre idrettsfag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="RETTSVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Allmenn rettsvitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Privatrett" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Offentlig rett" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Folkerett" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Rettsinformatikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Miljørett" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fiskerirett" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre rettsvitenskapelige fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KRIMINOLOGI" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="SOSIALT ARBEID" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KVINNE- OG KJØNNSSTUDIER" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="discipline.matnat" class="org.vortikal.repository.resourcetype.HierarchicalNode">
+    <property name="entry" value="MATEMATIKK OG NATURVITENSKAP" />
+    <property name="children">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MATEMATIKK" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Analyse" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Statistikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Anvendt matematikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Algebra/algebraisk analyse" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Topologi/geometri" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Logikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Forsikringsmatematikk og risikoanalyse" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="INFORMASJONS- OG KOMMUNIKASJONSVITENSKAP" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Teoretisk databehandling, programmeringsspråk og -teori" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Algoritmer og beregnbarhetsteori" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kommunikasjon og distribuerte systemer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Sikkerhet og sårbarhet" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kunnskapsbaserte systemer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Systemutvikling og – arbeid" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Matematisk modellering og numeriske metoder" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Databaser og multimediasystemer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Simulering, visualisering, signalbehandling, bildeanalyse" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="FYSIKK" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kjerne- og elementærpartikkelfysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Atomfysikk, molekylfysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Elektromagnetisme, akustikk, optikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Elektronikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kondenserte fasers fysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Rom- og plasmafysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Astrofysikk, astronomi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KJEMI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Organisk kjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Uorganisk kjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fysikalsk kjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Teoretisk kjemi, kvantekjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Analytisk kjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Miljøkjemi, naturmiljøkjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kjernekjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Legemiddelkjemi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="GEOFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Faste jords fysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Oseanografi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Meteorologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Hydrologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Naturgeografi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Sedimentologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Stratigrafi og paleontologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Mineralogi, petrologi, geokjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Tektonikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Petroleumsgeologi og -geofysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kvartærgeologi, glasiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Marin geologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Hydrogeologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Geometrikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre geofag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="BASALE BIOFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Cellebiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Generell mikrobiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Molekylærbiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Genetikk og genomikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bioinformatikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Biokjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Biofysikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Generell immunologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="ZOOLOGISKE OG BOTANISKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Zoologisk anatomi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Embryologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Zoofysiologi og komparativ fysiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Parasittologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Etologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Zoogeografi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Systematisk zoologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Økologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Økotoksikologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Planteanatomi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Plantefysiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Systematisk botanikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Vegetasjonshistorie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Plantegeografi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Marinbiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Limnologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="discipline.teknologi" class="org.vortikal.repository.resourcetype.HierarchicalNode">
+    <property name="entry" value="TEKNOLOGI" />
+    <property name="children">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="BERG‑ OG PETROLEUMSFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bergteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Petroleumsteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Geoteknikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre berg‑ og petroleumsfag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MATERIALTEKNOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Metallurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Funksjonelle materialer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Plast- og  komposittmaterialer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bygningsmaterialer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen materialteknologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="BYGNINGSFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Arkitektur og bygningsteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bygg-, anleggs-  og transportteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Konstruksjonsteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kart og oppmåling" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fysisk planlegging" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Geoteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Hydroteknologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="ELEKTROTEKNISKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Elektronikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Elkraft" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre elektrotekniske fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="INFORMASJONS- OG KOMMUNIKASJONSTEKNOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Datateknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Telekommunikasjon" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Teknisk kybernetikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Geografiske informasjonssystemer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen informasjonsteknologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KJEMISK TEKNOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Elektrokjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kjemisk prosessteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kjemiteknikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Farmasøytisk formulering og teknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen kjemisk teknologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MASKINFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Maskinkonstruksjon og materialteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Produksjon og driftsteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Maskinteknisk energi- og miljøteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Mekaniske og strømningstekniske fag" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre maskinfag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MARIN TEKNOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Offshoreteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Skipsteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Annen marin teknologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="BIOTEKNOLOGI" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="NÆRINGSMIDDELTEKNOLOGI" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MILJØTEKNOLOGI" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="MEDISINSK TEKNOLOGI" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="NANOTEKNOLOGI" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="INDUSTRI- OG PRODUKTDESIGN" />
+          <property name="children">
+            <list>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="discipline.med" class="org.vortikal.repository.resourcetype.HierarchicalNode">
+    <property name="entry" value="MEDISINSKE FAG" />
+    <property name="children">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="BASALE MEDISINSKE, ODONTOLOGISKE OG VETERINÆRMEDISINSKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Medisinsk molekylærbiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Medisinsk genetikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Medisinsk mikrobiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Medisinsk immunologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Anatomi, fysisk antropologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Human og veterinærmedisinsk fysiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Generell patologi, patologisk anatomi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Rettsmedisin, rettsodontologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Patofysiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klinisk kjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Medisinsk biokjemi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Farmakologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Toksikologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Biofarmasi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Farmakognosi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Klinisk farmakologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KLINISK MEDISINSKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Allmennmedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nevrologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Dermatologi og venerologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Oftalmologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Otorhinolaryngologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Gynekologi og obstetrikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Psykiatri, barnepsykiatri" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Rettspsykiatri" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Reumatologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Pediatri" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Tropemedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Onkologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Radiologi og bildediagnostikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fysikalsk medisin og rehabilitering" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Anestesiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Generell indremedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kardiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nefrologi, urologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Gasteroenterologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Endokrinologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Hematologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Infeksjonsmedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Lungesykdommer" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Geriatri" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Generell kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Gasteroenterologisk kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kar- og thoraxkirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Traumatologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Ortopedisk kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Plastisk kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Nevrokirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kjevekirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Endokrin kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre klinisk medisinske fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="HELSEFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samfunnsmedisin, sosialmedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samfunnsodontologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Epidemiologi medisinsk og odontologisk statistikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Forebyggende medisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Medisinsk/odontologisk etikk, atferdsfag, historie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Helsetjeneste- og helseadministrasjonsforskning" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fysioterapi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Sykepleievitenskap" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Yrkesmedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bedriftsmedisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Ernæring" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Samfunnsfarmasi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Næringsmiddelhygiene" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre helsefag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KLINISK ODONTOLOGISKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Konserverende tannpleie" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Protetikk og bitt funksjon" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kjeveortopedi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Barnetannpleie og kariesprofylakse" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Oral kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Oral medisin" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Oral radiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Periodonti" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre kliniske odontologiske fag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="IDRETTSMEDISINSKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Treningslære" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Bevegelseslære" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Doping/idrettsfarmakologi" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="discipline.landbruksfag" class="org.vortikal.repository.resourcetype.HierarchicalNode">
+    <property name="entry" value="LANDBRUKS‑ OG FISKERIFAG" />
+    <property name="children">
+      <list>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="LANDBRUKSFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Planteforedling, hagebruk, plantevern, plantepatologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Husdyravl, oppdrett, forplantning" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Jordfag" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Naturressursforvaltning" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Skogbruk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Landbruksteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fôring" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre landbruksfag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="FISKERIFAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Ressursbiologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Akvakultur" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fiskehelse" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fiskeriteknologi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Fangst" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Andre fiskerifag" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+          <property name="entry" value="KLINISK VETERINÆRMEDISINSKE FAG" />
+          <property name="children">
+            <list>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Reproduksjon" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Obstetrikk" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Kirurgi" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="Indremedisin" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+<!--   <bean id="disciplinesConstraint"  -->
+<!--         class="org.vortikal.repository.resourcetype.property.StringEnumerationConstraint"> -->
+<!--     <property name="allowedValues"> -->
+<!--       <set> -->
+<!--         <value>HUMANIORA</value> -->
+<!--         <value>SPRÅKVITENSKAPELIGE FAG</value> -->
+<!--         <value>Allmenn språkvitenskap og fonetikk</value> -->
+<!--         <value>Anvendt språkvitenskap</value> -->
+<!--         <value>Tegnspråk</value> -->
+<!--         <value>Nordiske språk</value> -->
+<!--         <value>Norrøn filologi</value> -->
+<!--         <value>Engelsk språk</value> -->
+<!--         <value>Tysk språk</value> -->
+<!--         <value>Nederlandsk språk</value> -->
+<!--         <value>Andre germanske språk</value> -->
+<!--         <value>Fransk språk</value> -->
+<!--         <value>Italiensk språk</value> -->
+<!--         <value>Spansk språk</value> -->
+<!--         <value>Andre romanske språk</value> -->
+<!--         <value>Russisk språk</value> -->
+<!--         <value>Andre slaviske språk</value> -->
+<!--         <value>Finsk-ugriske språk</value> -->
+<!--         <value>Samisk språk</value> -->
+<!--         <value>Klassisk filologi</value> -->
+<!--         <value>Indoeuropeiske språk</value> -->
+<!--         <value>Østasiatiske språk</value> -->
+<!--         <value>Semittiske språk</value> -->
+<!--         <value>Afrikanske språk</value> -->
+<!--         <value>Stillehavsspråk</value> -->
+<!--         <value>Tyrkiske språk</value> -->
+<!--         <value>Andre språkvitenskapelige fag</value> -->
+<!--         <value>LITTERATURVITENSKAPELIGE FAG</value> -->
+<!--         <value>Allmenn litteraturvitenskap</value> -->
+<!--         <value>Nordisk litteratur</value> -->
+<!--         <value>Engelsk litteratur</value> -->
+<!--         <value>Tysk litteratur</value> -->
+<!--         <value>Annen germansk litteratur</value> -->
+<!--         <value>Fransk litteratur</value> -->
+<!--         <value>Italiensk litteratur</value> -->
+<!--         <value>Spansk litteratur</value> -->
+<!--         <value>Annen romansk litteratur</value> -->
+<!--         <value>Russisk litteratur</value> -->
+<!--         <value>Annen slavisk litteratur</value> -->
+<!--         <value>Finsk litteratur</value> -->
+<!--         <value>Samisk litteratur</value> -->
+<!--         <value>Klassisk litteratur</value> -->
+<!--         <value>Indoeuropeisk litteratur</value> -->
+<!--         <value>Østasiatisk litteratur</value> -->
+<!--         <value>Semittisk litteratur</value> -->
+<!--         <value>Afrikansk litteratur</value> -->
+<!--         <value>Andre litteraturvitenskapelige fag</value> -->
+<!--         <value>KULTURVITENSKAP</value> -->
+<!--         <value>Nordisk kulturvitenskap</value> -->
+<!--         <value>Germansk kulturvitenskap</value> -->
+<!--         <value>Romansk kulturvitenskap</value> -->
+<!--         <value>Slavisk kulturvitenskap</value> -->
+<!--         <value>Klassisk kulturvitenskap</value> -->
+<!--         <value>Indoeuropeisk kulturvitenskap</value> -->
+<!--         <value>Østasiatisk kulturvitenskap</value> -->
+<!--         <value>Angloamerikansk kulturvitenskap</value> -->
+<!--         <value>Annen kulturvitenskap</value> -->
+<!--         <value>HISTORIE</value> -->
+<!--         <value>Politisk historie</value> -->
+<!--         <value>Sosialhistorie</value> -->
+<!--         <value>Kvinnehistorie</value> -->
+<!--         <value>Økonomisk historie</value> -->
+<!--         <value>Kulturhistorie</value> -->
+<!--         <value>Oldtidens historie</value> -->
+<!--         <value>Middelalderhistorie</value> -->
+<!--         <value>Nyere tids historie (før 1800)</value> -->
+<!--         <value>Moderne historie (etter 1800)</value> -->
+<!--         <value>Samtidshistorie (etter 1945)</value> -->
+<!--         <value>Ikke-europeisk/-vestlig historie</value> -->
+<!--         <value>Annen historie</value> -->
+<!--         <value>ARKEOLOGI</value> -->
+<!--         <value>Nordisk arkeologi</value> -->
+<!--         <value>Klassisk arkeologi</value> -->
+<!--         <value>Annen arkeologi</value> -->
+<!--         <value>FOLKLORISTIKK, ETNOLOGI</value> -->
+<!--         <value>Folkloristikk</value> -->
+<!--         <value>Etnologi</value> -->
+<!--         <value>MUSIKKVITENSKAP</value> -->
+<!--         <value>Musikkhistorie</value> -->
+<!--         <value>Musikkteori</value> -->
+<!--         <value>Musikkterapi</value> -->
+<!--         <value>Musikkpedagogikk</value> -->
+<!--         <value>Annen musikkvitenskap</value> -->
+<!--         <value>KUNSTHISTORIE</value> -->
+<!--         <value>Skulptur</value> -->
+<!--         <value>Maleri, tegning, grafikk</value> -->
+<!--         <value>Folkekunst, kunsthåndverk</value> -->
+<!--         <value>Konservering og restaurering</value> -->
+<!--         <value>Antikkens kunsthistorie</value> -->
+<!--         <value>Middelalderkunsthistorie</value> -->
+<!--         <value>Fra renessanse‑ t.o.m. barokk</value> -->
+<!--         <value>Nyere tids kunsthistorie</value> -->
+<!--         <value>Moderne kunsthistorie</value> -->
+<!--         <value>Ikke‑europeisk kunsthistorie</value> -->
+<!--         <value>Annen kunsthistorie</value> -->
+<!--         <value>ARKITEKTUR OG DESIGN</value> -->
+<!--         <value>Arkitektur- og designhistorie</value> -->
+<!--         <value>Arkitektur- og designteori</value> -->
+<!--         <value>Prosjekterings‑ og formgivningsmetodikk</value> -->
+<!--         <value>Landskapsarkitektur</value> -->
+<!--         <value>TEOLOGI OG RELIGIONSVITENSKAP</value> -->
+<!--         <value>Teologi</value> -->
+<!--         <value>Kristendomskunnskap</value> -->
+<!--         <value>Religionsvitenskap, religionshistorie</value> -->
+<!--         <value>FILOSOFISKE FAG</value> -->
+<!--         <value>Filosofi</value> -->
+<!--         <value>Idéhistorie</value> -->
+<!--         <value>Logikk</value> -->
+<!--         <value>Etikk</value> -->
+<!--         <value>Andre filosofiske fag</value> -->
+<!--         <value>FILM- OG TEATERVITENSKAP</value> -->
+<!--         <value>Filmvitenskap</value> -->
+<!--         <value>Teatervitenskap</value> -->
+<!--         <value>SAMFUNNSVITENSKAP</value> -->
+<!--         <value>ØKONOMI</value> -->
+<!--         <value>Samfunnsøkonomi</value> -->
+<!--         <value>Bedriftsøkonomi</value> -->
+<!--         <value>Økonometri</value> -->
+<!--         <value>SOSIOLOGI</value> -->
+<!--         <value>URBANISME OG FYSISK PLANLEGGING</value> -->
+<!--         <value>Planleggingshistorie, -teori og -metodikk</value> -->
+<!--         <value>Bebyggelses‑ og reguleringsplanlegging</value> -->
+<!--         <value>Landskapsplanlegging</value> -->
+<!--         <value>Urbanisme</value> -->
+<!--         <value>Romlig, territoriell planlegging</value> -->
+<!--         <value>STATSVITENSKAP OG ORGANISASJONSTEORI</value> -->
+<!--         <value>Sammenlignende politikk</value> -->
+<!--         <value>Offentlig og privat administrasjon</value> -->
+<!--         <value>Internasjonal politikk</value> -->
+<!--         <value>SOSIALANTROPOLOGI</value> -->
+<!--         <value>PSYKOLOGI</value> -->
+<!--         <value>Biologisk psykologi</value> -->
+<!--         <value>Klinisk psykologi</value> -->
+<!--         <value>Sosial- og arbeidspsykologi</value> -->
+<!--         <value>Personlighetspsykologi</value> -->
+<!--         <value>Utviklingspsykologi</value> -->
+<!--         <value>Kognitiv psykologi</value> -->
+<!--         <value>Organisasjonspsykologi</value> -->
+<!--         <value>Andre psykologiske fag</value> -->
+<!--         <value>PEDAGOGISKE FAG</value> -->
+<!--         <value>Allmennpedagogikk</value> -->
+<!--         <value>Spesialpedagogikk</value> -->
+<!--         <value>Fagdidaktikk</value> -->
+<!--         <value>Andre pedagogiske fag</value> -->
+<!--         <value>SAMFUNNSGEOGRAFI</value> -->
+<!--         <value>DEMOGRAFI</value> -->
+<!--         <value>MEDIEVITENSKAP OG JOURNALISTIKK</value> -->
+<!--         <value>BIBLIOTEK- OG INFORMASJONSVITENSKAP</value> -->
+<!--         <value>Informasjons- og kommunikasjonssystemer</value> -->
+<!--         <value>Informasjonspolitikk</value> -->
+<!--         <value>Kunnskapsgjenfinning og organisering</value> -->
+<!--         <value>Bibliometri</value> -->
+<!--         <value>Dokumentasjonsvitenskap</value> -->
+<!--         <value>Arkivistikk</value> -->
+<!--         <value>SAMFUNNSVITENSKAPELIGE IDRETTSFAG</value> -->
+<!--         <value>Integreringsfag</value> -->
+<!--         <value>Aktivitetslære</value> -->
+<!--         <value>Idrettspedagogikk og -psykologi</value> -->
+<!--         <value>Andre idrettsfag</value> -->
+<!--         <value>RETTSVITENSKAP</value> -->
+<!--         <value>Allmenn rettsvitenskap</value> -->
+<!--         <value>Privatrett</value> -->
+<!--         <value>Offentlig rett</value> -->
+<!--         <value>Folkerett</value> -->
+<!--         <value>Rettsinformatikk</value> -->
+<!--         <value>Miljørett</value> -->
+<!--         <value>Fiskerirett</value> -->
+<!--         <value>Andre rettsvitenskapelige fag</value> -->
+<!--         <value>KRIMINOLOGI</value> -->
+<!--         <value>SOSIALT ARBEID</value> -->
+<!--         <value>KVINNE- OG KJØNNSSTUDIER</value> -->
+<!--         <value>MATEMATIKK OG NATURVITENSKAP</value> -->
+<!--         <value>MATEMATIKK</value> -->
+<!--         <value>Analyse</value> -->
+<!--         <value>Statistikk</value> -->
+<!--         <value>Anvendt matematikk</value> -->
+<!--         <value>Algebra/algebraisk analyse</value> -->
+<!--         <value>Topologi/geometri</value> -->
+<!--         <value>Logikk</value> -->
+<!--         <value>Forsikringsmatematikk og risikoanalyse</value> -->
+<!--         <value>INFORMASJONS- OG KOMMUNIKASJONSVITENSKAP</value> -->
+<!--         <value>Teoretisk databehandling, programmeringsspråk og -teori</value> -->
+<!--         <value>Algoritmer og beregnbarhetsteori</value> -->
+<!--         <value>Kommunikasjon og distribuerte systemer</value> -->
+<!--         <value>Sikkerhet og sårbarhet</value> -->
+<!--         <value>Kunnskapsbaserte systemer</value> -->
+<!--         <value>Systemutvikling og – arbeid</value> -->
+<!--         <value>Matematisk modellering og numeriske metoder</value> -->
+<!--         <value>Databaser og multimediasystemer</value> -->
+<!--         <value>Simulering, visualisering, signalbehandling, bildeanalyse</value> -->
+<!--         <value>FYSIKK</value> -->
+<!--         <value>Kjerne- og elementærpartikkelfysikk</value> -->
+<!--         <value>Atomfysikk, molekylfysikk</value> -->
+<!--         <value>Elektromagnetisme, akustikk, optikk</value> -->
+<!--         <value>Elektronikk</value> -->
+<!--         <value>Kondenserte fasers fysikk</value> -->
+<!--         <value>Rom- og plasmafysikk</value> -->
+<!--         <value>Astrofysikk, astronomi</value> -->
+<!--         <value>KJEMI</value> -->
+<!--         <value>Organisk kjemi</value> -->
+<!--         <value>Uorganisk kjemi</value> -->
+<!--         <value>Fysikalsk kjemi</value> -->
+<!--         <value>Teoretisk kjemi, kvantekjemi</value> -->
+<!--         <value>Analytisk kjemi</value> -->
+<!--         <value>Miljøkjemi, naturmiljøkjemi</value> -->
+<!--         <value>Kjernekjemi</value> -->
+<!--         <value>Legemiddelkjemi</value> -->
+<!--         <value>GEOFAG</value> -->
+<!--         <value>Faste jords fysikk</value> -->
+<!--         <value>Oseanografi</value> -->
+<!--         <value>Meteorologi</value> -->
+<!--         <value>Hydrologi</value> -->
+<!--         <value>Naturgeografi</value> -->
+<!--         <value>Sedimentologi</value> -->
+<!--         <value>Stratigrafi og paleontologi</value> -->
+<!--         <value>Mineralogi, petrologi, geokjemi</value> -->
+<!--         <value>Tektonikk</value> -->
+<!--         <value>Petroleumsgeologi og -geofysikk</value> -->
+<!--         <value>Kvartærgeologi, glasiologi</value> -->
+<!--         <value>Marin geologi</value> -->
+<!--         <value>Hydrogeologi</value> -->
+<!--         <value>Geometrikk</value> -->
+<!--         <value>Andre geofag</value> -->
+<!--         <value>BASALE BIOFAG</value> -->
+<!--         <value>Cellebiologi</value> -->
+<!--         <value>Generell mikrobiologi</value> -->
+<!--         <value>Molekylærbiologi</value> -->
+<!--         <value>Genetikk og genomikk</value> -->
+<!--         <value>Bioinformatikk</value> -->
+<!--         <value>Biokjemi</value> -->
+<!--         <value>Biofysikk</value> -->
+<!--         <value>Generell immunologi</value> -->
+<!--         <value>ZOOLOGISKE OG BOTANISKE FAG</value> -->
+<!--         <value>Zoologisk anatomi</value> -->
+<!--         <value>Embryologi</value> -->
+<!--         <value>Zoofysiologi og komparativ fysiologi</value> -->
+<!--         <value>Parasittologi</value> -->
+<!--         <value>Etologi</value> -->
+<!--         <value>Zoogeografi</value> -->
+<!--         <value>Systematisk zoologi</value> -->
+<!--         <value>Økologi</value> -->
+<!--         <value>Økotoksikologi</value> -->
+<!--         <value>Planteanatomi</value> -->
+<!--         <value>Plantefysiologi</value> -->
+<!--         <value>Systematisk botanikk</value> -->
+<!--         <value>Vegetasjonshistorie</value> -->
+<!--         <value>Plantegeografi</value> -->
+<!--         <value>Marinbiologi</value> -->
+<!--         <value>Limnologi</value> -->
+<!--         <value>TEKNOLOGI</value> -->
+<!--         <value>BERG‑ OG PETROLEUMSFAG</value> -->
+<!--         <value>Bergteknologi</value> -->
+<!--         <value>Petroleumsteknologi</value> -->
+<!--         <value>Geoteknikk</value> -->
+<!--         <value>Andre berg‑ og petroleumsfag</value> -->
+<!--         <value>MATERIALTEKNOLOGI</value> -->
+<!--         <value>Metallurgi</value> -->
+<!--         <value>Funksjonelle materialer</value> -->
+<!--         <value>Plast- og  komposittmaterialer</value> -->
+<!--         <value>Bygningsmaterialer</value> -->
+<!--         <value>Annen materialteknologi</value> -->
+<!--         <value>BYGNINGSFAG</value> -->
+<!--         <value>Arkitektur og bygningsteknologi</value> -->
+<!--         <value>Bygg-, anleggs-  og transportteknologi</value> -->
+<!--         <value>Konstruksjonsteknologi</value> -->
+<!--         <value>Kart og oppmåling</value> -->
+<!--         <value>Fysisk planlegging</value> -->
+<!--         <value>Geoteknologi</value> -->
+<!--         <value>Hydroteknologi</value> -->
+<!--         <value>ELEKTROTEKNISKE FAG</value> -->
+<!--         <value>Elektronikk</value> -->
+<!--         <value>Elkraft</value> -->
+<!--         <value>Andre elektrotekniske fag</value> -->
+<!--         <value>INFORMASJONS- OG KOMMUNIKASJONSTEKNOLOGI</value> -->
+<!--         <value>Datateknologi</value> -->
+<!--         <value>Telekommunikasjon</value> -->
+<!--         <value>Teknisk kybernetikk</value> -->
+<!--         <value>Geografiske informasjonssystemer</value> -->
+<!--         <value>Annen informasjonsteknologi</value> -->
+<!--         <value>KJEMISK TEKNOLOGI</value> -->
+<!--         <value>Elektrokjemi</value> -->
+<!--         <value>Kjemisk prosessteknologi</value> -->
+<!--         <value>Kjemiteknikk</value> -->
+<!--         <value>Farmasøytisk formulering og teknologi</value> -->
+<!--         <value>Annen kjemisk teknologi</value> -->
+<!--         <value>MASKINFAG</value> -->
+<!--         <value>Maskinkonstruksjon og materialteknologi</value> -->
+<!--         <value>Produksjon og driftsteknologi</value> -->
+<!--         <value>Maskinteknisk energi- og miljøteknologi</value> -->
+<!--         <value>Mekaniske og strømningstekniske fag</value> -->
+<!--         <value>Andre maskinfag</value> -->
+<!--         <value>MARIN TEKNOLOGI</value> -->
+<!--         <value>Offshoreteknologi</value> -->
+<!--         <value>Skipsteknologi</value> -->
+<!--         <value>Annen marin teknologi</value> -->
+<!--         <value>BIOTEKNOLOGI</value> -->
+<!--         <value>NÆRINGSMIDDELTEKNOLOGI</value> -->
+<!--         <value>MILJØTEKNOLOGI</value> -->
+<!--         <value>MEDISINSK TEKNOLOGI</value> -->
+<!--         <value>NANOTEKNOLOGI</value> -->
+<!--         <value>INDUSTRI- OG PRODUKTDESIGN</value> -->
+<!--         <value>MEDISINSKE FAG</value> -->
+<!--         <value>BASALE MEDISINSKE, ODONTOLOGISKE OG VETERINÆR MEDISINSKE FAG</value> -->
+<!--         <value>Medisinsk molekylærbiologi</value> -->
+<!--         <value>Medisinsk genetikk</value> -->
+<!--         <value>Medisinsk mikrobiologi</value> -->
+<!--         <value>Medisinsk immunologi</value> -->
+<!--         <value>Anatomi, fysisk antropologi</value> -->
+<!--         <value>Human og veterinærmedisinsk fysiologi</value> -->
+<!--         <value>Generell patologi, patologisk anatomi</value> -->
+<!--         <value>Rettsmedisin, rettsodontologi</value> -->
+<!--         <value>Patofysiologi</value> -->
+<!--         <value>Klinisk kjemi</value> -->
+<!--         <value>Medisinsk biokjemi</value> -->
+<!--         <value>Farmakologi</value> -->
+<!--         <value>Toksikologi</value> -->
+<!--         <value>Biofarmasi</value> -->
+<!--         <value>Farmakognosi</value> -->
+<!--         <value>Klinisk farmakologi</value> -->
+<!--         <value>KLINISK MEDISINSKE FAG</value> -->
+<!--         <value>Allmennmedisin</value> -->
+<!--         <value>Nevrologi</value> -->
+<!--         <value>Dermatologi og venerologi</value> -->
+<!--         <value>Oftalmologi</value> -->
+<!--         <value>Otorhinolaryngologi</value> -->
+<!--         <value>Gynekologi og obstetrikk</value> -->
+<!--         <value>Psykiatri, barnepsykiatri</value> -->
+<!--         <value>Rettspsykiatri</value> -->
+<!--         <value>Reumatologi</value> -->
+<!--         <value>Pediatri</value> -->
+<!--         <value>Tropemedisin</value> -->
+<!--         <value>Onkologi</value> -->
+<!--         <value>Radiologi og bildediagnostikk</value> -->
+<!--         <value>Fysikalsk medisin og rehabilitering</value> -->
+<!--         <value>Anestesiologi</value> -->
+<!--         <value>Generell indremedisin</value> -->
+<!--         <value>Kardiologi</value> -->
+<!--         <value>Nefrologi, urologi</value> -->
+<!--         <value>Gasteroenterologi</value> -->
+<!--         <value>Endokrinologi</value> -->
+<!--         <value>Hematologi</value> -->
+<!--         <value>Infeksjonsmedisin</value> -->
+<!--         <value>Lungesykdommer</value> -->
+<!--         <value>Geriatri</value> -->
+<!--         <value>Generell kirurgi</value> -->
+<!--         <value>Gasteroenterologisk kirurgi</value> -->
+<!--         <value>Kar- og thoraxkirurgi</value> -->
+<!--         <value>Traumatologi</value> -->
+<!--         <value>Ortopedisk kirurgi</value> -->
+<!--         <value>Plastisk kirurgi</value> -->
+<!--         <value>Nevrokirurgi</value> -->
+<!--         <value>Kjevekirurgi</value> -->
+<!--         <value>Endokrin kirurgi</value> -->
+<!--         <value>Andre klinisk medisinske fag</value> -->
+<!--         <value>HELSEFAG</value> -->
+<!--         <value>Samfunnsmedisin, sosialmedisin</value> -->
+<!--         <value>Samfunnsodontologi</value> -->
+<!--         <value>Epidemiologi medisinsk og odontologisk statistikk</value> -->
+<!--         <value>Forebyggende medisin</value> -->
+<!--         <value>Medisinsk/odontologisk etikk, atferdsfag, historie</value> -->
+<!--         <value>Helsetjeneste- og helseadministrasjonsforskning</value> -->
+<!--         <value>Fysioterapi</value> -->
+<!--         <value>Sykepleievitenskap</value> -->
+<!--         <value>Yrkesmedisin</value> -->
+<!--         <value>Bedriftsmedisin</value> -->
+<!--         <value>Ernæring</value> -->
+<!--         <value>Samfunnsfarmasi</value> -->
+<!--         <value>Næringsmiddelhygiene</value> -->
+<!--         <value>Andre helsefag</value> -->
+<!--         <value>KLINISK ODONTOLOGISKE FAG</value> -->
+<!--         <value>Konserverende tannpleie</value> -->
+<!--         <value>Protetikk og bitt funksjon</value> -->
+<!--         <value>Kjeveortopedi</value> -->
+<!--         <value>Barnetannpleie og kariesprofylakse</value> -->
+<!--         <value>Oral kirurgi</value> -->
+<!--         <value>Oral medisin</value> -->
+<!--         <value>Oral radiologi</value> -->
+<!--         <value>Periodonti</value> -->
+<!--         <value>Andre kliniske odontologiske fag</value> -->
+<!--         <value>IDRETTSMEDISINSKE FAG</value> -->
+<!--         <value>Treningslære</value> -->
+<!--         <value>Bevegelseslære</value> -->
+<!--         <value>Doping/idrettsfarmakologi</value> -->
+<!--         <value>LANDBRUKS‑ OG FISKERIFAG</value> -->
+<!--         <value>LANDBRUKSFAG</value> -->
+<!--         <value>Planteforedling, hagebruk, plantevern, plantepatologi</value> -->
+<!--         <value>Husdyravl, oppdrett, forplantning</value> -->
+<!--         <value>Jordfag</value> -->
+<!--         <value>Naturressursforvaltning</value> -->
+<!--         <value>Skogbruk</value> -->
+<!--         <value>Landbruksteknologi</value> -->
+<!--         <value>Fôring</value> -->
+<!--         <value>Andre landbruksfag</value> -->
+<!--         <value>FISKERIFAG</value> -->
+<!--         <value>Ressursbiologi</value> -->
+<!--         <value>Akvakultur</value> -->
+<!--         <value>Fiskehelse</value> -->
+<!--         <value>Fiskeriteknologi</value> -->
+<!--         <value>Fangst</value> -->
+<!--         <value>Andre fiskerifag</value> -->
+<!--         <value>KLINISK VETERINÆRMEDISINSKE FAG</value> -->
+<!--         <value>Reproduksjon</value> -->
+<!--         <value>Obstetrikk</value> -->
+<!--         <value>Kirurgi</value> -->
+<!--         <value>Indremedisin </value> -->
 <!--         <value>000</value> -->
 <!--         <value>010</value> -->
 <!--         <value>011</value> -->
@@ -843,9 +2312,11 @@
 <!--         <value>952</value> -->
 <!--         <value>953</value> -->
 <!--         <value>954</value> -->
-      </set>
-    </property>
-  </bean>
+<!--       </set> -->
+<!--     </property> -->
+<!--   </bean> -->
+
+
 </beans>
 
 <!-- 000 HUMANIORA -->

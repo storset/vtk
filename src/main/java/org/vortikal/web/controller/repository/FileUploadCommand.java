@@ -48,5 +48,6 @@ public class FileUploadCommand extends AbstractSaveCancelCommand {
     public String getFile() {
         return this.file;
     }
+    
 }
 

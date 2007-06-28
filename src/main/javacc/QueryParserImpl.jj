@@ -25,7 +25,6 @@ import org.vortikal.repository.search.query.PropertyPrefixQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriOperator;
@@ -291,20 +290,20 @@ Query TypeQuery() :
 {
     Query q;
     Token eq = null, ne = null, in = null, ni = null, v;
-    TypeOperator o;
+    TermOperator o;
 }
 {
     (<TYPE> (eq=<EQ> | ne=<NE> | in=<IN> | ni=<NI>) v=<VALUE>)
         { 
-            TypeOperator operator = null;
+            TermOperator operator = null;
             if (eq != null)
-                o = TypeOperator.EQ;
+                o = TermOperator.EQ;
             else if (ne != null)
-                o = TypeOperator.NE;
+                o = TermOperator.NE;
             else if (in != null)
-                o = TypeOperator.IN;
+                o = TermOperator.IN;
             else
-                o = TypeOperator.NI;
+                o = TermOperator.NI;
 
             return new TypeTermQuery(v.image, o);
         }

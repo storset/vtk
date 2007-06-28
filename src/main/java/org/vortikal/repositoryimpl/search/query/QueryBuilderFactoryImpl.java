@@ -40,7 +40,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.Vocabulary;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.AbstractMultipleQuery;
 import org.vortikal.repository.search.query.AbstractPropertyQuery;
 import org.vortikal.repository.search.query.NamePrefixQuery;
@@ -53,6 +56,7 @@ import org.vortikal.repository.search.query.PropertyRangeQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -62,6 +66,8 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.LuceneIndexManager;
 import org.vortikal.repositoryimpl.index.mapping.BinaryFieldValueMapper;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
+import org.vortikal.repositoryimpl.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.NameRangeQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.NameTermQueryBuilder;
@@ -72,7 +78,6 @@ import org.vortikal.repositoryimpl.search.query.builders.PropertyRangeQueryBuild
 import org.vortikal.repositoryimpl.search.query.builders.PropertyTermQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.PropertyWildcardQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.QueryTreeBuilder;
-import org.vortikal.repositoryimpl.search.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.UriTermQueryBuilder;
@@ -144,8 +149,9 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         }
        
         else if (query instanceof TypeTermQuery) {
-            builder = new TypeTermQueryBuilder(this.resourceTypeTree, 
-                                               (TypeTermQuery)query);
+            TypeTermQuery ttq = (TypeTermQuery)query;
+            builder = new HierarchicalTermQueryBuilder(this.resourceTypeTree, 
+            ttq.getOperator(), DocumentMapper.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
         }
        
         if (builder == null) {
@@ -159,33 +165,44 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     private QueryBuilder getAbstractPropertyQueryBuilder(Query query)
         throws QueryBuilderException {
 
-        QueryBuilder builder = null;
-        
         if (query instanceof PropertyTermQuery) {
-            builder = new PropertyTermQueryBuilder((PropertyTermQuery)query);
+            PropertyTermQuery ptq = (PropertyTermQuery) query;
+            PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
+
+            if (ptq.getOperator() == TermOperator.IN || ptq.getOperator() == TermOperator.NI) {
+                Vocabulary vocabulary = propDef.getVocabulary();
+                if (vocabulary == null || !(vocabulary instanceof HierarchicalVocabulary)) {
+                    throw new QueryBuilderException("Property type doesn't have a hierachical vocabulary: " + propDef);
+                }
+                HierarchicalVocabulary hv = (HierarchicalVocabulary) vocabulary;
+                
+                String fieldName = DocumentMapper.getFieldName(propDef);
+                String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
+                return new HierarchicalTermQueryBuilder(hv , ptq.getOperator(), fieldName, fieldValue);
+            } 
+            
+            return new PropertyTermQueryBuilder(ptq.getOperator(), ptq.getTerm(),
+                    DocumentMapper.getFieldName(propDef),FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType()));
         }
         
         if (query instanceof PropertyPrefixQuery) {
-            builder = new PropertyPrefixQueryBuilder((PropertyPrefixQuery)query);
+            return new PropertyPrefixQueryBuilder((PropertyPrefixQuery)query);
         }
         
         if (query instanceof PropertyRangeQuery) {
-            builder = new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
+            return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
         }
         
         if (query instanceof PropertyWildcardQuery) {
-            builder = new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
+            return new PropertyWildcardQueryBuilder((PropertyWildcardQuery)query);
         }
         
         if (query instanceof PropertyExistsQuery) {
-            builder = new PropertyExistsQueryBuilder((PropertyExistsQuery)query);
+            return new PropertyExistsQueryBuilder((PropertyExistsQuery)query);
         }
         
-        if (builder == null) {
             throw new QueryBuilderException("Unsupported property query type: " 
                                         + query.getClass().getName());
-        }
-        return builder;
     }
     
     private Term getPropertySetIdTermFromIndex(String uri) 

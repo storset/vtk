@@ -30,59 +30,63 @@
  */
 package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.search.query.TypeOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repository.HierarchicalVocabulary;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
-/**
- * 
- * @author oyviste
- *
- */
-public class TypeTermQueryBuilder implements QueryBuilder {
+public class HierarchicalTermQueryBuilder implements QueryBuilder {
 
-    private TypeTermQuery ttq;
-    private ResourceTypeTree resourceTypeTree;
+    private HierarchicalVocabulary hierarchicalVocabulary;
+    private final TermOperator operator;
+    private final String fieldName;
+    private final String term;
     
-    public TypeTermQueryBuilder(ResourceTypeTree resourceTypeTree, TypeTermQuery ttq) {
-        this.ttq = ttq;
-        this.resourceTypeTree = resourceTypeTree; 
+    public HierarchicalTermQueryBuilder(HierarchicalVocabulary hierarchicalVocabulary, TermOperator operator, String fieldName, String term) {
+        this.hierarchicalVocabulary = hierarchicalVocabulary;
+        this.operator = operator;
+        this.fieldName = fieldName;
+        this.term = term; 
     }
 
     public Query buildQuery() {
-        String typeTerm = this.ttq.getTerm();
+        if (this.operator == TermOperator.IN) {
+            return getInQuery();
+        } else if (this.operator == TermOperator.NI) {
+            Filter filter = new InversionFilter(new QueryFilter(getInQuery()));
+            return new ConstantScoreQuery(filter);
+        } else {
+            throw new QueryBuilderException("Unsupported type operator: " + this.operator);
+        }
+
+    }
+
+    private Query getInQuery() {
+        BooleanQuery bq = new BooleanQuery(true);
+        bq.add(new TermQuery(new Term(fieldName, term)),
+                            BooleanClause.Occur.SHOULD);
+
+        List<String> descendantNames = this.hierarchicalVocabulary.getDescendantsAndSelf(term);
         
-        if (this.ttq.getOperator() == TypeOperator.EQ) {
-            return new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm));
-        } else if (this.ttq.getOperator() == TypeOperator.IN) {
-            
-            BooleanQuery bq = new BooleanQuery(true);
-            bq.add(new TermQuery(new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, typeTerm)),
-                                BooleanClause.Occur.SHOULD);
-
-            List descendantNames = this.resourceTypeTree.getResourceTypeDescendantNames(typeTerm);
-            
-            if (descendantNames != null) {
-                for (Iterator i = descendantNames.iterator();i.hasNext();) {
-                    Term t = new Term(DocumentMapper.RESOURCETYPE_FIELD_NAME, (String)i.next());
-                    bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
-                }
+        if (descendantNames != null) {
+            for (String descendantName: descendantNames) {
+                Term t = new Term(fieldName, descendantName);
+                bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
             }
-            
-            return bq;
-        } else throw new QueryBuilderException("Unsupported type operator: " + this.ttq.getOperator());
-
+        }
+        
+        return bq;
     }
 
 }

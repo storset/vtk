@@ -33,6 +33,7 @@ package org.vortikal.web.controller.properties;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -84,11 +85,9 @@ public class PropertyEditValidator implements Validator {
                     splitValues, command.getDefinition().getType());
 
                 if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
-                    for (int i = 0; i < values.length; i++) {
-                        
-                        if (!this.principalManager.validatePrincipal(
-                                values[i].getPrincipalValue())) {
-                            throw new ValueFormatException("Invalid principal " + values[i]);
+                    for (Value v: values) {
+                        if (!this.principalManager.validatePrincipal(v.getPrincipalValue())) {
+                            throw new ValueFormatException("Invalid principal " + v);
                         }
                     } 
                 }
@@ -107,20 +106,26 @@ public class PropertyEditValidator implements Validator {
                     constraint.validate(value);
                 }
 
-                Value[] allowedValues = command.getDefinition().getAllowedValues();
-                if (allowedValues != null) {
-                    boolean found = false;
-                    for (int i = 0; i < allowedValues.length; i++) {
-                        if (value.equals(allowedValues[i])) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        errors.rejectValue("value", "Illegal value");
+                Vocabulary<Value> vocabulary = command.getDefinition().getVocabulary();
+
+                if (vocabulary == null) {
+                    return;
+                }
+                
+                Value[] allowedValues = vocabulary.getAllowedValues();
+
+                if (allowedValues == null) {
+                    return;
+                }
+
+                for (Value v: allowedValues) {
+                    if (value.equals(v)) {
                         return;
                     }
                 }
+
+                errors.rejectValue("value", "Illegal value");
+
             }
 
         } catch (ValueFormatException e) {

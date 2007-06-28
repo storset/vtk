@@ -32,8 +32,8 @@ package org.vortikal.web.controller.repository;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -41,14 +41,11 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -96,12 +93,6 @@ public class FileUploadController extends SimpleFormController {
                                     BindException errors)
         throws Exception {
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-
-        String uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
         FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
 
         if (fileUploadCommand.getCancelAction() != null) {
@@ -115,37 +106,41 @@ public class FileUploadController extends SimpleFormController {
     
 
         FileItem uploadItem = null;
-        List fileItems = upload.parseRequest(request);
-        for (Iterator i = fileItems.iterator(); i.hasNext();) {
-            FileItem item = (FileItem) i.next();
+
+        List<FileItem> fileItems = upload.parseRequest(request);
+        for (FileItem item: fileItems) {
             if (!item.isFormField()) {
                 uploadItem = item;
             }
         }
         
         if (uploadItem == null) {
-            logger.info("The user didn't upload anything");
+            if (logger.isDebugEnabled()) {
+                logger.debug("The user didn't upload anything");
+            }
             return new ModelAndView(getSuccessView());
         }
 
-        String name = uploadItem.getName();
+        String name = stripWindowsPath(uploadItem.getName());
+        
+        if (name == null || name.trim().equals("")) {
+            return new ModelAndView(getSuccessView());
+        }
+
+        String uri = RequestContext.getRequestContext().getResourceURI();
+
+        String itemURI = uri.equals("/") ? "/" + name : uri + "/" + name;
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Uploaded resource will be: " + itemURI);
+        }
+
+        String token = SecurityContext.getSecurityContext().getToken();
+
         try {
-
-            name = stripWindowsPath(name);
-            if (name == null || name.trim().equals("")) {
-                return new ModelAndView(getSuccessView());
-            }
-
-            String itemURI = uri.equals("/") ? "/" + name : uri + "/" + name;
-            if (logger.isDebugEnabled()) {
-                logger.debug("Uploaded resource will be: " + itemURI);
-            }
 
             boolean exists = this.repository.exists(token, itemURI);
             if (exists) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Uploaded file already existed.");
-                }
                 errors.rejectValue("file",
                                    "manage.upload.resource.exists",
                                    "A resource with this name already exists");
@@ -153,20 +148,19 @@ public class FileUploadController extends SimpleFormController {
             }
 
             Resource newResource = this.repository.createDocument(token, itemURI);
-            if (uploadItem.getContentType() != null) {
 
+            String contentType = uploadItem.getContentType();
+            if (contentType != null) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Setting content type of resource to "
-                                 + uploadItem.getContentType());
+                    logger.debug("Setting content type of resource to " + contentType);
                 }
-                newResource.setContentType(uploadItem.getContentType());
+                newResource.setContentType(contentType);
                 this.repository.store(token, newResource);
             }
 
             InputStream inStream = uploadItem.getInputStream();
             this.repository.storeContent(token, itemURI, inStream);
-            fileUploadCommand.setDone(true);
-            return new ModelAndView(getSuccessView());
+
         } catch (Exception e) {
             logger.warn("Caught exception while performing file upload", e);
             errors.rejectValue("file",
@@ -174,6 +168,10 @@ public class FileUploadController extends SimpleFormController {
                                "An unexpected error occurred while processing file upload");
             return showForm(request, response, errors);
         }
+
+        fileUploadCommand.setDone(true);
+        return new ModelAndView(getSuccessView());
+
     }
 
 
@@ -186,22 +184,18 @@ public class FileUploadController extends SimpleFormController {
     static String stripWindowsPath(String fileName) {
 
         if (fileName == null || fileName.trim().equals("")) {
-            return fileName;
-        }
-
-        if (fileName.indexOf("\\") < 0) {
-
-            return fileName;
+            return null;
         }
 
         int pos = fileName.lastIndexOf("\\");
 
         if (pos > fileName.length() - 2) {
-
             return fileName;
-        }
+        } else if (pos >= 0) {
+            return fileName.substring(pos + 1, fileName.length());
+        } 
 
-        return fileName.substring(pos + 1, fileName.length());
+        return fileName;
     }
 
 }

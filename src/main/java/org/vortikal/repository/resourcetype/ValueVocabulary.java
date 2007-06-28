@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,29 +28,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.resourcetype;
 
+import java.util.List;
 
-public class TermOperator {
+import org.vortikal.repository.Vocabulary;
 
-    public static final TermOperator EQ = new TermOperator("EQ");
-    public static final TermOperator NE = new TermOperator("NE");
-    public static final TermOperator GT = new TermOperator("GT");
-    public static final TermOperator LT = new TermOperator("LT");
-    public static final TermOperator GE = new TermOperator("GE");
-    public static final TermOperator LE = new TermOperator("LE");
-    public static final TermOperator IN = new TermOperator("IN");
-    public static final TermOperator NI = new TermOperator("NI");
+public class ValueVocabulary implements Vocabulary<Value> {
+
+    private Value[] allowedValues;
     
-    
-    private String id;
-
-    private TermOperator(String id) {
-        this.id = id;
+    public Value[] getAllowedValues() {
+        return this.allowedValues;
     }
 
-    public String toString() {
-        return this.id;
+    public void setValues(List<Value> allowedValues) {
+        this.allowedValues = allowedValues.toArray(new Value[allowedValues.size()]);
     }
+    
 
 }

@@ -150,6 +150,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      */
     private Map<String, List<String>> resourceTypeDescendantNames;
 
+    /**
+     * All primary resource type names (Supports unused getAllowedValues)
+     */
+    private String[] primaryResourceTypeNames;
+
 
     public PropertyTypeDefinition findPropertyTypeDefinition(Namespace namespace, String name) {
         PropertyTypeDefinition propDef = null;
@@ -195,10 +200,15 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return children;
     }
     
-    public List<String> getResourceTypeDescendantNames(String resourceTypeName) {
-        return this.resourceTypeDescendantNames.get(resourceTypeName);
+    public List<String> getDescendantsAndSelf(String entry) {
+        return this.resourceTypeDescendantNames.get(entry);
     }
 
+    public String[] getAllowedValues() {
+        return this.primaryResourceTypeNames;
+    }
+
+    
     public ResourceTypeDefinition getResourceTypeDefinitionByName(String name) {
         ResourceTypeDefinition type = this.resourceTypeNameMap.get(name);
         if (type == null) {
@@ -322,7 +332,13 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return sb.toString();
     }
 
-
+    private String[] getPrimaryResourceTypeNames() {
+        List<String> list = new ArrayList<String>();
+        for (PrimaryResourceTypeDefinition def : this.primaryTypes) {
+            list.add(def.getName());
+        }
+        return list.toArray(new String[list.size()]);
+    }
 
     private  void init() {
 
@@ -330,6 +346,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     PrimaryResourceTypeDefinition.class, false, false).values();
 
+        this.primaryResourceTypeNames = getPrimaryResourceTypeNames();
+        
         this.mixins = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     MixinResourceTypeDefinition.class, false, false).values();

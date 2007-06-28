@@ -37,7 +37,7 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
-public interface ResourceTypeTree {
+public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
 
     public PropertyTypeDefinition findPropertyTypeDefinition(
             Namespace namespace, String name);
@@ -102,8 +102,6 @@ public interface ResourceTypeTree {
      * @return
      */
     public List<PrimaryResourceTypeDefinition> getResourceTypeDefinitionChildren(PrimaryResourceTypeDefinition def);
-
-    public List getResourceTypeDescendantNames(String resourceTypeName);
 
     public Namespace getNamespace(String namespaceUrl);
 

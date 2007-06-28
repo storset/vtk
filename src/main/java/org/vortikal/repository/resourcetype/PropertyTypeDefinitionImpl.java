@@ -36,6 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Vocabulary;
 
 
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
@@ -55,6 +56,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private NameChangePropertyEvaluator nameModificationEvaluator;
     private PropertyValidator validator;
     private Value[] allowedValues;
+
+    private Vocabulary<Value> vocabulary;
 
     public void afterPropertiesSet() {
         
@@ -154,25 +157,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.allowedValues;
     }
     
-    public void setAllowedValues(Value[] allowedValues) {
-        this.allowedValues = allowedValues;
-    }
-    
-    public void addAllowedValue(Value allowedValue) {
-        if (allowedValue == null) {
-            return;
-        }
-        if (this.allowedValues == null) {
-            this.allowedValues = new Value[] { allowedValue };
-            return;
-        }
-        java.util.List<Value> l = 
-            new java.util.ArrayList<Value>(Arrays.asList(this.allowedValues));
-        l.add(allowedValue);
-        this.allowedValues = l.toArray(new Value[l.size()]);
-    }
-    
-
     public Namespace getNamespace() {
         return this.namespace;
     }
@@ -194,6 +178,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setNameModificationEvaluator(
             NameChangePropertyEvaluator nameModificationEvaluator) {
         this.nameModificationEvaluator = nameModificationEvaluator;
+    }
+
+    public Vocabulary<Value> getVocabulary() {
+        return this.vocabulary;
+    }
+
+    public void setVocabulary(Vocabulary<Value> vocabulary) {
+        this.vocabulary = vocabulary;
     }
 
 }

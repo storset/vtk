@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,29 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.resourcetype;
 
+import java.util.List;
 
-public class TermOperator {
+public class HierarchicalNode<T> {
 
-    public static final TermOperator EQ = new TermOperator("EQ");
-    public static final TermOperator NE = new TermOperator("NE");
-    public static final TermOperator GT = new TermOperator("GT");
-    public static final TermOperator LT = new TermOperator("LT");
-    public static final TermOperator GE = new TermOperator("GE");
-    public static final TermOperator LE = new TermOperator("LE");
-    public static final TermOperator IN = new TermOperator("IN");
-    public static final TermOperator NI = new TermOperator("NI");
+    private T entry;
+    private List<HierarchicalNode<T>> children;
     
-    
-    private String id;
-
-    private TermOperator(String id) {
-        this.id = id;
+    public List<HierarchicalNode<T>> getChildren() {
+        return children;
     }
 
-    public String toString() {
-        return this.id;
+    public void setChildren(List<HierarchicalNode<T>> children) {
+        this.children = children;
+    }
+
+    public T getEntry() {
+        return entry;
+    }
+
+    public void setEntry(T entry) {
+        this.entry = entry;
     }
 
 }

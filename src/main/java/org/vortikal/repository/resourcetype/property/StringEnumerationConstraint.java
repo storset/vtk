@@ -40,20 +40,15 @@ import org.vortikal.repository.resourcetype.Value;
 
 public class StringEnumerationConstraint implements Constraint {
 
-    private Set allowedValues = new HashSet();
+    private Set<String> allowedValues = new HashSet<String>();
     
     public void validate(Value value) throws ConstraintViolationException {
-        if (!this.allowedValues.contains(value.getStringValue()))
+        if (this.allowedValues == null || !this.allowedValues.contains(value.getStringValue()))
             throw new ConstraintViolationException("Value not in allowed set");
     }
 
-    public void setAllowedValues(String[] allowedValues) {
-        if (allowedValues == null)
-            return;
-        
-        for (int i = 0; i < allowedValues.length; i++) {
-            this.allowedValues.add(allowedValues[i]);
-        }
+    public void setAllowedValues(Set<String> allowedValues) {
+        this.allowedValues = allowedValues;
     }
 
 }

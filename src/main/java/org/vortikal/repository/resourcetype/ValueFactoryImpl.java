@@ -33,7 +33,6 @@ package org.vortikal.repository.resourcetype;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -52,7 +51,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
 
     private PrincipalFactory principalFactory;
     
-    private List dateFormats;
+    private List<String> dateFormats;
     
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -143,8 +142,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         
         SimpleDateFormat format;
         Date date;
-        for (Iterator iter = this.dateFormats.iterator(); iter.hasNext(); ) {
-            String dateFormat = (String) iter.next();
+        for (String dateFormat: this.dateFormats) {
             format = new SimpleDateFormat(dateFormat);
             format.setLenient(false);
             try {
@@ -159,7 +157,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
             "Unable to parse date value for input string: '" + stringValue + "'");
     }
 
-    public void setDateFormats(List dateformats) {
+    public void setDateFormats(List<String> dateformats) {
         this.dateFormats = dateformats;
     }
 

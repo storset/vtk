@@ -6,7 +6,7 @@
   <!-- Managed XML resource -->
 
   <bean id="managedXmlResource" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="managed-xml"/>
+    <property name="name" value="managed-xml" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="xmlResource" />
     <property name="mixinTypeDefinitions">
@@ -14,7 +14,7 @@
         <ref bean="visualProfileMixinResourceTypeDef" />
         <ref bean="ssiMixinResourceTypeDef" />
       </list>
-    </property>    
+    </property>
     <property name="assertions">
       <list>
         <ref bean="schemaPropSet" />
@@ -33,25 +33,27 @@
     <property name="resourceTypeDefinition" ref="managedXmlResource" />
   </bean>
 
-  <bean id="plaintextEditPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="plaintextEditPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="plaintext-edit" />
     <property name="type" ref="TYPE_BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="allowedValues">
-      <list>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="boolean">
-            <value>true</value>
-          </constructor-arg>
-        </bean>
-      </list>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
 
-  <bean id="managedXmlTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="managedXmlTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="managedXmlTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -59,35 +61,33 @@
   </bean>
 
   <bean id="managedXmlOverriddenTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="contentModificationEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
     <property name="nameModificationEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="managedXmlOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
-    <property name="fallbackTitlePropDef" ref="managedXmlTitlePropDef"/>
+    <property name="fallbackTitlePropDef" ref="managedXmlTitlePropDef" />
   </bean>
 
 
-  <bean id="schemaPropSet" 
-        class="org.vortikal.web.service.ResourcePropertyAssertion">
+  <bean id="schemaPropSet" class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="schema" />    
+    <property name="name" value="schema" />
     <property name="checkExistenceOnly" value="true" />
   </bean>
 
-   <bean id="managedXml.messageSource"
-         class="org.springframework.context.support.ResourceBundleMessageSource">
-     <property name="basenames">
-       <list>
-         <value>vortikal.i18n.xmlprops</value>
-       </list>
-     </property>
-   </bean>
+  <bean id="managedXml.messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.xmlprops</value>
+      </list>
+    </property>
+  </bean>
 
   <bean id="managedXmlTitlePropertyEvaluator"
-        class="org.vortikal.repository.resourcetype.property.PropertyValueConditionalEvaluator">
+    class="org.vortikal.repository.resourcetype.property.PropertyValueConditionalEvaluator">
     <property name="propertyDefinition" ref="schemaPropDef" />
     <property name="conditionalValueEvaluatorMap">
       <map>
@@ -114,7 +114,7 @@
         </entry>
 
         <!-- apollonia -->
-        <entry key="http://www.uio.no/xsd/apollonia/artikkel/v00.*/artikkel.xsd"> <!-- v001 - v003 -->
+        <entry key="http://www.uio.no/xsd/apollonia/artikkel/v00.*/artikkel.xsd"><!-- v001 - v003 -->
           <bean parent="abstractXPathEvaluator">
             <property name="expression" value="/artikkel/tittel" />
           </bean>
@@ -182,7 +182,7 @@
           <bean parent="abstractXPathEvaluator">
             <property name="expression" value="concat(vrtx:localize('common.slideshow'),' - ',/slideshow/title)" />
           </bean>
-        </entry> 
+        </entry>
 
         <!-- folder-eval -->
         <entry key="http://www.uio.no/xsd/folder-eval/folder-eval-report/v001/folder-eval-report.xsd">
@@ -195,7 +195,7 @@
         <entry key="http://www.uio.no/xsd/hf/person/v00.*/person.xsd">
           <bean parent="abstractXPathEvaluator">
             <!-- tittel i dokumentet hentes fra personsøk - dette er det beste man får til -->
-            <property name="expression" value="concat(vrtx:localize('hf.person'),' - ',/person/username)" /> 
+            <property name="expression" value="concat(vrtx:localize('hf.person'),' - ',/person/username)" />
           </bean>
         </entry>
 
@@ -246,292 +246,308 @@
         <entry key="http://www.uio.no/xsd/muv/muv-faktaark/v001/muv-faktaark.xsd">
           <bean parent="abstractXPathEvaluator">
             <!-- kun en skal eksistere -->
-            <property name="expression" value="concat(/muv-faktaark/person/navn, /muv-faktaark/bygning/offisielt-navn)" /> 
+            <property name="expression" value="concat(/muv-faktaark/person/navn, /muv-faktaark/bygning/offisielt-navn)" />
           </bean>
         </entry>
 
         <!-- romfortegnelse -->
         <entry key="http://www.uio.no/xsd/romfortegnelser/romskjema/v001/romskjema.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('romfortegnelse.rom'),' ',/romskjema/om-rommet/romnummer,' (',/romskjema/om-rommet/romtype,') ',vrtx:localize('i'),' ',/romskjema/om-rommet/bygningsnavn,' (',/romskjema/om-rommet/bygningsnummer,')')" />
+            <property name="expression"
+              value="concat(vrtx:localize('romfortegnelse.rom'),' ',/romskjema/om-rommet/romnummer,' (',/romskjema/om-rommet/romtype,') ',vrtx:localize('i'),' ',/romskjema/om-rommet/bygningsnavn,' (',/romskjema/om-rommet/bygningsnummer,')')" />
           </bean>
         </entry>
 
         <!-- studier -->
         <entry key="http://www.uio.no/xsd/studier/beskjeder/v001/beskjeder.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.beskjeder'), ' (',/beskjeder/tittel/emnekode,' - ',vrtx:localize(/beskjeder/tittel/semester),' ',/beskjeder/tittel/aar,')')" />
+            <property name="expression"
+              value="concat(vrtx:localize('studier.beskjeder'), ' (',/beskjeder/tittel/emnekode,' - ',vrtx:localize(/beskjeder/tittel/semester),' ',/beskjeder/tittel/aar,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/beskjeder-delkurs/v001/beskjeder-delkurs.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.beskjeder'), ' (',/beskjeder/tittel/emnekode,' - ',vrtx:localize(/beskjeder/tittel/semester),' ',/beskjeder/tittel/aar,')')" />
+            <property name="expression"
+              value="concat(vrtx:localize('studier.beskjeder'), ' (',/beskjeder/tittel/emnekode,' - ',vrtx:localize(/beskjeder/tittel/semester),' ',/beskjeder/tittel/aar,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/beskjeder-studieprogram/v001/beskjeder-studieprogram.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.beskjeder')" /> 
+            <property name="expression" value="vrtx:localize('studier.beskjeder')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/beskjeder-studieretning/v001/beskjeder-studieretning.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.beskjeder')" /> 
+            <property name="expression" value="vrtx:localize('studier.beskjeder')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/delkurs/v001/delkurs.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/kurs/tittel/emnenavn, ' (', /kurs/tittel/emnekode,' - ',vrtx:localize(/kurs/tittel/semester),' ',/kurs/tittel/aar,')')" />
+            <property name="expression"
+              value="concat(/kurs/tittel/emnenavn, ' (', /kurs/tittel/emnekode,' - ',vrtx:localize(/kurs/tittel/semester),' ',/kurs/tittel/aar,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/eksamen/v002/eksamen.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.eksamen-tid-og-sted'), ' (', /eksamen/emnekode, ' - ',vrtx:localize(/eksamen/semester),' ',/eksamen/aar,')')" /> 
+            <property name="expression"
+              value="concat(vrtx:localize('studier.eksamen-tid-og-sted'), ' (', /eksamen/emnekode, ' - ',vrtx:localize(/eksamen/semester),' ',/eksamen/aar,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/emne/v001/emne.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/emne/tittel/emnekode,' - ',/emne/tittel/emnenavn)" /> 
+            <property name="expression" value="concat(/emne/tittel/emnekode,' - ',/emne/tittel/emnenavn)" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/emnegruppe/v001/emnegruppe.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/emnegruppe/emnegruppeomfang, '-', vrtx:localize('studier.gruppe'), ' - ', /emnegruppe/emnegruppenavn,' (',/emnegruppe/emnegruppekode,')')" /> 
+            <property name="expression"
+              value="concat(/emnegruppe/emnegruppeomfang, '-', vrtx:localize('studier.gruppe'), ' - ', /emnegruppe/emnegruppenavn,' (',/emnegruppe/emnegruppekode,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/generell/v001/generell.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/generell/tittel/titteltekst" /> 
+            <property name="expression" value="/generell/tittel/titteltekst" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/hva-laerer-du/v001/hva-laerer-du.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.hva-laerer-du')" /> 
+            <property name="expression" value="vrtx:localize('studier.hva-laerer-du')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/hvordan-soke/v001/hvordan-soke.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.hvordan-soke')" /> 
+            <property name="expression" value="vrtx:localize('studier.hvordan-soke')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/jobb-og-studiemuligheter/v001/jobb-og-studiemuligheter.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.jobb-og-studiemuligheter')" /> 
+            <property name="expression" value="vrtx:localize('studier.jobb-og-studiemuligheter')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/karriereintervju/v001/karriereintervju.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/karriereintervju/tittel" /> 
+            <property name="expression" value="/karriereintervju/tittel" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/kontaktinformasjon/v001/kontaktinformasjon.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.kontaktinformasjon')" /> 
+            <property name="expression" value="vrtx:localize('studier.kontaktinformasjon')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/kontaktinformasjon-(del)?kurs/v00*">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.kontaktinformasjon'), ' (',/kontaktinformasjon/tittel/emnekode,' - ',vrtx:localize(/kontaktinformasjon/tittel/semester),' ',/kontaktinformasjon/tittel/aar,')')" /> 
+            <property name="expression"
+              value="concat(vrtx:localize('studier.kontaktinformasjon'), ' (',/kontaktinformasjon/tittel/emnekode,' - ',vrtx:localize(/kontaktinformasjon/tittel/semester),' ',/kontaktinformasjon/tittel/aar,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/kontaktinformasjon-studie*/v001/kontaktinformasjon-studie*.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.kontaktinformasjon')" /> 
+            <property name="expression" value="vrtx:localize('studier.kontaktinformasjon')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/kort-om-programmet/v001/kort-om-programmet.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.kort-om-programmet')" /> 
+            <property name="expression" value="vrtx:localize('studier.kort-om-programmet')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/kort-om-studieretningen/v001/kort-om-studieretningen.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.kort-om-studieretningen')" /> 
+            <property name="expression" value="vrtx:localize('studier.kort-om-studieretningen')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/kurs/v001/kurs.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/kurs/tittel/emnekode,' - ',vrtx:localize(/kurs/tittel/semester),' ',/kurs/tittel/aar,' (', /kurs/tittel/emnenavn, ')')" />
+            <property name="expression"
+              value="concat(/kurs/tittel/emnekode,' - ',vrtx:localize(/kurs/tittel/semester),' ',/kurs/tittel/aar,' (', /kurs/tittel/emnenavn, ')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/oppbygging-gjennomforing/v001/oppbygging-gjennomforing.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.oppbygging-gjennomforing')" /> 
+            <property name="expression" value="vrtx:localize('studier.oppbygging-gjennomforing')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/pensumliste/v001/pensumliste.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.pensumliste'), ' (', /pensumliste/tittel/emnekode,' - ',vrtx:localize(/pensumliste/tittel/semester),' ',/pensumliste/tittel/aar, ')')" /> 
+            <property name="expression"
+              value="concat(vrtx:localize('studier.pensumliste'), ' (', /pensumliste/tittel/emnekode,' - ',vrtx:localize(/pensumliste/tittel/semester),' ',/pensumliste/tittel/aar, ')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/studieprogram-hjemmeside/v002/studieprogram-hjemmeside.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/studieprogram-hjemmeside/programnavn, ' (', vrtx:localize(/studieprogram-hjemmeside/programtype), ')')" /> 
+            <property name="expression"
+              value="concat(/studieprogram-hjemmeside/programnavn, ' (', vrtx:localize(/studieprogram-hjemmeside/programtype), ')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/studieretning-hjemmeside/v002/studieretning-hjemmeside.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/studieretning-hjemmeside/studieretningsnavn, ' (', vrtx:localize('studier.studieretning'), ')')" /> 
+            <property name="expression"
+              value="concat(/studieretning-hjemmeside/studieretningsnavn, ' (', vrtx:localize('studier.studieretning'), ')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/studiestart/v001/studiestart.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.studiestart')" /> 
+            <property name="expression" value="vrtx:localize('studier.studiestart')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/tid-og-sted-*/v001/tid-og-sted-*.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.undervisning-tid-og-sted'), ' (', /tid-og-sted/emnekode, ' - ',vrtx:localize(/tid-og-sted/semester),' ',/tid-og-sted/aar,')')" /> 
+            <property name="expression"
+              value="concat(vrtx:localize('studier.undervisning-tid-og-sted'), ' (', /tid-og-sted/emnekode, ' - ',vrtx:localize(/tid-og-sted/semester),' ',/tid-og-sted/aar,')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/undervisningsplan/v001/undervisningsplan.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.undervisningsplan'), ' (', /undervisningsplan/tittel/emnekode,' - ',vrtx:localize(/undervisningsplan/tittel/semester),' ',/undervisningsplan/tittel/aar, ')')" /> 
+            <property name="expression"
+              value="concat(vrtx:localize('studier.undervisningsplan'), ' (', /undervisningsplan/tittel/emnekode,' - ',vrtx:localize(/undervisningsplan/tittel/semester),' ',/undervisningsplan/tittel/aar, ')')" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/universitet/v001/universitet.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/universitet/navn" /> 
+            <property name="expression" value="/universitet/navn" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/utvekslingsavtale/v001/utvekslingsavtale.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('studier.utvekslingsavtale-mellom'), ' ', /utvekslingsavtale/universitet, ' ', vrtx:localize('og'), ' ', /utvekslingsavtale/avtaleeier)" /> 
+            <property name="expression"
+              value="concat(vrtx:localize('studier.utvekslingsavtale-mellom'), ' ', /utvekslingsavtale/universitet, ' ', vrtx:localize('og'), ' ', /utvekslingsavtale/avtaleeier)" />
           </bean>
         </entry>
 
         <entry key="http://www.uio.no/xsd/studier/utenlandsopphold/v001/utenlandsopphold.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="vrtx:localize('studier.utenlandsopphold')" /> 
+            <property name="expression" value="vrtx:localize('studier.utenlandsopphold')" />
           </bean>
         </entry>
 
         <!-- UiO -->
         <entry key="http://www.uio.no/xsd/uio/adresse/v001/adresse.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/adressedokument/tittel" /> 
+            <property name="expression" value="/adressedokument/tittel" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/arrangement/v001/arrangement.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/arrangement/tittel" /> 
+            <property name="expression" value="/arrangement/tittel" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/beskjeder/v001/beskjeder.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/beskjeder/tittel" /> 
+            <property name="expression" value="/beskjeder/tittel" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/disputas/v001/disputas.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/disputas/doktorand/fornavn,' ',/disputas/doktorand/etternavn,' - ',/disputas/oppgavetittel)" /> 
+            <property name="expression"
+              value="concat(/disputas/doktorand/fornavn,' ',/disputas/doktorand/etternavn,' - ',/disputas/oppgavetittel)" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/faq/v001/faq.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/faq/tittel" /> 
+            <property name="expression" value="/faq/tittel" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/forside/v001/forside.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/forside/tittel" /> 
+            <property name="expression" value="/forside/tittel" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/generell/v001/generell.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/generell/tittel/titteltekst" /> 
+            <property name="expression" value="/generell/tittel/titteltekst" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/generell/v002/generell.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/generell/tittel" /> 
+            <property name="expression" value="/generell/tittel" />
           </bean>
         </entry>
         <entry key="http://www.uio.no/xsd/uio/nyhet/v001/nyhet.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/nyhet/tittel" /> 
+            <property name="expression" value="/nyhet/tittel" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/uio/person/v001/person.xsd"> <!-- v001 - v004 -->
+        <entry key="http://www.uio.no/xsd/uio/person/v001/person.xsd"><!-- v001 - v004 -->
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(vrtx:localize('uio.person'),' - ',/person/username)" /> 
+            <property name="expression" value="concat(vrtx:localize('uio.person'),' - ',/person/username)" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/uio/proveforelesning/v001/proveforelesning.xsd"> 
+        <entry key="http://www.uio.no/xsd/uio/proveforelesning/v001/proveforelesning.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="concat(/proveforelsening/doktorand/fornavn,' ',/proveforelsning/doktorand/etternavn,' - ',/proveforelesning/emne)" /> 
+            <property name="expression"
+              value="concat(/proveforelsening/doktorand/fornavn,' ',/proveforelsning/doktorand/etternavn,' - ',/proveforelesning/emne)" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/uio/publikasjon/v001/publikasjon.xsd"> 
+        <entry key="http://www.uio.no/xsd/uio/publikasjon/v001/publikasjon.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/publikasjon/tittel" /> 
+            <property name="expression" value="/publikasjon/tittel" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/uio-strategi/generell/v001/generell.xsd"> 
+        <entry key="http://www.uio.no/xsd/uio-strategi/generell/v001/generell.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/generell/tittel/titteltekst" /> 
+            <property name="expression" value="/generell/tittel/titteltekst" />
           </bean>
         </entry>
-        
+
         <!-- universell-utforming -->
-        <entry key="http://www.uio.no/xsd/universell-utforming/fak-ins-oversikt/v001/fak-ins-oversikt.xsd"> 
+        <entry key="http://www.uio.no/xsd/universell-utforming/fak-ins-oversikt/v001/fak-ins-oversikt.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/fak-ins-oversikt/tittel" /> 
+            <property name="expression" value="/fak-ins-oversikt/tittel" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/universell-utforming/institutt-oversikt/v001/institutt-oversikt.xsd"> 
+        <entry key="http://www.uio.no/xsd/universell-utforming/institutt-oversikt/v001/institutt-oversikt.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="'Kompendier (instituttoversikt)'" /> 
+            <property name="expression" value="'Kompendier (instituttoversikt)'" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/universell-utforming/kompendier/v001/kompendier.xsd"> 
+        <entry key="http://www.uio.no/xsd/universell-utforming/kompendier/v001/kompendier.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/kompendier/dokumenttittel" /> 
+            <property name="expression" value="/kompendier/dokumenttittel" />
           </bean>
         </entry>
 
         <!-- universitetsstyret -->
-        <entry key="http://www.uio.no/xsd/universitetsstyret/protokoll/v00.*/protokoll.xsd"> <!-- v001 - v002 --> 
+        <entry key="http://www.uio.no/xsd/universitetsstyret/protokoll/v00.*/protokoll.xsd"><!-- v001 - v002 -->
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/protokoll/tittel/moetenavn" /> 
+            <property name="expression" value="/protokoll/tittel/moetenavn" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/universitetsstyret/sakskart/v00.*/sakskart.xsd"> <!-- v001 - v002 --> 
+        <entry key="http://www.uio.no/xsd/universitetsstyret/sakskart/v00.*/sakskart.xsd"><!-- v001 - v002 -->
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/sakskart/tittel/moetenavn" /> 
+            <property name="expression" value="/sakskart/tittel/moetenavn" />
           </bean>
         </entry>
 
         <!-- usit -->
-        <entry key="http://www.uio.no/xsd/usit/generell/v001/generell.xsd"> 
+        <entry key="http://www.uio.no/xsd/usit/generell/v001/generell.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/genrell/tittel/titteltekst" /> 
+            <property name="expression" value="/genrell/tittel/titteltekst" />
           </bean>
         </entry>
       </map>

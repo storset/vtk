@@ -34,6 +34,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Vocabulary;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
@@ -44,10 +45,6 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
     private NameChangePropertyEvaluator nameModificationEvaluator;
     private Value defaultValue;
-
-    public Value[] getAllowedValues() {
-        return this.overriddenPropDef.getAllowedValues();
-    }
 
     public Constraint getConstraint() {
         return this.overriddenPropDef.getConstraint();
@@ -156,6 +153,10 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
 
     public void setDefaultValue(Value defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    public Vocabulary getVocabulary() {
+        return this.overriddenPropDef.getVocabulary();
     }
 
 }

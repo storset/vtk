@@ -34,19 +34,19 @@ package org.vortikal.repository.search.query;
 public class TypeTermQuery implements Query {
 
     private String term;
-    private TypeOperator operator;
+    private TermOperator operator;
     
-    public TypeTermQuery(String term, TypeOperator operator) {
+    public TypeTermQuery(String term, TermOperator operator) {
         this.term = term;
         this.operator = operator;
         
     }
 
-    public TypeOperator getOperator() {
+    public TermOperator getOperator() {
         return this.operator;
     }
 
-    public void setOperator(TypeOperator operator) {
+    public void setOperator(TermOperator operator) {
         this.operator = operator;
     }
 

@@ -36,25 +36,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
-import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -202,7 +201,7 @@ public class PropertyEditController extends SimpleFormController
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
         String value = null;
-        List formAllowedValues = null;
+        List<String> formAllowedValues = null;
         String editURL = null;
         PropertyTypeDefinition definition = null;        
 
@@ -227,26 +226,28 @@ public class PropertyEditController extends SimpleFormController
                     }
                 }
 
-                Value[] definitionAllowedValues = definition.getAllowedValues();
+                Vocabulary<Value> vocabulary = definition.getVocabulary();
+                if (vocabulary != null) {
+                    Value[] definitionAllowedValues = vocabulary
+                            .getAllowedValues();
+                    if (definitionAllowedValues != null) {
+                        formAllowedValues = new ArrayList<String>();
+                        for (Value v: definitionAllowedValues) {
+                            formAllowedValues.add(v.toString());
+                        }
+                        if (!definition.isMandatory())
+                            formAllowedValues.add(0, "");
 
-                if (definitionAllowedValues != null) {
-                    formAllowedValues = new ArrayList();
-                    for (int j = 0; j < definitionAllowedValues.length; j++) {
-                        formAllowedValues.add(definitionAllowedValues[j].toString());
                     }
-                    if (!definition.isMandatory())
-                        formAllowedValues.add(0, "");
-
                 }
-                Map urlParameters = new HashMap();
+                Map<String, String> urlParameters = new HashMap<String, String>();
                 String namespaceURI = definition.getNamespace().getUri();
                 if (namespaceURI != null)
                     urlParameters.put("namespace", namespaceURI);
 
                 urlParameters.put("name", definition.getName());
 
-                editURL = service.constructLink(resource, securityContext.getPrincipal(),
-                                                urlParameters);
+                editURL = service.constructLink(resource, securityContext.getPrincipal(), urlParameters);
             }
         }
         
@@ -396,11 +397,11 @@ public class PropertyEditController extends SimpleFormController
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
 
-        List propsList = new ArrayList();
-        Map propsMap = new HashMap();
-        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
+        List<PropertyItem> propsList = new ArrayList<PropertyItem>();
+        Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 
-            PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
+        for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
+
             if (!isApplicableProperty(def, resource.getResourceTypeDefinition())) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Property type definition " + def
@@ -418,7 +419,7 @@ public class PropertyEditController extends SimpleFormController
             if (resource.isAuthorized(def.getProtectionLevel(),
                                       securityContext.getPrincipal())) {
                 
-                Map urlParameters = new HashMap();
+                Map<String, String> urlParameters = new HashMap<String, String>();
                 String namespaceURI = def.getNamespace().getUri();
                 if (namespaceURI != null) {
                     urlParameters.put("namespace", namespaceURI);
@@ -473,15 +474,28 @@ public class PropertyEditController extends SimpleFormController
     
 
     private boolean isToggleableProperty(PropertyTypeDefinition def) {
-        if (!def.isMandatory()) {
-            return (def.getAllowedValues() != null && def.getAllowedValues().length == 1);
-        } 
-        return (def.getAllowedValues() != null && def.getAllowedValues().length == 2);
+        Vocabulary<Value> vocabulary = def.getVocabulary();
+        
+        if (vocabulary == null) {
+            return false;
+        }
+        
+        Value[] allowedValues = vocabulary.getAllowedValues();
+
+        if (allowedValues == null) {
+            return false;
+        }
+        
+        if (def.isMandatory()) {
+            return (allowedValues.length == 2);
+        }
+
+        return (allowedValues.length == 1);
     }
     
     private Value getToggleValue(PropertyTypeDefinition def, Property property) {
         
-        Value[] allowedValues = def.getAllowedValues();
+        Value[] allowedValues = def.getVocabulary().getAllowedValues();
 
         if (!def.isMandatory() && allowedValues != null && allowedValues.length == 1) {
             if (property == null) {

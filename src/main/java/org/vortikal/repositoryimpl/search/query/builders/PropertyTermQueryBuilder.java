@@ -36,11 +36,7 @@ import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -52,20 +48,23 @@ import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
  */
 public class PropertyTermQueryBuilder implements QueryBuilder {
 
-    private PropertyTermQuery ptq;
-    public PropertyTermQueryBuilder(PropertyTermQuery ptq) {
-        this.ptq = ptq;
+    private TermOperator op;
+    private String term;
+    private String fieldName;
+    private String fieldValue;
+    
+    public PropertyTermQueryBuilder(TermOperator op, String term, String fieldName, String fieldValue) {
+        this.op = op;
+        this.term = term;
+        this.fieldName = fieldName;
+        this.fieldValue = fieldValue;
     }
+
+
 
     public Query buildQuery() throws QueryBuilderException {
         
-        TermOperator op = this.ptq.getOperator();
-        PropertyTypeDefinition propDef = this.ptq.getPropertyDefinition();
         
-        String fieldName = DocumentMapper.getFieldName(propDef);
-
-        String fieldValue = FieldValueMapper.encodeIndexFieldValue(this.ptq.getTerm(), 
-                                                            propDef.getType());
         
         if (op == TermOperator.EQ) {
             return new TermQuery(new Term(fieldName, fieldValue));

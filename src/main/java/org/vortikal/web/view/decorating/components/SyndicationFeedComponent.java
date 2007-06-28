@@ -94,7 +94,8 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
     private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
 
     private static final String PARAMETER_URL = "url";
-    private static final String PARAMETER_URL_DESC = "The feed url";
+    private static final String PARAMETER_URL_DESC = "The feed url. For host " +
+            "local feeds, you get authenticated retrieval of the resource if you skip the protocol/host part";
 
     private static final String PARAMETER_FEED_TITLE = "feed-title";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";

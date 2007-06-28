@@ -6,61 +6,68 @@
   <!-- Resource type 'collection' -->
   <bean id="collectionResourceTypeDefinition"
     class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="collection"/>
-    <property name="namespace" ref="DEFAULT_NAMESPACE"/>
+    <property name="name" value="collection" />
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions">
       <list>
-        <ref bean="collectionAssertion"/>
+        <ref bean="collectionAssertion" />
       </list>
     </property>
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="visualProfileMixinResourceTypeDef" />
       </list>
-    </property>    
-    <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition"/>
+    </property>
+    <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="skipInPathPropDef"/>
+        <ref bean="skipInPathPropDef" />
         <ref bean="typePropDef" />
       </list>
     </property>
   </bean>
-  
+
   <bean id="typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="type"/>
-    <property name="type" ref="TYPE_STRING"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-    <property name="allowedValues">
-      <list>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
-            <value>portal-page</value>
-          </constructor-arg>
-        </bean>
-      </list>
+    <property name="name" value="type" />
+    <property name="type" ref="TYPE_STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>portal-page</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
-  
+
   <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="skipInPath"/>
-    <property name="type" ref="TYPE_BOOLEAN"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-    <property name="allowedValues">
-      <list>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="boolean">
-            <value>true</value>
-          </constructor-arg>
-        </bean>
-      </list>
+    <property name="name" value="skipInPath" />
+    <property name="type" ref="TYPE_BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
-  
+
   <!-- Assertion that matches all collection resources -->
-  <bean id="collectionAssertion"
-        class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+  <bean id="collectionAssertion" class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
 
 </beans>

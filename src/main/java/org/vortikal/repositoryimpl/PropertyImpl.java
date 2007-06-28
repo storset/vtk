@@ -37,6 +37,7 @@ import java.util.List;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -330,8 +331,9 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             constraint.validate(value);
         }
 
-        if (this.propertyTypeDefinition.getAllowedValues() != null) {
-            List valuesList = Arrays.asList(this.propertyTypeDefinition.getAllowedValues());
+        Vocabulary vocabulary = this.propertyTypeDefinition.getVocabulary();
+        if (vocabulary != null && vocabulary.getAllowedValues() != null) {
+            List valuesList = Arrays.asList(vocabulary.getAllowedValues());
             if (!valuesList.contains(value)) {
                 ConstraintViolationException e = 
                     new ConstraintViolationException(

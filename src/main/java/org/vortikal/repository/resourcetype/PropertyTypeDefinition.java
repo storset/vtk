@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Vocabulary;
 
 
 /**
@@ -67,7 +68,7 @@ public interface PropertyTypeDefinition {
 
     public PropertyValidator getValidator();
     
-    public Value[] getAllowedValues();
+    public Vocabulary<Value> getVocabulary();
 
 }
 

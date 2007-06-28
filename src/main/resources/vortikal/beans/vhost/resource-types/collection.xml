@@ -27,7 +27,6 @@
     </property>
   </bean>
   
-  <!-- XXX: No allowed values! -->
   <bean id="typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="type"/>
     <property name="type" ref="TYPE_STRING"/>
@@ -35,6 +34,11 @@
     <property name="mandatory" value="false"/>
     <property name="allowedValues">
       <list>
+        <bean class="org.vortikal.repository.resourcetype.Value">
+          <constructor-arg type="java.lang.String">
+            <value>portal-page</value>
+          </constructor-arg>
+        </bean>
       </list>
     </property>
   </bean>

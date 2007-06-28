@@ -21,20 +21,6 @@
     </property>
   </bean>
   
-  <bean id="registerPortalPageResourceType" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="typePropDef" />
-    <property name="targetMethod" value="addAllowedValue" />
-    <property name="arguments">
-      <list>
-        <bean class="org.vortikal.repository.resourcetype.Value">
-          <constructor-arg type="java.lang.String">
-            <value>portal-page</value>
-          </constructor-arg>
-        </bean>
-      </list>
-    </property>
-  </bean>
-
   <bean id="PORTALPAGE_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="portal-page" />
     <constructor-arg value="http://www.uio.no/portal-page" />

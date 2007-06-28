@@ -51,9 +51,9 @@
     </notifiers>
   </ciManagement>
   <scm>
-    <connection>scm:svn:svn://xml.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://xml.uio.no/svnroot/vortikal/trunk</developerConnection>
-    <url>svn://xml.uio.no/svnroot/vortikal/trunk</url>
+    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <url>svn://svn.uio.no/svnroot/vortikal/trunk</url>
   </scm>
   <licenses>
     <license>

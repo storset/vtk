@@ -46,6 +46,16 @@
         <icon>${cssBaseURL}/up.gif</icon>
       </collection>
     </#if>
+    
+    <#if resourceContext.currentResource.name?exists>
+      <resource id="resource:${resourceContext.currentResource.name}">
+        <title>&lt;Current folder&gt;</title>
+        <#if (viewService.url)?has_content>
+        <uri>${viewService.url?html}</uri>
+        </#if>
+        <icon>${cssBaseURL}/dir2.gif</icon>
+      </resource>
+    </#if>
 
   <#list collectionListing.children as child>
 

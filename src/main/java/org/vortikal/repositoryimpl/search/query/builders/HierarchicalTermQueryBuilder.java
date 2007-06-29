@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@
  */
 package org.vortikal.repositoryimpl.search.query.builders;
 
-import java.util.List;
 
+import java.util.List;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -41,19 +41,21 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.HierarchicalVocabulary;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 
-public class HierarchicalTermQueryBuilder implements QueryBuilder {
+public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
 
-    private HierarchicalVocabulary hierarchicalVocabulary;
+    private HierarchicalVocabulary<T> hierarchicalVocabulary;
     private final TermOperator operator;
     private final String fieldName;
-    private final String term;
+    private final T term;
     
-    public HierarchicalTermQueryBuilder(HierarchicalVocabulary hierarchicalVocabulary, TermOperator operator, String fieldName, String term) {
+    public HierarchicalTermQueryBuilder(HierarchicalVocabulary<T> hierarchicalVocabulary,
+                                        TermOperator operator, String fieldName, T term) {
         this.hierarchicalVocabulary = hierarchicalVocabulary;
         this.operator = operator;
         this.fieldName = fieldName;
@@ -74,16 +76,19 @@ public class HierarchicalTermQueryBuilder implements QueryBuilder {
 
     private Query getInQuery() {
         BooleanQuery bq = new BooleanQuery(true);
-        bq.add(new TermQuery(new Term(fieldName, term)),
+        bq.add(new TermQuery(new Term(fieldName, this.term.toString())),
                             BooleanClause.Occur.SHOULD);
 
-        List<String> descendantNames = this.hierarchicalVocabulary.getDescendantsAndSelf(term);
+        List<T> descendantNames = this.hierarchicalVocabulary.getDescendantsAndSelf(this.term);
         
-        if (descendantNames != null) {
-            for (String descendantName: descendantNames) {
+        if (descendantNames != null && !descendantNames.isEmpty()) {
+            for (T o: descendantNames) {
+                String descendantName = o.toString();
                 Term t = new Term(fieldName, descendantName);
                 bq.add(new TermQuery(t),  BooleanClause.Occur.SHOULD);
             }
+
+
         }
         
         return bq;

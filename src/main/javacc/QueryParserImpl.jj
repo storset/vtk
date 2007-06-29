@@ -413,11 +413,11 @@ Query PropertyPrefixQuery() :
 // Property value query:
 Query PropertyTermQuery() : {
     Token p=null, n, v;
-    Token ne=null, ge=null, le=null, eq=null, gt=null, lt=null;
+    Token ne=null, ge=null, le=null, eq=null, gt=null, lt=null, in=null, ni=null;
 }
 {
     [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
-        (ne=<NE> | ge =<GE> | le=<LE> | eq=<EQ> | gt=<GT> | lt=<LT>)
+        (ne=<NE> | ge =<GE> | le=<LE> | eq=<EQ> | gt=<GT> | lt=<LT> | in=<IN> | ni=<NI>)
         //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
         v=<VALUE>
         {
@@ -438,9 +438,12 @@ Query PropertyTermQuery() : {
                 operator = TermOperator.EQ;
             else if (gt != null)
                 operator = TermOperator.GT;
-            else
+            else if (lt != null)
                 operator = TermOperator.LT;
-
+            else if (in != null)
+                operator = TermOperator.IN;
+            else 
+                operator = TermOperator.NI;
 
             return getPropTermQuery(prefix, name, value, operator);
         }

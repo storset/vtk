@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@
  */
 package org.vortikal.repositoryimpl.search.query;
 
-import java.io.IOException;
 
+import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
@@ -82,6 +82,7 @@ import org.vortikal.repositoryimpl.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.UriTermQueryBuilder;
 import org.vortikal.util.repository.URIUtil;
+import org.vortikal.repository.resourcetype.Value;
 
 /**
  * Factory that helps in building different Lucene queries 
@@ -150,7 +151,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
        
         else if (query instanceof TypeTermQuery) {
             TypeTermQuery ttq = (TypeTermQuery)query;
-            builder = new HierarchicalTermQueryBuilder(this.resourceTypeTree, 
+            builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, 
             ttq.getOperator(), DocumentMapper.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
         }
        
@@ -170,15 +171,15 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
             PropertyTypeDefinition propDef = ptq.getPropertyDefinition();
 
             if (ptq.getOperator() == TermOperator.IN || ptq.getOperator() == TermOperator.NI) {
-                Vocabulary vocabulary = propDef.getVocabulary();
+                Vocabulary<Value> vocabulary = propDef.getVocabulary();
                 if (vocabulary == null || !(vocabulary instanceof HierarchicalVocabulary)) {
                     throw new QueryBuilderException("Property type doesn't have a hierachical vocabulary: " + propDef);
                 }
-                HierarchicalVocabulary hv = (HierarchicalVocabulary) vocabulary;
+                HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
                 
                 String fieldName = DocumentMapper.getFieldName(propDef);
                 String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
-                return new HierarchicalTermQueryBuilder(hv , ptq.getOperator(), fieldName, fieldValue);
+                return new HierarchicalTermQueryBuilder<Value>(hv , ptq.getOperator(), fieldName, new Value(fieldValue));
             } 
             
             return new PropertyTermQueryBuilder(ptq.getOperator(), ptq.getTerm(),

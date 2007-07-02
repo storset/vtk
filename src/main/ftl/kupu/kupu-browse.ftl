@@ -47,6 +47,7 @@
       </collection>
     </#if>
     
+    <#--
     <#if resourceContext.currentResource.name?exists>
       <resource id="resource:${resourceContext.currentResource.name}">
         <title>&lt;Current folder&gt;</title>
@@ -56,6 +57,7 @@
         <icon>${cssBaseURL}/dir2.gif</icon>
       </resource>
     </#if>
+    -->
 
   <#list collectionListing.children as child>
 

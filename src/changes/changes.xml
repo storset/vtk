@@ -11,7 +11,20 @@
     <release version="0.3.9-SNAPSHOT" date="In SVN" description="Release 0.3.9">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
-      
+      <action type="fix">
+        Kupu: various bug fixes.
+      </action>
+      <action type="add">
+        Resource types: add support for hierarchichal property vocabularies.
+      </action>
+      <action type="update">
+        Security: always require secure connection for HTTP/Basic authenticaion.
+      </action>
+      <action type="fix">
+        Fix for 500 internal server error when accessing index files
+        that are not readable for anonymous clients. (Instead, either
+        require authentication or display a 403 status page.)
+      </action>
     </release>
 
     <release version="0.3.8" date="2007-06-04" description="Release 0.3.8">

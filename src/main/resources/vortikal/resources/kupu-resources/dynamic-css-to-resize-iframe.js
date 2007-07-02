@@ -35,7 +35,6 @@ var iexplore7offset = 350;  // window is slightly smaller due to tabs
 
 
 function dyniframesize() {
-    
     if( !is_safari ) {
         if( document.getElementById ) { //begin resizing iframe procedure
             var editIframe = document.getElementById(iframeid);

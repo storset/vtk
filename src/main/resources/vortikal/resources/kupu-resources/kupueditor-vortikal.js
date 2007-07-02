@@ -230,10 +230,14 @@ function KupuEditor(document, config, logger) {
             };
         };
         
-        // This makes sure all links in tags and in attributes listed are the same as the original: The second argument to getAttribute gets the real value
-		var a_elements = this.getInnerDocument().getElementsByTagName('a');
-		for(var i=0;i<a_elements.length;i++){
-			a_elements[i].setAttribute('href', a_elements[i].getAttribute('href', 2));
+        // This makes sure all links in tags and in attributes listed are the same as the original: 
+        // The second argument to getAttribute gets the real value
+        // (Workaround, as IE defaults all href's to absolute path incl. hostname + current URI path)
+        if (_SARISSA_IS_IE) {
+		    var a_elements = this.getInnerDocument().getElementsByTagName('a');
+		    for(var i=0;i<a_elements.length;i++){
+			    a_elements[i].setAttribute('href', a_elements[i].getAttribute('href', 2));
+		    }
 		}
         
         // pass the content through the filters

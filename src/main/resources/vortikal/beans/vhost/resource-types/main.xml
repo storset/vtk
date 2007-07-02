@@ -50,7 +50,10 @@
 
   <!-- Portalen -->
   <import resource="portal-page.xml" />
-
+  
+  <!-- Romskjema -->
+  <import resource="romskjema.xml" />  
+  
   <!-- MIXINs -->
   <import resource="mixins/header-control.xml" />
   <import resource="mixins/ssi.xml" />

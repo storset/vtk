@@ -479,6 +479,9 @@
                 <property name="entry" value="234" />
               </bean>
               <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="235" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
                 <property name="entry" value="236" />
               </bean>
               <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
@@ -1356,13 +1359,13 @@
                 <property name="entry" value="835" />
               </bean>
               <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
-                <property name="entry" value="835" />
-              </bean>
-              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
                 <property name="entry" value="836" />
               </bean>
               <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
                 <property name="entry" value="837" />
+              </bean>
+              <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
+                <property name="entry" value="838" />
               </bean>
               <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
                 <property name="entry" value="849" />

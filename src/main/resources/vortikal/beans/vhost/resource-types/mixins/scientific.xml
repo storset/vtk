@@ -786,7 +786,7 @@
           </property>
         </bean>
         <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">
-          <property name="entry" value=" 450    GEOFAG" />
+          <property name="entry" value="450" />
           <property name="children">
             <list>
               <bean class="org.vortikal.repository.resourcetype.HierarchicalNode">

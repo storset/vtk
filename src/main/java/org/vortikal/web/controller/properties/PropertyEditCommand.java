@@ -40,19 +40,21 @@ import org.vortikal.web.controller.AbstractSaveCancelCommand;
 public class PropertyEditCommand extends AbstractSaveCancelCommand {
 
     private PropertyTypeDefinition definition;
-    private List possibleValues;
+    private List<String> possibleValues;
     private String value;
     
     private String namespace;
     private String name;
+    private final String hierarchicalHelpUrl;
     
 
     public PropertyEditCommand(String submitURL, PropertyTypeDefinition definition,
-                               String value, List possibleValues) {
+                               String value, List<String> possibleValues, String hierarchicalHelpUrl) {
         super(submitURL);
         this.definition = definition;
         this.value = value;
         this.possibleValues = possibleValues;
+        this.hierarchicalHelpUrl = hierarchicalHelpUrl;
         this.namespace = definition != null ? definition.getNamespace().getUri() : null;
         this.name = definition != null ? definition.getName() : null;
     }
@@ -77,7 +79,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         this.value = value;
     }
     
-    public List getPossibleValues() {
+    public List<String> getPossibleValues() {
         return this.possibleValues;
     }
     
@@ -101,6 +103,10 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
         buffer.append(", name = ").append(this.name);
         buffer.append("]");
         return buffer.toString();
+    }
+
+    public String getHierarchicalHelpUrl() {
+        return hierarchicalHelpUrl;
     }
     
 }

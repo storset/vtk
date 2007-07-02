@@ -51,6 +51,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.HierarchicalNode;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
@@ -640,6 +641,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 sb.append("\n");
             }
         }
+    }
+
+    public List<HierarchicalNode<String>> getRootNodes() {
+        // XXX: Not implemented yet.
+        return null;
     }
 
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+   
+   <bean id="vocabularyHelpService" class="org.vortikal.web.service.ServiceImpl">
+      <property name="parent" ref="manageService" />
+      <property name="order" value="-600" />
+      <property name="assertions">
+            <bean class="org.vortikal.web.service.RequestParameterAssertion">
+               <property name="parameterName" value="mode" />
+               <property name="parameterValue" value="property-vocabulary" />
+            </bean>
+      </property>
+      <property name="handler" ref="defaultVocabularyHandler" />
+   </bean>
+   
+         
+   <bean id="defaultVocabularyHandler" 
+      class="org.vortikal.web.controller.properties.VocabularyResolvingController">
+      <property name="viewName" value="vocabulary" />
+      <property name="resourceTypeTree" ref="resourceTypeTree" />
+   </bean>
+   
+      
+   <bean id="vocabularyViewResolver" 
+      class="org.vortikal.web.view.decorating.MappingViewResolver">
+      <property name="views">
+         <map>
+            <entry key="vocabulary" value-ref="vocabularyView" />
+         </map>
+      </property>
+   </bean>
+   
+   
+  <bean id="vocabularyView" parent="freemarkerView">
+      <property name="url" value="pages/vocabularyviewer.ftl" />
+      <property name="attributesMap">
+         <map>
+            <entry key="jsURLs">
+               <list>
+                  <value>${cssBaseURL}/vocabulary.js</value>
+               </list>
+            </entry>
+         </map>
+      </property>
+ 
+ </bean>
+
+</beans>

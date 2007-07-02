@@ -174,10 +174,10 @@ public interface Service extends Ordered, Categorizable {
      * assertions for this service (or any of the ancestors) fail to
      * match for the resource or principal.
      */
-    public String constructLink(Resource resource, Principal principal, Map parameters)
+    public String constructLink(Resource resource, Principal principal, Map<String, String> parameters)
         throws ServiceUnlinkableException;
 
-    public URL constructURL(Resource resource, Principal principal, Map parameters)
+    public URL constructURL(Resource resource, Principal principal, Map<String, String> parameters)
         throws ServiceUnlinkableException;
 
     /**
@@ -197,11 +197,11 @@ public interface Service extends Ordered, Categorizable {
      * one of the assertions for this service (or any of the
      * ancestors) fail to match for the resource or principal.
      */
-    public String constructLink(Resource resource, Principal principal, Map parameters,
+    public String constructLink(Resource resource, Principal principal, Map<String, String> parameters,
                                 boolean matchAssertions)
         throws ServiceUnlinkableException;
 	
-    public URL constructURL(Resource resource, Principal principal, Map parameters,
+    public URL constructURL(Resource resource, Principal principal, Map<String, String> parameters,
                             boolean matchAssertions)
         throws ServiceUnlinkableException;
 
@@ -209,9 +209,9 @@ public interface Service extends Ordered, Categorizable {
 
     public URL constructURL(String uri);
 
-    public String constructLink(String uri, Map parameters);
+    public String constructLink(String uri, Map<String, String> parameters);
 
-    public URL constructURL(String uri, Map parameters);
+    public URL constructURL(String uri, Map<String, String> parameters);
 
     /**
      * Gets the list of handler interceptors for this service, if any.

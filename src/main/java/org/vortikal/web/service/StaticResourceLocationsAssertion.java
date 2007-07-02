@@ -49,7 +49,7 @@ import org.vortikal.web.StaticResourceLocation;
 public class StaticResourceLocationsAssertion
   implements Assertion, ApplicationContextAware, InitializingBean {
 
-    private Set prefixes;
+    private Set<String> prefixes;
     private ApplicationContext applicationContext;
 
 
@@ -61,12 +61,10 @@ public class StaticResourceLocationsAssertion
     public void afterPropertiesSet() {
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, StaticResourceLocation.class, true, false);
-        Collection allLocations = matchingBeans.values();
-        this.prefixes = new HashSet();
+        Collection<StaticResourceLocation> allLocations = matchingBeans.values();
+        this.prefixes = new HashSet<String>();
 
-        for (Iterator i = allLocations.iterator(); i.hasNext();) {
-            StaticResourceLocation location = (StaticResourceLocation) i.next();
-
+        for (StaticResourceLocation location: allLocations) {
             String uri = location.getUriPrefix();
             this.prefixes.add(uri);
             this.prefixes.add(uri + "/");

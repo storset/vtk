@@ -47,6 +47,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -103,6 +104,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>editHooks</code> - a list of {@link
  *   PropertyEditHook} objects, allowing hooks to be run when specific
  *   properties are created, removed and edited.
+ *   <li><code>vocabularyChooserService</code> - optional url to a service helping to choose a value, to be opened in another window.
  * </ul>
  *
  */
@@ -122,6 +124,8 @@ public class PropertyEditController extends SimpleFormController
     
     private String propertyListModelName;
     private String propertyMapModelName;
+
+    private Service vocabularyChooserService;
 
     public void setPropertyListModelName(String propertyListModelName) {
         this.propertyListModelName = propertyListModelName;
@@ -195,65 +199,78 @@ public class PropertyEditController extends SimpleFormController
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
+
+        String inputNamespace = request.getParameter("namespace");
+        String inputName = request.getParameter("name");
+        PropertyTypeDefinition definition = null;
+
+        for (PropertyTypeDefinition propertyTypeDefinition: this.propertyTypeDefinitions) {
+            if (isFocusedProperty(propertyTypeDefinition, inputNamespace, inputName)) {
+                definition  = propertyTypeDefinition;
+                break;
+            }
+        }
+
+        if (definition == null) {
+            return new PropertyEditCommand(null, null, null, null, null);
+        }
+
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Service service = requestContext.getService();
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                      requestContext.getResourceURI(), false);
         String value = null;
-        List<String> formAllowedValues = null;
-        String editURL = null;
-        PropertyTypeDefinition definition = null;        
 
-        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
-
-            if (isFocusedProperty(this.propertyTypeDefinitions[i], request)) {
-                definition = this.propertyTypeDefinitions[i];
-
-                Property property = resource.getProperty(definition);
-
-                if (property != null) {
-                    if (definition.isMultiple()) {
-                        StringBuffer val = new StringBuffer();
-                        Value[] values = property.getValues();
-                        for (int j = 0; j < values.length; j++) {
-                            val.append(values[j].toString());
-                            if (j < values.length - 1) val.append(", ");
-                        }
-                        value = val.toString();
-                    } else {
-                        value = getValueAsString(property.getValue());
-                    }
+        Property property = resource.getProperty(definition);
+        if (property != null) {
+            if (definition.isMultiple()) {
+                StringBuffer val = new StringBuffer();
+                Value[] values = property.getValues();
+                for (int i = 0; i < values.length; i++) {
+                    val.append(values[i].toString());
+                    if (i < values.length - 1)
+                        val.append(", ");
                 }
-
-                Vocabulary<Value> vocabulary = definition.getVocabulary();
-                if (vocabulary != null) {
-                    Value[] definitionAllowedValues = vocabulary
-                            .getAllowedValues();
-                    if (definitionAllowedValues != null) {
-                        formAllowedValues = new ArrayList<String>();
-                        for (Value v: definitionAllowedValues) {
-                            formAllowedValues.add(v.toString());
-                        }
-                        if (!definition.isMandatory())
-                            formAllowedValues.add(0, "");
-
-                    }
-                }
-                Map<String, String> urlParameters = new HashMap<String, String>();
-                String namespaceURI = definition.getNamespace().getUri();
-                if (namespaceURI != null)
-                    urlParameters.put("namespace", namespaceURI);
-
-                urlParameters.put("name", definition.getName());
-
-                editURL = service.constructLink(resource, securityContext.getPrincipal(), urlParameters);
+                value = val.toString();
+            } else {
+                value = getValueAsString(property.getValue());
             }
         }
+
+        Map<String, String> urlParameters = new HashMap<String, String>();
+        String namespaceURI = definition.getNamespace().getUri();
+        if (namespaceURI != null)
+            urlParameters.put("namespace", namespaceURI);
+        urlParameters.put("name", definition.getName());
+
+        List<String> formAllowedValues = null;
+        String hierarchicalHelpUrl = null;
+
+        Vocabulary<Value> vocabulary = definition.getVocabulary();
+        if (vocabulary != null) {
+            if ((vocabulary instanceof HierarchicalVocabulary) && this.vocabularyChooserService != null) {
+                hierarchicalHelpUrl = this.vocabularyChooserService.constructLink(resource, securityContext.getPrincipal(), urlParameters);
+            } else {
+                Value[] definitionAllowedValues = vocabulary.getAllowedValues();
+                formAllowedValues = new ArrayList<String>();
+                
+                if (!definition.isMandatory()) {
+                    formAllowedValues.add("");
+                }
+                
+                for (Value v : definitionAllowedValues) {
+                    formAllowedValues.add(v.toString());
+                }
+            }
+
+
+        }
         
-        PropertyEditCommand propertyEditCommand = new PropertyEditCommand(
-            editURL, definition, value, formAllowedValues);
-        return propertyEditCommand;
+        Service service = requestContext.getService();
+        String editURL = service.constructLink(resource, 
+                securityContext.getPrincipal(), urlParameters);
+
+        return new PropertyEditCommand(editURL, definition, value, formAllowedValues, hierarchicalHelpUrl);
     }
 
 
@@ -535,13 +552,6 @@ public class PropertyEditController extends SimpleFormController
 
 
     private boolean isFocusedProperty(PropertyTypeDefinition propDef,
-                                      HttpServletRequest request) {
-        String inputNamespace = request.getParameter("namespace");
-        String inputName = request.getParameter("name");
-        return isFocusedProperty(propDef, inputNamespace, inputName);
-    }
-    
-    private boolean isFocusedProperty(PropertyTypeDefinition propDef,
                                       String inputNamespace, String inputName) {
 
         if (inputNamespace != null) inputNamespace = inputNamespace.trim();
@@ -563,6 +573,10 @@ public class PropertyEditController extends SimpleFormController
         }
 
         return propDef.getNamespace().getUri().equals(inputNamespace);
+    }
+
+    public void setVocabularyChooserService(Service vocabularyChooserService) {
+        this.vocabularyChooserService = vocabularyChooserService;
     }
 
 }

@@ -32,7 +32,6 @@ package org.vortikal.web.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,9 +78,9 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private List<HandlerInterceptor> handlerInterceptors;
     private int order = 0;
-    private Set categories = null;
-    private List urlPostProcessors = new ArrayList();
-    private List accumulatedUrlPostProcessors = null;
+    private Set<String> categories = null;
+    private List<URLPostProcessor> urlPostProcessors = new ArrayList<URLPostProcessor>();
+    private List<URLPostProcessor> accumulatedUrlPostProcessors = null;
     	
     
     public void setHandler(Object handler) {
@@ -112,7 +111,7 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     }
     
 
-    public void setUrlPostProcessors(List urlPostProcessors) {
+    public void setUrlPostProcessors(List<URLPostProcessor> urlPostProcessors) {
         this.urlPostProcessors = urlPostProcessors;
     }
     
@@ -138,12 +137,12 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     }
 	
 
-    private List getAllURLPostProcessors() {
+    private List<URLPostProcessor> getAllURLPostProcessors() {
         if (this.accumulatedUrlPostProcessors != null) {
             return this.accumulatedUrlPostProcessors;
         }
 
-        List allPostProcessors = new ArrayList();
+        List<URLPostProcessor> allPostProcessors = new ArrayList<URLPostProcessor>();
         Service s = this;
         while (s != null) {
             
@@ -212,22 +211,22 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
 
 	
     public String constructLink(Resource resource, Principal principal,
-                                Map parameters) {
+                                Map<String, String> parameters) {
         return constructLink(resource, principal, parameters, true);
     }
 
     public URL constructURL(Resource resource, Principal principal,
-                               Map parameters) {
+                               Map<String, String> parameters) {
         return constructURL(resource, principal, parameters, true);
     }
 
     public String constructLink(Resource resource, Principal principal,
-                                Map parameters, boolean matchAssertions) {
+                                Map<String, String> parameters, boolean matchAssertions) {
         return constructURL(resource, principal, parameters, matchAssertions).toString();
     }
 	
     public URL constructURL(Resource resource, Principal principal,
-                                Map parameters, boolean matchAssertions) {
+                                Map<String, String> parameters, boolean matchAssertions) {
         URL urlObject = 
             constructInternal(resource, principal, parameters, this.allAssertions, 
                     matchAssertions);
@@ -244,8 +243,7 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     public URL constructURL(String uri) {
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
-        for (Iterator i = this.allAssertions.iterator(); i.hasNext();) {
-            Assertion assertion = (Assertion) i.next();
+        for (Assertion assertion: this.allAssertions) {
             assertion.processURL(urlObject);
         }
        
@@ -254,26 +252,20 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
         return urlObject;
     }
 
-    public String constructLink(String uri, Map parameters) {
+    public String constructLink(String uri, Map<String, String> parameters) {
         return constructURL(uri, parameters).toString();
     }
 
-    public URL constructURL(String uri, Map parameters) {
+    public URL constructURL(String uri, Map<String, String> parameters) {
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
+
         if (parameters != null) {
-            for (Iterator iter = parameters.entrySet().iterator(); iter
-                    .hasNext();) {
-                Map.Entry entry = (Map.Entry) iter.next();
-
-                String key = entry.getKey().toString();
-                String value = entry.getValue().toString();
-
-                urlObject.addParameter(key, value);
+            for (Map.Entry<String, String> entry: parameters.entrySet()) {
+                urlObject.addParameter(entry.getKey(), entry.getValue());
             }
         }
 
-        for (Iterator i = this.allAssertions.iterator(); i.hasNext();) {
-            Assertion assertion = (Assertion) i.next();
+        for (Assertion assertion: this.allAssertions) {
             assertion.processURL(urlObject);
         }
        
@@ -321,22 +313,21 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     }
 
 
-    public Set getCategories() {
+    public Set<String> getCategories() {
         return this.categories;
     }
 
 
-    public void setCategories(Set categories) {
+    public void setCategories(Set<String> categories) {
         this.categories = categories;
     }
   
     
     private void postProcess(URL urlObject) {
-        List urlPostProcessors = getAllURLPostProcessors();
+        List<URLPostProcessor> urlPostProcessors = getAllURLPostProcessors();
 
         if (urlPostProcessors != null) {
-            for (Iterator i = urlPostProcessors.iterator(); i.hasNext();) {
-                URLPostProcessor urlProcessor = (URLPostProcessor) i.next();
+            for (URLPostProcessor urlProcessor: urlPostProcessors) {
                 try {
                     urlProcessor.processURL(urlObject);
                 } catch (Exception e) {
@@ -348,30 +339,25 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     }
 
     private URL constructInternal(Resource resource, Principal principal,
-            Map parameters, List assertions, boolean matchAssertions) {
+            Map<String, String> parameters, List<Assertion> assertions, boolean matchAssertions) {
 
         String path = resource.getURI();
         if (resource.isCollection()) {
             path += "/";
         }
         URL urlObject = new URL("http", NetUtils.guessHostName(), path);
+
         if (parameters != null) {
-            for (Iterator iter = parameters.entrySet().iterator(); iter
-                    .hasNext();) {
-                Map.Entry entry = (Map.Entry) iter.next();
-
-                String key = entry.getKey().toString();
-                String value = entry.getValue().toString();
-
-                urlObject.addParameter(key, value);
+            for (Map.Entry<String, String> entry: parameters.entrySet()) {
+                urlObject.addParameter(entry.getKey(), entry.getValue());
             }
         }
         // urlObject.setQuery(parameters);
 
-        for (Iterator i = assertions.iterator(); i.hasNext();) {
-            Assertion assertion = (Assertion) i.next();
+        for (Assertion assertion: assertions) {
             boolean match = assertion.processURL(urlObject, resource,
                     principal, matchAssertions);
+            
             if (match == false) {
                 throw new ServiceUnlinkableException("Service "
                         + getName() + " cannot be applied to resource "

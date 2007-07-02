@@ -454,22 +454,20 @@
 
         <#if form.possibleValues?exists && form.possibleValues?size = 2>
           <#list form.possibleValues as alternative>
+            <@formInputWrapper item>
             <#if alternative?has_content>
-              <@formInputWrapper item>
               <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}" default="${alternative}" /></#local>
               <input id="${alternative}" type="radio" name="value" value="${alternative}"
                          <#if form.value?has_content && form.value = alternative>checked</#if>>
                 <label for="${alternative}">${label}</label>
-              </@formInputWrapper>
             <#else>
-              <@formInputWrapper item>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
               <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" /></#local>
                 <input id="unset" type="radio" name="value" value=""
                            <#if !form.value?has_content>checked</#if>>
                   <label for="unset">${label}</label>
-              </@formInputWrapper>
             </#if>
+            </@formInputWrapper>
           </#list>
 
         <#-- Display drop down list for value sets > 2: -->
@@ -516,12 +514,25 @@
             <#if inputSize &gt; 99>
               <textarea name="value" rows="5" cols="60">${value}</textarea>
             <#else>
-              <input type="text" name="value" value="${value}" size=${inputSize}>
+              <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
           </@formInputWrapper>
 
         </#if>
+        <#if form.hierarchicalHelpUrl?exists>
+          <script language="javascript" type="text/javascript">
+                function popitup(url) {
+                  var fixedUrl = url + '&selected=' + document.getElementById('value').value;
+	          var newwindow=window.open(fixedUrl,'vocabulary','scrollbars=1');
+	          if (window.focus) {newwindow.focus()}
+	          return false;
+                }
+          </script>
+
+          <a target="vocabulary" href="${form.hierarchicalHelpUrl}" onclick="return popitup('${form.hierarchicalHelpUrl}')" >Help</a>
+        </#if>
+
       <@spring.bind "form.value"/>
       <#if spring.status.errorCodes?size &gt; 0>
         <@formErrorsWrapper>

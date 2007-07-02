@@ -52,6 +52,10 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
         return this.allowedValues;
     }
 
+    public List<HierarchicalNode<Value>> getRootNodes() {
+        return this.nodes;
+    }
+    
     public void setNodes(List<HierarchicalNode<Value>> nodes) {
         this.nodes = nodes;
     }

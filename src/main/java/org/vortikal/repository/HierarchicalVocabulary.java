@@ -32,8 +32,11 @@ package org.vortikal.repository;
 
 import java.util.List;
 
+import org.vortikal.repository.resourcetype.HierarchicalNode;
+
 public interface HierarchicalVocabulary<T> extends Vocabulary<T> {
 
     public List<T> getDescendantsAndSelf(T entry);
 
+    public List<HierarchicalNode<T>> getRootNodes();
 }

@@ -239,7 +239,7 @@ public interface PropertySetIndex {
      *         
      * @throws IndexException
      */
-    public boolean lock() throws IndexException;
+    public boolean lock();
     
     /**
      * Try to obtain index mutex write lock.
@@ -251,13 +251,13 @@ public interface PropertySetIndex {
      *         
      * @throws IndexException
      */
-    public boolean lock(long timeout) throws IndexException;
+    public boolean lock(long timeout);
     
     /**
      * Release index mutex write lock.
      * @throws IndexException
      */
-    public void unlock() throws IndexException;
+    public void unlock();
  
     /**
      * Commit any changes

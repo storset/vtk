@@ -222,7 +222,7 @@ public class ConsistencyCheck {
             this.errors.add(new UnmappableConsistencyError(indexUri, dme, daoPropSet));
         }
     
-}
+    }
 
 
     /**

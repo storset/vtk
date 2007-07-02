@@ -620,8 +620,6 @@
         <property name="expression" value="/romskjema/rominnhold/forsoksdyr/kommentar" />
     </bean>
     
-    <ref bean="" />
-    <ref bean="" />
     <bean id="romskjemaRominnholdAndreFarerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="rominnhold.andrefarer-mengde" />
         <property name="type" ref="TYPE_STRING" />

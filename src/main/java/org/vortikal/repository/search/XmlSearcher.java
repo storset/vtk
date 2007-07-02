@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -353,7 +353,7 @@ public class XmlSearcher implements InitializingBean {
                     logger.warn(valueString + " led to exception ", e);
                 }
             } else if (format.equals("localized")) {
-                    String i18nKey = "property." + propDef.getNamespace().getPrefix() + ":" + propDef.getName() + "."+ value.toString();
+                    String i18nKey = "property." + propDef.getNamespace().getPrefix() + ":" + propDef.getName() + ".value." + value.toString();
                     this.messageSource.getMessage(i18nKey, null, value.toString(), locale);
                 }
 

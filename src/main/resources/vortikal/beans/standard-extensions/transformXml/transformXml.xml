@@ -203,6 +203,7 @@
     <property name="parser" ref="searchParser" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultLocale" value="${view.defaultLocale}" />
+    <property name="messageSource" ref="messageSource" />
 
     <property name="valueFormatter" ref="valueFormatter" />
 

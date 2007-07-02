@@ -47,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.MessageSource;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -92,6 +93,8 @@ public class XmlSearcher implements InitializingBean {
     private ResourceTypeDefinition collectionResourceTypeDef;
 
     private ValueFormatter valueFormatter;
+
+    private MessageSource messageSource;
     
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
@@ -307,14 +310,14 @@ public class XmlSearcher implements InitializingBean {
                 }
                 Value[] values = prop.getValues();
                 for (int i = 0; i < values.length; i++) {
-                    String valueString = getFormattedPropertyValue(uri, values[i], format, locale);
+                    String valueString = getFormattedPropertyValue(prop.getDefinition(),uri, values[i], format, locale);
                     Element valueElement = valueElement(doc, valueString);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
             } else {
                 Value value = prop.getValue();
-                String valueString = getFormattedPropertyValue(uri, value, format, locale);
+                String valueString = getFormattedPropertyValue(prop.getDefinition(),uri, value, format, locale);
                 Element valueElement = valueElement(doc, valueString);
                 if (format != null) {
                     valueElement.setAttribute("format", format);
@@ -334,7 +337,7 @@ public class XmlSearcher implements InitializingBean {
             return valueElement;
     }
 
-    private String getFormattedPropertyValue(String uri, Value value, String format, Locale locale) {
+    private String getFormattedPropertyValue(PropertyTypeDefinition propDef, String uri, Value value, String format, Locale locale) {
         String valueString = this.valueFormatter.valueToString(value, format, locale);
 
         // If string value and format is url, try to create url (if it doesn't start with http?)
@@ -349,7 +352,11 @@ public class XmlSearcher implements InitializingBean {
                 } catch (Exception e) {
                     logger.warn(valueString + " led to exception ", e);
                 }
-            }
+            } else if (format.equals("localized")) {
+                    String i18nKey = "property." + propDef.getNamespace().getPrefix() + ":" + propDef.getName() + "."+ value.toString();
+                    this.messageSource.getMessage(i18nKey, null, value.toString(), locale);
+                }
+
         }
         return valueString;
     }
@@ -587,5 +594,9 @@ public class XmlSearcher implements InitializingBean {
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 }

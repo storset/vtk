@@ -355,7 +355,7 @@ public class XmlSearcher implements InitializingBean {
             } else if (format.equals("localized")) {
                     String i18nKey = "property." + propDef.getNamespace().getPrefix() + ":" + propDef.getName() + ".value." + value.toString();
                     valueString = this.messageSource.getMessage(i18nKey, null, value.toString(), locale);
-                }
+            }
 
         }
         return valueString;

@@ -1,6 +1,6 @@
 
 /**
- *  Copied from yui task example
+ *  Mostly copied from yui task example
  *
  * The check box marks a task complete.  It is a simulated form field 
  * with three states ...

@@ -3,11 +3,18 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#if propertyDefinition.namespace.prefix?exists>
+  <#assign localePrefix =  propertyDefinition.namespace.prefix + ":" />
+</#if>
+<#assign localePrefix = "property." + localePrefix?if_exists + propertyDefinition.name />
+
+<#assign title="Vocabulary for " + vrtx.getMsg(localePrefix, "Unknown") />
+
 <!doctype html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 
 <head>
-<title>Vocabulary</title>
+<title>${title}</title>
 <link rel="stylesheet" type="text/css" href="http://developer.yahoo.com/yui/examples/treeview/css/screen.css">
 <link rel="stylesheet" type="text/css" href="http://developer.yahoo.com/yui/examples/treeview/css/check/tree.css">
 
@@ -65,11 +72,13 @@ function getCheckedAsStringValue(node, result) {
 	var nodes = new Array();
 	
 	function treeInit() {
+	  <#if propertyDefinition.multiple>
       document.getElementById("expandcontractdiv").style.visibility = "visible";
       document.getElementById("insert").style.visibility = "visible";
 	  tree = new YAHOO.widget.TreeView("treeDiv1");
       <@createTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes parentchecked=false />
       tree.draw();
+      </#if>
 	}
 
 	function treeNode(i, c) {
@@ -103,8 +112,8 @@ function getCheckedAsStringValue(node, result) {
   <div id="content">
     <form name="mainForm">
 	<div class="newsItem">
-	  <h3>Scientific disciplines</h3>
-	  <p>Choose the relevant scientific disciplines and press submit</p>
+	  <h3>${title}</h3>
+	  <p>Choose the relevant values and press submit</p>
 
 	  <div style="visibility:hidden" id="expandcontractdiv">
 		<a href="javascript:tree.expandAll()">Expand all</a>
@@ -116,7 +125,7 @@ function getCheckedAsStringValue(node, result) {
 	   </div>
 
 	</div>
-	<input style="visibility:hidden" type="button" onclick="javascript:updateParent()" id="insert" name="save" value="Sett inn">
+	<input style="visibility:hidden" type="button" onclick="javascript:updateParent()" id="insert" name="save" value="Submit">
 	</form>
   </div>
     </div>
@@ -128,7 +137,7 @@ function getCheckedAsStringValue(node, result) {
  <#macro listNodes nodes>
  <ul>
  <#list nodes as node>
-        <#assign displayName = vrtx.getMsg("property.scientific:disciplines.value." + node.entry?string, node.entry?string) />
+        <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
  <li>${node.entry?string} - ${displayName}
         <#if node.children?exists><@listNodes nodes=node.children /></#if>
 </li>
@@ -141,7 +150,7 @@ function getCheckedAsStringValue(node, result) {
 	    <#if !checked>
 	      <#assign checked=selected?seq_contains(node.entry) />
         </#if>
-        <#assign displayName = vrtx.getMsg("property.scientific:disciplines.value." + node.entry?string, node.entry?string) />
+        <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
         var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
         <#if node.children?exists>
 	      <@createTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected parentchecked=checked />     	         

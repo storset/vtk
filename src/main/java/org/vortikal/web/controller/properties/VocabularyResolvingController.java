@@ -45,19 +45,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
 
 
 /**
@@ -88,6 +81,7 @@ public class VocabularyResolvingController implements Controller {
         
         if (vocabulary != null && (vocabulary instanceof HierarchicalVocabulary)) {
             HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
+            model.put("propertyDefinition", propDef);
             model.put("rootNodes", hv.getRootNodes());
             String[] selectedItems = getList(selected, hv);
             model.put("selected_nodes", selectedItems);

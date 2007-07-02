@@ -8,7 +8,7 @@ delete from extra_prop_entry where extra_prop_entry_id in
 
 -- Insert new htmlTitle properties (based on existing xhtmlTitle):
 insert into extra_prop_entry 
-select nextval('extra_prop_entry_seq_pk'),
+select extra_prop_entry_seq_pk.nextval,
    p.resource_id,
    0,
    null,

@@ -274,7 +274,9 @@ public class XmlSearcher implements InitializingBean {
     private void addPropertyToPropertySetElement(String uri, Element propSetElement,
                                                  Property prop, SearchEnvironment envir) {
         
-        if (prop.getDefinition() == null) {
+        PropertyTypeDefinition propertyDefinition = prop.getDefinition();
+
+        if (propertyDefinition == null) {
             return;
         }
         
@@ -296,28 +298,27 @@ public class XmlSearcher implements InitializingBean {
         
         Locale locale = envir.getLocale();
 
-        Set<String> formatSet = envir.getFormats().getFormats(prop.getDefinition());
+        Set<String> formatSet = envir.getFormats().getFormats(propertyDefinition);
         if (!formatSet.contains(null)) {
             // Add default (null) format:
             formatSet.add(null);
         }
 
         for (String format: formatSet) {
-            if (prop.getDefinition().isMultiple()) {
+            if (propertyDefinition.isMultiple()) {
                 Element valuesElement = doc.createElement("values");
                 if (format != null) {
                     valuesElement.setAttribute("format", format);
                 }
-                Value[] values = prop.getValues();
-                for (int i = 0; i < values.length; i++) {
-                    String valueString = getFormattedPropertyValue(prop.getDefinition(),uri, values[i], format, locale);
+                for (Value v: prop.getValues()) {
+                    String valueString = getFormattedPropertyValue(propertyDefinition,uri, v, format, locale);
                     Element valueElement = valueElement(doc, valueString);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
             } else {
                 Value value = prop.getValue();
-                String valueString = getFormattedPropertyValue(prop.getDefinition(),uri, value, format, locale);
+                String valueString = getFormattedPropertyValue(propertyDefinition,uri, value, format, locale);
                 Element valueElement = valueElement(doc, valueString);
                 if (format != null) {
                     valueElement.setAttribute("format", format);

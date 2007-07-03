@@ -31,6 +31,7 @@
 package org.vortikal.web.controller.permissions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
@@ -66,7 +66,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     private PrincipalFactory principalFactory;
     private RepositoryAction privilege;
     
-    private Map privilegePrincipalMap;
+    private Map<RepositoryAction, Principal> privilegePrincipalMap;
 
     private Principal groupingPrincipal = PseudoPrincipal.ALL;
     
@@ -85,7 +85,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
 
-    public void setPrivilegePrincipalMap(Map privilegePrincipalMap) {
+    public void setPrivilegePrincipalMap(Map<RepositoryAction, Principal> privilegePrincipalMap) {
         this.privilegePrincipalMap = privilegePrincipalMap;
     }
     
@@ -113,7 +113,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             throw new BeanInitializationException(
                 "Bean property 'privilegePrincipalMap' must be set");
         }
-        Principal p = (Principal) this.privilegePrincipalMap.get(this.privilege);
+        Principal p = this.privilegePrincipalMap.get(this.privilege);
         if (p != null) this.groupingPrincipal = p;
     }
     
@@ -140,33 +140,30 @@ public class ACLEditController extends SimpleFormController implements Initializ
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        Acl acl = resource.getAcl();
-        
-        String submitURL = service.constructLink(
-            resource, securityContext.getPrincipal());
-         
+        String submitURL = service.constructLink(resource, securityContext.getPrincipal());
         ACLEditCommand command = new ACLEditCommand(submitURL);
         
+        command.setResource(resource);
+
+        Acl acl = resource.getAcl();
         command.setGrouped(acl.containsEntry(this.privilege, this.groupingPrincipal));
         command.setOwner(resource.getOwner().getName());
 
-        List authorizedUsers = new ArrayList(
-            java.util.Arrays.asList(acl.listPrivilegedUsers(this.privilege)));
-        authorizedUsers.addAll(java.util.Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
-//         if (!authorizedUsers.contains(PseudoPrincipal.OWNER)) {
-//             authorizedUsers.add(0, PseudoPrincipal.OWNER);
-//         }
+        List<Principal> authorizedUsers = 
+            new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedUsers(this.privilege)));
+        authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 
-        List authorizedGroups = new ArrayList(
-            java.util.Arrays.asList(acl.listPrivilegedGroups(this.privilege)));
+        List<Principal> authorizedGroups = 
+            new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedGroups(this.privilege)));
+
         command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
 
-        Map removeUserURLs = new HashMap();
+        Map<String, String> removeUserURLs = new HashMap<String, String>();
+        command.setRemoveUserURLs(removeUserURLs);
 
-        for (int i = 0; i < authorizedUsers.size(); i++) {
-            Principal authorizedUser = (Principal) authorizedUsers.get(i);
-            Map parameters = new HashMap();
+        for (Principal authorizedUser: authorizedUsers) {
+            Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeUserAction", "true");
             parameters.put("userNames", authorizedUser.getName());
             // Switch grouping when removing individual groups:
@@ -180,12 +177,12 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 removeUserURLs.put(authorizedUser.getName(), url);
             }
         }
-        command.setRemoveUserURLs(removeUserURLs);
 
-        Map removeGroupURLs = new HashMap();
-        for (int i = 0; i < authorizedGroups.size(); i++) {
-            Principal authorizedGroup = (Principal) authorizedGroups.get(i);
-            Map parameters = new HashMap();
+        Map<String, String> removeGroupURLs = new HashMap<String, String>();
+        command.setRemoveGroupURLs(removeGroupURLs);
+
+        for (Principal authorizedGroup: authorizedGroups) {
+            Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeGroupAction", "true");
             parameters.put("groupNames", authorizedGroup.getName());
             // Switch grouping when removing individual groups:
@@ -194,8 +191,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 resource, securityContext.getPrincipal(), parameters);
             removeGroupURLs.put(authorizedGroup.getName(), url);
         }
-        command.setRemoveGroupURLs(removeGroupURLs);
-        command.setResource(resource);
+
         return command;
     }
     
@@ -258,19 +254,19 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         // doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
-            String[] userNames = editCommand.getUserNames();
 
-            for (int i = 0; i < userNames.length; i++) {
+            for (String userName: editCommand.getUserNames()) {
                 Principal principal = null;
-                if (userNames[i].startsWith("pseudo")) {
-                    principal = PseudoPrincipal.getPrincipal(userNames[i]);
+                if (userName.startsWith("pseudo")) {
+                    principal = PseudoPrincipal.getPrincipal(userName);
                 } else {
-                    principal = this.principalFactory.getUserPrincipal(userNames[i]);
+                    principal = this.principalFactory.getUserPrincipal(userName);
                 }
                 if (!PseudoPrincipal.OWNER.equals(principal)) {
                     acl.removeEntry(this.privilege, principal);
                 }
             }
+            
             return showForm(request, response, new BindException(
                                 getACLEditCommand(editCommand.getResource()),
                                 this.getCommandName()));
@@ -286,9 +282,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     getACLEditCommand(resource), this.getCommandName()));
             
         } else if (editCommand.getAddUserAction() != null) {
-            String[] userNames = editCommand.getUserNames();
-            for (int i = 0; i < userNames.length; i++) {
-                Principal principal = this.principalFactory.getUserPrincipal(userNames[i]);
+            for (String userName: editCommand.getUserNames()) {
+                Principal principal = this.principalFactory.getUserPrincipal(userName);
                 acl.addEntry(this.privilege, principal);
             }
             ModelAndView mv =  showForm(
@@ -298,12 +293,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             return mv;
 
         } else if (editCommand.getAddGroupAction() != null) {
-            String[] groupNames = editCommand.getGroupNames();
-            
-           
-            for (int i = 0; i < groupNames.length; i++) {
-                Principal group = this.principalFactory.getGroupPrincipal(groupNames[i]);
-
+            for (String groupName: editCommand.getGroupNames()) {
+                Principal group = this.principalFactory.getGroupPrincipal(groupName);
                 acl.addEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(

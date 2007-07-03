@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 import org.vortikal.web.controller.AbstractSaveCancelCommand;
 
 public class ACLEditCommand extends AbstractSaveCancelCommand {
@@ -44,10 +45,10 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
     private String removeGroupAction = null;
     private boolean grouped;
     private String owner;
-    private List users;
-    private List groups;
-    private Map removeUserURLs;
-    private Map removeGroupURLs;
+    private List<Principal> users;
+    private List<Principal> groups;
+    private Map<String, String> removeUserURLs;
+    private Map<String, String> removeGroupURLs;
     private String userNames[] = new String[0];
     private String groupNames[] = new String[0];
     private Resource resource;
@@ -96,19 +97,19 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
         this.grouped = grouped;
     }
 
-    public List getUsers() {
+    public List<Principal> getUsers() {
         return this.users;
     }
 
-    public void setUsers(List users)  {
+    public void setUsers(List<Principal> users)  {
         this.users = users;
     }
 
-    public List getGroups() {
+    public List<Principal> getGroups() {
         return this.groups;
     }
 
-    public void setGroups(List groups)  {
+    public void setGroups(List<Principal> groups)  {
         this.groups = groups;
     }
     
@@ -120,19 +121,19 @@ public class ACLEditCommand extends AbstractSaveCancelCommand {
         this.owner = owner;
     }
 
-    public Map getRemoveUserURLs() {
+    public Map<String, String> getRemoveUserURLs() {
         return this.removeUserURLs;
     }
 
-    public void setRemoveUserURLs(Map removeUserURLs)  {
+    public void setRemoveUserURLs(Map<String, String> removeUserURLs)  {
         this.removeUserURLs = removeUserURLs;
     }
 
-    public Map getRemoveGroupURLs() {
+    public Map<String, String> getRemoveGroupURLs() {
         return this.removeGroupURLs;
     }
 
-    public void setRemoveGroupURLs(Map removeGroupURLs)  {
+    public void setRemoveGroupURLs(Map<String, String> removeGroupURLs)  {
         this.removeGroupURLs = removeGroupURLs;
     }
 

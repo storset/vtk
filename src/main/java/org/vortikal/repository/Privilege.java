@@ -46,8 +46,8 @@ public class Privilege {
     public static final RepositoryAction ALL = RepositoryAction.ALL;
     
 
-    public static final Set PRIVILEGES =
-        new HashSet(Arrays.asList(new RepositoryAction[] {READ_PROCESSED,READ,BIND,WRITE,ALL}));
+    public static final Set<RepositoryAction> PRIVILEGES =
+        new HashSet<RepositoryAction>(Arrays.asList(new RepositoryAction[] {READ_PROCESSED,READ,BIND,WRITE,ALL}));
     
 
     public static final RepositoryAction getActionByName(String actionName) {

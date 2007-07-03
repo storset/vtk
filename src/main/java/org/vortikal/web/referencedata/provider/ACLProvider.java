@@ -31,8 +31,8 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,9 +52,9 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
- * Model builder that retrieves various Acces Control List (ACL)
+ * Model builder that retrieves various Access Control List (ACL)
  * information for the current resource. The information is made
- * available in the model as a submodel with name
+ * available in the model as a sub model with name
  * <code>aclInfo</code>.
  * 
  * Configurable properties:
@@ -70,7 +70,7 @@ import org.vortikal.web.service.Service;
  * Model data provided in the sub-model:
  * <ul>
  *   inheritance editing service
- *   <li><code>aclEditURLsL</code> - map from {@link RepositoryAction actions} to edit URLs
+ *   <li><code>aclEditURLs</code> - map from {@link RepositoryAction actions} to edit URLs
  *   <li><code>privileges</code> - map from {@link Privilege#getName
  *   privilege names} to {@link Privilege privilege objects}
  *   <li><code>groupingPrivilegePrincipalMap</code> - map from
@@ -90,9 +90,9 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     private Repository repository = null;
     private Service aclInheritanceService = null;
     
-    private Map groupingPrivilegePrincipalMap;
+    private Map<RepositoryAction, Principal> groupingPrivilegePrincipalMap;
 
-    private Map aclEditServices;
+    private Map<RepositoryAction, Service> aclEditServices;
     
     private String modelName = "aclInfo";
     
@@ -104,7 +104,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         this.aclInheritanceService = aclInheritanceService;
     }
     
-    public void setAclEditServices(Map aclEditServices) {
+    public void setAclEditServices(Map<RepositoryAction, Service> aclEditServices) {
         this.aclEditServices = aclEditServices;
     }      
 
@@ -112,7 +112,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         this.modelName = modelName;
     }
     
-    public void setGroupingPrivilegePrincipalMap(Map groupingPrivilegePrincipalMap) {
+    public void setGroupingPrivilegePrincipalMap(Map<RepositoryAction, Principal> groupingPrivilegePrincipalMap) {
         this.groupingPrivilegePrincipalMap = groupingPrivilegePrincipalMap;
     }
     
@@ -144,7 +144,8 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
-        Map aclModel = new HashMap();
+        Map<String, Object> aclModel = new HashMap<String, Object>();
+        model.put("aclInfo", aclModel);
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -154,13 +155,12 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         
         Resource resource = this.repository.retrieve(token, uri, false);
         Acl acl = resource.getAcl();
-        Map editURLs = new HashMap();
+        Map<String, String> editURLs = new HashMap<String, String>();
 
         if (!resource.isInheritedAcl()) {
-            for (Iterator i = this.aclEditServices.keySet().iterator(); i.hasNext();) {
-                RepositoryAction action = (RepositoryAction) i.next();
+            for (RepositoryAction action: this.aclEditServices.keySet()) {
                 String privilegeName = Privilege.getActionName(action);
-                Service editService = (Service) this.aclEditServices.get(action);
+                Service editService = this.aclEditServices.get(action);
                 try {
                     String url = editService.constructLink(
                         resource, securityContext.getPrincipal());
@@ -178,13 +178,12 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         } catch (Exception e) { }
         
 
-        Map privileges = new HashMap();
-        Map privilegedUsers = new HashMap();
-        Map privilegedGroups = new HashMap();
-        Map privilegedPseudoPrincipals = new HashMap();
+        Map<String, RepositoryAction> privileges = new HashMap<String, RepositoryAction>();
+        Map<String, Principal[]> privilegedUsers = new HashMap<String, Principal[]>();
+        Map<String, Principal[]> privilegedGroups = new HashMap<String, Principal[]>();
+        Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>();
 
-        for (Iterator i = Privilege.PRIVILEGES.iterator(); i.hasNext();) {
-            RepositoryAction action = (RepositoryAction) i.next();
+        for (RepositoryAction action: Privilege.PRIVILEGES) {
             String actionName = Privilege.getActionName(action);
             privileges.put(actionName, action);
 
@@ -192,18 +191,16 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
             privilegedUsers.put(actionName, acl.listPrivilegedUsers(action));
             privilegedGroups.put(actionName, acl.listPrivilegedGroups(action));
 
-            List l = new ArrayList(java.util.Arrays.asList(acl.listPrivilegedPseudoPrincipals(action)));
-            // No reason to add owner after changed acl semantics
-            //            if (!l.contains(PseudoPrincipal.OWNER)) {
-            //                l.add(0, PseudoPrincipal.OWNER);
-            //            }
-            privilegedPseudoPrincipals.put(actionName, l);
+            List<Principal> ppps = 
+                new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedPseudoPrincipals(action)));
+            privilegedPseudoPrincipals.put(actionName, ppps);
         }
         
-        Map pseudoPrincipalPrivilegeMap = new HashMap(this.groupingPrivilegePrincipalMap);
-        for (Iterator i = this.groupingPrivilegePrincipalMap.keySet().iterator(); i.hasNext();) {
-            RepositoryAction action = (RepositoryAction) i.next();
-            Principal p = (Principal) this.groupingPrivilegePrincipalMap.get(action);
+        Map<String, Principal> pseudoPrincipalPrivilegeMap = 
+            new HashMap<String, Principal>();
+
+        for (RepositoryAction action: this.groupingPrivilegePrincipalMap.keySet()) {
+            Principal p = this.groupingPrivilegePrincipalMap.get(action);
             pseudoPrincipalPrivilegeMap.put(Privilege.getActionName(action), p);
         }
 
@@ -214,7 +211,6 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
         aclModel.put("privilegedUsers", privilegedUsers);
         aclModel.put("privilegedGroups", privilegedGroups);
-        model.put("aclInfo", aclModel);
     }
 
 }

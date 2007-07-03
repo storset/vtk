@@ -231,8 +231,8 @@ public class XmlSearcher implements InitializingBean {
         doc.appendChild(resultElement);
         resultElement.setAttribute("size", String.valueOf(rs.getSize()));
         resultElement.setAttribute("totalHits", String.valueOf(rs.getTotalHits()));
-        for (Iterator i = rs.iterator(); i.hasNext();) {
-            PropertySet propSet = (PropertySet)i.next();
+        for (Iterator<PropertySet> i = rs.iterator(); i.hasNext();) {
+            PropertySet propSet = i.next();
             addPropertySetToResults(doc, resultElement, propSet, envir);
         }
         

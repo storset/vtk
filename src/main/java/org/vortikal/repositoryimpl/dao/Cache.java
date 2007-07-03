@@ -30,26 +30,24 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ResourceImpl;
+import org.vortikal.security.Principal;
 import org.vortikal.util.repository.URIUtil;
+
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 
 
 /**
@@ -155,14 +153,12 @@ public class Cache implements DataAccessor, InitializingBean {
 
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws IOException {
 
-        List found = new ArrayList();
-        List notFound = new ArrayList();
+        List<ResourceImpl> found = new ArrayList<ResourceImpl>();
+        List<String> notFound = new ArrayList<String>();
 
-        String[] uris = parent.getChildURIs();
+        for (String uri: parent.getChildURIs()) {
 
-        for (int i = 0; i < uris.length; i++) {
-
-            ResourceImpl r = this.items.get(uris[i]);
+            ResourceImpl r = this.items.get(uri);
             boolean lockTimedOut =
                 (r != null && r.getLock() != null
                  && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
@@ -172,7 +168,7 @@ public class Cache implements DataAccessor, InitializingBean {
             }
 
             if (r == null || lockTimedOut) {
-                notFound.add(uris[i]);
+                notFound.add(uri);
             } else {
                 found.add(r);
             }
@@ -183,25 +179,23 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         if (notFound.size() == 0) {
-            return (ResourceImpl[]) found.toArray(new ResourceImpl[] {  });
+            return found.toArray(new ResourceImpl[found.size()]);
         }
 
-        found = new ArrayList();
-        
         ResourceImpl[] resources = null;
         
         String[] obtainedLocks = new String[0];
         try {
-            obtainedLocks = this.lockManager.lock(uris);
+            obtainedLocks = this.lockManager.lock(parent.getChildURIs());
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Loading " + uris.length + " resources");
+                this.logger.debug("Loading " + parent.getChildURIs().length + " resources");
             }
 
             resources = this.wrappedAccessor.loadChildren(parent);
 
-            for (int i = 0; i < resources.length; i++) {
-                enterResource(resources[i]);
+            for (ResourceImpl resourceImpl: resources) {
+                enterResource(resourceImpl);
             }
         } finally {
             this.lockManager.unlock(obtainedLocks);
@@ -298,17 +292,16 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     public void storeACL(ResourceImpl r) throws IOException {
-        List uris = new ArrayList();
+        List<String> uris = new ArrayList<String>();
         uris.add(r.getURI());
+        
         if (r.isCollection()) {
             String testURI = r.getURI();
 
             if (!testURI.equals("/")) {
                 testURI += "/";
             }
-            for (Iterator iterator = this.items.uriSet().iterator();
-                    iterator.hasNext();) {
-                String uri = (String) iterator.next();
+            for (String uri: this.items.uriSet()) {
                 if (uri.startsWith(testURI) && !uri.equals("/")) {
                     uris.add(uri);
                 }
@@ -319,9 +312,7 @@ public class Cache implements DataAccessor, InitializingBean {
         try {
             lockedUris = this.lockManager.lock(uris);
             this.wrappedAccessor.storeACL(r);
-            for (Iterator i = uris.iterator(); i.hasNext();) {
-                String uri = (String) i.next();
-
+            for (String uri: uris) {
                 if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
                 }
@@ -340,7 +331,7 @@ public class Cache implements DataAccessor, InitializingBean {
     
 
     public void store(ResourceImpl r) throws IOException {
-        List uris = new ArrayList();
+        List<String> uris = new ArrayList<String>();
 
         uris.add(r.getURI());
 
@@ -349,9 +340,7 @@ public class Cache implements DataAccessor, InitializingBean {
             lockedUris = this.lockManager.lock(uris);
             this.wrappedAccessor.store(r);
 
-            for (Iterator i = uris.iterator(); i.hasNext();) {
-                String uri = (String) i.next();
-
+            for (String uri: uris) {
                 if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
                 }
@@ -370,7 +359,7 @@ public class Cache implements DataAccessor, InitializingBean {
     public void copy(ResourceImpl r, ResourceImpl dest, String destURI, boolean copyACLs,
                      PropertySet fixedProperties, PropertySet newResource) throws IOException {
         
-        List uris = new ArrayList();
+        List<String> uris = new ArrayList<String>();
         uris.add(r.getURI());
         uris.add(destURI);
 
@@ -407,15 +396,12 @@ public class Cache implements DataAccessor, InitializingBean {
 
 
     public void delete(ResourceImpl r) throws IOException {
-        List uris = new ArrayList();
+        List<String> uris = new ArrayList<String>();
 
         uris.add(r.getURI());
 
         if (r.isCollection()) {
-            for (Iterator iterator = this.items.uriSet().iterator();
-                    iterator.hasNext();) {
-                String uri = (String) iterator.next();
-
+            for (String uri: this.items.uriSet()) {
                 if (uri.startsWith(r.getURI()) && !uri.equals(r.getURI())) {
                     uris.add(uri);
                 }
@@ -433,9 +419,7 @@ public class Cache implements DataAccessor, InitializingBean {
         try {
             this.wrappedAccessor.delete(r);
 
-            for (Iterator i = uris.iterator(); i.hasNext();) {
-                String uri = (String) i.next();
-
+            for (String uri: uris) {
                 if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
                 }
@@ -553,7 +537,7 @@ public class Cache implements DataAccessor, InitializingBean {
     
 
     private class Items {
-        private Map map = new ConcurrentReaderHashMap();
+        private Map<String, Item> map = new ConcurrentReaderHashMap();
         private Item in = null;
         private Item out = null;
 
@@ -563,7 +547,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         public ResourceImpl get(String uri) {
-            Item i = (Item) this.map.get(uri);
+            Item i = this.map.get(uri);
 
             if (i != null) {
                 return i.getResource();
@@ -593,7 +577,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         public synchronized void remove(String uri) {
-            Item i = (Item) this.map.get(uri);
+            Item i = this.map.get(uri);
 
             //             synchronized(this) {
             if (i != null) {
@@ -618,7 +602,7 @@ public class Cache implements DataAccessor, InitializingBean {
             return this.map.size();
         }
 
-        public Set uriSet() {
+        public Set<String> uriSet() {
             return this.map.keySet();
         }
 
@@ -627,7 +611,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         public synchronized void hit(String uri) {
-            Item i = (Item) this.map.get(uri);
+            Item i = this.map.get(uri);
 
             //             synchronized(this) {
             //             if (logger.isDebugEnabled())
@@ -708,7 +692,7 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.discoverACLs(uri);
     }
     
-    public Set discoverGroups() throws IOException {
+    public Set<Principal> discoverGroups() throws IOException {
         return this.wrappedAccessor.discoverGroups();
     }
 

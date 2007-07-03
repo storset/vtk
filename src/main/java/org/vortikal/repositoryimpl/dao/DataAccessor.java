@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ResourceImpl;
+import org.vortikal.security.Principal;
 
 
 /**
@@ -164,6 +165,6 @@ public interface DataAccessor {
      * @return A <code>Set</code> of <code>Principal</code> objects representing
      *         the groups.
      */
-    public Set discoverGroups() throws IOException;
+    public Set<Principal> discoverGroups() throws IOException;
 
 }

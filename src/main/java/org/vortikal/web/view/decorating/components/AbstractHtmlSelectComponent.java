@@ -104,7 +104,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         processElements(elements, request, response);
     }
 
-    protected abstract void processElements(List elements,
+    protected abstract void processElements(List<HtmlElement> elements,
                                             DecoratorRequest request,
                                             DecoratorResponse response) throws Exception;
 

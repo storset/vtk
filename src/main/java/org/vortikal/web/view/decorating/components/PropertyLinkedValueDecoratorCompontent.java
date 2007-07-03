@@ -84,8 +84,8 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         model.put("title", title);
 
         if (this.propertyTypeDefinition.isMultiple()) {
-            List valueList = new ArrayList();
-            List urlList = new ArrayList();
+            List<String> valueList = new ArrayList<String>();
+            List<String> urlList = new ArrayList<String>();
 
             model.put("urls", urlList);
             model.put("values", valueList);
@@ -139,8 +139,8 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         return DESCRIPTION;
     }
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
         return map;
     }

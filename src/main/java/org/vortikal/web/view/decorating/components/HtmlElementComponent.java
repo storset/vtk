@@ -72,7 +72,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
     }
     
     
-    public void processElements(List elements, DecoratorRequest request,
+    protected void processElements(List<HtmlElement> elements, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
 
         boolean enclosed = (this.enclosed != null) ?
@@ -83,7 +83,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
-        Set excludedElements = new HashSet();
+        Set<String> excludedElements = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
             String[] splitValues = exclude.split(",");
             for (int i = 0; i < splitValues.length; i++) {
@@ -94,9 +94,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         Writer out = response.getWriter();
         ExcludeFilter excludeFilter = new ExcludeFilter(excludedElements);
 
-        for (int i = 0; i < elements.size(); i++) {
-            HtmlElement element = (HtmlElement) elements.get(i);
-            
+        for (HtmlElement element: elements) {
             if (enclosed) {
                 out.write(element.getEnclosedContent(excludeFilter));
             } else {
@@ -109,9 +107,9 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
 
     private class ExcludeFilter implements HtmlNodeFilter {
 
-        private Set excluded;
+        private Set<String> excluded;
 
-        public ExcludeFilter(Set excluded) {
+        public ExcludeFilter(Set<String> excluded) {
             this.excluded = excluded;
         }
 
@@ -130,8 +128,8 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         return DESCRIPTION;
     }
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
         if (this.elementPath == null)
             map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
         if (this.exclude == null)

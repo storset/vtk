@@ -47,9 +47,9 @@ public interface Acl extends Cloneable {
     
     public Principal[] listPrivilegedPseudoPrincipals(RepositoryAction action);
 
-    public Set getPrincipalSet(RepositoryAction action);
+    public Set<Principal> getPrincipalSet(RepositoryAction action);
 
-    public Set getActions();
+    public Set<RepositoryAction> getActions();
 
     public void clear();
 

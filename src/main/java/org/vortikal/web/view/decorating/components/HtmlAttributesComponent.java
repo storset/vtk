@@ -54,12 +54,12 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         this.exclude = exclude;
     }
     
-    public void processElements(List elements, DecoratorRequest request,
+    protected void processElements(List<HtmlElement> elements, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
         if (elements.isEmpty()) {
             return;
         }
-        HtmlElement element = (HtmlElement) elements.get(0);
+        HtmlElement element = elements.get(0);
         
         String exclude = (this.exclude != null) ?
             this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
@@ -73,13 +73,12 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
         }
         Writer out = response.getWriter();
         StringBuffer sb = new StringBuffer();
-        HtmlAttribute[] attributes = element.getAttributes();
-        for (int i = 0; i < attributes.length; i++) {
-            if (exclude != null && excludedAttributes.contains(attributes[i].getName())) {
+        for (HtmlAttribute htmlAttribute: element.getAttributes()) {
+            if (exclude != null && excludedAttributes.contains(htmlAttribute.getName())) {
                 continue;
             }
-            sb.append(" ").append(attributes[i].getName()).append("=\"");
-            sb.append(attributes[i].getValue()).append("\"");
+            sb.append(" ").append(htmlAttribute.getName()).append("=\"");
+            sb.append(htmlAttribute.getValue()).append("\"");
         }
 
         out.write(sb.toString());

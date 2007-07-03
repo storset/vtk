@@ -56,7 +56,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
 
     private String description;
 
-    private Map parameterDescriptions;
+    private Map<String, String> parameterDescriptions;
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
@@ -84,7 +84,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
 
     protected abstract String getDescriptionInternal();
 
-    public final Map getParameterDescriptions() {
+    public final Map<String, String> getParameterDescriptions() {
         return this.parameterDescriptions;
     }
 

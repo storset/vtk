@@ -36,9 +36,9 @@ import java.util.Stack;
 
 public final class BaseContext {
 
-    private static ThreadLocal threadLocal = new ThreadLocal();
+    private static ThreadLocal<Stack<BaseContext>> threadLocal = new ThreadLocal<Stack<BaseContext>>();
 
-    private Map map = new HashMap();    
+    private Map<Object, Object> map = new HashMap<Object, Object>();    
 
     private BaseContext() {
     }
@@ -52,28 +52,26 @@ public final class BaseContext {
     }
     
     public static BaseContext getContext() {
-        Stack s = (Stack) threadLocal.get();
+        Stack<BaseContext> s = threadLocal.get();
         if (s == null || s.isEmpty()) {
             throw new IllegalStateException(
                 "Cannot call getContext(): no context exists");
         }
-
-        BaseContext ctx = (BaseContext) s.peek();
-        return ctx;
+        return s.peek();
     }
     
     public static void pushContext() {
         BaseContext ctx = new BaseContext();
-        Stack s = (Stack) threadLocal.get();
+        Stack<BaseContext> s = threadLocal.get();
         if (s == null) {
-            s = new Stack();
+            s = new Stack<BaseContext>();
             threadLocal.set(s);
         }
         s.push(ctx);
     }
     
     public static void popContext() {
-        Stack s = (Stack) threadLocal.get();
+        Stack<BaseContext> s = threadLocal.get();
         if (s == null) {
             throw new IllegalStateException(
                 "Cannot call popContext(): no context exists");

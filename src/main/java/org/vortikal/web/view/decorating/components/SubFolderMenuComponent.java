@@ -348,16 +348,14 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private class ItemTitleComparator implements Comparator {
+    private class ItemTitleComparator implements Comparator<MenuItem> {
         private Collator collator;
 
         public ItemTitleComparator(Locale locale) {
             this.collator = Collator.getInstance(locale);
         }
 
-        public int compare(Object o1, Object o2) {
-            MenuItem i1 = (MenuItem) o1;
-            MenuItem i2 = (MenuItem) o2;
+        public int compare(MenuItem i1, MenuItem i2) {
             return this.collator.compare(i1.getTitle(), i2.getTitle());
         }
     }

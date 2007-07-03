@@ -31,19 +31,18 @@
 package org.vortikal.repository.search.query;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
 public abstract class AbstractMultipleQuery implements Query {
 
-    private List queries = new ArrayList();
+    private List<Query> queries = new ArrayList<Query>();
 
     public void add(Query query) {
         this.queries.add(query);
     }
     
-    public List getQueries() {
+    public List<Query> getQueries() {
         return this.queries;
     }
 
@@ -52,8 +51,8 @@ public abstract class AbstractMultipleQuery implements Query {
         buf.append(this.getClass().getName()).append("\n");
         
         prefix += "  ";
-        for (Iterator iter = this.queries.iterator(); iter.hasNext();) {
-            Query query = (Query) iter.next();
+
+        for (Query query: this.queries) {
             buf.append(query.dump(prefix));
         }
 

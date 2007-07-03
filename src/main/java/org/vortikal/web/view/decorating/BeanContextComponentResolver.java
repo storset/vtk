@@ -34,14 +34,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,14 +54,14 @@ public class BeanContextComponentResolver
     
     private boolean initialized;
     private ApplicationContext applicationContext;
-    private Map components = new HashMap();
-    private Set prohibitedComponentNamespaces = new HashSet();
+    private Map<String, DecoratorComponent> components = new HashMap<String, DecoratorComponent>();
+    private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
-    public void setProhibitedComponentNamespaces(Set prohibitedComponentNamespaces) {
+    public void setProhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
         this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
     
@@ -85,8 +83,7 @@ public class BeanContextComponentResolver
             init();
         }
 
-        DecoratorComponent component = (DecoratorComponent)
-            this.components.get(namespace + ":" + name);
+        DecoratorComponent component = this.components.get(namespace + ":" + name);
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved namespace: '" + namespace + "', name: '" + name
                          + "' to component:  " + component);
@@ -95,22 +92,21 @@ public class BeanContextComponentResolver
     }
     
     
-    public List listComponents() {
+    public List<DecoratorComponent> listComponents() {
         if (!this.initialized) {
             init();
         }
-        return new ArrayList(this.components.values());
+        return new ArrayList<DecoratorComponent>(this.components.values());
     }
     
 
     private synchronized void init() {
-        Collection beans = 
+        Collection<DecoratorComponent> beans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.applicationContext, 
                 DecoratorComponent.class, false, false).values();        
         
-        for (Iterator i = beans.iterator(); i.hasNext();) {
-            DecoratorComponent component = (DecoratorComponent) i.next();
+        for (DecoratorComponent component: beans) {
             String ns = component.getNamespace();
             String name = component.getName();
             if (ns == null) {

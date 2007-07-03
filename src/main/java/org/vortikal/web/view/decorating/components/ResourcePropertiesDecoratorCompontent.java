@@ -182,8 +182,8 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
         return DESCRIPTION;
     }
 
-    protected Map getParameterDescriptionsInternal() {
-        Map map = new HashMap();
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_ID, PARAMETER_ID_DESC);
         return map;
     }

@@ -303,11 +303,11 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
             return this.params.get(name);
         }
 
-        public Map getParameterMap() {
+        public Map<String, String> getParameterMap() {
             return Collections.unmodifiableMap(this.params);
         }
 
-        public Enumeration getParameterNames() {
+        public Enumeration<String> getParameterNames() {
             return Collections.enumeration(this.params.keySet());
         }
 

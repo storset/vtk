@@ -31,6 +31,7 @@
 package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,7 +55,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     public final void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        Map model = new java.util.HashMap();
+        Map model = new HashMap();
         processModel(model, request, response);
         renderView(model, request, response);
     }

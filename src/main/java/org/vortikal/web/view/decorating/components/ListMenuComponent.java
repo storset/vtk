@@ -276,11 +276,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private List<MenuItem> sortSpecifiedOrder(String[] childNames, Map nameItemMap) {
+    private List<MenuItem> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem> nameItemMap) {
         List<MenuItem> result = new ArrayList<MenuItem>();
         for (int i = 0; i < childNames.length; i++) {
             String name = childNames[i].trim();
-            MenuItem item = (MenuItem) nameItemMap.get(name);
+            MenuItem item = nameItemMap.get(name);
             if (item != null) {
                 result.add(item);
             }

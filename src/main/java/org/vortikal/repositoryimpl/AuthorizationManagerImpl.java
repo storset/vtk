@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
@@ -460,7 +459,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         for (int i = 0; i < privileges.length; i++) {
             RepositoryAction privilege = privileges[i];
-            Set principalSet = acl.getPrincipalSet(privilege);
+            Set<Principal> principalSet = acl.getPrincipalSet(privilege);
             
             // Dont't need to test the conditions if (principalSet == null)
             if (principalSet == null || principalSet.size() == 0) {
@@ -500,7 +499,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             
         for (int i = 0; i < privileges.length; i++) {
             RepositoryAction action = privileges[i];
-            Set principalSet = acl.getPrincipalSet(action);
+            Set<Principal> principalSet = acl.getPrincipalSet(action);
             
             // Condition 5:
             if (groupMatch(principalSet, principal)) {
@@ -511,10 +510,9 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
     
 
-    private boolean groupMatch(Set principalList, Principal principal) {
+    private boolean groupMatch(Set<Principal> principalList, Principal principal) {
 
-        for (Iterator i = principalList.iterator(); i.hasNext();) {
-            Principal p = (Principal) i.next();
+        for (Principal p: principalList) {
 
             if (p.getType() == Principal.TYPE_GROUP) {
                 if (this.principalManager.isMember(principal, p)) {

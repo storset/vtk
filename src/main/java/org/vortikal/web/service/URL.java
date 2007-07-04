@@ -62,6 +62,33 @@ public class URL {
     private static final String PROTOCOL_HTTP = "http";
     private static final String PROTOCOL_HTTPS = "https";
     
+    /**
+     * Construct a new <code>URL</code> instance that is a copy
+     * if the provided original.
+     * 
+     * @param original The original <code>URL</code> instance to base the new
+     *                 instance on.
+     */
+    public URL(URL original) {
+        this.protocol = original.protocol;
+        this.host = original.host;
+        this.port = original.port;
+        this.path = original.path;
+        this.characterEncoding = original.characterEncoding;
+        this.ref = original.ref;
+        
+        // Copy parameter map
+        for (Map.Entry<String, List<String>> entry: original.parameters.entrySet()) {
+            String key = entry.getKey();
+            List<String> values = entry.getValue();
+            
+            List<String> copiedValues = new ArrayList<String>(values.size());
+            for (String value: values) {
+                copiedValues.add(value);
+            }
+            this.parameters.put(key, copiedValues);
+        }
+    }
 
     public URL(String protocol, String host, String path) {
         if (!(PROTOCOL_HTTP.equals(protocol) || PROTOCOL_HTTPS.equals(protocol))) {

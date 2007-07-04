@@ -56,7 +56,7 @@ public class InvalidACLInheritedFromInconsistency extends InvalidDataInconsisten
     
     public String getDescription() {
         return "Invalid ACL inherited from inconsistency for index property set at URI '"
-          + getUri() + "', indexACL = + " + this.indexACL + ", daoACL = " + this.daoACL;
+          + getUri() + "', indexACL = " + this.indexACL + ", daoACL = " + this.daoACL;
     }
 
     public String toString() {

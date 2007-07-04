@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -183,8 +182,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setInheritedAcl(this.aclInherited);
         
-        for (Iterator i = getProperties().iterator(); i.hasNext(); ){
-            Property prop = (Property)i.next();
+        for (Property prop: getProperties()) {
             clone.addProperty((Property) prop.clone());
         }
         

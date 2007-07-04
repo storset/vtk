@@ -102,9 +102,9 @@ public class CompositeView extends AbstractView
         int sc = HttpServletResponse.SC_OK;
         String contentType = null;
 
-        for (int i = 0; i < this.views.length; i++) {
+        for (View view: this.views) {
             BufferedResponse bufferedResponse = new BufferedResponse();
-            this.views[i].render(model, request, bufferedResponse);
+            view.render(model, request, bufferedResponse);
             bufferStream.write(bufferedResponse.getContentBuffer());
             sc = bufferedResponse.getStatus();
             contentType = bufferedResponse.getContentType();
@@ -147,15 +147,15 @@ public class CompositeView extends AbstractView
      * views.
      */
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        List providers = new ArrayList();
+        List<ReferenceDataProvider> providers = new ArrayList<ReferenceDataProvider>();
 
         if (this.referenceDataProviders != null) {
             providers.addAll(Arrays.asList(this.referenceDataProviders));
         }
 
-        for (int i = 0; i < this.views.length; i++) {
-            if (this.views[i] instanceof ReferenceDataProviding) {
-                ReferenceDataProvider[] providerList = ((ReferenceDataProviding) this.views[i])
+        for (View view: this.views) {
+            if (view instanceof ReferenceDataProviding) {
+                ReferenceDataProvider[] providerList = ((ReferenceDataProviding) view)
                         .getReferenceDataProviders();
                 if (providerList != null && providerList.length > 0) {
                     providers.addAll(Arrays.asList(providerList));
@@ -163,6 +163,6 @@ public class CompositeView extends AbstractView
             }
         }
 
-        return (ReferenceDataProvider[]) providers.toArray(new ReferenceDataProvider[providers.size()]);
+        return providers.toArray(new ReferenceDataProvider[providers.size()]);
     }
 }

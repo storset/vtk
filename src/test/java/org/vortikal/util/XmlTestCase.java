@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2006, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,13 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.util;
 
 
-/**
- * Marker interface indicating a property that might be defined multiple 
- * places in the resource type tree.
- */
-public interface OverridablePropertyTypeDefinition extends PropertyTypeDefinition {
+import org.jdom.Document;
+import org.jdom.Element;
+
+import junit.framework.TestCase;
+
+public class XmlTestCase extends TestCase {
+
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    public void testCreateNumericPath() {
+        Element e_1 = new Element("foo"), e_1_1 = new Element("foo");
+        Element e_1_1_1 = new Element("foo"), e_1_2 = new Element("foo");
+        new Document(e_1);
+        e_1.addContent(e_1_1);
+        e_1.addContent(e_1_2);
+        e_1_1.addContent(e_1_1_1);
+
+        assertEquals("1", Xml.createNumericPath(e_1));
+        assertEquals("1.1", Xml.createNumericPath(e_1_1));
+        assertEquals("1.2", Xml.createNumericPath(e_1_2));
+        assertEquals("1.1.1", Xml.createNumericPath(e_1_1_1));
+
+        assertEquals("1", Xml.createNumericPath(new Element("foo")));
+    }
 
 }

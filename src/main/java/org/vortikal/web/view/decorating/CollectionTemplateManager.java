@@ -53,7 +53,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
  *   <li><code>repository</code> - the {@link Repository content repository}
  *   <li><code>collectionName</code> - the complete path to the
  *   templates collection, e.g. <code>/foo/bar/templates</code>.
- *   <li><code>templateParser</code> - a {@link Templateparser template parser}
+ *   <li><code>templateParser</code> - a {@link TemplateParser template parser}
  *   <li><code>templateResourceType</code> - the {@link
  *   ResourceTypeDefinition resource type} identifying templates (all
  *   candidate templates must be of this resource type).
@@ -68,7 +68,7 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
     private String collectionName;
     private TemplateParser templateParser;
     private ResourceTypeDefinition templateResourceType;
-    private Map templatesMap;
+    private Map<String, Template> templatesMap;
     
 
     public void setRepository(Repository repository) {
@@ -119,7 +119,8 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
             return null;
         }
 
-        Template template = (Template) this.templatesMap.get(name);
+        Template template = this.templatesMap.get(name);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved name '" + name + "' to template '"
                          + template + "'");
@@ -130,27 +131,27 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
 
     public synchronized void load() throws Exception {
 
-        Map map = new HashMap();
+        Map<String, Template> map = new HashMap<String, Template>();
         Resource[] resources =
             this.repository.listChildren(null, this.collectionName, true);
 
         int numTemplates = 0;
 
-        for (int i = 0; i < resources.length; i++) {
+        for (Resource resource: resources) {
 
-            if (resources[i].isOfType(this.templateResourceType)) {
+            if (resource.isOfType(this.templateResourceType)) {
                 TemplateSource templateSource =
-                    new RepositoryTemplateSource(resources[i].getURI(), this.repository, null);
+                    new RepositoryTemplateSource(resource.getURI(), this.repository, null);
 
                 try {
                     Template template = new StandardDecoratorTemplate(this.templateParser, templateSource);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Loaded template '" + resources[i].getName() + "'");
+                        logger.debug("Loaded template '" + resource.getName() + "'");
                     }
-                    map.put(resources[i].getName(), template);
+                    map.put(resource.getName(), template);
                     numTemplates++;
                 } catch (Throwable t) {
-                    logger.info("Unable to compile template from resource " + resources[i], t);
+                    logger.info("Unable to compile template from resource " + resource, t);
                 }
             }
         }

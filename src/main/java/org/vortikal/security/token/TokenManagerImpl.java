@@ -31,7 +31,6 @@
 package org.vortikal.security.token;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,32 +65,31 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     private static Log logger = LogFactory.getLog(TokenManagerImpl.class);
 
-    private SimpleCache cache = null;
-    private Map registeredPrincipals = new HashMap();
-    private List defaultPrincipals = null;
+    private SimpleCache<String, PrincipalItem> cache = null;
+    private Map<String, Principal> registeredPrincipals = new HashMap<String, Principal>();
+    private List<Principal> defaultPrincipals = null;
     
 
-    public void setCache(SimpleCache cache) {
+    public void setCache(SimpleCache<String, PrincipalItem> cache) {
         this.cache = cache;
     }
 
-    public void setDefaultPrincipals(List defaultPrincipals) {
+    public void setDefaultPrincipals(List<Principal> defaultPrincipals) {
         this.defaultPrincipals = defaultPrincipals;
     }
     
     public void afterPropertiesSet() throws Exception {
 
         if (this.defaultPrincipals != null) {
-            for (Iterator iter = this.defaultPrincipals.iterator(); iter.hasNext();) {
-                Principal principal = (Principal) iter.next();
+            for (Principal principal: this.defaultPrincipals) {
                 String token = generateID();
-                this.registeredPrincipals.put(token,principal);
+                this.registeredPrincipals.put(token, principal);
             }
         }
         
         if (this.cache == null) {
             logger.info("No SimpleCache supplied, instantiating default");
-            this.cache = new SimpleCacheImpl();    
+            this.cache = new SimpleCacheImpl<String, PrincipalItem>();    
         }
     }
 
@@ -99,9 +97,9 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     public Principal getPrincipal(String token) {
 
         if (this.registeredPrincipals.containsKey(token))
-            return (Principal)this.registeredPrincipals.get(token);
+            return this.registeredPrincipals.get(token);
         
-        PrincipalItem item = (PrincipalItem) this.cache.get(token);
+        PrincipalItem item = this.cache.get(token);
         if (item == null) {
             return null;
         }
@@ -113,7 +111,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
         if (this.registeredPrincipals.containsKey(token))
             return null;
         
-        PrincipalItem item = (PrincipalItem) this.cache.get(token);
+        PrincipalItem item = this.cache.get(token);
         if (item == null) {
             return null;
         }
@@ -132,7 +130,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     public void removeToken(String token) {
 
-        PrincipalItem item = (PrincipalItem) this.cache.get(token);
+        PrincipalItem item = this.cache.get(token);
         if (item == null) {
             throw new IllegalArgumentException(
                     "Tried to remove unexisting token: " + token);
@@ -142,8 +140,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
     public String getRegisteredToken(Principal principal) {
         if (this.registeredPrincipals.containsValue(principal)) {
-            for (Iterator iter = this.registeredPrincipals.keySet().iterator(); iter.hasNext();) {
-                String token = (String) iter.next();
+            for (String token: this.registeredPrincipals.keySet()) {
                 if (this.registeredPrincipals.get(token).equals(principal))
                         return token;
             }
@@ -153,9 +150,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
 
 
     private String generateID() {
-        String uuid = UUIDGenerator.getInstance().generateRandomBasedUUID()
-                .toString();
-        return uuid;
+        return UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
     }
  
 

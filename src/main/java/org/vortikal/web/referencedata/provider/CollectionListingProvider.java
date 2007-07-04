@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +70,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  possible operations for each child, e.g. delete,
  *  <li><code>browsingService</code> - the service used for linking to
  *  the children and the parent collection
- *  <li><code>matchingResourceTypes</code> - list of resource types to filter with.
+ *  <li><code>matchingResourceTypes</code> - set of resource types to filter with.
  *  <li><code>childInfoItems</code> - list of info items to be
  *      displayed for the children. Valid items are <code>name</code>,
  *      <code>size</code>, <code>locked</code>,
@@ -96,7 +95,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>childLinks</code> (Map[]) - for every child, a map of
  *      links to all linkedServices specified on this ModelBuilder
  *      (with service name as key)
- *   <li><code>sortByLinks</code> (Map) - links to collectionlisting,
+ *   <li><code>sortByLinks</code> (Map) - links to collection listing,
  *      sorted by the different configured childInfoItems
  *   <li><code>childInfoItems</code> - the configured child
  *      information to support sorting for
@@ -106,7 +105,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>browsingLinks</code> - array of the links to the
  *   browsing service for each child
  *   <li><code>resourceURIs</code> - array of the resource URI for 
- *   each child (used in naming the checkboxes for copy/move 
+ *   each child (used in naming the check boxes for copy/move 
  *   <li><code>parentURL</code> - link to the parent collection,
  *       generated using the <code>browsingService</code>. If the
  *       parent collection is the root, or the user is not allowed to
@@ -128,10 +127,10 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                                       "owner" }));
     
     private Repository repository;
-    private Map linkedServices = new HashMap();
+    private Map<String, Service> linkedServices = new HashMap<String, Service>();
     private Service browsingService;
     private boolean retrieveForProcessing = false;
-    private ResourceTypeDefinition[] matchingResourceTypes = null;
+    private Set<ResourceTypeDefinition> matchingResourceTypes = null;
 
     public void setBrowsingService(Service browsingService) {
         this.browsingService = browsingService;
@@ -145,7 +144,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         this.repository = repository;
     }
 
-    public void setLinkedServices(Map linkedServices)  {
+    public void setLinkedServices(Map<String, Service> linkedServices)  {
         this.linkedServices = linkedServices;
     }
 
@@ -183,11 +182,12 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
-        Map collectionListingModel = new HashMap();
+        Map<String, Object> collectionListingModel = new HashMap<String, Object>();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         collectionListingModel.put("childInfoItems", this.childInfoItems);
         Resource[] children = null;
 
@@ -206,8 +206,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         String sortBy = request.getParameter("sort-by");
         boolean invertedSort = "true".equals(request.getParameter("invert"));
         boolean validSortByParameter = false;
-        for (int i = 0; i < this.childInfoItems.length; i++) {
-            if (this.childInfoItems[i].equals(sortBy)) validSortByParameter = true;
+        for (String childInfoItem : this.childInfoItems) {
+            if (childInfoItem.equals(sortBy)) validSortByParameter = true;
         }
         if (!validSortByParameter) sortBy = DEFAULT_SORT_BY_PARAMETER;
         sortChildren(children, sortBy, invertedSort);
@@ -215,27 +215,23 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         collectionListingModel.put("invertedSort", new Boolean(invertedSort));
         collectionListingModel.put("children", children);
         
-        List linkedServiceNames = new ArrayList();
+        List<String> linkedServiceNames = new ArrayList<String>();
         
-        for (Iterator iter = this.linkedServices.keySet().iterator(); iter.hasNext();) {
-            String linkName = (String) iter.next();
+        for (String linkName: this.linkedServices.keySet()) {
             linkedServiceNames.add(linkName);
         }
        
         collectionListingModel.put("linkedServiceNames", linkedServiceNames);
         
-        Map[] childLinks = new HashMap[children.length];
+        Map<String, String>[] childLinks = new HashMap[children.length];
         String[] browsingLinks = new String[children.length];
-        
-        for (int i = 0;  i < children.length; i++) {
-            Map linkMap = new HashMap();
-            
-            for (Iterator iter = this.linkedServices.keySet().iterator(); iter.hasNext();) {
-                String linkName = (String) iter.next();
-                Service service = (Service) this.linkedServices.get(linkName);
+        for (int i = 0; i < children.length; i++) {
+            Resource child = children[i];
+            Map<String, String> linkMap = new HashMap<String, String>();
+            for (String linkName: this.linkedServices.keySet()) {
+                Service service = this.linkedServices.get(linkName);
                 try {
-                    String url = service.constructLink(children[i], 
-                            securityContext.getPrincipal());
+                    String url = service.constructLink(child, principal);
                     linkMap.put(linkName, url);
                 } catch (ServiceUnlinkableException e) {
                     // do nothing
@@ -244,8 +240,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             childLinks[i] = linkMap; 
             
             try {
-                browsingLinks[i] = this.browsingService.constructLink(
-                    children[i], securityContext.getPrincipal());
+                browsingLinks[i] = 
+                    this.browsingService.constructLink(child, principal);
             } catch (ServiceUnlinkableException e) {
                 // do nothing
             }
@@ -253,11 +249,10 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         collectionListingModel.put("childLinks", childLinks);
         collectionListingModel.put("browsingLinks", browsingLinks);
 
-        Map sortByLinks = new HashMap(); 
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        for (int i = 0; i < this.childInfoItems.length; i++) {
-            String column = this.childInfoItems[i];
-            Map parameters = new HashMap();
+        Map<String, String> sortByLinks = new HashMap<String, String>(); 
+
+        for (String column: this.childInfoItems) {
+            Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("sort-by", column);
             if (sortBy.equals(column) && !invertedSort) {
                 parameters.put("invert", "true");
@@ -290,16 +285,15 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             return children;
         }
         
-        List filteredChildren = new ArrayList();
-        for (int i = 0; i < children.length; i++) {
-            for (int j = 0; j < this.matchingResourceTypes.length; j++) {
-                if (children[i].isOfType(this.matchingResourceTypes[j]))
-                    filteredChildren.add(children[i]);
+        List<Resource> filteredChildren = new ArrayList<Resource>();
+        for (Resource resource: children) {
+            for (ResourceTypeDefinition resourceDef: this.matchingResourceTypes) {
+                if (resource.isOfType(resourceDef))
+                    filteredChildren.add(resource);
             }
         }
             
-        return (Resource[]) filteredChildren.toArray(
-            new Resource[filteredChildren.size()]);
+        return filteredChildren.toArray(new Resource[filteredChildren.size()]);
     }
     
 
@@ -326,7 +320,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     }
 
     public void setMatchingResourceTypes(
-            ResourceTypeDefinition[] matchingResourceTypes) {
+            Set<ResourceTypeDefinition> matchingResourceTypes) {
         this.matchingResourceTypes = matchingResourceTypes;
     }
 

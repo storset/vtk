@@ -45,7 +45,7 @@ public class CSVListFactoryBean extends AbstractCSVFactoryBean {
      * <code>FactoryBean</code> is not a singleton, but a prototype.
      */
     public Object createInstance() throws Exception {
-        List list = new ArrayList(super.elements.length);
+        List<String> list = new ArrayList<String>(super.elements.length);
         
         for (int i=0; i<super.elements.length; i++) {
             list.add(super.elements[i]);

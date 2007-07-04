@@ -62,10 +62,9 @@ import org.vortikal.web.service.Assertion;
 public class ConfigurableDelegatingServlet extends FrameworkServlet {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private Map hostMap = null;
     private ServletContext servletContext = null;
 
-    private ServletMapping[] servletMappings;
+    private List<ServletMapping> servletMappings;
 
 
 
@@ -75,13 +74,11 @@ public class ConfigurableDelegatingServlet extends FrameworkServlet {
 
         WebApplicationContext context = getWebApplicationContext();
         
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+        Map<?, ServletMapping> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 context, ServletMapping.class, true, false);
         
-        List servletMappings = new ArrayList(matchingBeans.values());
-        Collections.sort(servletMappings, new OrderComparator());
-        this.servletMappings = (ServletMapping[])
-            servletMappings.toArray(new ServletMapping[servletMappings.size()]);
+        this.servletMappings = new ArrayList<ServletMapping>(matchingBeans.values());
+        Collections.sort(this.servletMappings, new OrderComparator());
         
     }
 
@@ -90,15 +87,12 @@ public class ConfigurableDelegatingServlet extends FrameworkServlet {
     protected void doService(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
 
-        for (int i = 0; i < this.servletMappings.length; i++) {
-            Assertion[] assertions = this.servletMappings[i].getAssertions();
-            for (int j = 0; j < assertions.length; j++) {
-                if (!assertions[j].matches(request, null, null)) {
+        for (ServletMapping mapping: this.servletMappings) {
+            for (Assertion assertion: mapping.getAssertions()) {
+                if (!assertion.matches(request, null, null)) {
                     continue;
                 }
-                String servletName = this.servletMappings[i].getServletName();
-                
-                doDispatch(servletName, request, response);
+                doDispatch(mapping.getServletName(), request, response);
             }
         }
     }

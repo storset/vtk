@@ -203,7 +203,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         String country = locale.getCountry();
         String variant = locale.getVariant();
         
-        List references = new ArrayList();
+        List<String> references = new ArrayList<String>();
         if (!"".equals(country) && !"".equals(variant)) {
             references.add(base + "_" + language + "_" + country + "_" + variant + extension);
         }
@@ -216,7 +216,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             logger.debug("Attempting to resolve template ref '" + ref + "' using "
                          + "sequence " + references);
         }
-        return (String[]) references.toArray(new String[references.size()]);
+        return references.toArray(new String[references.size()]);
     }
 
 

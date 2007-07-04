@@ -32,7 +32,6 @@ package org.vortikal.security.store;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,33 +50,33 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private List managers = null;
+    private List<GroupStore> managers;
 
     // Maintain cache: principal -> item(map(groups)) for
     // fast group membership lookup
-    private SimpleCache cache = null;
+    private SimpleCache<Principal, GroupItem> cache;
     
 
     public ChainedGroupStore() {
     }
 
-    public ChainedGroupStore(List managers) {
+    public ChainedGroupStore(List<GroupStore> managers) {
         this.managers = managers;
     }
 
-    public ChainedGroupStore(List managers, SimpleCache cache) {
+    public ChainedGroupStore(List<GroupStore> managers, SimpleCache<Principal, GroupItem> cache) {
         this.managers = managers;
         this.cache = cache;
     }
     
     
 
-    public void setManagers(List managers) {
+    public void setManagers(List<GroupStore> managers) {
         this.managers = managers;
     }
     
 
-    public void setCache(SimpleCache cache) {
+    public void setCache(SimpleCache<Principal, GroupItem> cache) {
         this.cache = cache;
     }
     
@@ -92,8 +91,7 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
 
     public boolean validateGroup(Principal group)
         throws AuthenticationProcessingException {
-        for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            GroupStore manager = (GroupStore) i.next();
+        for (GroupStore manager: this.managers) {
             if (manager.validateGroup(group)) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Validated group '" + group
@@ -121,8 +119,7 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
     public boolean isMemberUncached(Principal principal, Principal group)
         throws AuthenticationProcessingException {
 
-        for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            GroupStore manager = (GroupStore) i.next();
+        for (GroupStore manager: this.managers) {
             if (manager.validateGroup(group)) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Validated group membership for principal '"
@@ -148,7 +145,7 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
 
         String groupName = group.getQualifiedName();
             
-            GroupItem item = (GroupItem) this.cache.get(principal);
+            GroupItem item = this.cache.get(principal);
             if (item == null) {
 
                 item = new GroupItem();
@@ -156,7 +153,7 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
             
             }
 
-            Map groupsMap = item.getGroupsMap();
+            Map<String, Object> groupsMap = item.getGroupsMap();
 
             if (groupsMap.containsKey(groupName)) {
                 boolean isMember = (groupsMap.get(groupName) != null);
@@ -170,8 +167,7 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
             }
 
 
-        for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            GroupStore manager = (GroupStore) i.next();
+        for (GroupStore manager: this.managers) {
             // XXX: We currently have two group stores for the same domain,
             // Should both member sets be checked? (currently only the first)
             if (manager.validateGroup(group)) {
@@ -201,9 +197,9 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
     
 
     private class GroupItem {
-        private Map groupsMap = new HashMap();
+        private Map<String, Object> groupsMap = new HashMap<String, Object>();
 
-        public Map getGroupsMap() {
+        public Map<String, Object> getGroupsMap() {
             return this.groupsMap;
         }
     }
@@ -223,12 +219,10 @@ public class ChainedGroupStore implements InitializingBean, GroupStore {
     /**
      * @see org.vortikal.security.GroupStore#getMemberGroups(org.vortikal.security.Principal)
      */
-    public Set getMemberGroups(Principal principal) {
-        Set groups = new HashSet();
-        for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            GroupStore manager = (GroupStore) i.next();
-            
-            Set memberGroups = manager.getMemberGroups(principal);
+    public Set<Principal> getMemberGroups(Principal principal) {
+        Set<Principal> groups = new HashSet<Principal>();
+        for (GroupStore manager: this.managers) {
+            Set<Principal> memberGroups = manager.getMemberGroups(principal);
             if (memberGroups != null) {
                 groups.addAll(memberGroups);
             }

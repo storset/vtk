@@ -53,42 +53,33 @@ public class ChainedPropertyEvaluator
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private CreatePropertyEvaluator[] createEvaluators;
-    private ContentModificationPropertyEvaluator[] contentModificationEvaluators;
-    private PropertiesModificationPropertyEvaluator[] propertiesModificationEvaluators;
+    private List<CreatePropertyEvaluator> createEvaluators = 
+        new ArrayList<CreatePropertyEvaluator>();
+    private List<ContentModificationPropertyEvaluator> contentModificationEvaluators = 
+        new ArrayList<ContentModificationPropertyEvaluator>();
+    private List<PropertiesModificationPropertyEvaluator> propertiesModificationEvaluators = 
+        new ArrayList<PropertiesModificationPropertyEvaluator>();
     
     
     public void setPropertyEvaluators(Object[] propertyEvaluators) {
         if (propertyEvaluators == null || propertyEvaluators.length == 0) {
             throw new IllegalArgumentException("No property evaluators specified");
         }
-        List createEvaluators = new ArrayList();
-        List contentModificationEvaluators = new ArrayList();
-        List propertiesModificationEvaluators = new ArrayList();
 
-        for (int i = 0; i < propertyEvaluators.length; i++) {
-            Object o = propertyEvaluators[i];
+        for (Object o: propertyEvaluators) {
             if (o instanceof CreatePropertyEvaluator) {
-                createEvaluators.add(o);
+                createEvaluators.add((CreatePropertyEvaluator)o);
             }
-            if (o instanceof ContentModificationPropertyEvaluator) {
-                contentModificationEvaluators.add(o);
+            else if (o instanceof ContentModificationPropertyEvaluator) {
+                contentModificationEvaluators.add((ContentModificationPropertyEvaluator)o);
             }
-            if (o instanceof PropertiesModificationPropertyEvaluator) {
-                propertiesModificationEvaluators.add(o);
+            else if (o instanceof PropertiesModificationPropertyEvaluator) {
+                propertiesModificationEvaluators.add((PropertiesModificationPropertyEvaluator)o);
+            }
+            else {
+                throw new IllegalArgumentException("Property evaluator not of required class " + o);
             }
         }
-        
-        this.createEvaluators = (CreatePropertyEvaluator[])
-            createEvaluators.toArray(new CreatePropertyEvaluator[createEvaluators.size()]);
-
-        this.contentModificationEvaluators = (ContentModificationPropertyEvaluator[])
-            contentModificationEvaluators.toArray(
-                new ContentModificationPropertyEvaluator[contentModificationEvaluators.size()]);
-
-        this.propertiesModificationEvaluators = (PropertiesModificationPropertyEvaluator[])
-            propertiesModificationEvaluators.toArray(
-                new PropertiesModificationPropertyEvaluator[propertiesModificationEvaluators.size()]);
     }
     
 
@@ -96,13 +87,12 @@ public class ChainedPropertyEvaluator
     public boolean create(Principal principal, Property property,
                           PropertySet ancestorPropertySet, boolean isCollection,
                           Date time) throws PropertyEvaluationException {
-        for (int i = 0; i < this.createEvaluators.length; i++) {
-            if (this.createEvaluators[i].create(principal, property,
+        for (CreatePropertyEvaluator evaluator: this.createEvaluators) {
+            if (evaluator.create(principal, property,
                                                 ancestorPropertySet, isCollection, time)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for property evaluator '"
-                                 + this.createEvaluators[i] + "', "
-                                 + "property set: " + property);
+                            + evaluator + "', property set: " + property);
                 }
                 return true;
             }
@@ -114,14 +104,13 @@ public class ChainedPropertyEvaluator
     public boolean propertiesModification(Principal principal, Property property,
                                           PropertySet ancestorPropertySet,
                                           Date time) throws PropertyEvaluationException {
-        for (int i = 0; i < this.propertiesModificationEvaluators.length; i++) {
-            if (this.propertiesModificationEvaluators[i].propertiesModification(
+        for (PropertiesModificationPropertyEvaluator evaluator: this.propertiesModificationEvaluators) {
+            if (evaluator.propertiesModification(
                     principal, property, ancestorPropertySet, time)) {
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for property evaluator '"
-                                 + this.propertiesModificationEvaluators[i] + "', "
-                                 + "property set: " + property);
+                            + evaluator + "', property set: " + property);
                 }
                 return true;
             }
@@ -133,13 +122,12 @@ public class ChainedPropertyEvaluator
     public boolean contentModification(Principal principal, Property property,
                                        PropertySet ancestorPropertySet, Content content,
                                        Date time) throws PropertyEvaluationException {
-        for (int i = 0; i < this.contentModificationEvaluators.length; i++) {
-            if (this.contentModificationEvaluators[i].contentModification(
+        for (ContentModificationPropertyEvaluator evaluator: this.contentModificationEvaluators) {
+            if (evaluator.contentModification(
                     principal, property, ancestorPropertySet, content, time)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for property evaluator '"
-                                 + this.contentModificationEvaluators[i] + "', "
-                                 + "property set: " + property);
+                            + evaluator + "', property set: " + property);
                 }
                 return true;
             }

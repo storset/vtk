@@ -75,8 +75,8 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
 
     private static final Log logger = LogFactory.getLog(CollectionListingAsFeedProvider.class);
     
-    private static final Set supportedResourceColumns = 
-        new HashSet(Arrays.asList(new String[] {
+    private static final Set<String> supportedResourceColumns = 
+        new HashSet<String>(Arrays.asList(new String[] {
                                       "name", 
                                       "content-length", 
                                       "last-modified",
@@ -87,7 +87,7 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
     private Repository repository;
     private Service browsingService;
 
-    private Set contentTypeFilter;
+    private Set<String> contentTypeFilter;
     private Pattern contentTypeRegexpFilter;
     
 
@@ -107,7 +107,7 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
         this.childInfoItems = childInfoItems;
     }
 
-    public void setContentTypeFilter(Set contentTypeFilter) {
+    public void setContentTypeFilter(Set<String> contentTypeFilter) {
         this.contentTypeFilter = contentTypeFilter;
     }
     
@@ -139,7 +139,7 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
-        Map feedModel = new HashMap();
+        Map<String, Object> feedModel = new HashMap<String, Object>();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
@@ -193,23 +193,22 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
             return children;
         }
         
-        List filteredChildren = new ArrayList();
-        for (int i = 0; i < children.length; i++) {
-                
+        List<Resource> filteredChildren = new ArrayList<Resource>();
+
+        for (Resource resource: children) {
             if (this.contentTypeFilter != null) {
-                if (this.contentTypeFilter.contains(children[i].getContentType())) {
-                    filteredChildren.add(children[i]);
+                if (this.contentTypeFilter.contains(resource.getContentType())) {
+                    filteredChildren.add(resource);
                 }
             } else {
                 Matcher m = this.contentTypeRegexpFilter.matcher(
-                    children[i].getContentType());
+                    resource.getContentType());
                 if (m.matches()) {
-                    filteredChildren.add(children[i]);
+                    filteredChildren.add(resource);
                 }
             }
         }
-        return (Resource[]) filteredChildren.toArray(
-            new Resource[filteredChildren.size()]);
+        return filteredChildren.toArray(new Resource[filteredChildren.size()]);
     }
     
 

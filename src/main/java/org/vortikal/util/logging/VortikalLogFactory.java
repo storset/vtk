@@ -146,8 +146,8 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
         ("true".equals(System.getProperty("org.vortikal.logging.debug")));
 
     private Properties properties = new Properties();
-    private Map loggers = new HashMap();
-    private Map loggerDescriptors = new HashMap();
+    private Map<String, VortikalLogger> loggers = new HashMap<String, VortikalLogger>();
+    private Map<String, LoggerDescriptor> loggerDescriptors = new HashMap<String, LoggerDescriptor>();
     
 
     public VortikalLogFactory() {
@@ -188,7 +188,7 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
     public Log getInstance(String name) throws LogConfigurationException {
 
         synchronized(this.loggers) {
-            VortikalLogger logger = (VortikalLogger) this.loggers.get(name);
+            VortikalLogger logger = this.loggers.get(name);
             if (logger != null) {
                 return logger;
             }
@@ -433,7 +433,7 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
         while (true) {
 
             if (this.loggerDescriptors.containsKey(key)) {
-                return (LoggerDescriptor) this.loggerDescriptors.get(key);
+                return this.loggerDescriptors.get(key);
             }
             if (key.indexOf(".") < 0) {
                 break;
@@ -443,7 +443,7 @@ public class VortikalLogFactory extends org.apache.commons.logging.LogFactory {
         }
 
         // An empty package name means 'match all' (if configured).
-        return (LoggerDescriptor) this.loggerDescriptors.get("");
+        return this.loggerDescriptors.get("");
     }
 
 

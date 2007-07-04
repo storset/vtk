@@ -30,7 +30,6 @@
  */
 package org.vortikal.security.store;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -46,16 +45,16 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private List managers = null;
+    private List<PrincipalStore> managers = null;
 
     public ChainedPrincipalStore() {
     }
 
-    public ChainedPrincipalStore(List managers) {
+    public ChainedPrincipalStore(List<PrincipalStore> managers) {
         this.managers = managers;
     }
 
-    public void setManagers(List managers) {
+    public void setManagers(List<PrincipalStore> managers) {
         this.managers = managers;
     }
     
@@ -70,8 +69,7 @@ public class ChainedPrincipalStore implements InitializingBean, PrincipalStore {
     public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException {
 
-        for (Iterator i = this.managers.iterator(); i.hasNext();) {
-            PrincipalStore manager = (PrincipalStore) i.next();
+        for (PrincipalStore manager: this.managers) {
             if (manager.validatePrincipal(principal)) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Validated principal '" + principal.getQualifiedName()

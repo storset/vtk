@@ -31,6 +31,7 @@
 package org.vortikal.web.context;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public class ChildDelegatingMessageSource
 
     private String beanName;
     private ApplicationContext applicationContext;
-    private MessageSource[] children;
+    private List<MessageSource> children;
     
     public String getMessage(String code, Object[] args, String defaultMessage,
             Locale locale) {
@@ -68,8 +69,7 @@ public class ChildDelegatingMessageSource
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        for (int i = 0; i < this.children.length; i++) {
-            MessageSource messageSource = this.children[i];
+        for (MessageSource messageSource: this.children) {
             try {
                 return messageSource.getMessage(code, args, locale);
             } catch (NoSuchMessageException e) {
@@ -83,9 +83,9 @@ public class ChildDelegatingMessageSource
         if (codes == null) {
             throw new NoSuchMessageException(null, locale);
         }
-        for (int i = 0; i < codes.length; i++) {
+        for (String code: codes) {
             try {
-                return getMessage(codes[i], resolvable.getArguments(), locale);
+                return getMessage(code, resolvable.getArguments(), locale);
             } catch (NoSuchMessageException e) {}
         }
         if (resolvable.getDefaultMessage() != null) {
@@ -96,12 +96,12 @@ public class ChildDelegatingMessageSource
 
     public void afterPropertiesSet() throws Exception {
         // find all services, and sort out those of category 'category';
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+        Map<Object, MessageSource> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, MessageSource.class, true, false);
 
         matchingBeans.remove(this.beanName);
         
-        this.children = (MessageSource[]) new ArrayList(matchingBeans.values()).toArray(new MessageSource[0]);
+        this.children = new ArrayList<MessageSource>(matchingBeans.values());
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

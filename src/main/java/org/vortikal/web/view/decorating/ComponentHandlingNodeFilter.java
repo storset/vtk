@@ -65,17 +65,17 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
 
     private static Log logger = LogFactory.getLog(ComponentHandlingNodeFilter.class);
 
-    private Map ssiDirectiveComponentMap;
-    private Set prohibitedComponentNamespaces = new HashSet();
+    private Map<String, DecoratorComponent> ssiDirectiveComponentMap;
+    private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
     private TemplateParser contentComponentParser;
     private boolean parseAttributes = false;
     
 
-    public void setSsiDirectiveComponentMap(Map ssiDirectiveComponentMap) {
+    public void setSsiDirectiveComponentMap(Map<String, DecoratorComponent> ssiDirectiveComponentMap) {
         this.ssiDirectiveComponentMap = ssiDirectiveComponentMap;
     }
     
-    public void setProhibitedComponentNamespaces(Set prohibitedComponentNamespaces) {
+    public void setProhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
         this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
     
@@ -168,7 +168,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         Matcher paramMatcher = SSI_PARAMETERS_REGEXP.matcher(
             content.substring(directiveMatcher.end()));
 
-        Map parameters = new HashMap();
+        Map<String, String> parameters = new HashMap<String, String>();
 
         while (paramMatcher.find()) {
             String name = paramMatcher.group(1);
@@ -178,14 +178,14 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             }
         }
 
-        final DecoratorComponent component = (DecoratorComponent)
+        final DecoratorComponent component = 
             this.ssiDirectiveComponentMap.get(directive);
         if (component == null) {
             return null;
         }
-        final Map invocationParams = parameters;
+        final Map<String, String> invocationParams = parameters;
         return new ComponentInvocation() {
-            public Map getParameters() {
+            public Map<String, String> getParameters() {
                 return invocationParams;
             }
             public DecoratorComponent getComponent() {
@@ -218,7 +218,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < components.length; i++) {
 
-            Map parameters = components[i].getParameters();
+            Map<String, String> parameters = components[i].getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                 null, servletRequest, parameters, doctype, locale);
             DecoratorResponseImpl response = new DecoratorResponseImpl(

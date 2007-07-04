@@ -784,10 +784,10 @@
       </map>
     </property>
     <property name="matchingResourceTypes">
-      <list>
+      <set>
         <ref bean="collectionResourceTypeDefinition" />
         <ref bean="imageResourceTypeDefinition" />
-      </list>
+      </set>
     </property>
     <property name="retrieveForProcessing" value="true" />
   </bean>

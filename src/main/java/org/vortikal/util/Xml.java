@@ -32,6 +32,7 @@ package org.vortikal.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -41,26 +42,25 @@ import org.jdom.Text;
 import org.jdom.xpath.XPath;
 
 
-/**
- * @author Eirik Meland (eirik.meland@usit.uio.no)
- */
 public class Xml {
     /**
-     * Get textnodes by running provided XPath expression on provided JDom
-     * Doucment. Returned as ArrayList.
+     * Get text nodes by running provided XPath expression on provided 
+     * {@link Document}.
+     * 
+     * XXX: Uses unsafe conversion, assuming expression only returns text nodes!
+     * 
      * @param doc
      * @return
      * @throws JDOMException
      */
-    public static ArrayList getNodesByXPath(Document doc, XPath expression)
+    public static List<String> getNodesByXPath(Document doc, XPath expression)
             throws JDOMException {
         // get nodes
-        ArrayList nodes = (ArrayList) expression.selectNodes(doc);
+        List<Text> nodes = (List<Text>) expression.selectNodes(doc);
         
-        // Convert textnodes to strings and add to ArrayList
-        ArrayList textNodes = new ArrayList();
-        for (Iterator nodesIter = nodes.iterator(); nodesIter.hasNext();) {
-            Text textNode = (Text) nodesIter.next();
+        // Convert text nodes to strings and add to ArrayList
+        List<String> textNodes = new ArrayList<String>();
+        for (Text textNode: nodes) {
             textNodes.add(textNode.getText());
         }
         return textNodes;
@@ -93,22 +93,12 @@ public class Xml {
         return currentElement;
     }
     
-    public static String createNumericPath(Element element) {
-        if (element.isRootElement()) { return "1"; }
+    public static String createNumericPath(Element element) throws IllegalArgumentException {
+        Element parent = element.getParentElement();
+        if (parent == null) { return "1"; }
 
-        Element parent = (Element) element.getParent();
-        int index = 1;
-
-        for (Iterator i = parent.getChildren().iterator(); i.hasNext();) {
-            Element child = (Element) i.next();
-            if (child == element) {
-                break;
-            }
-            index++;
-        }
-
-        String path = createNumericPath(parent) + "." + index;
-        return path;
+        int index = parent.indexOf(element) + 1;
+        return createNumericPath(parent) + "." + index;
     }
 
     public static void removeProcessingInstruction(Element element, String target) {
@@ -117,7 +107,7 @@ public class Xml {
     }
 
     public static ProcessingInstruction findProcessingInstruction(Element element, String target) {
-        for (Iterator it = element.getContent().iterator(); it.hasNext();) {
+        for (Iterator<?> it = element.getContent().iterator(); it.hasNext();) {
             Object o = it.next();
             if ((o instanceof ProcessingInstruction)
                     && target.equals(((ProcessingInstruction) o).getTarget())) { 

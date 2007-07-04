@@ -36,12 +36,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -74,19 +72,17 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
         
         this.contentFactories = new HashMap<Class, ContentFactory>();
         
-        Collection contentFactoryBeans = 
+        Collection<ContentFactory> contentFactoryBeans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     ContentFactory.class, false, false).values();
 
-        for (Iterator i = contentFactoryBeans.iterator(); i.hasNext();) {
-            ContentFactory factory = (ContentFactory)i.next();
-
+        for (ContentFactory factory: contentFactoryBeans) {
             Class[] supportedClasses = factory.getRepresentationClasses();
-            for (int j = 0; j < supportedClasses.length; j++) {
+            for (Class supportedClass: supportedClasses) {
                 this.logger.info("Registering content factory for class '"
-                            + supportedClasses[j] + "': " + factory);
+                            + supportedClass + "': " + factory);
 
-                this.contentFactories.put(supportedClasses[j], factory);
+                this.contentFactories.put(supportedClass, factory);
             }
         }
     }
@@ -95,23 +91,22 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
     public Object createRepresentation(Class clazz, InputStream content) 
         throws Exception {
 
-        ContentFactory factory = (ContentFactory) this.contentFactories.get(clazz);
+        ContentFactory factory = this.contentFactories.get(clazz);
 
-        if (factory == null) {
+        if (factory != null) {
+            return factory.getContentRepresentation(clazz, content);
+        }
 
-            // The default representations:
+        // The default representations:
+        if (clazz == byte[].class) {
+            return getContentAsByteArray(content);
+        } else if (clazz == java.nio.ByteBuffer.class) {
+            return ByteBuffer.wrap(getContentAsByteArray(content));
+        }
 
-            if (clazz == byte[].class) {
-                return getContentAsByteArray(content);
-            } else if (clazz == java.nio.ByteBuffer.class) {
-                return ByteBuffer.wrap(getContentAsByteArray(content));
-            }
-
-            throw new UnsupportedContentRepresentationException(
+        throw new UnsupportedContentRepresentationException(
                 "Content type '" + clazz.getName() + "' not supported.");
             
-        }
-        return factory.getContentRepresentation(clazz, content);
     }
     
 

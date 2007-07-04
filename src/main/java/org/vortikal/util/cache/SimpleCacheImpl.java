@@ -35,9 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,15 +49,15 @@ import org.springframework.beans.factory.InitializingBean;
  * defaulting to zero seconds.
  * 
  * You can set refreshTimestampOnGet to false if you don't want to 
- * refresh an item's timestamp when it's retrieved from the cache. 
+ * refresh an item's time stamp when it's retrieved from the cache. 
  */
-public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
+public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
                                         InitializingBean, DisposableBean {
     
     private static Log logger = LogFactory.getLog(SimpleCacheImpl.class);
 
     
-    private Map cache = new HashMap();
+    private Map<S, Item> cache = new HashMap<S, Item>();
     private int timeoutSeconds = 0;
     private boolean refreshTimestampOnGet = true;
 
@@ -81,7 +80,7 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
     }
 
 
-    public void put(Object key, Object value) {
+    public void put(S key, T value) {
         synchronized (this.cache) {
             this.cache.put(key, new Item(value));
         }
@@ -113,8 +112,8 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
     }
     
 
-    public Object get(Object key) {
-        Item item = (Item) this.cache.get(key);
+    public T get(S key) {
+        Item item = this.cache.get(key);
         if (item == null)
             return null;
         else if (item.getTimestamp().getTime() + this.timeoutSeconds * 1000 > new Date().getTime()) {
@@ -132,10 +131,10 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
     }
 
 
-    public Object remove(Object key) {
+    public T remove(S key) {
         if (this.cache.containsKey(key)) {
             synchronized (this.cache) {
-                return ((Item) this.cache.remove(key)).getValue();
+                return this.cache.remove(key).getValue();
             }
         }
         return null;
@@ -155,17 +154,13 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
 
         if (this.timeoutSeconds < 1) return;
         
-        ArrayList removeableItems = new ArrayList();
+        List<S> removeableItems = new ArrayList<S>();
 
         /* FIXME: Is this a good idea?
-         * Trying to avoid concurrentmodificationexception 
-         * without syncronization */
-        Set set = new HashSet(this.cache.keySet());
-        
-        for (Iterator i = set.iterator(); i.hasNext();) {
-            String key = (String) i.next();
-
-            Item item = (Item) this.cache.get(key);
+         * Trying to avoid concurrent modification exception 
+         * without synchronization */
+        for (S key: new HashSet<S>(this.cache.keySet())) {
+            Item item = this.cache.get(key);
 
             if (item != null &&
                 item.getTimestamp().getTime() + this.timeoutSeconds * 1000
@@ -180,8 +175,7 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
         }
 
         synchronized (this.cache) {
-            for (Iterator iterator = removeableItems.iterator(); iterator.hasNext();) {
-                String key = (String) iterator.next();
+            for (S key: removeableItems) {
                 this.cache.remove(key);
 
             }
@@ -191,9 +185,9 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
 
     private class Item {
         Date date;
-        Object value;
+        T value;
         
-        public Item(Object value) {
+        public Item(T value) {
             this.date = new Date();
             this.value = value;
         }
@@ -203,7 +197,7 @@ public class SimpleCacheImpl implements SimpleCache, BeanNameAware,
         }
         
         
-        public Object getValue() {
+        public T getValue() {
             if (SimpleCacheImpl.this.refreshTimestampOnGet) this.date = new Date();
             return this.value;
         }

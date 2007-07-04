@@ -34,13 +34,13 @@ package org.vortikal.util.cache;
 /**
  * Simple cache interface.
  */
-public interface SimpleCache {
+public interface SimpleCache<S, T> {
     
-    public void put(Object key, Object value);
+    public void put(S key, T value);
     
-    public Object get(Object key);
+    public T get(S key);
     
-    public Object remove(Object key);
+    public T remove(S key);
 
     public int getSize();
     

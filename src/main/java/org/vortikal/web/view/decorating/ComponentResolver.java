@@ -44,7 +44,7 @@ public interface ComponentResolver {
      */
     public DecoratorComponent resolveComponent(String namespace, String name);
     
-    public List listComponents();
+    public List<DecoratorComponent> listComponents();
 
 }
 

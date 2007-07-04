@@ -117,7 +117,7 @@ public class XmlEditController implements Controller, InitializingBean {
     private ActionHandler newSubElementAtActionHandler = new NewSubElementAtController();
     private ActionHandler deleteSubElementAtActionHandler = new DeleteSubElementAtController();
     
-    private Map actionMapping = new HashMap();
+    private Map<String, ActionHandler> actionMapping = new HashMap<String, ActionHandler>();
 
     public void afterPropertiesSet() throws Exception {
         this.actionMapping.put(EDIT_ACTION, editActionHandler);
@@ -137,9 +137,9 @@ public class XmlEditController implements Controller, InitializingBean {
         try {
             String action = request.getParameter(ACTION_PARAMETER_NAME);
 
-            Map sessionMap = getSessionMap(request);
+            Map<String, Object> sessionMap = getSessionMap(request);
 
-            /* "Validate" and create web-editable resource session */
+            /* "Validate" and create web editable resource session */
             if (sessionMap == null) {
                 sessionMap = initEditSession(request);
             }
@@ -154,7 +154,7 @@ public class XmlEditController implements Controller, InitializingBean {
                 return new ModelAndView(this.finishViewName);
             }
 
-            ActionHandler handler = (ActionHandler) this.actionMapping.get(action);
+            ActionHandler handler = this.actionMapping.get(action);
             Map model = new HashMap();
 
             if (handler != null)
@@ -180,35 +180,37 @@ public class XmlEditController implements Controller, InitializingBean {
         request.getSession(true).removeAttribute(sessionID);
     }
     
-    private Map getSessionMap(HttpServletRequest request) throws IOException {
+    private Map<String, Object> getSessionMap(HttpServletRequest request) throws IOException {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
         String sessionID = XmlEditController.class.getName() + ":" + uri; 
-        Map sessionMap = (Map) request.getSession(true).getAttribute(sessionID);
+        Map<String, Object> sessionMap = (Map<String, Object>) request.getSession(true).getAttribute(sessionID);
 
-        /* Check that sessionmap isn't stale (the lock has been released) */
-        /* a user can access the same (locked) resource from different clients */
-        if (sessionMap != null) {
-            String token = SecurityContext.getSecurityContext().getToken();
-            Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-            Lock lock = this.repository.retrieve(token, uri, false).getLock();
-
-            if (lock == null) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Stored xml edit session data is out of date.");
-
-                request.getSession(true).removeAttribute(sessionID);
-                sessionMap = null;
-            } else if (!lock.getPrincipal().equals(principal)) {
-                // Should do something else
-                if (logger.isDebugEnabled())
-                    logger.debug("Resource locked by another user.");
-                request.getSession(true).removeAttribute(sessionID);
-                sessionMap = null;
-            }
-
+        if (sessionMap == null) {
+            return null;
         }
+
+        /* Check that session map isn't stale (the lock has been released) */
+        /* a user can access the same (locked) resource from different clients */
+        String token = SecurityContext.getSecurityContext().getToken();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        Lock lock = this.repository.retrieve(token, uri, false).getLock();
+
+        if (lock == null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Stored xml edit session data is out of date.");
+
+            request.getSession(true).removeAttribute(sessionID);
+            sessionMap = null;
+        } else if (!lock.getPrincipal().equals(principal)) {
+            // Should do something else
+            if (logger.isDebugEnabled())
+                logger.debug("Resource locked by another user.");
+            request.getSession(true).removeAttribute(sessionID);
+            sessionMap = null;
+        }
+
         return sessionMap;
     }
     
@@ -314,7 +316,7 @@ public class XmlEditController implements Controller, InitializingBean {
     
 
 
-    private Map initEditSession(HttpServletRequest request) 
+    private Map<String, Object> initEditSession(HttpServletRequest request) 
     throws IOException, TransformerException {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -326,7 +328,7 @@ public class XmlEditController implements Controller, InitializingBean {
         
         Resource resource = this.repository.retrieve(token, uri, false);
         
-        Map sessionMap = new HashMap();
+        Map<String, Object> sessionMap = new HashMap<String, Object>();
 
         EditDocument document = null;
         SchemaDocumentDefinition documentDefinition = null;

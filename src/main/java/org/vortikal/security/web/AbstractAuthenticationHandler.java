@@ -43,7 +43,7 @@ public abstract class AbstractAuthenticationHandler implements
     protected Log logger = LogFactory.getLog(this.getClass());
 
     /* Simple cache to allow for clients that don't send cookies */
-    private SimpleCache cache = null;
+    private SimpleCache<String, Principal> cache;
 
     private List<Assertion> requestAssertions; 
     
@@ -53,7 +53,7 @@ public abstract class AbstractAuthenticationHandler implements
 
     protected PrincipalFactory principalFactory;
 
-    public void setCache(SimpleCache cache) {
+    public void setCache(SimpleCache<String, Principal> cache) {
         this.cache = cache;
     }
 
@@ -138,10 +138,12 @@ public abstract class AbstractAuthenticationHandler implements
                     + "'", e);
         }
 
+        String md5sum = null;
         if (this.cache != null) {
-            Principal cachedPrincipal = (Principal) this.cache.get(MD5
-                    .md5sum(principal.getQualifiedName() + password));
-
+            // Only calculate if useful
+            md5sum = MD5.md5sum(principal.getQualifiedName() + password);
+            
+            Principal cachedPrincipal = this.cache.get(md5sum);
             if (cachedPrincipal != null) {
                 if (this.logger.isDebugEnabled())
                     this.logger.debug("Found authenticated principal '"
@@ -154,8 +156,7 @@ public abstract class AbstractAuthenticationHandler implements
 
         if (this.cache != null)
             /* add to cache */
-            this.cache.put(MD5.md5sum(principal.getQualifiedName() + password),
-                    principal);
+            this.cache.put(md5sum, principal);
 
         return principal;
     }

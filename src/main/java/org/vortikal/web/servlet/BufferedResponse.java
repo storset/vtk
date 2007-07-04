@@ -293,7 +293,7 @@ public class BufferedResponse implements HttpServletResponse {
         this.statusMessage = statusMessage;
     }
 
-    public Map getHeaders() {
+    public Map<String, Object> getHeaders() {
         return this.headers;
     }
     

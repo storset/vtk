@@ -69,5 +69,5 @@ public interface GroupStore extends Ordered {
      * member. If no such groups exists, the return value should be an
      * empty set (not <code>null</code>).
      */
-    public Set getMemberGroups(Principal principal);
+    public Set<Principal> getMemberGroups(Principal principal);
 }

@@ -411,10 +411,6 @@ public class RepositoryResourceHelperImpl
             propDef.getNameModificationEvaluator();
 
         if (evaluator == null) {
-            if (propDef instanceof OverridablePropertyTypeDefinition) {
-                // Trying to fix overridden properties with default value that changes
-                return null;
-            }
             return property;
         }
         

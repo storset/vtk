@@ -230,10 +230,10 @@
   </bean>
 -->
 
-  <bean class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">
-    <property name="propertyManager" ref="propertyManager"/>
-    <property name="authorizationManager" ref="authorizationManager" />
-  </bean>
+<!--   <bean class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype"> -->
+<!--     <property name="propertyManager" ref="propertyManager"/> -->
+<!--     <property name="authorizationManager" ref="authorizationManager" /> -->
+<!--   </bean> -->
 
 
-</beans>
+</Beans>

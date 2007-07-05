@@ -41,7 +41,8 @@ import org.vortikal.util.cache.ContentCacheLoader;
  * Clients have to implement the <code>handleContentStream()</code>
  * method in order to build a cacheable object.
  */
-public abstract class URLConnectionCacheLoader implements ContentCacheLoader {
+public abstract class URLConnectionCacheLoader <O>
+  implements ContentCacheLoader<String, O>  {
 
     private int readTimeout = -1;
     private int connectTimeout = -1;
@@ -71,7 +72,7 @@ public abstract class URLConnectionCacheLoader implements ContentCacheLoader {
      *
      * @param url the URL to load
      */
-    public final Object load(Object url) throws Exception {
+    public final O load(String url) throws Exception {
         String address = url.toString();
         URLConnection connection = new URL(address).openConnection();
         setConnectionProperties(connection);
@@ -96,6 +97,6 @@ public abstract class URLConnectionCacheLoader implements ContentCacheLoader {
     }
 
 
-    protected abstract Object handleConnection(URLConnection connection) throws Exception;
+    protected abstract O handleConnection(URLConnection connection) throws Exception;
     
 }

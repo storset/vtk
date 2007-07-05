@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -49,9 +49,9 @@ import org.vortikal.util.cache.ContentCache;
  */
 public class XmlSchemaRegistry {
 
-    private ContentCache schemaCache;
+    private ContentCache<String, Document> schemaCache;
     
-    public void setSchemaCache(ContentCache schemaCache) {
+    public void setSchemaCache(ContentCache<String, Document> schemaCache) {
         this.schemaCache = schemaCache;
     }
 
@@ -65,7 +65,7 @@ public class XmlSchemaRegistry {
      * @exception Exception if an error occurs
      */
     public Document getXMLSchema(String docType) throws Exception {
-        return (Document) this.schemaCache.get(docType);
+        return this.schemaCache.get(docType);
     }
 
 }

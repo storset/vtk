@@ -85,7 +85,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
     private ServletContext servletContext;
 
-    private ContentCache httpIncludeCache;
+    private ContentCache<String, String> httpIncludeCache;
     
     private Repository repository;
 
@@ -97,7 +97,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         this.servletContext = servletContext;
     }
 
-    public void setHttpIncludeCache(ContentCache httpIncludeCache) {
+    public void setHttpIncludeCache(ContentCache<String, String> httpIncludeCache) {
         this.httpIncludeCache = httpIncludeCache;
     }
     
@@ -248,7 +248,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
     private void handleHttpInclude(String uri, DecoratorRequest request,
             DecoratorResponse response) throws Exception {
-        String result = (String) this.httpIncludeCache.get(uri);
+        String result = this.httpIncludeCache.get(uri);
         Writer writer = response.getWriter();
         writer.write(result);
         writer.close();

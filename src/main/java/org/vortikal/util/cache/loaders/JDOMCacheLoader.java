@@ -32,14 +32,15 @@ package org.vortikal.util.cache.loaders;
 
 import java.net.URLConnection;
 import org.jdom.input.SAXBuilder;
+import org.jdom.Document;
 
 /**
  * Produces JDOM {@link org.jdom.Document} objects from a
  * URLConnection using a {@link SAXBuilder}.
  */
-public class JDOMCacheLoader extends  URLConnectionCacheLoader {
+public class JDOMCacheLoader extends  URLConnectionCacheLoader<Document> {
 
-    protected Object handleConnection(URLConnection connection) throws Exception {
+    protected Document handleConnection(URLConnection connection) throws Exception {
         return new SAXBuilder().build(connection.getInputStream());
     }
 }

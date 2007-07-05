@@ -35,8 +35,8 @@ package org.vortikal.util.cache;
  * ContentCache}. Implementations are responsible for loading an
  * object from an item identifier.
  */
-public interface ContentCacheLoader {
+public interface ContentCacheLoader<K, V> {
 
-    public Object load(Object identifier) throws Exception;
+    public V load(K identifier) throws Exception;
 
 }

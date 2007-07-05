@@ -30,17 +30,18 @@
  */
 package org.vortikal.util.cache;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -73,15 +74,17 @@ import org.springframework.beans.factory.InitializingBean;
  *   in the cache. A negative number means no limit (the default).
  * </ul>
  *
+ * @param<K> key of the cached objects
+ * @param<V> value of the cached objects
  */
-public final class ContentCache implements InitializingBean, DisposableBean {
+public final class ContentCache<K, V> implements InitializingBean, DisposableBean {
     
     private static Log logger = LogFactory.getLog(ContentCache.class);    
 
     private String name;
-    private ContentCacheLoader loader;
+    private ContentCacheLoader<K, V> loader;
     private int cacheTimeout;
-    private ConcurrentHashMap cache = new ConcurrentHashMap();
+    private ConcurrentHashMap<K, Item> cache = new ConcurrentHashMap<K, Item>();
     private boolean asynchronousRefresh = false;
     private int refreshInterval = -1;
     private RefreshThread refreshThread;
@@ -91,7 +94,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         this.name = name;
     }
 
-    public void setCacheLoader(ContentCacheLoader loader) {
+    public void setCacheLoader(ContentCacheLoader<K, V> loader) {
         this.loader = loader;
     }
     
@@ -141,7 +144,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         }
     }
 
-    public Object get(Object identifier) throws Exception {
+    public V get(K identifier) throws Exception {
         if (identifier == null) {
             throw new IllegalArgumentException("Cache identifiers cannot be NULL");
         }
@@ -156,20 +159,20 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             removeOldestExceedingSizeLimit();
         }
 
-        Item item = (Item) this.cache.get(identifier);
+        Item item = this.cache.get(identifier);
         if (item == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Caching object: '" + identifier + "'");
             }
             cacheItem(identifier);
         }
-        item = (Item) this.cache.get(identifier);
+        item = this.cache.get(identifier);
         if (item.getTimestamp().getTime() + this.cacheTimeout <= System.currentTimeMillis()) {
             if (this.asynchronousRefresh) {
                 triggerSingleRefresh(identifier);
             } else {
                 cacheItem(identifier);
-                item = (Item) this.cache.get(identifier);
+                item = this.cache.get(identifier);
             }
         }
         if (logger.isTraceEnabled()) {
@@ -179,20 +182,20 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     }
     
     
-    private void cacheItem(Object identifier) throws Exception {
+    private void cacheItem(K identifier) throws Exception {
 
-        Item item = (Item) this.cache.get(identifier);
+        Item item = this.cache.get(identifier);
         long now = new Date().getTime();
 
         if (item == null ||
             (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
-            Object object = this.loader.load(identifier);
+            V object = this.loader.load(identifier);
             this.cache.put(identifier, new Item(identifier, object));
         }
     }
 
 
-    private void triggerSingleRefresh(final Object identifier) {
+    private void triggerSingleRefresh(final K identifier) {
         Runnable fetcher = new Runnable() {
            public void run() {
               try {
@@ -213,26 +216,28 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         int n = size - this.maxItems;
         if (n <= 0) return;
 
-        List<Map.Entry> sortedList = new ArrayList<Map.Entry>(this.cache.entrySet());
-        Collections.sort(sortedList, new Comparator<Map.Entry>() {
-                public int compare(Map.Entry entry1, Map.Entry entry2) {
-                    Item i1 = (Item) entry1.getValue();
-                    Item i2 = (Item) entry2.getValue();
+
+        List<Map.Entry<K, Item>> sortedList =
+            new ArrayList<Map.Entry<K, Item>>(this.cache.entrySet());
+
+        Collections.sort(sortedList, new Comparator<Map.Entry<K, Item>>() {
+                public int compare(Map.Entry<K, Item> entry1, Map.Entry<K, Item> entry2) {
+                    Item i1 = entry1.getValue();
+                    Item i2 = entry2.getValue();
 
                     return new Long(i1.getTimestamp().getTime()).compareTo(
                         new Long(i2.getTimestamp().getTime()));
                 }
             });
         
-        List removeList = sortedList.subList(0, n);
+        List<Map.Entry<K, Item>> removeList = sortedList.subList(0, n);
         if (logger.isDebugEnabled()) {
             logger.debug("Cache size limit exceeded, removing " + n
                          + " oldest items (of total " + size + ")");
         }
 
-        for (Iterator i = removeList.iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            Item item = (Item) entry.getValue();
+        for (Map.Entry<K, Item> entry: removeList) {
+            Item item = entry.getValue();
             this.cache.remove(item.getKey());
         }
     }
@@ -245,24 +250,23 @@ public final class ContentCache implements InitializingBean, DisposableBean {
             size = this.cache.size();
         }
 
-        List<Object> refreshList = new ArrayList<Object>();
+        List<K> refreshList = new ArrayList<K>();
 
-        for (Iterator i = this.cache.keySet().iterator(); i.hasNext();) {
-            Object identifier = i.next();
-            Item item = (Item) this.cache.get(identifier);
-
+        for (Map.Entry<K, Item> entry: this.cache.entrySet()) {
+            K identifier = entry.getKey();
+            Item item =  entry.getValue();
             long now = new Date().getTime();
             if (item.getTimestamp().getTime() + this.cacheTimeout < now) {
                 refreshList.add(identifier);
             }
         }
+
         if (logger.isTraceEnabled()) {
             logger.trace("Checking expired items: " + refreshList.size()
                          + " expired items found (of total " + size + ")");
         }
 
-        for (Iterator i = refreshList.iterator(); i.hasNext();) {
-            Object identifier = i.next();
+        for (K identifier: refreshList) {
             try {
                 cacheItem(identifier);
                 if (logger.isDebugEnabled()) {
@@ -280,11 +284,11 @@ public final class ContentCache implements InitializingBean, DisposableBean {
     
 
     private class Item {
-        private Object key;
-        private Object object;
+        private K key;
+        private V object;
         private Date timestamp;
 
-        public Item(Object key, Object object) {
+        public Item(K key, V object) {
             this.key = key;
             this.object = object;
             this.timestamp = new Date();
@@ -292,7 +296,7 @@ public final class ContentCache implements InitializingBean, DisposableBean {
         public Object getKey() {
             return this.key;
         }
-        public Object getObject() {
+        public V getObject() {
             return this.object;
         }
         public Date getTimestamp() {

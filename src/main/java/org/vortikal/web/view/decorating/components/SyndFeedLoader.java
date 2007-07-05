@@ -42,7 +42,7 @@ import java.io.InputStream;
 /**
  * A cache loader that produces {@link SyndFeed} objects.
  */
-public class SyndFeedLoader extends URLConnectionCacheLoader {
+public class SyndFeedLoader extends URLConnectionCacheLoader<SyndFeed> {
 
     private String clientIdentifier = "Anonymous Feed Fetcher";
 
@@ -55,7 +55,7 @@ public class SyndFeedLoader extends URLConnectionCacheLoader {
         connection.setRequestProperty("User-Agent", this.clientIdentifier);
     }
 
-    protected Object handleConnection(URLConnection connection) throws Exception {
+    protected SyndFeed handleConnection(URLConnection connection) throws Exception {
         InputStream stream = connection.getInputStream();
         XmlReader xmlReader = new XmlReader(stream);
         SyndFeedInput input = new SyndFeedInput();

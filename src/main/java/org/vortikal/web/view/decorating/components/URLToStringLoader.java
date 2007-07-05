@@ -43,7 +43,7 @@ import org.vortikal.util.text.TextUtils;
  * A cache loader that reads the content of a network resource into a
  * string.
  */
-public class URLToStringLoader extends URLConnectionCacheLoader {
+public class URLToStringLoader extends URLConnectionCacheLoader<String> {
 
     private int maxLength = -1;
     private String defaultCharset = "iso-8859-1";
@@ -59,7 +59,7 @@ public class URLToStringLoader extends URLConnectionCacheLoader {
         connection.setRequestProperty("Accept", "text/*");
     }
 
-    protected Object handleConnection(URLConnection connection) throws Exception {
+    protected String handleConnection(URLConnection connection) throws Exception {
         if (!(connection instanceof HttpURLConnection)) {
             throw new IllegalArgumentException("Only HTTP addresses are supported");
         }

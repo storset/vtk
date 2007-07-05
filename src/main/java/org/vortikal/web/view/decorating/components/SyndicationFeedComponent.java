@@ -101,7 +101,7 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
 
     private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
-    private ContentCache cache;
+    private ContentCache<String, SyndFeed> cache;
     private View view;
 
     private ServletContext servletContext;
@@ -111,7 +111,7 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
         this.view = view;
     }
 
-    public void setContentCache(ContentCache cache) {
+    public void setContentCache(ContentCache<String, SyndFeed> cache) {
         this.cache = cache;
     }
     
@@ -172,7 +172,7 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
         SyndFeed feed = null;
         
         if (!url.startsWith("/")) {
-            feed = (SyndFeed) this.cache.get(url);
+            feed = this.cache.get(url);
         } else {
             feed = getLocalFeed(url, request);
         }

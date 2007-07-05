@@ -37,6 +37,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
 
 
@@ -66,7 +67,7 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
 
     private static Log logger = LogFactory.getLog(StylesheetInSchemaResolver.class);
     
-    private XmlSchemaRegistry schemaRegistry = null;
+    private XmlSchemaRegistry schemaRegistry;
     private String elementXPath = "/xsd:schema/xsd:annotation/xsd:appinfo/view/xsl";
     
 
@@ -74,6 +75,7 @@ public class StylesheetInSchemaResolver implements StylesheetReferenceResolver {
         this.elementXPath = elementXPath;
     }
 
+    @Required
     public void setSchemaRegistry(XmlSchemaRegistry schemaRegistry) {
         this.schemaRegistry = schemaRegistry;
     }

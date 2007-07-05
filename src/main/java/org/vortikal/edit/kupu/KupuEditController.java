@@ -49,8 +49,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -77,11 +76,10 @@ import org.vortikal.web.service.Service;
  *   <li><code>lockTimeoutSeconds</code> - the number of seconds for
  *   which to request lock timeouts on every request (default is 300)
  *  <li><code>defaultCharacterEncoding - defaults to 'utf-8', which 
- *  encoding to enterpret the supplied resource content in, if unable to guess.
+ *  encoding to interpret the supplied resource content in, if unable to guess.
  * </ul>
  */
-public class KupuEditController extends SimpleFormController
-  implements InitializingBean {
+public class KupuEditController extends SimpleFormController {
 
     private static final int MAX_XML_DECLARATION_SIZE = 500;
 
@@ -93,11 +91,7 @@ public class KupuEditController extends SimpleFormController
     private int lockTimeoutSeconds = 300;
     private String defaultCharacterEncoding = "utf-8";
     
-    /**
-     * Sets the repository.
-     *
-     * @param repository a <code>Repository</code> value
-     */
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -114,29 +108,16 @@ public class KupuEditController extends SimpleFormController
     
 
     /**
-     * Sets the cancel view name (will be returned when user cancelles
+     * Sets the cancel view name (will be returned when user cancels
      * the edit operation).
      *
      * @param cancelView the view name to set.
      */
+    @Required
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }
-    
-
-
-    public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-        if (this.cancelView == null) {
-            throw new BeanInitializationException(
-                "Bean property 'cancelView' must be set");
-        }
-
-    }
-    
+        
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {

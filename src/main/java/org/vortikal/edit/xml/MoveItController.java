@@ -32,12 +32,9 @@ package org.vortikal.edit.xml;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -96,36 +93,30 @@ public class MoveItController implements ActionHandler {
             }
 
             /* actually insert the elements: */
-            Enumeration enumeration = document.getElements().elements();
-            List turnedElements = new ArrayList();
+            List<Element> turnedElements = new ArrayList<Element>();
 
             /* Flip the elements (must be reversed) */
-            while (enumeration.hasMoreElements()) {
-                turnedElements.add(0, enumeration.nextElement());
+            for (Element e: document.getElements()) {
+                turnedElements.add(0, e);
             }
 
-            List l = currentElement.getChildren();
+            List<Element> l = currentElement.getChildren();
 
-            for (Iterator it = turnedElements.iterator(); it.hasNext();) {
-                Element elem = (Element) it.next();
-
+            for (Element elem: turnedElements) {
                 Element clone = (Element) elem.clone();
                 l.add(index, clone);
                 Xml.removeProcessingInstruction(clone, "marked");
-                document.resetElements(new Vector(clone.getChildren()));
+                document.resetElements(new ArrayList<Element>(clone.getChildren()));
             }
 
-            enumeration = document.getElements().elements();
-            while (enumeration.hasMoreElements()) {
-                Element elem = (Element) enumeration.nextElement();
+            for (Element elem: document.getElements()) {
                 elem.detach();
                 l.remove(elem);
             }
 
-            ArrayList newChildren = new ArrayList();
-            for (Iterator i = l.iterator(); i.hasNext();) {
-                Element e = (Element) i.next();
-                newChildren.add(e.clone());
+            ArrayList<Element> newChildren = new ArrayList<Element>();
+            for (Element e: l) {
+                newChildren.add((Element)e.clone());
             }
             currentElement.removeContent();
             currentElement.setContent(newChildren);

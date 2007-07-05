@@ -31,8 +31,10 @@
 package org.vortikal.edit.xml;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -57,20 +59,20 @@ public class DeleteController implements ActionHandler {
         Map model = new HashMap();
 
         if (mode.equals("default")) {
-            Enumeration enumeration = request.getParameterNames();
+            Enumeration<String> enumeration = request.getParameterNames();
 
-            Vector v = new Vector();
+            List<Element> elements = new ArrayList<Element>();
             while (enumeration.hasMoreElements()) {
-                String param = (String) enumeration.nextElement();
+                String param = enumeration.nextElement();
                 if (param.matches("\\d+(\\.\\d+)*")) {
                     Element e = document.findElementByPath(param);
                     e.addContent(new ProcessingInstruction("marked", "true"));
-                    v.add(e);
+                    elements.add(e);
                 }
             }
-            if (v.size() > 0) {
+            if (elements.size() > 0) {
                 document.setDocumentMode("delete");
-                document.setElements(v);
+                document.setElements(elements);
             } else
                 Util.setXsltParameter(
                         model,"ERRORMESSAGE", "MISSING_ELEMENTS_FOR_DELETION");
@@ -82,9 +84,7 @@ public class DeleteController implements ActionHandler {
             if ("true".equals(con)) {
 
                 /* Delete elements */
-                Enumeration enumeration = document.getElements().elements();
-                while (enumeration.hasMoreElements()) {
-                    Element e = (Element) enumeration.nextElement();
+                for (Element e: document.getElements()) {
                     e.detach();
                 }
 

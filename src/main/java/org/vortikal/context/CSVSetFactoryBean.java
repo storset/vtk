@@ -47,8 +47,8 @@ public class CSVSetFactoryBean extends AbstractCSVFactoryBean {
     protected Object createInstance() throws Exception {
         Set csvSet = new HashSet();
         
-        for (int i=0; i<super.elements.length; i++) {
-            csvSet.add(super.elements[i]);
+        for (String element: super.elements) {
+            csvSet.add(element);
         }
         
         return csvSet;

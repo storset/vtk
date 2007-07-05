@@ -2,8 +2,11 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
-   <!-- Context Initializers -->
+  
+  <!-- @Reqired annotations -->
+  <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+  
+  <!-- Context Initializers -->
 
    <bean id="requestContextInitializer"
          class="org.vortikal.web.RequestContextInitializer" lazy-init="true">

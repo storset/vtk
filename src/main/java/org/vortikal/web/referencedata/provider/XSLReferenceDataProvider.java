@@ -45,8 +45,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.output.DOMOutputter;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -109,8 +108,7 @@ import org.w3c.dom.NodeList;
  *  It is a straight forward XML mapping of the <code>breadCrumbProvider</code> 
  *  result.
  */
-public class XSLReferenceDataProvider
-  implements InitializingBean, ReferenceDataProvider {
+public class XSLReferenceDataProvider implements ReferenceDataProvider {
 
     private static final String REQUEST_PARAMETERS = "requestParameters";
     private static final String ADMIN_URL = "ADMIN-URL";
@@ -124,7 +122,6 @@ public class XSLReferenceDataProvider
     
     private String modelName = null;
     private Repository repository; 
-    private Service service; 
     private Service adminService;
     private boolean supplyRequestParameters = true;
     
@@ -132,19 +129,18 @@ public class XSLReferenceDataProvider
     
     private BreadCrumbProvider breadCrumbProvider; 
         
+    @Required
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
     
-    public void setService(Service service) {
-        this.service = service;
-    }
-    
+    @Required
     public void setAdminService(Service adminService) {
         this.adminService = adminService;
     }
@@ -158,33 +154,10 @@ public class XSLReferenceDataProvider
         this.matchAdminServiceAssertions = matchAdminServiceAssertions;
     }
 
+    @Required
     public void setBreadCrumbProvider(BreadCrumbProvider breadCrumbProvider) {
         this.breadCrumbProvider = breadCrumbProvider;
     }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelName' must be set");
-        }
-        if (this.adminService == null) {
-            throw new BeanInitializationException(
-                "Bean property 'adminService' must be set");
-        }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-        if (this.service == null) {
-            throw new BeanInitializationException(
-                "Bean property 'service' must be set");
-        }
-        if (this.breadCrumbProvider == null) {
-            throw new BeanInitializationException(
-                "Bean property 'breadCrumbProvider' must be set");
-        }
-    }
-
 
     public void referenceData(Map model, HttpServletRequest request) {
         
@@ -202,9 +175,9 @@ public class XSLReferenceDataProvider
                 resource = this.repository.retrieve(token, uri, true);
             }
 
-            Map subModel = (Map) model.get(this.modelName);
+            Map<String, Object> subModel = (Map<String, Object>) model.get(this.modelName);
             if (subModel == null) {
-                subModel = new HashMap();
+                subModel = new HashMap<String, Object>();
                 model.put(this.modelName, subModel);
             }
 
@@ -238,10 +211,10 @@ public class XSLReferenceDataProvider
         /* creating a nodeList with all request parameters */
         Document doc = new Document(new Element("root"));
         Element root = doc.getRootElement();
-        List children = root.getChildren();
+        List<Element> children = root.getChildren();
 
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
-            String parameterName = (String) e.nextElement();
+        for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
+            String parameterName = e.nextElement();
         
             Element element = new Element("parameter");
             element.setAttribute("name", parameterName);

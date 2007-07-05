@@ -98,11 +98,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public void removeProperty(Namespace namespace, String name) {
-        Map props = (Map)this.propertyMap.get(namespace);
+        Map<String, Property> props = this.propertyMap.get(namespace);
         
         if (props == null) return;
         
-        Property prop = (Property)props.get(name);
+        Property prop = props.get(name);
         
         if (prop == null) return;
 
@@ -318,30 +318,30 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
     
     private String getPropValue(String name) {
-        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         if (prop == null) return null;
         return prop.getStringValue();
     }
 
     private Date getDatePropValue(String name) {
-        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         if (prop == null) return null;
         return prop.getDateValue();
     }
 
     private long getLongPropValue(String name) {
-        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         if (prop == null) return -1;
         return prop.getLongValue();
     }
 
     private boolean getBooleanPropValue(String name) {
-        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         return prop.getBooleanValue();
     }
 
     private Principal getPrincipalPropValue(String name) {
-        Property prop = (Property)((Map)this.propertyMap.get(Namespace.DEFAULT_NAMESPACE)).get(name);
+        Property prop = this.propertyMap.get(Namespace.DEFAULT_NAMESPACE).get(name);
         return prop.getPrincipalValue();
     }
 

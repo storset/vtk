@@ -30,14 +30,14 @@
  */
 package org.vortikal.edit.xml;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,27 +59,26 @@ public class MoveController implements ActionHandler {
         String mode = document.getDocumentMode();
 
         if (mode.equals("default")) {
-            Enumeration enumeration = request.getParameterNames();
-            Vector v = new Vector();
+            Enumeration<String> enumeration = request.getParameterNames();
+
+            List<String> paths = new ArrayList<String>();
             while (enumeration.hasMoreElements()) {
-                String s = (String) enumeration.nextElement();
+                String s = enumeration.nextElement();
                 if (s.matches("\\d+(\\.\\d+)*")) {
-                    v.add(s);
+                    paths.add(s);
                 }
             }
-            Object[] array = v.toArray();
-            java.util.Arrays.sort(array, new PathComparator());
-            List l = java.util.Arrays.asList(array);
-            v = new Vector();
-            for (Iterator it = l.iterator(); it.hasNext();) {
-                String param = (String) it.next();
+            Collections.sort(paths, new PathComparator());
+
+            List<Element> elements = new ArrayList<Element>();
+            for (String param: paths) {
                 Element e = document.findElementByPath(param);
                 e.addContent(new ProcessingInstruction("marked", "true"));
-                v.add(e);
+                elements.add(e);
             }
-            if (v.size() > 0) {
+            if (elements.size() > 0) {
                 document.setDocumentMode("move");
-                document.setElements(v);
+                document.setElements(elements);
             } else {
                 Util.setXsltParameter(model,"ERRORMESSAGE", "MISSING_ELEMENTS_TO_MOVE");
             }
@@ -88,16 +87,12 @@ public class MoveController implements ActionHandler {
         return null;
     }
 
-    private class PathComparator implements Comparator {
+    private class PathComparator implements Comparator<String> {
 
         public PathComparator() {
         }
 
-        public int compare(Object o1, Object o2) {
-
-            String s1 = (String) o1;
-            String s2 = (String) o2;
-
+        public int compare(String s1, String s2) {
             StringTokenizer st1 = new StringTokenizer(s1, ".");
             StringTokenizer st2 = new StringTokenizer(s2, ".");
 
@@ -113,8 +108,8 @@ public class MoveController implements ActionHandler {
                     }
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException(
-                        "Unable to compare objects "
-                        + o1 + ", " + o2 + ": paths must must consist "
+                        "Unable to compare strings "
+                        + s1 + ", " + s2 + ": paths must must consist "
                         + "of numbers, separated by dots");
                 }
             }

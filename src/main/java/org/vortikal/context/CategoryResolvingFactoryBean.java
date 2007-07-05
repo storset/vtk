@@ -41,6 +41,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
@@ -112,10 +113,12 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements
         return true;
     }
 
+    @Required
     public void setCategory(String category) {
         this.category = category;
     }
 
+    @Required
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
@@ -126,10 +129,6 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements
     
 
     public void afterPropertiesSet() throws Exception {
-        if (this.category == null) 
-            throw new BeanInitializationException("Property 'category' must be specified");
-        if (this.clazz == null)
-            throw new BeanInitializationException("Property 'clazz' must be specified");
         if (! Categorizable.class.isAssignableFrom(this.clazz))
             throw new BeanInitializationException(
                 "Property 'clazz' must be a class implementing Categorizable");

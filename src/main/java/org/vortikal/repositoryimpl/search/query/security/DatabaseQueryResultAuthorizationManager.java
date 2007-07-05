@@ -66,7 +66,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
      * Set of principal names for which all hits are automatically
      * authorized without checking database.
      */
-    private Set noAuthorizationCheckForPrincipals;
+    private Set<String> noAuthorizationCheckForPrincipals;
     
     public void afterPropertiesSet() throws BeanInitializationException {
         
@@ -121,13 +121,9 @@ public final class DatabaseQueryResultAuthorizationManager implements
         
         Set<String> principalNames = new HashSet<String>();
         if (principal != null) {
-            
             principalNames.add(principal.getQualifiedName());
             
-            // Get principal's groups
-            Set memberGroups = this.principalManager.getMemberGroups(principal);
-            for (Iterator i = memberGroups.iterator(); i.hasNext();) {
-                Principal group = (Principal)i.next();
+            for (Principal group: this.principalManager.getMemberGroups(principal)) {
                 principalNames.add(group.getQualifiedName());
             }
         } 
@@ -151,9 +147,9 @@ public final class DatabaseQueryResultAuthorizationManager implements
         if (this.noAuthorizationCheckForPrincipals != null) {
             return (this.noAuthorizationCheckForPrincipals.contains(
                                                     principal.getQualifiedName()));
-        } else {
-            return false;
         }
+
+        return false;
     }
     
     private boolean isAuthorizedByRole(Principal principal) {
@@ -173,7 +169,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
         this.tokenManager = tokenManager;
     }
 
-    public void setNoAuthorizationCheckForPrincipals(Set noAuthorizationCheckForPrincipals) {
+    public void setNoAuthorizationCheckForPrincipals(Set<String> noAuthorizationCheckForPrincipals) {
         this.noAuthorizationCheckForPrincipals = noAuthorizationCheckForPrincipals;
     }
 

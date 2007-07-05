@@ -105,15 +105,15 @@ public class LoggingMethodTimerInterceptor implements MethodInterceptor, Initial
         if (this.logStackTraces) {
 
             msg.append("\nStacktrace:");
-            for (int i = 0; i < stackTrace.length; i++) {
-
+            for (StackTraceElement element: stackTrace) {
                 msg.append("\n       ");
-                msg.append(stackTrace[i].getClassName());
-                msg.append(".").append(stackTrace[i].getMethodName());
-                String file = stackTrace[i].getFileName();
+                msg.append(element.getClassName());
+                msg.append(".").append(element.getMethodName());
+
+                String file = element.getFileName();
                 if (file != null) {
                     msg.append("(").append(file);
-                    int line = stackTrace[i].getLineNumber();
+                    int line = element.getLineNumber();
                     if (line >= 0) {
                         msg.append(":").append(line);
                     }

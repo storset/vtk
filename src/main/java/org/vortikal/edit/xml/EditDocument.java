@@ -81,7 +81,7 @@ public class EditDocument extends Document {
     private Element element = null;
     private Element clone = null;
     private String newElementName = null;
-    private Vector elements = null;
+    private List<Element> elements = null;
 
     EditDocument(Element root, DocType docType, Resource resource, Repository repository) {
         super(root, docType);
@@ -240,40 +240,31 @@ public class EditDocument extends Document {
 
 
 
-    public Vector getElements() {
+    public List<Element> getElements() {
         return this.elements;
     }
 
 
 
-    public void setElements(Vector e) {
+    public void setElements(List<Element> e) {
         this.elements = e;
     }
 
 
 
-    public void resetElements(Vector vector) {
+    public void resetElements(List<Element> elements) {
         // FIXME: lag denne! brukes under og fra edithandler!
-        Enumeration enumeration = vector.elements();
-        HashMap removalSet = new HashMap();
+        HashMap<Element, ProcessingInstruction> removalSet = new HashMap<Element, ProcessingInstruction>();
 
-        while (enumeration.hasMoreElements()) {
-            Object ob = enumeration.nextElement();
-
-            Element elem = (Element) ob;//enum.nextElement();
-            logger.debug("Resetting element " + elem.getName());
-
-            for (Iterator i = elem.getContent().iterator(); i.hasNext();) {
-                Object o = i.next();
+        for (Element elem: elements) {
+            for (Object o: elem.getContent()) {
                 if (o instanceof ProcessingInstruction) {
-                    removalSet.put(elem, o);
+                    removalSet.put(elem, (ProcessingInstruction)o);
                 }
             }
         }
-        for (Iterator i = removalSet.keySet().iterator(); i.hasNext();) {
-            Element e = (Element) i.next();
-            ProcessingInstruction pi = (ProcessingInstruction) removalSet
-                    .get(e);
+        for (Element e: removalSet.keySet()) {
+            ProcessingInstruction pi = removalSet.get(e);
             e.removeContent(pi);
         }
     }
@@ -288,16 +279,15 @@ public class EditDocument extends Document {
 
 
     protected void removeProcessingInstructions() {
-        Stack s = new Stack();
-        for (Iterator i = getContent().iterator(); i.hasNext();) {
+        Stack<ProcessingInstruction> stack = new Stack<ProcessingInstruction>();
+        for (Iterator<?> i = getContent().iterator(); i.hasNext();) {
             Object o = i.next();
             if (o instanceof ProcessingInstruction) {
-                s.push(o);
+                stack.push((ProcessingInstruction)o);
             }
         }
-        while (s.size() > 0) {
-            ProcessingInstruction i = (ProcessingInstruction) s.pop();
-            removeContent(i);
+        for (ProcessingInstruction pi: stack) {
+            removeContent(pi);
         }
     }
 
@@ -310,16 +300,16 @@ public class EditDocument extends Document {
      * @param parameters
      * @param documentDefinition
      */
-    public void addContentsToElement(Element element, Map parameters,
+    public void addContentsToElement(Element element, Map<String, String> parameters,
             SchemaDocumentDefinition documentDefinition) {
 
         addAttributesToElement(element, parameters);
 
-        Map modifiedElements = new HashMap();
+        Map<Element, String> modifiedElements = new HashMap<Element, String>();
 
 
         String path = Xml.createNumericPath(element);
-        String input = (String) parameters.get(path);
+        String input = parameters.get(path);
         if (input != null) {
             modifiedElements.put(element, input);
         }
@@ -330,26 +320,22 @@ public class EditDocument extends Document {
             if (o instanceof Element) {
                 Element e = (Element) o;
                 path = Xml.createNumericPath(e);
-                input = (String) parameters.get(path);
+                input = parameters.get(path);
                 if (input != null) {
                     modifiedElements.put(e, input);
                 }
             }
         }
 
-        for (Iterator iterator = modifiedElements.keySet().iterator(); iterator.hasNext();) {
-            Element e = (Element) iterator.next();
-
-            documentDefinition.setElementContents(
-                e, (String) modifiedElements.get(e));
+        for (Element e: modifiedElements.keySet()) {
+            documentDefinition.setElementContents(e, modifiedElements.get(e));
         }
     }
 
 
 
-    private void addAttributesToElement(Element element, Map parameters) {
-        for (Iterator iter = parameters.keySet().iterator(); iter.hasNext();) {
-            String key = (String) iter.next();
+    private void addAttributesToElement(Element element, Map<String, String> parameters) {
+        for (String key: parameters.keySet()) {
             /*
              * If the input parameter is on the path of the current element and
              * matches the attribute syntax.
@@ -364,7 +350,7 @@ public class EditDocument extends Document {
                     throw new EditException(
                         "The document does not contain an element with path "
                         + elementPath, this.resource.getURI());
-                e.setAttribute(attributeName, (String) parameters.get(key));
+                e.setAttribute(attributeName, parameters.get(key));
             }
         }
     }
@@ -433,40 +419,25 @@ public class EditDocument extends Document {
     }
 
 
-    /**
-     * @return Returns the clone.
-     */
     public Element getClone() {
         return this.clone;
     }
 
 
-    /**
-     * @param clone The clone to set.
-     */
     public void setClone(Element clone) {
         this.clone = clone;
     }
 
 
-    /**
-     * @return Returns the newElementName.
-     */
     public String getNewElementName() {
         return this.newElementName;
     }
 
 
-    /**
-     * @param newElementName The newElementName to set.
-     */
     public void setNewElementName(String newElementName) {
         this.newElementName = newElementName;
     }
     
-    /**
-     * @return Returns the resource.
-     */
     public Resource getResource() {
         return this.resource;
     }

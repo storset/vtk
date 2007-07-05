@@ -56,7 +56,7 @@ public class Xml {
     public static List<String> getNodesByXPath(Document doc, XPath expression)
             throws JDOMException {
         // get nodes
-        List<Text> nodes = (List<Text>) expression.selectNodes(doc);
+        List<Text> nodes = expression.selectNodes(doc);
         
         // Convert text nodes to strings and add to ArrayList
         List<String> textNodes = new ArrayList<String>();

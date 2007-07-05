@@ -34,13 +34,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -56,7 +59,6 @@ import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
-import java.util.HashMap;
 
 /**
  * Controller that handles editing of plaintext resource content.
@@ -106,6 +108,7 @@ public class PlaintextEditController extends SimpleFormController
     private Service[] tooltipServices;
     
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -114,6 +117,7 @@ public class PlaintextEditController extends SimpleFormController
         this.lockTimeoutSeconds = lockTimeoutSeconds;
     }
 
+    @Required
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }
@@ -132,15 +136,6 @@ public class PlaintextEditController extends SimpleFormController
     
     
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-        if (this.cancelView == null) {
-            throw new BeanInitializationException(
-                "Bean property 'cancelView' must be set");
-        }
-
         this.textResourceContentHelper = new TextResourceContentHelper(
             this.repository, this.defaultCharacterEncoding);
     }
@@ -164,7 +159,7 @@ public class PlaintextEditController extends SimpleFormController
         String url = service.constructLink(resource, principal);
         String content = getTextualContent(resource, token);
         
-        List tooltips = resolveTooltips(resource, principal);
+        List<Map<String, String>> tooltips = resolveTooltips(resource, principal);
         return new PlaintextEditCommand(content, url, tooltips);
     }
 
@@ -283,8 +278,8 @@ public class PlaintextEditController extends SimpleFormController
     }
     
 
-    private List resolveTooltips(Resource resource, Principal principal) {
-        List<Map> tooltips = new ArrayList<Map>();
+    private List<Map<String, String>> resolveTooltips(Resource resource, Principal principal) {
+        List<Map<String, String>> tooltips = new ArrayList<Map<String, String>>();
         if (this.tooltipServices != null) {
             for (Service service: this.tooltipServices) {
                 String url = null;

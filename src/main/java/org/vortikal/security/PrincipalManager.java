@@ -77,6 +77,6 @@ public interface PrincipalManager {
      */
     public boolean isMember(Principal principal, Principal group);
 
-    public Set getMemberGroups(Principal principal);
+    public Set<Principal> getMemberGroups(Principal principal);
 
 }

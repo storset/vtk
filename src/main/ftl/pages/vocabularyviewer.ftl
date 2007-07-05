@@ -134,28 +134,29 @@ function getCheckedAsStringValue(node, result) {
   </body>
 </html>
 
- <#macro listNodes nodes>
- <ul>
- <#list nodes as node>
+  <#macro listNodes nodes>
+    <ul>
+      <#list nodes as node>
         <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
- <li>${node.entry?string} - ${displayName}
-        <#if node.children?exists><@listNodes nodes=node.children /></#if>
-</li>
-</#list>
- </ul>
- </#macro>
-	<#macro createTree nodes parent name selected parentchecked>
-	  <#list nodes as node>
-	    <#assign checked=parentchecked />
-	    <#if !checked>
-	      <#assign checked=selected?seq_contains(node.entry) />
-        </#if>
-        <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
-        var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
-        <#if node.children?exists>
-	      <@createTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected parentchecked=checked />     	         
-        </#if>	
+        <li>${node.entry?string} - ${displayName}
+          <#if node.children?exists><@listNodes nodes=node.children /></#if>
+        </li>
       </#list>
-	</#macro>
+    </ul>
+  </#macro>
+  
+  <#macro createTree nodes parent name selected parentchecked>
+    <#list nodes as node>
+      <#assign checked=parentchecked />
+      <#if !checked>
+	<#assign checked=selected?seq_contains(node.entry) />
+      </#if>
+      <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+      var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
+      <#if node.children?exists>
+	<@createTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected parentchecked=checked />     	         
+      </#if>	
+    </#list>
+  </#macro>
 
  

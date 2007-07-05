@@ -43,6 +43,6 @@ public interface Categorizable {
      * 
      * @return the category of this object
      */
-    public Set getCategories();
+    public Set<?> getCategories();
 
 }

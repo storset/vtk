@@ -54,8 +54,6 @@
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
 
-
-
   <bean id="repository.cache" class="org.vortikal.repositoryimpl.dao.Cache">
     <property name="maxItems" value="${resourceCacheSize}" />
     <property name="wrappedAccessor" ref="repository.database" />
@@ -231,5 +229,11 @@
     <property name="dataAccessor" ref="repository.database" />
   </bean>
 -->
+
+  <bean class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">
+    <property name="propertyManager" ref="propertyManager"/>
+    <property name="authorizationManager" ref="authorizationManager" />
+  </bean>
+
 
 </beans>

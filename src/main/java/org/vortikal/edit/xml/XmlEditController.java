@@ -46,7 +46,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.JDOMException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
@@ -81,7 +81,7 @@ import org.vortikal.xml.TransformerManager;
  *   <li>+++++
  * </ul>
  */
-public class XmlEditController implements Controller, InitializingBean {
+public class XmlEditController implements Controller {
 
     private static Log logger = LogFactory.getLog(XmlEditController.class);
 
@@ -107,29 +107,19 @@ public class XmlEditController implements Controller, InitializingBean {
     private static String DELETE_SUB_ELEMENT_AT_ACTION = "deleteSubElementAt";
     private static String NEW_SUB_ELEMENT_AT_ACTION = "newSubElementAt";
     
-    private ActionHandler editActionHandler = new EditController();
-    private ActionHandler editElementDoneActionHandler = new EditDoneController();
-    private ActionHandler newElementAtActionHandler = new NewElementAtController();
-    private ActionHandler moveElementActionHandler = new MoveController();
-    private ActionHandler moveElementDoneActionHandler = new MoveItController();
-    private ActionHandler deleteElementActionHandler = new DeleteController();
-    private ActionHandler newElementActionHandler = new NewElementController();
-    private ActionHandler newSubElementAtActionHandler = new NewSubElementAtController();
-    private ActionHandler deleteSubElementAtActionHandler = new DeleteSubElementAtController();
     
     private Map<String, ActionHandler> actionMapping = new HashMap<String, ActionHandler>();
 
-    public void afterPropertiesSet() throws Exception {
-        this.actionMapping.put(EDIT_ACTION, editActionHandler);
-        this.actionMapping.put(EDIT_DONE_ACTION, editElementDoneActionHandler);
-        this.actionMapping.put(NEW_AT_ACTION, newElementAtActionHandler);
-        this.actionMapping.put(MOVE_ACTION, moveElementActionHandler);
-        this.actionMapping.put(MOVE_DONE_ACTION, moveElementDoneActionHandler);
-        this.actionMapping.put(DELETE_ELEMENT_ACTION, deleteElementActionHandler);
-        this.actionMapping.put(NEW_ACTION, newElementActionHandler);
-        this.actionMapping.put(NEW_SUB_ELEMENT_AT_ACTION, newSubElementAtActionHandler);
-        this.actionMapping.put(DELETE_SUB_ELEMENT_AT_ACTION, deleteSubElementAtActionHandler);
-
+    public XmlEditController() {
+        this.actionMapping.put(EDIT_ACTION, new EditController());
+        this.actionMapping.put(EDIT_DONE_ACTION, new EditDoneController());
+        this.actionMapping.put(NEW_AT_ACTION, new NewElementAtController());
+        this.actionMapping.put(MOVE_ACTION, new MoveController());
+        this.actionMapping.put(MOVE_DONE_ACTION, new MoveItController());
+        this.actionMapping.put(DELETE_ELEMENT_ACTION, new DeleteController());
+        this.actionMapping.put(NEW_ACTION, new NewElementController());
+        this.actionMapping.put(NEW_SUB_ELEMENT_AT_ACTION, new NewSubElementAtController());
+        this.actionMapping.put(DELETE_SUB_ELEMENT_AT_ACTION, new DeleteSubElementAtController());
     }
     
     public ModelAndView handleRequest(HttpServletRequest request, 
@@ -405,10 +395,12 @@ public class XmlEditController implements Controller, InitializingBean {
         this.browseService = browseService;
     }
     
+    @Required
     public void setTransformerManager(TransformerManager transformerManager) {
         this.transformerManager = transformerManager;
     }
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -417,14 +409,17 @@ public class XmlEditController implements Controller, InitializingBean {
         this.lockTimeoutSeconds = lockTimeoutSeconds;
     }
 
+    @Required
     public void setViewName(final String viewName){
         this.viewName = viewName;
     }
 
+    @Required
     public void setSchemaPropDef(PropertyTypeDefinition schemaPropDef) {
         this.schemaPropDef = schemaPropDef;
     }
 
+    @Required
     public void setFinishViewName(String finishViewName) {
         this.finishViewName = finishViewName;
     }

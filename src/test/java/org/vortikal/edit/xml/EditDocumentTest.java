@@ -104,7 +104,7 @@ public class EditDocumentTest extends MockObjectTestCase {
 }
    
     public void testAddContentsToElement() {
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("1.1:type", "1");
         map.put("1.1", "Lala");
 

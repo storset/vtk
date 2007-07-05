@@ -45,8 +45,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSource;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -76,7 +75,7 @@ import org.w3c.dom.Text;
  * dependencies among other things).
  *
  */
-public class XmlSearcher implements InitializingBean {
+public class XmlSearcher {
 
     private static final String URL_IDENTIFIER = "url";
     
@@ -96,6 +95,7 @@ public class XmlSearcher implements InitializingBean {
 
     private MessageSource messageSource;
     
+    @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
@@ -104,44 +104,13 @@ public class XmlSearcher implements InitializingBean {
         this.maxResults = maxResults;
     }
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
     public void setDefaultLocale(String defaultLocale) {
         this.defaultLocale = defaultLocale;
-    }
-    
-
-    public void afterPropertiesSet() {
-        if (this.searcher == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'searcher' not set");
-        }
-        if (this.parser == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'queryParser' not set");
-        }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not set");
-        }
-        if (this.valueFormatter == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'valueFormatter' not set");
-        }
-        if (this.linkToService == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'linkToService' not set");
-        }
-        if (this.defaultLocale == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'defaultLocale' not set");
-        }
-        if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'resourceTypeTree' not set");
-        }
     }
     
 
@@ -576,6 +545,7 @@ public class XmlSearcher implements InitializingBean {
 
     }
 
+    @Required
     public void setLinkToService(Service linkToService) {
         this.linkToService = linkToService;
     }
@@ -585,14 +555,17 @@ public class XmlSearcher implements InitializingBean {
         this.collectionResourceTypeDef = collectionResourceTypeDef;
     }
 
+    @Required
     public void setValueFormatter(ValueFormatter valueFormatter) {
         this.valueFormatter = valueFormatter;
     }
 
+    @Required
     public void setParser(Parser parser) {
         this.parser = parser;
     }
 
+    @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }

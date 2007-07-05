@@ -8,11 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 
 public final class Util {
 
-    public static Map getRequestParameterMap(HttpServletRequest request) {
-        Map parameterMap = new HashMap();
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
-            String key = (String) e.nextElement();
-    
+    public static Map<String, String> getRequestParameterMap(HttpServletRequest request) {
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
+            String key = e.nextElement();
             parameterMap.put(key, request.getParameter(key));
         }
         return parameterMap;

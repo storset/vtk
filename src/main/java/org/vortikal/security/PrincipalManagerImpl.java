@@ -82,10 +82,10 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             
             // Try to look up principal stores from the context
 
-            Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+            Map<?, PrincipalStore> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.applicationContext, PrincipalStore.class, true, false);
     
-            List stores = new ArrayList(matchingBeans.values());
+            List<PrincipalStore> stores = new ArrayList<PrincipalStore>(matchingBeans.values());
             Collections.sort(stores, new OrderComparator());
 
             if (stores.size() > 0) {
@@ -106,10 +106,10 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
             
             // Try to look up principal stores from the context
 
-            Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+            Map<?, GroupStore> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.applicationContext, GroupStore.class, true, false);
     
-            List stores = new ArrayList(matchingBeans.values());
+            List<GroupStore> stores = new ArrayList<GroupStore>(matchingBeans.values());
             Collections.sort(stores, new OrderComparator());
 
             if (stores.size() > 0) {
@@ -144,7 +144,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     }
 
 
-    public Set getMemberGroups(Principal principal) {
+    public Set<Principal> getMemberGroups(Principal principal) {
         return this.groupStore.getMemberGroups(principal);
     }
 }

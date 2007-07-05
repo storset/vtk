@@ -190,7 +190,6 @@
     <description>
       This reference data provider adds some metadata to the model for use when transforming XML documents.
     </description>
-    <property name="service" ref="viewService" />
     <property name="adminService" ref="manageService" />
     <property name="modelName" value="xsltParameters" />
     <property name="breadCrumbProvider" ref="viewBreadCrumbProvider" />

@@ -90,23 +90,34 @@ public class TemplateDecorator implements Decorator {
             return;
         }
 
+        if (isFrameset(html)) {
+            // Framesets are not decorated:
+            replaceContentFromPage(content, html, false);
+            return;
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("Rendering request for " + request.getRequestURI()
                          + " using template '" + template + "'");
         }
 
-        HtmlElement rootElement = html.getRootElement();
-        if (rootElement != null && "frameset".equals(rootElement.getName())) {
-            // Framesets are not decorated:
-            replaceContentFromPage(content, html, descriptor.tidy());
-            return;
-        } 
         content.setContent(template.render(html, request, locale));
         if (descriptor.tidy()) {
             tidyContent(content);
         }
     }
 
+    protected boolean isFrameset(HtmlPage page) {
+        HtmlElement rootElement = page.getRootElement();
+        if (rootElement != null) {
+            HtmlElement[] children = rootElement.getChildElements("frameset");
+            if (children != null && children.length > 0) {
+                return true;
+            }
+        } 
+        return false;
+    }
+    
 
     protected void replaceContentFromPage(Content content, HtmlPage page,
                                           boolean tidy) throws Exception {

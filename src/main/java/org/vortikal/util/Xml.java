@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,10 +94,18 @@ public class Xml {
     }
     
     public static String createNumericPath(Element element) throws IllegalArgumentException {
-        Element parent = element.getParentElement();
-        if (parent == null) { return "1"; }
+        if (element.isRootElement()) { return "1"; }
 
-        int index = parent.indexOf(element) + 1;
+        Element parent = (Element) element.getParent();
+        int index = 1;
+
+        for (Iterator i = parent.getChildren().iterator(); i.hasNext();) {
+            Element child = (Element) i.next();
+            if (child == element) {
+                break;
+            }
+            index++;
+        }
         return createNumericPath(parent) + "." + index;
     }
 

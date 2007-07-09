@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,6 @@ public class EditDoneController implements ActionHandler {
 
                 /* Add element values */
             document.setDocumentMode("default");
-
             document.addContentsToElement(document.getEditingElement(),
                     Util.getRequestParameterMap(request),
                     documentDefinition);

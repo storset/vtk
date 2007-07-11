@@ -99,9 +99,8 @@ public class Xml {
         }
         Element parent = (Element) element.getParent();
         int index = 1;
-
-        for (Iterator i = parent.getChildren().iterator(); i.hasNext();) {
-            Element child = (Element) i.next();
+        List<Element> children = parent.getChildren();
+        for (Element child: children) {
             if (child == element) {
                 break;
             }

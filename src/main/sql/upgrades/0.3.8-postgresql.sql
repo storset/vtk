@@ -40,7 +40,7 @@ delete from extra_prop_entry
 -- Insert 'title' (= 'usertitle') for those resources:
 
 insert into extra_prop_entry 
-select nextval('extra_prop_entry_seq_pk',
+select nextval('extra_prop_entry_seq_pk'),
        resource_id,
        0,
        null,

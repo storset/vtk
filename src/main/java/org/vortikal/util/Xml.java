@@ -94,8 +94,9 @@ public class Xml {
     }
     
     public static String createNumericPath(Element element) throws IllegalArgumentException {
-        if (element.isRootElement()) { return "1"; }
-
+        if (element.isRootElement() || element.getParent() == null) {
+            return "1";
+        }
         Element parent = (Element) element.getParent();
         int index = 1;
 

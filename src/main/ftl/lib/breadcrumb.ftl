@@ -20,7 +20,7 @@
 
 <#if crumbs?size &gt; 0>
 <div class="breadcrumb">
-<@vrtx.msg code="breadcrumb.locationTitle" default="You are here"/>:
+  <span class="breadcrumb-prefix"><@vrtx.msg code="breadcrumb.locationTitle" default="You are here"/>:</span>
   <#list crumbs as elem>
     <#assign name = elem.title/>
     <#if elem.URL?exists>

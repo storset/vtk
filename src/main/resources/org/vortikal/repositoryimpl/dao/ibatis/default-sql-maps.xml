@@ -687,9 +687,20 @@
 
   <!-- Comments section -->
 
+  <resultMap id="Comment" class="org.vortikal.repository.Comment">
+    <result property="ID" column="ID" />
+    <result property="URI" column="URI"/>
+    <result property="time" column="time"/>
+    <result property="author" column="author"/>
+    <result property="title" column="title"/>
+    <result property="text" column="text"/>
+    <result property="approved" column="approved"
+            typeHandler="org.vortikal.repositoryimpl.dao.ibatis.BooleanCharTypeHandlerCallback"/>
+  </resultMap>
+
   <select id="listCommentsByResource"
           parameterClass="org.vortikal.repository.Resource"
-          resultClass="org.vortikal.repository.Comment">
+          resultMap="Comment">
     select c.id as ID, #URI# as URI, c.time, c.author, c.title, c.text, c.approved
     from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id 
     where c.resource_id in
@@ -698,11 +709,12 @@
   </select>
 
   <select id="loadCommentById" parameterClass="java.lang.Integer"
-          resultClass="org.vortikal.repository.Comment">
+          resultMap="Comment">
     select c.id as ID, #URI# as URI, c.time, c.author, c.title, c.text, c.approved
     from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id
     where c.id = #value#
   </select>
+  
 
   <delete id="deleteComment" parameterClass="org.vortikal.repository.Comment">
     delete from vortex_comment where id = #ID#

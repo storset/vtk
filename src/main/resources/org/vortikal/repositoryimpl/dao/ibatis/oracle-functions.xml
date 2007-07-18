@@ -31,6 +31,9 @@
     #destUri# || substr(uri, length(#uri#) + 1)
   </sql>
 
+  <sql id="nextVortexCommentId">
+    vortex_comment_seq_pk.nextval
+  </sql>
 
   <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
     update vortex_resource r1
@@ -42,7 +45,5 @@
            and r1.acl_inherited_from is not null
            and r1.acl_inherited_from != #inheritedFrom#
   </update>
-
-
 
 </sqlMap>

@@ -131,6 +131,31 @@
     <property name="handler" ref="logoutHandler" />
   </bean>
 
+  <!-- Service for requesting authentication using whatever challenge
+       is defined for the parent service. This service will not match
+       requests that are already authenticated.
+
+       XXX: check if authenticateService duplicates this.
+  -->
+  <bean id="loginService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="login" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="requireAuthenticationController" />
+  </bean>
+
+  <bean id="requireAuthenticationController" class="org.vortikal.web.controller.RequireAuthenticationController">
+    <property name="redirectService" ref="viewService" />
+  </bean>
+
+
   <!-- Service for explicitly requesting authentication. This service 
        will not match requests that are already authenticated.
        
@@ -192,7 +217,6 @@
     </property>
   </bean>
   
-
   <bean id="isAuthenticatedAssertion" class="org.vortikal.web.service.IsAuthenticatedAssertion">
     <property name="requiresAuthentication" value="true" />
   </bean>

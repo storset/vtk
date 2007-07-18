@@ -271,7 +271,7 @@ create unique index changelog_entry_index1
 
 drop sequence vortex_comment_seq_pk;
 
-create sequence vortex_comment_seq_pk increment 1 start 1000;
+create sequence vortex_comment_seq_pk increment by 1 start with 1000;
 
 drop table vortex_comment;
 
@@ -279,12 +279,12 @@ create table vortex_comment
 (
     id number not null,
     resource_id number not null,
-    author varchar(64) not null,
+    author varchar2 (64) not null,
     time timestamp not null,
-    title varchar2(2048) not null,
-    text varchar2(4096) not null,
-    approved char(1) default 'Y' not null,
-    constraint vortex_comment_id_constraint unique (id)
+    title varchar2 (2048) not null,
+    -- XXX:
+    text varchar (2048) not null,
+    approved char(1) default 'Y' not null
 );
 
 alter table vortex_comment

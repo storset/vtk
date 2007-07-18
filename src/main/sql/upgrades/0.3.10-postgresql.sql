@@ -11,8 +11,7 @@ create table vortex_comment
     time timestamp not null,
     title varchar(2048) not null,
     text varchar(4096) not null,
-    approved char(1) default 'Y' not null,
-    constraint vortex_comment_id_constraint unique (id)
+    approved char(1) default 'Y' not null
 );
 
 alter table vortex_comment

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -215,6 +215,35 @@ public interface AuthorizationManager {
      */
     public void authorizeMove(String srcUri, String destUri,
             Principal principal, boolean deleteDestination) 
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException;
+
+
+
+    /**
+     * <ul>
+     *   <li>Privilege ADD_COMMENT, WRITE or ALL in ACL
+     *   <li>Role ROOT
+     *   <li>+ resource not locked by another principal
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeAddComment(String uri, Principal principal) 
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException;
+
+
+    /**
+     * <ul>
+     *   <li>Privilege WRITE or ALL in ACL
+     *   <li>Role ROOT
+     *   <li>+ resource not locked by another principal
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeEditComment(String uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
 

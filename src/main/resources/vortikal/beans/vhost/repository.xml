@@ -11,6 +11,7 @@
     <property name="roleManager" ref="roleManager" />
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="dao" ref="${repositoryBackend}" />
+    <property name="commentDAO" ref="repository.commentDAO" />
     <property name="lockManager" ref="lockManager" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
   </bean>
@@ -59,6 +60,11 @@
     <property name="wrappedAccessor" ref="repository.database" />
   </bean>
 
+
+  <bean id="repository.commentDAO" class="org.vortikal.repositoryimpl.dao.SqlMapCommentDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
 
   <!--
   <bean id="repository.cache" class="org.vortikal.repositoryimpl.dao.JBossCacheDataAccessor">

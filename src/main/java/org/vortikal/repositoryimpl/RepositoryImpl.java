@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2005, 2006, 2007 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,14 +33,18 @@ package org.vortikal.repositoryimpl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
+import org.vortikal.repository.Comment;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.PropertySet;
@@ -55,6 +59,7 @@ import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repositoryimpl.dao.CommentDAO;
 import org.vortikal.repositoryimpl.dao.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -83,12 +88,13 @@ import org.vortikal.util.repository.URIUtil;
  * content type uses name, and only on creation. 
  * 
  */
-public class RepositoryImpl implements Repository, ApplicationContextAware,
-        InitializingBean {
+public class RepositoryImpl
+  implements Repository, ApplicationContextAware, InitializingBean {
 
     private ApplicationContext context;
 
     private DataAccessor dao;
+    private CommentDAO commentDAO;
     private RoleManager roleManager;
     private TokenManager tokenManager;
     private LockManager lockManager;
@@ -649,6 +655,133 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
         }
     }
 
+    
+    public List<Comment> getComments(String token, Resource resource) {
+        Principal principal = this.tokenManager.getPrincipal(token);
+
+        if (resource == null) {
+            throw new IllegalOperationException("Resource argument cannot be NULL");
+        }
+
+        if (!(resource instanceof ResourceImpl)) {
+            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+        }
+
+        try {
+            ResourceImpl original = this.dao.load(resource.getURI());
+            if (original == null) {
+                throw new ResourceNotFoundException(resource.getURI());
+            }
+
+            this.authorizationManager.authorizeRead(resource.getURI(), principal);
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource);
+            return Collections.unmodifiableList(comments);
+        } catch (IOException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
+        }
+    }
+    
+
+    public Comment addComment(String token, Resource resource, String title, String text) {
+        Principal principal = this.tokenManager.getPrincipal(token);
+
+        if (resource == null) {
+            throw new IllegalOperationException("Resource argument cannot be NULL");
+        }
+
+        if (!(resource instanceof ResourceImpl)) {
+            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+        }
+
+        try {
+            ResourceImpl original = this.dao.load(resource.getURI());
+            if (original == null) {
+                throw new ResourceNotFoundException(resource.getURI());
+            }
+
+            this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
+            Comment comment = new Comment();
+            comment.setURI(original.getURI());
+            comment.setTime(new java.util.Date());
+            comment.setAuthor(principal.getQualifiedName());
+            comment.setTitle(title);
+            comment.setText(text);
+            comment.setApproved(true);
+
+            comment = this.commentDAO.create(original, comment);
+            //comment = this.commentDAO.update(comment);
+            return comment;
+        } catch (IOException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
+        }
+    }
+    
+
+    public void deleteComment(String token, Resource resource, Comment comment) {
+        Principal principal = this.tokenManager.getPrincipal(token);
+
+        if (resource == null) {
+            throw new IllegalOperationException("Resource argument cannot be NULL");
+        }
+
+        if (!(resource instanceof ResourceImpl)) {
+            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+        }
+
+        try {
+            ResourceImpl original = this.dao.load(resource.getURI());
+            if (original == null) {
+                throw new ResourceNotFoundException(resource.getURI());
+            }
+
+            this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
+            this.commentDAO.delete(comment);
+        } catch (IOException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
+        }
+    }
+    
+
+
+    public Comment updateComment(String token, Resource resource, Comment comment) {
+        Principal principal = this.tokenManager.getPrincipal(token);
+
+        if (resource == null) {
+            throw new IllegalOperationException("Resource argument cannot be NULL");
+        }
+
+        if (!(resource instanceof ResourceImpl)) {
+            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+        }
+
+        try {
+            ResourceImpl original = this.dao.load(resource.getURI());
+            if (original == null) {
+                throw new ResourceNotFoundException(resource.getURI());
+            }
+
+            Comment old = null;
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource);
+            for (Comment c: comments) {
+                if (c.getID() == comment.getID() && c.getURI().equals(comment.getURI())) {
+                    old = c;
+                    break;
+                }
+            }
+            if (old == null) {
+                throw new IllegalArgumentException("Trying to update a non-existing comment");
+            }
+
+            this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
+            comment = this.commentDAO.update(comment);
+            return comment;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
+        }
+    }
+    
+
     private Resource create(String token, String uri, boolean collection)
         throws AuthorizationException, AuthenticationException, 
         IllegalOperationException, ResourceLockedException, 
@@ -748,6 +881,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware,
 
     public void setDao(DataAccessor dao) {
         this.dao = dao;
+    }
+
+    public void setCommentDAO(CommentDAO commentDAO) {
+        this.commentDAO = commentDAO;
     }
 
     public void setRoleManager(RoleManager roleManager) {

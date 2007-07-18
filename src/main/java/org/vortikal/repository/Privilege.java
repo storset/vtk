@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,11 +44,20 @@ public class Privilege {
     public static final RepositoryAction READ = RepositoryAction.READ;
     public static final RepositoryAction BIND = RepositoryAction.CREATE;
     public static final RepositoryAction WRITE = RepositoryAction.WRITE;
+    public static final RepositoryAction ADD_COMMENT = RepositoryAction.ADD_COMMENT;
     public static final RepositoryAction ALL = RepositoryAction.ALL;
     
 
     public static final Set<RepositoryAction> PRIVILEGES =
-        new HashSet<RepositoryAction>(Arrays.asList(new RepositoryAction[] {READ_PROCESSED,READ,BIND,WRITE,ALL}));
+        Collections.unmodifiableSet(
+            new HashSet<RepositoryAction>(
+                Arrays.asList(new RepositoryAction[] {
+                        READ_PROCESSED,
+                        READ,
+                        BIND,
+                        WRITE,
+                        ALL,
+                        ADD_COMMENT})));
     
 
     public static final RepositoryAction getActionByName(String actionName) {
@@ -65,6 +75,9 @@ public class Privilege {
         }
         if ("bind".equals(actionName)) {
             return BIND;
+        }
+        if ("add-comment".equals(actionName)) {
+            return ADD_COMMENT;
         }
         throw new IllegalArgumentException("Invalid ACL action: '" + actionName + "'");
     }
@@ -86,6 +99,9 @@ public class Privilege {
         }
         if (BIND.equals(action)) {
             return "bind";
+        }
+        if (ADD_COMMENT.equals(action)) {
+            return "add-comment";
         }
         throw new IllegalArgumentException("Invalid ACL privilege: '" + action + "'");
     }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -99,25 +99,38 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             throw new AuthorizationException("Uneditable");
         } else if (RepositoryAction.READ_PROCESSED.equals(action)) {
             authorizeReadProcessed(uri, principal);
+
         } else if (RepositoryAction.READ.equals(action)) {
             authorizeRead(uri, principal);
+
         } else if (RepositoryAction.CREATE.equals(action)) {
             authorizeCreate(uri, principal);
+
         } else if (RepositoryAction.WRITE.equals(action)) {
             authorizeWrite(uri, principal);
+
+        } else if (RepositoryAction.EDIT_COMMENT.equals(action)) {
+            authorizeEditComment(uri, principal);
+
+        } else if (RepositoryAction.ADD_COMMENT.equals(action)) {
+            authorizeAddComment(uri, principal);
+
         } else if (RepositoryAction.WRITE_ACL.equals(action) ||
                 RepositoryAction.ALL.equals(action)) {
             authorizeAll(uri, principal);
+
         } else if (RepositoryAction.UNLOCK.equals(action)) {
             authorizeUnlock(uri, principal);
+
         } else if (RepositoryAction.DELETE.equals(action)) {
             authorizeDelete(uri, principal);
+
         } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
             authorizePropertyEditAdminRole(uri, principal);
+
         } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
             authorizePropertyEditRootRole(uri, principal);
         }
-        
     }
     
     
@@ -227,6 +240,67 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         aclAuthorize(principal, resource, WRITE_AUTH_PRIVILEGES);
     }
     
+
+    private static final RepositoryAction[] ADD_COMMENT_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE, Privilege.ADD_COMMENT};
+
+    /**
+     * <ul>
+     *   <li>Privilege WRITE, ALL or ADD_COMMENT in ACL
+     *   <li>Role ROOT
+     *   <li>+ resource not locked by another principal
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeAddComment(String uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = this.dao.load(uri);
+        
+        this.lockManager.lockAuthorize(resource, principal, false);
+
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, ADD_COMMENT_AUTH_PRIVILEGES);
+    }
+    
+
+
+    private static final RepositoryAction[] EDIT_COMMENT_AUTH_PRIVILEGES = 
+        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE};
+
+    /**
+     * <ul>
+     *   <li>Privilege WRITE or ALL in ACL
+     *   <li>Role ROOT
+     *   <li>+ resource not locked by another principal
+     * </ul>
+     * @return is authorized
+     * @throws IOException
+     */
+    public void authorizeEditComment(String uri, Principal principal)
+        throws AuthenticationException, AuthorizationException, ReadOnlyException,
+        ResourceLockedException, IOException {
+
+        checkReadOnly(principal);
+
+        ResourceImpl resource = this.dao.load(uri);
+        
+        this.lockManager.lockAuthorize(resource, principal, false);
+
+        if (this.roleManager.hasRole(principal, RoleManager.ROOT))
+            return;
+        
+        aclAuthorize(principal, resource, EDIT_COMMENT_AUTH_PRIVILEGES);
+    }
+    
+
+
 
     private static final RepositoryAction[] ALL_AUTH_PRIVILEGES = 
         new RepositoryAction[] {Privilege.ALL};

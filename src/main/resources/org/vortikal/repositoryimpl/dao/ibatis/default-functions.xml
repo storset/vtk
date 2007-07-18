@@ -31,4 +31,8 @@
     #destUri# || substring(uri, length(#uri#) + 1)
   </sql>
 
+  <sql id="nextVortexCommentId">
+    nextval('vortex_comment_seq_pk')
+  </sql>
+
 </sqlMap>

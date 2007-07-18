@@ -36,6 +36,12 @@
               value="org.vortikal.repository.Privilege.ALL" />
   </bean>
 
+  <bean id="PRIVILEGE_ADD_COMMENT"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.Privilege.ADD_COMMENT" />
+  </bean>
+
 
   <!-- Repository actions -->
 
@@ -103,6 +109,18 @@
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
               value="org.vortikal.repository.RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION" />
+  </bean>
+
+  <bean id="ACTION_ADD_COMMENT"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.RepositoryAction.ADD_COMMENT" />
+  </bean>
+
+  <bean id="ACTION_EDIT_COMMENT"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField"
+              value="org.vortikal.repository.RepositoryAction.EDIT_COMMENT" />
   </bean>
 
 </beans>

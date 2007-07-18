@@ -374,6 +374,19 @@
     <property name="handler" ref="editAdminPermissionsHandler" />
   </bean>
 
+  <bean id="editAddCommentPermissionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="permissionsService" />
+    <property name="assertions">
+      <list>
+        <ref local="writeACLPermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="edit-commenting-permissions" />
+        </bean>
+      </list>
+    </property>  
+    <property name="handler" ref="editAddCommentPermissionsHandler" />
+  </bean>
 
   <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
@@ -887,6 +900,12 @@
     <property name="commandName" value="permissionsForm_read-processed" />
   </bean>
 
+  <bean id="editAddCommentPermissionsHandler" parent="abstractPermissionsHandler">
+    <property name="privilege" ref="PRIVILEGE_ADD_COMMENT" />
+    <property name="successView" value="redirectToPermissions" />
+    <property name="commandName" value="permissionsForm_add-comment" />
+  </bean>
+
   <bean id="permissionsHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
@@ -899,6 +918,7 @@
         <entry key-ref="PRIVILEGE_READ" value-ref="PRINCIPAL_ALL" />
         <entry key-ref="PRIVILEGE_WRITE" value-ref="PRINCIPAL_AUTHENTICATED" />
         <entry key-ref="PRIVILEGE_ALL" value-ref="PRINCIPAL_AUTHENTICATED" />
+        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="PRINCIPAL_AUTHENTICATED" />
         <entry key-ref="PRIVILEGE_BIND" value-ref="PRINCIPAL_AUTHENTICATED" />
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="PRINCIPAL_ALL" />
       </map>
@@ -1276,6 +1296,7 @@
         <entry key-ref="PRIVILEGE_READ" value-ref="editReadPermissionsService" />
         <entry key-ref="PRIVILEGE_WRITE" value-ref="editWritePermissionsService" />
         <entry key-ref="PRIVILEGE_ALL" value-ref="editAdminPermissionsService" />
+        <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
         <entry key-ref="PRIVILEGE_BIND" value-ref="editBindPermissionsService" />
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
       </map>

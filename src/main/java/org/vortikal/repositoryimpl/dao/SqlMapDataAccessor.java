@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -68,18 +68,14 @@ import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
-
-
 
 /**
  * An iBATIS SQL maps implementation of the DataAccessor interface.
  */
-public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
+public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
+  implements InitializingBean, DataAccessor {
 
     public static final char SQL_ESCAPE_CHAR = '@';
-
-    private Map sqlMaps;
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -87,7 +83,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     private PropertyManager propertyManager;
     private PrincipalFactory principalFactory;
     private AuthorizationManager authorizationManager;
-    private SqlMapClient sqlMapClient;
     
     private boolean optimizedAclCopySupported = false;
 
@@ -107,19 +102,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
         this.authorizationManager = authorizationManager;
     }
 
-    public void setSqlMapClient(SqlMapClient sqlMapClient) {
-        this.sqlMapClient = sqlMapClient;
-    }
-    
     public void setOptimizedAclCopySupported(boolean optimizedAclCopySupported) {
         this.optimizedAclCopySupported = optimizedAclCopySupported;
     }
     
-    public void setSqlMaps(Map sqlMaps) {
-        this.sqlMaps = sqlMaps;
-    }
-    
     public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+
         if (this.contentStore == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'contentStore' not specified");
@@ -136,24 +125,13 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
             throw new BeanInitializationException(
                 "JavaBean property 'principalManager' not specified");
         }
-        if (this.sqlMapClient == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'sqlMapClient' not specified");
-        }
-        if (this.sqlMaps == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'sqlMaps' not specified");
-        }
     }
-
 
 
     public boolean validate() throws IOException {
         throw new IOException("Not implemented");
     }
 
-
-    
 
     public ResourceImpl load(String uri) throws IOException {
 
@@ -1348,12 +1326,6 @@ public class SqlMapDataAccessor implements InitializingBean, DataAccessor {
     }
     
 
-    private String getSqlMap(String statementId) {
-        if (this.sqlMaps.containsKey(statementId)) {
-            return (String) this.sqlMaps.get(statementId);
-        }
-        return statementId;
-    }
     
     public Set<Principal> discoverGroups() throws IOException {
         

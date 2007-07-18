@@ -3,6 +3,7 @@
 
 <sqlMap>
 
+
   <resultMap id="Resource" class="java.util.HashMap">
     <result property="uri" column="uri" />
     <result property="id" column="resource_id"/>
@@ -681,5 +682,49 @@
     values (<include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
       #operation#, #timestamp#, #uri#, #resourceId#, #collection#)
   </insert>
+
+
+
+  <!-- Comments section -->
+
+  <select id="listCommentsByResource"
+          parameterClass="org.vortikal.repository.Resource"
+          resultClass="org.vortikal.repository.Comment">
+    select c.id as ID, #URI# as URI, c.time, c.author, c.title, c.text, c.approved
+    from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id 
+    where c.resource_id in
+      (select resource_id from vortex_resource where uri = #URI#)
+    order by c.time desc
+  </select>
+
+  <select id="loadCommentById" parameterClass="java.lang.Integer"
+          resultClass="org.vortikal.repository.Comment">
+    select c.id as ID, #URI# as URI, c.time, c.author, c.title, c.text, c.approved
+    from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id
+    where c.id = #value#
+  </select>
+
+  <delete id="deleteComment" parameterClass="org.vortikal.repository.Comment">
+    delete from vortex_comment where id = #ID#
+  </delete>
+
+  <insert id="insertComment" parameterClass="org.vortikal.repository.Comment">
+    insert into vortex_comment 
+      (id, resource_id, author, time, title, text, approved)
+    select <include refid="nextVortexCommentId" />, r.resource_id, 
+           #author#, #time#, #title#, #text#,
+           #approved,handler=org.vortikal.repositoryimpl.dao.ibatis.BooleanCharTypeHandlerCallback#
+    from vortex_resource r where r.uri = #URI#
+  </insert>
+
+  <update id="updateComment" parameterClass="org.vortikal.repository.Comment">
+    update vortex_comment
+      set author = #author#,
+          time = #time#,
+          title = #title#,
+          text = #text#,
+          approved = #approved,handler=org.vortikal.repositoryimpl.dao.ibatis.BooleanCharTypeHandlerCallback#
+      where id = #ID#
+  </update>
 
 </sqlMap>

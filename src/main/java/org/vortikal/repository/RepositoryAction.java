@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,10 @@ public final class RepositoryAction {
 
     public final static RepositoryAction ALL = new RepositoryAction("all");
 
+    public final static RepositoryAction ADD_COMMENT = new RepositoryAction("add-comment");
+
+    public final static RepositoryAction EDIT_COMMENT = new RepositoryAction("edit-comment");
+
     public final static RepositoryAction UNEDITABLE_ACTION =
         new RepositoryAction("property-edit-uneditable-action");
 
@@ -79,6 +83,8 @@ public final class RepositoryAction {
         RepositoryAction.COPY,
         RepositoryAction.MOVE,
         RepositoryAction.ALL,
+        RepositoryAction.ADD_COMMENT,
+        RepositoryAction.EDIT_COMMENT,
         RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION,
         RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION,
         RepositoryAction.UNEDITABLE_ACTION};

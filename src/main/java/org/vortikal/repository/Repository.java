@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2005, 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,15 @@
  */
 package org.vortikal.repository;
 
+
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.vortikal.security.AuthenticationException;
+import java.util.List;
 
 
 /**
- * This interface defines the content repositorys
+ * This interface defines the content repository's
  * externally available webDAV-like functionality.
  */
 public interface Repository {
@@ -469,6 +470,59 @@ public interface Repository {
             ReadOnlyException, IOException;
 
     
+    /**
+     * Creates a new comment instance for a resource.
+     *
+     * @param token the security token of the current principal
+     * @param resource the resource to comment
+     * @return a newly created comment
+     * @exception RepositoryException if an error occurs
+     * @exception AuthenticationException if an error occurs
+     */
+    public List<Comment> getComments(String token, Resource resource)
+        throws RepositoryException, AuthenticationException;
+
+
+    /**
+     * Adds a comment on a resource
+     *
+     * @param token the security token of the current principal
+     * @param resource the resource
+     * @param title the title of the comment
+     * @param text the text of the comment
+     * @return the newly added comment
+     * @exception RepositoryException if an error occurs
+     * @exception AuthenticationException if an error occurs
+     */
+    public Comment addComment(String token, Resource resource, String title, String text)
+        throws RepositoryException, AuthenticationException;
+
+
+
+    /**
+     * Deletes a comment on a resource
+     *
+     * @param token the security token of the current principal
+     * @param resource the resource
+     * @exception RepositoryException if an error occurs
+     * @exception AuthenticationException if an error occurs
+     */
+    public void deleteComment(String token, Resource resource, Comment comment)
+        throws RepositoryException, AuthenticationException;
+
+
+    /**
+     * Updates a comment on a resource.
+     *
+     * @param token the security token of the current principal
+     * @param resource the resource
+     * @exception RepositoryException if an error occurs
+     * @exception AuthenticationException if an error occurs
+     */
+    public Comment updateComment(String token, Resource resource, Comment comment)
+        throws RepositoryException, AuthenticationException;
+
+
     /**
      * Get the repository ID.
      */

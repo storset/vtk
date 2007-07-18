@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2005, 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,16 +32,21 @@ package org.vortikal.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Comment;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -268,6 +273,32 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         }
         this.repository.storeACL(token, resource);
     }
+
+    public List<Comment> getComments(String token, Resource resource)
+        throws RepositoryException, AuthenticationException {
+        return this.repository.getComments(token, resource);
+    }
+    
+
+    public Comment addComment(String token, Resource resource, String title, String text)
+        throws RepositoryException, AuthenticationException {
+        return this.repository.addComment(token, resource, title, text);
+    }
+    
+
+
+    public void deleteComment(String token, Resource resource, Comment comment)
+        throws RepositoryException, AuthenticationException {
+        this.repository.deleteComment(token, resource, comment);
+    }
+    
+
+    public Comment updateComment(String token, Resource resource, Comment comment)
+        throws RepositoryException, AuthenticationException {
+        return this.repository.updateComment(token, resource, comment);
+    }
+    
+
 
     // XXX: Losing stack traces unnecessary
     private void throwAppropriateException(String uri, Throwable t) 

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+  <bean name="commenting.postFormSessionAttributeName" class="java.lang.String">
+    <constructor-arg value="org.vortikal.web.commenting.FormSessionAttribute" />
+  </bean>
+
+
+  <bean name="commenting.listCommentsComponent"
+        class="org.vortikal.web.view.decorating.components.ListCommentsDecoratorComponent"
+        parent="requestLocalRepositoryAware">
+    <property name="namespace" ref="decorating.documentNamespace" />
+    <property name="name" value="comments" />
+    <property name="description" value="Lists comments" />
+    <property name="postCommentService" ref="commenting.postCommentService" />
+    <property name="deleteCommentService" ref="commenting.deleteCommentService" />
+    <property name="loginService" ref="loginService" />
+    <property name="view" ref="commenting.commentsView" />
+    <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
+  </bean>
+
+  <bean id="commenting.commentsView" parent="freemarkerView">
+    <property name="url" value="layouts/comments-view.ftl" />
+  </bean>
+
+  <bean name="commenting.postCommentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsAddComment" />
+        <ref bean="commenting.isPostRequest" />
+        <ref bean="commenting.isCommentable" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.postCommentController" />
+  </bean>
+
+  <bean name="commenting.deleteCommentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsDeleteComment" />
+        <ref bean="commenting.hasDeletePermission" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.deleteCommentController" />
+  </bean>
+
+  <bean name="commenting.postCommentController"
+        class="org.vortikal.web.commenting.PostCommentController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView" value="commenting.redirectToDefault" />
+    <property name="successView" value="commenting.redirectToDefault" />
+    <property name="commandName" value="postCommentForm" />
+    <property name="commandClass"
+              value="org.vortikal.web.commenting.PostCommentCommand" />
+    <property name="validator" ref="commenting.postCommentValidator" />
+    <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
+  </bean>
+
+  <bean name="commenting.postCommentValidator"
+        class="org.vortikal.web.commenting.PostCommentCommandValidator" />
+
+
+  <bean name="commenting.deleteCommentController"
+        class="org.vortikal.web.commenting.DeleteCommentController"
+        parent="requestLocalRepositoryAware">
+    <property name="viewName" value="commenting.redirectToDefault" />
+  </bean>
+
+
+  <bean id="commenting.requestParameterIsAddComment" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="add-comment" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsDeleteComment" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="delete-comment" />
+  </bean>
+
+  <bean id="commenting.isPostRequest"
+        class="org.vortikal.web.service.RequestMethodAssertion">
+    <property name="methods">
+      <set>
+        <value>POST</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="commenting.isCommentable"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="PRIVILEGE_ADD_COMMENT" />
+  </bean>
+
+  <bean id="commenting.hasDeletePermission"
+        parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="PRIVILEGE_ALL" />
+  </bean>
+
+
+  <bean id="commenting.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="commenting.redirectToDefault" value-ref="commenting.redirectToDefaultView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="commenting.redirectToDefaultView" 
+    class="org.vortikal.web.view.RedirectView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="commenting.redirectToDefaultProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="commenting.redirectToDefaultProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="redirectToService" ref="displayResourceService" />
+    <property name="urlAnchor" value="comment-form" />
+  </bean>
+
+</beans>

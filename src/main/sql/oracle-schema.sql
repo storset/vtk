@@ -1,57 +1,54 @@
 -----------------------------------------------------------------------------
--- VORTEX DDL $Id: oracle-schema.sql,v 1.12 2004/03/19 17:08:47 gormap Exp $
--- This file contains definitions of the tables required by the
--- OracleDatabase class. 
+-- VORTEX DDL
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
 -- resource
--- TODO: allow null values for content_language
 -----------------------------------------------------------------------------
 
-DROP SEQUENCE vortex_resource_seq_pk;
+drop sequence vortex_resource_seq_pk;
 
-CREATE SEQUENCE vortex_resource_seq_pk INCREMENT BY 1 START WITH 1000;
+create sequence vortex_resource_seq_pk increment by 1 start with 1000;
 
-DROP TABLE vortex_resource CASCADE CONSTRAINTS;
+drop table vortex_resource cascade constraints;
 
-CREATE TABLE vortex_resource
+create table vortex_resource
 (
-    resource_id NUMBER NOT NULL,
-    prev_resource_id NUMBER NULL, -- used when copying/moving
-    uri VARCHAR2 (2048) NOT NULL,
-    depth NUMBER NOT NULL,
-    creation_time TIMESTAMP NOT NULL,
-    created_by VARCHAR2 (64) NOT NULL,
-    content_last_modified TIMESTAMP NOT NULL,
-    properties_last_modified TIMESTAMP NOT NULL,
-    last_modified TIMESTAMP NOT NULL,
-    content_modified_by VARCHAR2 (64) NOT NULL,
-    properties_modified_by VARCHAR2 (64) NOT NULL,
-    modified_by VARCHAR2 (64) NOT NULL,
-    resource_owner VARCHAR2 (64) NOT NULL,
-    content_language VARCHAR2 (64) NULL,
-    content_type VARCHAR2 (64) NULL,
-    content_length NUMBER NULL,
-    resource_type VARCHAR2 (64) NOT NULL,
-    character_encoding VARCHAR2 (64) NULL,
-    guessed_character_encoding VARCHAR2 (64) NULL,
-    user_character_encoding VARCHAR2 (64) NULL,
-    is_collection CHAR(1) DEFAULT 'N' NOT NULL,
-    acl_inherited_from NUMBER NULL,
-    CONSTRAINT resource_uri_index UNIQUE (uri)
+    resource_id number not null,
+    prev_resource_id number null, -- used when copying/moving
+    uri VARCHAR2 (2048) not null,
+    depth number not null,
+    creation_time timestamp not null,
+    created_by varchar2 (64) not null,
+    content_last_modified timestamp not null,
+    properties_last_modified timestamp not null,
+    last_modified timestamp not null,
+    content_modified_by varchar2 (64) not null,
+    properties_modified_by varchar2 (64) not null,
+    modified_by varchar2 (64) not null,
+    resource_owner varchar2 (64) not null,
+    content_language varchar2 (64) null,
+    content_type varchar2 (64) null,
+    content_length number null,
+    resource_type varchar2 (64) not null,
+    character_encoding varchar2 (64) null,
+    guessed_character_encoding varchar2 (64) null,
+    user_character_encoding varchar2 (64) null,
+    is_collection char(1) default 'N' not null,
+    acl_inherited_from number null,
+    constraint resource_uri_index unique (uri)
 );
 
-ALTER TABLE vortex_resource
-    ADD CONSTRAINT vortex_resource_PK PRIMARY KEY (resource_id);
+alter table vortex_resource
+    add constraint vortex_resource_PK primary key (resource_id);
 
-ALTER TABLE vortex_resource
-      ADD CONSTRAINT vortex_resource_FK FOREIGN KEY (acl_inherited_from)
-          REFERENCES vortex_resource (resource_id);
+alter table vortex_resource
+      add constraint vortex_resource_FK foreign key (acl_inherited_from)
+          references vortex_resource (resource_id);
 
-CREATE INDEX vortex_resource_acl_index ON vortex_resource(acl_inherited_from);
+create index vortex_resource_acl_index on vortex_resource(acl_inherited_from);
 
-CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
+create index vortex_resource_depth_index on vortex_resource(depth);
 
 
 -----------------------------------------------------------------------------
@@ -59,25 +56,25 @@ CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 -- Stored function for retrieving a resource's ancestor IDs.
 -- Returns a VARCHAR of space-separated id integers.
 -----------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION resource_ancestor_ids(uri IN VARCHAR)
-RETURN VARCHAR AS
-  ancestor VARCHAR(1500) DEFAULT '/';
-  id NUMBER;
-  ids VARCHAR(1500) DEFAULT '';
-  slashpos NUMBER DEFAULT 1;
-BEGIN
-  IF uri = '/' THEN RETURN ids; END IF;
+create or replace function resource_ancestor_ids(uri in varchar)
+return varchar as
+  ancestor varchar(1500) default '/';
+  id number;
+  ids varchar(1500) default '';
+  slashpos number default 1;
+begin
+  if uri = '/' then return ids; end if;
 
-  LOOP
-    SELECT vr.resource_id INTO id FROM vortex_resource vr
-    WHERE vr.uri = ancestor AND vr.is_collection = 'Y';
+  loop
+    select vr.resource_id into id from vortex_resource vr
+    where vr.uri = ancestor and vr.is_collection = 'Y';
     ids := ids || ' ' || id;
     slashpos := instr(uri, '/', slashpos+1);
-    EXIT WHEN slashpos = 0;
+    exit when slashpos = 0;
     ancestor := substr(uri, 1, slashpos-1);
-  END LOOP;
-  RETURN ids;
-END resource_ancestor_ids;
+  end loop;
+  return ids;
+end resource_ancestor_ids;
 /
 show errors;
 
@@ -86,17 +83,17 @@ show errors;
 -- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-
 --              IDs
 -----------------------------------------------------------------------------
-DROP SEQUENCE vortex_tmp_session_id_seq;
-CREATE SEQUENCE vortex_tmp_session_id_seq INCREMENT BY 1 START WITH 1000;
+drop sequence vortex_tmp_session_id_seq;
+create sequence vortex_tmp_session_id_seq increment by 1 start with 1000;
 
-DROP TABLE vortex_tmp;
-CREATE TABLE vortex_tmp (
-    session_id NUMBER,
-    resource_id NUMBER,
-    uri VARCHAR2(2048)
+drop table vortex_tmp;
+create table vortex_tmp (
+    session_id number,
+    resource_id number,
+    uri varchar2(2048)
 );
 
-CREATE INDEX vortex_tmp_index ON vortex_tmp(uri);
+create index vortex_tmp_index on vortex_tmp(uri);
 
 
 
@@ -104,168 +101,199 @@ CREATE INDEX vortex_tmp_index ON vortex_tmp(uri);
 -----------------------------------------------------------------------------
 -- vortex_lock
 -----------------------------------------------------------------------------
-DROP SEQUENCE vortex_lock_seq_pk;
+drop sequence vortex_lock_seq_pk;
 
-CREATE SEQUENCE vortex_lock_seq_pk INCREMENT BY 1 START WITH 1000;
+create sequence vortex_lock_seq_pk increment by 1 start with 1000;
 
-DROP TABLE vortex_lock CASCADE CONSTRAINTS;
+drop table vortex_lock cascade constraints;
 
-CREATE TABLE vortex_lock
+create table vortex_lock
 (
-    lock_id NUMBER NOT NULL,
-    resource_id NUMBER NOT NULL,
-    token VARCHAR2 (128) NOT NULL,
-    lock_owner VARCHAR2 (128) NOT NULL,
-    lock_owner_info VARCHAR2 (128) NOT NULL,
-    depth CHAR (1) DEFAULT '1' NOT NULL,
-    timeout TIMESTAMP NOT NULL
+    lock_id number not null,
+    resource_id number not null,
+    token varchar2 (128) not null,
+    lock_owner varchar2 (128) not null,
+    lock_owner_info varchar2 (128) not null,
+    depth char (1) default '1' not null,
+    timeout timestamp not null
 );
 
-ALTER TABLE vortex_lock
-    ADD CONSTRAINT vortex_lock_PK
-PRIMARY KEY (lock_id);
+alter table vortex_lock
+    add constraint vortex_lock_PK
+primary key (lock_id);
 
-ALTER TABLE vortex_lock
-    ADD CONSTRAINT vortex_lock_FK_1 FOREIGN KEY (resource_id)
-    REFERENCES vortex_resource (resource_id) ON DELETE CASCADE;
+alter table vortex_lock
+    add constraint vortex_lock_FK_1 foreign key (resource_id)
+    references vortex_resource (resource_id) on delete cascade;
 ;
 
-CREATE INDEX vortex_lock_index1 ON vortex_lock(resource_id);
-CREATE INDEX vortex_lock_index2 ON vortex_lock(timeout);
+create index vortex_lock_index1 on vortex_lock(resource_id);
+create index vortex_lock_index2 on vortex_lock(timeout);
 
 -----------------------------------------------------------------------------
 -- action_type
 -----------------------------------------------------------------------------
-DROP TABLE action_type CASCADE CONSTRAINTS;
+drop table action_type cascade constraints;
 
-CREATE TABLE action_type
+create table action_type
 (
-    action_type_id NUMBER NOT NULL,
-    name VARCHAR2 (64) NOT NULL
+    action_type_id number not null,
+    name varchar2 (64) not null
 );
 
-ALTER TABLE action_type
-    ADD CONSTRAINT action_type_PK
-PRIMARY KEY (action_type_id);
+alter table action_type
+    add constraint action_type_PK
+primary key (action_type_id);
 
 
 -----------------------------------------------------------------------------
 -- acl_entry
 -----------------------------------------------------------------------------
-DROP SEQUENCE acl_entry_seq_pk;
+drop sequence acl_entry_seq_pk;
 
-CREATE SEQUENCE acl_entry_seq_pk INCREMENT BY 1 START WITH 1000;
+create sequence acl_entry_seq_pk increment by 1 start with 1000;
 
-DROP TABLE acl_entry CASCADE CONSTRAINTS;
+drop table acl_entry cascade constraints;
 
-CREATE TABLE acl_entry
+create table acl_entry
 (
-    acl_entry_id NUMBER NOT NULL,
-    resource_id NUMBER NOT NULL,
-    action_type_id NUMBER NOT NULL,
-    user_or_group_name VARCHAR2 (64) NOT NULL,
-    is_user CHAR (1) DEFAULT 'Y' NOT NULL,
-    granted_by_user_name VARCHAR2 (64) NOT NULL,
-    granted_date DATE NOT NULL
+    acl_entry_id number not null,
+    resource_id number not null,
+    action_type_id number not null,
+    user_or_group_name varchar2 (64) not null,
+    is_user char (1) default 'Y' not null,
+    granted_by_user_name varchar2 (64) not null,
+    granted_date date not null
 );
 
-ALTER TABLE acl_entry
-    ADD CONSTRAINT acl_entry_PK
-PRIMARY KEY (acl_entry_id);
+alter table acl_entry
+    add constraint acl_entry_PK
+primary key (acl_entry_id);
 
-ALTER TABLE acl_entry
-    ADD CONSTRAINT acl_entry_FK_1 FOREIGN KEY (resource_id)
-    REFERENCES vortex_resource (resource_id) ON DELETE CASCADE
+alter table acl_entry
+    add constraint acl_entry_FK_1 foreign key (resource_id)
+    references vortex_resource (resource_id) on delete cascade
 ;
 
-ALTER TABLE acl_entry
-    ADD CONSTRAINT acl_entry_FK_2 FOREIGN KEY (action_type_id)
-    REFERENCES action_type (action_type_id)
+alter table acl_entry
+    add constraint acl_entry_FK_2 foreign key (action_type_id)
+    references action_type (action_type_id)
 ;
 
-CREATE INDEX acl_entry_index1 ON acl_entry(resource_id);
+create index acl_entry_index1 on acl_entry(resource_id);
 
 
 -----------------------------------------------------------------------------
 -- prop_type
 -----------------------------------------------------------------------------
-DROP TABLE prop_type CASCADE CONSTRAINTS;
+drop table prop_type cascade constraints;
 
-CREATE TABLE prop_type
+create table prop_type
 (
-    prop_type_id NUMBER NOT NULL,
-    prop_type_name VARCHAR2 (64) NOT NULL
+    prop_type_id number not null,
+    prop_type_name varchar2 (64) not null
 );
 
-ALTER TABLE prop_type
-    ADD CONSTRAINT prop_type_PK PRIMARY KEY (prop_type_id);
+alter table prop_type
+    add constraint prop_type_PK primary key (prop_type_id);
 
 
 -----------------------------------------------------------------------------
 -- extra_prop_entry
 -----------------------------------------------------------------------------
-DROP SEQUENCE extra_prop_entry_seq_pk;
+drop sequence extra_prop_entry_seq_pk;
 
-CREATE SEQUENCE extra_prop_entry_seq_pk INCREMENT BY 1 START WITH 1000;
+create sequence extra_prop_entry_seq_pk increment by 1 start with 1000;
 
-DROP TABLE extra_prop_entry CASCADE CONSTRAINTS;
+drop table extra_prop_entry cascade constraints;
 
-CREATE TABLE extra_prop_entry
+create table extra_prop_entry
 (
-    extra_prop_entry_id NUMBER NOT NULL,
-    resource_id NUMBER NOT NULL,
-    prop_type_id NUMBER DEFAULT 0 NOT NULL,
-    name_space VARCHAR2 (128) NULL,
-    name VARCHAR2 (64) NOT NULL,
-    value VARCHAR2 (2048) NOT NULL
+    extra_prop_entry_id number not null,
+    resource_id number not null,
+    prop_type_id number default 0 not null,
+    name_space varchar2 (128) null,
+    name varchar2 (64) not null,
+    value varchar2 (2048) not null
 );
 
-ALTER TABLE extra_prop_entry
-    ADD CONSTRAINT extra_prop_entry_PK
-PRIMARY KEY (extra_prop_entry_id);
+alter table extra_prop_entry
+    add constraint extra_prop_entry_PK
+primary key (extra_prop_entry_id);
 
-ALTER TABLE extra_prop_entry
-    ADD CONSTRAINT extra_prop_entry_FK_1 FOREIGN KEY (resource_id)
-    REFERENCES vortex_resource (resource_id) ON DELETE CASCADE
+alter table extra_prop_entry
+    add constraint extra_prop_entry_FK_1 foreign key (resource_id)
+    references vortex_resource (resource_id) on delete cascade
 ;
 
-ALTER TABLE extra_prop_entry
-    ADD CONSTRAINT extra_prop_entry_FK_2 FOREIGN KEY (prop_type_id)
-    REFERENCES prop_type(prop_type_id) ON DELETE CASCADE
+alter table extra_prop_entry
+    add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
+    references prop_type(prop_type_id) on delete cascade
 ;
 
 
-CREATE INDEX extra_prop_entry_index1 ON extra_prop_entry(resource_id);
+create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
 
 -----------------------------------------------------------------------------
 -- changelog_entry
 -----------------------------------------------------------------------------
-DROP SEQUENCE changelog_entry_seq_pk;
+drop sequence changelog_entry_seq_pk;
 
-CREATE SEQUENCE changelog_entry_seq_pk INCREMENT BY 1 START WITH 1000;
+create sequence changelog_entry_seq_pk increment by 1 start with 1000;
 
-DROP TABLE changelog_entry CASCADE CONSTRAINTS;
+drop table changelog_entry cascade constraints;
 
-CREATE TABLE changelog_entry
+create table changelog_entry
 (
-    changelog_entry_id NUMBER NOT NULL,
-    logger_id NUMBER NOT NULL,
-    logger_type NUMBER NOT NULL,
-    operation VARCHAR2 (128) NULL,
-    timestamp DATE NOT NULL,
-    uri VARCHAR2 (2048) NOT NULL,
-    resource_id NUMBER,
-    is_collection CHAR(1) DEFAULT 'N' NOT NULL
+    changelog_entry_id number not null,
+    logger_id number not null,
+    logger_type number not null,
+    operation varchar2 (128) NULL,
+    timestamp date not null,
+    uri varchar2 (2048) not null,
+    resource_id number,
+    is_collection char(1) default 'N' not null
 );
 
-ALTER TABLE changelog_entry
-    ADD CONSTRAINT changelog_entry_PK
-PRIMARY KEY (changelog_entry_id);
+alter table changelog_entry
+    add constraint changelog_entry_PK
+primary key (changelog_entry_id);
 
 /* DROP INDEX changelog_entry_index1; */
 
-CREATE UNIQUE INDEX changelog_entry_index1
-    ON changelog_entry (uri, changelog_entry_id);
+create unique index changelog_entry_index1
+    on changelog_entry (uri, changelog_entry_id);
+
+
+-----------------------------------------------------------------------------
+-- vortex_comment
+-----------------------------------------------------------------------------
+
+drop sequence vortex_comment_seq_pk;
+
+create sequence vortex_comment_seq_pk increment 1 start 1000;
+
+drop table vortex_comment;
+
+create table vortex_comment
+(
+    id number not null,
+    resource_id number not null,
+    author varchar(64) not null,
+    time timestamp not null,
+    title varchar2(2048) not null,
+    text varchar2(4096) not null,
+    approved char(1) default 'Y' not null,
+    constraint vortex_comment_id_constraint unique (id)
+);
+
+alter table vortex_comment
+      add constraint vortex_comment_pk primary key (id);
+
+alter table vortex_comment
+      add constraint vortex_comment_fk foreign key (resource_id)
+          references vortex_resource (resource_id);
+
 
 
 
@@ -275,25 +303,27 @@ CREATE UNIQUE INDEX changelog_entry_index1
 
 -- Action types
  
-INSERT INTO action_type (action_type_id, name) VALUES (1, 'read');
-INSERT INTO action_type (action_type_id, name) VALUES (2, 'write');
-INSERT INTO action_type (action_type_id, name) VALUES (3, 'all');
-INSERT INTO action_type (action_type_id, name) VALUES (4, 'read-processed');
-INSERT INTO action_type (action_type_id, name) VALUES (5, 'bind');
+insert into action_type (action_type_id, name) values (1, 'read');
+insert into action_type (action_type_id, name) values (2, 'write');
+insert into action_type (action_type_id, name) values (3, 'all');
+insert into action_type (action_type_id, name) values (4, 'read-processed');
+insert into action_type (action_type_id, name) values (5, 'bind');
+insert into action_type (action_type_id, name) values (6, 'add-comment');
+
 
 -- Property value types
 -- This data currently corresponds to definitions in 
 -- org.vortikal.repository.resourcetype.PropertyType
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (0, 'String');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (1, 'Integer');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (2, 'Long');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (3, 'Date');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (4, 'Boolean');
-INSERT INTO prop_type (prop_type_id, prop_type_name) VALUES (5, 'Principal');
+insert into prop_type (prop_type_id, prop_type_name) values (0, 'String');
+insert into prop_type (prop_type_id, prop_type_name) values (1, 'Integer');
+insert into prop_type (prop_type_id, prop_type_name) values (2, 'Long');
+insert into prop_type (prop_type_id, prop_type_name) values (3, 'Date');
+insert into prop_type (prop_type_id, prop_type_name) values (4, 'Boolean');
+insert into prop_type (prop_type_id, prop_type_name) values (5, 'Principal');
 
 -- root resource
 
-INSERT INTO VORTEX_RESOURCE (
+insert into vortex_resource (
     resource_id,
     prev_resource_id,
     uri,
@@ -314,9 +344,9 @@ INSERT INTO VORTEX_RESOURCE (
     acl_inherited_from,
     content_length,
     resource_type)
-VALUES (
+values (
     vortex_resource_seq_pk.nextval,
-    NULL,
+    null,
     '/',
     0,
     current_timestamp,
@@ -328,20 +358,20 @@ VALUES (
     'vortex@localhost',
     'vortex@localhost',
     'vortex@localhost',
-    NULL,
+    null,
     'application/x-vortex-collection',
-    NULL,
+    null,
     'Y',
-    NULL,
-    NULL,
+    null,
+    null,
     'collection'
 );
 
 
 -- Insert title property for root resource:
 
-INSERT INTO extra_prop_entry 
-SELECT extra_prop_entry_seq_pk.nextval,
+insert into extra_prop_entry 
+select extra_prop_entry_seq_pk.nextval,
        resource_id,
        0,
        null,
@@ -352,7 +382,7 @@ from vortex_resource where uri = '/';
 
 -- (pseudo:all (read))
 
-INSERT INTO ACL_ENTRY (
+insert into acl_entry (
     acl_entry_id,
     resource_id,
     action_type_id,
@@ -360,7 +390,7 @@ INSERT INTO ACL_ENTRY (
     is_user,
     granted_by_user_name,
     granted_date)
-VALUES (
+values (
     acl_entry_seq_pk.nextval,
     vortex_resource_seq_pk.currval,
     1,
@@ -373,7 +403,7 @@ VALUES (
 
 -- (pseudo:owner, all)
 
-INSERT INTO ACL_ENTRY (
+insert into acl_entry (
     acl_entry_id,
     resource_id,
     action_type_id,
@@ -381,7 +411,7 @@ INSERT INTO ACL_ENTRY (
     is_user,
     granted_by_user_name,
     granted_date)
-VALUES (
+values (
     acl_entry_seq_pk.nextval,
     vortex_resource_seq_pk.currval,
     3,

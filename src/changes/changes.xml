@@ -11,6 +11,10 @@
     <release version="0.3.10-SNAPSHOT" date="In SVN" description="Release 0.3.10">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Added basic support for commenting on resources via a web
+        interface.
+      </action>
     </release>
 
     <release version="0.3.9.1" date="2007-07-04" description="Release 0.3.9.1">

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import org.springframework.core.Ordered;
  *   <li><code>clazz</code> - required bean {@link Class type}. Must
  *    implement {@link Categorizable}.  If the class implements {@link
  *    Ordered}, the returned set will be sorted.
- *   <li><code>category</code> - an optional {@link Comparator},
+ *   <li><code>comparator</code> - an optional {@link Comparator},
  *   which, if specified, is used for sorting the result set instead
  *   of the default {@link OrderComparator}.
  * </ul>

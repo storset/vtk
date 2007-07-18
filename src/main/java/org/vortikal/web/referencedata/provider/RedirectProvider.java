@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,11 @@ package org.vortikal.web.referencedata.provider;
 
 import java.io.IOException;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -44,19 +44,20 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 /**
  * Provides a redirect URL to the current resource for a given
- * service. The model is first searched for an object of type
- * <code>org.vortikal.repository.Resource</code> and key
- * <code>resource</code>. If no such object exists in the model, the
- * resource is retrieved from the repository.
+ * service. The model is first searched for an object of type {@link
+ * Resource} and key <code>resource</code>. If no such object exists
+ * in the model, the resource is retrieved from the repository.
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>redirectToService</code> - the service for which to
- *   construct the redirect URL
- *   <li><code>repository</code> - the content repository
+ *   <li><code>redirectToService</code> - the {@link Service service}
+ *   for which to construct the redirect URL
+ *   <li><code>repository</code> - the content {@link Repository repository}
+ *   <li><code>urlAnchor</code> - anchor to append to redirect URL (optional)
  * </ul>
  *
  * <p>Model data provided:
@@ -68,6 +69,7 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
 
     private Service redirectToService;
     private Repository repository = null;
+    private String urlAnchor;
     
 
     public void setRedirectToService(Service redirectToService) {
@@ -76,6 +78,10 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
 
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    public void setUrlAnchor(String urlAnchor) {
+        this.urlAnchor = urlAnchor;
     }
 
 
@@ -109,8 +115,12 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
                 securityContext.getToken(), requestContext.getResourceURI(), false);
         }
         
-        String redirectURL = this.redirectToService.constructLink(resource, principal);
-        model.put("redirectURL", redirectURL);
+        URL redirectURL = this.redirectToService.constructURL(resource, principal);
+        if (this.urlAnchor != null) {
+            redirectURL.setRef(this.urlAnchor);
+        }
+
+        model.put("redirectURL", redirectURL.toString());
     }
 
 }

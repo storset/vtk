@@ -20,7 +20,7 @@ alter table vortex_comment
 
 alter table vortex_comment
       add constraint vortex_comment_fk foreign key (resource_id)
-          references vortex_resource (resource_id);
+          references vortex_resource (resource_id) on delete cascade;
 
 
 -- add 'add-comment' privilege

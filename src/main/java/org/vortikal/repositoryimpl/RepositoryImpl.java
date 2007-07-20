@@ -290,7 +290,7 @@ public class RepositoryImpl
 
             destParent = this.resourceHelper.contentModification(destParent, principal);
             
-            this.dao.copy(src, destParent, destUri, preserveACL, fixedProps, newResource);
+            this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
 
@@ -300,6 +300,8 @@ public class RepositoryImpl
 
         this.context.publishEvent(new ResourceCreationEvent(this, dest));
     }
+
+
 
     public void move(String token, String srcUri, String destUri,
         boolean overwrite)
@@ -348,7 +350,7 @@ public class RepositoryImpl
 
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
 
-        // Performing delete operation
+        // Deleting existing resource at destinaiton URI:
         if (dest != null) {
             this.dao.delete(dest);
             this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
@@ -361,15 +363,13 @@ public class RepositoryImpl
             ResourceImpl newResource = src.createCopy(destUri);
             newResource = this.resourceHelper.nameChange(newResource, principal);
 
-            this.dao.copy(src, destParent, destUri, true, null, newResource);
+            this.dao.move(src, newResource);
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("clone() operation failed");
         }
         this.context.publishEvent(new ResourceCreationEvent(this, dest));
-
-        this.dao.delete(src);
         this.context.publishEvent(new ResourceDeletionEvent(this, srcUri,
                 src.getID(), src.isCollection()));
 

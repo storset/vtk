@@ -348,9 +348,24 @@
     where uri = #uri# or uri like #uriWildcard# escape '@'
   </insert>
 
+  
+  <update id="moveResource" parameterClass="java.util.Map">
+    update vortex_resource set
+        uri = #destUri#,
+        depth = depth + #depthDiff#
+    where uri = #srcUri#
+  </update>
+
+  <update id="moveDescendants" parameterClass="java.util.Map">
+    update vortex_resource set
+        uri = <include refid="destinationDescendantUriMove" />,
+        depth = depth + #depthDiff#
+    where uri like #uriWildcard# escape '@'
+  </update>
+
 
   <delete id="deleteResourceByUri" parameterClass="java.util.Map">
-    delete from VORTEX_RESOURCE where uri = #uri# or uri like #uriWildcard# escape '@'
+    delete from vortex_resource where uri = #uri# or uri like #uriWildcard# escape '@'
   </delete>
 
 
@@ -694,6 +709,7 @@
     <result property="author" column="author"/>
     <result property="title" column="title"/>
     <result property="text" column="text"/>
+
     <result property="approved" column="approved"
             typeHandler="org.vortikal.repositoryimpl.dao.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
@@ -720,6 +736,7 @@
     delete from vortex_comment where id = #ID#
   </delete>
 
+  <!-- See: http://issues.apache.org/jira/browse/IBATIS-244 -->
   <insert id="insertComment" parameterClass="org.vortikal.repository.Comment">
     insert into vortex_comment 
       (id, resource_id, author, time, title, text, approved)

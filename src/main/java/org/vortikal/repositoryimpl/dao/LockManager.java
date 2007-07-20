@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,15 @@
  */
 package org.vortikal.repositoryimpl.dao;
 
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 
 
 /**
@@ -52,57 +50,39 @@ public class LockManager {
 
     private Map locks = new ConcurrentReaderHashMap();
     private Log logger = LogFactory.getLog(LockManager.class);
-    private StringComparator comparator = new StringComparator();
 
-    /**
-     * Aquires a lock for a URI. Blocks until lock has been obtained.
-     *
-     * @param uri the URI to lock
-     */
-    public String[] lock(String uri) {
-        return lock(new String[] { uri });
-    }
 
-    /**
-     * Aquires locks for a list of URIs. Blocks until all locks are
-     * obtained.
-     *
-     * @param uris the <code>List</code> of URIs (Strings) to lock
-     */
-    public String[] lock(List uris) {
-        String[] list = new String[uris.size()];
 
-        int index = 0;
-
-        for (Iterator i = uris.iterator(); i.hasNext();) {
-            String uri = (String) i.next();
-
-            list[index++] = uri;
-        }
-
+    public List<String> lock(String[] uris) {
+        List<String> list = java.util.Arrays.asList(uris);
         return lock(list);
     }
+    
 
     /**
      * Aquires locks for a list of URIs. Blocks until all locks are
-     * obtained.
+     * obtained, or throws an exception (leaving no locks) if not all
+     * the locks could be obtained.
      *
      * @param uris the list of URIs to lock
+     * @throws RuntimeException if not all of the requested locks
+     * could be obtained
      */
-    public String[] lock(String[] uris) {
-        Arrays.sort(uris, this.comparator);
-        List claimedLocks = new ArrayList();
-        for (int i = 0; i < uris.length; i++) {
+    public List<String> lock(List<String> uris) {
+
+        Collections.sort(uris);
+
+        List<String> claimedLocks = new ArrayList<String>();
+        for (String uri: uris) {
             Lock lock = null;
             boolean haveLock = false;
             int iterations = 0;
 
             while (!haveLock) {
-                iterations++;
-                lock = getLock(uris[i]);
+                lock = getLock(uri);
 
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("claiming " + uris[i]);
+                    this.logger.debug("claiming " + uri);
                 }
 
                 lock.claim(this.iterationWaitTimeout);
@@ -119,14 +99,14 @@ public class LockManager {
 
                 if (lock.isValid()) {                    
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("suceeded: locking " + uris[i]
+                        this.logger.debug("suceeded: locking " + uri
                                      + ", iterations = " + iterations);
                     }
                     haveLock = true;
-                    claimedLocks.add(uris[i]);
+                    claimedLocks.add(uri);
                 } else {
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("failed: locking " + uris[i]
+                        this.logger.debug("failed: locking " + uri
                                      + ", iterations = " + iterations);
                     }
                     if (iterations > this.maxIterations) {
@@ -134,28 +114,20 @@ public class LockManager {
                             this.logger.debug("giving up after " +
                                          this.maxIterations + " iterations");
                         }
-                        throw new RuntimeException(
-                            "Thread " + Thread.currentThread().getName() +
-                            " giving up locking " + uris[i] +
-                            " after " + iterations + " iterations");
+                        try {
+                            throw new RuntimeException(
+                                "Thread " + Thread.currentThread().getName() +
+                                " giving up locking " + uri +
+                                " after " + iterations + " iterations");
+                        } finally {
+                            unlock(claimedLocks);
+                        }
                     }
                 }
+                iterations++;
             }
         }
-        
-        return (String[]) claimedLocks.toArray(new String[claimedLocks.size()]);
-    }
-
-
-    /**
-     * Releases the lock on a URI. Wakes up the first thread waiting
-     * to obtain the lock. The current thread must be the owner of the
-     * lock.
-     *
-     * @param uri the URI to unlock
-     */
-    public void unlock(String uri) {
-        unlock(new String[] { uri });
+        return Collections.unmodifiableList(claimedLocks);
     }
 
 
@@ -165,35 +137,14 @@ public class LockManager {
      *
      * @param uris the URIs to unlock.
      */
-    public void unlock(List uris) {
-        String[] list = new String[uris.size()];
+    public void unlock(List<String> uris) {
 
-        int index = 0;
-
-        for (Iterator i = uris.iterator(); i.hasNext();) {
-            String uri = (String) i.next();
-
-            list[index++] = uri;
-        }
-
-        unlock(list);
-    }
-
-    /**
-     * Releases locks on a list of URIs. Wakes up threads waiting on
-     * the locks.
-     *
-     * @param uris the URIs to unlock.
-     */
-    public void unlock(String[] uris) {
-        Arrays.sort(uris, this.comparator);
-
-        for (int i = 0; i < uris.length; i++) {
-            Lock lock = getLock(uris[i]);
-
+        for (String uri: uris) {
+            Lock lock = getLock(uri);
             lock.release();
         }
     }
+
 
     /**
      * Gets a lock instance. The instance maps one to one to resource
@@ -206,7 +157,6 @@ public class LockManager {
 
         if (!this.locks.containsKey(uri)) {
             Lock lock = new Lock(uri);
-
             this.locks.put(uri, lock);
         }
         return (Lock) this.locks.get(uri);
@@ -224,7 +174,7 @@ public class LockManager {
     }
 
     /**
-     * Simple mutex implementation.
+     * Simple lock implementation.
      *
      */
     private class Lock {
@@ -320,19 +270,6 @@ public class LockManager {
                     LockManager.this.logger.warn(e);
                 }
             }
-        }
-    }
-
-    private class StringComparator implements Comparator {
-        public int compare(Object o1, Object o2) {
-            if (!((o1 instanceof String) && (o2 instanceof String))) {
-                throw new IllegalArgumentException("Need two Strings");
-            }
-
-            String a = (String) o1;
-            String b = (String) o2;
-
-            return a.compareTo(b);
         }
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2005, 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -184,9 +184,9 @@ public class Cache implements DataAccessor, InitializingBean {
 
         ResourceImpl[] resources = null;
         
-        String[] obtainedLocks = new String[0];
+        
+        List<String> obtainedLocks = this.lockManager.lock(parent.getChildURIs());
         try {
-            obtainedLocks = this.lockManager.lock(parent.getChildURIs());
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Loading " + parent.getChildURIs().length + " resources");
@@ -243,7 +243,7 @@ public class Cache implements DataAccessor, InitializingBean {
             updateStatistics(0, 1);
         }
 
-        this.lockManager.lock(uri);
+        List<String> lock = this.lockManager.lock(new String[]{uri});
 
         try {
             r = this.items.get(uri);
@@ -278,7 +278,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
             return r;
         } finally {
-            this.lockManager.unlock(uri);
+            this.lockManager.unlock(lock);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("load: took " +
@@ -308,9 +308,8 @@ public class Cache implements DataAccessor, InitializingBean {
             }
         }
         
-        String[] lockedUris = null;
+        List<String> lockedUris = this.lockManager.lock(uris);
         try {
-            lockedUris = this.lockManager.lock(uris);
             this.wrappedAccessor.storeACL(r);
             for (String uri: uris) {
                 if (this.items.containsURI(uri)) {
@@ -319,9 +318,7 @@ public class Cache implements DataAccessor, InitializingBean {
             }
 
         } finally {
-            if (lockedUris != null) {
-                this.lockManager.unlock(lockedUris);
-            }
+            this.lockManager.unlock(lockedUris);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -335,9 +332,8 @@ public class Cache implements DataAccessor, InitializingBean {
 
         uris.add(r.getURI());
 
-        String[] lockedUris = null;
+        List<String> lockedUris = this.lockManager.lock(uris);
         try {
-            lockedUris = this.lockManager.lock(uris);
             this.wrappedAccessor.store(r);
 
             for (String uri: uris) {
@@ -346,9 +342,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 }
             }
         } finally {
-            if (lockedUris != null) {
-                this.lockManager.unlock(lockedUris);
-            }
+            this.lockManager.unlock(lockedUris);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -356,9 +350,11 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public void copy(ResourceImpl r, ResourceImpl dest, String destURI, boolean copyACLs,
-                     PropertySet fixedProperties, PropertySet newResource) throws IOException {
+    public void copy(ResourceImpl r, ResourceImpl dest, PropertySet newResource, boolean copyACLs,
+                     PropertySet fixedProperties) throws IOException {
         
+        String destURI = newResource.getURI();
+
         List<String> uris = new ArrayList<String>();
         uris.add(r.getURI());
         uris.add(destURI);
@@ -368,7 +364,7 @@ public class Cache implements DataAccessor, InitializingBean {
             uris.add(destParentURI);
         }
 
-        String srcParentURI = URIUtil.getParentURI(r.getURI());
+        String srcParentURI = r.getParent();
         if ((srcParentURI != null) && !uris.contains(srcParentURI) &&
             this.items.containsURI(srcParentURI)) {
             uris.add(srcParentURI);
@@ -377,7 +373,7 @@ public class Cache implements DataAccessor, InitializingBean {
         this.lockManager.lock(uris);
 
         try {
-            this.wrappedAccessor.copy(r, dest, destURI, copyACLs, fixedProperties, newResource);
+            this.wrappedAccessor.copy(r, dest, newResource, copyACLs, fixedProperties);
 
             if (this.items.containsURI(destParentURI)) {
                 this.items.remove(destParentURI);
@@ -394,6 +390,51 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
+    public void move(ResourceImpl r, ResourceImpl newResource) throws IOException {
+        String destURI = newResource.getURI();
+
+        List<String> uris = new ArrayList<String>();
+        uris.add(r.getURI());
+        uris.add(destURI);
+        if (r.isCollection()) {
+            for (String uri: this.items.uriSet()) {
+                if (uri.startsWith(r.getURI()) && !uri.equals(r.getURI())) {
+                    uris.add(uri);
+                }
+            }
+        }
+        
+        String destParentURI = newResource.getParent();
+        if (this.items.containsURI(destParentURI)) {
+            uris.add(destParentURI);
+        }
+
+        String srcParentURI = r.getParent();
+        if ((srcParentURI != null) && !uris.contains(srcParentURI) &&
+            this.items.containsURI(srcParentURI)) {
+            uris.add(srcParentURI);
+        }
+        
+        List<String> locks = this.lockManager.lock(uris);
+
+        try {
+            this.wrappedAccessor.move(r, newResource);
+
+            for (String uri: uris) {
+                if (this.items.containsURI(uri)) {
+                    this.items.remove(uri);
+                }
+            }
+
+        } finally {
+            this.lockManager.unlock(locks);
+
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("cache size : " + this.items.size());
+            }
+        }
+    }
+    
 
     public void delete(ResourceImpl r) throws IOException {
         List<String> uris = new ArrayList<String>();
@@ -440,13 +481,13 @@ public class Cache implements DataAccessor, InitializingBean {
 
     public void storeContent(String uri, InputStream stream)
         throws IOException {
+        List<String> lock = this.lockManager.lock(new String[]{uri});
         try {
-            this.lockManager.lock(uri);
             this.items.remove(uri);
 
             this.wrappedAccessor.storeContent(uri, stream);
         } finally {
-            this.lockManager.unlock(uri);
+            this.lockManager.unlock(lock);
         }
     }
 

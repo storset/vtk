@@ -606,10 +606,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
     
     public void copy(ResourceImpl resource, ResourceImpl dest,
-                     String destURI, boolean copyACLs,
-                     PropertySet fixedProperties, PropertySet newResource) throws IOException {
+                     PropertySet newResource, boolean copyACLs,
+                     PropertySet fixedProperties) throws IOException {
+
+        String destURI = newResource.getURI();
+
         try {
             this.sqlMapClient.startTransaction();
+
 
             int depthDiff = SqlDaoUtils.getUriDepth(destURI)
                 - SqlDaoUtils.getUriDepth(resource.getURI());
@@ -718,6 +722,47 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     }
 
 
+    public void move(ResourceImpl resource, ResourceImpl newResource) throws IOException {
+
+        try {
+            this.sqlMapClient.startTransaction();
+
+            String destURI = newResource.getURI();
+
+            int depthDiff = SqlDaoUtils.getUriDepth(destURI)
+                - SqlDaoUtils.getUriDepth(resource.getURI());
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("srcUri", resource.getURI());
+            parameters.put("destUri", newResource.getURI());
+
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               resource.getURI(), SQL_ESCAPE_CHAR));
+            parameters.put("depthDiff", new Integer(depthDiff));
+
+            String sqlMap = getSqlMap("moveResource");
+            this.sqlMapClient.update(sqlMap, parameters);
+
+            sqlMap = getSqlMap("moveDescendants");
+            this.sqlMapClient.update(sqlMap, parameters);
+
+            this.contentStore.copy(resource.getURI(), destURI);
+            this.contentStore.deleteResource(resource.getURI());
+            
+            this.sqlMapClient.commitTransaction();
+        } catch (SQLException e) {
+            this.logger.warn("Error occurred while moving resource: " + resource.getURI()
+                             + " to: " + newResource.getURI(), e);
+            throw new IOException(e.getMessage());
+        } finally {
+            try {
+                this.sqlMapClient.endTransaction();
+            } catch (SQLException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+    }
+    
 
     private void loadChildUris(ResourceImpl parent) throws SQLException {
         Map<String, Object> parameters = new HashMap<String, Object>();

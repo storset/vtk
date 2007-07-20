@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2005, 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -131,20 +131,28 @@ public interface DataAccessor {
      * @param resource the resource to copy from
      * @param dest the resource to copy into (becomes the parent of
      * the copied resource after the copy operation)
-     * @param destURI the destination path
+     * @param newResource the newly created resource: this resource is
+     * passed as an argument, as its properties may have changed as a
+     * result of the name change operation.
      * @param copyACLs whether to copy ACLs from the existing
      * resource, or to inherit from the new parent resource
      * @param fixedProperties a set of properties to set on the new
      * resource(s) instead of copying from the existing
-     * @param newResource the newly created resource
      */
     public void copy(ResourceImpl resource, ResourceImpl dest,
-                     String destURI, boolean copyACLs,
-                     PropertySet fixedProperties,
-                     PropertySet newResource) throws IOException;
+                     PropertySet newResource, boolean copyACLs,
+                     PropertySet fixedProperties) throws IOException;
 
 
-    //public void move(Resource resource, String destURI);
+    /**
+     * Atomically moves a resource to a new destination.
+     * @param resource the resource to move
+     * @param newResource the newly created resource: this resource is
+     * passed as an argument, as its properties may have changed as a
+     * result of the name change operation.
+     */
+    public void move(ResourceImpl resource, ResourceImpl newResource)
+        throws IOException;
 
 
     /**

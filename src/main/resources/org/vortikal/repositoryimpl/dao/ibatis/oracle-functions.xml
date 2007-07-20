@@ -35,6 +35,10 @@
     vortex_comment_seq_pk.nextval
   </sql>
 
+  <sql id="destinationDescendantUriMove">
+    #destUri# || substr(uri, length(#srcUri#) + 1)
+  </sql>
+
   <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
     update vortex_resource r1
       set (acl_inherited_from) =

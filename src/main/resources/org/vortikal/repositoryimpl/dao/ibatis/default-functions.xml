@@ -35,4 +35,8 @@
     nextval('vortex_comment_seq_pk')
   </sql>
 
+  <sql id="destinationDescendantUriMove">
+    #destUri# || substring(uri, length(#srcUri#) + 1)
+  </sql>
+  
 </sqlMap>

@@ -99,13 +99,6 @@ public interface DataAccessor {
         throws IOException;
 
 
-//     public ContentHandle writeTemporaryContent(String uri, InputStream stream) throws IOException;
-    
-//     public class ContentHandle 
-//     {
-//     }
-
-
     /**
      * Lists all descendants of a collection resource, sorted by URI
      */

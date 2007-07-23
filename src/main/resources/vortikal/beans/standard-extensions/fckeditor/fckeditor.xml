@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="fckeditor.distStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${fckeditor.base}" />
+    <property name="resourceLocation" value="classpath:///vortikal/resources/fckeditor-build" />
+  </bean>
+
+  <bean id="fckeditor.fckService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9900" />
+    <property name="assertions">
+      <list>
+        <ref bean="fckeditor.modeParameterAssertion" />
+        <bean class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
+          <property name="header" value="User-Agent" />
+          <property name="patterns">
+            <list>
+              <!-- FIXME: These tests must be improved -->
+
+              <!-- IE -->
+              <value>Mozilla/4\.0 \(compatible; MSIE 7\.0; Windows.*</value>
+              <value>Mozilla/4\.0 \(compatible; MSIE 6\.0; Windows.*</value>
+              <value>Mozilla/4\.0 \(compatible; MSIE 5\.5; Windows.*</value>
+              
+              <!-- Mozilla -->
+              <value>Mozilla/5\.0.*rv:1\.7\..*Gecko.*</value>
+              <value>Mozilla/5\.0.*rv:1\.8\..*Gecko.*</value>
+
+              <!-- Firefox -->
+              <value>Mozilla/5\.0.*Gecko.*Firefox/1\..*</value>
+
+              <!-- Camino -->
+              <value>Mozilla/5\.0.*Gecko.*Camino/.*</value>
+
+	      <!-- Opera 9.01 (linux) not working 
+	      <value>Mozilla/4\.0 \(compatible; .*\) Opera 9\.01</value>
+	      -->
+            </list>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="fckeditor.editService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="fckeditor.fckService" />
+    <property name="order" value="-9800" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="resourceTypeIsXhtmlTrans" />
+        <ref bean="fckeditor.parameterEqualsEdit" />
+      </list>
+    </property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map><entry key="tabOrder"><value type="java.lang.Integer">150</value></entry></map>
+    </property>
+    <property name="handler" ref="fckeditor.editHandler" />
+  </bean>
+
+  <bean id="fckeditor.getPutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="fckeditor.fckService" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="fckeditor.parameterEqualsGetPut" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="fckeditor.getSourceHandlerInterceptor"
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+    <property name="includeLastModifiedHeader" value="false" />
+    <property name="includeEtagHeader" value="false" />
+  </bean>
+
+
+  <bean id="fckeditor.getSourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="fckeditor.getPutService" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="GET" />
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="fckeditor.getSourceHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.controller.DisplayResourceController"
+            parent="requestLocalRepositoryAware">
+        <property name="ignoreLastModified" value="true" />
+        <property name="view">
+          <bean class="org.vortikal.web.view.decorating.WrappingView">
+            <property name="view">
+              <bean class="org.vortikal.web.view.DisplayResourceView">
+              </bean>
+            </property>
+            <property name="viewWrapper">
+              <bean class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+                <property name="guessCharacterEncodingFromContent" value="true" />
+                <property name="forcedOutputEncoding" value="utf-8" />
+                <property name="decorators">
+                  <list>
+                    <bean class="org.vortikal.web.view.decorating.HtmlBodyExtractor">
+                      <property name="parser" ref="decorating.htmlParser" />
+                    </bean>
+                  </list>
+                </property>
+              </bean>
+            </property>
+          </bean>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="fckeditor.putService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="fckeditor.getPutService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="PUT" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="fckeditor.putController" />
+  </bean>
+
+
+  <bean id="fckeditor.putController"
+        class="org.vortikal.webdav.PutController"
+        parent="requestLocalRepositoryAware">
+    <property name="maxUploadSize" value="1000000" />
+    <property name="supportIfHeaders" value="false" />
+    <property name="obeyClientCharacterEncoding" value="false" />
+    <property name="removeUserSpecifiedCharacterEncoding" value="true" />
+    <property name="requestFilters">
+      <list>
+        <!--
+        <ref bean="kupu.translateHeadersSaveFilter" />
+        <ref bean="kupu.replaceContentTypeFilter" />
+        -->
+        <ref bean="fckeditor.replaceBodyFilter" />
+        <ref bean="fckeditor.prettyPrintFilter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="fckeditor.replaceBodyFilter"
+        class="org.vortikal.web.filter.ReplaceHtmlBodyInputStreamFilter"
+        parent="requestLocalRepositoryAware">
+    <property name="parser" ref="decorating.htmlParser" />
+  </bean>
+
+  <bean id="fckeditor.prettyPrintFilter"
+        class="org.vortikal.web.filter.JerichoHtmlInputStreamFilter" />
+
+
+  <bean id="fckeditor.modeParameterAssertion"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="mode" />
+    <property name="parameterValue" value="fck-editor" />
+  </bean>
+
+  <bean id="fckeditor.parameterEqualsEdit"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="fck-action" />
+    <property name="parameterValue" value="edit" />
+  </bean>
+
+  <bean id="fckeditor.parameterEqualsGetPut"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="fck-action" />
+    <property name="parameterValue" value="get-put" />
+  </bean>
+
+
+  <bean id="fckeditor.wrappingViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="fckeditor.editView" value-ref="fckeditor.editView" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="fckeditor.editView" parent="freemarkerView">
+    <property name="url" value="fckeditor/fckeditor.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="service" ref="viewService" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${fckeditor.base}" />
+          <property name="urlName" value="url" />
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="fckSource" />
+          <property name="service" ref="fckeditor.getSourceService" />
+          <property name="urlName" value="getURL" />
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="fckSource" />
+          <property name="service" ref="fckeditor.putService" />
+          <property name="urlName" value="putURL" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="fckeditor.editCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${cssBaseURL}/basic.css</value>
+        <value>${cssBaseURL}/tabs.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- FCKEditor main controller -->
+  
+  <bean id="fckeditor.editHandler"
+        class="org.vortikal.web.controller.ResourceServiceURLController"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="fckeditor.editService"/>
+    <property name="viewName" value="fckeditor.editView" />
+  </bean>
+
+
+</beans>

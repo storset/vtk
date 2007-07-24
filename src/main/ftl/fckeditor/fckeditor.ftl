@@ -24,7 +24,6 @@
           fckSource.putURL: ${fckSource.putURL?html}
         </pre>-->
 
-
         
         <div id="myEditorDiv">FCKeditor loading failed</div>
         <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
@@ -147,13 +146,13 @@
 			//alert(xReq.responseText);
 			createFCKEditorInDiv("myEditorDiv", xReq.responseText, 700, 500, "myEditorIstance");
 		}}
-		xReq.open("get", "${fckSource.getURL}", true);
+		xReq.open("GET", "${fckSource.getURL}", true);
 		xReq.send(null);
 
 		// Save function
 		function performSave(reshtml){
 			var xReq = getXmlHttpRequestObject(); // new XMLHttpRequest()
-			xReq.open("get", "${fckSource.getURL}", true);
+			xReq.open("PUT", "${fckSource.putURL}", true);
 			xReq.send(reshtml);
 		}
 	</script>

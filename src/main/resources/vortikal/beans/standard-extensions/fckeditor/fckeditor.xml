@@ -109,6 +109,7 @@
               <bean class="org.vortikal.web.view.DisplayResourceView">
               </bean>
             </property>
+            <!--
             <property name="viewWrapper">
               <bean class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
                 <property name="guessCharacterEncodingFromContent" value="true" />
@@ -122,6 +123,7 @@
                 </property>
               </bean>
             </property>
+            -->
           </bean>
         </property>
       </bean>

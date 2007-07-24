@@ -49,7 +49,8 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 /**
- * Controller that removes a {@link Comment} from a {@link Resource}.
+ * Controller that removes a {@link Comment comment} from a {@link
+ * Resource resource}.
  * 
  */
 public class DeleteCommentController extends AbstractController implements InitializingBean {

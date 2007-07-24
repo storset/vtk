@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -53,8 +54,11 @@ public class HtmlBodyExtractor implements Decorator {
     }
     
     public void decorate(Map model, HttpServletRequest request, Content content) throws Exception {
-        InputStream is = request.getInputStream();
-        HtmlPage page = this.parser.parse(is, request.getCharacterEncoding());
+        InputStream is = new ByteArrayInputStream(
+            content.getContent().getBytes(content.getOriginalCharacterEncoding()));
+
+        HtmlPage page = this.parser.parse(is, content.getOriginalCharacterEncoding());
+
         HtmlElement body = findBodyTag(page.getRootElement());
         if (body == null) {
             throw new RuntimeException("Did not find a body element");

@@ -980,8 +980,8 @@ function FCKFocusManager_Win_OnFocus(){
 	FCKFocusManager._ResetTimer() ;
 
 	// Filter XML if necessary
-	if(isInvalidElementsAndTags(FCK.EditorDocument.body, parent.whitelist)){
-		var x = getContents(FCK.EditorDocument.body, parent.whitelist, 0);
+	if(isInvalidElementsAndTags(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist)){
+		var x = getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
 		FCK.SetHTML(x);
 		//alert("Document formating adjusted");
 	}

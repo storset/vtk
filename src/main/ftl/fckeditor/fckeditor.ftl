@@ -16,17 +16,17 @@
     </head>
     <body>
 
-        <p>A: Editor for HTML 1 Transitional</p>
+        <!--<p>A: Editor for HTML 1 Transitional</p>
         Config: 
         <pre>
           fckeditorBase: ${fckeditorBase.url?html}
           fckSource.getURL: ${fckSource.getURL?html}
           fckSource.putURL: ${fckSource.putURL?html}
-        </pre>
+        </pre>-->
 
 
         
-        <div id="myEditorDiv">hello</div>
+        <div id="myEditorDiv">FCKeditor loading failed</div>
         <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
 	<script type="text/javascript">
 		function createFCKEditorInDiv(editorDiv, contents, w, h, editorinstancename){

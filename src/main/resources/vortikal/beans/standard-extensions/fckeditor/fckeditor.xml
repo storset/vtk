@@ -156,8 +156,8 @@
         <!--
         <ref bean="kupu.translateHeadersSaveFilter" />
         <ref bean="kupu.replaceContentTypeFilter" />
-        -->
         <ref bean="fckeditor.replaceBodyFilter" />
+        -->
         <ref bean="fckeditor.prettyPrintFilter" />
       </list>
     </property>

@@ -141,8 +141,7 @@
 			}
 		}
 
-		var srchtml;
-
+		// The following code is executed on load
 		var xReq = getXmlHttpRequestObject(); // new XMLHttpRequest()
 		xReq.onreadystatechange = function(){ if(xReq.readyState==4){
 			//alert(xReq.responseText);
@@ -150,6 +149,13 @@
 		}}
 		xReq.open("get", "${fckSource.getURL}", true);
 		xReq.send(null);
+
+		// Save function
+		function performSave(reshtml){
+			var xReq = getXmlHttpRequestObject(); // new XMLHttpRequest()
+			xReq.open("get", "${fckSource.getURL}", true);
+			xReq.send(reshtml);
+		}
 	</script>
         
     </body>

@@ -150,7 +150,7 @@
 		xReq.send(null);
 
 		// Save function
-		function performSave(reshtml){
+		function performSave(reshtml, x){
 			var xReq = getXmlHttpRequestObject(); // new XMLHttpRequest()
 			xReq.open("PUT", "${fckSource.putURL}", true);
 			xReq.send(reshtml);

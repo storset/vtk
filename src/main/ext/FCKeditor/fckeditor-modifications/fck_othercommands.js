@@ -157,9 +157,10 @@ var FCKSaveCommand = function()
 FCKSaveCommand.prototype.Execute = function(){
 	// Filter XML
 	//FCK.EditorDocument.tagName = 'html';
-	var reshtml = getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
+	var xhtmlContentType = "<!DOCTYPE " + FCK.EditorDocument.doctype.name + " PUBLIC \"" + FCK.EditorDocument.doctype.publicId + "\" \"" + FCK.EditorDocument.doctype.systemId + "\">";
+	var reshtml = xhtmlContentType + "\n" + getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
 	FCK.SetHTML(reshtml);
-	parent.performSave(reshtml);
+	parent.performSave(reshtml, FCK);
 	return;
 }
 

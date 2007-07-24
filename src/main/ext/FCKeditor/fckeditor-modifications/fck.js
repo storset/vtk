@@ -981,9 +981,9 @@ function FCKFocusManager_Win_OnFocus(){
 
 	// Filter XML if necessary
 	if(isInvalidElementsAndTags(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist)){
-		var x = getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
-		FCK.SetHTML(x);
-		//alert("Document formating adjusted");
+		var xhtmlContentType = "<!DOCTYPE " + FCK.EditorDocument.doctype.name + " PUBLIC \"" + FCK.EditorDocument.doctype.publicId + "\" \"" + FCK.EditorDocument.doctype.systemId + "\">";
+		var reshtml = xhtmlContentType + "\n" + getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
+		FCK.SetHTML(reshtml);
 	}
 
 	if ( !FCK.HasFocus && !FCKFocusManager.IsLocked )

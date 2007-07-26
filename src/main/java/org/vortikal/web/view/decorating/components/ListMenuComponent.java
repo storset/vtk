@@ -121,7 +121,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private Searcher searcher;
 
 
-    public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
+    public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         Search search = buildSearch(menuRequest);

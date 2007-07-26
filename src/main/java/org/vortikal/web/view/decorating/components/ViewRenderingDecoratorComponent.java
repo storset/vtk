@@ -55,7 +55,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     public final void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
-        Map model = new HashMap();
+        Map<Object, Object> model = new HashMap<Object, Object>();
         processModel(model, request, response);
         renderView(model, request, response);
     }
@@ -71,7 +71,8 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
      * @param response the decorator response
      * @exception Exception if an error occurs
      */
-    protected void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
+                                DecoratorResponse response)
         throws Exception {
 
         if (!(this.view instanceof ReferenceDataProviding)) {

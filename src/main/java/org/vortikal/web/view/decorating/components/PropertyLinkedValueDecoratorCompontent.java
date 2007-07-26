@@ -67,7 +67,7 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         this.repository = repository;
     }
 
-    protected void processModel(Map model, DecoratorRequest request,
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();

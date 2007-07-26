@@ -109,7 +109,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     
 
 
-    public void processModel(Map model, DecoratorRequest request, DecoratorResponse response)
+    public void processModel(Map<Object, Object> model, DecoratorRequest request,
+                             DecoratorResponse response)
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         Search search = buildSearch(menuRequest);

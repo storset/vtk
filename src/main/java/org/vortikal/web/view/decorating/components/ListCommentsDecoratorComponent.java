@@ -30,13 +30,13 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Required;
+
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;

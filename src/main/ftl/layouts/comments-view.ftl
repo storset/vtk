@@ -1,5 +1,20 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<style type="text/css">
+  div.vrtx-comment {
+     margin-bottom: 2em;
+  }
+  div.comment-info {
+     font-size: 90%;
+     padding-top: 1em;
+  }
+  .even {
+  }
+  .odd {
+  }
+</style>
+
+
 <div class="vrtx-comments" id="comments">
 
   <#if comments?exists>
@@ -11,15 +26,17 @@
     </#assign>
     <#if baseCommentURL?exists>
       <#-- XXX: which header level to use? -->
-      <h3><a href="${(baseCommentURL + '#comments')?html}">${header}</a></h3>
+      <h2><a href="${(baseCommentURL + '#comments')?html}">${header}</a></h2>
     <#else>
       ${header}
     </#if>
 
     <#assign comments = comments?sort_by("time") />
 
+    <#assign rowclass="even" />
+
     <#list comments as comment>
-      <p class="vrtx-comment" id="comment-${comment.ID?c}">
+      <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?c}">
         <#if config.titlesEnabled>
           <div class="comment-title">
             <#if baseCommentURL?exists>
@@ -32,12 +49,15 @@
               </#if>
           </div>
         </#if>
-        <span class="comment-body">${comment.text?html}</span>
+        <div class="comment-body">
+          ${comment.text?html}
+        </div>
         <div class="comment-info">
           ${comment.author?html} |
           <@vrtx.date value=comment.time format='long' />
         </div>
-      </p>
+      </div>
+      <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
     </#list>
   </#if>
 
@@ -45,7 +65,7 @@
       <hr /> 
 
       <#-- XXX: which header level to use? -->
-      <h3><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></h3>
+      <h2><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></h2>
 
       <#if !postCommentURL?exists && !principal?exists && loginURL?exists>
         <#assign defaultMsg>

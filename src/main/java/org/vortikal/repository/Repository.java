@@ -504,10 +504,23 @@ public interface Repository {
      *
      * @param token the security token of the current principal
      * @param resource the resource
+     * @param comment the comment to delete
      * @exception RepositoryException if an error occurs
      * @exception AuthenticationException if an error occurs
      */
     public void deleteComment(String token, Resource resource, Comment comment)
+        throws RepositoryException, AuthenticationException;
+
+
+    /**
+     * Deletes all comments on a resource
+     *
+     * @param token the security token of the current principal
+     * @param resource the resource
+     * @exception RepositoryException if an error occurs
+     * @exception AuthenticationException if an error occurs
+     */
+    public void deleteAllComments(String token, Resource resource)
         throws RepositoryException, AuthenticationException;
 
 

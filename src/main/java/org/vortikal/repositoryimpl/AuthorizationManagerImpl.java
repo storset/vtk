@@ -242,12 +242,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     
 
     private static final RepositoryAction[] ADD_COMMENT_AUTH_PRIVILEGES = 
-        new RepositoryAction[] {Privilege.ALL, Privilege.WRITE, Privilege.ADD_COMMENT};
+        new RepositoryAction[] {Privilege.ADD_COMMENT};
 
     /**
      * <ul>
-     *   <li>Privilege WRITE, ALL or ADD_COMMENT in ACL
-     *   <li>Role ROOT
+     *   <li>Privilege ADD_COMMENT in ACL
      *   <li>+ resource not locked by another principal
      * </ul>
      * @return is authorized

@@ -15,6 +15,7 @@
     <property name="description" value="Lists comments" />
     <property name="postCommentService" ref="commenting.postCommentService" />
     <property name="deleteCommentService" ref="commenting.deleteCommentService" />
+    <property name="deleteAllCommentsService" ref="commenting.deleteAllCommentsService" />
     <property name="loginService" ref="loginService" />
     <property name="view" ref="commenting.commentsView" />
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
@@ -65,6 +66,17 @@
     <property name="handler" ref="commenting.deleteCommentController" />
   </bean>
 
+  <bean name="commenting.deleteAllCommentsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsDeleteAllComments" />
+        <ref bean="commenting.hasDeletePermission" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.deleteAllCommentsController" />
+  </bean>
+
   <bean name="commenting.postCommentController"
         class="org.vortikal.web.commenting.PostCommentController"
         parent="requestLocalRepositoryAware">
@@ -89,6 +101,12 @@
     <property name="viewName" value="commenting.redirectToDefault" />
   </bean>
 
+  <bean name="commenting.deleteAllCommentsController"
+        class="org.vortikal.web.commenting.DeleteCommentController"
+        parent="requestLocalRepositoryAware">
+    <property name="deleteAllComments" value="true" />
+    <property name="viewName" value="commenting.redirectToDefault" />
+  </bean>
 
   <bean id="commenting.requestParameterIsAddComment" 
     class="org.vortikal.web.service.RequestParameterAssertion">
@@ -100,6 +118,12 @@
     class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="delete-comment" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsDeleteAllComments" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="delete-all-comments" />
   </bean>
 
   <bean id="commenting.isPostRequest"

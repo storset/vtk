@@ -41,6 +41,8 @@ public interface CommentDAO {
 
     public void delete(Comment comment) throws RuntimeException;
 
+    public void deleteAll(Resource resource) throws RuntimeException;
+
     public Comment create(Resource resource, Comment comment) throws RuntimeException;
 
     public Comment update(Comment comment) throws RuntimeException;

@@ -36,9 +36,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -54,25 +55,30 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
     private Repository repository;
     private Service postCommentService;
     private Service deleteCommentService;
+    private Service deleteAllCommentsService;
     private Service loginService;
     private String formSessionAttributeName;
     
 
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public void setPostCommentService(Service postCommentService) {
+    @Required public void setPostCommentService(Service postCommentService) {
         this.postCommentService = postCommentService;
+    }
+    
+
+    @Required public void setDeleteCommentService(Service deleteCommentService) {
+        this.deleteCommentService = deleteCommentService;
+    }
+    
+    @Required public void setDeleteAllCommentsService(Service deleteAllCommentsService) {
+        this.deleteAllCommentsService = deleteAllCommentsService;
     }
     
     public void setLoginService(Service loginService) {
         this.loginService = loginService;
-    }
-    
-
-    public void setDeleteCommentService(Service deleteCommentService) {
-        this.deleteCommentService = deleteCommentService;
     }
     
     public void setFormSessionAttributeName(String formSessionAttributeName) {
@@ -80,25 +86,8 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
     }
     
 
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
 
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'repository' not set");
-        }
-        if (this.postCommentService == null) {
-            throw new BeanInitializationException(
-            "JavaBean property 'postCommentService' not set");
-        }
-        if (this.deleteCommentService == null) {
-            throw new BeanInitializationException(
-            "JavaBean property 'deleteCommentService' not set");
-        }
-    }
-
-
-    protected void processModel(Map model, DecoratorRequest request,
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
@@ -125,7 +114,12 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
         List<Comment> comments = repository.getComments(token, resource);
         model.put("comments", comments);
 
-        Map<String, URL> commentURLs = new HashMap<String, URL>();
+        boolean commentsEnabled =
+            resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
+
+        model.put("commentsEnabled", Boolean.valueOf(commentsEnabled));
+        
+
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();
 
         URL baseDeleteURL = null;
@@ -141,6 +135,12 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
             }
         }
         model.put("deleteCommentURLs", deleteCommentURLs);
+
+        try {
+            URL deleteAllCommentsURL = this.deleteAllCommentsService.constructURL(resource, principal);
+            model.put("deleteAllCommentsURL", deleteAllCommentsURL);
+        } catch (Exception e) { }
+        
 
         URL baseCommentURL = null;
         try {

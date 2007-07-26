@@ -57,6 +57,8 @@ public class DeleteCommentController extends AbstractController implements Initi
 
     private Repository repository;
     private String viewName;
+    private boolean deleteAllComments = false;
+    
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -66,6 +68,11 @@ public class DeleteCommentController extends AbstractController implements Initi
         this.viewName = viewName;
     }
     
+    public void setDeleteAllComments(boolean deleteAllComments) {
+        this.deleteAllComments = deleteAllComments;
+    }
+    
+
     public void afterPropertiesSet() throws Exception {
         if (this.viewName == null)
             throw new BeanInitializationException("Property 'viewName' must be set");
@@ -89,19 +96,23 @@ public class DeleteCommentController extends AbstractController implements Initi
         String uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, true);
 
-        int id = -1;
-        try {
-            id = Integer.parseInt(request.getParameter("comment-id"));
-        } catch (Throwable t) {
-            throw new ResourceNotFoundException("No such comment");
-        }
+        if (this.deleteAllComments) {
+            this.repository.deleteAllComments(token, resource);
+        } else {
+            int id = -1;
+            try {
+                id = Integer.parseInt(request.getParameter("comment-id"));
+            } catch (Throwable t) {
+                throw new ResourceNotFoundException("No such comment");
+            }
 
-        List<Comment> comments = this.repository.getComments(token, resource);
-        Comment comment = findComment(id, comments);
-        if (comment == null) {
-            throw new ResourceNotFoundException("No such comment");
+            List<Comment> comments = this.repository.getComments(token, resource);
+            Comment comment = findComment(id, comments);
+            if (comment == null) {
+                throw new ResourceNotFoundException("No such comment");
+            }
+            this.repository.deleteComment(token, resource, comment);
         }
-        this.repository.deleteComment(token, resource, comment);
         
         Map model = new HashMap();
         model.put("resource", resource);

@@ -736,6 +736,11 @@
     delete from vortex_comment where id = #ID#
   </delete>
 
+  <delete id="deleteAllComments" parameterClass="org.vortikal.repository.Resource">
+    delete from vortex_comment where resource_id in 
+       (select resource_id from vortex_resource where uri = #URI#)
+  </delete>
+
   <!-- See: http://issues.apache.org/jira/browse/IBATIS-244 -->
   <insert id="insertComment" parameterClass="org.vortikal.repository.Comment">
     insert into vortex_comment 

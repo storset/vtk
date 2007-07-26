@@ -286,12 +286,15 @@ public class RequestLocalRepository implements InitializingBean, Repository {
     }
     
 
-
     public void deleteComment(String token, Resource resource, Comment comment)
         throws RepositoryException, AuthenticationException {
         this.repository.deleteComment(token, resource, comment);
     }
     
+    public void deleteAllComments(String token, Resource resource)
+        throws RepositoryException, AuthenticationException {
+        this.repository.deleteAllComments(token, resource);
+    }
 
     public Comment updateComment(String token, Resource resource, Comment comment)
         throws RepositoryException, AuthenticationException {

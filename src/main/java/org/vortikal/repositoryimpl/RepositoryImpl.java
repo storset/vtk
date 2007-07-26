@@ -751,6 +751,31 @@ public class RepositoryImpl
     }
     
 
+    public void deleteAllComments(String token, Resource resource) {
+        Principal principal = this.tokenManager.getPrincipal(token);
+
+        if (resource == null) {
+            throw new IllegalOperationException("Resource argument cannot be NULL");
+        }
+
+        if (!(resource instanceof ResourceImpl)) {
+            throw new IllegalOperationException("Can't store unknown implementation of resource..");
+        }
+
+        try {
+            ResourceImpl original = this.dao.load(resource.getURI());
+            if (original == null) {
+                throw new ResourceNotFoundException(resource.getURI());
+            }
+
+            this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
+            this.commentDAO.deleteAll(resource);
+        } catch (IOException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
+        }
+    }
+    
+
 
     public Comment updateComment(String token, Resource resource, Comment comment) {
         Principal principal = this.tokenManager.getPrincipal(token);

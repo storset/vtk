@@ -281,7 +281,7 @@ create table vortex_comment
     resource_id int not null,
     author varchar(64) not null,
     time timestamp not null,
-    title varchar(2048) not null,
+    title varchar(2048) null,
     text varchar(4096) not null,
     approved char(1) default 'Y' not null
 );

@@ -49,6 +49,9 @@
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.write" default="Write" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="write" privilegeHeading=privilegeHeading />
 
+      <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
+      <@permissions.editOrDisplayPrivilege privilegeName="add-comment" privilegeHeading=commentHeading />
+
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
      
@@ -61,9 +64,6 @@
         <#assign privilegeList = [{"name":"read-processed", "heading":readProHeading }] />
       </#if>        
       <@permissions.editOrDisplayPrivileges privilegeList=privilegeList heading=groupHeading />
-
-      <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
-      <@permissions.editOrDisplayPrivilege privilegeName="add-comment" privilegeHeading=commentHeading />
 
     </div>
   </body>

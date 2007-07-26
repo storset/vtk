@@ -38,9 +38,15 @@ import org.springframework.validation.Validator;
 public class PostCommentCommandValidator implements Validator {
 
     private int maxLength = 4000;
+    private boolean requireTitle = false;
+    
 
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
+    }
+    
+    public void setRequireTitle(boolean requireTitle) {
+        this.requireTitle = requireTitle;
     }
     
 
@@ -55,8 +61,9 @@ public class PostCommentCommandValidator implements Validator {
 
         if (postCommentCommand.getCancelAction() != null) return;
         
-        if (postCommentCommand.getTitle() == null
-            || postCommentCommand.getTitle().trim().equals("")) {
+        if (this.requireTitle &&
+            (postCommentCommand.getTitle() == null
+             || postCommentCommand.getTitle().trim().equals(""))) {
             errors.rejectValue("title", "commenting.post.title.missing",
                                "You must type a value");
         }

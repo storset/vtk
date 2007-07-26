@@ -104,6 +104,8 @@ public class RepositoryImpl
     
     private String id;
 
+    private int maxComments = 1000;
+
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
     }
@@ -700,6 +702,14 @@ public class RepositoryImpl
             }
 
             this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
+
+            List comments = this.commentDAO.listCommentsByResource(resource);
+            if (comments.size() > this.maxComments) {
+                throw new IllegalOperationException(
+                    "Too many comments on resource " + resource.getURI());
+            }
+
+
             Comment comment = new Comment();
             comment.setURI(original.getURI());
             comment.setTime(new java.util.Date());
@@ -709,7 +719,6 @@ public class RepositoryImpl
             comment.setApproved(true);
 
             comment = this.commentDAO.create(original, comment);
-            //comment = this.commentDAO.update(comment);
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -910,6 +919,16 @@ public class RepositoryImpl
     public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
     }
+
+    public void setMaxComments(int maxComments) {
+        if (maxComments < 0) {
+            throw new IllegalArgumentException(
+                "Argument must be an integer >= 0");
+        }
+
+        this.maxComments = maxComments;
+    }
+    
 
     public void afterPropertiesSet() {
         if (this.dao == null) {

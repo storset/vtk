@@ -20,8 +20,26 @@
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
   </bean>
 
+  <bean id="commenting.titlesEnabled" class="java.lang.Boolean">
+    <constructor-arg value="${commenting.title.enabled}" />
+  </bean>
+
+
   <bean id="commenting.commentsView" parent="freemarkerView">
     <property name="url" value="layouts/comments-view.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="config" value-ref="commenting.freemarkerConfig" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="commenting.freemarkerConfig" class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="titlesEnabled" value-ref="commenting.titlesEnabled" />
+      </map>
+    </property>
   </bean>
 
   <bean name="commenting.postCommentService" class="org.vortikal.web.service.ServiceImpl">
@@ -60,7 +78,9 @@
   </bean>
 
   <bean name="commenting.postCommentValidator"
-        class="org.vortikal.web.commenting.PostCommentCommandValidator" />
+        class="org.vortikal.web.commenting.PostCommentCommandValidator">
+    <property name="requireTitle" ref="commenting.titlesEnabled" />
+  </bean>
 
 
   <bean name="commenting.deleteCommentController"

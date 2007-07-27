@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <style type="text/css">
@@ -44,7 +45,13 @@
       ${header}
     </#if>
     <#if comments?size &gt; 1>
-      <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('Are you sure?')" href="${deleteAllCommentsURL?html}">delete all</a>&nbsp;)</#if>
+      <#assign confirmation>
+        <@vrtx.msg code="commenting.deleteall.confirmation" 
+                   default="Are you sure you want to delete all ${comments?size} comments?" 
+                   args=[comments?size] />
+      </#assign>
+      <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
+      <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
     </#if>
    </div>
 
@@ -70,9 +77,13 @@
           ${comment.author?html} |
           <@vrtx.date value=comment.time format='long' />
           <#if deleteCommentURLs[comment.ID?c]?exists>
-            (&nbsp;<a onclick="return confirm('Are you sure?');" href="${deleteCommentURLs[comment.ID?c]?html}">delete</a>&nbsp;)
+            <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>
+            <#assign confirmation>
+              <@vrtx.msg code="commenting.delete.confirmation" 
+                         default="Are you sure you want to delete this comment?" />
+            </#assign>
+            (&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID?c]?html}">${message}</a>&nbsp;)
           </#if>
-
         </div>
       </div>
       <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
@@ -88,9 +99,7 @@
       <#assign defaultMsg>
         To comment on this resource you have to <a href="${loginURL?html}&amp;anchor=comment-form">log in</a>
       </#assign>
-      <p><@vrtx.rawMsg code="commenting.not-logged-in"
-                         default=defaultMsg
-                         args=[loginURL] /></p>
+      <p><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[loginURL] /></p>
 
     <#elseif principal?exists && !commentsEnabled>
       <p><@vrtx.msg code="commenting.disabled"
@@ -98,7 +107,7 @@
 
     <#elseif principal?exists && !postCommentURL?exists>
       <p><@vrtx.msg code="commenting.denied"
-                    default="You do not have permissions to add comments on this resource." /></p>
+                    default="You do not have sufficient privileges to add comments on this resource." /></p>
 
     <#elseif postCommentURL?exists>
       <form action="${postCommentURL?string?html}" method="post">

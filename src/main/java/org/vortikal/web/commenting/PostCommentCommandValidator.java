@@ -65,16 +65,17 @@ public class PostCommentCommandValidator implements Validator {
             (postCommentCommand.getTitle() == null
              || postCommentCommand.getTitle().trim().equals(""))) {
             errors.rejectValue("title", "commenting.post.title.missing",
-                               "You must type a value");
+                               "You must provide a title");
         }
         if (postCommentCommand.getText() == null
             || postCommentCommand.getText().trim().equals("")) {
             errors.rejectValue("text", "commenting.post.text.missing",
-                               "You must type a value");
+                               "You must type something in the comment field");
         }
         if (postCommentCommand.getText().length() > this.maxLength) {
             errors.rejectValue("text", "commenting.post.text.toolong",
-                               "Value too long");
+                               new Object[] {this.maxLength},
+                               "Value too long: maximum length is " + this.maxLength);
         }
     }
 }

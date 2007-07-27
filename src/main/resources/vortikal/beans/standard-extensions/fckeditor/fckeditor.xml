@@ -46,6 +46,12 @@
     </property>
   </bean>
 
+  <bean id="fckeditor.lockResourceHandlerInterceptor"
+        class="org.vortikal.web.controller.LockResourceHandlerInterceptor"
+        parent="requestLocalRepositoryAware">
+  </bean>
+
+
   <bean id="fckeditor.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="fckeditor.fckService" />
     <property name="order" value="-9800" />
@@ -64,6 +70,11 @@
     <property name="attributes">
       <map><entry key="tabOrder"><value type="java.lang.Integer">150</value></entry></map>
     </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="fckeditor.lockResourceHandlerInterceptor" />
+      </list>
+    </property>
     <property name="handler" ref="fckeditor.editHandler" />
   </bean>
 
@@ -77,7 +88,7 @@
     </property>
   </bean>
 
-  <bean id="fckeditor.getSourceHandlerInterceptor"
+  <bean id="fckeditor.getSourceStripHeadersInterceptor"
         class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
@@ -96,7 +107,7 @@
     </property>
     <property name="handlerInterceptors">
       <list>
-        <ref bean="fckeditor.getSourceHandlerInterceptor" />
+        <ref bean="fckeditor.getSourceStripHeadersInterceptor" />
       </list>
     </property>
     <property name="handler">
@@ -109,21 +120,6 @@
               <bean class="org.vortikal.web.view.DisplayResourceView">
               </bean>
             </property>
-            <!--
-            <property name="viewWrapper">
-              <bean class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-                <property name="guessCharacterEncodingFromContent" value="true" />
-                <property name="forcedOutputEncoding" value="utf-8" />
-                <property name="decorators">
-                  <list>
-                    <bean class="org.vortikal.web.view.decorating.HtmlBodyExtractor">
-                      <property name="parser" ref="decorating.htmlParser" />
-                    </bean>
-                  </list>
-                </property>
-              </bean>
-            </property>
-            -->
           </bean>
         </property>
       </bean>

@@ -220,7 +220,7 @@ FCK.Paste = function()
 
 	if ( FCKConfig.ForcePasteAsPlainText )
 	{
-		FCK.PasteFromWord() ;
+		FCK.PasteAsPlainText() ;
 		return false ;
 	}
 

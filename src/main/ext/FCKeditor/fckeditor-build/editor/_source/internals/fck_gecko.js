@@ -200,7 +200,7 @@ FCK.PasteAsPlainText = function()
 
 	// If the function is called inmediately Firefox 2 does automatically paste the contents as soon as the new dialog is created
 	// so we run it in a Timeout and the paste event can be cancelled
-	FCKTools.RunFunction( FCKDialog.OpenDialog, FCKDialog, ['FCKDialog_Paste', FCKLang.PasteFromWord, 'dialog/fck_paste.html', 400, 330, 'Word'] ) ;
+	FCKTools.RunFunction( FCKDialog.OpenDialog, FCKDialog, ['FCKDialog_Paste', FCKLang.PasteAsText, 'dialog/fck_paste.html', 400, 330, 'PlainText'] ) ;
 
 /*
 	var sText = FCKTools.HTMLEncode( clipboardData.getData("Text") ) ;

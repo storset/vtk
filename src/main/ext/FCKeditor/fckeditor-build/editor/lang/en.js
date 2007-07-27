@@ -341,7 +341,7 @@ PasteErrorCut	: "Your browser security settings don't permit the editor to autom
 PasteErrorCopy	: "Your browser security settings don't permit the editor to automatically execute copying operations. Please use the keyboard for that (Ctrl+C).",
 
 PasteAsText		: "Paste as Plain Text",
-PasteFromWord	: "Paste",
+PasteFromWord	: "Paste from Word",
 
 DlgPasteMsg2	: "Please paste inside the following box using the keyboard (<strong>Ctrl+V</strong>) and hit <strong>OK</strong>.",
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",

@@ -154,14 +154,25 @@ var FCKSaveCommand = function()
 	this.Name = 'Save' ;
 }
 
-FCKSaveCommand.prototype.Execute = function(){
-	// Filter XML
-	//FCK.EditorDocument.tagName = 'html';
-	var xhtmlContentType = "<!DOCTYPE " + FCK.EditorDocument.doctype.name + " PUBLIC \"" + FCK.EditorDocument.doctype.publicId + "\" \"" + FCK.EditorDocument.doctype.systemId + "\">";
-	var reshtml = xhtmlContentType + "\n" + getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
-	FCK.SetHTML(reshtml);
-	parent.performSave(reshtml, FCK);
-	return;
+FCKSaveCommand.prototype.Execute = function()
+{
+	// Get the linked field form.
+	var oForm = FCK.GetParentForm() ;
+
+	if ( typeof( oForm.onsubmit ) == 'function' )
+	{
+		var bRet = oForm.onsubmit() ;
+		if ( bRet != null && bRet === false )
+			return ;
+	}
+
+	// Submit the form.
+	// If there's a button named "submit" then the form.submit() function is masked and
+	// can't be called in Mozilla, so we call the click() method of that button.
+	if ( typeof( oForm.submit ) == 'function' )
+		oForm.submit() ;
+	else
+		oForm.submit.click() ;
 }
 
 FCKSaveCommand.prototype.GetState = function()

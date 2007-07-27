@@ -53,7 +53,7 @@ FCKConfig.AutoGrowMax = 400 ;
 // FCKConfig.ProtectedSource.Add( /<\?[\s\S]*?\?>/g ) ;	// PHP style server side code
 // FCKConfig.ProtectedSource.Add( /(<asp:[^\>]+>[\s|\S]*?<\/asp:[^\>]+>)|(<asp:[^\>]+\/>)/gi ) ;	// ASP.Net style tags <asp:control>
 
-FCKConfig.AutoDetectLanguage	= false ;
+FCKConfig.AutoDetectLanguage	= true ;
 FCKConfig.DefaultLanguage		= 'en' ;
 FCKConfig.ContentLangDirection	= 'ltr' ;
 
@@ -74,14 +74,14 @@ FCKConfig.FormatIndentator	= '    ' ;
 FCKConfig.ForceStrongEm = true ;
 FCKConfig.GeckoUseSPAN	= false ;
 FCKConfig.StartupFocus	= false ;
-FCKConfig.ForcePasteAsPlainText	= true;
-FCKConfig.AutoDetectPasteFromWord = false ;	// IE only.
+FCKConfig.ForcePasteAsPlainText	= false ;
+FCKConfig.AutoDetectPasteFromWord = true ;	// IE only.
 FCKConfig.ForceSimpleAmpersand	= false ;
 FCKConfig.TabSpaces		= 0 ;
 FCKConfig.ShowBorders	= true ;
 FCKConfig.SourcePopup	= false ;
 FCKConfig.ToolbarStartExpanded	= true ;
-FCKConfig.ToolbarCanCollapse	= false ;
+FCKConfig.ToolbarCanCollapse	= true ;
 FCKConfig.IgnoreEmptyParagraphValue = true ;
 FCKConfig.PreserveSessionOnFileBrowser = false ;
 FCKConfig.FloatingPanelsZIndex = 10000 ;
@@ -93,7 +93,7 @@ FCKConfig.ToolbarLocation = 'In' ;
 
 FCKConfig.ToolbarSets["Default"] = [
 	['Source','DocProps','-','Save','NewPage','Preview','-','Templates'],
-	['Cut','Copy','Paste','-','Print','SpellCheck'],
+	['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
 	['Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField'],
 	'/',
@@ -107,25 +107,6 @@ FCKConfig.ToolbarSets["Default"] = [
 	['TextColor','BGColor'],
 	['FitWindow','-','About']
 ] ;
-
-FCKConfig.ToolbarSets["FritekstSpesifikk"] = [
-	['Save','NewPage','Preview'],
-	['Cut','Copy','Paste','-','Print','SpellCheck'],
-	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	'/',
-	['Bold','Italic','-','Subscript','Superscript','-','SpecialChar'],
-	['OrderedList','UnorderedList'],
-	['Link','Unlink','Anchor'],
-	['FitWindow']
-];
-
-FCKConfig.ToolbarSets["LinjeEditorSpesifikk"] = [
-	['Save','NewPage'],
-	['Cut','Copy','Paste','-','SpellCheck'],
-	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	['Bold','Italic','-','Subscript','Superscript','-','SpecialChar'],
-	['Link','Unlink','Anchor'],
-];
 
 FCKConfig.ToolbarSets["Basic"] = [
 	['Bold','Italic','-','OrderedList','UnorderedList','-','Link','Unlink','-','About']

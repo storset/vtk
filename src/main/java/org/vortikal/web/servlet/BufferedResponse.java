@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.vortikal.util.io.BoundedOutputStream;
-import org.vortikal.util.web.HttpUtil;
 
 
 
@@ -68,7 +67,6 @@ public class BufferedResponse implements HttpServletResponse {
 
     private long maxBufferSize = -1;
     private int status = 200;
-    private String statusMessage = "OK";
     private ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
     private Map<String, Object> headers = new HashMap<String, Object>(); 
     private List<Cookie> cookies = new ArrayList<Cookie>();
@@ -233,19 +231,16 @@ public class BufferedResponse implements HttpServletResponse {
 
     public void sendError(int status, String statusMessage) {
         this.status = status;
-        this.statusMessage = statusMessage;
         this.committed = true;
     }
 
     public void sendError(int status) {
         this.status = status;
-        this.statusMessage = HttpUtil.getStatusMessage(status);
         this.committed = true;
     }
 
     public void sendRedirect(String url) {
         this.status = HttpServletResponse.SC_MOVED_TEMPORARILY;
-        this.statusMessage = "Moved Temporarily";
         this.headers.put("Location", url);
         this.committed = true;
     }
@@ -285,12 +280,10 @@ public class BufferedResponse implements HttpServletResponse {
 
     public void setStatus(int status) {
         this.status = status;
-        this.statusMessage = HttpUtil.getStatusMessage(status);
     }
 
     public void setStatus(int status, String statusMessage) {
         this.status = status;
-        this.statusMessage = statusMessage;
     }
 
     public Map<String, Object> getHeaders() {

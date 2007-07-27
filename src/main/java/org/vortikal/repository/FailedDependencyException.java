@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -39,10 +39,10 @@ public class FailedDependencyException extends RepositoryException {
 
     private static final long serialVersionUID = 3978703995533539378L;
 
-    private Map map;
+    private Map<String, Exception> map;
 
     public FailedDependencyException() {
-        this.map = new HashMap();
+        this.map = new HashMap<String, Exception>();
     }
 
     public void addException(String uri, Exception e) {

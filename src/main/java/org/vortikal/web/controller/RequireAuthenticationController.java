@@ -62,6 +62,11 @@ public class RequireAuthenticationController implements Controller {
         }
         String uri = RequestContext.getRequestContext().getResourceURI();
         URL url = this.redirectService.constructURL(uri);
+
+        String anchor = request.getParameter("anchor");
+        if (anchor != null && !"".equals(anchor.trim())) {
+            url.setRef(anchor);
+        }
         response.sendRedirect(url.toString());
         return null;
     }

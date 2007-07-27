@@ -86,7 +86,7 @@
 
     <#if !postCommentURL?exists && !principal?exists && loginURL?exists>
       <#assign defaultMsg>
-        To comment on this resource you have to <a href="${loginURL?html}">log in</a>
+        To comment on this resource you have to <a href="${loginURL?html}&amp;anchor=comment-form">log in</a>
       </#assign>
       <p><@vrtx.rawMsg code="commenting.not-logged-in"
                          default=defaultMsg

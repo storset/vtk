@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.components;
+package org.vortikal.web.commenting;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +48,7 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
+import org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent;
 
 
 public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorComponent {

@@ -1,9 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
   
+  <!-- Transaction setup -->
+
+  <bean id="repository.transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="repository.dataSource"/>
+  </bean>
+
+
+  <tx:advice id="txAdvice" transaction-manager="repository.transactionManager">
+    <tx:attributes>
+      <tx:method name="get*" read-only="true" />
+      <tx:method name="*" no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" />
+    </tx:attributes>
+  </tx:advice>
+
+  <aop:config>
+    <aop:pointcut id="repository.repositoryOperationPointcut" expression="execution(* org.vortikal.repository.Repository.*(..))"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="repository.repositoryOperationPointcut"/>
+  </aop:config>
+
+  <aop:config>
+    <aop:pointcut id="repository.changeFetcherPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.JDBCResourceChangeFetcher.*(..))"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="repository.changeFetcherPointcut"/>
+  </aop:config>
+
+
+
   <!-- Repository -->
+
 
   <bean id="repository" class="org.vortikal.repositoryimpl.RepositoryImpl">
     <property name="id" value="${repositoryID}" />
@@ -12,9 +47,11 @@
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="dao" ref="${repositoryBackend}" />
     <property name="commentDAO" ref="repository.commentDAO" />
+    <property name="contentStore" ref="repository.contentStore" />
     <property name="lockManager" ref="lockManager" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
   </bean>
+
 
   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">
@@ -26,56 +63,17 @@
     <property name="defaultAutoCommit" value="false" />
   </bean>
 
-  <!--
-  <bean id="transactionManager"
-        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="repository.dataSource"/>
-  </bean>
-  -->
+  
 
   <!-- SqlMap setup for iBATIS Database Layer -->
+
   <bean id="repository.sqlMapClient"
         class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
-    <property name="transactionConfigClass"
-              value="com.ibatis.sqlmap.engine.transaction.jdbc.JdbcTransactionConfig" />
-    <property name="useTransactionAwareDataSource" value="false" />
+    <property name="useTransactionAwareDataSource" value="true" />
     <property name="configLocation"
-              value="classpath:/org/vortikal/repositoryimpl/dao/ibatis/${sqlDialect}-sql-map-config.xml"/>
+              value="classpath:/org/vortikal/repositoryimpl/store/db/ibatis/${sqlDialect}-sql-map-config.xml"/>
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
-
-
-  <bean id="repository.database" class="org.vortikal.repositoryimpl.dao.SqlMapDataAccessor">
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="contentStore" ref="repository.contentStore" />
-    <property name="propertyManager" ref="propertyManager" />
-    <property name="authorizationManager" ref="authorizationManager" />
-    <property name="principalFactory" ref="principalFactory" />
-    <property name="sqlMaps" ref="repository.statementMappings" />
-    <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
-  </bean>
-
-  <bean id="repository.cache" class="org.vortikal.repositoryimpl.dao.Cache">
-    <property name="maxItems" value="${resourceCacheSize}" />
-    <property name="wrappedAccessor" ref="repository.database" />
-  </bean>
-
-
-  <bean id="repository.commentDAO" class="org.vortikal.repositoryimpl.dao.SqlMapCommentDAO">
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="sqlMaps" ref="repository.statementMappings" />
-  </bean>
-
-  <!--
-  <bean id="repository.cache" class="org.vortikal.repositoryimpl.dao.JBossCacheDataAccessor">
-    <property name="wrappedAccessor" ref="repository.database" />
-    <property name="treeCache" ref="jbossTreeCache" />
-  </bean>
-
-  <bean id="jbossTreeCache" class="org.jboss.cache.TreeCache"
-        init-method="startService" destroy-method="stopService">
-  </bean>
-  -->
 
   <!-- Override iBATIS SQL map statement names in this map (should
        generally not be necessary): -->
@@ -87,7 +85,38 @@
   </bean>
 
 
-  <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl">
+  <bean id="repository.database" class="org.vortikal.repositoryimpl.store.db.SqlMapDataAccessor">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="propertyManager" ref="propertyManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+  </bean>
+
+  <bean id="repository.cache" class="org.vortikal.repositoryimpl.store.Cache">
+    <property name="maxItems" value="${resourceCacheSize}" />
+    <property name="wrappedAccessor" ref="repository.database" />
+  </bean>
+
+  <bean id="repository.commentDAO" class="org.vortikal.repositoryimpl.store.db.SqlMapCommentDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
+
+  <!--
+  <bean id="repository.cache" class="org.vortikal.repositoryimpl.store.JBossCacheDataAccessor">
+    <property name="wrappedAccessor" ref="repository.database" />
+    <property name="treeCache" ref="jbossTreeCache" />
+  </bean>
+
+  <bean id="jbossTreeCache" class="org.jboss.cache.TreeCache"
+        init-method="startService" destroy-method="stopService">
+  </bean>
+  -->
+
+
+  <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.store.db.IndexDataAccessorImpl">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="principalFactory" ref="principalFactory" />
@@ -103,10 +132,11 @@
   </bean>
 
   <bean id="repository.contentStore" 
-        class="org.vortikal.repositoryimpl.dao.SimpleFileSystemContentStore">
+        class="org.vortikal.repositoryimpl.store.fs.SimpleFileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
   </bean>
+
 
   <bean id="repository.requestLocal" class="org.vortikal.web.RequestLocalRepository">
     <property name="repository" ref="repository"/>

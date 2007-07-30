@@ -37,7 +37,7 @@ import org.springframework.validation.Validator;
 
 public class PostCommentCommandValidator implements Validator {
 
-    private int maxLength = 4000;
+    private int maxLength = 100000;
     private boolean requireTitle = false;
     
 
@@ -74,7 +74,7 @@ public class PostCommentCommandValidator implements Validator {
         }
         if (postCommentCommand.getText().length() > this.maxLength) {
             errors.rejectValue("text", "commenting.post.text.toolong",
-                               new Object[] {this.maxLength},
+                               new Object[] {postCommentCommand.getText().length(), this.maxLength},
                                "Value too long: maximum length is " + this.maxLength);
         }
     }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 
 /**
  * A simple re-indexer that works directly on the provided <code>PropertySetIndex</code> instance.

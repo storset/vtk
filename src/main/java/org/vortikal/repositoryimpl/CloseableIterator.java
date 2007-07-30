@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ package org.vortikal.repositoryimpl;
  * @author oyviste
  *
  */
-public interface CloseableIterator extends java.util.Iterator {
+public interface CloseableIterator<T> extends java.util.Iterator<T> {
     
     public void close() throws Exception;
 

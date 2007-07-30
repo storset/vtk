@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl.search.query.security;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
@@ -48,9 +47,6 @@ import org.vortikal.security.token.TokenManager;
 
 /**
  * Authorize result lists using <code>IndexDataAccessor</code> (database).
- * 
- * @author oyviste
- *
  */
 public final class DatabaseQueryResultAuthorizationManager implements 
     QueryResultAuthorizationManager, InitializingBean {

@@ -10,7 +10,7 @@ create table vortex_comment
     author varchar(64) not null,
     time timestamp not null,
     title varchar(2048) null,
-    text varchar(4096) not null,
+    content text not null,
     approved char(1) default 'Y' not null
 );
 

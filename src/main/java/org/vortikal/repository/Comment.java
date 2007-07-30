@@ -42,7 +42,7 @@ public final class Comment {
     private Date time;
     private String author;
     private String title;
-    private String text;
+    private String content;
     private boolean approved = false;
 
     public int getID() {
@@ -85,12 +85,12 @@ public final class Comment {
         this.title = title;
     }
 
-    public String getText() {
-        return this.text;
+    public String getContent() {
+        return this.content;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public boolean isApproved() {

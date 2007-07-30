@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ package org.vortikal.repositoryimpl.index;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 
 /**
  * <p>A <code>PropertySetIndex</code> re-indexer that uses a temporary index instance, instead of working

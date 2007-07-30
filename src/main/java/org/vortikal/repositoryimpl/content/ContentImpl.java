@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repositoryimpl.dao.ContentStore;
+import org.vortikal.repositoryimpl.store.ContentStore;
 
 /**
  * Implementation of <code>org.vortikal.repository.resourcetype.Content</code>

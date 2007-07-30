@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,13 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.dao.DataAccessor;
+import org.vortikal.repositoryimpl.store.DataAccessor;
 
 /**
  * Dump repository resource change log events in database changelog.
@@ -79,63 +78,36 @@ public class RepositoryEventDumperImpl extends AbstractRepositoryEventDumper
     }
     
     public void created(Resource resource) {
-        try {
-
-            this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
-                                                resource.getURI(), CREATED,
-                                                -1, resource.isCollection(),
-                                                new Date(), true);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting resource creation " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
+                                            resource.getURI(), CREATED,
+                                            -1, resource.isCollection(),
+                                            new Date(), true);
 
     }
 
     public void deleted(String uri, int resourceId, boolean collection) {
-        
-        try {
-            this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, uri, 
-                                                DELETED, resourceId, collection, 
-                                                new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting resource deletion " +
-                "for uri " + uri, e);
-        }
+        this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, uri, 
+                                            DELETED, resourceId, collection, 
+                                            new Date(), false);
 
     }
 
     public void modified(Resource resource, Resource originalResource) {
 
-        try {
-            this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
-                                                resource.getURI(), MODIFIED_PROPS,
-                                                -1, resource.isCollection(),
-                                                new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting property modification " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
+                                            resource.getURI(), MODIFIED_PROPS,
+                                            -1, resource.isCollection(),
+                                            new Date(), false);
 
     }
 
     public void contentModified(Resource resource) {
 
-        try {
-            this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
-                                                resource.getURI(),
-                                                MODIFIED_CONTENT, -1, 
-                                                resource.isCollection(),
-                                                new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting content modification " +
-                "for uri " + resource.getURI(), e);
-        }
-
+        this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
+                                            resource.getURI(),
+                                            MODIFIED_CONTENT, -1, 
+                                            resource.isCollection(),
+                                            new Date(), false);
     }
 
     public void aclModified(Resource resource, Resource originalResource, 
@@ -151,33 +123,26 @@ public class RepositoryEventDumperImpl extends AbstractRepositoryEventDumper
             return;
         }
         
-        try {
-            if (resource.isCollection() && 
-                    (originalResource.isInheritedAcl() != resource.isInheritedAcl())) {
+        if (resource.isCollection() && 
+            (originalResource.isInheritedAcl() != resource.isInheritedAcl())) {
                 
-                // ACL inheritance altered on collection resource, insert 
-                // recursive ACL modification event
-                this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
-                                                    resource.getURI(), 
-                                                    ACL_MODIFIED, -1,
-                                                    resource.isCollection(), 
-                                                    new Date(), true);
+            // ACL inheritance altered on collection resource, insert 
+            // recursive ACL modification event
+            this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
+                                                resource.getURI(), 
+                                                ACL_MODIFIED, -1,
+                                                resource.isCollection(), 
+                                                new Date(), true);
                 
                 
-            } else {
-                // Not a collection, insert single ACL modification event
-                this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
-                                                    resource.getURI(),
-                                                    ACL_MODIFIED, -1,
-                                                    resource.isCollection(),
-                                                    new Date(), false);
-            }
-        } catch (IOException e) {
-            this.logger.warn(
-                    "Caught IOException while reporting ACL modification " +
-                    "for uri " + resource.getURI(), e);
+        } else {
+            // Not a collection, insert single ACL modification event
+            this.dataAccessor.addChangeLogEntry(super.loggerId, super.loggerType, 
+                                                resource.getURI(),
+                                                ACL_MODIFIED, -1,
+                                                resource.isCollection(),
+                                                new Date(), false);
         }
-
     }
 
     public void setDataAccessor(DataAccessor dataAccessor) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,8 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.dao.DataAccessor;
+import org.vortikal.repositoryimpl.store.DataAccessException;
+import org.vortikal.repositoryimpl.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PseudoPrincipal;
 
@@ -57,11 +58,6 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public final static String ACL_READ_ALL_NO = "acl_read_all_no";
 
 
-    /**
-     * Sets the value of dataAccessor
-     *
-     * @param dataAccessor Value to assign to this.oracleDatabase
-     */
     public void setDataAccessor(DataAccessor dataAccessor)  {
         this.dataAccessor = dataAccessor;
     }
@@ -76,104 +72,73 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
 
     public void created(Resource resource) {
-        try {
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), CREATED,
+                                            -1, resource.isCollection(), new Date(), true);
 
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), CREATED,
-                                                -1, resource.isCollection(), new Date(), true);
-
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting resource creation " +
-                "for uri " + resource.getURI(), e);
-        }
     }
         
 
 
 
     public void deleted(String uri, int resourceId, boolean collection) {
-        
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED,
-                                                resourceId, collection, new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting resource deletion " +
-                "for uri " + uri, e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED,
+                                            resourceId, collection, new Date(), false);
     }
 
 
 
     public void modified(Resource resource, Resource originalResource) {
-
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
-                                                -1, resource.isCollection(), new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting property modification " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
+                                            -1, resource.isCollection(), new Date(), false);
     }
 
 
     public void contentModified(Resource resource) {
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
-                                                MODIFIED_CONTENT, -1, resource.isCollection(),
-                                                new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting content modification " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
+                                            MODIFIED_CONTENT, -1, resource.isCollection(),
+                                            new Date(), false);
     }
 
 
     public void aclModified(Resource resource, Resource originalResource,
                             Acl originalACL, Acl newACL) {
         
-//         logger.info("ACL_MODIFIED: " + resource.getURI() + ", BEFORE: " +
-//                     originalACL + ", AFTER: " + newACL);
-
-
-        try {
-            if (originalACL.equals(newACL)) {
-                return;
-            }
+        if (originalACL.equals(newACL)) {
+            return;
+        }
         
-            /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed:
-             * XXX: WHY!?
-             */
+        /* Check if ACE (dav:all (UIO_READ_PROCESSED)) has changed:
+         * XXX: WHY!?
+         */
 
-            Set principalListBefore = originalACL.getPrincipalSet(
-                Privilege.READ_PROCESSED);
-            Set principalListAfter = newACL.getPrincipalSet(
-                Privilege.READ_PROCESSED);
+        Set principalListBefore = originalACL.getPrincipalSet(
+            Privilege.READ_PROCESSED);
+        Set principalListAfter = newACL.getPrincipalSet(
+            Privilege.READ_PROCESSED);
            
 
-            if (principalListBefore == null &&
-                principalListAfter == null) {
-                return;
-            }
+        if (principalListBefore == null &&
+            principalListAfter == null) {
+            return;
+        }
             
-            principalListBefore = (principalListBefore == null) ?
-                new HashSet() : principalListBefore;
+        principalListBefore = (principalListBefore == null) ?
+            new HashSet() : principalListBefore;
             
-            principalListAfter = (principalListAfter == null) ?
-                new HashSet() : principalListAfter;
+        principalListAfter = (principalListAfter == null) ?
+            new HashSet() : principalListAfter;
 
-            if (principalListBefore.equals(principalListAfter)) {
-                return;
-            }
+        if (principalListBefore.equals(principalListAfter)) {
+            return;
+        }
             
-            Principal all = PseudoPrincipal.ALL;
+        Principal all = PseudoPrincipal.ALL;
+        
+        try {
             if (originalResource.isAuthorized(Privilege.READ_PROCESSED, all) &&
                 resource.isAuthorized(Privilege.READ_PROCESSED, all)) {
                 return;
             }
-
             
             String op = resource.isAuthorized(Privilege.READ_PROCESSED, all) ?
                 ACL_READ_ALL_YES : ACL_READ_ALL_NO;
@@ -191,12 +156,10 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                                                         false);
                 }
             }
-
         } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting ACL modification " +
-                "for uri " + resource.getURI(), e);
+            throw new DataAccessException("Unable to authorize", e);
         }
+
     }
 
 }

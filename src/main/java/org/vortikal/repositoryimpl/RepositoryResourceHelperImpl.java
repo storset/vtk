@@ -64,7 +64,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.content.ContentImpl;
 import org.vortikal.repositoryimpl.content.ContentRepresentationRegistry;
-import org.vortikal.repositoryimpl.dao.ContentStore;
+import org.vortikal.repositoryimpl.store.ContentStore;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;

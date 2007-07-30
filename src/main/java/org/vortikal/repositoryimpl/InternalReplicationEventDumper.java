@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,13 @@
  */
 package org.vortikal.repositoryimpl;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
 
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.dao.DataAccessor;
+import org.vortikal.repositoryimpl.store.DataAccessor;
 
 
 
@@ -52,12 +51,6 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     public final static String MODIFIED_ACL = "modified_acl";
 
 
-
-    /**
-     * Sets the value of dataAccessor
-     *
-     * @param dataAccessor Value to assign to this.dataAccessor
-     */
     public void setDataAccessor(DataAccessor dataAccessor)  {
         this.dataAccessor = dataAccessor;
     }
@@ -71,85 +64,45 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     }
     
     public void created(Resource resource) {
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
-                                                CREATED, -1, resource.isCollection(),
-                                                new Date(), false);
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
+                                            CREATED, -1, resource.isCollection(),
+                                            new Date(), false);
 
-            if (resource.isCollection()) {
-                org.vortikal.repositoryimpl.ResourceImpl[] childResources =
-                    this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
-                for (int i = 0; i < childResources.length; i++) {
-                    this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
-                                                        CREATED, -1, childResources[i].isCollection(),
-                                                        new Date(), false);
-                }
+        if (resource.isCollection()) {
+            org.vortikal.repositoryimpl.ResourceImpl[] childResources =
+                this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
+            for (int i = 0; i < childResources.length; i++) {
+                this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
+                                                    CREATED, -1, childResources[i].isCollection(),
+                                                    new Date(), false);
             }
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting resource creation " +
-                "for uri " + resource.getURI(), e);
         }
     }
-        
-
 
 
     public void deleted(String uri, int resourceId, boolean collection) {
-        
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED, resourceId,
-                                                collection, new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting resource deletion " +
-                "for uri " + uri, e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED, resourceId,
+                                            collection, new Date(), false);
     }
 
 
 
     public void modified(Resource resource, Resource originalResource) {
-
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
-                                                -1, resource.isCollection(), new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting property modification " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
+                                            -1, resource.isCollection(), new Date(), false);
     }
 
 
     public void contentModified(Resource resource) {
-        try {
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_CONTENT,
-                                                -1, resource.isCollection(), new Date(), false);
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting content modification " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_CONTENT,
+                                            -1, resource.isCollection(), new Date(), false);
     }
 
 
     public void aclModified(Resource resource, Resource originalResource,
                             Acl originalACL, Acl newACL) {
-        try {
-
-//            if (AclUtil.equal(originalACL, newACL) &&
-//                AclUtil.isInherited(newACL) == AclUtil.isInherited(originalACL)) {
-//                return;
-//            }
         
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_ACL,
-                                                -1, resource.isCollection(), new Date(), false);
-            
-        } catch (IOException e) {
-            this.logger.warn(
-                "Caught IOException while reporting ACL modification " +
-                "for uri " + resource.getURI(), e);
-        }
+        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_ACL,
+                                            -1, resource.isCollection(), new Date(), false);
     }
 }

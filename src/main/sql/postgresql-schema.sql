@@ -267,7 +267,7 @@ create unique index changelog_entry_index1
 
 
 -----------------------------------------------------------------------------
--- vortex_comments
+-- vortex_comment
 -----------------------------------------------------------------------------
 drop sequence vortex_comment_seq_pk;
 
@@ -282,7 +282,7 @@ create table vortex_comment
     author varchar(64) not null,
     time timestamp not null,
     title varchar(2048) null,
-    text varchar(4096) not null,
+    content text not null,
     approved char(1) default 'Y' not null
 );
 

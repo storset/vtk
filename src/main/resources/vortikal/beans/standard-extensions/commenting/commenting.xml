@@ -25,6 +25,10 @@
     <constructor-arg value="${commenting.title.enabled}" />
   </bean>
 
+  <bean id="commenting.htmlContentEnabled" class="java.lang.Boolean">
+    <constructor-arg value="${commenting.html.enabled}" />
+  </bean>
+
 
   <bean id="commenting.commentsView" parent="freemarkerView">
     <property name="url" value="layouts/comments-view.ftl" />
@@ -39,6 +43,7 @@
     <property name="sourceMap">
       <map>
         <entry key="titlesEnabled" value-ref="commenting.titlesEnabled" />
+        <entry key="htmlContentEnabled" value-ref="commenting.htmlContentEnabled" />
       </map>
     </property>
   </bean>
@@ -97,7 +102,9 @@
               value="org.vortikal.web.commenting.PostCommentCommand" />
     <property name="validator" ref="commenting.postCommentValidator" />
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
   </bean>
+
 
   <bean name="commenting.postCommentValidator"
         class="org.vortikal.web.commenting.PostCommentCommandValidator">

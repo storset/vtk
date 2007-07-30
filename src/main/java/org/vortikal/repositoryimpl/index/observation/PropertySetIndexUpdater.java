@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
 
 /**

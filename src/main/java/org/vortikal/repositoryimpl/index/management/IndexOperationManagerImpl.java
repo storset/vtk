@@ -34,7 +34,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repositoryimpl.dao.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 import org.vortikal.repositoryimpl.index.DirectReindexer;
 import org.vortikal.repositoryimpl.index.IndirectReindexer;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;

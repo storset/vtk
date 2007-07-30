@@ -13,7 +13,7 @@
 
   <!-- Resource change fetcher for new system index -->
   <bean id="repository.dbResourceChangeFetcher" 
-        class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
+        class="org.vortikal.repositoryimpl.store.db.JDBCResourceChangeFetcher">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="loggerId" value="1" />
     <property name="loggerType" value="3" />

@@ -71,7 +71,13 @@
           </div>
         </#if>
         <div class="comment-body">
-          ${comment.text?html}
+        <#if config.htmlContentEnabled>
+          <#-- Display content as raw html: -->
+          ${comment.content}
+        <#else>
+          <#-- Display content as escaped html: -->
+          ${comment.content?html}
+        </#if>
         </div>
         <div class="comment-info">
           ${comment.author?html} |
@@ -127,11 +133,12 @@
         </#if>
         <p>
           <#assign value><#if form?exists && form.text?exists>${form.text}</#if></#assign>
-          <textarea id="comments-text" name="text" rows="6" cols="80">${value}</textarea>
+          <textarea id="comments-text" name="text" rows="6" cols="80">${value?html}</textarea>
           <#if errors?exists && errors.getFieldError('text')?exists>
             <span class="error">
               <@vrtx.msg code=errors.getFieldError('text').getCode()
-                         default=errors.getFieldError('text').getDefaultMessage() />
+                         default=errors.getFieldError('text').getDefaultMessage() 
+                         args=errors.getFieldError('text').getArguments()  />
             </span>
           </#if>
         </p>

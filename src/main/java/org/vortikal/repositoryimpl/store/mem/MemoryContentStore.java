@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.dao.contentstore;
+package org.vortikal.repositoryimpl.store.mem;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

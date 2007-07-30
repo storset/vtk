@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.dao;
+package org.vortikal.repositoryimpl.store.mem;
+
 
 import org.apache.log4j.BasicConfigurator;
+import org.vortikal.repositoryimpl.store.AbstractContentStoreTestCase;
+import org.vortikal.repositoryimpl.store.ContentStore;
+
 
 public class MemoryContentStoreTestCase extends AbstractContentStoreTestCase {
 

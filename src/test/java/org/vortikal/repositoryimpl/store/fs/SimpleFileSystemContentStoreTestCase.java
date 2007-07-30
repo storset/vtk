@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.dao;
+package org.vortikal.repositoryimpl.store.fs;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -41,6 +40,10 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
+
+import org.vortikal.repositoryimpl.store.ContentStore;
+import org.vortikal.repositoryimpl.store.AbstractContentStoreTestCase;
+
 
 public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTestCase {
 
@@ -120,7 +123,7 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
         try {
             InputStream inputStreamAfterDelete = getStore().getInputStream(uri);
             fail("file does not exists");
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             // ok
         }
     }

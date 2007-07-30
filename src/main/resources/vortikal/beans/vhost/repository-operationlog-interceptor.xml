@@ -1,25 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-<beans>
-  <bean id="repository.repositoryProxyCreator"
-    class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
-    <property name="interceptorNames">
-      <list>
-        <value>repository.repositoryOperationLogInterceptor</value>
-      </list>
-    </property>
-    <property name="beanNames">
-      <list>
-        <value>repository</value>
-      </list>
-    </property>
-  </bean>
-  
+  <aop:config>
+    <aop:pointcut id="operationLog.repositoryOperation"
+                  expression="execution(* org.vortikal.repository.Repository.*(..))" />
+    <aop:advisor advice-ref="repository.repositoryOperationLogInterceptor"
+                 pointcut-ref="operationLog.repositoryOperation"/>
+  </aop:config>
+
   <bean id="repository.repositoryOperationLogInterceptor"
     class="org.vortikal.repositoryimpl.RepositoryOperationLogInterceptor">
     <property name="tokenManager" ref="tokenManager"/>
   </bean>
-  
+
 </beans>
 

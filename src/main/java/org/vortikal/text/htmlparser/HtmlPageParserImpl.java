@@ -122,9 +122,16 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         }
         boolean xhtml = isXhtml(doctype);
 
-        HtmlElement rootElement = (HtmlElement) buildHtml(root, filters, xhtml);
-        if (rootElement == null) {
-            throw new HtmlPageParserException("Unable to parse HTML: no root element found");
+        HtmlContent html = buildHtml(root, filters, xhtml);
+        if (html == null) {
+            throw new HtmlPageParserException("Unable to parse HTML: invalid document");
+        }
+        HtmlElement rootElement = null;
+        if (html instanceof HtmlElement) {
+            rootElement = (HtmlElement) html;
+        } else {
+            rootElement = new HtmlElementImpl("html", false, xhtml);
+            rootElement.setChildNodes(new HtmlContent[]{html});
         }
         return new HtmlPageImpl(rootElement, doctype);
     }

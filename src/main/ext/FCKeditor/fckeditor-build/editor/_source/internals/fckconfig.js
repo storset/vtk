@@ -86,6 +86,9 @@ FCKConfig.ProcessHiddenField = function()
 		else if ( sVal.toLowerCase() == "true" )	// If it is a boolean TRUE.
 			this.PageConfig[ sKey ] = true ;
 
+		else if ( sKey == 'ToolbarSets' )
+			FCKConfig[ sKey ] = eval(sVal) ;
+
 		else if ( sVal.toLowerCase() == "false" )	// If it is a boolean FALSE.
 			this.PageConfig[ sKey ] = false ;
 

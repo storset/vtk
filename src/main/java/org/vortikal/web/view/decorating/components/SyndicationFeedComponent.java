@@ -100,6 +100,9 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
     private static final String PARAMETER_FEED_TITLE = "feed-title";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
 
+    private static final String PARAMETER_INCLUDE_IF_EMPTY = "include-if-empty";
+    private static final String PARAMETER_INCLUDE_IF_EMPTY_DESC = "Set to 'false' if you don't want to display empty feeds. Default is 'true'.";
+
     private static Log logger = LogFactory.getLog(SyndicationFeedComponent.class);
     private ContentCache<String, SyndFeed> cache;
     private View view;
@@ -169,6 +172,13 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
             conf.setSortByTitle(true);
         }
         
+        boolean includeIfEmpty = true;
+        String includeIfEmptyParam = request.getStringParameter(PARAMETER_INCLUDE_IF_EMPTY);
+        if ("false".equalsIgnoreCase(includeIfEmptyParam)) {
+            includeIfEmpty = false;
+        }
+        conf.setIncludeIfEmpty(includeIfEmpty);
+
         SyndFeed feed = null;
         
         if (!url.startsWith("/")) {
@@ -256,6 +266,7 @@ public class SyndicationFeedComponent extends AbstractDecoratorComponent
         map.put(PARAMETER_ALL_MESSAGES_LINK, PARAMETER_ALL_MESSAGES_LINK_DESC);
         map.put(PARAMETER_PUBLISHED_DATE, PARAMETER_PUBLISHED_DATE_DESC);
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
+        map.put(PARAMETER_INCLUDE_IF_EMPTY, PARAMETER_INCLUDE_IF_EMPTY_DESC);
         return map;
     }
 

@@ -1,5 +1,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
-
+<#if feed.entries?size &gt; 0 || conf.includeIfEmpty>
 <div class="vrtx-feed">
   <#if conf.feedTitle>
     <a class="feed-title" href="${feed.link}">${feed.title?html}</a> 
@@ -9,7 +9,7 @@
     <div class="feed-description">${feed.description?html}</div> 
   </#if>
 
-  <#if feed.entries?exists && feed.entries?size gt 0>
+  <#if feed.entries?size gt 0>
     <#assign entries = feed.entries />
       <#if conf.sortByTitle>
         <#assign entries = entries?sort_by("title") />
@@ -47,3 +47,4 @@
   </a>
   </#if>
 </div>
+</#if>

@@ -9,6 +9,7 @@ public class SyndicationFeedConfig {
     private String publishedDate = "long";
     boolean bottomLinkToAllMessages = true;
     boolean sortByTitle = false;
+    boolean includeIfEmpty = true;
     
     public boolean isBottomLinkToAllMessages() {
         return bottomLinkToAllMessages;
@@ -52,5 +53,10 @@ public class SyndicationFeedConfig {
     public void setPublishedDate(String publishedDate) {
         this.publishedDate = publishedDate;
     }
-
+    public void setIncludeIfEmpty(boolean includeIfEmpty) {
+        this.includeIfEmpty = includeIfEmpty;
+    }
+    public boolean isIncludeIfEmpty() {
+        return this.includeIfEmpty;
+    }
 }

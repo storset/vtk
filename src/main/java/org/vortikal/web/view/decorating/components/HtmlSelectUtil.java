@@ -33,51 +33,58 @@ package org.vortikal.web.view.decorating.components;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 
+class HtmlSelectUtil {
 
-public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {
-
-    protected static final String PARAMETER_SELECT = "select";
-
-    private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
-
-    protected String elementPath;
-
-    public void setSelect(String select) {
-        this.elementPath = select;
-    }
-    
-    public void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
-
-        String expression = (this.elementPath != null) ?
-            this.elementPath : request.getStringParameter(PARAMETER_SELECT);
-        if (expression == null) {
-            throw new DecoratorComponentException("Missing parameter 'select'");
-        }
-
-        HtmlPage page = request.getHtmlPage();
-        List<HtmlElement> elements = HtmlSelectUtil.select(page, expression);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Processing elements: " + elements);
-        }
-
-        processElements(elements, request, response);
-    }
-
+    private static final Pattern EXP_PATTERN = Pattern.compile("([a-z]+)\\(([0-9]+)\\)$");
     
 
-    protected abstract void processElements(List<HtmlElement> elements,
-                                            DecoratorRequest request,
-                                            DecoratorResponse response) throws Exception;
+    public static List<HtmlElement> select(HtmlPage page, String expression) {
+        HtmlElement current = page.getRootElement();
 
+        String[] path = expression.split("\\.");
+        if (current == null || !current.getName().equalsIgnoreCase(path[0])) {
+            return new ArrayList<HtmlElement>();
+        }
+
+        List<HtmlElement> elements = new ArrayList<HtmlElement>();
+        elements.add(current);
+
+        int i = 1;
+        while (i < path.length && elements.size() > 0) {
+            String pathElement = path[i];
+
+            String name = pathElement;
+            int elementIdx = -1;
+
+            Matcher matcher = EXP_PATTERN.matcher(name);
+            if (matcher.matches()) {
+                name = matcher.group(1);
+                elementIdx = Integer.valueOf(matcher.group(2));
+            }
+
+            List<HtmlElement> list = new ArrayList<HtmlElement>();
+            
+            for (int j = 0; j < elements.size(); j++) {
+                HtmlElement elem = elements.get(j);
+                HtmlElement[] children = elem.getChildElements(name);
+                if (elementIdx == -1) {
+                    list.addAll(Arrays.asList(children));
+                } else {
+                    if (elementIdx >= 0 && elementIdx < children.length) {
+                        list.add(children[elementIdx]);
+                    }
+                }
+            }
+            elements = list;
+            i++;
+        }
+        return elements;
+    }
+    
 }
-

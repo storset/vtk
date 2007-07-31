@@ -30,24 +30,29 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -80,6 +85,13 @@ public class IncludeComponent extends AbstractDecoratorComponent
             "permissions apply to the resource including and the resource included." +
             "Note that this doesn't apply to virtual includes of full URLs.";
     
+    private static final String PARAMETER_ELEMENT = "element";
+    private static final String PARAMETER_ELEMENT_DESC =
+        "Selects an element from the included document (used in conjunction with the '"
+        + PARAMETER_FILE + "' parameter). The parameter must be a dot-separated path "
+        + "from the root element to the desired element: for example, the expression "
+        + "'html.body.h1' selects the (first) h1 element in the HTML body.";
+
     static final String INCLUDE_ATTRIBUTE_NAME =
         IncludeComponent.class.getName() + ".IncludeRequestAttribute";
 
@@ -89,18 +101,25 @@ public class IncludeComponent extends AbstractDecoratorComponent
     
     private Repository repository;
 
-    public void setRepository(Repository repository) {
+    private HtmlPageParser htmlParser;
+
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public void setServletContext(ServletContext servletContext) {
+    @Required public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
     }
 
-    public void setHttpIncludeCache(ContentCache<String, String> httpIncludeCache) {
+    @Required public void setHttpIncludeCache(ContentCache<String, String> httpIncludeCache) {
         this.httpIncludeCache = httpIncludeCache;
     }
     
+    @Required public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
+    
+
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
 
@@ -125,7 +144,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         if (uri.startsWith("http") || uri.startsWith("https")) {
             handleHttpInclude(uri, request, response);
             return;
-        } 
+        }
 
         if (!uri.startsWith("/")) {
             String requestURI = RequestContext.getRequestContext().getResourceURI();
@@ -170,14 +189,36 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         String characterEncoding = r.getCharacterEncoding();
         InputStream is = this.repository.getInputStream(token, address, true);
-        byte[] bytes = StreamUtil.readInputStream(is);
+
+        if (ContentTypeHelper.isHTMLOrXHTMLContentType(r.getContentType())) {
+            HtmlPage page = this.htmlParser.parse(is, characterEncoding);
+            String result = "";
+            
+            String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
+            if (elementParam == null) {
+                elementParam = "html.body";
+            }
+            
+            List<HtmlElement> elements = HtmlSelectUtil.select(page, elementParam);
+            if (elements.size() > 0) {
+                result = elements.get(0).getContent();
+            }
+            Writer writer = response.getWriter();
+            writer.write(result);
+            writer.close();
+            
+        } else {
+            byte[] bytes = StreamUtil.readInputStream(is);
         
-        response.setCharacterEncoding(characterEncoding);
-        OutputStream out = response.getOutputStream();
-        out.write(bytes);
-        out.close();
+            response.setCharacterEncoding(characterEncoding);
+            OutputStream out = response.getOutputStream();
+            out.write(bytes);
+            out.close();
+
+        }
     }
     
+
     private void handleVirtualInclude(String uri, DecoratorRequest request,
                                       DecoratorResponse response) throws Exception {
         
@@ -265,6 +306,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         map.put(PARAMETER_FILE, PARAMETER_FILE_DESC);
         map.put(PARAMETER_VIRTUAL, PARAMETER_VIRTUAL_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
+        map.put(PARAMETER_ELEMENT, PARAMETER_ELEMENT_DESC);
         return map;
     }
 

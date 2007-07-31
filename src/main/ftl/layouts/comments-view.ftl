@@ -1,5 +1,25 @@
+<#--
+  - File: comments-view.ftl
+  - 
+  - Description: displays a list of comments on the page.
+  - 
+  - Required model data:
+  -   comments
+  -   commentsEnabled
+  -   config
+  -
+  - Optional model data:
+  -   form
+  -   principal
+  - 
+  -->
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
+
+<#if !comments?exists || !config?exists>
+  <#stop "Unable to render model: model data missing: required entries
+          are 'comments' and 'config'">
+</#if>
 
 <style type="text/css">
 
@@ -28,73 +48,70 @@
   }
 </style>
 
-
+<#if commentsEnabled && comments?size &gt; 0>
 <div class="vrtx-comments" id="comments">
-
-  <#if comments?exists>
-    <hr />
-    <div class="comments-header">
-    <#assign header>
-      <@vrtx.msg code="commenting.header"
-                 default="Comments (" + comments?size + ")"
+  <hr />
+  <div class="comments-header">
+  <#assign header>
+    <@vrtx.msg code="commenting.header"
+               default="Comments (" + comments?size + ")"
+               args=[comments?size] />
+  </#assign>
+  <#if baseCommentURL?exists>
+    <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
+  <#else>
+    ${header}
+  </#if>
+  <#if comments?size &gt; 1>
+    <#assign confirmation>
+      <@vrtx.msg code="commenting.deleteall.confirmation" 
+                 default="Are you sure you want to delete all ${comments?size} comments?" 
                  args=[comments?size] />
     </#assign>
-    <#if baseCommentURL?exists>
-      <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
-    <#else>
-      ${header}
-    </#if>
-    <#if comments?size &gt; 1>
-      <#assign confirmation>
-        <@vrtx.msg code="commenting.deleteall.confirmation" 
-                   default="Are you sure you want to delete all ${comments?size} comments?" 
-                   args=[comments?size] />
-      </#assign>
-      <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
-      <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
-    </#if>
-   </div>
+    <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
+    <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
+  </#if>
+ </div>
 
-    <#assign comments = comments?sort_by("time") />
+  <#assign comments = comments?sort_by("time") />
 
-    <#assign rowclass="even" />
+  <#assign rowclass="even" />
 
-    <#list comments as comment>
-      <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?c}">
-        <#if config.titlesEnabled>
-          <div class="comment-title">
-            <#if baseCommentURL?exists>
-              <a href="${(baseCommentURL + '#comment-' + comment.ID?c)?html}">${comment.title?html}</a>
-              <#else>
-                ${comment.title?html}
-              </#if>
-          </div>
-        </#if>
-        <div class="comment-body">
-        <#if config.htmlContentEnabled>
-          <#-- Display content as raw html: -->
-          ${comment.content}
-        <#else>
-          <#-- Display content as escaped html: -->
-          ${comment.content?html}
-        </#if>
-        </div>
-        <div class="comment-info">
-          ${comment.author?html} |
-          <@vrtx.date value=comment.time format='long' />
-          <#if deleteCommentURLs[comment.ID?c]?exists>
-            <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>
-            <#assign confirmation>
-              <@vrtx.msg code="commenting.delete.confirmation" 
-                         default="Are you sure you want to delete this comment?" />
-            </#assign>
-            (&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID?c]?html}">${message}</a>&nbsp;)
+  <#list comments as comment>
+    <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?c}">
+      <#if config.titlesEnabled>
+        <div class="comment-title">
+          <#if baseCommentURL?exists>
+            <a href="${(baseCommentURL + '#comment-' + comment.ID?c)?html}">${comment.title?html}</a>
+          <#else>
+              ${comment.title?html}
           </#if>
         </div>
+      </#if>
+      <div class="comment-body">
+      <#if config.htmlContentEnabled>
+        <#-- Display content as raw html: -->
+        ${comment.content}
+      <#else>
+        <#-- Display content as escaped html: -->
+        ${comment.content?html}
+      </#if>
       </div>
-      <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
-    </#list>
-  </#if>
+      <div class="comment-info">
+        ${comment.author?html} |
+        <@vrtx.date value=comment.time format='long' />
+        <#if deleteCommentURLs[comment.ID?c]?exists>
+          <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>
+          <#assign confirmation>
+            <@vrtx.msg code="commenting.delete.confirmation" 
+                       default="Are you sure you want to delete this comment?" />
+          </#assign>
+          (&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID?c]?html}">${message}</a>&nbsp;)
+        </#if>
+      </div>
+    </div>
+    <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
+  </#list>
 
   <div class="add-comment" id="comment-form">
     <hr /> 
@@ -146,6 +163,5 @@
       </form>
     </#if>
   </div>
-
-
 </div>
+</#if>

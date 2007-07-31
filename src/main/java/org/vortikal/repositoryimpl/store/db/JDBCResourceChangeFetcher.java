@@ -37,13 +37,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+
 import org.vortikal.repositoryimpl.ProcessedContentEventDumper;
 import org.vortikal.repositoryimpl.RepositoryEventDumperImpl;
 import org.vortikal.repositoryimpl.index.observation.ResourceACLModification;
@@ -104,10 +106,10 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         
         List result = new ArrayList();
         try {
-            conn = this.dataSource.getConnection();
+            conn = DataSourceUtils.getConnection(this.dataSource);
            
             String query = "SELECT cl.* FROM changelog_entry cl " +
-                           "WHERE cl.logger_type=? AND cl.logger_id=?";
+                "WHERE cl.logger_type=? AND cl.logger_id=?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, this.loggerType);
             pstmt.setInt(2, this.loggerId);
@@ -123,17 +125,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             pstmt.close();
         } catch (SQLException sqle) {
             this.logger.warn("SQLException: ", sqle);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException sqle) {
-                this.logger.warn("SQLException when closing connection: ", sqle);
-            }
-        }
-        
+        } 
         return result;
     }
     
@@ -199,7 +191,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         
         List result = null;
         try {
-            conn = this.dataSource.getConnection();
+            conn = DataSourceUtils.getConnection(this.dataSource);
                 
             // Fetch all relevant changes up to MAX(changelog_entry_id)
             String maxIdQuery = "SELECT MAX(cl.changelog_entry_id) FROM changelog_entry cl " +
@@ -277,17 +269,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             pstmt.close();
         } catch (SQLException sqle) {
                 this.logger.warn("SQLException: ", sqle);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException sqle) {
-                this.logger.warn("SQLException when closing connection: ", sqle);
-            }
         }
-        
         return result;
     }
     
@@ -307,7 +289,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
         Connection conn = null;
         int result = -1;
         try {
-            conn = this.dataSource.getConnection();
+            conn = DataSourceUtils.getConnection(this.dataSource);
             String query =
                     "SELECT COUNT(1) FROM changelog_entry cl WHERE cl.logger_type =? " + 
                     "AND cl.logger_id =?";
@@ -325,15 +307,6 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             pstmt.close();
         } catch (SQLException sqle) {
             this.logger.warn("SQLException: ", sqle);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException sqle) {
-                this.logger.warn("SQLException while closing connection: ", sqle);
-            }
         }
         
         return result;
@@ -347,9 +320,10 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
      * NOTE: Assuming that bigger changelog_entry_id always means later in time.
      */
     public void removeChanges(List changes) {
+        logger.warn("Removing changes: " + changes);
         Connection conn = null;
         try {
-            conn = this.dataSource.getConnection();
+            conn = DataSourceUtils.getConnection(this.dataSource);
             // Delete indexed changes to resources, including all those that
             // occured before the last change to a resource. This should be OK to do.
             // NOTE: might be cases where the above is not true, need to consider this some more.
@@ -375,16 +349,7 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
             pstmt.close();
         } catch (SQLException sqle) {
             this.logger.warn("SQLException: ", sqle);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException sqle) {
-                this.logger.warn("SQLException when closing connection: ", sqle);
-            }
-        }
+        } 
     }
     
     public void setDataSource(DataSource dataSource) {

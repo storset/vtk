@@ -50,6 +50,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.store.DataAccessException;
 import org.vortikal.security.PrincipalFactory;
 
 /**
@@ -88,7 +89,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
     private Map<String, Integer> resourceIdCache;
     
     public ResourceIDCachingResultSetIteratorImpl(PropertyManager propertyManager,
-                                 PrincipalFactory principalFactory, ResultSet rs) throws IOException {
+                                 PrincipalFactory principalFactory, ResultSet rs) throws DataAccessException {
         this.propertyManager = propertyManager;
         this.principalFactory = principalFactory;
         this.rs = rs;
@@ -98,7 +99,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
             this.hasNext = this.rs.next();
             this.hasNext = this.hasNext && ! rs.isAfterLast();
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e.getMessage());
         }
     }
     
@@ -165,8 +166,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
             return propertySet;
 
         } catch (SQLException e) {
-            logger.warn("SQLException during iteration", e);
-            return null;
+            throw new DataAccessException("SQLException during iteration", e);
         }
     }
     
@@ -211,7 +211,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
         throw new UnsupportedOperationException("This iterator does not support removal of elements");
     }
     
-    public void close() throws IOException {
+    public void close() throws DataAccessException {
 
         this.hasNext = false;
 
@@ -225,7 +225,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
             }
             this.rs.close();
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         } finally {
             try {
                 if (stmt != null) {
@@ -233,7 +233,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
                 }
                 
             } catch (SQLException e) {
-                throw new IOException(e.getMessage());
+                throw new DataAccessException(e);
             } finally {
                 try {
                     if (conn != null) {
@@ -241,7 +241,7 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
                         conn.close();
                     }
                 } catch (SQLException e) {
-                    throw new IOException(e.getMessage());
+                    throw new DataAccessException(e);
                 }
             }
         }

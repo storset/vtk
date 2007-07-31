@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.store;
 
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -51,10 +50,8 @@ public interface IndexDataAccessor {
      * The URI order should be lexicographic.
      * Might be useful for incremental synchronization/re-indexing.
      * 
-     * @return
-     * @throws IOException
      */
-    public Iterator<PropertySet> getOrderedPropertySetIterator() throws IOException;
+    public Iterator<PropertySet> getOrderedPropertySetIterator() throws DataAccessException;
 
     /**
      * Get an ordered <code>PropertySet</code> iterator, starting from the given 
@@ -62,38 +59,30 @@ public interface IndexDataAccessor {
      * Might be useful for incremental synchronization/re-indexing.
      * 
      * @param startUri
-     * @return
-     * @throws IOException
      */
-    public Iterator<PropertySet> getOrderedPropertySetIterator(String startUri) throws IOException;
+    public Iterator<PropertySet> getOrderedPropertySetIterator(String startUri) throws DataAccessException;
     
     /**
      * Get iterator over all <code>PropertySet</code>s from URIs in the given 
      * <code>List</code>.
      *  
      * @param uris
-     * @return
-     * @throws IOException
      */
-    public Iterator<PropertySet> getPropertySetIteratorForUris(List uris) throws IOException;
+    public Iterator<PropertySet> getPropertySetIteratorForUris(List uris) throws DataAccessException;
 
     /**
      * Returns a single <code>PropertySet</code> for the given URI.
      * 
      * @param uri
-     * @return A single <code>PropertySet</code> for the given ID, or <code>null</code> if not found.
-     * @throws IOException
      */
-    public PropertySet getPropertySetByUri(String uri) throws IOException;
+    public PropertySet getPropertySetByUri(String uri) throws DataAccessException;
 
     /**
      * Returns a single <code>PropertySet</code> for the given ID.
      * @param id The repository ID of the property set.
      * @return A single <code>PropertySet</code> for the given ID, or <code>null</code> if not found.
-     * 
-     * @throws IOException
      */
-    public PropertySet getPropertySetByID(int id) throws IOException;
+    public PropertySet getPropertySetByID(int id) throws DataAccessException;
     
     /**
      * Close an {@link java.util.Iterator} instance obtained with any of the
@@ -109,7 +98,7 @@ public interface IndexDataAccessor {
      * @param iterator
      * @throws IOException
      */
-    public void close(Iterator<PropertySet> iterator) throws IOException;
+    public void close(Iterator<PropertySet> iterator) throws DataAccessException;
 
     /**
      * Process list of <code>ResultSecurityInfo</code> instances
@@ -117,10 +106,9 @@ public interface IndexDataAccessor {
      * 
      * @param principalNames
      * @param resultSecurityInfo
-     * @throws IOException
      */
     public void processQueryResultsAuthorization(
-        Set<String> principalNames,  List<ResultSecurityInfo> resultSecurityInfo) throws IOException;
+        Set<String> principalNames,  List<ResultSecurityInfo> resultSecurityInfo) throws DataAccessException;
 
     
 }

@@ -30,8 +30,8 @@
  */
 package org.vortikal.repositoryimpl.store.db;
 
+import com.ibatis.sqlmap.client.SqlMapClient;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,21 +41,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
+import org.vortikal.repositoryimpl.store.DataAccessException;
 import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 import org.vortikal.security.PrincipalFactory;
-
-import com.ibatis.sqlmap.client.SqlMapClient;
 
 /**
  * 
@@ -100,12 +101,11 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         }
     }
 
-    public Iterator<PropertySet> getOrderedPropertySetIterator() throws IOException {
+    public Iterator<PropertySet> getOrderedPropertySetIterator() throws DataAccessException {
         Connection conn = null;
 
         try {
-            conn = this.dataSource.getConnection();
-            conn.setAutoCommit(false);     
+            conn = DataSourceUtils.getConnection(this.dataSource);
             
             String query = "select r.*, "
                 + "p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r "
@@ -118,17 +118,16 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                                                               this.principalFactory, rs);
 
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         }
         
     }
 
     
-    public Iterator<PropertySet> getOrderedPropertySetIterator(String startURI) throws IOException {
+    public Iterator<PropertySet> getOrderedPropertySetIterator(String startURI) throws DataAccessException {
         Connection conn = null;
         try {
-            conn = this.dataSource.getConnection();
-            conn.setAutoCommit(false);     
+            conn = DataSourceUtils.getConnection(this.dataSource);
             
             String query = "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
                 + "p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r "
@@ -145,17 +144,16 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             return new ResultSetIteratorImpl(this.propertyManager, this.principalFactory,
                                              rs, stmt, conn);
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         }
 
     }
     
     
-    public PropertySet getPropertySetByUri(String uri) throws IOException {
+    public PropertySet getPropertySetByUri(String uri) throws DataAccessException {
         Connection conn = null;
         try {
-            conn = this.dataSource.getConnection();
-            conn.setAutoCommit(false);     
+            conn = DataSourceUtils.getConnection(this.dataSource);
             
             String query = 
                 "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
@@ -178,15 +176,14 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
 
             return propSet;
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
     
-    public PropertySet getPropertySetByID(int id) throws IOException {
+    public PropertySet getPropertySetByID(int id) throws DataAccessException {
         Connection conn = null;
         try {
-            conn = this.dataSource.getConnection();
-            conn.setAutoCommit(false);     
+            conn = DataSourceUtils.getConnection(this.dataSource);
             
             String query = 
                 "select resource_ancestor_ids(r.uri) AS ancestor_ids, r.*, "
@@ -211,19 +208,18 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             
             return propSet;
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
     
-    public Iterator<PropertySet> getPropertySetIteratorForUris(List uris) throws IOException {
+    public Iterator<PropertySet> getPropertySetIteratorForUris(List uris) throws DataAccessException {
         
         if (uris.size() == 0) {
             throw new IllegalArgumentException("At least one URI must be specified for retrieval.");
         }
         
         try {
-            Connection conn = this.dataSource.getConnection();
-            conn.setAutoCommit(false);
+            Connection conn = DataSourceUtils.getConnection(this.dataSource);
 
             int sessionId = getNewSessionId(conn);
             PreparedStatement pstmt = conn.prepareStatement(
@@ -264,7 +260,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
                                              rs, pstmt, conn);
             
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
 
@@ -330,7 +326,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
      */
     public void processQueryResultsAuthorization(Set principalNames,
                                                  List rsiList) 
-        throws IOException {
+        throws DataAccessException {
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Processing list of " + rsiList.size() + " elements");
@@ -338,8 +334,7 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
         
         Connection conn = null;
         try {
-            conn = this.dataSource.getConnection();
-            conn.setAutoCommit(false);
+            conn = DataSourceUtils.getConnection(this.dataSource);
             
             int sessionId = getNewSessionId(conn);
 
@@ -446,25 +441,16 @@ public class IndexDataAccessorImpl implements IndexDataAccessor, InitializingBea
             }
 
         } catch (SQLException sqle) {
-            throw new IOException(sqle.getMessage());
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.commit();
-                    conn.close();
-                } catch (SQLException sqle) {
-                    this.logger.warn("SQLException while closing connection", sqle);
-                }
-            }
-        }
+            throw new DataAccessException(sqle);
+        } 
     }
     
-    public void close(Iterator iterator) throws IOException {
+    public void close(Iterator iterator) throws DataAccessException {
         if (iterator instanceof CloseableIterator) {
             try {
                 ((CloseableIterator)iterator).close();
             } catch (Exception e) {
-                throw new IOException(e.getMessage());
+                throw new DataAccessException(e);
             }
         } else {
             throw new IllegalArgumentException("Iterator not closeable");

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl.store.db;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,6 +49,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.CloseableIterator;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.store.DataAccessException;
 import org.vortikal.security.PrincipalFactory;
 
 
@@ -78,7 +78,7 @@ public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
                                  PrincipalFactory principalFactory,
                                  ResultSet rs,
                                  Statement stmt,
-                                 Connection conn) throws IOException {
+                                 Connection conn) throws DataAccessException {
         this.propertyManager = propertyManager;
         this.principalFactory = principalFactory;
         this.rs = rs;
@@ -88,7 +88,7 @@ public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
             this.hasNext = this.rs.next();
             this.hasNext = this.hasNext && ! rs.isAfterLast();
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
     
@@ -162,14 +162,14 @@ public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
         }
     }
     
-    public void close() throws IOException {
+    public void close() throws DataAccessException {
 
         this.hasNext = false;
 
         try {
             this.rs.close();
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new DataAccessException(e.getMessage());
         } finally {
             try {
                 if (this.stmt != null) {
@@ -177,7 +177,7 @@ public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
                 }
                 
             } catch (SQLException e) {
-                throw new IOException(e.getMessage());
+                throw new DataAccessException(e.getMessage());
             } finally {
                 try {
                     if (this.conn != null) {
@@ -185,7 +185,7 @@ public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
                         this.conn.close();
                     }
                 } catch (SQLException e) {
-                    throw new IOException(e.getMessage());
+                    throw new DataAccessException(e.getMessage());
                 }
             }
         }

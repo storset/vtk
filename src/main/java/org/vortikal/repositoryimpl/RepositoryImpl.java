@@ -377,10 +377,11 @@ public class RepositoryImpl
             newResource = this.resourceHelper.nameChange(newResource, principal);
 
             this.dao.move(src, newResource);
+            newResource = this.dao.load(newResource.getURI());
             this.contentStore.copy(src.getURI(), newResource.getURI());
             this.contentStore.deleteResource(src.getURI());
             
-            this.context.publishEvent(new ResourceCreationEvent(this, dest));
+            this.context.publishEvent(new ResourceCreationEvent(this, newResource));
 
             this.context.publishEvent(new ResourceDeletionEvent(
                                           this, srcUri, src.getID(), src.isCollection()));

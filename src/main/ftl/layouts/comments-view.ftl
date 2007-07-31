@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: comments-view.ftl
   - 
@@ -13,7 +14,6 @@
   -   principal
   - 
   -->
-<#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if !comments?exists || !config?exists>

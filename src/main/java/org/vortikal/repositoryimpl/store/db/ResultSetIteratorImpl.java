@@ -178,16 +178,7 @@ public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
                 
             } catch (SQLException e) {
                 throw new DataAccessException(e.getMessage());
-            } finally {
-                try {
-                    if (this.conn != null) {
-                        this.conn.commit();
-                        this.conn.close();
-                    }
-                } catch (SQLException e) {
-                    throw new DataAccessException(e.getMessage());
-                }
-            }
+            } 
         }
     }
     

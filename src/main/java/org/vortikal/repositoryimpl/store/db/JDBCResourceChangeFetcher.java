@@ -320,7 +320,6 @@ public class JDBCResourceChangeFetcher implements ResourceChangeFetcher, Initial
      * NOTE: Assuming that bigger changelog_entry_id always means later in time.
      */
     public void removeChanges(List changes) {
-        logger.warn("Removing changes: " + changes);
         Connection conn = null;
         try {
             conn = DataSourceUtils.getConnection(this.dataSource);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -99,16 +99,16 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         String params = null;
         
         // Reduce avg. overhead by putting most common ops early in list ..
-        if (RepositoryOperations.RETRIEVE.equals(operation)          ||
-            RepositoryOperations.LIST_CHILDREN.equals(operation)     ||
-            RepositoryOperations.GET_INPUTSTREAM.equals(operation)   ||
-            RepositoryOperations.LOCK.equals(operation)              ||
-            RepositoryOperations.UNLOCK.equals(operation)            ||
-            RepositoryOperations.CREATE_DOCUMENT.equals(operation)   ||
-            RepositoryOperations.CREATE_COLLECTION.equals(operation) ||
-            RepositoryOperations.CREATE.equals(operation)            ||
-            RepositoryOperations.DELETE.equals(operation)            ||
-            RepositoryOperations.STORE_CONTENT.equals(operation)) {
+        if (RepositoryOperations.RETRIEVE.equals(operation)            ||
+            RepositoryOperations.LIST_CHILDREN.equals(operation)       ||
+            RepositoryOperations.GET_INPUTSTREAM.equals(operation)     ||
+            RepositoryOperations.LOCK.equals(operation)                ||
+            RepositoryOperations.UNLOCK.equals(operation)              ||
+            RepositoryOperations.CREATE_DOCUMENT.equals(operation)     ||
+            RepositoryOperations.CREATE_COLLECTION.equals(operation)   ||
+            RepositoryOperations.CREATE.equals(operation)              ||
+            RepositoryOperations.DELETE.equals(operation)              ||
+            RepositoryOperations.STORE_CONTENT.equals(operation)) {            
             
             token = (String)args[0];
             String uri = (String)args[1];
@@ -122,14 +122,18 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             String dstUri = (String)args[2];
             params = "(" + srcUri + ", " + dstUri + ")";
             
-        } else if (RepositoryOperations.STORE.equals(operation) ||
-                   RepositoryOperations.STORE_ACL.equals(operation)) {
+        } else if (RepositoryOperations.STORE.equals(operation)               ||
+                   RepositoryOperations.STORE_ACL.equals(operation)           ||
+                   RepositoryOperations.ADD_COMMENT.equals(operation)         ||
+                   RepositoryOperations.DELETE_COMMENT.equals(operation)      ||
+                   RepositoryOperations.DELETE_ALL_COMMENTS.equals(operation) ||
+                   RepositoryOperations.UPDATE_COMMENT.equals(operation)) {
 
             token = (String)args[0];
             Resource resource = (Resource)args[1];
             String uri = resource.getURI();
             params = "(" + uri + ")";
-            
+
         } else {
             // Unknown repository operation (wrt. logging)
             return invocation.proceed();

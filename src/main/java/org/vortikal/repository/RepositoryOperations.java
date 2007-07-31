@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -51,11 +51,16 @@ public class RepositoryOperations {
     public final static String GET_INPUTSTREAM = "getInputStream";
     public final static String STORE_CONTENT = "storeContent";
     public final static String STORE_ACL = "storeACL";
+    public final static String ADD_COMMENT = "addComment";
+    public final static String DELETE_COMMENT = "deleteComment";
+    public final static String DELETE_ALL_COMMENTS = "deleteAllComments";
+    public final static String UPDATE_COMMENT = "updateComment";
+
     
-    public static final Set WRITE_OPERATIONS;
+    public static final Set<String> WRITE_OPERATIONS;
     
     static {
-        WRITE_OPERATIONS = new HashSet();
+        WRITE_OPERATIONS = new HashSet<String>();
         WRITE_OPERATIONS.add(CREATE);
         WRITE_OPERATIONS.add(CREATE_COLLECTION);
         WRITE_OPERATIONS.add(CREATE_DOCUMENT);
@@ -67,6 +72,10 @@ public class RepositoryOperations {
         WRITE_OPERATIONS.add(STORE);
         WRITE_OPERATIONS.add(STORE_CONTENT);
         WRITE_OPERATIONS.add(STORE_ACL);
+        WRITE_OPERATIONS.add(ADD_COMMENT);
+        WRITE_OPERATIONS.add(DELETE_COMMENT);
+        WRITE_OPERATIONS.add(DELETE_ALL_COMMENTS);
+        WRITE_OPERATIONS.add(UPDATE_COMMENT);
     }
 
 }

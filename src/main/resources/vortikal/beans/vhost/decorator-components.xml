@@ -20,6 +20,10 @@
     <constructor-arg type="java.lang.String" value="resource" />
   </bean>
 
+  <bean id="decorating.includeNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="include" />
+  </bean>
+
   <!--
   <bean id="decorating.tocComponent"
         class="org.vortikal.web.view.decorating.components.HtmlTocComponent">
@@ -167,7 +171,7 @@
 
   <bean id="decorating.feedComponent"
         class="org.vortikal.web.view.decorating.components.SyndicationFeedComponent">
-    <property name="namespace" value="include" />
+    <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feed" />
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
@@ -197,7 +201,7 @@
 
   <bean id="decorating.listMenuComponent"
         class="org.vortikal.web.view.decorating.components.ListMenuComponent">
-    <property name="namespace" value="include" />
+    <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="uri-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryParser" ref="searchParser" />
@@ -234,13 +238,29 @@
   </bean>
 
 
+  <bean id="decorating.authenticationComponent"
+        class="org.vortikal.web.view.decorating.components.AuthenticationComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="login" />
+    <property name="view" ref="decorating.authenticationComponent.view" />
+    <property name="loginService" ref="loginService" />
+    <property name="logoutService" ref="logoutService" />
+    <property name="description" value="Displays a login or logout URL" />
+  </bean>
+
+  <bean name="decorating.authenticationComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/login-logout.ftl" />
+  </bean>
+
+
   <bean id="decorating.includeComponent"
         class="org.vortikal.web.view.decorating.components.IncludeComponent"
         parent="requestLocalRepositoryAware">
-    <property name="namespace" value="include" />
+    <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="file" />
     <property name="description" value="Includes the contents of another document in the page" />
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
+    <!--property name="htmlParser" ref="decorating.htmlParser" /-->
   </bean>
 
   <bean id="decorating.includeComponent.httpIncludeCache"

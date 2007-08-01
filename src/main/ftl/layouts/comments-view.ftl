@@ -21,8 +21,9 @@
           are 'comments' and 'config'">
 </#if>
 
-<#if commentsEnabled && comments?size &gt; 0>
-
+<#if !commentsEnabled && comments?size = 0>
+  <#-- display nothing -->
+<#else>
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">

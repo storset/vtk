@@ -1,8 +1,11 @@
 div.vrtx-comments {
   margin-top: 1em;
-  border: 1px solid #ccc; 
   background-color: #eee;  
-  padding: 1em;
+  padding: 1em 1em 0 1em;
+
+  border-radius: .75em;  /* CSS3 */
+  -moz-border-radius: .75em;
+  -webkit-border-radius: .75em; 
 }
 
 div.vrtx-comments  div.comments-header {
@@ -82,7 +85,7 @@ div.vrtx-comments div.comments-text textarea {
 div.vrtx-comments div.add-comment div.submit {
   margin-top: -1px;
   background: transparent url(speech-bubble-tip.gif) 2em 0px no-repeat;
-  padding: 1em 1.1em;
+  padding: 1em 1em 0 1em;
 }
 
 div.vrtx-comments .error {

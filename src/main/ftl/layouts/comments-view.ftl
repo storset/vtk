@@ -74,7 +74,7 @@
       </#if>
       </div>
       <div class="comment-info">
-        ${comment.author?html} |
+        ${comment.author?html} -
         <@vrtx.date value=comment.time format='long' />
         <#if deleteCommentURLs[comment.ID?c]?exists>
           <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>

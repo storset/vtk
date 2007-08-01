@@ -135,7 +135,6 @@
           </#if>
         </div>
         <div class="submit">
-        <span class="user">${principal.name?html}</span> - 
         <input type="submit" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" /></div>
       </form>
     </#if>

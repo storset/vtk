@@ -139,6 +139,18 @@
     <property name="handler" ref="fckeditor.putController" />
   </bean>
 
+  <bean id="fckeditor.cleanSourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="fckeditor.fckService" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="fckeditor.parameterEqualsCleanSource" />
+      </list>
+    </property>
+    <property name="handler" ref="fckeditor.cleanSourceController" />
+  </bean>
+
+
 
   <bean id="fckeditor.putController"
         class="org.vortikal.webdav.PutController"
@@ -158,6 +170,18 @@
       </list>
     </property>
   </bean>
+
+
+  <bean id="fckeditor.cleanSourceController"
+        class="org.vortikal.web.filter.HttpFilterServiceController">
+    <property name="requestFilter" ref="fckeditor.htmlParseFilter" />
+  </bean>
+
+  <bean id="fckeditor.htmlParseFilter"
+        class="org.vortikal.web.filter.HtmlParserInputStreamFilter">
+    <property name="parser" ref="decorating.htmlParser" />
+  </bean>
+
 
   <bean id="fckeditor.replaceBodyFilter"
         class="org.vortikal.web.filter.ReplaceHtmlBodyInputStreamFilter"
@@ -187,6 +211,11 @@
     <property name="parameterValue" value="get-put" />
   </bean>
 
+  <bean id="fckeditor.parameterEqualsCleanSource"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="fck-action" />
+    <property name="parameterValue" value="clean-source" />
+  </bean>
 
   <bean id="fckeditor.wrappingViewResolver" parent="adminViewResolver">
     <property name="views">
@@ -223,6 +252,14 @@
           <property name="service" ref="fckeditor.putService" />
           <property name="urlName" value="putURL" />
         </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="fckCleanup" />
+          <property name="service" ref="fckeditor.getSourceService" />
+          <property name="urlName" value="url" />
+        </bean>
+
       </list>
     </property>
   </bean>

@@ -21,54 +21,30 @@
           are 'comments' and 'config'">
 </#if>
 
-<style type="text/css">
-
-  div.comments-header {
-     margin-top: 1em;
-     margin-bottom: 2em;
-  }
-  div.comments-header a.header-href {
-     font-size: 110%;
-     font-weight: bold;
-  }
-  div.vrtx-comment {
-     margin-bottom: 2em;
-  }
-  div.comment-info {
-     font-size: 90%;
-     padding-top: 1em;
-  }
-  .even {
-  }
-  .odd {
-  }
-  div.add-comment-header {
-     font-size: 110%;
-     font-weight: bold;
-  }
-</style>
-
 <#if commentsEnabled && comments?size &gt; 0>
+
 <div class="vrtx-comments" id="comments">
-  <hr />
-  <div class="comments-header">
-  <#assign header>
-    <@vrtx.msg code="commenting.header"
-               default="Comments (" + comments?size + ")"
-               args=[comments?size] />
-  </#assign>
-  <#if baseCommentURL?exists>
-    <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
-  <#else>
-    ${header}
-  </#if>
-  <#if comments?size &gt; 1>
-    <#assign confirmation>
-      <@vrtx.msg code="commenting.deleteall.confirmation" 
-                 default="Are you sure you want to delete all ${comments?size} comments?" 
+  <#if comments?exists>
+    <div class="comments-header">
+    <#assign header>
+      <@vrtx.msg code="commenting.header"
+                 default="Comments (" + comments?size + ")"
                  args=[comments?size] />
     </#assign>
+    <#if baseCommentURL?exists>
+      <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
+    <#else>
+      ${header}
+    </#if>
+
+
     <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
+      <#assign confirmation>
+        <@vrtx.msg code="commenting.deleteall.confirmation" 
+                   default="Are you sure you want to delete all ${comments?size} comments?" 
+                   args=[comments?size] />
+      </#assign>
+
     <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
   </#if>
  </div>
@@ -77,17 +53,17 @@
 
   <#assign rowclass="even" />
 
-  <#list comments as comment>
-    <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?c}">
-      <#if config.titlesEnabled>
-        <div class="comment-title">
-          <#if baseCommentURL?exists>
-            <a href="${(baseCommentURL + '#comment-' + comment.ID?c)?html}">${comment.title?html}</a>
-          <#else>
-              ${comment.title?html}
-          </#if>
-        </div>
-      </#if>
+    <#list comments as comment>
+      <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?c}">
+        <#if config.titlesEnabled>
+          <div class="comment-title">
+            <#if baseCommentURL?exists>
+              <a href="${(baseCommentURL + '#comment-' + comment.ID?c)?html}">${comment.title?html}</a>
+              <#else>
+                ${comment.title?html}
+              </#if>
+          </div>
+        </#if>
       <div class="comment-body">
       <#if config.htmlContentEnabled>
         <#-- Display content as raw html: -->
@@ -114,7 +90,6 @@
   </#list>
 
   <div class="add-comment" id="comment-form">
-    <hr /> 
 
     <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
 
@@ -135,7 +110,7 @@
     <#elseif postCommentURL?exists>
       <form action="${postCommentURL?string?html}" method="post">
         <#if config.titlesEnabled>
-        <p>
+        <div class="comments-title">
           <#assign value><#if form?exists && form.title?exists>${form.title}</#if></#assign>
           <label for="comments-title">
             <@vrtx.msg code="commenting.form.title" default="Title" /></label>
@@ -146,20 +121,22 @@
                          default=errors.getFieldError('title').getDefaultMessage() />
             </span>
           </#if>
-        </p>
+        </div>
         </#if>
-        <p>
+        <div class="comments-text">
           <#assign value><#if form?exists && form.text?exists>${form.text}</#if></#assign>
           <textarea id="comments-text" name="text" rows="6" cols="80">${value?html}</textarea>
           <#if errors?exists && errors.getFieldError('text')?exists>
-            <span class="error">
+            <div class="error">
               <@vrtx.msg code=errors.getFieldError('text').getCode()
                          default=errors.getFieldError('text').getDefaultMessage() 
                          args=errors.getFieldError('text').getArguments()  />
-            </span>
+            </div>
           </#if>
-        </p>
-        <input type="submit" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" />
+        </div>
+        <div class="submit">
+        <span class="user">${principal.name?html}</span> - 
+        <input type="submit" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" /></div>
       </form>
     </#if>
   </div>

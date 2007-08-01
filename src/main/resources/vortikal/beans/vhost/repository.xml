@@ -18,7 +18,7 @@
   </bean>
 
 
-  <tx:advice id="txAdvice" transaction-manager="repository.transactionManager">
+  <tx:advice id="repository.txAdvice" transaction-manager="repository.transactionManager">
     <tx:attributes>
       <!--tx:method name="get*" read-only="true" /-->
       <tx:method name="*" no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" />
@@ -27,15 +27,21 @@
 
   <aop:config>
     <aop:pointcut id="repository.repositoryOperationPointcut" expression="execution(* org.vortikal.repository.Repository.*(..))"/>
-    <aop:advisor advice-ref="txAdvice" pointcut-ref="repository.repositoryOperationPointcut"/>
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.repositoryOperationPointcut"/>
+  </aop:config>
+
+
+  <!-- XXX: identify (indexing-related) pointcuts that should be wrapped in transactions: -->
+  <aop:config>
+    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repositoryimpl.index.observation.ResourceChangePoller.pollChanges(..))"/>
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
   </aop:config>
 
   <aop:config>
-    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repositoryimpl.index.observation.ResourceChangePoller.pollChanges(..))"/>
-    <aop:advisor advice-ref="txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
+    <aop:pointcut id="repository.searchAuthorizationPointcut" expression="execution(* org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager.authorizeQueryResults(..))"/>
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.searchAuthorizationPointcut"/>
   </aop:config>
 
-  <!-- XXX: clarify what methods to make transactional: -->
   <!--
   <aop:config>
     <aop:pointcut id="repository.indexDataAccessorPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.IndexDataAccessorImpl.*(..))"/>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * Class for distributing resouce changes from a single change fetcher to
  * a set of indexes.
  */
-public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
+public class ResourceChangeNotifierImpl implements ResourceChangeNotifier, ResourceChangePoller {
     
     private Log logger = LogFactory.getLog(ResourceChangeNotifierImpl.class);
     private Set observers = new HashSet();

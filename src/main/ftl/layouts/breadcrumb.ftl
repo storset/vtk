@@ -1,5 +1,5 @@
 <#--
-  - File: plain-header.ftl
+  - File: breadcrumb.ftl
   - 
   - Description: header that displays a breadcrumb and a resource title
   - 
@@ -7,7 +7,6 @@
   -   breadcrumb
   -
   - Optional model data:
-  -   includeTemplate - a template location which is included if specified
   - 
   -->
 

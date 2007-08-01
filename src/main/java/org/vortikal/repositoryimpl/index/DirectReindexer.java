@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl.index;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
@@ -111,15 +110,15 @@ public class DirectReindexer implements PropertySetIndexReindexer {
             }
             
             return counter;
-        } catch (IOException io) {
-            LOG.warn("IOException while re-indexing: " + io.getMessage());
-            throw new IndexException(io);
+        } catch (Exception e) {
+            LOG.warn("Exception while re-indexing", e);
+            throw new IndexException(e);
         } finally {
             try {
                 if (iterator != null) {
                     indexDataAccessor.close(iterator);
                 } 
-            } catch (IOException io) {
+            } catch (Exception io) {
                 this.LOG.warn("IOException while closing property set iterator.");
             }
         }

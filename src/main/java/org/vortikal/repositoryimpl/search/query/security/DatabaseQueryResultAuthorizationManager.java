@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl.search.query.security;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -131,10 +130,9 @@ public final class DatabaseQueryResultAuthorizationManager implements
         try {
             this.indexDataAccessor.processQueryResultsAuthorization(principalNames, 
                                                                     rsiList);
-        } catch (IOException io) {
-            this.logger.warn("IOException while authorizing query result list: " 
-                                                            + io.getMessage());
-            throw new QueryAuthorizationException(io.getMessage());
+        } catch (Exception e) {
+            this.logger.warn("Exception while authorizing query result list: ", e);
+            throw new QueryAuthorizationException(e);
         }
         
     }

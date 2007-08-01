@@ -197,11 +197,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             this.index.unlock();
             
             if (propSetIterator != null) {
-                try {
-                    this.indexDataAccessor.close(propSetIterator);
-                } catch (IOException io) {
-                    this.logger.warn("Exception while closing result set iterator");
-                }
+                this.indexDataAccessor.close(propSetIterator);
             }
         }
     }

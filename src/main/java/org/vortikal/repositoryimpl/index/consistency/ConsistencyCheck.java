@@ -133,13 +133,9 @@ public class ConsistencyCheck {
             throw sce; // Re-throw, since we can't work on or fix a corrupted index
         } finally {
             // Clean up resources
-            try {
-                if (daoIterator != null) this.indexDataAccessor.close(daoIterator);
-                if (indexUriIterator != null) this.index.close(indexUriIterator);
-                if (randomIndexAccessor != null) randomIndexAccessor.close();
-            } catch (IOException io) {
-                LOG.warn("IOException while freeing index or dao resources: " + io.getMessage());
-            }
+            if (daoIterator != null) this.indexDataAccessor.close(daoIterator);
+            if (indexUriIterator != null) this.index.close(indexUriIterator);
+            if (randomIndexAccessor != null) randomIndexAccessor.close();
         }
 
         this.completed = true;

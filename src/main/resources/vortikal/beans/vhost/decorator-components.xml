@@ -260,7 +260,7 @@
     <property name="name" value="file" />
     <property name="description" value="Includes the contents of another document in the page" />
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
-    <!--property name="htmlParser" ref="decorating.htmlParser" /-->
+    <property name="htmlParser" ref="decorating.htmlParser" />
   </bean>
 
   <bean id="decorating.includeComponent.httpIncludeCache"

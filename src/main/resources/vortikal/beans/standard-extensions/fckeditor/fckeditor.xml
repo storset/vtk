@@ -256,7 +256,7 @@
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="modelName" value="fckCleanup" />
-          <property name="service" ref="fckeditor.getSourceService" />
+          <property name="service" ref="fckeditor.cleanSourceService" />
           <property name="urlName" value="url" />
         </bean>
 

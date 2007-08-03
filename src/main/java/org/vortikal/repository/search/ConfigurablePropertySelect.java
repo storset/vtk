@@ -40,7 +40,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  * added {@link PropertyTypeDefinition property type definitions}.
  */
 public class ConfigurablePropertySelect implements PropertySelect {
-    private Set properties = new HashSet();
+    private Set<PropertyTypeDefinition> properties = new HashSet<PropertyTypeDefinition>();
     
     public void addPropertyDefinition(PropertyTypeDefinition def) {
         this.properties.add(def);

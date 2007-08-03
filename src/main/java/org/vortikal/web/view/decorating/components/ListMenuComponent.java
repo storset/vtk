@@ -206,10 +206,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         String currentURI = menuRequest.getCurrentURI();        
         String[] childNames = menuRequest.getChildNames();
 
-        MenuItem parent = null;
-        List<MenuItem> items = new ArrayList<MenuItem>();
-        Map<String, MenuItem> activeMatches = new HashMap<String, MenuItem>();
-        Map<String, MenuItem> nameItemMap = new HashMap<String, MenuItem>();
+        MenuItem<String> parent = null;
+        List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
+        Map<String, MenuItem<String>> activeMatches = new HashMap<String, MenuItem<String>>();
+        Map<String, MenuItem<String>> nameItemMap = new HashMap<String, MenuItem<String>>();
 
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
@@ -219,7 +219,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             String title = titleProperty != null ?
                 titleProperty.getStringValue() : resource.getName();
 
-            MenuItem item = new MenuItem();
+            MenuItem<String> item = new MenuItem<String>();
             item.setUrl(url);
             item.setTitle(title);
             item.setLabel(title);
@@ -269,18 +269,18 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             items.add(0, parent);
         }
 
-        ListMenu menu = new ListMenu();
-        menu.setItems(items.toArray(new MenuItem[items.size()]));
+        ListMenu<String> menu = new ListMenu<String>();
+        menu.addAllItems(items);
         menu.setLabel(menuRequest.getStyle());
         return menu;
     }
 
 
-    private List<MenuItem> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem> nameItemMap) {
-        List<MenuItem> result = new ArrayList<MenuItem>();
+    private List<MenuItem<String>> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem<String>> nameItemMap) {
+        List<MenuItem<String>> result = new ArrayList<MenuItem<String>>();
         for (int i = 0; i < childNames.length; i++) {
             String name = childNames[i].trim();
-            MenuItem item = nameItemMap.get(name);
+            MenuItem<String> item = nameItemMap.get(name);
             if (item != null) {
                 result.add(item);
             }
@@ -288,7 +288,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return result;
     }
     
-    private List<MenuItem> sortRegularOrder(List<MenuItem> items, Locale locale) {
+    private List<MenuItem<String>> sortRegularOrder(List<MenuItem<String>> items, Locale locale) {
         Collections.sort(items, new ItemTitleComparator(locale));
         return items;
     }
@@ -392,7 +392,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private class ItemTitleComparator implements Comparator {
+    private class ItemTitleComparator implements Comparator<MenuItem<String>> {
 
         private Collator collator;
 
@@ -401,9 +401,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         
 
-        public int compare(Object o1, Object o2) {
-            MenuItem i1 = (MenuItem) o1;
-            MenuItem i2 = (MenuItem) o2;
+        public int compare(MenuItem<String> i1, MenuItem<String>i2) {
             return this.collator.compare(i1.getTitle(), i2.getTitle());
         }
     }

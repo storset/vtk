@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.view.components.menu;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -152,7 +150,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
         
-        ListMenu menu = new ListMenu();
+        ListMenu<String> menu = new ListMenu<String>();
         menu.setLabel(this.label);
         
 
@@ -165,7 +163,6 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             this.retrieveForProcessing);
         Service currentService = requestContext.getService();
         
-        List<MenuItem> items = new ArrayList<MenuItem>();
         MenuItem activeItem = null;
         
         for (Service service : this.services) {
@@ -178,7 +175,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
                 // ok
             }
 
-            MenuItem item = new MenuItem();
+            MenuItem<String> item = new MenuItem<String>();
             item.setLabel(label);
             item.setTitle(title);
             item.setUrl(url);
@@ -188,10 +185,11 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
                 activeItem = item;
             }
 
-            items.add(item);
+            menu.addItem(item);
+//             items.add(item);
         }
         
-        menu.setItems(items.toArray(new MenuItem[items.size()]));
+        //menu.setItems(items.toArray(new MenuItem[items.size()]));
         menu.setActiveItem(activeItem);
         model.put(this.modelName, menu);
     }

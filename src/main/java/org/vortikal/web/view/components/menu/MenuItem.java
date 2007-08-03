@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,15 @@ package org.vortikal.web.view.components.menu;
  * <li><code>active</code> - boolean flag set if this is the current shown item
  *
  */
-public class MenuItem {
+public class MenuItem<T extends Comparable<T>>
+  implements Comparable<MenuItem<T>> {
 
     private String url;
-    private String title;
+    private T title;
+    private T sortField;
     private String label;
     private boolean active;
+    private ListMenu subMenu;
     
     public boolean isActive() {
         return this.active;
@@ -64,11 +67,11 @@ public class MenuItem {
         this.label = label;
     }
     
-    public String getTitle() {
+    public T getTitle() {
         return this.title;
     }
     
-    public void setTitle(String title) {
+    public void setTitle(T title) {
         this.title = title;
     }
     
@@ -80,11 +83,63 @@ public class MenuItem {
         this.url = url;
     }
     
+    public void setSortField(T sortField) {
+        this.sortField = sortField;
+    }
+    
+    public void setSubMenu(ListMenu subMenu) {
+        this.subMenu = subMenu;
+    }
+
+    public ListMenu getMenu() {
+        return this.subMenu;
+    }
+    
+    public int compareTo(MenuItem<T> other) {
+        return this.getSortField().compareTo(other.getSortField());
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof MenuItem)) return false;
+        MenuItem other = (MenuItem) o;
+        if ((this.url == null || other.url == null) && this.url != other.url)
+            return false;
+        if (this.url != null && !this.url.equals(other.url))
+            return false;
+        if ((this.title == null || other.title == null) && this.title != other.title)
+            return false;
+        if (this.title != null && !this.title.equals(other.title))
+            return false;
+        if ((this.label == null || other.label == null) && this.label != other.label)
+            return false;
+        if (this.label != null && !this.label.equals(other.label))
+            return false;
+        if ((this.sortField == null || other.sortField == null) && this.sortField != other.sortField)
+            return false;
+        if (this.sortField != null && !this.sortField.equals(other.sortField))
+            return false;
+        if (this.active != other.active)
+            return false;
+        return true;
+    }
+    
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(":");
         sb.append(this.title);
+        if (this.subMenu != null) {
+            sb.append("; subMenu: ").append(this.subMenu);
+        }
+
         return sb.toString();
     }
     
+    private T getSortField() {
+        if (this.sortField != null) {
+            return this.sortField;
+        }
+        return this.title;
+    }
+
 }

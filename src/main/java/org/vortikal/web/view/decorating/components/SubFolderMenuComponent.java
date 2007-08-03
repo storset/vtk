@@ -30,9 +30,7 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,16 +48,14 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
-import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.SortField;
-import org.vortikal.repository.search.SortFieldDirection;
-import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -96,6 +92,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             "If this is set to 'true', the listing is done as the currently " +
             "logged in user (if any)";
 
+    private static final String PARAMETER_DEPTH = "depth";
+    private static final String PARAMETER_DEPTH_DESC =
+        "Specifies the number of levels to retrieve subfolders for. The default value is '1' ";
+
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
     
     private QueryParser queryParser;
@@ -119,7 +119,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
         }
-        ListMenu menu = buildListMenu(rs, menuRequest);
+        ListMenu<Value> menu = buildListMenu(rs, menuRequest);
         Map<String, Object> menuModel = buildMenuModel(menu, menuRequest);
         model.put(this.modelName, menuModel);
         if (logger.isDebugEnabled()) {
@@ -128,14 +128,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
 
-    private Map<String, Object> buildMenuModel(ListMenu menu, MenuRequest menuRequest) {
-        List<ListMenu> resultList = new ArrayList<ListMenu>();
+    private Map<String, Object> buildMenuModel(ListMenu<Value> menu, MenuRequest menuRequest) {
+        List<ListMenu<Value>> resultList = new ArrayList<ListMenu<Value>>();
         int resultSets = menuRequest.getResultSets();
-        List<MenuItem> allItems = java.util.Arrays.asList(menu.getItems());
+        List<MenuItem<Value>> allItems = menu.getItems();
         if (resultSets > allItems.size()) {
             resultSets = allItems.size();
         }
-
 
         int itemsPerResultSet = Math.round((float) allItems.size() / (float) resultSets);
         int remainder = allItems.size() - (resultSets * itemsPerResultSet);
@@ -151,17 +150,18 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 endIdx = allItems.size();
             }
 
-            List<MenuItem> subList = allItems.subList(startIdx, endIdx);
-            ListMenu m = new ListMenu();
+            List<MenuItem<Value>> subList = allItems.subList(startIdx, endIdx);
+            ListMenu<Value> m = new ListMenu<Value>();
+            menu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort()));
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
-            m.setItems(subList.toArray(new MenuItem[subList.size()]));
+            m.addAllItems(subList);
             resultList.add(m);
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resultSets", resultList);
-        model.put("size", new Integer(menu.getItems().length));
+        model.put("size", new Integer(menu.getItems().size()));
         model.put("title", menu.getTitle());
         return model;
     }
@@ -170,71 +170,111 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private Search buildSearch(MenuRequest menuRequest) {
         String uri = menuRequest.getURI();
         int depth = URLUtil.splitUri(uri).length;
-        StringBuffer query = new StringBuffer();
+        StringBuilder query = new StringBuilder();
         
-        query.append("uri = ").append(uri).append("/*");
-        query.append(" AND depth = ").append(depth);
+        query.append("uri = ").append(uri);
+        if ("/".equals(uri)) {
+            query.append("*");
+        } else {
+            query.append("/*");
+        }
+        if (menuRequest.getDepth() > 1) {
+            query.append(" AND (");
+            for (int i = 0; i < menuRequest.getDepth(); i++) {
+                query.append("depth = ").append(depth + i);
+                if (i < menuRequest.getDepth() - 1) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(") ");
+        } else {
+            query.append(" AND depth = ").append(depth);
+        }
         query.append(" AND type IN ").append(this.collectionResourceType.getName());
 
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropDef);
+        select.addPropertyDefinition(menuRequest.getSortProperty());
         Search search = new Search();
         search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(menuRequest.getSortField());
-        search.setSorting(sorting);
         return search;
     }
     
 
-    private ListMenu buildListMenu(ResultSet rs, MenuRequest menuRequest) {
+    private ListMenu<Value> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
         
-        List<MenuItem> items = new ArrayList<MenuItem>();
-
+        Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
+        List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
-            
-            String url = this.viewService.constructLink(resource.getURI());
-            Property titleProperty = resource.getProperty(this.titlePropDef);
-            String title = titleProperty != null ?
-                titleProperty.getStringValue() : resource.getName();
-
-            MenuItem item = new MenuItem();
-            item.setUrl(url);
-            item.setTitle(title);
-            item.setLabel(title);
-            item.setActive(false);
-            items.add(item);
+            String parentURI = URIUtil.getParentURI(resource.getURI());
+            if (parentURI.equals(menuRequest.getURI())) {
+                toplevel.add(resource);
+            }
+            List<PropertySet> childList = childMap.get(parentURI);
+            if (childList == null) {
+                childList = new ArrayList<PropertySet>();
+                childMap.put(parentURI, childList);
+            }
+            childList.add(resource);
+        }
+        
+        List<MenuItem<Value>> toplevelItems = new ArrayList<MenuItem<Value>>();
+        for (PropertySet resource: toplevel) {
+            toplevelItems.add(buildItem(resource, childMap, menuRequest));
         }
 
-        // Sort children (if not already sorted):
-        if (!menuRequest.isUserSpecifiedSorting()) {
-            items = sortByTitleOrName(items, menuRequest.getLocale());
-        }
-
-        ListMenu menu = new ListMenu();
-        menu.setItems(items.toArray(new MenuItem[items.size()]));
+        ListMenu<Value> menu = new ListMenu<Value>();
+        menu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort()));
+        menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
         return menu;
     }
 
 
-    
-    private List<MenuItem> sortByTitleOrName(List<MenuItem> items, Locale locale) {
-        Collections.sort(items, new ItemTitleComparator(locale));
-        return items;
+    private MenuItem<Value> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap,
+                               MenuRequest menuRequest) {
+        
+        String url = this.viewService.constructLink(resource.getURI());
+        Property titleProperty = resource.getProperty(this.titlePropDef);
+        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
+
+        MenuItem<Value> item = new MenuItem<Value>();
+        item.setUrl(url);
+        item.setTitle(title);
+        item.setLabel(title.getStringValue());
+        item.setActive(false);
+        Property sortProp = resource.getProperty(menuRequest.getSortProperty());
+        if (sortProp == null) {
+            throw new DecoratorComponentException(
+                "Cannot sort on property '" + menuRequest.getSortProperty()
+                + "': no such property on resource '" + resource.getURI() + "'");
+        }
+        item.setSortField(sortProp.getValue());
+
+        List<PropertySet> children = childMap.get(resource.getURI());
+        if (children != null) {
+            ListMenu<Value> subMenu = new ListMenu<Value>();
+            subMenu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort()));
+            for (PropertySet child: children) {
+                subMenu.addItem(buildItem(child, childMap, menuRequest));
+            }
+            item.setSubMenu(subMenu);
+        }
+        return item;
     }
     
-
     private class MenuRequest {
         private String uri;
         private String title;
-        private SortField sortField;
+        private PropertyTypeDefinition sortProperty;
+        private boolean ascendingSort = false;
         private boolean userSpecifiedSorting = false;
         private int resultSets = 1;
+        private int depth = 1;
         private Locale locale;
         private String token;
 
@@ -271,6 +311,21 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                         + PARAMETER_RESULT_SETS_MAX_VALUE);
                 }
             }
+
+            String depthStr = request.getStringParameter(PARAMETER_DEPTH);
+            if (depthStr != null) {
+                try {
+                    int depth = Integer.parseInt(depthStr);
+                    if (depth < 1) {
+                        throw new IllegalArgumentException("Depth must be an integer >= 1");
+                    }
+                    this.depth = depth;
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException(
+                        "Illegal value for parameter '" + PARAMETER_DEPTH + "': "
+                        + depthStr);
+                }
+            }
             this.locale = request.getLocale();
         }
         
@@ -282,8 +337,12 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             return this.title;
         }
 
-        public SortField getSortField() {
-            return this.sortField;
+        public PropertyTypeDefinition getSortProperty() {
+            return this.sortProperty;
+        }
+
+        public boolean isAscendingSort() {
+            return this.ascendingSort;
         }
 
         public boolean isUserSpecifiedSorting() {
@@ -302,10 +361,15 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             return this.token;
         }
         
+        public int getDepth() {
+            return this.depth;
+        }
+        
+
         private void initSortField(DecoratorRequest request) {
             String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
             if (sortFieldParam == null) {
-                this.sortField = new PropertySortField(titlePropDef, SortFieldDirection.ASC);
+                this.sortProperty = titlePropDef;
                 return;
             }
             String prefix;
@@ -322,46 +386,49 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 throw new DecoratorComponentException(
                     "Invalid sort field: '" + sortFieldParam + "'");
             }
-            PropertyTypeDefinition sortProperty =
+            PropertyTypeDefinition sortProperty = 
                 resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
             if (sortProperty == null) {
                 throw new DecoratorComponentException("Invalid sort field: '" + sortFieldParam 
                                                       + "': matches no property definition");
             }
+            this.sortProperty = sortProperty;
             this.userSpecifiedSorting = true;
 
-            SortFieldDirection direction;
             String sortDirectionParam = request.getStringParameter(PARAMETER_SORT_DIRECTION);
             if (sortDirectionParam == null) {
                 sortDirectionParam = "asc";
             }
+            
             if ("asc".equals(sortDirectionParam)) {
-                direction = SortFieldDirection.ASC;
+                this.ascendingSort = true;
             } else if ("desc".equals(sortDirectionParam)) {
-                direction = SortFieldDirection.DESC;
+                this.ascendingSort = false;
             } else {
                 throw new DecoratorComponentException(
                     "Illegal value for parameter '" + PARAMETER_SORT_DIRECTION
                     + "': '" + sortDirectionParam + "' (must be one of 'asc', 'desc')");
             }
-            this.sortField = new PropertySortField(sortProperty, direction);
+
         }
     }
 
+    private class ItemValueComparator implements Comparator<MenuItem<Value>> {
 
-    private class ItemTitleComparator implements Comparator<MenuItem> {
-        private Collator collator;
+        private boolean ascending = false;
 
-        public ItemTitleComparator(Locale locale) {
-            this.collator = Collator.getInstance(locale);
+        public ItemValueComparator(boolean ascending) {
+            this.ascending = ascending;
         }
-
-        public int compare(MenuItem i1, MenuItem i2) {
-            return this.collator.compare(i1.getTitle(), i2.getTitle());
+        
+        public int compare(MenuItem<Value> item1, MenuItem<Value> item2) {
+            if (!this.ascending) {
+                return item2.compareTo(item1);
+            } 
+            return item1.compareTo(item2);
         }
     }
     
-
     public void setQueryParser(QueryParser queryParser) {
         this.queryParser = queryParser;
     }
@@ -407,6 +474,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
+        map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
         return map;
     }
 

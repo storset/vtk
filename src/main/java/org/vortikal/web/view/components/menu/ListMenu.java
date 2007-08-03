@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,11 @@
  */
 package org.vortikal.web.view.components.menu;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Bean representing a simple menu.
  * 
@@ -41,12 +46,14 @@ package org.vortikal.web.view.components.menu;
  * <li><code>activeItem</code> - reference to the currently active item, if it's in this menu
  * </ul>
  */
-public class ListMenu {
+public class ListMenu<T extends Comparable<T>> {
 
     private String title;
     private String label;
-    private MenuItem[] items;
+    private List<MenuItem<T>> items = new ArrayList<MenuItem<T>>();
     private MenuItem activeItem;
+    private Comparator<MenuItem<T>> comparator;
+    
 
     public String getTitle() {
         return this.title;
@@ -72,24 +79,41 @@ public class ListMenu {
         this.activeItem = activeItem;
     }
     
-    public MenuItem[] getItems() {
-        return this.items;
+    public void addItem(MenuItem<T> item) {
+        this.items.add(item);
     }
     
-    public void setItems(MenuItem[] items) {
-        this.items = items;
+    public void addAllItems(List<MenuItem<T>> items) {
+        this.items.addAll(items);
     }
-        
+
+    public List<MenuItem<T>> getItems() {
+        return Collections.unmodifiableList(this.items);
+    }
+    
+    public void setComparator(Comparator<MenuItem<T>> comparator) {
+        this.comparator = comparator;
+    }
+
+    public List<MenuItem<T>> getItemsSorted() {
+        List<MenuItem<T>> sortedList = new ArrayList<MenuItem<T>>(this.items);
+        if (this.comparator != null) {
+            Collections.sort(sortedList, this.comparator);
+        } else {
+            Collections.sort(sortedList);
+        }
+        return Collections.unmodifiableList(sortedList);
+    }
+    
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(this.getClass().getName()).append(": [");
         sb.append("title=").append(this.title);
         sb.append(", label=").append(this.label);
         sb.append(", activeItem=").append(this.activeItem);
-        sb.append(", items=").append(this.items != null? this.items.length : 0);
+        sb.append(", items=").append(this.items);
         sb.append("]");
         return sb.toString();
     }
-    
-
 }

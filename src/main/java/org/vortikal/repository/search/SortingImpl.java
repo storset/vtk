@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,13 @@ import java.util.List;
 
 public class SortingImpl implements Sorting {
 
-    private List sortFields;
+    private List<SortField> sortFields;
     
     public SortingImpl() {
-        this.sortFields = new LinkedList();
+        this.sortFields = new LinkedList<SortField>();
     }
     
-    public SortingImpl(List sortFields) {
+    public SortingImpl(List<SortField> sortFields) {
         this.sortFields = sortFields;
     }
     

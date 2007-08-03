@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ import java.util.Date;
 import org.vortikal.security.Principal;
 
 
-public final class Value implements Cloneable {
+public final class Value implements Cloneable, Comparable<Value> {
     
     private int type = PropertyType.TYPE_STRING;
     private static final long MAX_LENGTH = 2048;
@@ -221,6 +221,28 @@ public final class Value implements Cloneable {
         }
     }
     
+    public int compareTo(Value other) {
+        if (this.type != other.type) {
+            throw new IllegalArgumentException("Values not of same type");
+        }
+        switch (this.type) {
+        case PropertyType.TYPE_BOOLEAN:
+            return Boolean.valueOf(this.booleanValue).compareTo(other.booleanValue);
+        case PropertyType.TYPE_INT:
+            return Integer.valueOf(this.intValue).compareTo(other.intValue);
+        case PropertyType.TYPE_LONG:
+            return Long.valueOf(this.longValue).compareTo(other.longValue);
+        case PropertyType.TYPE_DATE:    
+            return this.dateValue.compareTo(other.dateValue);
+        case PropertyType.TYPE_PRINCIPAL:
+            return this.principalValue.getQualifiedName().compareTo(
+                other.principalValue.getQualifiedName());
+        default:
+            return this.stringValue.compareTo(other.stringValue);
+        }
+    }
+    
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
 

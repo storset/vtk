@@ -139,15 +139,18 @@
     <property name="handler" ref="fckeditor.putController" />
   </bean>
 
-  <bean id="fckeditor.cleanSourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="fckeditor.cleanupSourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="fckeditor.fckService" />
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="fckeditor.parameterEqualsCleanSource" />
+        <ref bean="fckeditor.parameterEqualsCleanupSource" />
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="PUT" />
+        </bean>
       </list>
     </property>
-    <property name="handler" ref="fckeditor.cleanSourceController" />
+    <property name="handler" ref="fckeditor.cleanupSourceController" />
   </bean>
 
 
@@ -172,7 +175,7 @@
   </bean>
 
 
-  <bean id="fckeditor.cleanSourceController"
+  <bean id="fckeditor.cleanupSourceController"
         class="org.vortikal.web.filter.HttpFilterServiceController">
     <property name="requestFilter" ref="fckeditor.htmlParseFilter" />
   </bean>
@@ -211,10 +214,10 @@
     <property name="parameterValue" value="get-put" />
   </bean>
 
-  <bean id="fckeditor.parameterEqualsCleanSource"
+  <bean id="fckeditor.parameterEqualsCleanupSource"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="fck-action" />
-    <property name="parameterValue" value="clean-source" />
+    <property name="parameterValue" value="cleanup-source" />
   </bean>
 
   <bean id="fckeditor.wrappingViewResolver" parent="adminViewResolver">
@@ -256,7 +259,7 @@
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="modelName" value="fckCleanup" />
-          <property name="service" ref="fckeditor.cleanSourceService" />
+          <property name="service" ref="fckeditor.cleanupSourceService" />
           <property name="urlName" value="url" />
         </bean>
 

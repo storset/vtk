@@ -46,11 +46,18 @@ import org.vortikal.text.html.HtmlPageParser;
 public class HtmlParserInputStreamFilter extends AbstractRequestFilter {
 
     private HtmlPageParser parser;
+    private String defaultCharacterEncoding = "utf-8";
+    
     
     @Required public void setParser(HtmlPageParser parser) {
         this.parser = parser;
     }
     
+    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
+        this.defaultCharacterEncoding = defaultCharacterEncoding;
+    }
+    
+
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         try {
             return new HtmlParserRequestWrapper(request);
@@ -71,9 +78,14 @@ public class HtmlParserInputStreamFilter extends AbstractRequestFilter {
         }
         
         public ServletInputStream getInputStream() throws IOException {
+            String characterEncoding = this.request.getCharacterEncoding();
+            if (characterEncoding == null) {
+                characterEncoding = defaultCharacterEncoding;
+            }
+
             return new org.vortikal.util.io.ServletInputStream(
                 new ByteArrayInputStream(this.page.getStringRepresentation().getBytes(
-                                             this.request.getCharacterEncoding())));
+                                             characterEncoding)));
         }
 
         private HtmlPage parse() throws Exception {

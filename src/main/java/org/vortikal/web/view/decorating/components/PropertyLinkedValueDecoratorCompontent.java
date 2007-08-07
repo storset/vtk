@@ -54,9 +54,11 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         "Display the value(s) of a string property, with link(s) to search";
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "Optional title (default is 'Tags')";
+    private static final String PARAMETER_SERVICEURL = "service-url";
+    //private static final String PARAMETER_SERVICEURL_DESC = ""; // Settes dynamisk ved populering av output map
 
     
-    private String urlPattern;
+    private String defaultURLpattern;
     private Repository repository;
     private PropertyTypeDefinition propertyTypeDefinition;
 
@@ -82,7 +84,9 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
 
         String title = request.getStringParameter(PARAMETER_TITLE);
         model.put("title", title);
-
+        
+        String serviceURL = request.getStringParameter(PARAMETER_SERVICEURL);
+        
         if (this.propertyTypeDefinition.isMultiple()) {
             List<String> valueList = new ArrayList<String>();
             List<String> urlList = new ArrayList<String>();
@@ -94,18 +98,23 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
             for (int i = 0; i < values.length; i++) {
                 String s = values[i].getStringValue();
                 valueList.add(s);
-                urlList.add(getUrl(s));
+                urlList.add(getUrl(s, serviceURL));
             }
         } else {
             String value = prop.getValue().getStringValue();
-            model.put("url", getUrl(value));
+            model.put("url", getUrl(value, serviceURL));
             model.put("value", value);
         }
     }
+    
 
-    private String getUrl(String value) {
-        return this.urlPattern.replaceAll("%v", value);
+    private String getUrl(String value, String serviceUrl) {
+        if(serviceUrl == null)
+            return this.defaultURLpattern.replaceAll("%v", value);
+        else
+            return serviceUrl.replaceAll("%v", value);
     }
+
     
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
@@ -125,9 +134,9 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
                 + "PropertyType.TYPE_STRING");
         }
         
-        if (this.urlPattern == null) {
+        if (this.defaultURLpattern == null) {
             throw new BeanInitializationException(
-            "JavaBean property 'urlPattern' not set");
+            "JavaBean property 'defaultURLpattern' not set");
         }
     }
 
@@ -142,6 +151,7 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
+        map.put(PARAMETER_SERVICEURL, "Optional URL to tag service (default is '" + defaultURLpattern + "')");
         return map;
     }
 
@@ -150,8 +160,8 @@ public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecorat
         this.propertyTypeDefinition = propertyTypeDefinition;
     }
 
-    public void setUrlPattern(String urlPattern) {
-        this.urlPattern = urlPattern;
+    public void setDefaultURLpattern(String defaultURLpattern) {
+        this.defaultURLpattern = defaultURLpattern;
     }
 
 }

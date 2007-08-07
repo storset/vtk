@@ -72,7 +72,7 @@ public class StandardDecoratorTemplate implements Template {
             compile();
         }
         
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         ComponentInvocation[] fragments = this.fragments;        
         for (int i = 0; i < fragments.length; i++) {
             

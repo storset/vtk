@@ -47,6 +47,7 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
@@ -62,9 +63,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     private PropertyManager propertyManager;
     private AuthorizationManager authorizationManager;
     
+    public ResourceImpl() {
+        super();
+    }
+    
     public ResourceImpl(String uri, PropertyManager propertyManager, 
             AuthorizationManager authorizationManager) {
-        super(uri);
+        super();
+        this.uri = uri;
         this.propertyManager = propertyManager;
         this.authorizationManager = authorizationManager;
     }
@@ -95,6 +101,33 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         Property prop = this.propertyManager.createProperty(namespace, name);
         addProperty(prop);
         return prop;
+    }
+
+    /**
+     * Creates and adds a property with a given namespace, name
+     * and value. The type is set according to its {@link
+     * PropertyDefinition property definition}, or {@link
+     * PropertyType.TYPE_STRING} if it has no definition
+     *
+     * @param namespace the namespace
+     * @param name the name
+     * @return a property instance
+     * @throws ValueFormatException if the supplied value's type does
+     * not match that of the property definition
+     */
+    public Property createProperty(Namespace namespace, String name,
+            Object value) throws ValueFormatException {
+        Property prop = this.propertyManager.createProperty(namespace, name, value);
+        addProperty(prop);
+        return prop;
+    }
+
+    public Property createProperty(String namespaceUrl, String name, 
+            String[] stringValues) {
+        Property prop = this.propertyManager.createProperty(namespaceUrl, name, stringValues);
+        addProperty(prop);
+        return prop;
+        
     }
 
     public void removeProperty(Namespace namespace, String name) {
@@ -355,7 +388,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
             prop = createProperty(namespace, name);
         }
         prop.setStringValue(value);
-    
     }
     
     /**
@@ -395,6 +427,14 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         sb.append(this.getClass().getName());
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
+    }
+
+    public void setPropertyManager(PropertyManager propertyManager) {
+        this.propertyManager = propertyManager;
+    }
+
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
     }
 
 }

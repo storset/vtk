@@ -43,10 +43,8 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 /**
  * Implementation of {@link org.vortikal.repository.PropertySet}.
  * 
- * @author oyviste
  *
  */
-
 public class PropertySetImpl implements PropertySet, Cloneable {
 
     /**
@@ -56,7 +54,8 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     
     protected String uri;
     protected String resourceType;
-    protected Map<Namespace, Map<String, Property>> propertyMap;
+    protected Map<Namespace, Map<String, Property>> propertyMap =
+        new HashMap<Namespace, Map<String, Property>>();
     
     // Numeric ID used by database 
     protected int id = NULL_RESOURCE_ID;
@@ -69,11 +68,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     // Numeric ID of ancestors. Might be null. Used by indexing system.
     private int[] ancestorIds;  
    
-    public PropertySetImpl(String uri) {
-        this.uri = uri;
-        this.propertyMap = new HashMap<Namespace, Map<String, Property>>();
+    // Note: needs uri set explicitly
+    public PropertySetImpl() {
     }
- 
+
     public int getID() {
         return this.id;
     }
@@ -137,13 +135,6 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         map.put(property.getName(), property);
     }
  
-    public void removeProperty(Namespace namespace, String name) {
-        Map<String, Property> map = this.propertyMap.get(namespace);
-        if (map != null) {
-            map.remove(name);
-        }
-    }
-    
     public Property getProperty(PropertyTypeDefinition type) {
         return getProperty(type.getNamespace(), type.getName());
     }
@@ -177,8 +168,9 @@ public class PropertySetImpl implements PropertySet, Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         
-        PropertySetImpl clone = new PropertySetImpl(this.uri);
+        PropertySetImpl clone = new PropertySetImpl();
         clone.resourceType = this.resourceType;
+        clone.setUri(this.uri);
         clone.setAclInheritedFrom(this.aclInheritedFrom);
         clone.setInheritedAcl(this.aclInherited);
         
@@ -221,6 +213,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
             }
         }
         return true;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
     
 }

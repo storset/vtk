@@ -216,7 +216,8 @@ public class DocumentMapper implements InitializingBean {
     public PropertySetImpl getPropertySet(Document doc, PropertySelect select) 
         throws DocumentMappingException {
         
-        PropertySetImpl propSet = new PropertySetImpl(doc.get(URI_FIELD_NAME));
+        PropertySetImpl propSet = new PropertySetImpl();
+        propSet.setUri(doc.get(URI_FIELD_NAME));
         propSet.setAclInheritedFrom(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(ACL_INHERITED_FROM_FIELD_NAME)));
         propSet.setID(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(

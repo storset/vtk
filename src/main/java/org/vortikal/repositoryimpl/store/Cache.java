@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl.store;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,8 +38,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
@@ -117,6 +116,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
 
+    @Required
     public void setWrappedAccessor(DataAccessor wrappedAccessor) {
         this.wrappedAccessor = wrappedAccessor;
     }
@@ -137,10 +137,6 @@ public class Cache implements DataAccessor, InitializingBean {
     
     
     public void afterPropertiesSet() {
-        if (this.wrappedAccessor == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'wrappedAccessor' not set");
-        }
 
         this.removeItems = (int) (this.maxItems * this.evictionRatio);
 
@@ -694,6 +690,14 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
+    public String[] discoverACLs(String uri) throws DataAccessException {
+        return this.wrappedAccessor.discoverACLs(uri);
+    }
+    
+    public Set<Principal> discoverGroups() throws DataAccessException {
+        return this.wrappedAccessor.discoverGroups();
+    }
+
     private class Item {
         Item older = null;
         Item newer = null;
@@ -708,14 +712,5 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    // --------------  New Stuff
-
-    public String[] discoverACLs(String uri) throws DataAccessException {
-        return this.wrappedAccessor.discoverACLs(uri);
-    }
-    
-    public Set<Principal> discoverGroups() throws DataAccessException {
-        return this.wrappedAccessor.discoverGroups();
-    }
 
 }

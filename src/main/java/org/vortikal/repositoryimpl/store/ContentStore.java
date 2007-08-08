@@ -34,8 +34,8 @@ import java.io.InputStream;
 
 
 /**
- * Defines a pure content store. It is organized hierachically and 
- * resource nodes are adressed by their URIs. The behaviour shall be equal
+ * Defines a pure content store. It is organized hierarchically and 
+ * resource nodes are addressed by their URIs. The behaviour shall be equal
  * to that of a common file system. Every node must have an 
  * existing parent collection resource node, except the root node. 
  * The root collection node shall always exist, and should not need to be 

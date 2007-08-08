@@ -131,7 +131,9 @@ public class RepositoryResourceHelperImpl
     public PropertySet getFixedCopyProperties(Resource resource,
             Principal principal, String destUri)
             throws CloneNotSupportedException {
-        PropertySetImpl fixedProps = new PropertySetImpl(destUri);
+        PropertySetImpl fixedProps = new PropertySetImpl();
+        fixedProps.setUri(destUri);
+        
         java.util.Date now = new java.util.Date();
 
         Property owner = (Property) resource.getProperty(

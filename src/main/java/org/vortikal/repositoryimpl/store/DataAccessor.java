@@ -30,7 +30,6 @@
  */
 package org.vortikal.repositoryimpl.store;
 
-import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
 
@@ -44,13 +43,6 @@ import org.vortikal.security.Principal;
  */
 public interface DataAccessor {
 
-
-//     public void startTransaction() throws DataAccessException;
-
-//     public void commitTransaction() throws DataAccessException;
-
-//     public void endTransaction() throws DataAccessException;
-    
 
     /**
      * "Sanity check" method, called after
@@ -89,20 +81,6 @@ public interface DataAccessor {
      * Deletes a single resource (and any children)
      */
     public void delete(ResourceImpl resource) throws DataAccessException;
-
-
-    /**
-     * Opens an input stream for reading from a resource
-     */
-//     public InputStream getInputStream(String uri)
-//         throws DataAccessException;
-
-
-    /**
-     * Writes content for a resource
-     */
-//     public void storeContent(String uri, InputStream stream)
-//         throws DataAccessException;
 
 
     /**

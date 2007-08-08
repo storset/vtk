@@ -103,14 +103,17 @@
     </constructor-arg>
   </bean>
 
-
   <bean id="repository.database" class="org.vortikal.repositoryimpl.store.db.SqlMapDataAccessor">
+    <lookup-method name="createResourceImpl" bean="resourceImpl"/>
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="propertyManager" ref="propertyManager" />
-    <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+  </bean>
+
+  <bean id="resourceImpl" class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">
+    <property name="propertyManager" ref="propertyManager" />
+    <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
   <bean id="repository.cache" class="org.vortikal.repositoryimpl.store.Cache">

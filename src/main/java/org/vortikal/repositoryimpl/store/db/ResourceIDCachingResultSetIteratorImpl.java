@@ -118,8 +118,9 @@ public class ResourceIDCachingResultSetIteratorImpl implements CloseableIterator
             
             this.currentURI = uri;
 
-            PropertySetImpl propertySet = new PropertySetImpl(this.currentURI);
-
+            PropertySetImpl propertySet = new PropertySetImpl();
+            propertySet.setUri(this.currentURI);
+            
             SqlDaoUtils.populateStandardProperties(this.propertyManager, this.principalFactory,
                                                   propertySet, this.rs);
 

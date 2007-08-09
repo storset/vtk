@@ -19,6 +19,8 @@
 		#contents {padding: 0px;}
 	</style>
 
+        Connector URL: ${fckBrowse.url}
+
 	<!--
 	<p>${fckCleanup.url?html}</p>
 	<p>${fckeditorBase.url?html}</p>

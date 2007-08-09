@@ -5,7 +5,7 @@
 <beans>
   
   <bean id="fckeditor.distStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${fckeditor.base}" />
+    <property name="uriPrefix" value="${fckeditor.resources.base}" />
     <property name="resourceLocation" value="classpath:///vortikal/resources/fckeditor-build" />
   </bean>
 
@@ -85,6 +85,26 @@
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="fckeditor.parameterEqualsGetPut" />
       </list>
+    </property>
+  </bean>
+
+  <bean id="fckeditor.browseService" class="org.vortikal.web.service.ServiceImpl">
+    <!--property name="parent" ref="fckeditor.fckService" /-->
+    <!--property name="parent" ref="webService" /-->
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <!--ref bean="requiresWritePermissionAssertion" /-->
+        <ref bean="fckeditor.browseUriAssertion" />
+        <ref bean="fckeditor.parameterEqualsBrowse" />
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.controller.FCKeditorConnector"
+            parent="requestLocalRepositoryAware">
+        <property name="viewService" ref="viewService" />
+        <property name="viewName" value="fckeditor.browseView" />
+      </bean>
     </property>
   </bean>
 
@@ -196,6 +216,11 @@
         class="org.vortikal.web.filter.JerichoHtmlInputStreamFilter" />
 
 
+  <bean id="fckeditor.browseUriAssertion"
+        class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value="${fckeditor.browse.base}" />
+  </bean>
+
   <bean id="fckeditor.modeParameterAssertion"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="mode" />
@@ -214,6 +239,12 @@
     <property name="parameterValue" value="get-put" />
   </bean>
 
+  <bean id="fckeditor.parameterEqualsBrowse"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="fck-action" />
+    <property name="parameterValue" value="browse" />
+  </bean>
+
   <bean id="fckeditor.parameterEqualsCleanupSource"
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="fck-action" />
@@ -228,6 +259,13 @@
     </property>
   </bean>
 
+  <bean id="fckeditor.plainViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="fckeditor.browseView" value-ref="fckeditor.browseView" />
+      </map>
+    </property>
+  </bean>
 
   <bean id="fckeditor.editView" parent="freemarkerView">
     <property name="url" value="fckeditor/fckeditor.ftl" />
@@ -238,7 +276,7 @@
           <property name="modelName" value="fckeditorBase" />
           <property name="service" ref="viewService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${fckeditor.base}" />
+          <property name="appendPath" value="${fckeditor.resources.base}" />
           <property name="urlName" value="url" />
         </bean>
 
@@ -263,10 +301,23 @@
           <property name="urlName" value="url" />
         </bean>
 
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="modelName" value="fckBrowse" />
+          <property name="service" ref="fckeditor.browseService" />
+          <property name="path" value="${fckeditor.browse.base}" />
+        </bean>
+
       </list>
     </property>
   </bean>
 
+  <bean id="fckeditor.browseView" parent="freemarkerView">
+    <property name="url" value="fckeditor/browse.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
 
   <bean id="fckeditor.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>

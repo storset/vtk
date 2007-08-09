@@ -74,21 +74,13 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
     
     public void deleteAll(Resource resource) throws RuntimeException {
         try {
-            this.sqlMapClient.startTransaction();
-
             String sqlMap = getSqlMap("deleteAllComments");
             this.sqlMapClient.delete(sqlMap, resource);
             
         } catch (SQLException e) {
             throw new DataAccessException(
                 "Error occurred while deleting all comments on resource " + resource, e);
-        } finally {
-            try {
-                this.sqlMapClient.endTransaction();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        } 
     }
 
     public Comment create(Resource resource, Comment comment) throws RuntimeException {

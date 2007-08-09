@@ -628,6 +628,10 @@ FCK.Events	= new FCKEvents( FCK ) ;
 // GetHTML is Deprecated : returns the same value as GetXHTML.
 FCK.GetHTML	= FCK.GetXHTML ;
 
+FCK.CustomCleanWord = function ( oNode, bIgnoreFont, bRemoveStyles ){
+	return parent.processPaste(oNode);
+}
+
 // Replace all events attributes (like onclick).
 function _FCK_ProtectEvents_ReplaceTags( tagMatch )
 {
@@ -698,8 +702,10 @@ function _FCK_KeystrokeHandler_OnKeystroke( keystroke, keystrokeValue )
 
 	if ( FCK.EditMode == FCK_EDITMODE_WYSIWYG )
 	{
-		if ( keystrokeValue == 'Paste' )
-			return !FCK.Events.FireEvent( 'OnPaste' ) ;
+		if ( keystrokeValue == 'Paste' ){
+			var x = !FCK.Events.FireEvent( 'OnPaste' );
+			return x;
+		}
 	}
 	else
 	{

@@ -179,7 +179,7 @@
 			fck.ToolbarSet = "Vortikal";
 
 			// File browser
-			fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?Connector=filebrows.xml';
+                        fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?Connector=${fckBrowse.url.pathRepresentation}';
 
 			// Misc setup
 			fck.Config['FullPage'] = true;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Connector command="${command}" resourceType="File">
-  <CurrentFolder path="${currentFolder}" url="${currentFolder}" />
+  <CurrentFolder path="${currentFolder?html}" url="${currentFolder?html}" />
   <#if folders?exists>
   <Folders>
   <#list folders?keys as uri>
@@ -11,8 +11,7 @@
   <#if files?exists>
   <Files>
   <#list files?keys as uri>
-    <File name="${files[uri].resource.name?html}"
-          size="${(files[uri].resource.contentLength/1000)?html}" />
+    <File name="${files[uri].resource.name}" size="${(files[uri].resource.contentLength/1000)?html}" />
   </#list>
   </Files>
   </#if>

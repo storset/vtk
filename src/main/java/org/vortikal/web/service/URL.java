@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -264,25 +264,36 @@ public class URL {
                 url.append(":").append(this.port.intValue());
             }
         }
+        url.append(getPathRepresentation());
+
+        return url.toString();
+    }
+    
+    /**
+     * Generates an "absolute path" representation of this URL (a
+     * string starting with '/', without protocol, hostname and port
+     * information).
+     */
+    public String getPathRepresentation() {
+        StringBuilder sb = new StringBuilder();
         try {
-            url.append(URLUtil.urlEncode(this.path, this.characterEncoding));
+            sb.append(URLUtil.urlEncode(this.path, this.characterEncoding));
         } catch (java.io.UnsupportedEncodingException e) {
             // Ignore, this.characterEncoding is supposed to be valid.
         }
         
         String qs = getQueryString();
         if (qs != null) {
-            url.append("?");
-            url.append(qs);
+            sb.append("?");
+            sb.append(qs);
         }
 
         if (this.ref != null) {
-            url.append("#").append(this.ref);
+            sb.append("#").append(this.ref);
         }
 
-        return url.toString();
+        return sb.toString();
     }
-    
 
     /**
      * Utility method to create a URL from an existing URL. The newly

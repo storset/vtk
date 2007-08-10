@@ -76,11 +76,13 @@ public class FCKeditorConnector implements Controller {
         String token = securityContext.getToken();
 
         String currentFolderParam = request.getParameter("CurrentFolder");
-        
-        if (currentFolderParam != null) {
-            currentFolderParam = URIUtil.stripTrailingSlash(currentFolderParam);
+        if (currentFolderParam == null) {
+            currentFolderParam = "/";
         }
-        
+        if (!"/".equals(currentFolderParam) && currentFolderParam.endsWith("/")) {
+            currentFolderParam = currentFolderParam.substring(0, currentFolderParam.length() -1);
+        }
+
         Resource currentFolder = this.repository.retrieve(token, currentFolderParam, true);
         if (!currentFolder.isCollection()) {
             
@@ -88,10 +90,14 @@ public class FCKeditorConnector implements Controller {
         Resource[] children = this.repository.listChildren(token, currentFolder.getURI(), true);
 
         String commandParam = request.getParameter("Command");
-        Command c = Command.valueOf(commandParam);
+        Command c = commandParam == null ? Command.GetFoldersAndFiles : Command.valueOf(commandParam);
 
         Map model = new HashMap();
-        model.put("currentFolder", currentFolder.getURI());
+        if ("/".equals(currentFolder.getURI())) {
+            model.put("currentFolder", currentFolder.getURI());
+        } else {
+            model.put("currentFolder", currentFolder.getURI() + "/");
+        }
         model.put("command", c.name());
 
         switch (c) {

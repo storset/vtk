@@ -71,6 +71,25 @@ public class FCKeditorConnector implements Controller {
     }
     
     
+    private static final Filter FILE_FILTER = new Filter() {
+        public boolean isAccepted(Resource resource) {
+           return true;
+        }
+    };
+
+    private static final Filter IMAGE_FILTER = new Filter() {
+         public boolean isAccepted(Resource resource) {
+             return resource.getContentType().startsWith("image/");
+         }
+    };
+        
+    private static final Filter FLASH_FILTER = new Filter() {
+         public boolean isAccepted(Resource resource) {
+             return resource.getContentType().startsWith("application/x-shockwawe-flash");
+         }
+    };
+
+
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -100,13 +119,30 @@ public class FCKeditorConnector implements Controller {
         }
         model.put("command", c.name());
 
+        
+        String resourceTypeParam = request.getParameter("Type");
+        if (resourceTypeParam == null) {
+            resourceTypeParam = "File";
+        }
+
+        model.put("resourceType", resourceTypeParam);
+
+        Filter filter = null;
+
+        if ("Image".equals(resourceTypeParam)) {
+            filter = IMAGE_FILTER;
+        }
+        if ("Flash".equals(resourceTypeParam)) {
+            filter = FLASH_FILTER;
+        }
+
         switch (c) {
             case GetFolders:
                 model.put("folders", getFolders(children));
                 break;
             case GetFoldersAndFiles:
                 model.put("folders", getFolders(children));
-                model.put("files", getFiles(children));
+                model.put("files", getFiles(children, filter));
                 break;
             default:
                 throw new RuntimeException("Not implemented");
@@ -129,10 +165,13 @@ public class FCKeditorConnector implements Controller {
         return result;
     }
 
-    private Map<String, Map> getFiles(Resource[] children) {
+    private Map<String, Map> getFiles(Resource[] children, Filter filter) {
         Map<String, Map> result = new HashMap<String, Map>();
         for (Resource r: children) {
             if (!r.isCollection()) {
+                if (filter != null && !filter.isAccepted(r)) {
+                    continue;
+                }
                 Map<String, Object> entry = new HashMap<String, Object>();
                 URL url = this.viewService.constructURL(r, null);
                 entry.put("resource", r);
@@ -144,5 +183,8 @@ public class FCKeditorConnector implements Controller {
         return result;
     }
     
-
+    private interface Filter {
+        public boolean isAccepted(Resource r);
+    }
+    
 }

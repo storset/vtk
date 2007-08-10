@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Connector command="${command}" resourceType="File">
+<Connector command="${command}" resourceType="${resourceType}">
   <CurrentFolder path="${currentFolder?html}" url="${currentFolder?html}" />
   <#if folders?exists>
   <Folders>

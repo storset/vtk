@@ -19,12 +19,11 @@
 		#contents {padding: 0px;}
 	</style>
 
-        Connector URL: ${fckBrowse.url}
-
 	<!--
 	<p>${fckCleanup.url?html}</p>
 	<p>${fckeditorBase.url?html}</p>
 	<p>${fckSource.getURL}</p>
+        <p>${fckBrowse.url}</p>
 	-->
 
 	<script type="text/javascript" src="${fckeditorBase.url?html}/xmlcleaner.js"></script>

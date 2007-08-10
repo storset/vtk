@@ -42,6 +42,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -75,6 +76,11 @@ public class FCKeditorConnector implements Controller {
         String token = securityContext.getToken();
 
         String currentFolderParam = request.getParameter("CurrentFolder");
+        
+        if (currentFolderParam != null) {
+            currentFolderParam = URIUtil.stripTrailingSlash(currentFolderParam);
+        }
+        
         Resource currentFolder = this.repository.retrieve(token, currentFolderParam, true);
         if (!currentFolder.isCollection()) {
             

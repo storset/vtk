@@ -313,6 +313,7 @@
 
   <bean id="fckeditor.browseView" parent="freemarkerView">
     <property name="url" value="fckeditor/browse.ftl" />
+    <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="referenceDataProviders">
       <list>
       </list>

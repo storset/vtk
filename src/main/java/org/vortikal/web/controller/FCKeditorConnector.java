@@ -85,7 +85,7 @@ public class FCKeditorConnector implements Controller {
         
     private static final Filter FLASH_FILTER = new Filter() {
          public boolean isAccepted(Resource resource) {
-             return resource.getContentType().startsWith("application/x-shockwawe-flash");
+             return resource.getContentType().equalsIgnoreCase("application/x-shockwave-flash");
          }
     };
 

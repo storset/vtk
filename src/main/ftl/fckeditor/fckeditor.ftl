@@ -180,6 +180,7 @@
 			// File browser
                         fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?Connector=${fckBrowse.url.pathRepresentation}';
                         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+                        fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
 			// Misc setup
 			fck.Config['FullPage'] = true;

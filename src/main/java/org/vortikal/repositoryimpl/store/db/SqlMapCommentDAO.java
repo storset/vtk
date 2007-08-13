@@ -47,7 +47,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
 
             List<Comment> comments = new ArrayList<Comment>();
             List theComments =
-                this.sqlMapClient.queryForList(sqlMap, resource);
+                getSqlMapClient().queryForList(sqlMap, resource);
             for (Object o: theComments) {
                 Comment comment = (Comment) o;
                 comments.add(comment);
@@ -64,7 +64,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         try {
 
             String sqlMap = getSqlMap("deleteComment");
-            this.sqlMapClient.delete(sqlMap, comment);
+            getSqlMapClient().delete(sqlMap, comment);
             
         } catch (SQLException e) {
             throw new DataAccessException(
@@ -75,7 +75,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
     public void deleteAll(Resource resource) throws RuntimeException {
         try {
             String sqlMap = getSqlMap("deleteAllComments");
-            this.sqlMapClient.delete(sqlMap, resource);
+            getSqlMapClient().delete(sqlMap, resource);
             
         } catch (SQLException e) {
             throw new DataAccessException(
@@ -87,7 +87,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         try {
 
             String sqlMap = getSqlMap("insertComment");
-            this.sqlMapClient.insert(sqlMap, comment);
+            getSqlMapClient().insert(sqlMap, comment);
 
             // XXX: define new semantics for creating a new comment:
             // client should first obtain a new unique ID, then call
@@ -107,10 +107,10 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         try {
 
             String sqlMap = getSqlMap("updateComment");
-            this.sqlMapClient.update(sqlMap, comment);
+            getSqlMapClient().update(sqlMap, comment);
 
             sqlMap = getSqlMap("loadCommentById");
-            comment = (Comment) this.sqlMapClient.queryForObject(sqlMap, new Integer(comment.getID()));
+            comment = (Comment) getSqlMapClient().queryForObject(sqlMap, new Integer(comment.getID()));
             return comment;
 
         } catch (SQLException e) {

@@ -31,35 +31,15 @@
 package org.vortikal.repositoryimpl.store.db;
 
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
+public abstract class AbstractSqlMapDataAccessor extends SqlMapClientDaoSupport {
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-
-public abstract class AbstractSqlMapDataAccessor implements InitializingBean {
-
-    protected SqlMapClient sqlMapClient;
     private Map<String, String> sqlMaps;
 
-
-    public void setSqlMapClient(SqlMapClient sqlMapClient) {
-        this.sqlMapClient = sqlMapClient;
-    }
-
-    public void setSqlMaps(Map<String, String> sqlMaps) {
+    @Required public void setSqlMaps(Map<String, String> sqlMaps) {
         this.sqlMaps = sqlMaps;
-    }
-    
-    public void afterPropertiesSet() throws Exception {
-        if (this.sqlMapClient == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'sqlMapClient' not specified");
-        }
-        if (this.sqlMaps == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'sqlMaps' not specified");
-        }
     }
     
     protected final String getSqlMap(String statementId) {

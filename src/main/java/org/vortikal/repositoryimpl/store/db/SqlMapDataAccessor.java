@@ -124,7 +124,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     private ResourceImpl loadResourceInternal(String uri) throws SQLException {
         String sqlMap = getSqlMap("loadResourceByUri");
         Map<String, ?> resourceMap = (Map<String, ?>)
-            this.sqlMapClient.queryForObject(sqlMap, uri);
+            getSqlMapClient().queryForObject(sqlMap, uri);
         if (resourceMap == null) {
             return null;
         }
@@ -140,7 +140,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Integer resourceId = new Integer(resource.getID());
         sqlMap = getSqlMap("loadPropertiesForResource");
         List<Map<String, Object>> propertyList = 
-            this.sqlMapClient.queryForList(sqlMap, resourceId);
+            getSqlMapClient().queryForList(sqlMap, resourceId);
         populateCustomProperties(new ResourceImpl[] {resource}, propertyList);
 
         Integer aclInheritedFrom = (Integer) resourceMap.get("aclInheritedFrom");
@@ -157,7 +157,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         try {
             String sqlMap = getSqlMap("deleteExpiredLocks");
-            this.sqlMapClient.update(sqlMap, new Date());
+            getSqlMapClient().update(sqlMap, new Date());
 
         } catch (SQLException e) {
             throw new DataAccessException("Error occurred while deleting expired locks", e);
@@ -190,7 +190,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             } else {
                 sqlMap = getSqlMap("insertChangelogEntry");
             }
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
         } catch (SQLException e) {
             throw new DataAccessException("Error occurred while adding changelog entry: " + operation
@@ -209,7 +209,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
             String sqlMap = getSqlMap("discoverLocks");
             List<Map<String,String>> list = 
-                this.sqlMapClient.queryForList(sqlMap, parameters);
+                getSqlMapClient().queryForList(sqlMap, parameters);
 
             String[] locks = new String[list.size()];
             for (int i = 0; i < list.size(); i++) {
@@ -233,7 +233,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                                         SQL_ESCAPE_CHAR));
             String sqlMap = getSqlMap("listSubTree");
             List<Map<String, String>> list = 
-                this.sqlMapClient.queryForList(sqlMap, parameters);
+                getSqlMapClient().queryForList(sqlMap, parameters);
             
             String[] uris = new String[list.size()];
             int n = 0;
@@ -277,7 +277,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("inheritedFrom", null);
 
             String sqlMap = getSqlMap("updateAclInheritedFromByResourceId");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             parameters = new HashMap<String, Object>();
             parameters.put("previouslyInheritedFrom", new Integer(oldInheritedFrom));
@@ -287,14 +287,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                r.getURI(), SQL_ESCAPE_CHAR));
             
             sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
             return;
         }
 
         // ACL was not inherited
         // Delete previous ACL entries for resource:
         String sqlMap = getSqlMap("deleteAclEntriesByResourceId");
-        this.sqlMapClient.delete(sqlMap, new Integer(r.getID()));
+        getSqlMapClient().delete(sqlMap, new Integer(r.getID()));
 
         if (!r.isInheritedAcl()) {
             insertAcl(r);
@@ -311,7 +311,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("previouslyInheritedFrom", new Integer(r.getID()));
             
             sqlMap = getSqlMap("updateAclInheritedFromByResourceIdOrPreviousInheritedFrom");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
         }
     }
     
@@ -321,7 +321,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         try {
 
             String sqlMap = getSqlMap("loadResourceByUri");
-            boolean existed = this.sqlMapClient.queryForObject(sqlMap, r.getURI()) != null;
+            boolean existed = getSqlMapClient().queryForObject(sqlMap, r.getURI()) != null;
 
             Map<String, Object> parameters = getResourceAsMap(r);
             if (!existed) {
@@ -336,11 +336,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                              + ", parameter map: " + parameters);
             }
 
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             if (!existed) {
                 sqlMap = getSqlMap("loadResourceIdByUri");
-                Map map = (Map) this.sqlMapClient.queryForObject(sqlMap, r.getURI());
+                Map map = (Map) getSqlMapClient().queryForObject(sqlMap, r.getURI());
                 Integer id = (Integer) map.get("resourceId");
                 r.setID(id.intValue());
             } 
@@ -364,16 +364,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                          SQL_ESCAPE_CHAR));
             
             String sqlMap = getSqlMap("deleteAclEntriesByUri");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             sqlMap = getSqlMap("deleteLocksByUri");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             sqlMap = getSqlMap("deletePropertiesByUri");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             sqlMap = getSqlMap("deleteResourceByUri");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
         } catch (SQLException e) {
             throw new DataAccessException("Error occurred while deleting resource: "
@@ -392,7 +392,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
             List<ResourceImpl> children = new ArrayList<ResourceImpl>();
             String sqlMap = getSqlMap("loadChildren");
-            List<Map> resources = this.sqlMapClient.queryForList(sqlMap, parameters);
+            List<Map> resources = getSqlMapClient().queryForList(sqlMap, parameters);
             Map locks = loadLocksForChildren(parent);
 
             for (Map resourceMap: resources) {
@@ -431,7 +431,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR));
 
             String sqlMap = getSqlMap("discoverAcls");
-            List uris = this.sqlMapClient.queryForList(sqlMap, parameters);
+            List uris = getSqlMapClient().queryForList(sqlMap, parameters);
             
             String[] result = new String[uris.size()];
             int n = 0;
@@ -487,15 +487,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             }
 
             String sqlMap = getSqlMap("copyResource");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             sqlMap = getSqlMap("copyProperties");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             if (copyACLs) {
 
                 sqlMap = getSqlMap("copyAclEntries");
-                this.sqlMapClient.update(sqlMap, parameters);
+                getSqlMapClient().update(sqlMap, parameters);
             
                 // Update inheritance to nearest node:
                 int srcNearestACL = findNearestACL(resource.getURI());
@@ -509,21 +509,21 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 parameters.put("previouslyInheritedFrom", new Integer(srcNearestACL));
 
                 sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
-                this.sqlMapClient.update(sqlMap, parameters);
+                getSqlMapClient().update(sqlMap, parameters);
 
                 if (this.optimizedAclCopySupported) {
                     sqlMap = getSqlMap("updateAclInheritedFromByPreviousResourceId");
-                    this.sqlMapClient.update(sqlMap, parameters);
+                    getSqlMapClient().update(sqlMap, parameters);
                 } else {
                     sqlMap = getSqlMap("loadPreviousInheritedFromMap");
-                    List list = this.sqlMapClient.queryForList(sqlMap, parameters);
-                    this.sqlMapClient.startBatch();
+                    List list = getSqlMapClient().queryForList(sqlMap, parameters);
+                    getSqlMapClient().startBatch();
                     for (Iterator i = list.iterator(); i.hasNext();) {
                         Map map = (Map) i.next();
                         sqlMap = getSqlMap("updateAclInheritedFromByResourceId");
-                        this.sqlMapClient.update(sqlMap, map);
+                        getSqlMapClient().update(sqlMap, map);
                     }
-                    this.sqlMapClient.executeBatch();
+                    getSqlMapClient().executeBatch();
                 }
 
             } else {
@@ -535,7 +535,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 parameters.put("inheritedFrom", nearestAclNode);
 
                 sqlMap = getSqlMap("updateAclInheritedFromByUri");
-                this.sqlMapClient.update(sqlMap, parameters);
+                getSqlMapClient().update(sqlMap, parameters);
             }
 
             parameters = new HashMap<String, Object>();
@@ -543,11 +543,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
                                destURI, SQL_ESCAPE_CHAR));
             sqlMap = getSqlMap("clearPrevResourceIdByUri");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             parameters = getResourceAsMap(dest);
             sqlMap = getSqlMap("updateResource");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             ResourceImpl created = loadResourceInternal(newResource.getURI());
             for (Property prop: newResource.getProperties()) {
@@ -584,10 +584,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("depthDiff", new Integer(depthDiff));
 
             String sqlMap = getSqlMap("moveResource");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
             sqlMap = getSqlMap("moveDescendants");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
 
         } catch (SQLException e) {
             throw new DataAccessException(
@@ -605,7 +605,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                 parent.getURI()) + 1));
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
-        List resourceList = this.sqlMapClient.queryForList(sqlMap, parameters);
+        List resourceList = getSqlMapClient().queryForList(sqlMap, parameters);
         
         String[] childUris = new String[resourceList.size()];
         int n = 0;
@@ -634,7 +634,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                 parent.getURI()) + 2));
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
-        List resourceUris = this.sqlMapClient.queryForList(sqlMap, parameters);
+        List resourceUris = getSqlMapClient().queryForList(sqlMap, parameters);
 
         for (Iterator i = resourceUris.iterator(); i.hasNext();) {
             Map map = (Map) i.next();
@@ -670,7 +670,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                 parent.getURI()) + 1));
 
         String sqlMap = getSqlMap("loadPropertiesForChildren");
-        List propertyList = this.sqlMapClient.queryForList(sqlMap, parameters);
+        List propertyList = getSqlMapClient().queryForList(sqlMap, parameters);
 
         populateCustomProperties(resources, propertyList);
     }
@@ -684,7 +684,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("timestamp", new Date());
         String sqlMap = getSqlMap("loadLocksByUris");
 
-        List<Map<String, ?>> locks = this.sqlMapClient.queryForList(sqlMap, parameters);
+        List<Map<String, ?>> locks = getSqlMapClient().queryForList(sqlMap, parameters);
 
         Map<String, Lock> result = new HashMap<String, Lock>();
 
@@ -712,7 +712,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                                 parent.getURI()) + 1));
         
         String sqlMap = getSqlMap("loadLocksForChildren");
-        List locks = this.sqlMapClient.queryForList(sqlMap, parameters);
+        List locks = getSqlMapClient().queryForList(sqlMap, parameters);
         Map<String, Lock> result = new HashMap<String, Lock>();
 
         for (Iterator i = locks.iterator(); i.hasNext();) {
@@ -743,7 +743,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         
         String sqlMap = getSqlMap("insertAclEntry");
 
-        this.sqlMapClient.startBatch();
+        getSqlMapClient().startBatch();
         for (Iterator i = actions.iterator(); i.hasNext();) {
             RepositoryAction action = (RepositoryAction) i.next();
             String actionName = Privilege.getActionName(action);
@@ -765,12 +765,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 parameters.put("grantedBy", r.getOwner().getQualifiedName());
                 parameters.put("grantedDate", new Date());
 
-                this.sqlMapClient.update(sqlMap, parameters);
+                getSqlMapClient().update(sqlMap, parameters);
             }
 
         }
 
-        this.sqlMapClient.executeBatch();
+        getSqlMapClient().executeBatch();
     }
     
 
@@ -780,7 +780,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Integer> actionTypes = new HashMap<String, Integer>();
 
         String sqlMap = getSqlMap("loadActionTypes");
-        List list = this.sqlMapClient.queryForList(sqlMap, null);
+        List list = getSqlMapClient().queryForList(sqlMap, null);
         for (Iterator i = list.iterator(); i.hasNext();) {
             Map map = (Map) i.next();
             actionTypes.put((String) map.get("name"), (Integer) map.get("id"));
@@ -791,7 +791,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     private boolean isInheritedAcl(ResourceImpl r) throws SQLException {
 
         String sqlMap = getSqlMap("isInheritedAcl");
-        Map map = (Map) this.sqlMapClient.queryForObject(
+        Map map = (Map) getSqlMapClient().queryForObject(
             sqlMap, new Integer(r.getID()));
         
         Integer inheritedFrom = (Integer) map.get("inheritedFrom");
@@ -810,7 +810,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("path", path);
         String sqlMap = getSqlMap("findNearestAclResourceId");
-        List list = this.sqlMapClient.queryForList(sqlMap, parameters);
+        List list = getSqlMapClient().queryForList(sqlMap, parameters);
         Map<String, Integer> uris = new HashMap<String, Integer>();
         for (Iterator i = list.iterator(); i.hasNext();) {
              Map map = (Map) i.next();
@@ -888,7 +888,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameterMap.put("resourceIds", resourceIds);
 
         String sqlMap = getSqlMap("loadAclEntriesByResourceIds");
-        List aclEntries = this.sqlMapClient.queryForList(sqlMap, parameterMap);
+        List aclEntries = getSqlMapClient().queryForList(sqlMap, parameterMap);
             
 
         for (Iterator i = aclEntries.iterator(); i.hasNext();) {
@@ -928,11 +928,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         if (lock == null) {
             // Delete any old persistent locks
             String sqlMap = getSqlMap("deleteLockByResourceId");
-            this.sqlMapClient.delete(sqlMap, new Integer(r.getID()));
+            getSqlMapClient().delete(sqlMap, new Integer(r.getID()));
         }
         if (lock != null) {
             String sqlMap = getSqlMap("loadLockByLockToken");
-            boolean exists = this.sqlMapClient.queryForObject(
+            boolean exists = getSqlMapClient().queryForObject(
                 sqlMap, lock.getLockToken()) != null;
 
             Map<String, Object> parameters = new HashMap<String, Object>();
@@ -944,7 +944,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("resourceId", new Integer(r.getID()));
 
             sqlMap = exists ? getSqlMap("updateLock") : getSqlMap("insertLock");
-            this.sqlMapClient.update(sqlMap, parameters);
+            getSqlMapClient().update(sqlMap, parameters);
         }
     }
     
@@ -953,7 +953,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     private void storeProperties(ResourceImpl r) throws SQLException {
         
         String sqlMap = getSqlMap("deletePropertiesByResourceId");
-        this.sqlMapClient.update(sqlMap, new Integer(r.getID()));
+        getSqlMapClient().update(sqlMap, new Integer(r.getID()));
 
         List<Property> properties = r.getProperties();
         
@@ -961,7 +961,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
             sqlMap = getSqlMap("insertPropertyEntry");
 
-            this.sqlMapClient.startBatch();
+            getSqlMapClient().startBatch();
 
             for (Property property: properties) {
 
@@ -983,16 +983,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                             parameters.put("value",
                                            values[i].getNativeStringRepresentation());
                             
-                            this.sqlMapClient.update(sqlMap, parameters);
+                            getSqlMapClient().update(sqlMap, parameters);
                         }
                     } else {
                         Value value = property.getValue();
                         parameters.put("value", value.getNativeStringRepresentation());
-                        this.sqlMapClient.update(sqlMap, parameters);
+                        getSqlMapClient().update(sqlMap, parameters);
                     }
                 }
             }
-            this.sqlMapClient.executeBatch();
+            getSqlMapClient().executeBatch();
         }
     }
     
@@ -1189,7 +1189,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         
         try {
             String sqlMap = getSqlMap("discoverGroups");
-            List<String> groupNames = this.sqlMapClient.queryForList(sqlMap, null);
+            List<String> groupNames = getSqlMapClient().queryForList(sqlMap, null);
         
             Set<Principal> groups = new HashSet<Principal>();
             for (String groupName: groupNames) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,10 @@ package org.vortikal.web.referencedata.provider;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.NoSuchMessageException;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -80,8 +81,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * </ul>
  * 
  */
-public class ResourceServiceURLProvider
-  implements ReferenceDataProvider, InitializingBean {
+public class ResourceServiceURLProvider implements ReferenceDataProvider {
 
     private String modelName = null;
     private Service service = null;
@@ -91,15 +91,15 @@ public class ResourceServiceURLProvider
     private String urlName = "url";
     private String titleName = "title";
 
-    public void setModelName(String modelName) {
+    @Required public void setModelName(String modelName) {
         this.modelName = modelName;
     }
     
-    public void setService(Service service) {
+    @Required public void setService(Service service) {
         this.service = service;
     }
     
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
@@ -118,21 +118,6 @@ public class ResourceServiceURLProvider
     public void setTitleName (String titleName) {
         this.titleName = titleName;
     }
-    public void afterPropertiesSet() {
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelName' must be set");
-        }
-        if (this.service == null) {
-            throw new BeanInitializationException(
-                "Bean property 'service' must be set");
-        }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-    }
-    
 
 
     public void referenceData(Map model, HttpServletRequest request)

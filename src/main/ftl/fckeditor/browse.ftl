@@ -15,4 +15,7 @@
   </#list>
   </Files>
   </#if>
+  <#if error?exists>
+  <Error number="${error}" />
+  </#if>
 </Connector>

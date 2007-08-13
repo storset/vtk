@@ -30,32 +30,39 @@
  */
 package org.vortikal.web.controller;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 
+
 public class FCKeditorConnector implements Controller {
 
-    private static enum Command {
-        GetFolders, GetFoldersAndFiles, CreateFolder, FileUpload;
-    }
             
     private Repository repository;
     private Service viewService;
-    private String viewName;
+    private String browseViewName;
+    private String uploadStatusViewName;
     
 
     @Required public void setRepository(Repository repository) {
@@ -66,8 +73,12 @@ public class FCKeditorConnector implements Controller {
         this.viewService = viewService;
     }
     
-    @Required public void setViewName(String viewName) {
-        this.viewName = viewName;
+    @Required public void setBrowseViewName(String browseViewName) {
+        this.browseViewName = browseViewName;
+    }
+    
+    @Required public void setUploadStatusViewName(String uploadStatusViewName) {
+        this.uploadStatusViewName = uploadStatusViewName;
     }
     
     
@@ -91,51 +102,39 @@ public class FCKeditorConnector implements Controller {
 
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        FCKeditorFileBrowserCommand command = new FCKeditorFileBrowserCommand(request);
+
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
-        String currentFolderParam = request.getParameter("CurrentFolder");
-        if (currentFolderParam == null) {
-            currentFolderParam = "/";
-        }
-        if (!"/".equals(currentFolderParam) && currentFolderParam.endsWith("/")) {
-            currentFolderParam = currentFolderParam.substring(0, currentFolderParam.length() -1);
-        }
-
-        Resource currentFolder = this.repository.retrieve(token, currentFolderParam, true);
+        Resource currentFolder = this.repository.retrieve(token, command.getCurrentFolder(), true);
         if (!currentFolder.isCollection()) {
             
         }
         Resource[] children = this.repository.listChildren(token, currentFolder.getURI(), true);
 
-        String commandParam = request.getParameter("Command");
-        Command c = commandParam == null ? Command.GetFoldersAndFiles : Command.valueOf(commandParam);
-
-        Map model = new HashMap();
-        if ("/".equals(currentFolder.getURI())) {
-            model.put("currentFolder", currentFolder.getURI());
-        } else {
-            model.put("currentFolder", currentFolder.getURI() + "/");
-        }
-        model.put("command", c.name());
-
-        
-        String resourceTypeParam = request.getParameter("Type");
-        if (resourceTypeParam == null) {
-            resourceTypeParam = "File";
-        }
-
-        model.put("resourceType", resourceTypeParam);
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("currentFolder", ensureTrailingSlash(currentFolder.getURI()));
+        model.put("command", command.getCommand().name());
+        model.put("resourceType", command.getResourceType());
 
         Filter filter = null;
 
-        if ("Image".equals(resourceTypeParam)) {
-            filter = IMAGE_FILTER;
+        FCKeditorFileBrowserCommand.ResourceType type = command.getResourceType();
+        switch (type) {
+            case Image:
+                filter = IMAGE_FILTER;
+                break;
+            case Flash:
+                filter = FLASH_FILTER;
+                break;
+            default:
+                filter = FILE_FILTER;
+                break;
         }
-        if ("Flash".equals(resourceTypeParam)) {
-            filter = FLASH_FILTER;
-        }
-
+        
+        FCKeditorFileBrowserCommand.Command c = command.getCommand();
         switch (c) {
             case GetFolders:
                 model.put("folders", getFolders(children));
@@ -144,11 +143,16 @@ public class FCKeditorConnector implements Controller {
                 model.put("folders", getFolders(children));
                 model.put("files", getFiles(children, filter));
                 break;
+            case CreateFolder:
+                model.put("error", createFolder(command, token));
+                break;
+            case FileUpload:
+                return uploadFile(command, token, request); 
             default:
                 throw new RuntimeException("Not implemented");
         }
 
-        return new ModelAndView(this.viewName, model);
+        return new ModelAndView(this.browseViewName, model);
     }
     
     private Map<String, Map> getFolders(Resource[] children) {
@@ -183,8 +187,124 @@ public class FCKeditorConnector implements Controller {
         return result;
     }
     
+    
+
+    private int createFolder(FCKeditorFileBrowserCommand command, String token) {
+        String newFolderURI = "/".equals(command.getCurrentFolder()) ?
+            command.getCurrentFolder() + command.getNewFolderName() :
+            command.getCurrentFolder() + "/" + command.getNewFolderName();
+        try {
+            if (this.repository.exists(token, newFolderURI)) {
+                return 101;
+            }
+            this.repository.createCollection(token, newFolderURI);
+            return 0;
+        } catch (AuthorizationException e) {
+            return 103;
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+    
+    private int maxUploadSize = 1000000;
+    
+
+    private ModelAndView uploadFile(FCKeditorFileBrowserCommand command, String token, HttpServletRequest request) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        
+        FileItemFactory factory = new DiskFileItemFactory(
+            this.maxUploadSize, new File(System.getProperty("java.io.tmpdir")));
+        ServletFileUpload upload = new ServletFileUpload(factory);
+    
+        FileItem uploadItem = null;
+        try {
+            List<FileItem> fileItems = upload.parseRequest(request);
+            for (FileItem item: fileItems) {
+                if (!item.isFormField()) {
+                    uploadItem = item;
+                    break;
+                }
+            }
+            String base = command.getCurrentFolder();
+            String name = uploadItem.getName();
+
+            if (!"/".equals(base) && !base.endsWith("/")) {
+                base += "/";
+            }
+
+            boolean existed = false;
+
+            String uri = base + name;
+            if (this.repository.exists(token, uri)) {
+                existed = true;
+                uri = base + newFileName(command, token, uploadItem);
+            }
+
+            this.repository.createDocument(token, uri);
+
+            InputStream inStream = uploadItem.getInputStream();
+            this.repository.storeContent(token, uri, inStream);
+
+            URL fileURL = this.viewService.constructURL(uri);
+
+            model.put("existed", existed);
+            model.put("fileName", name);
+            model.put("fileURL", fileURL);
+            model.put("error", existed ? 201 : 0);
+
+        } catch (AuthorizationException e) {
+            model.put("error", 203);
+            
+        } catch (Exception e) {
+            model.put("error", 1);
+            model.put("customMessage", e.getMessage());
+        }
+
+        return new ModelAndView(this.uploadStatusViewName, model);
+    }
+    
+
+
+    private String ensureTrailingSlash(String path) {
+        if ("/".equals(path)) return path;
+        if (path.endsWith("/")) return path;
+        return path + "/";
+    }
+    
+    private String newFileName(FCKeditorFileBrowserCommand command,
+                                   String token, FileItem item) throws Exception {
+        
+        String name = item.getName();
+        String base = command.getCurrentFolder();
+        if (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
+        }
+
+        String extension = "";
+        String dot = "";
+        int number = 1;
+
+        if (name.endsWith(".")) {
+            name = name.substring(0, name.lastIndexOf("."));
+
+        } else if (name.contains(".")) {
+            extension = name.substring(name.lastIndexOf(".") + 1, name.length());
+            dot = ".";
+            name = name.substring(0, name.lastIndexOf("."));
+        }
+
+        while (this.repository.exists(
+                   token, base + "/" + name + "(" + number + ")" + dot + extension)) {
+            number++;
+        }
+        return  name + "(" + number + ")" + dot + extension;
+    }
+    
+
+
     private interface Filter {
         public boolean isAccepted(Resource r);
     }
     
+
 }

@@ -103,7 +103,8 @@
       <bean class="org.vortikal.web.controller.FCKeditorConnector"
             parent="requestLocalRepositoryAware">
         <property name="viewService" ref="viewService" />
-        <property name="viewName" value="fckeditor.browseView" />
+        <property name="browseViewName" value="fckeditor.browseView" />
+        <property name="uploadStatusViewName" value="fckeditor.uploadStatusView" />
       </bean>
     </property>
   </bean>
@@ -263,6 +264,7 @@
     <property name="views">
       <map>
         <entry key="fckeditor.browseView" value-ref="fckeditor.browseView" />
+        <entry key="fckeditor.uploadStatusView" value-ref="fckeditor.uploadStatusView" />
       </map>
     </property>
   </bean>
@@ -314,6 +316,15 @@
   <bean id="fckeditor.browseView" parent="freemarkerView">
     <property name="url" value="fckeditor/browse.ftl" />
     <property name="contentType" value="text/xml;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="fckeditor.uploadStatusView" parent="freemarkerView">
+    <property name="url" value="fckeditor/upload-status.ftl" />
+    <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
       <list>
       </list>

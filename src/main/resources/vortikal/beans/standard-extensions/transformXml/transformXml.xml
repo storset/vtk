@@ -114,7 +114,7 @@
 
   <bean id="xmlTransformService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
-    <property name="order" value="0" />
+    <property name="order" value="50" />
 
     <property name="assertions">
       <list>

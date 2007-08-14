@@ -1,11 +1,11 @@
-.scope {list-style-type: none; padding-left: 0; padding-bottom: 0.25em;}
-.scope input {margin-right: 0.75em;}
-.result h2 {font-size: 130%;margin-bottom: 0.25em;} 
-.result .footer {margin-top: 0.25em; color: green; font-size: 90%;}
-.login {padding-bottom:1em;}
-.paging {white-space: nowrap; padding-top: 1em;}
+.vrtx-search-scope {list-style-type: none; padding-left: 0; padding-bottom: 0.25em;}
+.vrtx-search-scope input {margin-right: 0.75em;}
+div.vrtx-search-results .result h2 {font-size: 130%;margin-bottom: 0.25em;} 
+div.vrtx-search-results .result .footer {margin-top: 0.25em; color: green; font-size: 90%;}
+.vrtx-search-login {padding-bottom:1em;}
+.vrtx-search-paging {white-space: nowrap; padding-top: 1em;}
 
-.contact {
+.vrtx-search-contact {
   border: solid 1px #aaa; 
   margin: 0.5em 0em 0.5em 0em; 
   padding: 1em; 
@@ -13,7 +13,7 @@
   width: 13em;
 }
 
-div#brodtekst {margin-right: 1em;}
+div#brodtekst {margin-right: 1em;} /* Do we need this */
 
 h1 sup {font-size: 35%;vertical-align: top;}
 

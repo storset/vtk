@@ -277,3 +277,11 @@ a.vrtx-manage-url {
 /* END resource:manage-url */
 
 
+/* START resource:toc */
+
+span.vrtx-toc-header {
+  font-size: 150%; 
+  font-weight:bold; 
+} 
+
+/* END resource:toc */

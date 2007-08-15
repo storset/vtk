@@ -57,6 +57,7 @@ import org.vortikal.security.PrincipalFactory;
  * ResultSetIterator implementation
  *
  * XXX: exception handling
+ * @deprecated
  */
 public class ResultSetIteratorImpl implements CloseableIterator<PropertySet> {
 

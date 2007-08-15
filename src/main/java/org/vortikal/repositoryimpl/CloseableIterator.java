@@ -38,7 +38,7 @@ package org.vortikal.repositoryimpl;
  * is completed.
  * 
  * @author oyviste
- *
+ * @deprecated
  */
 public interface CloseableIterator<T> extends java.util.Iterator<T> {
     

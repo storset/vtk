@@ -41,6 +41,7 @@ import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
  * Repository data accessor for indexing system.
  *  
  * @author oyviste
+ * @deprecated
  *
  */
 public interface IndexDataAccessor {
@@ -108,7 +109,8 @@ public interface IndexDataAccessor {
      * @param resultSecurityInfo
      */
     public void processQueryResultsAuthorization(
-        Set<String> principalNames,  List<ResultSecurityInfo> resultSecurityInfo) throws DataAccessException;
+        Set<String> principalNames,  
+        List<ResultSecurityInfo> resultSecurityInfo) throws DataAccessException;
 
     
 }

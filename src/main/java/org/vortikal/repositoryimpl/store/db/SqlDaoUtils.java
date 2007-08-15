@@ -83,7 +83,10 @@ class SqlDaoUtils {
         return count;
     }
 
-    
+
+    /**
+     * @deprecated
+     */
     public static void populateStandardProperties(
         PropertyManager propertyManager, PrincipalFactory principalFactory,
         PropertySetImpl propertySet, ResultSet rs) throws SQLException {

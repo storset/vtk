@@ -70,6 +70,7 @@ import org.vortikal.security.PrincipalFactory;
  * over all <code>PropertySet</code>s in the database is done.
  * 
  * XXX: exception handling
+ * @deprecated
  * 
  * @author oyviste
  *

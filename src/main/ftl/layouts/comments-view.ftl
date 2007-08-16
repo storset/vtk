@@ -111,7 +111,7 @@
 
     <#elseif postCommentURL?exists>
       <div class="comment-syntax-desc">
-        Basic HTML syntax is allowed.
+        <@vrtx.msg code="commenting.form.syntax-description" default="Basic HTML syntax is allowed" />
       <#if commenting.richEditorEnabled>
         <script type="text/javascript">
           document.write("(&nbsp;<a href=\"javascript:loadEditor();\"><@vrtx.msg code="commenting.form.rich-editor" default="rich editor" /></a>&nbsp;)");

@@ -122,8 +122,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             
             Integer sessionId = (Integer)client.queryForObject(getSessionIdStatement);
             
-            System.out.println("session id: " + sessionId);
-            
             String insertUriTempTableStatement =
                     getSqlMap("insertIntoUriTempTable");
             
@@ -135,9 +133,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                 client.insert(insertUriTempTableStatement, params);
             }
             client.executeBatch();
-            // XXX: batch execution DOES NOT WORK and I don't know why, yet.
-            // No rows are inserted into database by client.executeBatch()
-            
+                
             String statement = getSqlMap("orderedPropertySetIterationForUris");
             
             PropertySetRowHandler rowHandler

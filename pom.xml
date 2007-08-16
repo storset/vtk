@@ -299,20 +299,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-one-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <remoteRepositoryId>maven1-repo@xml.uio.no</remoteRepositoryId>
-              <remoteRepositoryUrl>scpexe://xml.uio.no/site/var/virtual/no.uio.xml_80/htdocs/vortex/maven</remoteRepositoryUrl>
-            </configuration>
-            <goals>
-              <goal>deploy-maven-one-repository</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>

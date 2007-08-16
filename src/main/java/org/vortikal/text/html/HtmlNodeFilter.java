@@ -33,7 +33,8 @@ package org.vortikal.text.html;
 
 /**
  * Simple HTML node filter interface. Nodes are filtered during
- * document building.
+ * document building in a "bottom-up fashion": before a node is
+ * filtered, all its ancestor nodes are filtered.
  */
 public interface HtmlNodeFilter {
 

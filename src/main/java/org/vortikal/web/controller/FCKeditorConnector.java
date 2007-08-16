@@ -84,7 +84,13 @@ public class FCKeditorConnector implements Controller {
     
     private static final Filter FILE_FILTER = new Filter() {
         public boolean isAccepted(Resource resource) {
-           return true;
+            return !resource.isCollection();
+        }
+    };
+
+    private static final Filter COLLECTION_FILTER = new Filter() {
+        public boolean isAccepted(Resource resource) {
+            return resource.isCollection();
         }
     };
 
@@ -108,14 +114,8 @@ public class FCKeditorConnector implements Controller {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
-        Resource currentFolder = this.repository.retrieve(token, command.getCurrentFolder(), true);
-        if (!currentFolder.isCollection()) {
-            
-        }
-        Resource[] children = this.repository.listChildren(token, currentFolder.getURI(), true);
-
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("currentFolder", ensureTrailingSlash(currentFolder.getURI()));
+        model.put("currentFolder", ensureTrailingSlash(command.getCurrentFolder()));
         model.put("command", command.getCommand().name());
         model.put("resourceType", command.getResourceType());
 
@@ -137,52 +137,60 @@ public class FCKeditorConnector implements Controller {
         FCKeditorFileBrowserCommand.Command c = command.getCommand();
         switch (c) {
             case GetFolders:
-                model.put("folders", getFolders(children));
+                try {
+                    model.put("folders", listResources(token, command, COLLECTION_FILTER));
+                } catch (Exception e) {
+                    model.put("error", 1);
+                    model.put("customMessage", e.getMessage());
+                }
                 break;
+
             case GetFoldersAndFiles:
-                model.put("folders", getFolders(children));
-                model.put("files", getFiles(children, filter));
+                
+                try {
+                    model.put("folders", listResources(token, command, COLLECTION_FILTER));
+                    model.put("files", listResources(token, command, filter));
+                } catch (Exception e) {
+                    model.put("error", 1);
+                    model.put("customMessage", e.getMessage());
+                }
                 break;
+
             case CreateFolder:
                 model.put("error", createFolder(command, token));
                 break;
+
             case FileUpload:
                 return uploadFile(command, token, request); 
+
             default:
-                throw new RuntimeException("Not implemented");
+                model.put("error", 1);
+                model.put("customMessage", "Unknown command");
         }
 
         return new ModelAndView(this.browseViewName, model);
     }
     
-    private Map<String, Map> getFolders(Resource[] children) {
-        Map<String, Map> result = new HashMap<String, Map>();
-        for (Resource r: children) {
-            if (r.isCollection()) {
-                Map<String, Object> entry = new HashMap<String, Object>();
-                URL url = this.viewService.constructURL(r, null);
-                entry.put("resource", r);
-                entry.put("url", url);
-                result.put(r.getURI(), entry);
-            }
-        }
-        return result;
-    }
+    private Map<String, Map> listResources(String token, FCKeditorFileBrowserCommand command,
+                                           Filter filter) throws Exception {
 
-    private Map<String, Map> getFiles(Resource[] children, Filter filter) {
+        Resource[] children = this.repository.listChildren(
+            token, command.getCurrentFolder(), true);
+
         Map<String, Map> result = new HashMap<String, Map>();
         for (Resource r: children) {
-            if (!r.isCollection()) {
-                if (filter != null && !filter.isAccepted(r)) {
-                    continue;
-                }
-                Map<String, Object> entry = new HashMap<String, Object>();
-                URL url = this.viewService.constructURL(r, null);
-                entry.put("resource", r);
-                entry.put("url", url);
-                entry.put("contentLength", r.getContentLength());
-                result.put(r.getURI(), entry);
+            if (!filter.isAccepted(r)) {
+                continue;
             }
+            Map<String, Object> entry = new HashMap<String, Object>();
+            URL url = this.viewService.constructURL(r, null);
+            entry.put("resource", r);
+            entry.put("url", url);
+            if (!r.isCollection()) {
+                entry.put("contentLength", r.getContentLength());
+            }
+            
+            result.put(r.getURI(), entry);
         }
         return result;
     }

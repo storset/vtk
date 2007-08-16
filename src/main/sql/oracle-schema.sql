@@ -282,8 +282,7 @@ create table vortex_comment
     author varchar2 (64) not null,
     time timestamp not null,
     title varchar2 (2048) null,
-    -- XXX:
-    text varchar (2048) not null,
+    content clob not null,
     approved char(1) default 'Y' not null
 );
 

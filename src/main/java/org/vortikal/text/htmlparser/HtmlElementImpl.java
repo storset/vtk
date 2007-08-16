@@ -136,7 +136,7 @@ public class HtmlElementImpl implements HtmlElement {
         
 
     public String getContent() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Iterator i = this.contentList.iterator(); i.hasNext();) {
             HtmlContent child = (HtmlContent) i.next();
             if (child instanceof EnclosingHtmlContent) {
@@ -149,7 +149,7 @@ public class HtmlElementImpl implements HtmlElement {
     }
         
     public String getContent(HtmlNodeFilter filter) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Iterator i = this.contentList.iterator(); i.hasNext();) {
             HtmlContent child = (HtmlContent) i.next();
             child = filter.filterNode(child);
@@ -167,7 +167,7 @@ public class HtmlElementImpl implements HtmlElement {
     }
 
     public String getEnclosedContent() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<").append(this.name);
         HtmlAttribute[] attributes = getAttributes();
         if (attributes.length > 0) {
@@ -196,7 +196,7 @@ public class HtmlElementImpl implements HtmlElement {
     }
 
     public String getEnclosedContent(HtmlNodeFilter filter) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<").append(this.name);
         HtmlAttribute[] attributes = getAttributes();
         if (attributes.length > 0) {

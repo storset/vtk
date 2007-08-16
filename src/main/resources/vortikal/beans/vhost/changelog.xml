@@ -40,28 +40,4 @@
 
   </bean>
 
-<!-- Quartz scheduler factory for resourceChangeNotifier -->
-<!--   <bean id="repository.DMSSchedulerfactory"  -->
-<!--         class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
-<!--     <property name="triggers"> -->
-<!--       <list> -->
-<!--         <bean id="repository.pollChangesTrigger" -->
-<!--           class="org.springframework.scheduling.quartz.SimpleTriggerBean"> -->
-<!--           <property name="jobDetail"> -->
-<!--             <bean id="repository.pollChangesJobDetail" -->
-<!--                   class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean"> -->
-<!--               <property name="group" value="repository" /> -->
-<!--               <property name="targetObject" ref="repository.resourceChangeNotifier" /> -->
-<!--               <property name="targetMethod" value="pollChanges" /> -->
-<!--               <property name="concurrent" value="false" /> -->
-<!--             </bean> -->
-<!--           </property> -->
-<!--           <property name="startDelay" value="20000"/> -->
-<!--           <property name="repeatInterval" value="5000"/> -->
-<!--         </bean> -->
-<!--       </list> -->
-<!--     </property> -->
-<!--   </bean> -->
-
-
 </beans>

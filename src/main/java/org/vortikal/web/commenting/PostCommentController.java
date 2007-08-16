@@ -30,24 +30,24 @@
  */
 package org.vortikal.web.commenting;
 
-
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.EnclosingHtmlContent;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -67,21 +67,33 @@ public class PostCommentController extends SimpleFormController {
     private Repository repository = null;
     private String formSessionAttributeName;
     private HtmlPageParser parser;
+    private List<HtmlNodeFilter> nodeFilters;
+    private int maxCommentLength = 100000;
+    private boolean requireCommentTitle = false;
     
-//     public PostCommentController() {
-//         setSessionForm(true);
-//     }
-    
+
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+    @Required public void setHtmlParser(HtmlPageParser parser) {
+        this.parser = parser;
+    }
+    
     public void setFormSessionAttributeName(String formSessionAttributeName) {
         this.formSessionAttributeName = formSessionAttributeName;
     }
 
-    public void setHtmlParser(HtmlPageParser parser) {
-        this.parser = parser;
+    public void setNodeFilters(List<HtmlNodeFilter> nodeFilters) {
+        this.nodeFilters = nodeFilters;
+    }
+
+    public void setMaxCommentLength(int maxCommentLength) {
+        this.maxCommentLength = maxCommentLength;
+    }
+    
+    public void setRequireCommentTitle(boolean requireCommentTitle) {
+        this.requireCommentTitle = requireCommentTitle;
     }
     
 
@@ -96,8 +108,41 @@ public class PostCommentController extends SimpleFormController {
         return command;
     }
 
+
     protected void onBindAndValidate(HttpServletRequest request, Object command,
                           BindException errors) throws Exception {
+
+        if (!"POST".equals(request.getMethod()) && this.formSessionAttributeName != null) {
+            if (request.getSession(false) != null) {
+                request.getSession().removeAttribute(this.formSessionAttributeName);
+            }
+        }
+
+        PostCommentCommand commentCommand = (PostCommentCommand) command;
+        if (commentCommand.getCancelAction() != null) return;
+
+        if (this.requireCommentTitle &&
+            (commentCommand.getTitle() == null
+             || commentCommand.getTitle().trim().equals(""))) {
+            errors.rejectValue("title", "commenting.post.title.missing",
+                               "You must provide a title");
+        }
+        if (commentCommand.getText() == null
+            || commentCommand.getText().trim().equals("")) {
+            errors.rejectValue("text", "commenting.post.text.missing",
+                               "You must type something in the comment field");
+        } else if (commentCommand.getText().length() > this.maxCommentLength) {
+            errors.rejectValue("text", "commenting.post.text.toolong",
+                               new Object[] {commentCommand.getText().length(), this.maxCommentLength},
+                               "Value too long: maximum length is " + this.maxCommentLength);
+        }
+        String parsedText = parseContent(commentCommand.getText());
+        if (parsedText == null || "".equals(parsedText.trim())) {
+            errors.rejectValue("text", "commenting.post.text.missing",
+                               "You must type something in the comment field");
+        }
+        commentCommand.setParsedText(parsedText);
+
         if (this.formSessionAttributeName == null) {
             return;
         }
@@ -117,93 +162,92 @@ public class PostCommentController extends SimpleFormController {
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+
+        Resource resource = this.repository.retrieve(token, uri, false);
         
         PostCommentCommand commentCommand = (PostCommentCommand) command;
         if (commentCommand.getCancelAction() != null) {
             commentCommand.setDone(true);
             return;
         }
-        String uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
-        Resource resource = this.repository.retrieve(token, uri, true);
-        String title = parseTitle(commentCommand.getTitle());
-        String text = parseContent(commentCommand.getText());
-
+        String title = commentCommand.getTitle();
+        String text = commentCommand.getParsedText();
         repository.addComment(token, resource, title, text);
     }
 
-    protected String parseTitle(String title) {
-        if (title == null) {
-            return null;
-        }
-        if (this.parser != null) {
-            
-        }
-        return title;
-    }
-    
 
     protected String parseContent(String text) throws Exception {
+
         if (this.parser != null) {
-        text = "<html>" + text + "</html>";
-//             Source source = new Source(new StringReader(text));
-//            OutputDocument out = new OutputDocument(source);
-//             List elements = source.findAllElements();
-//             String result = elementToString((Element) elements.get(0));
-//             for (Object o: elements) {
-//                 Element element = (Element) o;
-                
-//                 System.out.println("__element: " + element + ": " + element.getContent());
-//             }
+            text = "<html><head></head><body>" + text + "</body></html>";
             InputStream is = new ByteArrayInputStream(text.getBytes("utf-8"));
-            HtmlPage page = this.parser.parse(is, "utf-8", new ContentFilter());
-            System.out.println("__parse: " + page.getRootElement().getContent());
-            
-            return page.getRootElement().getContent();
+            HtmlPage page = null;
+
+            List<HtmlNodeFilter> filters = new ArrayList<HtmlNodeFilter>();
+            if (this.nodeFilters != null) {
+                filters.addAll(this.nodeFilters);
+            }
+            filters.add(new TagEntityFilter());
+
+            page = this.parser.parse(is, "utf-8", filters);
+            if (isEmptyContent(page.getRootElement())) {
+                return null;
+            }
+
+            StringBuilder result = new StringBuilder();
+            String content = page.getRootElement().getContent();
+            if ("".equals(content.trim())) {
+                return null;
+            }
+
+            if (!content.trim().startsWith("<p>")) {
+                result.append("<p>").append(content).append("</p>");
+            } else {
+                result.append(content);
+            }
+            return result.toString();
         }
-        
         return text;
     }
+
     
-    private class ContentFilter implements HtmlNodeFilter {
-        
-        Set<String> validElements = new HashSet<String>();
-        Set<String> illegalElements = new HashSet<String>();
+    private boolean isEmptyContent(HtmlContent node) {
+        if (node instanceof EnclosingHtmlContent) {
+            HtmlContent[] children = ((EnclosingHtmlContent) node).getChildNodes();
+            for (HtmlContent child: children) {
+                if (!isEmptyContent(child)) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (node instanceof HtmlText) {
+            return "".equals(node.getContent().trim());
 
-        public ContentFilter() {
-//             this.validElements.add("html");
-            this.validElements.add("b");
-            this.validElements.add("p");
-            this.illegalElements.add("script");
+        } else if (node instanceof HtmlComment) {
+            return true;
         }
-
+        return false;
+    }
+    
+    private class TagEntityFilter implements HtmlNodeFilter {
 
         public HtmlContent filterNode(HtmlContent node) {
-            if (node instanceof HtmlComment) {
-                return null;
-            } else if (node instanceof HtmlText) {
-                return node;
-
-            } else if (node instanceof HtmlElement) {
-                HtmlElement element = (HtmlElement) node;
-                if (this.illegalElements.contains(element.getName())) {
-                    return null;
-                }
-                if (this.validElements.contains(element.getName())) {
-                    return node;
-                }
-                // Return text:
-                final String text = element.getContent();
+            if (node instanceof HtmlText) {
+                String content = node.getContent();
+                content = content.replaceAll("<", "&lt;");
+                content = content.replaceAll(">", "&gt;");
+                
+                final String newContent = content;
                 return new HtmlText() {
                     public String getContent() {
-                        return text;
+                        return newContent;
                     }
                 };
-            }
+            } 
             return node;
         }
     }
-    
 
 }

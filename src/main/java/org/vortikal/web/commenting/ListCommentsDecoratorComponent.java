@@ -91,6 +91,8 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
     protected void processModel(Map<Object, Object> model, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
 
+        super.processModel(model, request, response);
+
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();

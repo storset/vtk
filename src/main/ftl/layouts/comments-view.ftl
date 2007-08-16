@@ -15,6 +15,7 @@
   - 
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/fckeditor/fckeditor-textarea.ftl" as fck />
 
 <#if !comments?exists || !config?exists>
   <#stop "Unable to render model: model data missing: required entries
@@ -109,7 +110,15 @@
                     default="You do not have sufficient privileges to add comments on this resource." /></p>
 
     <#elseif postCommentURL?exists>
-      <form action="${postCommentURL?string?html}" method="post">
+      <div class="comment-syntax-desc">
+        Basic HTML syntax is allowed.
+      <#if commenting.richEditorEnabled>
+        <script type="text/javascript">
+          document.write("(&nbsp;<a href=\"javascript:loadEditor();\"><@vrtx.msg code="commenting.form.rich-editor" default="rich editor" /></a>&nbsp;)");
+        </script>
+      </#if>      
+      </div>
+      <form action="${postCommentURL?string?html}#comment-form" method="post">
         <#if config.titlesEnabled>
         <div class="comments-title">
           <#assign value><#if form?exists && form.title?exists>${form.title}</#if></#assign>
@@ -124,22 +133,26 @@
           </#if>
         </div>
         </#if>
-        <div class="comments-text">
+        <div class="comments-text" id="comments-text-div">
           <#assign value><#if form?exists && form.text?exists>${form.text}</#if></#assign>
           <textarea id="comments-text" name="text" rows="6" cols="80">${value?html}</textarea>
-          <#if errors?exists && errors.getFieldError('text')?exists>
-            <div class="error">
-              <@vrtx.msg code=errors.getFieldError('text').getCode()
-                         default=errors.getFieldError('text').getDefaultMessage() 
-                         args=errors.getFieldError('text').getArguments()  />
-            </div>
-          </#if>
+        <#if errors?exists && errors.getFieldError('text')?exists>
+          <div class="error">
+            <@vrtx.msg code=errors.getFieldError('text').getCode()
+                       default=errors.getFieldError('text').getDefaultMessage() 
+                       args=errors.getFieldError('text').getArguments()  />
+          </div>
+        </#if>
         </div>
         <div class="submit">
-        <input type="submit" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" /> (<@vrtx.msg code="commenting.as"
+        <input type="submit" id="submit-comment-button" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" /> (<@vrtx.msg code="commenting.as"
                     default="as" /> <span class="user">${principal?html}</span>)</div>
       </form>
+      <#if commenting.richEditorEnabled>
+        <@fck.editorInTextarea textarea="comments-text" runOnLoad=false fckeditorBase=fckeditorBase />
+      </#if>
     </#if>
+
   </div>
 </div>
 </#if>

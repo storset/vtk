@@ -28,46 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.commenting;
+package org.vortikal.text.htmlparser;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
-import org.vortikal.web.service.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class PostCommentCommand extends AbstractSaveCancelCommand {
 
-    private String title;
-    private String text;
-    private String parsedText;
-    
+public class HtmlElementDescriptor {
+    private String name;
+    private List<String> attributes = new ArrayList<String>();
 
-    public PostCommentCommand(URL submitURL) {
-        super(submitURL.toString());
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTitle() {
-        return this.title;
+    public String getName() {
+        return this.name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public String getText() {
-        return this.text;
+    public void setAttributes(List<String> attributes) {
+        if (attributes != null) {
+            this.attributes = new ArrayList<String>(attributes);
+        }
     }
     
-    public void setText(String text)  {
-        this.text = text;
+    public List<String> getAttributes() {
+        return Collections.unmodifiableList(this.attributes);
     }
-
-    String getParsedText() {
-        return this.parsedText;
-    }
-
-    void setParsedText(String parsedText) {
-        this.parsedText = parsedText;
-    }
-    
     
 }
-

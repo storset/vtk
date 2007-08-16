@@ -5,6 +5,11 @@
   - 
   - Required model data:
   -  
+  -  fckeditorBase.url
+  -  fckSource.getURL
+  -  fckCleanup.url
+  -  fckBrowse.url
+  -  
   - Optional model data:
   -
   -->
@@ -20,9 +25,9 @@
 	</style>
 
 	<!--
-	<p>${fckCleanup.url?html}</p>
 	<p>${fckeditorBase.url?html}</p>
 	<p>${fckSource.getURL}</p>
+	<p>${fckCleanup.url?html}</p>
         <p>${fckBrowse.url}</p>
 	-->
 

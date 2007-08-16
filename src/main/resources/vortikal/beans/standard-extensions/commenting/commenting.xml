@@ -32,10 +32,46 @@
 
   <bean id="commenting.commentsView" parent="freemarkerView">
     <property name="url" value="layouts/comments-view.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider" parent="requestLocalRepositoryAware">
+          <property name="service" ref="viewService" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${fckeditor.resources.base}" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="url" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.AssertionResultProvider" parent="requestLocalRepositoryAware">
+          <property name="assertion" ref="commenting.fckUserAgentAssertion" />
+          <property name="modelName" value="commenting" />
+          <property name="variable" value="richEditorEnabled" />
+        </bean>
+      </list>
+    </property>
     <property name="attributesMap">
       <map>
-        <entry key="config" value-ref="commenting.freemarkerConfig" />
+        <entry key="config" value-ref="commenting.freemarkerConfig" />       
+        <entry key="validHtmlElements" value-ref="commenting.validHtmlElementSet" />
       </map>
+    </property>
+  </bean>
+
+  <bean id="commenting.fckUserAgentAssertion" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
+    <property name="header" value="User-Agent" />
+    <property name="patterns" ref="commenting.fckUserAgentRegexpList" />
+  </bean>
+
+  <bean id="commenting.fckUserAgentRegexpList" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList">
+      <value>
+        Mozilla/4\.0 \(compatible; MSIE 7\.0; Windows.*,
+        Mozilla/4\.0 \(compatible; MSIE 6\.0; Windows.*,
+        Mozilla/4\.0 \(compatible; MSIE 5\.5; Windows.*,
+        Mozilla/5\.0.*rv:1\.7\..*Gecko.*,
+        Mozilla/5\.0.*rv:1\.8\..*Gecko.*,
+        Mozilla/5\.0.*Gecko.*Firefox/1\..*,
+        Mozilla/5\.0.*Gecko.*Camino/.*
+      </value>
     </property>
   </bean>
 
@@ -100,16 +136,89 @@
     <property name="commandName" value="postCommentForm" />
     <property name="commandClass"
               value="org.vortikal.web.commenting.PostCommentCommand" />
-    <property name="validator" ref="commenting.postCommentValidator" />
+    <property name="requireCommentTitle" ref="commenting.titlesEnabled" />
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
     <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="nodeFilters" ref="commenting.parser.nodeFilters" />
+  </bean>
+
+  <bean name="commenting.parser.nodeFilters" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <bean class="org.vortikal.text.htmlparser.EnumerationNodeFilter">
+        <!-- These elements are dropped (removed): -->
+        <property name="illegalElements" ref="commenting.illegalHtmlElementSet" />
+        <!-- These elements are kept (with attribute filtering): -->
+        <property name="validElements" ref="commenting.validHtmlElementSet" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="commenting.illegalHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <value>script</value>
+        <value>style</value>
+        <value>form</value>
+        <value>input</value>
+        <value>frameset</value>
+        <value>frame</value>
+        <value>iframe</value>
+        <value>object</value>
+        <value>embed</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="commenting.validHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="li" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+      </set>
+    </property>
   </bean>
 
 
-  <bean name="commenting.postCommentValidator"
-        class="org.vortikal.web.commenting.PostCommentCommandValidator">
-    <property name="requireTitle" ref="commenting.titlesEnabled" />
-  </bean>
+
 
 
   <bean name="commenting.deleteCommentController"

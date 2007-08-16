@@ -42,6 +42,11 @@
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.searchAuthorizationPointcut"/>
   </aop:config>
 
+  <aop:config>
+    <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.SqlMapIndexDao.*(..))"/>
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.sqlMapIndexDaoPointcut"/>
+  </aop:config>
+
   <!--
   <aop:config>
     <aop:pointcut id="repository.indexDataAccessorPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.IndexDataAccessorImpl.*(..))"/>
@@ -109,6 +114,13 @@
     <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+  </bean>
+  
+  <bean id="repository.indexdao" class="org.vortikal.repositoryimpl.store.db.SqlMapIndexDao">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="propertyManager" ref="propertyManager" />
   </bean>
 
   <bean id="resourceImpl" class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">

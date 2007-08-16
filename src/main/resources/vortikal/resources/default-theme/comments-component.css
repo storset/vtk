@@ -64,9 +64,14 @@ div.vrtx-comments  div.add-comment {
 
 
 div.vrtx-comments div.add-comment-header {
+  margin-bottom: .9em;
   font-size: 1.1em;
   font-weight: bold;
-  margin-bottom: .9em;
+}
+
+div.vrtx-comments div.comment-syntax-desc {
+  font-size: .9em;
+  margin-bottom: .4em;
 }
 
 div.vrtx-comments div.comments-text {

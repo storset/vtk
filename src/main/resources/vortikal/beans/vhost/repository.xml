@@ -116,7 +116,7 @@
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
   
-  <bean id="repository.indexdao" class="org.vortikal.repositoryimpl.store.db.SqlMapIndexDao">
+  <bean id="repository.indexDao" class="org.vortikal.repositoryimpl.store.db.SqlMapIndexDao">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
@@ -150,6 +150,7 @@
   -->
 
 
+  <!-- DEPRECATED - to be removed when all dependencies are converted to SqlMapIndexDao -->
   <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.store.db.IndexDataAccessorImpl">
     <property name="dataSource" ref="repository.dataSource" />
     <property name="propertyManager" ref="propertyManager" />

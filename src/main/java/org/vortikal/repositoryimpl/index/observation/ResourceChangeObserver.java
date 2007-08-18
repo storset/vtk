@@ -43,7 +43,7 @@ public interface ResourceChangeObserver {
     /**
      * This method is called to notify the observer of resource changes.
      */
-    public void notifyResourceChanges(List resourceChanges);
+    public void notifyResourceChanges(List<ResourceChange> resourceChanges);
 
     /**
      * Return an id for this observer.

@@ -147,7 +147,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             rowHandler.handleLastBufferedRows();
             
             // Clean-up temp table
-            statement = getSqlMap("deleteFromUriTempTableBySessionId");
+            statement = getSqlMap("deleteFromTempTableBySessionId");
             client.delete(statement, sessionId);
             
         } catch (SQLException e) {

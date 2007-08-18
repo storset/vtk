@@ -38,14 +38,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.store.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.db.IndexDao;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.security.token.TokenManager;
 
 /**
- * Authorize result lists using <code>IndexDataAccessor</code> (database).
+ * Authorize result lists using {@link org.vortikal.repositoryimpl.store.db.IndexDao}.
  */
 public final class DatabaseQueryResultAuthorizationManager implements 
     QueryResultAuthorizationManager, InitializingBean {
@@ -54,7 +54,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
     
     private PrincipalManager principalManager;
     private TokenManager tokenManager;
-    private IndexDataAccessor indexDataAccessor;
+    private IndexDao indexDao;
     private RoleManager roleManager;
     
     /**
@@ -68,7 +68,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
         if (this.principalManager == null) {
             throw new BeanInitializationException(
                     "Bean property 'principalManager' not set (null).");
-        } else if (this.indexDataAccessor == null) {
+        } else if (this.indexDao == null) {
             throw new BeanInitializationException(
                     "Bean property 'indexDataAccessor' not set (null).");
         } else if (this.tokenManager == null) {
@@ -128,7 +128,7 @@ public final class DatabaseQueryResultAuthorizationManager implements
         }
         
         try {
-            this.indexDataAccessor.processQueryResultsAuthorization(principalNames, 
+            this.indexDao.processQueryResultsAuthorization(principalNames, 
                                                                     rsiList);
         } catch (Exception e) {
             this.logger.warn("Exception while authorizing query result list: ", e);
@@ -151,8 +151,8 @@ public final class DatabaseQueryResultAuthorizationManager implements
              || this.roleManager.hasRole(principal, RoleManager.ROOT));
     }
 
-    public void setIndexDataAccessor(IndexDataAccessor indexDataAccessor) {
-        this.indexDataAccessor = indexDataAccessor;
+    public void setIndexDao(IndexDao indexDao) {
+        this.indexDao = indexDao;
     }
 
     public void setPrincipalManager(PrincipalManager principalManager) {

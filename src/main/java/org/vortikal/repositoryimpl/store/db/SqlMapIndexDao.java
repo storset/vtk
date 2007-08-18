@@ -31,14 +31,18 @@
 package org.vortikal.repositoryimpl.store.db;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repositoryimpl.PropertyManager;
+import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 import org.vortikal.repositoryimpl.store.DataAccessException;
 import org.vortikal.security.PrincipalFactory;
 
@@ -52,7 +56,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  */
 public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexDao {
 
-    Log logger = LogFactory.getLog(IndexDataAccessorImpl.class);
+    private static final Log LOG = LogFactory.getLog(SqlMapIndexDao.class);
     
     private PropertyManager propertyManager;
     private PrincipalFactory principalFactory;
@@ -97,7 +101,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(startUri, 
                                         SqlMapDataAccessor.SQL_ESCAPE_CHAR));
             
-            
             client.queryWithRowHandler(statementId, parameters, rowHandler);
             
             rowHandler.handleLastBufferedRows();
@@ -123,7 +126,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             Integer sessionId = (Integer)client.queryForObject(getSessionIdStatement);
             
             String insertUriTempTableStatement =
-                    getSqlMap("insertIntoUriTempTable");
+                    getSqlMap("insertUriIntoTempTable");
             
             client.startBatch();
             for (String uri: uris) {
@@ -151,7 +154,131 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             throw new DataAccessException(e);
         }
     }
-    
+
+    public void processQueryResultsAuthorization(
+                            Set<String> principalNames,
+                            List<ResultSecurityInfo> rsiList)
+        throws DataAccessException {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Processing list of " 
+                    + rsiList.size() + " elements");
+        }
+        
+        try {
+            SqlMapClient client = getSqlMapClient();
+            
+            String statement = getSqlMap("nextTempTableSessionId");
+            
+            Integer sessionId = (Integer)client.queryForObject(statement);
+            
+            Set<Integer> authorizedIds = new HashSet<Integer>();
+            Set<Integer> allIds = new HashSet<Integer>();
+            
+            int batchSize = this.queryAuthorizationBatchSize;
+            int batchStart = 0;
+            int batchEnd = batchSize > rsiList.size() ? rsiList.size() : batchSize;
+            for (;;) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Processing batch " + batchStart + " to "
+                            + batchEnd);
+                }
+                
+                int n = 0;
+                statement = getSqlMap("insertResourceIdIntoTempTable");
+                client.startBatch();
+                Map params = new HashMap();
+                for (int i=batchStart; i < batchEnd; i++) {
+                    ResultSecurityInfo rsi = rsiList.get(i);
+                    Integer id = rsi.getAclNodeId();
+                    
+                    if (! allIds.add(id)) {
+                        continue;
+                    }
+                    
+                    params.put("sessionId", sessionId);
+                    params.put("resourceId", id);
+                    client.insert(statement, params);
+                    params.clear();
+                    ++n;
+                }
+                client.executeBatch();
+                
+                params = new HashMap();
+                statement = getSqlMap("queryResultAuthorization");
+                if (n > 0) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Need to check " + n + " entries in database");
+                    }
+                    
+                    params.put("sessionId", sessionId);
+                    // XXX: No no no, iBATIS does not allow Set value iteration, 
+                    //      must wrap in List implementation... :(
+                    params.put("principalNames", new ArrayList(principalNames));
+                    
+                    List<Integer> authorizedList = 
+                                        (List<Integer>)client.queryForList(
+                                                             statement, params);
+                    
+                    for (Integer authorizedId: authorizedList) {
+                        boolean added = authorizedIds.add(authorizedId);
+                        if (LOG.isDebugEnabled()) {
+                            
+                            if (added) {
+                                LOG.debug("Adding ACL node id "
+                                   + authorizedId + " to set of authorized IDs");
+                            }
+                            
+                            LOG.debug("Current ACL node id: " + authorizedId);
+                        }
+                    }
+                    
+                    // Clean up temp table for current batch
+                    statement = getSqlMap("deleteFromTempTableBySessionId");
+                    client.delete(statement, sessionId);
+                    
+                }
+                
+                // Process current batch
+                for (int i = batchStart; i < batchEnd; i++) {
+                    ResultSecurityInfo rsi = rsiList.get(i);
+                    
+                    rsi.setAuthorized(
+                            authorizedIds.contains(rsi.getAclNodeId())
+                          || principalNames.contains(rsi.getOwnerAsUserOrGroupName()));
+                    
+                    if (LOG.isDebugEnabled()) {
+                        if (rsi.isAuthorized()) {
+                            LOG.debug("Authorized resource with ACL node id: "
+                                    + rsi.getAclNodeId());
+                        } else {
+                            LOG.debug("NOT authorized resource with ACL node id: "
+                                    + rsi.getAclNodeId());
+                        }
+                    }
+                }
+                
+                if (batchEnd == rsiList.size()) {
+                    break;
+                }
+                
+                batchStart += batchSize;
+                batchEnd = (batchEnd + batchSize) > rsiList.size() ?
+                        rsiList.size() : batchEnd + batchSize;
+            }
+            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Set of authorized IDs contains "
+                        + authorizedIds.size() + " elements");
+                LOG.debug("Set of all unique IDs contains "
+                        + allIds.size() + " elements");
+            }
+            
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
+        }
+        
+    }
 
     @Required
     public void setPropertyManager(PropertyManager propertyManager) {

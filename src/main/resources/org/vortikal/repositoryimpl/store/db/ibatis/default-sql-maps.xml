@@ -103,18 +103,6 @@
     <result property="ancestorIds" column="ancestor_ids" javaType="string"/>
   </resultMap>
   
-  <select id="nextTempTableSessionId" resultClass="java.lang.Integer">
-    select <include refid="nextTempTableSessionId" />
-  </select>
-  
-  <insert id="insertIntoUriTempTable" parameterClass="java.util.Map">
-    insert into vortex_tmp(session_id, uri) values (#sessionId#, #uri#)
-  </insert>
-  
-  <delete id="deleteFromUriTempTableBySessionId" parameterClass="java.lang.Integer">
-    delete from vortex_tmp where session_id = #value#
-  </delete>
-
   <select id="loadResourceByUri" resultMap="Resource">
     select * from vortex_resource where uri = #value#
   </select>
@@ -677,6 +665,22 @@
   </update>
 
   <!-- System index DAO statement section -->
+  <select id="nextTempTableSessionId" resultClass="java.lang.Integer">
+    select <include refid="nextTempTableSessionId" />
+  </select>
+  
+  <insert id="insertUriIntoTempTable" parameterClass="java.util.Map">
+    insert into vortex_tmp(session_id, uri) values (#sessionId#, #uri#)
+  </insert>
+  
+  <insert id="insertResourceIdIntoTempTable" parameterClass="java.util.Map">
+    insert into vortex_tmp(session_id, resource_id) values (#sessionId#, #resourceId#)
+  </insert>
+  
+  <delete id="deleteFromTempTableBySessionId" parameterClass="java.lang.Integer">
+    delete from vortex_tmp where session_id = #value#
+  </delete>
+  
   <select id="orderedPropertySetIteration" resultMap="ResourceAndExtraProperties">
     select r.*, 
     p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r
@@ -700,7 +704,7 @@
   </select>
 
   <select id="orderedPropertySetIterationForUris" parameterClass="java.lang.Integer"
-        resultMap="ResourceAndExtraPropertiesWithAncestorIds">
+                    resultMap="ResourceAndExtraPropertiesWithAncestorIds">
     select resource_ancestor_ids(r.uri) AS ancestor_ids, 
            r.*,
            p.prop_type_id,
@@ -712,5 +716,24 @@
     where r.uri = t.uri AND t.session_id=#value#
     order by p.resource_id, p.extra_prop_entry_id;            
   </select>
+
+  <select id="queryResultAuthorization" resultClass="java.lang.Integer"
+                                        parameterClass="java.util.Map">
+    
+    select ace.resource_id from acl_entry ace, vortex_tmp vtmp
+    where ace.resource_id = vtmp.resource_id
+    and vtmp.session_id = #sessionId#
+    and ace.user_or_group_name in 
+    ('pseudo:all'
+      <isNotEmpty open="," property="principalNames" >
+        'pseudo:authenticated'
+      </isNotEmpty>
+      <iterate open="," property="principalNames" conjunction=",">
+        #principalNames[]#      
+      </iterate>
+    )
+    and ace.action_type_id in (1, 3, 4)
+    
+  </select>  
   
 </sqlMap>

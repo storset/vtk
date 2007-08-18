@@ -31,7 +31,9 @@
 package org.vortikal.repositoryimpl.store.db;
 
 import java.util.List;
+import java.util.Set;
 
+import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 import org.vortikal.repositoryimpl.store.DataAccessException;
 
 /**
@@ -53,6 +55,11 @@ public interface IndexDao {
     
     public void orderedPropertySetIterationForUris(List<String> uris, 
                                                 PropertySetHandler handler)
+        throws DataAccessException;
+
+    public void processQueryResultsAuthorization(
+                                    Set<String> principalNames,  
+                                    List<ResultSecurityInfo> resultSecurityInfo) 
         throws DataAccessException;
     
 }

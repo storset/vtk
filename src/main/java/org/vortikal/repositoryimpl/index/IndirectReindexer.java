@@ -32,7 +32,7 @@ package org.vortikal.repositoryimpl.index;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repositoryimpl.store.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.db.IndexDao;
 
 /**
  * <p>A <code>PropertySetIndex</code> re-indexer that uses a temporary index instance, instead of working
@@ -52,18 +52,18 @@ import org.vortikal.repositoryimpl.store.IndexDataAccessor;
  */
 public class IndirectReindexer implements PropertySetIndexReindexer {
 
-    private IndexDataAccessor indexDataAccessor;
+    private IndexDao indexDao;
     private PropertySetIndex targetIndex;
     private PropertySetIndex temporaryIndex;
     private static final Log LOG = LogFactory.getLog(IndirectReindexer.class);
     
     public IndirectReindexer(PropertySetIndex targetIndex, 
                              PropertySetIndex temporaryIndex,
-                             IndexDataAccessor indexDataAccessor) {
+                             IndexDao indexDao) {
         
         this.targetIndex = targetIndex;
         this.temporaryIndex = temporaryIndex;
-        this.indexDataAccessor = indexDataAccessor;
+        this.indexDao = indexDao;
     }
     
     public int run() throws IndexException {
@@ -89,7 +89,7 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
             LOG.info("Initiating re-indexing to temporary index '" 
                                             + this.temporaryIndex.getId() + "'");
             int count = 
-                new DirectReindexer(this.temporaryIndex, this.indexDataAccessor).runWithExternalLocking();
+                new DirectReindexer(this.temporaryIndex, this.indexDao).runWithExternalLocking();
             
             LOG.info("Clearing contents of target index '" + this.targetIndex.getId() + "' now");
             this.targetIndex.clearContents();

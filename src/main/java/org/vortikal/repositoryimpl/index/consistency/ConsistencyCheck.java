@@ -39,13 +39,15 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 import org.vortikal.repositoryimpl.index.IndexException;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
 import org.vortikal.repositoryimpl.index.PropertySetIndexRandomAccessor;
 import org.vortikal.repositoryimpl.index.StorageCorruptionException;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMappingException;
+import org.vortikal.repositoryimpl.store.db.IndexDao;
+import org.vortikal.repositoryimpl.store.db.PropertySetHandler;
 
 /**
  * Check consistency and optionally repair errors afterwords.
@@ -61,10 +63,11 @@ public class ConsistencyCheck {
 
     private static final Log LOG = LogFactory.getLog(ConsistencyCheck.class);
 
-    private IndexDataAccessor indexDataAccessor;
+    private IndexDao indexDao;
     private PropertySetIndex index;
 
-    private List errors = new ArrayList(); // List of detected inconsistencies
+    private List<AbstractConsistencyError> errors = 
+        new ArrayList<AbstractConsistencyError>(); // List of detected inconsistencies
     private boolean completed = false; 
 
     /**
@@ -73,8 +76,8 @@ public class ConsistencyCheck {
      * @param indexDataAccessor
      */
     private ConsistencyCheck(PropertySetIndex index,
-                                        IndexDataAccessor indexDataAccessor) {
-        this.indexDataAccessor = indexDataAccessor;
+                             IndexDao indexDao) {
+        this.indexDao = indexDao;
         this.index = index;
     }
 
@@ -87,10 +90,10 @@ public class ConsistencyCheck {
      * @return
      */
     public static ConsistencyCheck run(PropertySetIndex index,
-            IndexDataAccessor indexDataAccessor) throws IndexException,
+            IndexDao indexDao) throws IndexException,
             ConsistencyCheckException, StorageCorruptionException {
 
-        ConsistencyCheck check = new ConsistencyCheck(index, indexDataAccessor);
+        ConsistencyCheck check = new ConsistencyCheck(index, indexDao);
         check.runInternal();
         return check;
     }
@@ -102,23 +105,21 @@ public class ConsistencyCheck {
 
         LOG.info("Running consistency check on index '" + indexId + "'");
 
-        LOG.info("Running storage corruption test ..");
-        // This has the positive side effect of warming up the Lucene reader cache
-        this.index.validateStorageFacility();
-        LOG.info("Storage corruption test passed.");
-
         Iterator indexUriIterator = null;
-        Iterator daoIterator = null;
         PropertySetIndexRandomAccessor randomIndexAccessor = null;
 
         try {
             
-            daoIterator = this.indexDataAccessor.getOrderedPropertySetIterator();
+            LOG.info("Running storage corruption test ..");
+            // This has the positive side effect of warming up the Lucene reader cache
+            this.index.validateStorageFacility();
+            LOG.info("Storage corruption test passed.");
+
             indexUriIterator = this.index.orderedUriIterator();
             randomIndexAccessor = this.index.randomAccessor();
             
             LOG.info("Running consistency check ..");
-            runConsistencyCheck(daoIterator, randomIndexAccessor, indexUriIterator);
+            runConsistencyCheck(randomIndexAccessor, indexUriIterator);
             
             if (this.errors.size() > 0) {
                 LOG.warn("Consistency check completed, " + this.errors.size() + " inconsistencies detected");
@@ -126,14 +127,11 @@ public class ConsistencyCheck {
                 LOG.info("Consistency check completed successfully without any errors detected");
             }
 
-        } catch (IOException io) {
-            throw new ConsistencyCheckException("IOException while running consistency check", io);
         } catch (StorageCorruptionException sce) {
             LOG.warn("Storage corruption test failed: " + sce.getMessage());
             throw sce; // Re-throw, since we can't work on or fix a corrupted index
         } finally {
             // Clean up resources
-            if (daoIterator != null) this.indexDataAccessor.close(daoIterator);
             if (indexUriIterator != null) this.index.close(indexUriIterator);
             if (randomIndexAccessor != null) randomIndexAccessor.close();
         }
@@ -141,33 +139,71 @@ public class ConsistencyCheck {
         this.completed = true;
     }
     
-    private void runConsistencyCheck(Iterator daoIterator, 
-                                     PropertySetIndexRandomAccessor randomIndexAccessor,
-                                     Iterator indexUriIterator) 
-        throws IOException, IndexException {
-        Set valid = new HashSet(10000);
+    private void runConsistencyCheck(final PropertySetIndexRandomAccessor randomIndexAccessor,
+                                     final Iterator indexUriIterator) 
+        throws IndexException {
+        final Set valid = new HashSet(10000);
         
-        while (daoIterator.hasNext()) {
-            PropertySetImpl daoPropSet = (PropertySetImpl)daoIterator.next();
-            String currentUri = daoPropSet.getURI();
-            
-            int indexInstances = randomIndexAccessor.countInstances(currentUri);
-            
-            if (indexInstances == 0) {
-                // Missing in index
-                this.errors.add(new MissingInconsistency(currentUri, daoPropSet));
-                continue;
-            } else  if (indexInstances == 1) {
-                // OK, only a single instance exists, verify the instance data
-                checkPropertySet(currentUri, randomIndexAccessor, daoPropSet);
-            } else {
-                // Multiples inconsistency
-                this.errors.add(new MultiplesInconsistency(currentUri, indexInstances, daoPropSet));
+        // XXX: Don't know if I like this callback style, the only way to 
+        //      abort the iteration is to throw an un-checked exception.
+        //      I don't think the exception modelling is very good here.
+        PropertySetHandler handler = new PropertySetHandler() {
+
+            public void handlePropertySet(PropertySet propertySet) {
+
+                PropertySetImpl daoPropSet = (PropertySetImpl)propertySet;
+                String currentUri = daoPropSet.getURI();
+                int indexInstances = 
+                    randomIndexAccessor.countInstances(currentUri);
+                
+                if (indexInstances == 0) {
+                    // Missing in index
+                    ConsistencyCheck.this.errors.add(
+                            new MissingInconsistency(currentUri, daoPropSet));
+                    return;
+                } else  if (indexInstances == 1) {
+                    // OK, only a single instance exists, verify the instance data
+                    try {
+                        ConsistencyCheck.this.checkPropertySet(currentUri, randomIndexAccessor, daoPropSet);
+                    } catch (IOException io) {
+                        throw new ConsistencyCheckException("IOException while running consistency check", io);
+                    }
+                } else {
+                    // Multiples inconsistency
+                    ConsistencyCheck.this.errors.add(
+                            new MultiplesInconsistency(currentUri, indexInstances, daoPropSet));
+                }
+                
+                // Add to set of valid index property set URIs
+                valid.add(currentUri);
+                
             }
             
-            // Add to set of valid index property set URIs
-            valid.add(currentUri);
-        }
+        };
+        
+        this.indexDao.orderedPropertySetIteration(handler);
+        
+//        while (daoIterator.hasNext()) {
+//            PropertySetImpl daoPropSet = (PropertySetImpl)daoIterator.next();
+//            String currentUri = daoPropSet.getURI();
+//            
+//            int indexInstances = randomIndexAccessor.countInstances(currentUri);
+//            
+//            if (indexInstances == 0) {
+//                // Missing in index
+//                this.errors.add(new MissingInconsistency(currentUri, daoPropSet));
+//                continue;
+//            } else  if (indexInstances == 1) {
+//                // OK, only a single instance exists, verify the instance data
+//                checkPropertySet(currentUri, randomIndexAccessor, daoPropSet);
+//            } else {
+//                // Multiples inconsistency
+//                this.errors.add(new MultiplesInconsistency(currentUri, indexInstances, daoPropSet));
+//            }
+//            
+//            // Add to set of valid index property set URIs
+//            valid.add(currentUri);
+//        }
         
         // Need to make a complete pass over index URIs to detect dangling inconsistencies
         while (indexUriIterator.hasNext()) {
@@ -233,6 +269,9 @@ public class ConsistencyCheck {
      * Oracle seems to do it right in our case, but Postgresql sorts special characters 
      * differently if the cluster has been created with a non-C locale environment (which is typical
      * for local installations, etc).
+     * 
+     * TODO Convert to new index dao API - not done yet, because of the experimental 
+     *      status.
      * 
      * @param daoIterator
      * @param indexUriIterator
@@ -365,9 +404,7 @@ public class ConsistencyCheck {
                     "Cannot repair errors, the consistency check did not complete successfully.");
         }
 
-        Iterator errorIterator = this.errors.iterator();
-        while (errorIterator.hasNext()) {
-            AbstractConsistencyError error = (AbstractConsistencyError)errorIterator.next();
+        for(AbstractConsistencyError error: this.errors) {
             try {
               if (error.canRepair()) {
                   error.repair(this.index);
@@ -382,12 +419,12 @@ public class ConsistencyCheck {
                     throw ie;
                 }
             }
-            
         }
     }
 
-    public List getErrors() {
-        return new ArrayList(this.errors);
+    public List<AbstractConsistencyError> getErrors() {
+        return new ArrayList<AbstractConsistencyError>(this.errors);
     }
+
 
 }

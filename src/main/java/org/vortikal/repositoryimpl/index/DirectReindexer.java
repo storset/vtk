@@ -30,12 +30,11 @@
  */
 package org.vortikal.repositoryimpl.index;
 
-import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repositoryimpl.store.IndexDataAccessor;
+import org.vortikal.repositoryimpl.store.db.IndexDao;
+import org.vortikal.repositoryimpl.store.db.PropertySetHandler;
 
 /**
  * A simple re-indexer that works directly on the provided <code>PropertySetIndex</code> instance.
@@ -47,12 +46,12 @@ import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 public class DirectReindexer implements PropertySetIndexReindexer {
 
     private PropertySetIndex targetIndex;
-    private IndexDataAccessor indexDataAccessor;
+    private IndexDao indexDao;
     private final Log LOG = LogFactory.getLog(DirectReindexer.class);
     
-    public DirectReindexer(PropertySetIndex targetIndex, IndexDataAccessor indexDataAccessor) {
+    public DirectReindexer(PropertySetIndex targetIndex, IndexDao indexDao) {
         this.targetIndex = targetIndex;
-        this.indexDataAccessor = indexDataAccessor;
+        this.indexDao = indexDao;
     }
     
     public int run() throws IndexException {
@@ -81,47 +80,48 @@ public class DirectReindexer implements PropertySetIndexReindexer {
      */
     protected int runWithExternalLocking() throws IndexException {
         
-        int counter = 0;
-        Iterator iterator = null;
         try {
 
             LOG.info("Clearing index contents ..");
             targetIndex.clearContents();
-            iterator = indexDataAccessor.getOrderedPropertySetIterator();
-            
 
             LOG.info("Starting re-indexing ..");
-            while (iterator.hasNext()) {
-                PropertySet propertySet = (PropertySet)iterator.next();
-                
-                if (propertySet == null) {
-                    LOG.warn("Property set iterator returned null");
-                    throw new IndexException("Property set iterator returned null");
-                }
-
-                targetIndex.addPropertySet(propertySet);
-                ++counter; 
-            }
+            AddAllPropertySetHandler handler = 
+                new AddAllPropertySetHandler(this.targetIndex);
+            
+            this.indexDao.orderedPropertySetIteration(handler);
             
             targetIndex.commit();
             if (LOG.isInfoEnabled()) {
                 LOG.info("Index '" + this.targetIndex.getId() + "' committed, " 
-                        + counter + " property sets indexed successfully");
+                        + handler.getCount() + " property sets indexed successfully");
             }
             
-            return counter;
+            return handler.getCount();
         } catch (Exception e) {
             LOG.warn("Exception while re-indexing", e);
             throw new IndexException(e);
-        } finally {
-            try {
-                if (iterator != null) {
-                    indexDataAccessor.close(iterator);
-                } 
-            } catch (Exception io) {
-                this.LOG.warn("IOException while closing property set iterator.");
-            }
         }
+    }
+    
+    private class AddAllPropertySetHandler implements PropertySetHandler {
+        
+        private final PropertySetIndex index;
+        private int count;
+        
+        public AddAllPropertySetHandler(PropertySetIndex index) {
+            this.index = index;
+        }
+        
+        public void handlePropertySet(PropertySet propertySet) {
+            this.index.addPropertySet(propertySet);
+            ++count;
+        }
+        
+        public int getCount(){
+            return this.count;
+        }
+        
     }
 
 }

@@ -34,12 +34,12 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repositoryimpl.store.IndexDataAccessor;
 import org.vortikal.repositoryimpl.index.DirectReindexer;
 import org.vortikal.repositoryimpl.index.IndirectReindexer;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
 import org.vortikal.repositoryimpl.index.PropertySetIndexReindexer;
 import org.vortikal.repositoryimpl.index.consistency.ConsistencyCheck;
+import org.vortikal.repositoryimpl.store.db.IndexDao;
 
 /**
  * 
@@ -57,7 +57,7 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
     
     private final PropertySetIndex index;
     private final PropertySetIndex secondaryIndex; // only used for re-indexing of primary index, and not required
-    private final IndexDataAccessor indexDao;
+    private final IndexDao indexDao;
 
     private ConsistencyCheck lastConsistencyCheck = null;
     private boolean isCheckingConsistency = false;
@@ -70,7 +70,7 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
     private Date lastReindexingCompletionTime = null;
     
     public IndexOperationManagerImpl(PropertySetIndex index, 
-                                           IndexDataAccessor indexDao) {
+                                           IndexDao indexDao) {
         this.index = index;
         this.indexDao = indexDao;
         this.secondaryIndex = null;
@@ -78,7 +78,7 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
     
     public IndexOperationManagerImpl(PropertySetIndex index,
                                            PropertySetIndex secondaryIndex,
-                                           IndexDataAccessor indexDao) {
+                                           IndexDao indexDao) {
         this.index = index;
         this.secondaryIndex = secondaryIndex;
         this.indexDao = indexDao;

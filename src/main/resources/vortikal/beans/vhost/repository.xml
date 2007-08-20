@@ -121,6 +121,9 @@
     <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="propertyManager" ref="propertyManager" />
+    
+    <!-- How many query hits to process for authorization in one batch -->
+    <property name="queryAuthorizationBatchSize" value="1000"/>
   </bean>
 
   <bean id="resourceImpl" class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">
@@ -148,23 +151,6 @@
         init-method="startService" destroy-method="stopService">
   </bean>
   -->
-
-
-  <!-- DEPRECATED - to be removed when all dependencies are converted to SqlMapIndexDao -->
-  <bean id="repository.indexDataAccessor" class="org.vortikal.repositoryimpl.store.db.IndexDataAccessorImpl">
-    <property name="dataSource" ref="repository.dataSource" />
-    <property name="propertyManager" ref="propertyManager" />
-    <property name="principalFactory" ref="principalFactory" />
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="sqlMaps" ref="repository.statementMappings"/>
-    
-    <!-- Only temporary -->
-    <property name="sqlDialect" value="${sqlDialect}"/>
-
-    <!-- How many results to process at a time when authorizing query result sets
-        against database -->
-    <property name="queryAuthorizationBatchSize" value="1000"/>
-  </bean>
 
   <bean id="repository.contentStore" 
         class="org.vortikal.repositoryimpl.store.fs.SimpleFileSystemContentStore">

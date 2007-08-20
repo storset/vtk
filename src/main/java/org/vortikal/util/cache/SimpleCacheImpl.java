@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,14 @@
  */
 package org.vortikal.util.cache;
 
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,13 +49,13 @@ import org.springframework.beans.factory.InitializingBean;
  * You can set refreshTimestampOnGet to false if you don't want to 
  * refresh an item's time stamp when it's retrieved from the cache. 
  */
-public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
+public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
                                         InitializingBean, DisposableBean {
     
     private static Log logger = LogFactory.getLog(SimpleCacheImpl.class);
 
     
-    private Map<S, Item> cache = new HashMap<S, Item>();
+    private Map<K, Item> cache = new ConcurrentHashMap<K, Item>();
     private int timeoutSeconds = 0;
     private boolean refreshTimestampOnGet = true;
 
@@ -80,10 +78,8 @@ public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
     }
 
 
-    public void put(S key, T value) {
-        synchronized (this.cache) {
-            this.cache.put(key, new Item(value));
-        }
+    public void put(K key, V value) {
+        this.cache.put(key, new Item(value));
     }
 
 
@@ -112,7 +108,11 @@ public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
     }
     
 
-    public T get(S key) {
+    public V get(K key) {
+        if (key == null) {
+            return null;
+        }
+
         Item item = this.cache.get(key);
         if (item == null)
             return null;
@@ -122,22 +122,20 @@ public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
             
         if (logger.isDebugEnabled())
             logger.debug("Cache " + this.name + " expiring item with key='" + key + "'");
-
-        synchronized (this.cache) {
-            this.cache.remove(key);
-        }
-
+        this.cache.remove(key);
         return null;
     }
 
 
-    public T remove(S key) {
-        if (this.cache.containsKey(key)) {
-            synchronized (this.cache) {
-                return this.cache.remove(key).getValue();
-            }
+    public V remove(K key) {
+        if (key == null) {
+            return null;
         }
-        return null;
+        Item i = this.cache.remove(key);
+        if (i == null) {
+            return null;
+        }
+        return i.getValue();
     }
 
 
@@ -154,30 +152,14 @@ public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
 
         if (this.timeoutSeconds < 1) return;
         
-        List<S> removeableItems = new ArrayList<S>();
 
-        /* FIXME: Is this a good idea?
-         * Trying to avoid concurrent modification exception 
-         * without synchronization */
-        for (S key: new HashSet<S>(this.cache.keySet())) {
+        for (Iterator<K> i = this.cache.keySet().iterator(); i.hasNext();) {
+            K key = i.next();
             Item item = this.cache.get(key);
-
             if (item != null &&
                 item.getTimestamp().getTime() + this.timeoutSeconds * 1000
                 < System.currentTimeMillis()) {
-                removeableItems.add(key);
-            }
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Cache " + this.name + " removing " + removeableItems.size()
-                         + " expired items");
-        }
-
-        synchronized (this.cache) {
-            for (S key: removeableItems) {
-                this.cache.remove(key);
-
+                i.remove();
             }
         }
     }
@@ -185,9 +167,9 @@ public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
 
     private class Item {
         Date date;
-        T value;
+        V value;
         
-        public Item(T value) {
+        public Item(V value) {
             this.date = new Date();
             this.value = value;
         }
@@ -197,7 +179,7 @@ public class SimpleCacheImpl<S,T> implements SimpleCache<S, T>, BeanNameAware,
         }
         
         
-        public T getValue() {
+        public V getValue() {
             if (SimpleCacheImpl.this.refreshTimestampOnGet) this.date = new Date();
             return this.value;
         }

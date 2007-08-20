@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,13 @@ package org.vortikal.util.cache;
 /**
  * Simple cache interface.
  */
-public interface SimpleCache<S, T> {
+public interface SimpleCache<K, V> {
     
-    public void put(S key, T value);
+    public void put(K key, V value);
     
-    public T get(S key);
+    public V get(K key);
     
-    public T remove(S key);
+    public V remove(K key);
 
     public int getSize();
     

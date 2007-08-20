@@ -25,7 +25,8 @@ div.vrtx-comments div.vrtx-comment {
 
 div.vrtx-comments div.comment-body {
   border: 1px solid #ccc;
-  padding: 1em;
+  //padding: 1em;
+  padding: 0 1em 0 1em;
   height: 1%;
   background-color: #fff;   
 

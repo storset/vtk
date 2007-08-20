@@ -22,6 +22,7 @@
           are 'comments' and 'config'">
 </#if>
 
+
 <#if !commentsEnabled && comments?size = 0>
   <#-- display nothing -->
 <#else>
@@ -110,11 +111,25 @@
                     default="You do not have sufficient privileges to add comments on this resource." /></p>
 
     <#elseif postCommentURL?exists>
-      <div class="comment-syntax-desc">
-        <@vrtx.msg code="commenting.form.syntax-description" default="Basic HTML syntax is allowed" />
+      <div id="comment-syntax-desc" class="comment-syntax-desc">
+        <@vrtx.msg code="commenting.form.syntax-description" default="Basic HTML syntax is allowed" />:
+        <#list config.validHtmlElements as element>
+          &lt;${element.name?html}<#compress>
+          <#if (element.attributes)?exists>
+            <#list element.attributes as attr>
+              &nbsp;${attr?html}=".."
+            </#list>
+          </#if>
+          </#compress>&gt;<#if element_has_next>, </#if>
+        </#list>
+        
       <#if commenting.richEditorEnabled>
         <script type="text/javascript">
-          document.write("(&nbsp;<a href=\"javascript:loadEditor();\"><@vrtx.msg code="commenting.form.rich-editor" default="rich editor" /></a>&nbsp;)");
+          function editor() {
+             document.getElementById("comment-syntax-desc").style.display = "none";
+             loadEditor();
+          }
+          document.write("(&nbsp;<a href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="rich editor" /></a>&nbsp;)");
         </script>
       </#if>      
       </div>
@@ -149,7 +164,9 @@
                     default="as" /> <span class="user">${principal?html}</span>)</div>
       </form>
       <#if commenting.richEditorEnabled>
-        <@fck.editorInTextarea textarea="comments-text" runOnLoad=false fckeditorBase=fckeditorBase />
+        <@fck.editorInTextarea textarea="comments-text"
+                               validElements=config.validHtmlElements
+                               runOnLoad=false fckeditorBase=fckeditorBase />
       </#if>
     </#if>
 

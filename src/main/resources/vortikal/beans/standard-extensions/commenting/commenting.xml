@@ -51,7 +51,6 @@
     <property name="attributesMap">
       <map>
         <entry key="config" value-ref="commenting.freemarkerConfig" />       
-        <entry key="validHtmlElements" value-ref="commenting.validHtmlElementSet" />
       </map>
     </property>
   </bean>
@@ -80,6 +79,7 @@
       <map>
         <entry key="titlesEnabled" value-ref="commenting.titlesEnabled" />
         <entry key="htmlContentEnabled" value-ref="commenting.htmlContentEnabled" />
+        <entry key="validHtmlElements" value-ref="commenting.validHtmlElementSet" />
       </map>
     </property>
   </bean>
@@ -197,9 +197,6 @@
         </bean>
         <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
           <property name="name" value="strong" />
-        </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
-          <property name="name" value="cite" />
         </bean>
         <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
           <property name="name" value="cite" />

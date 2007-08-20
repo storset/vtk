@@ -32,6 +32,18 @@
     <script type="text/javascript">
       var initialized = false;
 
+      <#-- XXX: this whitelist is currently unused, filtering is done server-side: -->
+      var whitelist_elements = [
+        <#list validElements as element>
+          ["${element.name?html}"
+          <#if (element.attributes)?exists>
+            [<#list element.attributes as attr>
+              "${attr?html}"<#if attr_has_next>, </#if>
+            </#list>]
+          </#if>
+          ]<#if element_has_next>, </#if>
+        </#list>];
+
       function loadEditor() {
           if (initialized) return;
           var editor = new FCKeditor("${textarea}");

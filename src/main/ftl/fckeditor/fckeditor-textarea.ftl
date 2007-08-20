@@ -34,15 +34,18 @@
 
       <#-- XXX: this whitelist is currently unused, filtering is done server-side: -->
       var whitelist_elements = [
+        <#compress>
         <#list validElements as element>
           ["${element.name?html}"
-          <#if (element.attributes)?exists>
+          <#if (element.attributes)?exists && (element.attributes)?size &gt; 0>
             [<#list element.attributes as attr>
               "${attr?html}"<#if attr_has_next>, </#if>
             </#list>]
           </#if>
           ]<#if element_has_next>, </#if>
         </#list>];
+        </#compress>
+
 
       function loadEditor() {
           if (initialized) return;

@@ -97,10 +97,11 @@
     <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
 
     <#if !postCommentURL?exists && !principal?exists && loginURL?exists>
+      <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
       <#assign defaultMsg>
-        To comment on this resource you have to <a href="${loginURL?html}&amp;anchor=comment-form">log in</a>
+        To comment on this resource you have to <a href="${completeLoginURL}">log in</a>
       </#assign>
-      <p><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[loginURL] /></p>
+      <p><@vrtx.rawMsg code="commenting.not-logged-in" default=defaultMsg args=[completeLoginURL] /></p>
 
     <#elseif principal?exists && !commentsEnabled>
       <p><@vrtx.msg code="commenting.disabled"

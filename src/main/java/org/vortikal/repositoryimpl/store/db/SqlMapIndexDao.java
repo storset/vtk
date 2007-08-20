@@ -290,5 +290,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         this.principalFactory = principalFactory;
     }
 
+    public void setQueryAuthorizationBatchSize(int queryAuthorizationBatchSize) {
+        this.queryAuthorizationBatchSize = queryAuthorizationBatchSize;
+    }
+
 }
 

@@ -40,7 +40,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
-import org.vortikal.repositoryimpl.CloseableIterator;
 
 /**
  * Abstract iterator over documents for a given field and a field value prefix.

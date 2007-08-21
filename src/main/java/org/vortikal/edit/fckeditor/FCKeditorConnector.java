@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.controller;
+package org.vortikal.edit.fckeditor;
 
 import java.io.File;
 import java.io.InputStream;
@@ -119,18 +119,18 @@ public class FCKeditorConnector implements Controller {
         model.put("command", command.getCommand().name());
         model.put("resourceType", command.getResourceType());
 
-        Filter filter = null;
+        Filter fileFilter = null;
 
         FCKeditorFileBrowserCommand.ResourceType type = command.getResourceType();
         switch (type) {
             case Image:
-                filter = IMAGE_FILTER;
+                fileFilter = IMAGE_FILTER;
                 break;
             case Flash:
-                filter = FLASH_FILTER;
+                fileFilter = FLASH_FILTER;
                 break;
             default:
-                filter = FILE_FILTER;
+                fileFilter = FILE_FILTER;
                 break;
         }
         
@@ -149,7 +149,7 @@ public class FCKeditorConnector implements Controller {
                 
                 try {
                     model.put("folders", listResources(token, command, COLLECTION_FILTER));
-                    model.put("files", listResources(token, command, filter));
+                    model.put("files", listResources(token, command, fileFilter));
                 } catch (Exception e) {
                     model.put("error", 1);
                     model.put("customMessage", e.getMessage());

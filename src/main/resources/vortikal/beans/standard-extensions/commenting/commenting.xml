@@ -187,10 +187,10 @@
           <property name="name" value="ul" />
         </bean>
         <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
-          <property name="name" value="ol" />
+          <property name="name" value="li" />
         </bean>
         <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
-          <property name="name" value="li" />
+          <property name="name" value="ol" />
         </bean>
         <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
           <property name="name" value="em" />

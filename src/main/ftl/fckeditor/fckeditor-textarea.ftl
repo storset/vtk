@@ -60,6 +60,8 @@
           editor.Config['FullPage'] = false;
           editor.Config['ToolbarCanCollapse'] = false;
           editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
+          editor.Config.LinkBrowser = false;
+          editor.Config.LinkUpload = false;
           editor.ReplaceTextarea();
           initialized = true;
       }

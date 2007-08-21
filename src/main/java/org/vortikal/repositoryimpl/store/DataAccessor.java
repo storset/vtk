@@ -30,13 +30,11 @@
  */
 package org.vortikal.repositoryimpl.store;
 
-import java.util.Date;
 import java.util.Set;
 
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.ResourceImpl;
-import org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 import org.vortikal.security.Principal;
 
 
@@ -100,11 +98,6 @@ public interface DataAccessor {
     /**
      * Used externally to report a resource modification
      */
-//    public void addChangeLogEntry(int loggerID, int loggerType,
-//                                  String uri, ChangelogEntry.Operation operation, int resourceId,
-//                                  boolean collection, Date timestamp,
-//                                  boolean recurse) throws DataAccessException;
-
     public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
         throws DataAccessException;
     

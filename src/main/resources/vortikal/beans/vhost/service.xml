@@ -174,7 +174,7 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
-          <property name="parameterName" value="a" />
+          <property name="parameterName" value="authenticate" />
         </bean>
         <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
           <property name="invert" value="true" />

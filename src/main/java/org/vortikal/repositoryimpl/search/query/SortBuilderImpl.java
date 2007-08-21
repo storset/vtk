@@ -30,11 +30,8 @@
  */
 package org.vortikal.repositoryimpl.search.query;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Iterator;
 
-import org.apache.lucene.search.SortComparatorSource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;

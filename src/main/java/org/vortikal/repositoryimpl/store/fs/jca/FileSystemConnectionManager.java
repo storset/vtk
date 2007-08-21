@@ -31,10 +31,6 @@
 package org.vortikal.repositoryimpl.store.fs.jca;
 
 
-import java.io.Serializable;
-import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.resource.Referenceable;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;

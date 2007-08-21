@@ -31,15 +31,12 @@
 package org.vortikal.web.service;
 
 
-import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.web.RequestContext;
 
 
 public class AndAssertion implements Assertion {

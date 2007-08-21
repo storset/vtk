@@ -30,10 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;

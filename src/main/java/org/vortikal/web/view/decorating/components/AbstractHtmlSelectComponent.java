@@ -30,17 +30,14 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.web.view.decorating.DecoratorRequest;
+import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
 public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {

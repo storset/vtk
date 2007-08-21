@@ -34,16 +34,14 @@ package org.vortikal.web.controller;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
-import org.vortikal.repository.Repository;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
 
 /**

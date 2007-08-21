@@ -30,20 +30,9 @@
  */
 package org.vortikal.repositoryimpl.store.db;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repositoryimpl.PropertyManager;
-import org.vortikal.repositoryimpl.PropertySetImpl;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 
 
 class SqlDaoUtils {

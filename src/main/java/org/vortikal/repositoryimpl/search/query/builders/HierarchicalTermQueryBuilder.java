@@ -32,6 +32,7 @@ package org.vortikal.repositoryimpl.search.query.builders;
 
 
 import java.util.List;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -41,7 +42,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.HierarchicalVocabulary;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;

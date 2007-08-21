@@ -31,7 +31,6 @@
 package org.vortikal.web.service;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;

@@ -99,14 +99,15 @@ public final class FieldValueMapper {
      */
     public static Field getFieldFromValues(String name, Value[] values) {
 
-        StringBuffer fieldValue = new StringBuffer();
+        StringBuilder fieldValue = new StringBuilder();
         for (int i = 0; i < values.length; i++) {
             String encoded = encodeIndexFieldValue(values[i]);
             String escaped = escapeCharacter(MULTI_VALUE_FIELD_SEPARATOR,
                     encoded);
             fieldValue.append(escaped);
-            if (i < values.length - 1)
+            if (i < values.length - 1) {
                 fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
+            }
         }
 
         Field field = new Field(name, fieldValue.toString(), Field.Store.NO,
@@ -181,7 +182,7 @@ public final class FieldValueMapper {
      */
     public static Field getUnencodedMultiValueFieldFromIntegers(String name,
             int[] integers) {
-        StringBuffer fieldValue = new StringBuffer();
+        StringBuilder fieldValue = new StringBuilder();
         for (int i = 0; i < integers.length; i++) {
             fieldValue.append(Integer.toString(integers[i]));
             if (i < integers.length - 1) {
@@ -380,9 +381,6 @@ public final class FieldValueMapper {
      * Escape given character using the backslash character '\\'. Note that
      * occurences of the backslash character in the input string are also
      * escaped.
-     * 
-     * Avoided use of synchronized StringBuffer; We copy only one character at a
-     * time, so we need things to go fast.
      * 
      * @param c
      * @param s

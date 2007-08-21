@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,50 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.index.observation;
+package org.vortikal.repositoryimpl.store.db.ibatis;
 
+import java.sql.SQLException;
+
+import static org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
+
+import com.ibatis.sqlmap.client.extensions.ParameterSetter;
+import com.ibatis.sqlmap.client.extensions.ResultGetter;
+import com.ibatis.sqlmap.client.extensions.TypeHandlerCallback;
 
 /**
- * 
- * @author oyviste
+ * Handle String<->Operation mapping for iBATIS.
+ *
  */
-public class ResourceACLModification extends ResourceChange {
+public class ChangeLogEntryOperationTypeHandlerCallback implements
+        TypeHandlerCallback {
 
-    public ResourceACLModification() {};
     
-    /**
-     * Construct a ResourceACLModification object with parameters.
-     */
-    public ResourceACLModification (String uri, int id, long timestamp,
-                                    int loggerId, int loggerType, 
-                                    boolean collection) {
-        super(uri, id, timestamp, loggerId, loggerType, collection);
+    public Object getResult(ResultGetter getter) throws SQLException {
+        String value = getter.getString();
+        
+        for(Operation op: Operation.values()) {
+            if (value.equals(op.getOperationId())) {
+                return op;
+            }
+        }
+        
+        throw new SQLException("Unable to map unknown operation id value: " + value);
     }
 
-    public String toString() {
-        return super.toString() + ",operation=ACLModification";
+    public void setParameter(ParameterSetter setter, Object parameter)
+            throws SQLException {
+        Operation value = (Operation)parameter;
+        setter.setString(value.getOperationId());
     }
-  
+
+    public Object valueOf(String s) {
+        for(Operation op: Operation.values()) {
+            if (s.equals(op.getOperationId())) {
+                return op;
+            }
+        }
+        
+        return null;
+    }
+
 }

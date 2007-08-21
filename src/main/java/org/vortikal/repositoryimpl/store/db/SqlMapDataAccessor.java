@@ -54,6 +54,7 @@ import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repositoryimpl.AclImpl;
+import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.LockImpl;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.ResourceImpl;
@@ -167,35 +168,30 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
 
 
-    public void addChangeLogEntry(int loggerId, int loggerType, String uri,
-                                  String operation, int resourceId, boolean collection,
-                                  Date timestamp, boolean recurse) throws DataAccessException {
+    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse) 
+        throws DataAccessException {
         try {
 
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("loggerId", new Integer(loggerId));
-            parameters.put("loggerType", new Integer(loggerType));
-            parameters.put("uri", uri);
-            parameters.put("operation", operation);
-            parameters.put("resourceId", resourceId == -1 ? null : new Integer(resourceId));
-            parameters.put("collection", collection ? "Y" : "N");
-            parameters.put("timestamp", timestamp);
-            parameters.put("uri", uri);
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                               uri, SQL_ESCAPE_CHAR));
-
             String sqlMap = null;
-            if (collection && recurse) {
-                sqlMap = getSqlMap("insertChangelogEntriesRecursively");
+            if (entry.isCollection() && recurse) {
+                sqlMap = getSqlMap("insertChangeLogEntriesRecursively");
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                parameters.put("entry", entry);
+                parameters.put("uriWildcard", 
+                        SqlDaoUtils.getUriSqlWildcard(entry.getUri(), SQL_ESCAPE_CHAR));
+
+                getSqlMapClient().insert(sqlMap, parameters);
+                
             } else {
-                sqlMap = getSqlMap("insertChangelogEntry");
+                sqlMap = getSqlMap("insertChangeLogEntry");
+                getSqlMapClient().insert(sqlMap, entry);
             }
-            getSqlMapClient().update(sqlMap, parameters);
 
         } catch (SQLException e) {
-            throw new DataAccessException("Error occurred while adding changelog entry: " + operation
-                                          + " for resource: " + uri, e);
-        } 
+            throw new DataAccessException("Error occurred while adding changelog entry: " 
+                                        + entry.getOperation()
+                                          + " for resource: " + entry.getUri(), e);
+        }
     }
 
 

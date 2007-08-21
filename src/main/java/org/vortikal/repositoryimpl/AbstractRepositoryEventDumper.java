@@ -30,14 +30,13 @@
  */
 package org.vortikal.repositoryimpl;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -47,11 +46,12 @@ import org.vortikal.repository.event.RepositoryEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 
 
 
 public abstract class AbstractRepositoryEventDumper
-  implements ApplicationListener, InitializingBean {
+  implements ApplicationListener {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -59,25 +59,17 @@ public abstract class AbstractRepositoryEventDumper
     protected int loggerType = -1;
     protected Repository repository;
 
-
-    public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException("Bean property 'repository' not set.");
-        } else if (this.loggerId == -1) {
-            throw new BeanInitializationException("Bean property 'loggerId' not set/un-initialized (-1).");
-        } else if (this.loggerType == -1) {
-            throw new BeanInitializationException("Bean property 'loggerType' not set/un-initialized (-1).");
-        }
-    }
-    
+    @Required
     public void setLoggerId(int loggerId) {
         this.loggerId = loggerId;
     }      
 
+    @Required
     public void setLoggerType(int loggerType) {
         this.loggerType = loggerType;
     }      
     
+    @Required
     public void setRepository(Repository repository)  {
         this.repository = repository;
     }
@@ -124,5 +116,21 @@ public abstract class AbstractRepositoryEventDumper
 
     public abstract void aclModified(Resource resource, Resource originalResource,
                                      Acl originalACL, Acl newACL);
+
+    protected ChangeLogEntry changeLogEntry(int loggerId, int loggerType,
+            String uri, Operation operation, int resourceId,
+            boolean collection, Date timestamp) {
+
+        ChangeLogEntry entry = new ChangeLogEntry();
+        entry.setLoggerId(loggerId);
+        entry.setLoggerType(loggerType);
+        entry.setUri(uri);
+        entry.setOperation(operation);
+        entry.setResourceId(resourceId);
+        entry.setCollection(collection);
+        entry.setTimestamp(timestamp);
+
+        return entry;
+    }
     
 }

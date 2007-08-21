@@ -11,18 +11,10 @@
     <property name="loggerType" value="3" />
   </bean>
 
-  <!-- Resource change fetcher for new system index -->
-  <bean id="repository.dbResourceChangeFetcher" 
-        class="org.vortikal.repositoryimpl.store.db.JDBCResourceChangeFetcher">
-    <property name="dataSource" ref="repository.dataSource" />
-    <property name="loggerId" value="1" />
-    <property name="loggerType" value="3" />
-  </bean>
-
   <!-- Resource change notifier for new system index -->
   <bean id="repository.resourceChangeNotifier"
     class="org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifierImpl">
-    <property name="changeFetcher" ref="repository.dbResourceChangeFetcher"/>
+    <property name="indexDao" ref="repository.indexDao"/>
   </bean>
 
   <!-- Simple trigger bean for pollChanges() in 

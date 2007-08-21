@@ -103,6 +103,23 @@
     <result property="ancestorIds" column="ancestor_ids" javaType="string"/>
   </resultMap>
   
+  
+  <resultMap id="ChangeLogEntry" class="org.vortikal.repositoryimpl.ChangeLogEntry">
+    
+    <result property="changeLogEntryId" column="changelog_entry_id"/>
+    <result property="loggerId" column="logger_id"/>
+    <result property="loggerType" column="logger_type"/>
+    <result property="uri" column="uri" />
+    <result property="resourceId" column="resource_id"/>
+    <result property="operation" column="operation" 
+      typeHandler="org.vortikal.repositoryimpl.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback"/>
+    <result property="collection" column="is_collection"
+      typeHandler="org.vortikal.repositoryimpl.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="timestamp" column="timestamp"/>
+    
+  </resultMap>
+  
+  
   <select id="loadResourceByUri" resultMap="Resource">
     select * from vortex_resource where uri = #value#
   </select>
@@ -582,23 +599,27 @@
   </select>
   
   
-  <insert id="insertChangelogEntriesRecursively" parameterClass="java.util.Map">
+  <insert id="insertChangeLogEntriesRecursively" 
+          parameterClass="java.util.Map">
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
-    select <include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
-      #operation#, #timestamp#, uri, resource_id, is_collection 
+    select <include refid="nextChangelogEntryId" />, #entry.loggerId#, #entry.loggerType#,
+      #entry.operation,handler=org.vortikal.repositoryimpl.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
+      #entry.timestamp#, uri, resource_id, is_collection 
     from vortex_resource 
-    where uri = #uri# or uri like #uriWildcard# escape '@'
+    where uri = #entry.uri# or uri like #uriWildcard# escape '@'
   </insert>
 
 
-  <insert id="insertChangelogEntry" parameterClass="java.util.Map">
+  <insert id="insertChangeLogEntry" 
+          parameterClass="org.vortikal.repositoryimpl.ChangeLogEntry">
     insert into changelog_entry 
       (changelog_entry_id, logger_id, logger_type,
       operation, timestamp, uri, resource_id, is_collection)
     values (<include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
-      #operation#, #timestamp#, #uri#, #resourceId#, #collection#)
+    #operation,handler=org.vortikal.repositoryimpl.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
+    #timestamp#, #uri#, #resourceId#, #collection,handler=org.vortikal.repositoryimpl.store.db.ibatis.BooleanCharTypeHandlerCallback#)
   </insert>
 
 
@@ -734,6 +755,61 @@
     )
     and ace.action_type_id in (1, 3, 4)
     
-  </select>  
+  </select>
   
+  <select id="getMaxChangeLogEntryId" parameterClass="java.util.Map"
+          resultClass="java.lang.Integer">
+    select max(cl.changelog_entry_id) from changelog_entry cl
+    where cl.logger_type=#loggerType# and cl.logger_id=#loggerId#
+  </select>
+
+  <delete id="removeChangeLogEntries" parameterClass="java.util.Map">
+    delete from changelog_entry where changelog_entry_id &lt;= #maxId#  
+    and logger_type=#loggerType#
+    and logger_id=#loggerId#
+  </delete>
+
+  <select id="getLastChangeLogEntries" parameterClass="java.util.Map"
+          resultMap="ChangeLogEntry">  
+  
+  select cl1.*
+  from changelog_entry cl1
+  where
+  cl1.operation = 'deleted' AND cl1.is_collection = 'Y'
+  
+  <!-- This fixes a subtle problem regarding deletion
+  of collections. The difference between collection deletions
+  and every other operation, is that the event doesn't map 1:1 with
+  the number of affected resources, but rather 1:N. A collection deletion
+  can involve many resources in a tree. 
+  Therefore, we must make sure that we don't miss any of 
+  these events. Only picking the very latest event for collections, 
+  can result in masking earlier deletion events for collections
+  whose names were the same as newly created collections.
+  This will cause the indexing system to miss these important events, 
+  and the old tree will remain in the index, except for the replaced parent node. 
+  -->
+    
+  and cl1.changelog_entry_id &lt;= #maxId#
+  and cl1.logger_id = #loggerId#
+  and cl1.logger_type = #loggerType#
+  or 
+    cl1.changelog_entry_id IN 
+    ( select max(cl2.changelog_entry_id)
+      from changelog_entry cl2
+      where cl1.uri = cl2.uri 
+      and cl2.logger_id = #loggerId#
+      and cl2.logger_type = #loggerType#
+      and cl2.changelog_entry_id &lt;= #maxId# )
+    
+  order by cl1.changelog_entry_id
+    <!-- 
+      Changed ORDER BY to order by event id, instead of URI. It makes more sense
+      to list events in the order they happened, rather than what the URI looks like.
+      The URI is only an ID treated specially, and it doesn't
+      necessarily need a parent URI to exist in the index. The index is not a file
+      system, only a collection of documents, which happen to have an URI. 
+    -->
+    
+  </select>  
 </sqlMap>

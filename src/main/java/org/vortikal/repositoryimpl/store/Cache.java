@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.ResourceImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.util.repository.URIUtil;
@@ -481,13 +482,11 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.discoverLocks(uri);
     }
 
-    public void addChangeLogEntry(int loggerID, int loggerType,
-                                  String uri, String operation, int resourceId,
-                                  boolean collection, Date timestamp, boolean recurse) throws DataAccessException {
-        this.wrappedAccessor.addChangeLogEntry(loggerID, loggerType, uri, operation,
-                                               resourceId, collection, timestamp, recurse);
+    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
+        throws DataAccessException {
+        this.wrappedAccessor.addChangeLogEntry(entry, recurse);
     }
-
+    
     /**
      * Clears all cache entries.
      *

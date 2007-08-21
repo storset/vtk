@@ -33,6 +33,8 @@ package org.vortikal.repositoryimpl.index.observation;
 
 import java.util.List;
 
+import org.vortikal.repositoryimpl.ChangeLogEntry;
+
 /**
  * Implemented by classes that can be notified of resource changes.
  * 
@@ -43,7 +45,7 @@ public interface ResourceChangeObserver {
     /**
      * This method is called to notify the observer of resource changes.
      */
-    public void notifyResourceChanges(List<ResourceChange> resourceChanges);
+    public void notifyResourceChanges(List<ChangeLogEntry> resourceChanges);
 
     /**
      * Return an id for this observer.

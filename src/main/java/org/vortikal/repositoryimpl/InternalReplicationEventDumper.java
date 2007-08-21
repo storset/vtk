@@ -32,77 +32,83 @@ package org.vortikal.repositoryimpl;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.BeanInitializationException;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;
+import org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 import org.vortikal.repositoryimpl.store.DataAccessor;
 
 
-
+/**
+ * 
+ *
+ */
 public class InternalReplicationEventDumper extends AbstractRepositoryEventDumper {
 
-    protected DataAccessor dataAccessor;
+    private DataAccessor dataAccessor;
 
-    public final static String CREATED = "created";
-    public final static String DELETED = "deleted";
-    public final static String MODIFIED_PROPS = "modified_props";
-    public final static String MODIFIED_CONTENT = "modified_content";
-    public final static String MODIFIED_ACL = "modified_acl";
-
-
+    @Required
     public void setDataAccessor(DataAccessor dataAccessor)  {
         this.dataAccessor = dataAccessor;
     }
 
-
-    public void afterPropertiesSet() {
-        super.afterPropertiesSet();
-        if (this.dataAccessor == null) {
-            throw new BeanInitializationException("Bean property 'dataAccessor' not set.");
-        }
-    }
-    
     public void created(Resource resource) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
-                                            CREATED, -1, resource.isCollection(),
-                                            new Date(), false);
+        
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
+                Operation.CREATED, -1, resource.isCollection(),
+                new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
 
         if (resource.isCollection()) {
             org.vortikal.repositoryimpl.ResourceImpl[] childResources =
                 this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
             for (int i = 0; i < childResources.length; i++) {
-                this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
-                                                    CREATED, -1, childResources[i].isCollection(),
-                                                    new Date(), false);
+                entry = changeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
+                                                    Operation.CREATED, -1, childResources[i].isCollection(),
+                                                    new Date());
+                
+                this.dataAccessor.addChangeLogEntry(entry, false);
             }
         }
     }
 
 
     public void deleted(String uri, int resourceId, boolean collection) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED, resourceId,
-                                            collection, new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
+                Operation.DELETED, resourceId,
+                collection, new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 
 
 
     public void modified(Resource resource, Resource originalResource) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
-                                            -1, resource.isCollection(), new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+                Operation.MODIFIED_PROPS,
+                -1, resource.isCollection(), new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 
 
     public void contentModified(Resource resource) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_CONTENT,
-                                            -1, resource.isCollection(), new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+                Operation.MODIFIED_CONTENT,
+                -1, resource.isCollection(), new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 
 
     public void aclModified(Resource resource, Resource originalResource,
                             Acl originalACL, Acl newACL) {
         
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_ACL,
-                                            -1, resource.isCollection(), new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+                Operation.MODIFIED_ACL,
+                -1, resource.isCollection(), new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 }

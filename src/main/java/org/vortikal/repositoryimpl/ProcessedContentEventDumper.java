@@ -35,11 +35,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.BeanInitializationException;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
+import static org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 import org.vortikal.repositoryimpl.store.DataAccessException;
 import org.vortikal.repositoryimpl.store.DataAccessor;
 import org.vortikal.security.Principal;
@@ -48,7 +48,7 @@ import org.vortikal.security.PseudoPrincipal;
 
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
-    protected DataAccessor dataAccessor;
+    private DataAccessor dataAccessor;
 
     public final static String CREATED = "created";
     public final static String DELETED = "deleted";
@@ -58,45 +58,44 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     public final static String ACL_READ_ALL_NO = "acl_read_all_no";
 
 
+    @Required
     public void setDataAccessor(DataAccessor dataAccessor)  {
         this.dataAccessor = dataAccessor;
     }
 
 
-    public void afterPropertiesSet() {
-        super.afterPropertiesSet();
-        if (this.dataAccessor == null) {
-            throw new BeanInitializationException("Bean property 'dataAccessor' not set.");
-        }
-    }
-
-
     public void created(Resource resource) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), CREATED,
-                                            -1, resource.isCollection(), new Date(), true);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+                Operation.CREATED,
+                -1, resource.isCollection(), new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, true);
 
     }
-        
-
-
 
     public void deleted(String uri, int resourceId, boolean collection) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, uri, DELETED,
-                                            resourceId, collection, new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
+                Operation.DELETED,
+                resourceId, collection, new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 
-
-
     public void modified(Resource resource, Resource originalResource) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), MODIFIED_PROPS,
-                                            -1, resource.isCollection(), new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+                Operation.MODIFIED_PROPS,
+                -1, resource.isCollection(), new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 
 
     public void contentModified(Resource resource) {
-        this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
-                                            MODIFIED_CONTENT, -1, resource.isCollection(),
-                                            new Date(), false);
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
+                Operation.MODIFIED_CONTENT, -1, resource.isCollection(),
+                new Date());
+        
+        this.dataAccessor.addChangeLogEntry(entry, false);
     }
 
 
@@ -140,20 +139,24 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 return;
             }
             
-            String op = resource.isAuthorized(Privilege.READ_PROCESSED, all) ?
-                ACL_READ_ALL_YES : ACL_READ_ALL_NO;
+            Operation op = resource.isAuthorized(Privilege.READ_PROCESSED, all) ?
+                    Operation.ACL_READ_ALL_YES : Operation.ACL_READ_ALL_NO;
 
-            this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, resource.getURI(), op, -1,
-                                                resource.isCollection(), new Date(), false);
+            ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, 
+                    resource.getURI(), op, -1,
+                    resource.isCollection(), new Date());
+            
+            this.dataAccessor.addChangeLogEntry(entry, false);
             
             if (resource.isCollection()) {
                 
                 Resource[] childResources =
                     this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
                 for (int i=0; i < childResources.length; i++) {
-                    this.dataAccessor.addChangeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
-                                                        op, -1, childResources[i].isCollection(), new Date(),
-                                                        false);
+                    entry = changeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
+                            op, -1, childResources[i].isCollection(), new Date());
+                    
+                    this.dataAccessor.addChangeLogEntry(entry, false);
                 }
             }
         } catch (IOException e) {

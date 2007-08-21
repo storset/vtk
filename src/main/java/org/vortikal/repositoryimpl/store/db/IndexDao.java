@@ -33,13 +33,12 @@ package org.vortikal.repositoryimpl.store.db;
 import java.util.List;
 import java.util.Set;
 
+import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 import org.vortikal.repositoryimpl.store.DataAccessException;
 
 /**
  * Callback-based interface for fetching property sets from database. 
- * 
- * @TODO complete me
  * 
  * @author oyviste
  *
@@ -60,6 +59,14 @@ public interface IndexDao {
     public void processQueryResultsAuthorization(
                                     Set<String> principalNames,  
                                     List<ResultSecurityInfo> resultSecurityInfo) 
+        throws DataAccessException;
+
+    // XXX: Getting/removing db change log entries should perhaps be in some place more
+    //      generic. (not index dao)
+    public List<ChangeLogEntry> getLastChangeLogEntries()
+        throws DataAccessException;
+    
+    public void removeChangeLogEntries(List<ChangeLogEntry> entries)
         throws DataAccessException;
     
 }

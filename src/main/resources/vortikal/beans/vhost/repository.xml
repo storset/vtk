@@ -32,10 +32,11 @@
 
 
   <!-- XXX: identify (indexing-related) pointcuts that should be wrapped in transactions: -->
-  <aop:config>
+  <!-- Shouldn't need transaction wrapping here, since IndexDao is already being wrapped -->
+<!--  <aop:config>
     <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repositoryimpl.index.observation.ResourceChangePoller.pollChanges(..))"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
-  </aop:config>
+  </aop:config>-->
 
   <aop:config>
     <aop:pointcut id="repository.searchAuthorizationPointcut" expression="execution(* org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager.authorizeQueryResults(..))"/>
@@ -47,22 +48,7 @@
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.sqlMapIndexDaoPointcut"/>
   </aop:config>
 
-  <!--
-  <aop:config>
-    <aop:pointcut id="repository.indexDataAccessorPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.IndexDataAccessorImpl.*(..))"/>
-    <aop:advisor advice-ref="txAdvice" pointcut-ref="repository.indexDataAccessorPointcut"/>
-  </aop:config>
-  -->
-
-  <!--
-  <aop:config>
-    <aop:pointcut id="repository.changeFetcherPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.JDBCResourceChangeFetcher.*(..))"/>
-    <aop:advisor advice-ref="txAdvice" pointcut-ref="repository.changeFetcherPointcut"/>
-  </aop:config>
-  -->
-
   <!-- Repository -->
-
 
   <bean id="repository" class="org.vortikal.repositoryimpl.RepositoryImpl">
     <property name="id" value="${repositoryID}" />
@@ -124,6 +110,10 @@
     
     <!-- How many query hits to process for authorization in one batch -->
     <property name="queryAuthorizationBatchSize" value="1000"/>
+    
+    <!-- Logger id and logger type for change log -->
+    <property name="loggerId" value="1"/>
+    <property name="loggerType" value="3"/>
   </bean>
 
   <bean id="resourceImpl" class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">

@@ -41,6 +41,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 import org.vortikal.repositoryimpl.store.DataAccessException;
@@ -49,7 +50,7 @@ import org.vortikal.security.PrincipalFactory;
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 /**
- * New index data accessor based on iBatis
+ * New index data accessor based on iBatis.
  * 
  * @author oyviste
  *
@@ -60,6 +61,8 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     
     private PropertyManager propertyManager;
     private PrincipalFactory principalFactory;
+    private int loggerId;
+    private int loggerType;
 
     private int queryAuthorizationBatchSize = 1000;
 
@@ -279,6 +282,54 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         }
         
     }
+    
+    public List<ChangeLogEntry> getLastChangeLogEntries() {
+        
+        try {
+            
+            SqlMapClient client = getSqlMapClient();
+            
+            String statement = getSqlMap("getMaxChangeLogEntryId");
+            
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("loggerId", this.loggerId);
+            params.put("loggerType", this.loggerType);
+            Integer maxId = (Integer) client.queryForObject(statement, params);
+            
+            params.put("maxId", maxId);
+            statement = getSqlMap("getLastChangeLogEntries");
+            
+            List<ChangeLogEntry> entries = 
+                client.queryForList(statement, params);
+            
+            return entries;
+            
+        } catch (SQLException sqle) {
+            throw new DataAccessException(sqle);
+        }
+    }
+    
+    public void removeChangeLogEntries(List<ChangeLogEntry> entries) {
+        
+        int maxId = -1;
+        for (ChangeLogEntry entry: entries) {
+            maxId = Math.max(maxId, entry.getChangeLogEntryId());
+        }
+        
+        try {
+            String statement = getSqlMap("removeChangeLogEntries");
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("loggerId", this.loggerId);
+            params.put("loggerType", this.loggerType);
+            params.put("maxId", maxId);
+            
+            SqlMapClient client = getSqlMapClient();
+            client.delete(statement, params);
+            
+        } catch (SQLException sqle) {
+            throw new DataAccessException(sqle);
+        }
+    }
 
     @Required
     public void setPropertyManager(PropertyManager propertyManager) {
@@ -292,6 +343,16 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     public void setQueryAuthorizationBatchSize(int queryAuthorizationBatchSize) {
         this.queryAuthorizationBatchSize = queryAuthorizationBatchSize;
+    }
+    
+    @Required
+    public void setLoggerId(int loggerId) {
+        this.loggerId = loggerId;
+    }
+
+    @Required
+    public void setLoggerType(int loggerType) {
+        this.loggerType = loggerType;
     }
 
 }

@@ -40,6 +40,8 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repositoryimpl.ChangeLogEntry;
+import org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
 import org.vortikal.repositoryimpl.store.db.IndexDao;
 import org.vortikal.repositoryimpl.store.db.PropertySetHandler;
@@ -111,7 +113,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         
     }
     
-    public void notifyResourceChanges(List<ResourceChange> changes) {
+    public void notifyResourceChanges(List<ChangeLogEntry> changes) {
 
         synchronized (this) {
             if (! this.enabled) {
@@ -121,13 +123,20 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         }
         
         try {
-            List<ResourceChange> updates = new ArrayList<ResourceChange>();
-            List<ResourceDeletion> deletes = new ArrayList<ResourceDeletion>();
+            // Take lock immediately, we'll be doing some writing.
+            if (! this.index.lock()) {
+                LOG.error("Unable to acquire lock on index, will not attempt to " +
+                             "apply modifications, changes are lost !");
+                return;
+            }
+            
+            List<ChangeLogEntry> updates = new ArrayList<ChangeLogEntry>();
+            List<ChangeLogEntry> deletes = new ArrayList<ChangeLogEntry>();
 
             // Sort out deletes and updates
-            for (ResourceChange change: changes) {
-                if (change instanceof ResourceDeletion) {
-                    deletes.add((ResourceDeletion)change);
+            for (ChangeLogEntry change: changes) {
+                if (change.getOperation() == Operation.DELETED) {
+                    deletes.add(change);
                 } else {
                     updates.add(change);
                 }
@@ -135,12 +144,12 @@ public class PropertySetIndexUpdater implements BeanNameAware,
 
             // Apply changes to index
             // Regular deletes (might include collections)
-            for (ResourceDeletion deletion: deletes) {
+            for (ChangeLogEntry deletion: deletes) {
                 // Delete by resource ID, this info must be provided in the event.
                 if (deletion.isCollection()) {
-                    this.index.deletePropertySetTreeByUUID(deletion.getResourceId());
+                    this.index.deletePropertySetTreeByUUID(String.valueOf(deletion.getResourceId()));
                 } else {
-                    this.index.deletePropertySetByUUID(deletion.getResourceId());
+                    this.index.deletePropertySetByUUID(String.valueOf(deletion.getResourceId()));
                 }
             }
             
@@ -152,9 +161,9 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // Remove updated property sets from index in one batch, first, 
                 // before re-adding them. This is very necessary to keep things
                 // efficient.
-                for (ResourceChange change: updates) {
-                    this.index.deletePropertySet(change.getUri());
-                    updateUris.add(change.getUri());
+                for (ChangeLogEntry update: updates) {
+                    this.index.deletePropertySet(update.getUri());
+                    updateUris.add(update.getUri());
                 }
                 
                 // Now query index dao for a list of all property sets that 

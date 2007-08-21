@@ -37,16 +37,20 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repositoryimpl.ChangeLogEntry;
+import org.vortikal.repositoryimpl.store.db.IndexDao;
 
 /**
- * Class for distributing resouce changes from a single change fetcher to
- * a set of indexes.
+ * Class for distributing resouce changes from database to a set of observers.
+ * XXX: Simplify and get rid of publish/subscriber pattern for index updates ?
+ *      The only benefit is the ability to take one set of changes from database
+ *      and update multiple indexes (if the need should arise).
  */
-public class ResourceChangeNotifierImpl implements ResourceChangeNotifier, ResourceChangePoller {
+public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     
     private Log logger = LogFactory.getLog(ResourceChangeNotifierImpl.class);
     private Set observers = new HashSet();
-    private ResourceChangeFetcher changeFetcher;
+    private IndexDao indexDao;
     
     /**
      * This method should be periodically called to poll for resource changes.
@@ -56,7 +60,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier, Resou
         try {
             // Get last relevant changes to resources. This list should only
             // contain unique resources, and the last change that has happened to them.
-            List changes = this.changeFetcher.fetchLastChanges();
+            List<ChangeLogEntry> changes = this.indexDao.getLastChangeLogEntries();
             
             if (changes != null && changes.size() > 0) {
                 // Index changes
@@ -73,7 +77,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier, Resou
                 this.logger.debug("Finished notifying observers of changes.");
                 
                 // Remove _all_ changes _up_until_the_latest_ change in the list.
-                this.changeFetcher.removeChanges(changes);
+                this.indexDao.removeChangeLogEntries(changes);
                 if (this.observers.size() == 0 && this.logger.isDebugEnabled()) {
                     this.logger.debug("Changelog contents discarded, no observers are registered.");
                 }
@@ -111,8 +115,8 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier, Resou
         }
     }
     
-    public void setChangeFetcher(ResourceChangeFetcher changeFetcher) {
-        this.changeFetcher = changeFetcher;
+    public void setIndexDao(IndexDao indexDao) {
+        this.indexDao = indexDao;
     }
     
 }

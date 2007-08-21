@@ -365,7 +365,7 @@ public class Cache implements DataAccessor, InitializingBean {
             uris.add(srcParentURI);
         }
 
-        this.lockManager.lock(uris);
+        List<String> lockedUris = this.lockManager.lock(uris);
 
         try {
             this.wrappedAccessor.copy(r, dest, newResource, copyACLs, fixedProperties);
@@ -375,7 +375,7 @@ public class Cache implements DataAccessor, InitializingBean {
             }
 
         } finally {
-            this.lockManager.unlock(uris);
+            this.lockManager.unlock(lockedUris);
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -577,7 +577,6 @@ public class Cache implements DataAccessor, InitializingBean {
 
             this.map.put(uri, i);
 
-            //             synchronized(this) {
             if (this.in != null) {
                 this.in.newer = i;
             }
@@ -588,14 +587,11 @@ public class Cache implements DataAccessor, InitializingBean {
             if (this.out == null) {
                 this.out = this.in;
             }
-
-            //              }
         }
 
         public synchronized void remove(String uri) {
             Item i = this.map.get(uri);
 
-            //             synchronized(this) {
             if (i != null) {
                 if (i.older != null) {
                     i.older.newer = i.newer;
@@ -609,8 +605,6 @@ public class Cache implements DataAccessor, InitializingBean {
                     this.in = i.older;
                 }
             }
-
-            //             }
             this.map.remove(uri);
         }
 
@@ -629,9 +623,6 @@ public class Cache implements DataAccessor, InitializingBean {
         public synchronized void hit(String uri) {
             Item i = this.map.get(uri);
 
-            //             synchronized(this) {
-            //             if (logger.isDebugEnabled())
-            //                logger.debug("Before hit: " + dump());
             if ((i != null) && (i != this.in)) {
                 /* Remove i from list: */
                 if (i != this.out) {
@@ -648,14 +639,9 @@ public class Cache implements DataAccessor, InitializingBean {
                 i.newer = null;
                 this.in = i;
             }
-
-            //             if (logger.isDebugEnabled())
-            //                 logger.debug("After hit: " + dump());
-            //             }
         }
 
         public synchronized void removeOldest() {
-            //             synchronized(this) {
             if (this.out != null) {
                 if (Cache.this.logger.isDebugEnabled()) {
                     Cache.this.logger.debug("Removing oldest item " +

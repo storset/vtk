@@ -1569,20 +1569,20 @@
          class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
      <property name="serviceLocaleResolverMap">
        <map>
-         <entry key-ref="displayResourceService" value-ref="displayResourceLocaleResolver" />
-         <entry key-ref="viewService" value-ref="viewLocaleResolver" />
+         <entry key-ref="viewService" value-ref="viewServiceLocaleResolver" />
+         <entry key-ref="webService" value-ref="defaultViewLocaleResolver" />
        </map>
      </property>
      <property name="defaultLocaleResolver" ref="manageLocaleResolver" />
    </bean>
 
-   <bean id="displayResourceLocaleResolver"
+   <bean id="viewServiceLocaleResolver"
          class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
          parent="requestLocalRepositoryAware">
      <property name="defaultLocale" value="${view.defaultLocale}" />
    </bean>
 
-   <bean id="viewLocaleResolver"
+   <bean id="defaultViewLocaleResolver"
          class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
      <property name="cookieMaxAge" value="315360000" />
      <property name="cookieName" value="service.view.locale" />

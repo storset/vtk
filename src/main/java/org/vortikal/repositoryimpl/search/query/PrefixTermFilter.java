@@ -108,10 +108,9 @@ public class PrefixTermFilter extends Filter {
     }
     
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("SimplePrefixFilter[field='").append(this.prefixTerm.field());
         buffer.append("', prefix='").append(this.prefixTerm.text()).append("']");
         return buffer.toString();
     }
-
 }

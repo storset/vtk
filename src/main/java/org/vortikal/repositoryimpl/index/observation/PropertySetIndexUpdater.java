@@ -43,8 +43,8 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
-import org.vortikal.repositoryimpl.store.db.IndexDao;
-import org.vortikal.repositoryimpl.store.db.PropertySetHandler;
+import org.vortikal.repositoryimpl.store.IndexDao;
+import org.vortikal.repositoryimpl.store.PropertySetHandler;
 
 /**
  * Incremental index updates from resource changes.

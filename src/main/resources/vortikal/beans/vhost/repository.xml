@@ -38,10 +38,12 @@
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
   </aop:config>-->
 
-  <aop:config>
+  <!-- Query result authorization already wrapped by pointcut for SqlMapIndexDao -->
+  <!--
+  <aop:config>  
     <aop:pointcut id="repository.searchAuthorizationPointcut" expression="execution(* org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager.authorizeQueryResults(..))"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.searchAuthorizationPointcut"/>
-  </aop:config>
+  </aop:config> -->
 
   <aop:config>
     <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.SqlMapIndexDao.*(..))"/>

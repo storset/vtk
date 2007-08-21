@@ -1,4 +1,4 @@
-package org.vortikal.repositoryimpl.store.db;
+package org.vortikal.repositoryimpl.store;
 
 import org.vortikal.repository.PropertySet;
 

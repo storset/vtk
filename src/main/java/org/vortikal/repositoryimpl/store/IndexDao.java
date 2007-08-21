@@ -28,14 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repositoryimpl.store.db;
+package org.vortikal.repositoryimpl.store;
 
 import java.util.List;
 import java.util.Set;
 
 import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
-import org.vortikal.repositoryimpl.store.DataAccessException;
 
 /**
  * Callback-based interface for fetching property sets from database. 

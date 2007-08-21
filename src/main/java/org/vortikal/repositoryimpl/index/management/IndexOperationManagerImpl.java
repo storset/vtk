@@ -39,7 +39,7 @@ import org.vortikal.repositoryimpl.index.IndirectReindexer;
 import org.vortikal.repositoryimpl.index.PropertySetIndex;
 import org.vortikal.repositoryimpl.index.PropertySetIndexReindexer;
 import org.vortikal.repositoryimpl.index.consistency.ConsistencyCheck;
-import org.vortikal.repositoryimpl.store.db.IndexDao;
+import org.vortikal.repositoryimpl.store.IndexDao;
 
 /**
  * 

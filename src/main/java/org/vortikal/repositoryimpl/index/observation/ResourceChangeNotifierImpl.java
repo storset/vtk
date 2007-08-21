@@ -38,7 +38,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repositoryimpl.ChangeLogEntry;
-import org.vortikal.repositoryimpl.store.db.IndexDao;
+import org.vortikal.repositoryimpl.store.IndexDao;
 
 /**
  * Class for distributing resouce changes from database to a set of observers.

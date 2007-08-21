@@ -45,6 +45,8 @@ import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 import org.vortikal.repositoryimpl.store.DataAccessException;
+import org.vortikal.repositoryimpl.store.IndexDao;
+import org.vortikal.repositoryimpl.store.PropertySetHandler;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapClient;

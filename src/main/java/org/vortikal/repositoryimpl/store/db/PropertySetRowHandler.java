@@ -45,6 +45,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.store.PropertySetHandler;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 

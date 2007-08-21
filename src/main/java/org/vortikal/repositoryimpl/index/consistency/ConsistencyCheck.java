@@ -46,8 +46,8 @@ import org.vortikal.repositoryimpl.index.PropertySetIndex;
 import org.vortikal.repositoryimpl.index.PropertySetIndexRandomAccessor;
 import org.vortikal.repositoryimpl.index.StorageCorruptionException;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMappingException;
-import org.vortikal.repositoryimpl.store.db.IndexDao;
-import org.vortikal.repositoryimpl.store.db.PropertySetHandler;
+import org.vortikal.repositoryimpl.store.IndexDao;
+import org.vortikal.repositoryimpl.store.PropertySetHandler;
 
 /**
  * Check consistency and optionally repair errors afterwords.

@@ -38,14 +38,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repositoryimpl.store.db.IndexDao;
+import org.vortikal.repositoryimpl.store.IndexDao;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.security.token.TokenManager;
 
 /**
- * Authorize result lists using {@link org.vortikal.repositoryimpl.store.db.IndexDao}.
+ * Authorize result lists using {@link org.vortikal.repositoryimpl.store.IndexDao}.
  */
 public final class DatabaseQueryResultAuthorizationManager implements 
     QueryResultAuthorizationManager, InitializingBean {

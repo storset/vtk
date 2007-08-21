@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.store.PropertySetHandler;
 import org.vortikal.security.PrincipalFactory;
 
 /**

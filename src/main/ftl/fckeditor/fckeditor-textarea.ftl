@@ -27,7 +27,9 @@
                          {"name": "p", "attributes":[]}]
           toolbarElements=["Source", "Bold", "Italic", "Underline",
                            "StrikeThrough", "OrderedList",
-                           "UnorderedList", "Link", "Unlink"]>
+                           "UnorderedList", "Link", "Unlink"]
+          fckSkin="editor/skins/silver/">
+
     <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
     <script type="text/javascript">
       var initialized = false;
@@ -57,6 +59,7 @@
           editor.ToolbarSet = "MinimalToolbar";
           editor.Config['FullPage'] = false;
           editor.Config['ToolbarCanCollapse'] = false;
+          editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
           editor.ReplaceTextarea();
           initialized = true;
       }

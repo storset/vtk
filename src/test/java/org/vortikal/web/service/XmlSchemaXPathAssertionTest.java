@@ -30,11 +30,6 @@
  */
 package org.vortikal.web.service;
 
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
-
 import junit.framework.TestCase;
 
 /**

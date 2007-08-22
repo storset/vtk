@@ -25,7 +25,7 @@
   </sql>
 
   <sql id="nextTempTableSessionId">
-    vortex_tmp_session_id_seq.nextval
+    vortex_tmp_session_id_seq.nextval from dual
   </sql>
 
   <sql id="destinationUriCopy">

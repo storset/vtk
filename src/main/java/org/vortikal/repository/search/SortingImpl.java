@@ -54,7 +54,7 @@ public class SortingImpl implements Sorting {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": ").append(this.sortFields);
         return sb.toString();
     }

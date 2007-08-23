@@ -35,11 +35,10 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryFilter;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -69,7 +68,7 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
         // Use ancestor ids field from index to get all descendants
         Query query = 
             new TermQuery(
-                    new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME, this.idTerm.text()));
+                    new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, this.idTerm.text()));
 
         if (!this.uri.endsWith("/")) {
             // Include parent
@@ -85,7 +84,7 @@ public class UriPrefixQueryBuilder implements QueryBuilder {
         }
         
         if (this.inverted) {
-            Filter filter = new InversionFilter(new QueryFilter(query));
+            Filter filter = new InversionFilter(new QueryWrapperFilter(query));
             return new ConstantScoreQuery(filter);
         }
         

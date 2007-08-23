@@ -34,7 +34,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -57,7 +57,7 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
         
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
         
-        String fieldName = DocumentMapper.getFieldName(def);
+        String fieldName = FieldNameMapping.getSearchFieldName(def);
 
         Filter filter = new TermExistsFilter(fieldName);
         

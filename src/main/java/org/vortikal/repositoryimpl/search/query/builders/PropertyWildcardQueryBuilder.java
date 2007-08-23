@@ -38,7 +38,7 @@ import org.apache.lucene.search.WildcardTermEnum;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
 import org.vortikal.repositoryimpl.search.query.WildcardTermFilter;
@@ -75,7 +75,7 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
                 + "Use range queries for dates and numbers.");
         }
         
-        String fieldName = DocumentMapper.getFieldName(def);
+        String fieldName = FieldNameMapping.getSearchFieldName(def);
         Term wTerm = new Term(fieldName, wildcard);
 
         Filter filter = new WildcardTermFilter(wTerm);

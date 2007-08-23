@@ -39,7 +39,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryFilter;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.search.query.TermOperator;
@@ -66,7 +66,7 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
         if (this.operator == TermOperator.IN) {
             return getInQuery();
         } else if (this.operator == TermOperator.NI) {
-            Filter filter = new InversionFilter(new QueryFilter(getInQuery()));
+            Filter filter = new InversionFilter(new QueryWrapperFilter(getInQuery()));
             return new ConstantScoreQuery(filter);
         } else {
             throw new QueryBuilderException("Unsupported type operator: " + this.operator);

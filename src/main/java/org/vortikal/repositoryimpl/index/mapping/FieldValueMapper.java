@@ -102,8 +102,7 @@ public final class FieldValueMapper {
         StringBuilder fieldValue = new StringBuilder();
         for (int i = 0; i < values.length; i++) {
             String encoded = encodeIndexFieldValue(values[i]);
-            String escaped = escapeCharacter(MULTI_VALUE_FIELD_SEPARATOR,
-                    encoded);
+            String escaped = escapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, encoded);
             fieldValue.append(escaped);
             if (i < values.length - 1) {
                 fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);

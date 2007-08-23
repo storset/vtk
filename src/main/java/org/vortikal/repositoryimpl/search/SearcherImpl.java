@@ -37,6 +37,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
@@ -44,6 +45,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
@@ -58,10 +60,12 @@ import org.vortikal.repositoryimpl.search.query.SortBuilder;
 import org.vortikal.repositoryimpl.search.query.SortBuilderImpl;
 import org.vortikal.repositoryimpl.search.query.security.LuceneResultSecurityInfo;
 import org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager;
+import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 
 /**
- * @author oyviste
- *
+ * Implementation of repository {@link org.vortikal.repository.search.Searcher}
+ * using Lucene.
+ * 
  *  TODO: Integrate ACL filtering in search, don't do it post-search, 
  *        index relevant parts of ACL lists.
  *  TODO: Define behaviour when results are removed because of permissions
@@ -87,6 +91,7 @@ import org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizatio
  *      <li><code>queryBuilderFactory</code>
  *      Factory for building Lucene queries (required)</li>
  *  </ul>
+ * @author oyviste
  *
  */
 public class SearcherImpl implements Searcher, InitializingBean {
@@ -107,13 +112,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
     private int maxAllowedHitsPerQuery = 50000;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.indexAccessor == null) {
-            throw new BeanInitializationException("Property 'indexAccessor' not set.");
-        } else if (this.documentMapper == null) {
-            throw new BeanInitializationException("Property 'documentMapper' not set.");
-        } else if (this.queryBuilderFactory == null) {
-            throw new BeanInitializationException("Property 'queryBuilderFactory' not set.");
-        } else if (this.maxAllowedHitsPerQuery <= 0) {
+        if (this.maxAllowedHitsPerQuery <= 0) {
             throw new BeanInitializationException("Property 'maxAllowedHitsPerQuery'" 
                                          + " must be an integer greater than zero.");
         }
@@ -195,7 +194,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
         } finally {
             try {
                 this.indexAccessor.releaseIndexSearcher(searcher);                
-            } catch (IOException io) {}
+            } catch (IOException io) {
+                this.logger.warn("IOException while releasing index searcher", io);
+            }
         }
     }
 
@@ -217,12 +218,18 @@ public class SearcherImpl implements Searcher, InitializingBean {
         int end = (cursor + maxResults) < docs.length ? 
                                               cursor + maxResults : docs.length;
 
+        FieldSelector selector = null;
+        if (selectedProperties != null) {
+            selector = this.documentMapper.getDocumentFieldSelector(selectedProperties);
+        }
+        
         if (this.queryResultAuthorizationManager != null) {
             // XXX: cursor/maxresults might be confusing after filtering, define it 
             //      properly and fix this.
-            List rsiList = new ArrayList(end-cursor);
+            List<ResultSecurityInfo> rsiList = 
+                        new ArrayList<ResultSecurityInfo>(end-cursor);
             for (int i = cursor; i < end; i++) {
-                Document doc = reader.document(docs[i].doc);
+                Document doc = reader.document(docs[i].doc, selector);
                 rsiList.add(new LuceneResultSecurityInfo(doc));
             }
             
@@ -239,39 +246,34 @@ public class SearcherImpl implements Searcher, InitializingBean {
             // after security filtering, figure out best solution (use dummy results ?)
             // Add only authorized docs to ResultSet
             // XXX: add metadata to resultset about how many un-authorized hits, etc.
-            for (int i = 0; i < rsiList.size(); i++) {
-                LuceneResultSecurityInfo rsi = (LuceneResultSecurityInfo)rsiList.get(i);
-                
-                if (rsi.isAuthorized()) {
-                    // Only create property sets for authorized hits
+            for (ResultSecurityInfo info: rsiList) {
+                if (info.isAuthorized()) {
                     rs.addResult(this.documentMapper.getPropertySet(
-                                     rsi.getDocument(), selectedProperties));
-                } 
+                            ((LuceneResultSecurityInfo)info).getDocument()));
+                }
             }
+            
         } else {
             for (int i = cursor; i < end; i++) {
-                rs.addResult(this.documentMapper.getPropertySet(
-                                 reader.document(docs[i].doc), selectedProperties));
+                Document doc = reader.document(docs[i].doc, selector);
+                rs.addResult(this.documentMapper.getPropertySet(doc));
             }
         }
         
         return rs;
     }
     
-
+    @Required
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 
+    @Required
     public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
 
-    public void setQueryAuthorizationManager(
-            QueryResultAuthorizationManager queryResultAuthorizationManager) {
-        this.queryResultAuthorizationManager = queryResultAuthorizationManager;
-    }
-
+    @Required
     public void setQueryBuilderFactory(QueryBuilderFactory queryBuilderFactory) {
         this.queryBuilderFactory = queryBuilderFactory;
     }

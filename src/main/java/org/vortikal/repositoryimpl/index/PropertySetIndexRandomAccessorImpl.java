@@ -38,6 +38,7 @@ import org.apache.lucene.index.TermDocs;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 
 /**
  * Random accessor for property set index.
@@ -57,8 +58,8 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
         throws IOException {
         this.mapper = mapper;
         this.reader = reader;
-        this.uriTermDocs = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, ""));
-        this.uuidTermDocs = reader.termDocs(new Term(DocumentMapper.ID_FIELD_NAME, ""));
+        this.uriTermDocs = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, ""));
+        this.uuidTermDocs = reader.termDocs(new Term(FieldNameMapping.ID_FIELD_NAME, ""));
   
     }
     
@@ -69,7 +70,7 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
     public int countInstances(String uri) throws IndexException {
         int count = 0;
         try {
-            this.uriTermDocs.seek(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
             while (this.uriTermDocs.next()) {
                 if (! reader.isDeleted(this.uriTermDocs.doc())) ++count;
             }
@@ -84,12 +85,11 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
         PropertySet propSet = null;
 
         try {
-            this.uriTermDocs.seek(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
             while (this.uriTermDocs.next()) {
                 if (! reader.isDeleted(this.uriTermDocs.doc())) {
                     propSet = this.mapper.getPropertySet(
-                        this.reader.document(this.uriTermDocs.doc()),
-                        WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+                        this.reader.document(this.uriTermDocs.doc()));
                 }
             }
         } catch (IOException io) {
@@ -102,12 +102,11 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
     public PropertySet getPropertySetByUUID(String uuid) throws IndexException {
         PropertySet propSet = null;
         try {
-            this.uuidTermDocs.seek(new Term(DocumentMapper.ID_FIELD_NAME, uuid));
+            this.uuidTermDocs.seek(new Term(FieldNameMapping.ID_FIELD_NAME, uuid));
             while (this.uuidTermDocs.next()) {
                 if (! reader.isDeleted(this.uuidTermDocs.doc())) {
                     propSet = mapper.getPropertySet(
-                        reader.document(this.uuidTermDocs.doc()),
-                        WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+                        reader.document(this.uuidTermDocs.doc()));
                 }
             }
         } catch (IOException io) {

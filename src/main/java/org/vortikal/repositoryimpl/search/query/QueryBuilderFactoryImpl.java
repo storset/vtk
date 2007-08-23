@@ -65,7 +65,7 @@ import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.LuceneIndexManager;
 import org.vortikal.repositoryimpl.index.mapping.BinaryFieldValueMapper;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
 import org.vortikal.repositoryimpl.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repositoryimpl.search.query.builders.NamePrefixQueryBuilder;
@@ -152,7 +152,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         else if (query instanceof TypeTermQuery) {
             TypeTermQuery ttq = (TypeTermQuery)query;
             builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, 
-            ttq.getOperator(), DocumentMapper.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
+            ttq.getOperator(), FieldNameMapping.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
         }
        
         if (builder == null) {
@@ -177,13 +177,13 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
                 }
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
                 
-                String fieldName = DocumentMapper.getFieldName(propDef);
+                String fieldName = FieldNameMapping.getSearchFieldName(propDef);
                 String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
                 return new HierarchicalTermQueryBuilder<Value>(hv , ptq.getOperator(), fieldName, new Value(fieldValue));
             } 
             
             return new PropertyTermQueryBuilder(ptq.getOperator(), ptq.getTerm(),
-                    DocumentMapper.getFieldName(propDef),FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType()));
+                    FieldNameMapping.getSearchFieldName(propDef),FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType()));
         }
         
         if (query instanceof PropertyPrefixQuery) {
@@ -214,22 +214,22 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
         try {
             reader = this.indexAccessor.getReadOnlyIndexReader();
 
-            td = reader.termDocs(new Term(DocumentMapper.URI_FIELD_NAME, 
+            td = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, 
                                                 URIUtil.stripTrailingSlash(uri)));
             
             if (td.next()) {
                 Field field= reader.document(td.doc()).getField(
-                                            DocumentMapper.STORED_ID_FIELD_NAME);
+                                            FieldNameMapping.STORED_ID_FIELD_NAME);
                 
                 String value = 
                     Integer.toString(
                             BinaryFieldValueMapper.getIntegerFromStoredBinaryField(field));
                 
-                return new Term(DocumentMapper.ID_FIELD_NAME, value);
+                return new Term(FieldNameMapping.ID_FIELD_NAME, value);
                 
             }
             // URI not found, so the query should produce zero hits.
-            return new Term(DocumentMapper.ID_FIELD_NAME, String.valueOf(
+            return new Term(FieldNameMapping.ID_FIELD_NAME, String.valueOf(
                     PropertySetImpl.NULL_RESOURCE_ID));
         } catch (IOException io) {
             throw new QueryBuilderException("IOException while building query: " + io.getMessage());

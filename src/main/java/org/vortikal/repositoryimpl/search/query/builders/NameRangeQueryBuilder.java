@@ -33,7 +33,7 @@ package org.vortikal.repositoryimpl.search.query.builders;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.search.query.NameRangeQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 
 public class NameRangeQueryBuilder implements QueryBuilder {
@@ -50,7 +50,8 @@ public class NameRangeQueryBuilder implements QueryBuilder {
         String to = this.nrq.getToTerm();
         
         ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(
-                DocumentMapper.NAME_FIELD_NAME, from, to, this.nrq.isInclusive(), this.nrq.isInclusive());
+                FieldNameMapping.NAME_FIELD_NAME, from, to, this.nrq.isInclusive(),
+                this.nrq.isInclusive());
         
         return csrq;
     }

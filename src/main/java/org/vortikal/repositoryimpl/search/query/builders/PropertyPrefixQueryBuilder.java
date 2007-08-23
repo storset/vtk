@@ -37,7 +37,7 @@ import org.apache.lucene.search.Query;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyPrefixQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.PrefixTermFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
@@ -69,7 +69,7 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         }
         
         Filter filter = new PrefixTermFilter(
-                                new Term(DocumentMapper.getFieldName(def), term));
+                                new Term(FieldNameMapping.getSearchFieldName(def), term));
         
         if (ppq.isInverted()) {
             filter = new InversionFilter(filter);

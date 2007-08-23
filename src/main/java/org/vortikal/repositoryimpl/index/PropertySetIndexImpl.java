@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,7 +47,7 @@ import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.Namespace;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManager;
@@ -56,6 +55,7 @@ import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMappingException;
 import org.vortikal.repositoryimpl.index.mapping.EscapedMultiValueFieldAnalyzer;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
 
 /**
@@ -73,12 +73,6 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     private Analyzer analyzer;
 
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.indexAccessor == null) {
-            throw new BeanInitializationException("Property 'indexAccessor' not set.");
-        } else if (this.documentMapper == null) {
-            throw new BeanInitializationException("Property 'documentMapper' not set.");
-        }
-        
         this.analyzer = initializePerFieldAnalyzer();
     }
     
@@ -93,15 +87,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(keywordAnalyzer);
         
         for (PropertyTypeDefinition def: propDefs) {
-            String fieldName;
-            Namespace ns = def.getNamespace();
-            if (ns != null && ns.getPrefix() != null) {
-                fieldName = ns.getPrefix() 
-                          + DocumentMapper.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
-                          + def.getName();
-            } else {
-                fieldName = def.getName();
-            }
+            String fieldName = FieldNameMapping.getSearchFieldName(def);
             
             if (def.isMultiple()) {
                 wrapper.addAnalyzer(fieldName, multiValueAnalyzer);
@@ -111,13 +97,13 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         }
         
         // Special fields
-        wrapper.addAnalyzer(DocumentMapper.ACL_INHERITED_FROM_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(DocumentMapper.ID_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(DocumentMapper.NAME_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(DocumentMapper.ANCESTORIDS_FIELD_NAME, multiValueAnalyzer);
-        wrapper.addAnalyzer(DocumentMapper.RESOURCETYPE_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(DocumentMapper.URI_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(DocumentMapper.URI_DEPTH_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.ID_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.NAME_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.ANCESTORIDS_FIELD_NAME, multiValueAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.RESOURCETYPE_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.URI_FIELD_NAME, keywordAnalyzer);
+        wrapper.addAnalyzer(FieldNameMapping.URI_DEPTH_FIELD_NAME, keywordAnalyzer);
         
         return wrapper;
     }
@@ -125,7 +111,6 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
-        
         // NOTE: Write-locking must be done above this level.
         //       This is needed to ensure the possibility of efficiently batching 
         //       together operations without interruption.
@@ -137,9 +122,8 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                                                 + propertySet.getURI() + "'");
                 logger.debug("Document mapper created the following document: ");
                 
-                Enumeration fieldEnum = doc.fields();
-                while (fieldEnum.hasMoreElements()) {
-                    Field field = (Field)fieldEnum.nextElement();
+                for (Iterator iterator = doc.getFields().iterator(); iterator.hasNext();) {
+                    Field field = (Field)iterator.next();
                     if (field.isBinary()) {
                         logger.debug("Field '" + field.name() + "', value: [BINARY]");
                     } else {
@@ -170,10 +154,10 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                                                             + rootUuid + "'");
             }
             
-            n += reader.deleteDocuments(new Term(DocumentMapper.ID_FIELD_NAME,
+            n += reader.deleteDocuments(new Term(FieldNameMapping.ID_FIELD_NAME,
                                                                       rootUuid));
             
-            n += reader.deleteDocuments(new Term(DocumentMapper.ANCESTORIDS_FIELD_NAME,
+            n += reader.deleteDocuments(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME,
                                                                       rootUuid));
             
             if (n == 0) {
@@ -199,7 +183,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         try {
 
             IndexReader reader = this.indexAccessor.getIndexReader();
-            Term rootUriTerm = new Term(DocumentMapper.URI_FIELD_NAME, rootUri);
+            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri);
             String fieldName = rootUriTerm.field();
             tenum = reader.terms(rootUriTerm);
             tdocs = reader.termDocs();
@@ -249,7 +233,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public int deletePropertySet(String uri) throws IndexException {
         try {
-            Term uriTerm = new Term(DocumentMapper.URI_FIELD_NAME, uri);
+            Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, uri);
             IndexReader reader = this.indexAccessor.getIndexReader();
             
             if (logger.isDebugEnabled()) {
@@ -271,7 +255,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     
     public int deletePropertySetByUUID(String uuid) throws IndexException {
         try {
-            Term uuidTerm = new Term(DocumentMapper.ID_FIELD_NAME, uuid);
+            Term uuidTerm = new Term(FieldNameMapping.ID_FIELD_NAME, uuid);
             IndexReader reader = this.indexAccessor.getIndexReader();
             
             if (logger.isDebugEnabled()) {
@@ -298,7 +282,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
         
         try {
             IndexReader reader = this.indexAccessor.getIndexReader();
-            Term start = new Term(DocumentMapper.URI_FIELD_NAME, "");
+            Term start = new Term(FieldNameMapping.URI_FIELD_NAME, "");
             String enumField = start.field();
             termEnum = reader.terms(start);
             termDocs = reader.termDocs(start);
@@ -472,15 +456,18 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
     public boolean lock(long timeout) {
         return this.indexAccessor.writeLockAttempt(timeout);
     }
-
+    
+    @Required
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
-
+    
+    @Required
     public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
     }
-
+    
+    @Required
     public void setPropertyManager(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }

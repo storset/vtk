@@ -33,11 +33,11 @@ package org.vortikal.repositoryimpl.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
-import org.apache.lucene.search.QueryFilter;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -61,16 +61,15 @@ public class NameTermQueryBuilder implements QueryBuilder {
         
         if (op == TermOperator.EQ) {
             TermQuery tq = 
-                new TermQuery(new Term(DocumentMapper.NAME_FIELD_NAME, term));
+                new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
             
             return tq;
         }
         
         if (op == TermOperator.NE) {
             TermQuery tq = 
-                new TermQuery(new Term(DocumentMapper.NAME_FIELD_NAME, term));
-            return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
-            //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
+                new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
+            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
         } 
         
         boolean includeLower = false;
@@ -96,7 +95,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
             throw new QueryBuilderException("Unknown term operator"); 
         }
         
-        return new ConstantScoreRangeQuery(DocumentMapper.NAME_FIELD_NAME, 
+        return new ConstantScoreRangeQuery(FieldNameMapping.NAME_FIELD_NAME, 
                                            lowerTerm, 
                                            upperTerm, 
                                            includeLower, 

@@ -37,7 +37,7 @@ import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -61,13 +61,13 @@ public class UriTermQueryBuilder implements QueryBuilder {
 
         if (operator == UriOperator.EQ) {
             // URI equality
-            return new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+            return new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
         } 
 
         if (operator == UriOperator.NE) {
             // URI NOT equal
             TermQuery tq = 
-                new TermQuery(new Term(DocumentMapper.URI_FIELD_NAME, uri));
+                new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
             return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
             //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
         } 

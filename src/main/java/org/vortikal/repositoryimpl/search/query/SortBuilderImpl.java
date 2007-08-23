@@ -38,7 +38,7 @@ import org.vortikal.repository.search.SortField;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.TypedSortField;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 
 /**
  * 
@@ -82,7 +82,7 @@ public class SortBuilderImpl implements SortBuilder {
             } else if (f instanceof PropertySortField) {
                 PropertyTypeDefinition def = ((PropertySortField) f)
                         .getDefinition();
-                fieldName = DocumentMapper.getFieldName(def);
+                fieldName = FieldNameMapping.getSearchFieldName(def);
             } else {
                 throw new SortBuilderException("Unknown sorting type "
                         + f.getClass().getName());

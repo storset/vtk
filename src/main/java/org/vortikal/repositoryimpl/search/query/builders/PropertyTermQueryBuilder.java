@@ -34,7 +34,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryFilter;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repositoryimpl.search.query.InversionFilter;
@@ -73,7 +73,7 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         if (op == TermOperator.NE) {
             TermQuery tq = 
                 new TermQuery(new Term(fieldName, fieldValue));
-            return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
+            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
             //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
         } 
 

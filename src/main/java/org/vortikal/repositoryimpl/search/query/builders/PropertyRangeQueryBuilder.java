@@ -34,7 +34,7 @@ import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Query;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyRangeQuery;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
 import org.vortikal.repositoryimpl.search.query.QueryBuilder;
 import org.vortikal.repositoryimpl.search.query.QueryBuilderException;
@@ -60,7 +60,7 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         String fromEncoded = FieldValueMapper.encodeIndexFieldValue(from, def.getType());
         String toEncoded = FieldValueMapper.encodeIndexFieldValue(to, def.getType());
         
-        String fieldName = DocumentMapper.getFieldName(def);
+        String fieldName = FieldNameMapping.getSearchFieldName(def);
         
         ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName, 
                 fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());

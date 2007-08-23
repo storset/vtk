@@ -34,7 +34,6 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 
 /**
@@ -53,8 +52,7 @@ public class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator 
     }
 
     protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(
-            document, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+        return this.mapper.getPropertySet(document);
     }
 
 }

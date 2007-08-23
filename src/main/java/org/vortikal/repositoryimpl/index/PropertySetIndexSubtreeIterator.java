@@ -34,8 +34,8 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
+import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 
 public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
 
@@ -43,12 +43,12 @@ public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefi
     
     public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
             throws IOException {
-        super(reader, DocumentMapper.URI_FIELD_NAME, rootUri);
+        super(reader, FieldNameMapping.URI_FIELD_NAME, rootUri);
         this.mapper = mapper;
     }
 
     protected Object getObjectFromDocument(Document doc) throws Exception {
-        return mapper.getPropertySet(doc, WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+        return mapper.getPropertySet(doc);
     }
 
 }

@@ -38,7 +38,7 @@
       <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
     <#else>
       ${header}
-    </#if>
+    </#if><sup>BETA</sup>
 
 
     <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
@@ -93,8 +93,7 @@
   </#list>
 
   <div class="add-comment" id="comment-form">
-
-    <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
+    <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /><sup>BETA</sup></div>
 
     <#if !postCommentURL?exists && !principal?exists && loginURL?exists>
       <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
@@ -113,7 +112,8 @@
 
     <#elseif postCommentURL?exists>
       <div id="comment-syntax-desc" class="comment-syntax-desc">
-        <@vrtx.msg code="commenting.form.syntax-description" default="Basic HTML syntax is allowed" />:
+        <div class="syntax-head"><@vrtx.msg code="commenting.form.syntax-description" default="Allowed HTML syntax" />:</div>
+        <p>
         <#list config.validHtmlElements as element>
           &lt;${element.name?html}<#compress>
           <#if (element.attributes)?exists>
@@ -123,14 +123,15 @@
           </#if>
           </#compress>&gt;<#if element_has_next>, </#if>
         </#list>
-        
+        </p>
       <#if commenting.richEditorEnabled>
         <script type="text/javascript">
           function editor() {
              document.getElementById("comment-syntax-desc").style.display = "none";
+             document.getElementById("comments-text-div").style.margin = "0";
              loadEditor();
           }
-          document.write("(&nbsp;<a href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="rich editor" /></a>&nbsp;)");
+          document.write("<p><a class=\"javascript-editor\" href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="Use HTML-editor" /></a></p>");
         </script>
       </#if>      
       </div>

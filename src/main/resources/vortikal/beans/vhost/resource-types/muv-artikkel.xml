@@ -16,6 +16,7 @@
                 <ref bean="muvArtikkelIngressPropDef" />
                 <ref bean="muvArtikkelLiteBildeWebadressePropDef" />
                 <ref bean="muvArtikkelLiteBildeAlternativTekstPropDef" />
+                <ref bean="muvPubliseringsdatoPropDef" />
                 
                 <ref bean="muvArtikkelMetadataEpokePropDef" />
                 <ref bean="muvArtikkelMetadataMenneskenePropDef" />
@@ -89,6 +90,20 @@
     <bean id="muvArtikkelLiteBildeAlternativTextEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/muv-artikkel/lite-bilde/alternativ-tekst" />
     </bean>
+    
+    <bean id="muvPubliseringsdatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        <property name="name" value="publiseringsdato" />
+        <property name="type" ref="TYPE_DATE" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="muvPubliseringsdatoEvaluator" />
+    </bean>
+    
+    <bean id="muvPubliseringsdatoEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="concat(/muv-artikkel/publiseringsdato/dag, '.', /muv-artikkel/publiseringsdato/mnd, '.', /muv-artikkel/publiseringsdato/aar)" />
+        <!-- <property name="expression" value="concat(/muv-artikkel/publiseringsdato/dag, '.', /muv-artikkel/publiseringsdato/mnd, '.', /muv-artikkel/publiseringsdato/aar, ' ', '12', ':', '00')" /> -->
+    </bean>
+    
     
     <!-- Metadata -->
     <bean id="muvArtikkelMetadataEpokePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

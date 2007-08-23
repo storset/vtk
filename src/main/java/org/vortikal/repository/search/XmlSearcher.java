@@ -396,7 +396,7 @@ public class XmlSearcher {
         }
         
         public String toString() {
-            StringBuffer sb = new StringBuffer(this.getClass().getName());
+            StringBuilder sb = new StringBuilder(this.getClass().getName());
             sb.append(": select = ").append(this.select);
             sb.append(", sort = ").append(this.sort);
             sb.append(", formats = ").append(this.formats);

@@ -32,6 +32,7 @@ package org.vortikal.repositoryimpl.search.query;
 
 import java.util.Iterator;
 
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
@@ -79,16 +80,36 @@ public class SortBuilderImpl implements SortBuilder {
 
             if (f instanceof TypedSortField) {
                 fieldName = ((TypedSortField) f).getType();
+                
+                luceneSortFields[j] = new org.apache.lucene.search.SortField(
+                                            fieldName, f.getLocale(), direction);                
+                
             } else if (f instanceof PropertySortField) {
-                PropertyTypeDefinition def = ((PropertySortField) f)
-                        .getDefinition();
+                PropertyTypeDefinition def = ((PropertySortField) f).getDefinition();
                 fieldName = FieldNameMapping.getSearchFieldName(def);
+                
+                switch (def.getType()) {
+                
+                case PropertyType.TYPE_DATE:
+                case PropertyType.TYPE_BOOLEAN:
+                case PropertyType.TYPE_INT:
+                case PropertyType.TYPE_LONG:
+                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
+                            fieldName, direction);
+                    break;
+                    
+                default:
+                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
+                            fieldName, f.getLocale(), direction);
+                }
             } else {
                 throw new SortBuilderException("Unknown sorting type "
                         + f.getClass().getName());
             }
 
-            luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
+            
+            
+
             //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
 
         }

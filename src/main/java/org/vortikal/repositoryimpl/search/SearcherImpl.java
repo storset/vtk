@@ -129,7 +129,9 @@ public class SearcherImpl implements Searcher, InitializingBean {
 
         Query query = search.getQuery();
         Sorting sorting = search.getSorting();
+        
         int maxResults = search.getLimit();
+        
         int cursor = search.getCursor();
         PropertySelect selectedProperties = search.getPropertySelect();
         
@@ -218,10 +220,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
         int end = (cursor + maxResults) < docs.length ? 
                                               cursor + maxResults : docs.length;
 
-        FieldSelector selector = null;
-        if (selectedProperties != null) {
-            selector = this.documentMapper.getDocumentFieldSelector(selectedProperties);
-        }
+        FieldSelector selector = 
+            this.documentMapper.getDocumentFieldSelector(selectedProperties);
         
         if (this.queryResultAuthorizationManager != null) {
             // XXX: cursor/maxresults might be confusing after filtering, define it 

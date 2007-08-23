@@ -163,7 +163,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": [name=").append(this.name).append("]");
         return sb.toString();
     }

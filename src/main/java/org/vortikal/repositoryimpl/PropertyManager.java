@@ -34,6 +34,7 @@ package org.vortikal.repositoryimpl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 public interface PropertyManager {
@@ -84,7 +85,20 @@ public interface PropertyManager {
     public Property createProperty(String namespaceUrl, String name,
             String[] stringValues) throws ValueFormatException;
 
-
+    /**
+     * Create a {@link PropertySet} instance using the supplied
+     * {@link PropertyTypeDefinition}.
+     * 
+     * @param definition 
+     * @return
+     */
+    public Property createProperty(PropertyTypeDefinition definition);
+    
+    /**
+     * Get an instance of {@link ResourceTypeTree}.
+     *  
+     * @return An instance of {@link ResourceTypeTree}
+     */
     public ResourceTypeTree getResourceTypeTree();
     
 }

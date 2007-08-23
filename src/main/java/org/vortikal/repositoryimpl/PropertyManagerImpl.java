@@ -69,7 +69,31 @@ public class PropertyManagerImpl
         this.resourceTypeTree = resourceTypeTree;
     }
     
-
+    /**
+     * @see PropertyManager#createProperty(PropertyTypeDefinition)
+     */
+    public Property createProperty(PropertyTypeDefinition def) {
+        if (!this.initialized) {
+            initialize();
+        }
+        
+        if (def == null) {
+            throw new IllegalArgumentException("Argument cannot be null");
+        }
+        
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(def.getNamespace());
+        prop.setName(def.getName());
+        prop.setDefinition(def);
+        
+        if (def.getDefaultValue() != null) {
+            prop.setValue(def.getDefaultValue());
+        }
+        
+        return prop;
+    }
+    
+    
     public Property createProperty(Namespace namespace, String name) {
         if (!this.initialized) {
             initialize();

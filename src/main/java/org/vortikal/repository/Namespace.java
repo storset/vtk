@@ -103,7 +103,7 @@ public class Namespace {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (this.prefix != null) {
             sb.append(this.prefix).append(":");
         }

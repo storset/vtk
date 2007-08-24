@@ -83,6 +83,9 @@ public class Search {
     }
     
     public void setCursor(int cursor) {
+        if (cursor < 0) {
+            throw new IllegalArgumentException("Cursor cannot be negative");
+        }
         this.cursor = cursor;
     }
     
@@ -91,10 +94,13 @@ public class Search {
     }
     
     public void setLimit(int limit) {
-        if (limit > MAX_LIMIT)
+        if (limit > MAX_LIMIT) {
             this.limit = MAX_LIMIT;
-        else
+        } else if (limit < 0) {
+            throw new IllegalArgumentException("Limit cannot be negative");
+        } else {
             this.limit = limit;
+        }
     }
     
     public PropertySelect getPropertySelect() {

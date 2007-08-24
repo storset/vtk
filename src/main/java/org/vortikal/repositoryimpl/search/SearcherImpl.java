@@ -68,8 +68,6 @@ import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
  * 
  *  TODO: Integrate ACL filtering in search, don't do it post-search, 
  *        index relevant parts of ACL lists.
- *  TODO: Define behaviour when results are removed because of permissions
- *        wrt. to expected number of maxResults, etc.
  *        
  *  <p>Configurable bean properties:</p>
  *  <ul>
@@ -108,6 +106,8 @@ public class SearcherImpl implements Searcher, InitializingBean {
     /**
      * The maximum number of hits allowed for any
      * query <em>before</em> processing of the results by layers above Lucene.
+     * This limit includes unauthorized hits that are not supplied to client.
+     * 
      */
     private int maxAllowedHitsPerQuery = 50000;
     
@@ -130,7 +130,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
         Query query = search.getQuery();
         Sorting sorting = search.getSorting();
         
-        int maxResults = search.getLimit();
+        int limit = search.getLimit();
         
         int cursor = search.getCursor();
         PropertySelect selectedProperties = search.getPropertySelect();
@@ -154,16 +154,19 @@ public class SearcherImpl implements Searcher, InitializingBean {
             
             // The n parameter is the upper maximum number of results we allow
             // Lucene to fetch.
-            int n = cursor + maxResults;
-            if (n > this.maxAllowedHitsPerQuery) n = this.maxAllowedHitsPerQuery;
+            // int n = cursor + maxResults;
+            // if (n > this.maxAllowedHitsPerQuery) n = this.maxAllowedHitsPerQuery;
             
             long start = System.currentTimeMillis();
             TopDocs topDocs = null;
             if (sorting != null) {
+                // XXX: Sorting performance with many hits may very well suck ..
                 Sort sort = this.sortBuilder.buildSort(sorting);
-                topDocs = searcher.search(q, null, n, sort);
+                topDocs = searcher.search(q, null, 
+                                        this.maxAllowedHitsPerQuery, sort);
             } else {
-                topDocs = searcher.search(q, null, n);
+                topDocs = searcher.search(q, null, 
+                                        this.maxAllowedHitsPerQuery);
             }
             
             if (this.logger.isDebugEnabled()) {
@@ -180,7 +183,7 @@ public class SearcherImpl implements Searcher, InitializingBean {
             }
             
             ResultSet rs = buildResultSet(topDocs.scoreDocs, topDocs.totalHits, 
-                                          searcher.getIndexReader(), token, maxResults,
+                                          searcher.getIndexReader(), token, limit,
                                           cursor, selectedProperties);
             
             if (this.logger.isDebugEnabled()) {
@@ -201,67 +204,128 @@ public class SearcherImpl implements Searcher, InitializingBean {
             }
         }
     }
-
+    
     private ResultSetImpl buildResultSet(ScoreDoc[] docs, int totalHits,
-                                         IndexReader reader, String token, int maxResults,
-                                         int cursor, PropertySelect selectedProperties)
+                                        IndexReader reader, String token, int limit,
+                                        int cursor, PropertySelect selectedProps) 
         throws IOException {
-
-        ResultSetImpl rs = new ResultSetImpl(docs.length);
-        rs.setTotalHits(totalHits);
-
-        if (docs.length == 0 || cursor >= docs.length) {
-            return rs; // Empty result set
+        
+        ResultSetImpl resultSet = new ResultSetImpl(limit);
+        resultSet.setTotalHits(totalHits); // XXX: Revealing total hits includes unauthorized hits.
+        
+        // Get list of all authorized hits.
+        // XXX: Memory requirements for queries with many matches ..
+        List<Document> results = getAuthorizedResults(docs, reader, 
+                                                        token, selectedProps);
+        
+        int nResults = results.size();
+        if (cursor < nResults) {
+            int end = cursor + limit;
+            if (end > nResults) end = nResults;
+            
+            for (Document doc: results.subList(cursor, end)) {
+                resultSet.addResult(this.documentMapper.getPropertySet(doc));
+            }
         }
+        
+        return resultSet;
+    }
+    
+    private List<Document> getAuthorizedResults(ScoreDoc[] docs, 
+                          IndexReader reader, String token, PropertySelect select) 
+        throws IOException {
+        
+        FieldSelector fieldSelector
+            = this.documentMapper.getDocumentFieldSelector(select);
 
-        if (maxResults < 0)
-            maxResults = 0;
-
-        int end = (cursor + maxResults) < docs.length ? 
-                                              cursor + maxResults : docs.length;
-
-        FieldSelector selector = 
-            this.documentMapper.getDocumentFieldSelector(selectedProperties);
+        List<Document> results = new ArrayList<Document>(docs.length);
         
         if (this.queryResultAuthorizationManager != null) {
-            // XXX: cursor/maxresults might be confusing after filtering, define it 
-            //      properly and fix this.
+            
             List<ResultSecurityInfo> rsiList = 
-                        new ArrayList<ResultSecurityInfo>(end-cursor);
-            for (int i = cursor; i < end; i++) {
-                Document doc = reader.document(docs[i].doc, selector);
+                new ArrayList<ResultSecurityInfo>(docs.length);
+            
+            for (ScoreDoc scoreDoc: docs) {
+                Document doc = reader.document(scoreDoc.doc, fieldSelector);
                 rsiList.add(new LuceneResultSecurityInfo(doc));
             }
             
-            long start = System.currentTimeMillis();
             this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
-            long finish = System.currentTimeMillis();
             
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Query result authorization took " 
-                        + (finish-start) + " ms");
-            }
-            
-            // XXX: fix cursor crap, give client the expected number of results, even
-            // after security filtering, figure out best solution (use dummy results ?)
-            // Add only authorized docs to ResultSet
-            // XXX: add metadata to resultset about how many un-authorized hits, etc.
-            for (ResultSecurityInfo info: rsiList) {
-                if (info.isAuthorized()) {
-                    rs.addResult(this.documentMapper.getPropertySet(
-                            ((LuceneResultSecurityInfo)info).getDocument()));
+            for (ResultSecurityInfo rsi: rsiList) {
+                if (rsi.isAuthorized()) {
+                    results.add(((LuceneResultSecurityInfo)rsi).getDocument());
                 }
             }
-            
         } else {
-            for (int i = cursor; i < end; i++) {
-                Document doc = reader.document(docs[i].doc, selector);
-                rs.addResult(this.documentMapper.getPropertySet(doc));
+            for (ScoreDoc scoreDoc: docs) {
+                results.add(reader.document(scoreDoc.doc, fieldSelector));
             }
         }
         
-        return rs;
+        return results;
     }
+
+//    private ResultSetImpl buildResultSetOld(ScoreDoc[] docs, int totalHits,
+//                                         IndexReader reader, String token, int maxResults,
+//                                         int cursor, PropertySelect selectedProperties)
+//        throws IOException {
+//
+//        ResultSetImpl rs = new ResultSetImpl(docs.length);
+//        rs.setTotalHits(totalHits);
+//
+//        if (docs.length == 0 || cursor >= docs.length) {
+//            return rs; // Empty result set
+//        }
+//
+//        if (maxResults < 0)
+//            maxResults = 0;
+//
+//        int end = (cursor + maxResults) < docs.length ? 
+//                                              cursor + maxResults : docs.length;
+//
+//        FieldSelector selector = 
+//            this.documentMapper.getDocumentFieldSelector(selectedProperties);
+//        
+//        if (this.queryResultAuthorizationManager != null) {
+//            // XXX: cursor/maxresults might be confusing after filtering, define it 
+//            //      properly and fix this.
+//            List<ResultSecurityInfo> rsiList = 
+//                        new ArrayList<ResultSecurityInfo>(end-cursor);
+//            for (int i = cursor; i < end; i++) {
+//                Document doc = reader.document(docs[i].doc, selector);
+//                rsiList.add(new LuceneResultSecurityInfo(doc));
+//            }
+//            
+//            long start = System.currentTimeMillis();
+//            this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
+//            long finish = System.currentTimeMillis();
+//            
+//            if (this.logger.isDebugEnabled()) {
+//                this.logger.debug("Query result authorization took " 
+//                        + (finish-start) + " ms");
+//            }
+//            
+//            // XXX: fix cursor crap, give client the expected number of results, even
+//            // after security filtering, figure out best solution (use dummy results ?)
+//            // Add only authorized docs to ResultSet
+//            // XXX: add metadata to resultset about how many un-authorized hits, etc.
+//            for (ResultSecurityInfo info: rsiList) {
+//                if (info.isAuthorized()) {
+//                    rs.addResult(this.documentMapper.getPropertySet(
+//                            ((LuceneResultSecurityInfo)info).getDocument()));
+//                }
+//            }
+//            
+//        } else {
+//            for (int i = cursor; i < end; i++) {
+//                Document doc = reader.document(docs[i].doc, selector);
+//                rs.addResult(this.documentMapper.getPropertySet(doc));
+//            }
+//        }
+//        
+//        return rs;
+//    }
     
     @Required
     public void setDocumentMapper(DocumentMapper documentMapper) {

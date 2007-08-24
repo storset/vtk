@@ -6,7 +6,7 @@
 
   <resultMap id="Resource" class="java.util.HashMap">
     <result property="uri" column="uri" />
-    <result property="id" column="resource_id"/>
+    <result property="id" column="resource_id" javaType="int"/>
     <result property="resourceType" column="resource_type"/>
     <result property="creationTime" column="creation_time" javaType="date"/>
     <result property="createdBy" column="created_by" />
@@ -106,16 +106,16 @@
   
   <resultMap id="ChangeLogEntry" class="org.vortikal.repositoryimpl.ChangeLogEntry">
     
-    <result property="changeLogEntryId" column="changelog_entry_id"/>
-    <result property="loggerId" column="logger_id"/>
-    <result property="loggerType" column="logger_type"/>
+    <result property="changeLogEntryId" column="changelog_entry_id" javaType="int"/>
+    <result property="loggerId" column="logger_id" javaType="int"/>
+    <result property="loggerType" column="logger_type" javaType="int"/>
     <result property="uri" column="uri" />
-    <result property="resourceId" column="resource_id"/>
+    <result property="resourceId" column="resource_id" javaType="int"/>
     <result property="operation" column="operation" 
       typeHandler="org.vortikal.repositoryimpl.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback"/>
     <result property="collection" column="is_collection"
       typeHandler="org.vortikal.repositoryimpl.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
-    <result property="timestamp" column="timestamp"/>
+    <result property="timestamp" column="timestamp" javaType="date"/>
     
   </resultMap>
   

@@ -68,8 +68,8 @@ public class SortBuilderImpl implements SortBuilder {
                     new org.apache.lucene.search.SortField[0]);
         }
 
-        org.apache.lucene.search.SortField[] luceneSortFields = new org.apache.lucene.search.SortField[sort
-                .getSortFields().size()];
+        org.apache.lucene.search.SortField[] luceneSortFields = 
+            new org.apache.lucene.search.SortField[sort.getSortFields().size()];
 
         int j = 0;
         for (Iterator i = sort.getSortFields().iterator(); i.hasNext(); j++) {
@@ -107,13 +107,9 @@ public class SortBuilderImpl implements SortBuilder {
                         + f.getClass().getName());
             }
 
-            
-            
-
             //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
-
         }
 
         return new org.apache.lucene.search.Sort(luceneSortFields);
     }
-    }
+}

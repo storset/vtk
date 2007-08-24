@@ -5,7 +5,15 @@
   <artifactId>vortikal</artifactId>
   <version>0.3.10-SNAPSHOT</version>
   <name>The Vortikal Web Framework</name>
-  <url>http://vortikal.berlios.de</url>
+  <url>http://www.usit.uio.no/it/vortex/</url>
+
+  <description>The Vortikal Web Framework is an open source web
+  publishing solution. It consists of two principal parts, a file
+  repository for storing files and folders and a web framework
+  allowing functionality to be added in a resource centric way. On top
+  of this framework it provides both web based and webdav content
+  management solutions.</description>
+
   <organization>
     <name>Vortikal Project</name>
     <url>http://www.usit.uio.no/it/vortex</url>
@@ -16,17 +24,35 @@
   </issueManagement>
   <developers>
     <developer>
+      <id>storset</id>
       <name>Jo Størset</name>
+      <url>http://www.uio.no/sok?person=storset</url>
     </developer>
     <developer>
+      <id>gormap</id>
       <name>Gorm Paulsen</name>
+      <url>http://www.uio.no/sok?person=gormap</url>
     </developer>
     <developer>
+      <id>oyviste</id>
       <name>Øyvind Stegard</name>
+      <url>http://www.uio.no/sok?person=oyviste</url>
     </developer>
     <developer>
-      <name>Eirik Meland</name>
+      <id>evenh</id>
+      <name>Even Halvorsen</name>
+      <url>http://www.uio.no/sok?person=evenh</url>
     </developer>
+    <developer>
+      <id>tommae</id>
+      <name>Tomm Anders Eriksen</name>
+      <url>http://www.uio.no/sok?person=tommae</url>
+    </developer>  
+    <developer>
+      <id>kristisy</id>
+      <name>Kristian Syversen</name>
+      <url>http://www.uio.no/sok?person=kristisy</url>
+    </developer>  
   </developers>  
   <mailingLists>
     <mailingList>
@@ -53,7 +79,7 @@
   <scm>
     <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
     <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
-    <url>svn://svn.uio.no/svnroot/vortikal/trunk</url>
+    <!--url>svn://svn.uio.no/svnroot/vortikal/trunk</url-->
   </scm>
   <licenses>
     <license>
@@ -62,8 +88,8 @@
   </licenses>
   <distributionManagement>
     <site>
-      <id>stirfry</id>
-      <url>file:///usit/stirfry/www/var/virtual/no.uio.stirfry_80/htdocs/continuum/${pom.artifactId}</url>
+      <id>webdav-site</id>
+      <url>dav:https://www-dav.usit.uio.no/it/vortex/internt/maven/${project.build.finalName}-test</url>
     </site>
     <repository>
       <id>xml.uio.no</id>
@@ -95,16 +121,6 @@
       <id>repo1.maven.org</id>
       <url>http://repo1.maven.org/maven2</url>
     </repository>
-    <!--
-    <repository>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Repository for Maven</name>
-      <url>https://maven2-repository.dev.java.net/nonav/repository</url>
-      <layout>default</layout>	  
-    </repository>
-    -->
-    <!--
-    -->
   </repositories>
   
   <packaging>jar</packaging>
@@ -157,7 +173,13 @@
         <directory>src/test/resources</directory>
       </testResource>
     </testResources>
-    
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+      </extension>
+    </extensions>
+
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
@@ -234,6 +256,7 @@
 	  </excludes>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
         <artifactId>maven-framework-version-plugin</artifactId>
@@ -250,6 +273,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
@@ -269,6 +293,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -282,6 +307,7 @@
         </configuration>
 
       </plugin>
+
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
@@ -298,6 +324,15 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+
+      <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-site-plugin</artifactId>
+       <configuration>
+         <outputEncoding>utf-8</outputEncoding>
+       </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -342,7 +377,7 @@
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
-      <version>0.8</version>
+      <version>0.9</version>
     </dependency>
 
     <dependency>
@@ -592,12 +627,19 @@
       <artifactId>aspectjweaver</artifactId>
       <version>1.5.3</version>
     </dependency>
+    
     <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.1_3</version>
+    </dependency>
+
+    <!--dependency>
       <groupId>org.jencks</groupId>
       <artifactId>jencks</artifactId>
       <version>2.0</version>
       <classifier>all</classifier>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.geronimo.modules</groupId>
       <artifactId>geronimo-transaction</artifactId>
@@ -649,10 +691,20 @@
           </reportSet>
         </reportSets>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <!--plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin-->
+      <!--plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+      </plugin-->      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>changelog-maven-plugin</artifactId>
       </plugin>
       <!--
       <plugin>

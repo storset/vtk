@@ -114,7 +114,7 @@ public final class FieldValueMapper {
 
         return field;
     }
-
+    
     /**
      * Create indexed (but not stored) <code>Field</code> from single
      * <code>Value</code>.
@@ -145,33 +145,6 @@ public final class FieldValueMapper {
                 type);
 
         return valueFactory.createValue(decodedFieldValue, type);
-    }
-
-    /**
-     * Create multiple <code>Value</code>s from <code>Field</code> with the
-     * given datatype. The field values should be an escaped multi-value field
-     * with native string encoding of each value.
-     * 
-     * @param field
-     * @param valueFactory
-     * @param type
-     * @return
-     */
-    public static Value[] getValuesFromField(Field field,
-            ValueFactory valueFactory, int type) {
-
-        String[] stringValues = field.stringValue().split(
-                Character.toString(MULTI_VALUE_FIELD_SEPARATOR));
-        Value[] values = new Value[stringValues.length];
-        for (int i = 0; i < stringValues.length; i++) {
-            String stringValue = decodeIndexFieldValueToString(
-                    unescapeCharacter(MULTI_VALUE_FIELD_SEPARATOR,
-                            stringValues[i]), type);
-
-            values[i] = valueFactory.createValue(stringValue, type);
-        }
-
-        return values;
     }
 
     /**

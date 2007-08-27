@@ -53,7 +53,7 @@ public class VolatileLuceneIndex extends AbstractLuceneIndex  {
         
     }
     
-    protected Directory createDirectory(boolean eraseContents)
+    protected Directory createDirectory()
             throws IOException {
         return new RAMDirectory();
     }

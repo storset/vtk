@@ -89,7 +89,10 @@ public abstract class AbstractLuceneIndex {
      */
     private static final int MAX_DIRTY_READONLY_READERS = 10;
     
-    private LinkedList dirtyReadOnlyReaders = new LinkedList();
+    private LinkedList<ReadOnlyIndexReader> dirtyReadOnlyReaders = 
+                                    new LinkedList<ReadOnlyIndexReader>();
+
+    /** Shared read-only index reader instance */
     private ReadOnlyIndexReader roReader = null;
     
     private boolean roReaderDirty = false;  // Flags if the read-only reader instance is dirty
@@ -122,19 +125,19 @@ public abstract class AbstractLuceneIndex {
      * @throws IOException
      */
     protected void initialize() throws IOException {
-        this.directory = createDirectory(this.eraseExistingIndex);
+        this.directory = createDirectory();
         if (this.directory == null) {
             throw new IOException("Directory provided by subclass was null");
         }
         
-        initializeIndexDirectory(this.directory);
+        initializeIndexDirectory(this.directory, this.eraseExistingIndex);
     }
     
     /**
      * This method must be implemented by subclasses to provide a 
      * {@link org.apache.lucene.store.Directory} implementation.
      */
-    protected abstract Directory createDirectory(boolean eraseContents) throws IOException;
+    protected abstract Directory createDirectory() throws IOException;
     
     protected synchronized IndexWriter getIndexWriter() throws IOException {
         if (this.directory == null) {
@@ -186,13 +189,15 @@ public abstract class AbstractLuceneIndex {
             this.roReaderDirty = false;
         } else if (this.roReaderDirty) {
             
+            // Try closing old reader
             if (!this.roReader.closeOnZeroReferences()) {
+                // Still in use, so it has now been marked for closing internally
+                // Keep a reference to in old reader queue
                 this.dirtyReadOnlyReaders.addFirst(this.roReader);
             }
             
             if (this.dirtyReadOnlyReaders.size() > MAX_DIRTY_READONLY_READERS) {
-                ReadOnlyIndexReader oldest = 
-                                (ReadOnlyIndexReader)this.dirtyReadOnlyReaders.removeLast();
+                ReadOnlyIndexReader oldest = this.dirtyReadOnlyReaders.removeLast();
                 if (oldest.getReferenceCount() > 0) {
                     LOG.warn("Forcefully closing an old read-only index reader with ref count " 
                             + oldest.getReferenceCount());
@@ -334,8 +339,8 @@ public abstract class AbstractLuceneIndex {
             this.directory = null;
         }
         
-        this.directory = createDirectory(false);
-        initializeIndexDirectory(this.directory);
+        this.directory = createDirectory();
+        initializeIndexDirectory(this.directory, false);
 
         this.roReaderDirty = true;
 
@@ -369,8 +374,8 @@ public abstract class AbstractLuceneIndex {
             this.directory = null;
         }
         
-        this.directory = createDirectory(true);
-        initializeIndexDirectory(this.directory);
+        this.directory = createDirectory();
+        initializeIndexDirectory(this.directory, true);
 
         this.roReaderDirty = true;
         
@@ -380,8 +385,9 @@ public abstract class AbstractLuceneIndex {
 
     /** Force close all outdated read-only index readers in close-on-last-reference state */
     private void cleanupDirtyReadOnlyIndexReaders() {
-        for (Iterator i = this.dirtyReadOnlyReaders.iterator(); i.hasNext();) {
-            ReadOnlyIndexReader readOnlyReader = (ReadOnlyIndexReader)i.next();
+        for (Iterator<ReadOnlyIndexReader> i = 
+                this.dirtyReadOnlyReaders.iterator(); i.hasNext();) {
+            ReadOnlyIndexReader readOnlyReader = i.next();
             if (readOnlyReader.getReferenceCount() > 0) {
                 LOG.warn("Forcefully closing old read-only index reader with ref count "
                         + readOnlyReader.getReferenceCount());
@@ -398,21 +404,16 @@ public abstract class AbstractLuceneIndex {
     }
     
     /** Initialize Lucene index */
-    private void initializeIndexDirectory(Directory directory) throws IOException {
-        // Check index lock, no matter if a valid index exists in directory
-        // or not. The index locks are typically stored in /tmp, and as such, not
-        // dependent upon index directory contents.
-        // If contents of an index has been cleared manually, but locks still
-        // remain in /tmp, we are in trouble if we don't clear them here,
-        // and try to create a new index.
+    private void initializeIndexDirectory(Directory directory,
+                                     boolean createNew) throws IOException {
         
-        // Check for any index locks, remove them if requested.
-        checkIndexLock(directory);
-        
-        // Check status of index directory, create new index if necessary
-        if (! IndexReader.indexExists(directory)) {
-            new IndexWriter(directory, this.analyzer, true).close();
+        if (createNew || !IndexReader.indexExists(directory)) {
+            IndexWriter writer = new IndexWriter(directory, this.analyzer, true);
+            writer.setUseCompoundFile(true);
+            writer.close();
             LOG.info("Empty new index created in directory '" + directory + "'");
+        } else {
+            checkIndexLock(directory);
         }
     }
     

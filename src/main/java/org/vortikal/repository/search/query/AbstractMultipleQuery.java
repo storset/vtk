@@ -47,7 +47,7 @@ public abstract class AbstractMultipleQuery implements Query {
     }
 
     public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer().append(prefix);
+        StringBuilder buf = new StringBuilder(prefix);
         buf.append(this.getClass().getName()).append("\n");
         
         prefix += "  ";

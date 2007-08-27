@@ -70,7 +70,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
      * Create fs directory. One instance of this is created at startup
      * and whenever an index is re-initialized or re-created.
      */
-    protected Directory createDirectory(boolean eraseContents) throws IOException {
+    protected Directory createDirectory() throws IOException {
         logger.debug("Initializing index storage directory at path '" 
                 + this.storageDirectory.getAbsolutePath() + "'");
 
@@ -82,7 +82,9 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
                     + this.storageDirectory.getAbsolutePath() + "' is not writable.");
         }
         
-        return FSDirectory.getDirectory(this.storageDirectory, eraseContents);
+        return FSDirectory.getDirectory(this.storageDirectory);
+        
+        //return FSDirectory.getDirectory(this.storageDirectory, eraseContents);
     }
     
     /**

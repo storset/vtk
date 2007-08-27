@@ -37,12 +37,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.StaleReaderException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.TermFreqVector;
 import org.apache.lucene.index.TermPositions;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.vortikal.repository.IllegalOperationException;
 
 /**
@@ -128,6 +132,12 @@ final class ReadOnlyIndexReader extends IndexReader {
         throw new IllegalOperationException("Writing operations are not supported by this reader instance");
     }
 
+    public void setNorm(int doc, String field, float value)
+    throws StaleReaderException, CorruptIndexException,
+        LockObtainFailedException, IOException {
+        throw new IllegalOperationException("Writing operations are not supported by this reader instance.");
+    }
+
     public int docFreq(Term t) throws IOException {
         return this.wrappedReader.docFreq(t);
     }
@@ -207,4 +217,21 @@ final class ReadOnlyIndexReader extends IndexReader {
         return wrappedReader.hasNorms(field);
     }
 
+    public Directory directory() {
+        throw new IllegalOperationException("This is a read-only IndexReader instance, "
+                + "Directory-access will not be provided.");
+    }
+
+    public boolean isOptimized() {
+        return wrappedReader.isOptimized();
+    }
+
+    public TermDocs termDocs(Term term) throws IOException {
+        return wrappedReader.termDocs(term);
+    }
+
+    public TermPositions termPositions(Term term) throws IOException {
+        return wrappedReader.termPositions(term); 
+    }
+    
 }

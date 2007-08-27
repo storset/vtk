@@ -42,8 +42,10 @@ import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 
 import EDU.oswego.cs.dl.util.concurrent.Mutex;
+
 
 /**
  * Manages access to a single file-system based Lucene index instance.
@@ -72,9 +74,11 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     private boolean eraseExistingIndex = false;
     private boolean forceUnlock = false;
     
-    /** If <code>true</code>, the underlying index will be explicitly closed after initialization is complete.
-     *  Can be used for index instances you don't want to have open before it is explicitly needed.
-     *  Such an instance must be re-initialized before it can be used (by calling {@link #reinitialize()}). 
+    /** If <code>true</code>, the underlying index will be explicitly closed 
+     * after initialization is complete. Can be used for index instances you 
+     * don't want to have open before it is explicitly needed.
+     * Such an instance must be re-initialized before it can be 
+     * used (by calling {@link #reinitialize()}). 
      **/
     private boolean closeAfterInitialization = false;
     
@@ -82,12 +86,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     private Mutex lock = new Mutex();
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        
-        if (this.storageRootPath == null) {
-            throw new BeanInitializationException ("Property 'storageRootPath' not set.");
-        } else if (this.storageId == null) {
-            throw new BeanInitializationException("Property 'storageId' not set.");
-        }
         
         try {
             // Initialization of physical storage directory
@@ -354,6 +352,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         return this.storageId;
     }
 
+    @Required
     public void setStorageId(String storageId) {
         this.storageId = storageId;
     }
@@ -362,6 +361,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         return this.storageRootPath;
     }
 
+    @Required
     public void setStorageRootPath(String storageRootPath) {
         this.storageRootPath = storageRootPath;
     }

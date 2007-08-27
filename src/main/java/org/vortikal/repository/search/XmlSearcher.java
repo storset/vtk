@@ -497,15 +497,14 @@ public class XmlSearcher {
         // within (non-nested) brackets.
         private List<String> splitFields(String fields) {
             List<String> results = new ArrayList<String>();
-
-            String s = new String();
+            
+            StringBuilder field = new StringBuilder();
             boolean insideBrackets = false;
             for (int i = 0; i < fields.length(); i++) {
                 if (',' == fields.charAt(i) && !insideBrackets) {
-                    results.add(s);
-                    s = new String();
+                    results.add(field.toString());
+                    field = new StringBuilder();
                 } else {
-
                     if ('[' == fields.charAt(i)) {
                         if (!insideBrackets) {
                             insideBrackets = true;
@@ -516,12 +515,12 @@ public class XmlSearcher {
                             insideBrackets = false;
                         }
                     }
-                    s += fields.charAt(i);
+                    field.append(fields.charAt(i));
                 }
-
             }
-            if (!"".equals(s)) {
-                results.add(s);
+
+            if (field.length() > 0) {
+                results.add(field.toString());
             }
             
             return results;

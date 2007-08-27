@@ -71,8 +71,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     public void orderedPropertySetIteration(PropertySetHandler handler) 
         throws DataAccessException { 
 
+        SqlMapClient client = getSqlMapClient();
         try {
-            SqlMapClient client = getSqlMapClient();
+            client.startTransaction();
             String statementId = getSqlMap("orderedPropertySetIteration");
             
             ResourceIdCachingPropertySetRowHandler rowHandler = 
@@ -82,9 +83,15 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             client.queryWithRowHandler(statementId, rowHandler);
             
             rowHandler.handleLastBufferedRows();
-            
+            client.commitTransaction();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            try {
+                client.endTransaction();
+            } catch (SQLException sqle) {
+                throw new DataAccessException("Failed to end transaction", sqle);
+            }
         }
 
     }
@@ -92,8 +99,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     public void orderedPropertySetIteration(String startUri, PropertySetHandler handler) 
         throws DataAccessException {
         
+        SqlMapClient client = getSqlMapClient();
         try {
-            SqlMapClient client = getSqlMapClient();
+            client.startTransaction();
             String statementId = getSqlMap("orderedPropertySetIterationWithStartUri");
             
             PropertySetRowHandler rowHandler =
@@ -109,9 +117,15 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             client.queryWithRowHandler(statementId, parameters, rowHandler);
             
             rowHandler.handleLastBufferedRows();
-            
+            client.commitTransaction();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            try {
+                client.endTransaction();
+            } catch (SQLException sqle) {
+                throw new DataAccessException("Failed to end transaction");
+            }
         }
         
     }
@@ -124,8 +138,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             throw new IllegalArgumentException("URI list cannot be empty");
         }
         
+        SqlMapClient client = getSqlMapClient();
         try {
-            SqlMapClient client = getSqlMapClient();
+            client.startTransaction();
             String getSessionIdStatement = getSqlMap("nextTempTableSessionId");
             
             Integer sessionId = (Integer)client.queryForObject(getSessionIdStatement);
@@ -140,8 +155,11 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                 params.put("uri", uri);
                 client.insert(insertUriTempTableStatement, params);
             }
-            client.executeBatch();
-                
+            int batchCount = client.executeBatch();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Number of inserts batched (uri list): " + batchCount);
+            }
+            
             String statement = getSqlMap("orderedPropertySetIterationForUris");
             
             PropertySetRowHandler rowHandler
@@ -155,8 +173,15 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             statement = getSqlMap("deleteFromTempTableBySessionId");
             client.delete(statement, sessionId);
             
+            client.commitTransaction();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            try {
+                client.endTransaction();
+            } catch (SQLException e) {
+                throw new DataAccessException("Failed to end transaction: ", e);
+            }
         }
     }
 
@@ -170,9 +195,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                     + rsiList.size() + " elements");
         }
         
+        SqlMapClient client = getSqlMapClient();
         try {
-            SqlMapClient client = getSqlMapClient();
-            
+            client.startTransaction();
             String statement = getSqlMap("nextTempTableSessionId");
             
             Integer sessionId = (Integer)client.queryForObject(statement);
@@ -207,7 +232,10 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                     params.clear();
                     ++n;
                 }
-                client.executeBatch();
+                int batchCount = client.executeBatch();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Number of inserts batched (query auth): " + batchCount);
+                }
                 
                 params = new HashMap();
                 statement = getSqlMap("queryResultAuthorization");
@@ -279,18 +307,25 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                         + allIds.size() + " elements");
             }
             
+            client.commitTransaction();
+            
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            try {
+                client.endTransaction();
+            } catch (SQLException sqle) {
+                throw new DataAccessException("Failed to end transaction", sqle);
+            }
         }
         
     }
     
     public List<ChangeLogEntry> getLastChangeLogEntries() {
         
+        SqlMapClient client = getSqlMapClient();
         try {
-            
-            SqlMapClient client = getSqlMapClient();
-            
+            client.startTransaction();
             String statement = getSqlMap("getMaxChangeLogEntryId");
             
             Map<String, Object> params = new HashMap<String, Object>();
@@ -304,10 +339,17 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             List<ChangeLogEntry> entries = 
                 client.queryForList(statement, params);
             
+            client.commitTransaction();
+
             return entries;
-            
         } catch (SQLException sqle) {
             throw new DataAccessException(sqle);
+        } finally {
+            try {
+                client.endTransaction();
+            } catch (SQLException sqle) {
+                throw new DataAccessException("Failed to end transaction", sqle);
+            }
         }
     }
     
@@ -318,18 +360,25 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             maxId = Math.max(maxId, entry.getChangeLogEntryId());
         }
         
+        SqlMapClient client = getSqlMapClient();
         try {
+            client.startTransaction();
             String statement = getSqlMap("removeChangeLogEntries");
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("loggerId", this.loggerId);
             params.put("loggerType", this.loggerType);
             params.put("maxId", maxId);
             
-            SqlMapClient client = getSqlMapClient();
             client.delete(statement, params);
-            
+            client.commitTransaction();
         } catch (SQLException sqle) {
             throw new DataAccessException(sqle);
+        } finally {
+            try {
+                client.endTransaction(); 
+            } catch (SQLException sqle) {
+                throw new DataAccessException("Failed to end transaction", sqle);
+            }
         }
     }
 

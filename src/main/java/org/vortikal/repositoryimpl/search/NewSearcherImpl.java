@@ -41,6 +41,8 @@ public class NewSearcherImpl implements Searcher {
     private QueryBuilderFactory queryBuilderFactory;
     
     private final SortBuilder sortBuilder = new SortBuilderImpl();
+    
+    private static final int MIN_LUCENE_SEARCH_LIMIT = 100;
 
     /**
      * The internal maximum number of hits allowed for any
@@ -80,6 +82,12 @@ public class NewSearcherImpl implements Searcher {
             LOG.debug("Built Lucene sorting '" + luceneSort + "' from sorting '"
                     + sorting + "'");
         }
+        
+        System.out.println("Built Lucene query '" 
+                + luceneQuery + "' from query '" + query.dump("") + "'");
+        
+        System.out.println("Built Lucene sorting '" + luceneSort + "' from sorting '"
+                + sorting + "'");
 
         IndexSearcher searcher = null;
         try {
@@ -90,7 +98,8 @@ public class NewSearcherImpl implements Searcher {
             int have = 0;
             
             // Perform searches until we have enough authorized results
-            int searchLimit = Math.min(this.luceneSearchLimit, Math.max(need, 500));
+            int searchLimit = Math.min(this.luceneSearchLimit, 
+                                    Math.max(need, MIN_LUCENE_SEARCH_LIMIT));
             int scoreDocPos = 0;
             List<Document> authorizedDocs = new ArrayList<Document>(need);
             

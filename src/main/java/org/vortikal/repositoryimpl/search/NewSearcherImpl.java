@@ -42,7 +42,7 @@ public class NewSearcherImpl implements Searcher {
     
     private final SortBuilder sortBuilder = new SortBuilderImpl();
     
-    private static final int MIN_LUCENE_SEARCH_LIMIT = 100;
+    private static final int MIN_INITIAL_SEARCHLIMIT_UPSCALE = 500;
 
     /**
      * The internal maximum number of hits allowed for any
@@ -98,8 +98,7 @@ public class NewSearcherImpl implements Searcher {
             int have = 0;
             
             // Perform searches until we have enough authorized results
-            int searchLimit = Math.min(this.luceneSearchLimit, 
-                                    Math.max(need, MIN_LUCENE_SEARCH_LIMIT));
+            int searchLimit = Math.min(this.luceneSearchLimit, need);
             int scoreDocPos = 0;
             List<Document> authorizedDocs = new ArrayList<Document>(need);
             
@@ -133,7 +132,9 @@ public class NewSearcherImpl implements Searcher {
                 }  
                 
                 scoreDocPos = docs.length;
-                searchLimit = Math.min(searchLimit * 2, this.luceneSearchLimit);
+                searchLimit = Math.min(
+                                Math.max(searchLimit * 2, MIN_INITIAL_SEARCHLIMIT_UPSCALE),
+                                                                            this.luceneSearchLimit);
                 System.out.println("Preparing for next round with new searchLimit = " + searchLimit);
                 System.out.println("New scoreDocPos = " + scoreDocPos);
                 System.out.println("-------");

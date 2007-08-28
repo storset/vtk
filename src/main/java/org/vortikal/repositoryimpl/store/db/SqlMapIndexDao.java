@@ -135,7 +135,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         throws DataAccessException {
         
         if (uris.size() == 0) {
-            throw new IllegalArgumentException("URI list cannot be empty");
+            return;
         }
         
         SqlMapClient client = getSqlMapClient();

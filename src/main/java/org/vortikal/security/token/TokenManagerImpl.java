@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.doomdark.uuid.UUIDGenerator;
+import org.safehaus.uuid.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationHandler;

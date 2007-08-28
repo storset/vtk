@@ -90,10 +90,7 @@ public class NewSearcherImpl implements Searcher {
             int have = 0;
             
             // Perform searches until we have enough authorized results
-            int searchLimit = need;
-            if (searchLimit > this.luceneSearchLimit) {
-                searchLimit = this.luceneSearchLimit;
-            }
+            int searchLimit = Math.min(this.luceneSearchLimit, Math.max(need, 500));
             int scoreDocPos = 0;
             List<Document> authorizedDocs = new ArrayList<Document>(need);
             
@@ -116,11 +113,13 @@ public class NewSearcherImpl implements Searcher {
                                            reader, token, selector);
                 
                 System.out.println("have = " + have + " after authorization");
-                
+
+                ++round;
+
                 if (totalHits == docs.length 
                               || searchLimit == this.luceneSearchLimit) {
                     // We already have all available hits, no need to continue ..
-                    System.out.println("Breaking out because totalHits == docs.length || searchLimit reaced max");
+                    System.out.println("Breaking out because totalHits == docs.length || searchLimit reached max");
                     break;
                 }  
                 
@@ -129,7 +128,6 @@ public class NewSearcherImpl implements Searcher {
                 System.out.println("Preparing for next round with new searchLimit = " + searchLimit);
                 System.out.println("New scoreDocPos = " + scoreDocPos);
                 System.out.println("-------");
-                ++round;
             }
             
             System.out.println();

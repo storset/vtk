@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.QueryException;
@@ -62,271 +61,216 @@ import org.vortikal.repositoryimpl.search.query.security.LuceneResultSecurityInf
 import org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 
-/**
- * Implementation of repository {@link org.vortikal.repository.search.Searcher}
- * using Lucene.
- * 
- *  TODO: Integrate ACL filtering in search, don't do it post-search, 
- *        index relevant parts of ACL lists.
- *        
- *  <p>Configurable bean properties:</p>
- *  <ul>
- *      <li><code>maxAllowedHitsPerQuery</code>
- *      The internal maximum number of hits allowed for any
- *      query <em>before</em> any post-processing of the results.
- *      This is a low-level hard system limit, and no query result will ever be 
- *      bigger than this value.
- *      </li>
- *      
- *      <li><code>indexAccessor</code>
- *      The low-level Lucene index accessor instance that this searcher should use</li>
- *      
- *      <li><code>queryResultAuthorizationManager</code>
- *      Manager used to authorize results in queries based on the security token
- *      of the client performing the query. Security filtering will not be 
- *      applied to results if this bean is not configured.</li>
- *      
- *      <li><code>queryBuilderFactory</code>
- *      Factory for building Lucene queries (required)</li>
- *  </ul>
- * @author oyviste
- *
- */
-public class SearcherImpl implements Searcher, InitializingBean {
+public class SearcherImpl implements Searcher {
 
-    private final Log logger = LogFactory.getLog(SearcherImpl.class);
+    private static final Log LOG = LogFactory.getLog(SearcherImpl.class);
 
     private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
     private QueryResultAuthorizationManager queryResultAuthorizationManager;
     private QueryBuilderFactory queryBuilderFactory;
     
-    private SortBuilder sortBuilder = new SortBuilderImpl();
+    private final SortBuilder sortBuilder = new SortBuilderImpl();
     
+    private static final int MIN_INITIAL_SEARCHLIMIT_UPSCALE = 500;
+
     /**
-     * The maximum number of hits allowed for any
+     * The internal maximum number of hits allowed for any
      * query <em>before</em> processing of the results by layers above Lucene.
-     * This limit includes unauthorized hits that are not supplied to client.
-     * 
+     * This limit includes unauthorized hits that are <em>not</em> supplied to client.
      */
-    private int maxAllowedHitsPerQuery = 50000;
+    private int luceneSearchLimit = 60000;
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.maxAllowedHitsPerQuery <= 0) {
-            throw new BeanInitializationException("Property 'maxAllowedHitsPerQuery'" 
-                                         + " must be an integer greater than zero.");
-        }
-        
-        if (this.queryResultAuthorizationManager == null) {
-            this.logger.warn("No authorization manager configured, "
-                             + "queries will not be filtered with regard to"
-                             + " permissions.");
+        if (this.luceneSearchLimit <= 0) {
+            throw new BeanInitializationException(
+             "Property 'luceneHitLimit' must be an integer greater than zero.");
         }
     }
     
-    public ResultSet execute(String token, Search search)
-        throws QueryException {
+    public ResultSet execute(String token, Search search) throws QueryException {
 
         Query query = search.getQuery();
         Sorting sorting = search.getSorting();
-        
-        int limit = search.getLimit();
-        
-        int cursor = search.getCursor();
+        int clientLimit = search.getLimit();
+        int clientCursor = search.getCursor();
         PropertySelect selectedProperties = search.getPropertySelect();
-        
-        if (selectedProperties == null) {
-            throw new IllegalArgumentException("Argument selectedProperties cannot be NULL");
-        }
 
-
-        org.apache.lucene.search.Query q =
+        org.apache.lucene.search.Query luceneQuery =
             this.queryBuilderFactory.getBuilder(query).buildQuery();
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Built lucene query '" + q 
-                                            + "' from query " + query.dump(""));
+        Sort luceneSort = sorting != null ? 
+                this.sortBuilder.buildSort(sorting) : null;
+        
+        FieldSelector selector = selectedProperties != null ?
+                this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Built Lucene query '" 
+                    + luceneQuery + "' from query '" + query.dump("") + "'");
+            
+            LOG.debug("Built Lucene sorting '" + luceneSort + "' from sorting '"
+                    + sorting + "'");
         }
-
+        
         IndexSearcher searcher = null;
         try {
             searcher = this.indexAccessor.getIndexSearcher();
+            IndexReader reader = searcher.getIndexReader();
             
-            // The n parameter is the upper maximum number of results we allow
-            // Lucene to fetch.
-            // int n = cursor + maxResults;
-            // if (n > this.maxAllowedHitsPerQuery) n = this.maxAllowedHitsPerQuery;
+            int need = clientCursor + clientLimit;
+            int have = 0;
             
-            long start = System.currentTimeMillis();
-            TopDocs topDocs = null;
-            if (sorting != null) {
-                // XXX: Sorting performance with many hits may very well suck ..
-                Sort sort = this.sortBuilder.buildSort(sorting);
-                topDocs = searcher.search(q, null, 
-                                        this.maxAllowedHitsPerQuery, sort);
-            } else {
-                topDocs = searcher.search(q, null, 
-                                        this.maxAllowedHitsPerQuery);
+            // Perform searches until we have enough authorized results
+            int searchLimit = Math.min(this.luceneSearchLimit, need);
+            int scoreDocPos = 0;
+            List<Document> authorizedDocs = new ArrayList<Document>(need);
+            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Starting search interations ..");
+                LOG.debug("clientCursor = " + clientCursor + ", clientLimit = " + clientLimit);
+                LOG.debug("need = " + need + ", have = " + have);
             }
             
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Got " + topDocs.totalHits 
-                                        + " total hits for Lucene query: " + q);
+            int round = 0;
+            long totalLuceneQueryTime = 0L;
+            long queryAuthorizationTime = 0L;
+            int totalHits = -1;
+            while (have < need) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Searching with search limit = " 
+                                            + searchLimit + ", round = " + round);
+                }
+                long start = System.currentTimeMillis();
+                TopDocs topDocs = performLuceneQuery(searcher, luceneQuery, 
+                                                     searchLimit, luceneSort);
+                long finished = System.currentTimeMillis();
+                if (LOG.isDebugEnabled()) {
+                    if (luceneSort != null) {
+                        LOG.debug("Sorted Lucene query with searchLimit = " 
+                                + searchLimit + " took " 
+                                + (finished-start) + "ms");
+                    } else {
+                        LOG.debug("Unsorted Lucene query with searchLimit = " 
+                                + searchLimit + " took " 
+                                + (finished-start) + "ms");
+                    }
+                }
+                totalLuceneQueryTime += (finished-start);
                 
-                if (sorting != null) {
-                    this.logger.debug("Sorted Lucene query took: " 
-                            + (System.currentTimeMillis()-start) + " ms");
-                } else {
-                    this.logger.debug("Unsorted Lucene query took: " 
-                            + (System.currentTimeMillis()-start) + " ms");
+                ScoreDoc[] docs = topDocs.scoreDocs;
+                totalHits = topDocs.totalHits;
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Got " + docs.length + " Lucene hits, totalHits = " + totalHits);
+                }
+                
+                start = System.currentTimeMillis();
+                have += authorizeScoreDocs(docs, scoreDocPos,
+                                           authorizedDocs,
+                                           reader, token, selector);
+                finished = System.currentTimeMillis();
+                queryAuthorizationTime += (finished - start);
+                
+                
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("have = " + have + " results after authorization");
+                }
+
+                ++round;
+
+                if (totalHits == docs.length 
+                              || searchLimit == this.luceneSearchLimit) {
+                    // We already have all available hits, no need to continue ..
+                    LOG.debug("Breaking out because totalHits == docs.length || searchLimit reached max");
+                    break;
+                }  
+                
+                scoreDocPos = docs.length;
+                searchLimit = Math.min(
+                                Math.max(searchLimit * 2, MIN_INITIAL_SEARCHLIMIT_UPSCALE),
+                                                                            this.luceneSearchLimit);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Preparing for next round with new searchLimit = " + searchLimit);
+                    LOG.debug("New scoreDocPos = " + scoreDocPos);
                 }
             }
             
-            ResultSet rs = buildResultSet(topDocs.scoreDocs, topDocs.totalHits, 
-                                          searcher.getIndexReader(), token, limit,
-                                          cursor, selectedProperties);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Finished with search iterations, needed " + round + " rounds.");
+                
+                LOG.debug("Total time spent with Lucene queries: " + totalLuceneQueryTime + "ms");
+                LOG.debug("Total time spent with result authorization: " + queryAuthorizationTime + "ms");
+                
+                LOG.debug("authorizedDocs.size() = " + authorizedDocs.size());
+                LOG.debug("have = " + have);
+            }
             
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Total query time including result set building: " 
-                        + (System.currentTimeMillis()-start) + " ms");
+            ResultSetImpl rs = new ResultSetImpl();
+            rs.setTotalHits(totalHits);
+            if (clientCursor < have) {
+                int end = Math.min(need, have);
+                
+                long start = System.currentTimeMillis();
+                for (Document doc: authorizedDocs.subList(clientCursor, end)) {
+                    rs.addResult(this.documentMapper.getPropertySet(doc));
+                }
+                long finished = System.currentTimeMillis();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Document mapping took " + (finished-start) + "ms");
+                }
+                
             }
             
             return rs;
             
         } catch (IOException io) {
-            this.logger.warn("IOException while performing query on index", io);
+            LOG.warn("IOException while performing query on index", io);
             throw new QueryException("IOException while performing query on index", io);
         } finally {
             try {
                 this.indexAccessor.releaseIndexSearcher(searcher);                
             } catch (IOException io) {
-                this.logger.warn("IOException while releasing index searcher", io);
+                LOG.warn("IOException while releasing index searcher", io);
             }
         }
     }
     
-    private ResultSetImpl buildResultSet(ScoreDoc[] docs, int totalHits,
-                                        IndexReader reader, String token, int limit,
-                                        int cursor, PropertySelect selectedProps) 
+    private TopDocs performLuceneQuery(IndexSearcher searcher, 
+            org.apache.lucene.search.Query query, int limit, Sort sort)
         throws IOException {
-        
-        ResultSetImpl resultSet = new ResultSetImpl(limit);
-        resultSet.setTotalHits(totalHits); // XXX: Revealing total hits includes unauthorized hits.
-        
-        // Get list of all authorized hits.
-        // XXX: Memory requirements for queries with many matches ..
-        List<Document> results = getAuthorizedResults(docs, reader, 
-                                                        token, selectedProps);
-        
-        int nResults = results.size();
-        if (cursor < nResults) {
-            int end = cursor + limit;
-            if (end > nResults) end = nResults;
-            
-            for (Document doc: results.subList(cursor, end)) {
-                resultSet.addResult(this.documentMapper.getPropertySet(doc));
-            }
-        }
-        
-        return resultSet;
-    }
-    
-    private List<Document> getAuthorizedResults(ScoreDoc[] docs, 
-                          IndexReader reader, String token, PropertySelect select) 
-        throws IOException {
-        
-        FieldSelector fieldSelector
-            = this.documentMapper.getDocumentFieldSelector(select);
 
-        List<Document> results = new ArrayList<Document>(docs.length);
-        
-        if (this.queryResultAuthorizationManager != null) {
-            
-            List<ResultSecurityInfo> rsiList = 
-                new ArrayList<ResultSecurityInfo>(docs.length);
-            
-            for (ScoreDoc scoreDoc: docs) {
-                Document doc = reader.document(scoreDoc.doc, fieldSelector);
-                rsiList.add(new LuceneResultSecurityInfo(doc));
-            }
-            
-            this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
-            
-            for (ResultSecurityInfo rsi: rsiList) {
-                if (rsi.isAuthorized()) {
-                    results.add(((LuceneResultSecurityInfo)rsi).getDocument());
-                }
-            }
+        if (sort != null) {
+            return searcher.search(query, null, limit, sort);
         } else {
-            for (ScoreDoc scoreDoc: docs) {
-                results.add(reader.document(scoreDoc.doc, fieldSelector));
-            }
+            return searcher.search(query, null, limit);
         }
-        
-        return results;
     }
 
-//    private ResultSetImpl buildResultSetOld(ScoreDoc[] docs, int totalHits,
-//                                         IndexReader reader, String token, int maxResults,
-//                                         int cursor, PropertySelect selectedProperties)
-//        throws IOException {
-//
-//        ResultSetImpl rs = new ResultSetImpl(docs.length);
-//        rs.setTotalHits(totalHits);
-//
-//        if (docs.length == 0 || cursor >= docs.length) {
-//            return rs; // Empty result set
-//        }
-//
-//        if (maxResults < 0)
-//            maxResults = 0;
-//
-//        int end = (cursor + maxResults) < docs.length ? 
-//                                              cursor + maxResults : docs.length;
-//
-//        FieldSelector selector = 
-//            this.documentMapper.getDocumentFieldSelector(selectedProperties);
-//        
-//        if (this.queryResultAuthorizationManager != null) {
-//            // XXX: cursor/maxresults might be confusing after filtering, define it 
-//            //      properly and fix this.
-//            List<ResultSecurityInfo> rsiList = 
-//                        new ArrayList<ResultSecurityInfo>(end-cursor);
-//            for (int i = cursor; i < end; i++) {
-//                Document doc = reader.document(docs[i].doc, selector);
-//                rsiList.add(new LuceneResultSecurityInfo(doc));
-//            }
-//            
-//            long start = System.currentTimeMillis();
-//            this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
-//            long finish = System.currentTimeMillis();
-//            
-//            if (this.logger.isDebugEnabled()) {
-//                this.logger.debug("Query result authorization took " 
-//                        + (finish-start) + " ms");
-//            }
-//            
-//            // XXX: fix cursor crap, give client the expected number of results, even
-//            // after security filtering, figure out best solution (use dummy results ?)
-//            // Add only authorized docs to ResultSet
-//            // XXX: add metadata to resultset about how many un-authorized hits, etc.
-//            for (ResultSecurityInfo info: rsiList) {
-//                if (info.isAuthorized()) {
-//                    rs.addResult(this.documentMapper.getPropertySet(
-//                            ((LuceneResultSecurityInfo)info).getDocument()));
-//                }
-//            }
-//            
-//        } else {
-//            for (int i = cursor; i < end; i++) {
-//                Document doc = reader.document(docs[i].doc, selector);
-//                rs.addResult(this.documentMapper.getPropertySet(doc));
-//            }
-//        }
-//        
-//        return rs;
-//    }
-    
+    private int authorizeScoreDocs(ScoreDoc[] docs, int scoreDocPos,
+            List<Document> authorizedDocs, IndexReader reader, String token,
+            FieldSelector fieldSelector) throws IOException {
+
+        List<ResultSecurityInfo> rsiList = 
+            new ArrayList<ResultSecurityInfo>(docs.length-scoreDocPos);
+        
+        for (int i = scoreDocPos; i < docs.length; i++) {
+            Document doc = reader.document(docs[i].doc, fieldSelector);
+            rsiList.add(new LuceneResultSecurityInfo(doc));
+        }
+
+        this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
+
+        int authorizedCount = 0;
+        for (ResultSecurityInfo rsi : rsiList) {
+            if (rsi.isAuthorized()) {
+                authorizedDocs.add(((LuceneResultSecurityInfo) rsi).getDocument());
+                ++authorizedCount;
+            }
+        }
+
+        return authorizedCount;
+    }
+
     @Required
     public void setDocumentMapper(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
@@ -342,17 +286,18 @@ public class SearcherImpl implements Searcher, InitializingBean {
         this.queryBuilderFactory = queryBuilderFactory;
     }
     
-    public void setMaxAllowedHitsPerQuery(int maxAllowedHitsPerQuery) {
-        this.maxAllowedHitsPerQuery = maxAllowedHitsPerQuery;
-    }
-
-    public int getMaxAllowedHitsPerQuery() {
-        return this.maxAllowedHitsPerQuery;
-    }
-
+    @Required
     public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager
                                                    queryResultAuthorizationManager) {
         this.queryResultAuthorizationManager = queryResultAuthorizationManager;
+    }    
+
+    public int getLuceneSearchLimit() {
+        return luceneSearchLimit;
     }
 
+    public void setLuceneSearchLimit(int luceneSearchLimit) {
+        this.luceneSearchLimit = luceneSearchLimit;
+    }
+    
 }

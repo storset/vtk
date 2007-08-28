@@ -79,7 +79,6 @@
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
-    <property name="maxAllowedHitsPerQuery" value="50000"/>
     <property name="queryResultAuthorizationManager" ref="queryResultAuthorizationManager"/>
   </bean>
 

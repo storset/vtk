@@ -237,8 +237,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private MenuItem<Value> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap,
                                MenuRequest menuRequest) {
+        String uri = resource.getURI();
+        if (!uri.equals("/")) {
+            // Know it's a folder, append "/"
+            uri += "/";
+        }
         
-        String url = this.viewService.constructLink(resource.getURI());
+        String url = this.viewService.constructLink(uri);
         Property titleProperty = resource.getProperty(this.titlePropDef);
         Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
 

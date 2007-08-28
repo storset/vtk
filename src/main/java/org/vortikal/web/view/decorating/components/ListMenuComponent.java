@@ -214,7 +214,13 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
             
-            String url = this.viewService.constructLink(resource.getURI());
+            String uri = resource.getURI();
+            if (!uri.equals("/")) {
+                // Know it's a folder, append "/"
+                uri += "/";
+            }
+            
+            String url = this.viewService.constructLink(uri);
             Property titleProperty = resource.getProperty(this.titlePropdef);
             String title = titleProperty != null ?
                 titleProperty.getStringValue() : resource.getName();

@@ -94,8 +94,9 @@ public class SortBuilderImpl implements SortBuilder {
                 case PropertyType.TYPE_BOOLEAN:
                 case PropertyType.TYPE_INT:
                 case PropertyType.TYPE_LONG:
+                    // These types are all encoded as lexicographically sortable strings
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, direction);
+                            fieldName, org.apache.lucene.search.SortField.STRING, direction);
                     break;
                     
                 default:

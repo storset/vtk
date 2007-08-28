@@ -1,3 +1,33 @@
+/* Copyright (c) 2007, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.vortikal.repositoryimpl.search;
 
 import java.io.IOException;
@@ -33,7 +63,7 @@ import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
 
 public class NewSearcherImpl implements Searcher {
 
-    private static final Log LOG = LogFactory.getLog(SearcherImpl.class);
+    private static final Log LOG = LogFactory.getLog(NewSearcherImpl.class);
 
     private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
@@ -83,12 +113,6 @@ public class NewSearcherImpl implements Searcher {
                     + sorting + "'");
         }
         
-        System.out.println("Built Lucene query '" 
-                + luceneQuery + "' from query '" + query.dump("") + "'");
-        
-        System.out.println("Built Lucene sorting '" + luceneSort + "' from sorting '"
-                + sorting + "'");
-
         IndexSearcher searcher = null;
         try {
             searcher = this.indexAccessor.getIndexSearcher();
@@ -102,32 +126,62 @@ public class NewSearcherImpl implements Searcher {
             int scoreDocPos = 0;
             List<Document> authorizedDocs = new ArrayList<Document>(need);
             
-            System.out.println("Starting search interations ..");
-            System.out.println("clientCursor = " + clientCursor + ", clientLimit = " + clientLimit);
-            System.out.println("need = " + need + ", have = " + have);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Starting search interations ..");
+                LOG.debug("clientCursor = " + clientCursor + ", clientLimit = " + clientLimit);
+                LOG.debug("need = " + need + ", have = " + have);
+            }
+            
             int round = 0;
+            long totalLuceneQueryTime = 0L;
+            long queryAuthorizationTime = 0L;
             int totalHits = -1;
             while (have < need) {
-                System.out.println("Searching with search limit: " + searchLimit + ", round =" + round);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Searching with search limit = " 
+                                            + searchLimit + ", round = " + round);
+                }
+                long start = System.currentTimeMillis();
                 TopDocs topDocs = performLuceneQuery(searcher, luceneQuery, 
                                                      searchLimit, luceneSort);
+                long finished = System.currentTimeMillis();
+                if (LOG.isDebugEnabled()) {
+                    if (luceneSort != null) {
+                        LOG.debug("Sorted Lucene query with searchLimit = " 
+                                + searchLimit + " took " 
+                                + (finished-start) + "ms");
+                    } else {
+                        LOG.debug("Unsorted Lucene query with searchLimit = " 
+                                + searchLimit + " took " 
+                                + (finished-start) + "ms");
+                    }
+                }
+                totalLuceneQueryTime += (finished-start);
                 
                 ScoreDoc[] docs = topDocs.scoreDocs;
                 totalHits = topDocs.totalHits;
-                System.out.println("Got " + docs.length + " Lucene hits, totalHits = " + totalHits);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Got " + docs.length + " Lucene hits, totalHits = " + totalHits);
+                }
                 
+                start = System.currentTimeMillis();
                 have += authorizeScoreDocs(docs, scoreDocPos,
                                            authorizedDocs,
                                            reader, token, selector);
+                finished = System.currentTimeMillis();
+                queryAuthorizationTime += (finished - start);
                 
-                System.out.println("have = " + have + " after authorization");
+                
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("have = " + have + " results after authorization");
+                }
 
                 ++round;
 
                 if (totalHits == docs.length 
                               || searchLimit == this.luceneSearchLimit) {
                     // We already have all available hits, no need to continue ..
-                    System.out.println("Breaking out because totalHits == docs.length || searchLimit reached max");
+                    LOG.debug("Breaking out because totalHits == docs.length || searchLimit reached max");
                     break;
                 }  
                 
@@ -135,23 +189,36 @@ public class NewSearcherImpl implements Searcher {
                 searchLimit = Math.min(
                                 Math.max(searchLimit * 2, MIN_INITIAL_SEARCHLIMIT_UPSCALE),
                                                                             this.luceneSearchLimit);
-                System.out.println("Preparing for next round with new searchLimit = " + searchLimit);
-                System.out.println("New scoreDocPos = " + scoreDocPos);
-                System.out.println("-------");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Preparing for next round with new searchLimit = " + searchLimit);
+                    LOG.debug("New scoreDocPos = " + scoreDocPos);
+                }
             }
             
-            System.out.println();
-            System.out.println("Finished with search iterations, needed " + round + " rounds.");
-            System.out.println("authorizedDocs.size() == " + authorizedDocs.size());
-            System.out.println("have == " + have);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Finished with search iterations, needed " + round + " rounds.");
+                
+                LOG.debug("Total time spent with Lucene queries: " + totalLuceneQueryTime + "ms");
+                LOG.debug("Total time spent with result authorization: " + queryAuthorizationTime + "ms");
+                
+                LOG.debug("authorizedDocs.size() = " + authorizedDocs.size());
+                LOG.debug("have = " + have);
+            }
             
             ResultSetImpl rs = new ResultSetImpl();
             rs.setTotalHits(totalHits);
             if (clientCursor < have) {
                 int end = Math.min(need, have);
+                
+                long start = System.currentTimeMillis();
                 for (Document doc: authorizedDocs.subList(clientCursor, end)) {
                     rs.addResult(this.documentMapper.getPropertySet(doc));
                 }
+                long finished = System.currentTimeMillis();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Document mapping took " + (finished-start) + "ms");
+                }
+                
             }
             
             return rs;
@@ -219,6 +286,12 @@ public class NewSearcherImpl implements Searcher {
         this.queryBuilderFactory = queryBuilderFactory;
     }
     
+    @Required
+    public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager
+                                                   queryResultAuthorizationManager) {
+        this.queryResultAuthorizationManager = queryResultAuthorizationManager;
+    }    
+
     public int getLuceneSearchLimit() {
         return luceneSearchLimit;
     }
@@ -227,9 +300,4 @@ public class NewSearcherImpl implements Searcher {
         this.luceneSearchLimit = luceneSearchLimit;
     }
     
-    @Required
-    public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager
-                                                   queryResultAuthorizationManager) {
-        this.queryResultAuthorizationManager = queryResultAuthorizationManager;
-    }    
 }

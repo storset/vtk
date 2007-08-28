@@ -34,7 +34,7 @@ package org.vortikal.repositoryimpl;
 import java.io.IOException;
 import java.util.Date;
 
-import org.doomdark.uuid.UUIDGenerator;
+import org.safehaus.uuid.UUIDGenerator;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;

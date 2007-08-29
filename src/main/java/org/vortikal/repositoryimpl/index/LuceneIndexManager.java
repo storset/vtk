@@ -194,6 +194,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void optimize() throws IOException {
         this.fsIndex.getIndexWriter().optimize();
+        this.fsIndex.commit(); // Mark read-only reader dirty (force refresh)
     }
     
     // Commit changes done by reader/writer and optimize index if necessary.
@@ -285,7 +286,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
      * Write lock release.
      */
     public void writeLockRelease() {
-        
         this.lock.release();
         
         if (LOG.isDebugEnabled()) {

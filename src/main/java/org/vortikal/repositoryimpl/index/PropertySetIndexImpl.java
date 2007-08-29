@@ -444,6 +444,14 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                     + storagePath + "'): ", io);
         }
     }
+    
+    public void optimize() throws IndexException {
+        try {
+            this.indexAccessor.optimize();
+        } catch (IOException io) {
+            throw new IndexException("IOException while optimizing", io);
+        }
+    }
 
     public boolean lock() {
         return this.indexAccessor.writeLockAcquire();

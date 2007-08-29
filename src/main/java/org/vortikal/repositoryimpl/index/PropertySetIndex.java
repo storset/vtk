@@ -266,6 +266,14 @@ public interface PropertySetIndex {
     public void commit() throws IndexException;
     
     /**
+     * Optimize underlying storage facility. May do nothing, if not 
+     * applicable to the implementation.
+     * 
+     * @throws IndexException
+     */
+    public void optimize() throws IndexException;
+    
+    /**
      * Request a low-level validation of the underlying physical storage facility (ie. a corruption test).
      * You should obtain the index lock before doing this.
      *  

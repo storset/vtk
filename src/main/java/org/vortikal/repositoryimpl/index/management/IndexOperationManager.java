@@ -65,6 +65,8 @@ public interface IndexOperationManager {
     
     public boolean isReindexing();
     
+    public void optimize();
+    
     public boolean lastReindexingCompletedNormally() throws IllegalStateException;
     
     public Exception getLastReindexingException();

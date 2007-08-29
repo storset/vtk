@@ -239,14 +239,34 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
     }
 
     public void reinitialize() {
+        boolean acquired = false;
         try {
             LOG.info("Waiting for lock");
-            this.index.lock();
+            acquired = this.index.lock();
             LOG.info("Lock acquired");
+            LOG.info("Re-initializing ..");
             this.index.reinitialize();
         } finally {
-            this.index.unlock();
-            LOG.info("Lock released");
+            if (acquired) {
+                this.index.unlock();
+                LOG.info("Lock released");
+            }
+        }
+    }
+
+    public void optimize() {
+        boolean acquired = false;
+        try {
+            LOG.info("Waiting for lock");
+            acquired = this.index.lock();
+            LOG.info("Lock acquired");
+            LOG.info("Optimizing ..");
+            this.index.optimize();
+        } finally {
+            if (acquired) {
+                this.index.unlock();
+                LOG.info("Lock released");
+            }
         }
     }
 
@@ -259,7 +279,19 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
             throw new IllegalStateException("Index is already closed");
         }
         
-        this.index.close();
+        boolean acquired = false;
+        try {
+            LOG.info("Waiting for lock");
+            acquired = this.index.lock();
+            LOG.info("Lock acquired");
+            LOG.info("Closing ..");
+            this.index.close();
+        } finally {
+            if (acquired) {
+                this.index.unlock();
+                LOG.info("Lock released");
+            }
+        }
     }
 
     public boolean lock() {
@@ -282,7 +314,7 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
 
         return !acquired;
     }
-
+    
     public PropertySetIndex getManagedInstance() {
         return this.index;
     }

@@ -127,7 +127,7 @@ public class SearcherImpl implements Searcher {
             List<Document> authorizedDocs = new ArrayList<Document>(need);
             
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting search interations ..");
+                LOG.debug("Starting search iterations ..");
                 LOG.debug("clientCursor = " + clientCursor + ", clientLimit = " + clientLimit);
                 LOG.debug("need = " + need + ", have = " + have);
             }

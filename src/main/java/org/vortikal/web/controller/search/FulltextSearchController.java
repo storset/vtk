@@ -60,6 +60,7 @@ import org.vortikal.web.service.URL;
  *   <li><code>viewName</code> - the name of the view to return
  *   <li><code>searcher</code> - the {@link Searcher}
  *   <li><code>redirectViewName</code> - the name of an optional redirect view
+ *   <li><code>hostName</code> - optional name for the root node (to be displayed in the title)
  * </ul>
  *
  * <p>Model data provided:
@@ -74,7 +75,9 @@ public class FulltextSearchController implements Controller {
     private String viewName;
     private String redirectViewName;
     private int pageSize = 20;
-
+    private String hostName;
+    
+    
     public void setSearcher(FulltextSearcher searcher) {
         this.searcher = searcher;
     }
@@ -91,8 +94,7 @@ public class FulltextSearchController implements Controller {
     
 
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) 
-	throws Exception {
+                                      HttpServletResponse response) throws Exception {
         
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -114,97 +116,127 @@ public class FulltextSearchController implements Controller {
         }
         
         Map<String, Object> searchModel = new HashMap<String, Object>();
+        model.put("search", searchModel);
         
         String query = request.getParameter("query");
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Service currentService = requestContext.getService();
-        URL searchURL = currentService.constructURL(requestContext.getResourceURI());
+        Service currentService = RequestContext.getRequestContext().getService();
+        String resourceURI = RequestContext.getRequestContext().getResourceURI();
+        
+        URL searchURL = currentService.constructURL(resourceURI);
         searchModel.put("url", searchURL);
 
-        if (query != null) {
-            searchModel.put("query", query);
-            
-            
-            int startIdx = 0;
-            int page = 0;
-
-            String pageParam = request.getParameter("page");
-
-            if (pageParam != null) {
-                try {
-                    page = Integer.parseInt(pageParam);
-                    page--;
-                    if (page < 0) {
-                        page = 0;
-                    }
-                    startIdx = page * this.pageSize;
-                } catch (NumberFormatException e) { }
-            }
-            int endIdx = startIdx + this.pageSize;
-
-            ResultSet resultSet = searcher.execute(token, query, requestContext.getResourceURI());
-
-            // Check if last result of the current page exists 
-            if (! resultSet.hasResult(endIdx-1)) {
-                // Position endIdx one beyond the very last result (endIdx is exclusive)
-                endIdx = resultSet.getAllResults().size();
-            }
-
-            // Since endIdx might have been repositioned above, we need to make sure
-            // startIdx is sane.
-            if (startIdx >= endIdx) {
-                // In case of insane page number, don't roll back startIdx a 
-                // whole page, just roll back to start of the last result page.
-                if (endIdx % this.pageSize == 0) {
-                    startIdx = Math.max(endIdx - this.pageSize, 0);
-                } else {
-                    startIdx = endIdx - endIdx % this.pageSize;
-                }
-            }
-
-            List<PropertySet> results = resultSet.getResults(startIdx, endIdx);
-            
-            if (resultSet.hasResult(endIdx)) { // Check if there is another page of results
-                int nextPage = page + 1;
-                URL nextURL = currentService.constructURL(requestContext.getResourceURI());
-                nextURL.removeParameter("query");
-                nextURL.addParameter("query", query);
-                nextURL.removeParameter("page");
-                nextURL.addParameter("page", String.valueOf(nextPage + 1));
-                searchModel.put("next", nextURL);
-            }
-
-            if (page > 0) {
-                List<String> previousUrls = new ArrayList<String>();
-                int prevPage = page;
-
-                URL prevURL = currentService.constructURL(requestContext.getResourceURI());
-                prevURL.removeParameter("query");
-                prevURL.addParameter("query", query);
-                while (prevPage > 0) {
-                    prevURL.removeParameter("page");
-                    prevURL.addParameter("page", String.valueOf(prevPage));
-                    previousUrls.add(0, prevURL.toString());
-                    prevPage--;
-                }
-                searchModel.put("previousPages", previousUrls);
-            }
-
-            searchModel.put("results", results);
-            searchModel.put("totalHits", resultSet.getSize());
-            searchModel.put("start", startIdx+1);
-            searchModel.put("end", endIdx);
+        if (this.hostName != null) {
+            searchModel.put("hostName", this.hostName);
         }
         
+        if (query == null) {
+            return new ModelAndView(this.viewName, model);
+        }
+
+        int page = getPage(request.getParameter("page"));
+        int startIdx = page * this.pageSize;
+        int endIdx = startIdx + this.pageSize;
+
+        ResultSet resultSet = searcher.execute(token, query, resourceURI);
+
+        // Check if last result of the current page exists 
+        if (! resultSet.hasResult(endIdx-1)) {
+            // Position endIdx one beyond the very last result (endIdx is exclusive)
+            endIdx = resultSet.getAllResults().size();
+        }
+
+        // Since endIdx might have been repositioned above, we need to make sure
+        // startIdx and page is sane.
+        if (startIdx >= endIdx) {
+            // In case of insane page number, don't roll back startIdx a 
+            // whole page, just roll back to start of the last result page.
+            if (endIdx % this.pageSize == 0) {
+                startIdx = Math.max(endIdx - this.pageSize, 0);
+            } else {
+                startIdx = endIdx - endIdx % this.pageSize;
+            }
+            // Update page counter
+            page = startIdx / this.pageSize;
+        }
+
+        List<PropertySet> results = resultSet.getResults(startIdx, endIdx);
+
+        if (resultSet.hasResult(endIdx)) { // Check if there is another page of results
+            int nextPage = page + 1;
+            URL nextURL = currentService.constructURL(resourceURI);
+            nextURL.removeParameter("query");
+            nextURL.addParameter("query", query);
+            nextURL.removeParameter("page");
+            nextURL.addParameter("page", String.valueOf(nextPage + 1));
+            searchModel.put("next", nextURL);
+        }
+
+        if (page > 0) {
+            List<String> previousUrls = new ArrayList<String>();
+            int prevPage = page;
+
+            URL prevURL = currentService.constructURL(resourceURI);
+            prevURL.removeParameter("query");
+            prevURL.addParameter("query", query);
+            while (prevPage > 0) {
+                prevURL.removeParameter("page");
+                prevURL.addParameter("page", String.valueOf(prevPage));
+                previousUrls.add(0, prevURL.toString());
+                prevPage--;
+            }
+            searchModel.put("previousPages", previousUrls);
+        }
+
+        searchModel.put("query", query);
+        searchModel.put("results", results);
+        searchModel.put("totalHits", resultSet.getSize());
+        searchModel.put("start", startIdx+1);
+        searchModel.put("end", endIdx);
         
-        model.put("search", searchModel);
         return new ModelAndView(this.viewName, model);
+    }
+
+
+
+    /**
+     * Page number must be 0 or greater.
+     * Max page number can't be greater than
+     * pageNum * pageSize + pageSize <= Integer.MAX_VALUE
+     */
+    protected int getPage(String pageParam) {
+        if (pageParam == null) {
+            return 0;
+        }
+
+        int page = 0;
+        try {
+            page = Integer.parseInt(pageParam);
+            page--;
+        } catch (NumberFormatException e) { 
+            return 0;
+        }
+                
+        if (page < 0) {
+            return 0;
+        }
+
+        int maxPages = (Integer.MAX_VALUE - this.pageSize)/ this.pageSize;
+        if (page > maxPages) {
+            return maxPages;
+        }
+        
+        return page;
     }
 
 
     public void setRedirectViewName(String redirectViewName) {
         this.redirectViewName = redirectViewName;
+    }
+
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
 }

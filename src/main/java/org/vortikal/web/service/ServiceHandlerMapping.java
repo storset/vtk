@@ -47,7 +47,7 @@ import org.vortikal.web.RequestContext;
  * A {@link HandlerMapping} that uses a {@link Service service tree}
  * to resolve the handler to delegate the request to.
  *
- * <p>Note: this handler mapper must be configured in the application
+ * <p>Note: this handler mapping must be configured in the application
  * context in order for the framework to be able to map requests to
  * the correct handler based on the current service.
  */
@@ -122,10 +122,14 @@ public class ServiceHandlerMapping implements HandlerMapping {
         
         if (service.getParent() != null) {
             List<HandlerInterceptor> parentInterceptors = getHandlerInterceptors(service.getParent());
-            if (parentInterceptors != null) handlerInterceptors.addAll(parentInterceptors);
+            if (parentInterceptors != null) {
+                handlerInterceptors.addAll(parentInterceptors);
+            }
         }
         List<HandlerInterceptor> myHandlerInterceptors = service.getHandlerInterceptors();
-        if (myHandlerInterceptors != null) handlerInterceptors.addAll(myHandlerInterceptors);
+        if (myHandlerInterceptors != null) { 
+            handlerInterceptors.addAll(myHandlerInterceptors);
+        }
         
         return handlerInterceptors;
     }

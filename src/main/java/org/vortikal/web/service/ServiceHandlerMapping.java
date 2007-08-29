@@ -87,15 +87,12 @@ public class ServiceHandlerMapping implements HandlerMapping {
         }
 
 
-        List handlerInterceptorsList = getHandlerInterceptors(service);
-        HandlerInterceptor[] handlerInterceptors;
+        List<HandlerInterceptor> handlerInterceptorsList = getHandlerInterceptors(service);
+        HandlerInterceptor[] handlerInterceptors = null;
         
-        if (handlerInterceptorsList.size() < 1) 
-            handlerInterceptors = null;
-        else {
+        if (!handlerInterceptorsList.isEmpty()) { 
             handlerInterceptors = 
-                (HandlerInterceptor[]) handlerInterceptorsList.toArray(
-                    new HandlerInterceptor[handlerInterceptorsList.size()]);
+                handlerInterceptorsList.toArray(new HandlerInterceptor[handlerInterceptorsList.size()]);
         }
 
         if (logger.isDebugEnabled()) {
@@ -120,14 +117,14 @@ public class ServiceHandlerMapping implements HandlerMapping {
     }
 
 
-    private List getHandlerInterceptors(Service service) {
-        List handlerInterceptors = new ArrayList();
+    private List<HandlerInterceptor> getHandlerInterceptors(Service service) {
+        List<HandlerInterceptor> handlerInterceptors = new ArrayList<HandlerInterceptor>();
         
         if (service.getParent() != null) {
-            List parentInterceptors = getHandlerInterceptors(service.getParent());
+            List<HandlerInterceptor> parentInterceptors = getHandlerInterceptors(service.getParent());
             if (parentInterceptors != null) handlerInterceptors.addAll(parentInterceptors);
         }
-        List myHandlerInterceptors = service.getHandlerInterceptors();
+        List<HandlerInterceptor> myHandlerInterceptors = service.getHandlerInterceptors();
         if (myHandlerInterceptors != null) handlerInterceptors.addAll(myHandlerInterceptors);
         
         return handlerInterceptors;

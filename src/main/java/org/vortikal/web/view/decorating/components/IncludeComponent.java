@@ -48,6 +48,7 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.search.preprocessor.QueryStringPreProcessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
@@ -103,6 +104,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
     private HtmlPageParser htmlParser;
 
+    private QueryStringPreProcessor uriPreProcessor;
+    
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -146,11 +149,16 @@ public class IncludeComponent extends AbstractDecoratorComponent
             return;
         }
 
+        if (this.uriPreProcessor != null) {
+            uri = this.uriPreProcessor.process(uri);
+        }
+        
         if (!uri.startsWith("/")) {
             String requestURI = RequestContext.getRequestContext().getResourceURI();
             uri = requestURI.substring(0, requestURI.lastIndexOf("/") + 1) + uri;
             uri = URIUtil.expandPath(uri);
         }
+
         handleVirtualInclude(uri, request, response);
     }
 
@@ -190,15 +198,12 @@ public class IncludeComponent extends AbstractDecoratorComponent
         String characterEncoding = r.getCharacterEncoding();
         InputStream is = this.repository.getInputStream(token, address, true);
 
-        if (ContentTypeHelper.isHTMLOrXHTMLContentType(r.getContentType())) {
+        String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
+
+        if (elementParam != null && ContentTypeHelper.isHTMLOrXHTMLContentType(r.getContentType())) {
             HtmlPage page = this.htmlParser.parse(is, characterEncoding);
             String result = "";
-            
-            String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
-            if (elementParam == null) {
-                elementParam = "html.body";
-            }
-            
+                        
             List<HtmlElement> elements = HtmlSelectUtil.select(page, elementParam);
             if (elements.size() > 0) {
                 result = elements.get(0).getContent();
@@ -308,6 +313,10 @@ public class IncludeComponent extends AbstractDecoratorComponent
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         map.put(PARAMETER_ELEMENT, PARAMETER_ELEMENT_DESC);
         return map;
+    }
+
+    public void setUriPreProcessor(QueryStringPreProcessor uriPreProcessor) {
+        this.uriPreProcessor = uriPreProcessor;
     }
 
 }

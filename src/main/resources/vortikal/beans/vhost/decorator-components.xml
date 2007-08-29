@@ -279,6 +279,18 @@
     <property name="description" value="Includes the contents of another document in the page" />
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
     <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="uriPreProcessor" ref="uriPreProcessor" />
+  </bean>
+
+  <bean id="uriPreProcessor"
+        class="org.vortikal.repository.search.preprocessor.QueryStringPreProcessorImpl">
+    <property name="expressionEvaluators">
+      <list>
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
+              parent="requestLocalRepositoryAware" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentUriExpressionEvaluator" />
+      </list>
+    </property>
   </bean>
 
   <bean id="decorating.includeComponent.httpIncludeCache"

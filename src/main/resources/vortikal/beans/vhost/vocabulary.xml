@@ -39,16 +39,23 @@
          <map>
             <entry key="jsURLs">
                <list>
-                  <value>${cssBaseURL}/yui/2.2/yahoo.js</value>
-                  <value>${cssBaseURL}/yui/2.2/event.js</value>
-                  <value>${cssBaseURL}/yui/2.2/treeview.js</value>
-                  <value>${cssBaseURL}/yui/2.2/vocabulary.js</value>
+                 <value>${cssBaseURL}/yui/2.3/build/yahoo-dom-event/yahoo-dom-event.js</value>
+                 <value>${cssBaseURL}/yui/2.3/build/animation/animation.js</value>
+                 <value>${cssBaseURL}/yui/2.3/build/autocomplete/autocomplete.js</value>
+                 <value>${cssBaseURL}/yui/2.3/build/yahoo/yahoo.js</value>
+                 <value>${cssBaseURL}/yui/2.3/build/event/event.js</value>
+                 <value>${cssBaseURL}/yui/2.3/build/treeview/treeview.js</value>
+
+                 <value>${cssBaseURL}/yui/2.3/vocabulary.js</value>
                </list>
             </entry>
             <entry key="cssURLs">
                <list>
-                  <value>${cssBaseURL}/yui/2.2/screen.css</value>
-                  <value>${cssBaseURL}/yui/2.2/tree.css</value>
+                 <value>${cssBaseURL}/yui/2.3/build/fonts/fonts-min.css</value>
+                 <value>${cssBaseURL}/yui/2.3/build/autocomplete/assets/skins/sam/autocomplete.css</value>
+                 <value>${cssBaseURL}/yui/2.3/build/treeview/assets/skins/sam/treeview.css</value>
+
+                 <value>${cssBaseURL}/yui/2.3/vocabulary.css</value>
                </list>
             </entry>
          </map>

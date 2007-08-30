@@ -101,6 +101,7 @@ function getCheckedAsStringValue(node, result) {
             topNodes[i].uncheck();
         }
     }
+
 </script>
 
 </head>

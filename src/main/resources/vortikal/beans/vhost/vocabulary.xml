@@ -41,7 +41,6 @@
                <list>
                  <value>${cssBaseURL}/yui/2.3/build/yahoo-dom-event/yahoo-dom-event.js</value>
                  <value>${cssBaseURL}/yui/2.3/build/animation/animation.js</value>
-                 <value>${cssBaseURL}/yui/2.3/build/autocomplete/autocomplete.js</value>
                  <value>${cssBaseURL}/yui/2.3/build/yahoo/yahoo.js</value>
                  <value>${cssBaseURL}/yui/2.3/build/event/event.js</value>
                  <value>${cssBaseURL}/yui/2.3/build/treeview/treeview.js</value>
@@ -52,7 +51,6 @@
             <entry key="cssURLs">
                <list>
                  <value>${cssBaseURL}/yui/2.3/build/fonts/fonts-min.css</value>
-                 <value>${cssBaseURL}/yui/2.3/build/autocomplete/assets/skins/sam/autocomplete.css</value>
                  <value>${cssBaseURL}/yui/2.3/build/treeview/assets/skins/sam/treeview.css</value>
 
                  <value>${cssBaseURL}/yui/2.3/vocabulary.css</value>
@@ -62,5 +60,15 @@
       </property>
  
  </bean>
+
+  <bean id="vocabulary.messageSource"
+        class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>vortikal.i18n.vocabulary</value>
+      </list>
+    </property>
+  </bean>
+  
 
 </beans>

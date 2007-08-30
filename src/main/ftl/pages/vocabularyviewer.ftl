@@ -8,7 +8,8 @@
 </#if>
 <#assign localePrefix = "property." + localePrefix?if_exists + propertyDefinition.name />
 
-<#assign title="Vocabulary for " + vrtx.getMsg(localePrefix, "Unknown") />
+<#assign title = vrtx.getMsg("vocabulary.title.prefix", "Vocabulary for")
+         + " " + vrtx.getMsg(localePrefix, "Unknown")>
 
 <!doctype html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -27,6 +28,7 @@
   <script type="text/javascript" src="${jsURL}"></script>
   </#list>
 </#if>
+
 
 <script type="text/javascript">
 
@@ -101,12 +103,12 @@ function getCheckedAsStringValue(node, result) {
             topNodes[i].uncheck();
         }
     }
-
 </script>
 
 </head>
   
 <body onload="treeInit()">
+
 <div id="container">
   <div id="containerTop">
     <div id="main">
@@ -114,19 +116,23 @@ function getCheckedAsStringValue(node, result) {
     <form name="mainForm">
 	<div class="newsItem">
 	  <h3>${title}</h3>
-	  <p>Choose the relevant values and press submit</p>
+
+	  <p>${vrtx.getMsg("vocabulary.description", "Choose the relevant values and press submit")}</p>
 
 	  <div style="visibility:hidden" id="expandcontractdiv">
-		<a href="javascript:tree.expandAll()">Expand all</a>
-		<a href="javascript:tree.collapseAll()">Collapse all</a>
-		<a href="javascript:checkAll()">Check all</a>
-		<a href="javascript:uncheckAll()">Uncheck all</a>
+		<a href="javascript:tree.expandAll()">${vrtx.getMsg("vocabulary.expandall", "Expand all")}</a>
+		<a href="javascript:tree.collapseAll()">${vrtx.getMsg("vocabulary.collapseall", "Collapse all")}</a>
+		<a href="javascript:checkAll()">${vrtx.getMsg("vocabulary.checkall", "Check all")}</a>
+		<a href="javascript:uncheckAll()">${vrtx.getMsg("vocabulary.uncheckall", "Uncheck all")}</a>
 	  </div>
+<br>
 	  <div id="treeDiv1"><@listNodes nodes=rootNodes />
 	   </div>
 
 	</div>
-	<input style="visibility:hidden" type="button" onclick="javascript:updateParent()" id="insert" name="save" value="Submit">
+<br>
+        <#assign submit=vrtx.getMsg("vocabulary.submit", "Submit") />
+	<input style="visibility:hidden" type="button" onclick="javascript:updateParent()" id="insert" name="save" value="${submit}">
 	</form>
   </div>
     </div>
@@ -146,6 +152,13 @@ function getCheckedAsStringValue(node, result) {
     </ul>
   </#macro>
   
+  <#macro listNodesForAC nodes>
+      <#list nodes as node>
+        <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+        ["${displayName}", "${node.entry?string}"], ["${node.entry?string}", "${displayName}"]<#if node.children?exists>, <@listNodesForAC nodes=node.children /></#if><#if node_has_next>, </#if>
+      </#list>
+  </#macro>
+  
   <#macro createTree nodes parent name selected parentchecked>
     <#list nodes as node>
       <#assign checked=parentchecked />
@@ -159,5 +172,3 @@ function getCheckedAsStringValue(node, result) {
       </#if>	
     </#list>
   </#macro>
-
- 

@@ -715,6 +715,7 @@
         <ref bean="contentLengthPropDef" />
 
         <ref bean="userTitlePropDef" />
+        <ref bean="titlePropDef" />
         <ref bean="skipInPathPropDef" />
 
         <ref bean="keywordsPropDef" />
@@ -1570,7 +1571,7 @@
      <property name="serviceLocaleResolverMap">
        <map>
          <entry key-ref="viewService" value-ref="viewServiceLocaleResolver" />
-         <entry key-ref="webService" value-ref="defaultViewLocaleResolver" />
+<!--         <entry key-ref="webService" value-ref="defaultViewLocaleResolver" />-->
        </map>
      </property>
      <property name="defaultLocaleResolver" ref="manageLocaleResolver" />

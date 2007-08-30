@@ -172,24 +172,7 @@
 
   <table class="resourceInfo">
     <!-- title -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'title' />
-
-    <#if shouldDisplayForm('userTitle')>
-      <@propList.propertyForm
-         item=aboutItems['userTitle']
-         formValue=resource.title />
-    <#else>
-      <#assign editURL>
-        <@propList.propertyEditURL modelName='aboutItems'
-                                   propertyName='userTitle' />
-      </#assign>
-      <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("property.title", "Title")
-             value = resource.title
-             editURL = editURL />
-
-    </#if>
-
+    <@propList.editOrDisplayPropertyItem item=aboutItems['userTitle'] defaultItem=aboutItems['title'] />
 
     <!-- content:keywords -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />
@@ -229,32 +212,7 @@
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />
 
     <!-- Character encoding -->
-    <#if resource.characterEncoding?exists>
-    <#if shouldDisplayForm('userSpecifiedCharacterEncoding')>
-      <@propList.propertyForm
-         item=aboutItems['userSpecifiedCharacterEncoding']
-         formValue=resource.characterEncoding />
-    <#else>
-      <#assign encoding>
-        <#if resource.userSpecifiedCharacterEncoding?has_content>
-          ${resource.userSpecifiedCharacterEncoding}
-        <#else>
-          <@vrtx.msg code = "property.characterEncoding.guessed"
-                     args = [ "${resource.characterEncoding}" ]
-                     default = "Guessed to be ${resource.characterEncoding}" />
-        </#if>
-      </#assign>
-      <#assign editURL>
-        <@propList.propertyEditURL modelName='aboutItems'
-                                   propertyName='userSpecifiedCharacterEncoding' />
-      </#assign>
-      <@propList.defaultPropertyDisplay
-             name = vrtx.getMsg("property.characterEncoding", "Character encoding")
-             value = encoding
-             editURL = editURL />
-
-    </#if>
-    </#if>
+    <@propList.editOrDisplayPropertyItem item=aboutItems['userSpecifiedCharacterEncoding'] defaultItem=aboutItems['characterEncoding'] />
 
     <!-- Plaintext Edit on managed xml -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'plaintext-edit' />

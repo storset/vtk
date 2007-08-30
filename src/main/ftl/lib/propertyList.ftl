@@ -182,7 +182,6 @@
   </#if>
 </#macro>
 
-
 <#--
  * editOrDisplayPropertyItem
  *
@@ -208,10 +207,12 @@
         formInputWrapperMacro='defaultFormInputWrapper'
         formSubmitWrapperMacro='defaultFormSubmitWrapper'
         formErrorsWrapperMacro='defaultFormErrorsWrapper'
-        formErrorWrapperMacro='defaultFormErrorWrapper'>
+        formErrorWrapperMacro='defaultFormErrorWrapper'
+        defaultItem=false>
   <#if form?exists && form.definition?exists && form.definition = item.definition>
     <@propertyForm 
        item=item
+       defaultItem=defaultItem
        inputSize=inputSize
        editWrapperMacro=editWrapperMacro
        formWrapperMacro=formWrapperMacro
@@ -220,7 +221,7 @@
        formErrorsWrapperMacro=formErrorsWrapperMacro
        formErrorWrapperMacro=formErrorWrapperMacro/>
   <#else>
-    <@propertyDisplay item=item toggle=toggle displayMacro=displayMacro/>
+    <@propertyDisplay defaultItem=defaultItem item=item toggle=toggle displayMacro=displayMacro/>
   </#if>
 </#macro>
 
@@ -251,12 +252,15 @@
  * @editURL (optional) the edit (possibly toggle) URL of the property
  * 
 -->
-<#macro defaultPropertyDisplay name value editURL="">
+<#macro defaultPropertyDisplay name value prefix=false editURL="">
   <tr>
     <td class="key">
       ${name}:
     </td>
     <td class="value">
+      <#if prefix?is_string>
+        ${prefix}
+      </#if>
       ${value}
       <#if editURL != "">
         ${editURL}
@@ -366,32 +370,49 @@
  *        and "editURL", used to display the property.
  *        Default is 'defaultPropertyDisplay'
 -->
-<#macro propertyDisplay item toggle=false displayMacro='defaultPropertyDisplay'>
+<#macro propertyDisplay item toggle=false defaultItem=false displayMacro='defaultPropertyDisplay'>
   <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />  
   <#local name = vrtx.getMsg(localizedValueLookupKeyPrefix, item.definition.name) />
+  
+  <#assign valueItem=item />
+
+  <#assign prefix=false />
+    <#if !defaultItem?is_boolean>
+      <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
+      <#if item.property?exists && item.property.value == defaultItem.property.value>
+        <#assign prefix = vrtx.getMsg(localizedValueLookupKeyPrefix + ".set", "") />
+      <#else>
+        <#assign valueItem=defaultItem />
+        <#assign prefix = vrtx.getMsg(localizedValueLookupKeyPrefix + ".unset", "") />
+      </#if>
+      <#if prefix == "">
+        <#assign prefix=false />
+      </#if>
+    </#if>
+
   <#local value>
-    <#if item.property?exists>
-      <#if item.definition.multiple>
-        <#list item.property.values as val>
+    <#if valueItem.property?exists>
+      <#if valueItem.definition.multiple>
+        <#list valueItem.property.values as val>
           ${val?string}<#if val_has_next>, </#if>
         </#list>
-        <#if item.property.values?size &lt; 0>
+        <#if valueItem.property.values?size &lt; 0>
         </#if>
       <#else>
         <#-- type principal = 5 -->
-        <#if item.definition.type = 5>
-          <#if item.property.principalValue.URL?exists>
-            <a href="${item.property.principalValue.URL?html}">${item.property.principalValue.name?html}</a>
+        <#if valueItem.definition.type = 5>
+          <#if valueItem.property.principalValue.URL?exists>
+            <a href="${valueItem.property.principalValue.URL?html}">${valueItem.property.principalValue.name?html}</a>
           <#else>
-            ${item.property.principalValue.name?html}
+            ${valueItem.property.principalValue.name?html}
           </#if>
         <#-- type date = 3 -->
-        <#elseif item.definition.type = 3>
-          ${item.property.dateValue?datetime?string.long}
+        <#elseif valueItem.definition.type = 3>
+          ${valueItem.property.dateValue?datetime?string.long}
         <#else>
           <#local label>
-            <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${item.property.value?string}"
-                       default="${item.property.value?string}" />
+            <@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${valueItem.property.value?string}"
+                       default="${valueItem.property.value?string}" />
           </#local>
           ${label}
         </#if>
@@ -407,9 +428,9 @@
   <#local editURL>
     <@propertyItemEditURL item=item toggle=toggle />
   </#local>
-  
+
   <#local macroCall = resolveMacro(displayMacro) />
-  <@macroCall name=name value=value editURL=editURL />
+  <@macroCall name=name prefix=prefix value=value editURL=editURL />
 </#macro>
 
 
@@ -436,7 +457,8 @@
         formInputWrapperMacro='defaultFormInputWrapper'
         formSubmitWrapperMacro='defaultFormSubmitWrapper'
         formErrorsWrapperMacro='defaultFormErrorsWrapper'
-        formErrorWrapperMacro='defaultFormErrorWrapper'>
+        formErrorWrapperMacro='defaultFormErrorWrapper'
+        defaultItem=false>
 
   <#local localizedValueLookupKeyPrefix = getLocalizedValueLookupKeyPrefix(item) />
 
@@ -504,7 +526,8 @@
               ${formValue}
             <#elseif form.value?exists>
               ${form.value}
-            <#else>
+            <#elseif !defaultItem?is_boolean>
+              ${defaultItem.property.value?string}
             </#if>
             </#compress>
           </#local>
@@ -517,9 +540,6 @@
               <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
-          </@formInputWrapper>
-
-        </#if>
         <#if form.hierarchicalHelpUrl?exists>
           <script language="javascript" type="text/javascript">
                 function popitup(url) {
@@ -530,7 +550,10 @@
                 }
           </script>
 
-          <a target="vocabulary" href="${form.hierarchicalHelpUrl}" onclick="return popitup('${form.hierarchicalHelpUrl}')" >Help</a>
+          <a target="vocabulary" href="${form.hierarchicalHelpUrl}" onclick="return popitup('${form.hierarchicalHelpUrl}')" ><@vrtx.msg code="propertyEditor.browse" default="Browse"/></a>
+        </#if>
+          </@formInputWrapper>
+
         </#if>
 
       <@spring.bind "form.value"/>

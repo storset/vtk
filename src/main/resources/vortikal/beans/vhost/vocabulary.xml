@@ -39,7 +39,16 @@
          <map>
             <entry key="jsURLs">
                <list>
-                  <value>${cssBaseURL}/vocabulary.js</value>
+                  <value>${cssBaseURL}/yui/2.2/yahoo.js</value>
+                  <value>${cssBaseURL}/yui/2.2/event.js</value>
+                  <value>${cssBaseURL}/yui/2.2/treeview.js</value>
+                  <value>${cssBaseURL}/yui/2.2/vocabulary.js</value>
+               </list>
+            </entry>
+            <entry key="cssURLs">
+               <list>
+                  <value>${cssBaseURL}/yui/2.2/screen.css</value>
+                  <value>${cssBaseURL}/yui/2.2/tree.css</value>
                </list>
             </entry>
          </map>

@@ -15,12 +15,12 @@
 
 <head>
 <title>${title}</title>
-<link rel="stylesheet" type="text/css" href="http://developer.yahoo.com/yui/examples/treeview/css/screen.css">
-<link rel="stylesheet" type="text/css" href="http://developer.yahoo.com/yui/examples/treeview/css/check/tree.css">
 
-<script type="text/javascript" src="http://developer.yahoo.com/yui/build/yahoo/yahoo.js" ></script>
-<script type="text/javascript" src="http://developer.yahoo.com/yui/build/event/event.js"></script>
-<script type="text/javascript" src="http://developer.yahoo.com/yui/build/treeview/treeview.js" ></script>
+<#if cssURLs?exists>
+  <#list cssURLs as cssURL>
+    <link rel="stylesheet" type="text/css" href="${cssURL}">
+  </#list>
+</#if>
 
 <#if jsURLs?exists>
   <#list jsURLs as jsURL>

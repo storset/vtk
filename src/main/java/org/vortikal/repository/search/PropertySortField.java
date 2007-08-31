@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ public class PropertySortField extends AbstractSortField {
     public PropertySortField(PropertyTypeDefinition def, SortFieldDirection direction) {
         super(direction);
         if (def == null) {
-            throw new IllegalArgumentException("Argument def cannot be NULL");
+            throw new IllegalArgumentException("Argument 'def' cannot be NULL");
         }
         this.definition = def;
     }

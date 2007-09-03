@@ -138,7 +138,8 @@
     <property name="url" value="layouts/toc.ftl" />
     <property name="attributes">
       <map>
-        <entry key="url" value="${decorating.tableOfContentsComponent.javascript}" />
+	<entry key="url" value="${cssBaseURL}/toc.js" /> 
+        <!-- entry key="url" value="${decorating.tableOfContentsComponent.javascript}" / -->
       </map>
     </property>
   </bean>

@@ -5,7 +5,7 @@ var tempStr = navigator.userAgent.toLowerCase();
 var pos = tempStr.indexOf(kitName);
 var isAppleWebkit = (pos != -1);
 
-// This function is legally stolen from quirksmode.org
+// This function is stolen (legally) from quirksmode.org
 
 function getElementsByTagNames(list,obj) {
 	if (!obj) var obj = document;
@@ -55,7 +55,7 @@ function tocGen(writeTo){
 
 		// var headers = this.getHeaders(this.parentOb.parentNode);
 		if(headers.length > 0){
-                        this.writeOut += '<h2>Innholdsfortegnelse</h2>';
+                        // this.writeOut += '<h2>Innholdsfortegnelse</h2>';
 			// this.writeOut += '<ul>';
 			var num;
 			for(var i=0;i<headers.length;i++){

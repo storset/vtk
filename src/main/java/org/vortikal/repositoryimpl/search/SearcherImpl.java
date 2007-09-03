@@ -73,6 +73,12 @@ public class SearcherImpl implements Searcher {
     private final SortBuilder sortBuilder = new SortBuilderImpl();
     
     private static final int MIN_INITIAL_SEARCHLIMIT_UPSCALE = 500;
+    
+    /**
+     * Log a warning if any query takes longer complete than 
+     * this time (milliseconds). 15 seconds is the default.
+     */
+    private long totalQueryTimeWarnThreshold = 15000;
 
     /**
      * The internal maximum number of hits allowed for any
@@ -195,6 +201,20 @@ public class SearcherImpl implements Searcher {
                 }
             }
             
+            if (totalLuceneQueryTime > this.totalQueryTimeWarnThreshold) {
+                // Log a warning, query took too long to complete.
+                StringBuilder msg = 
+                    new StringBuilder("Total execution time for Lucene query '");
+                msg.append(luceneQuery).append("'");
+                msg.append(", with a final search limit of ").append(searchLimit);
+                msg.append(", was ").append(totalLuceneQueryTime).append("ms. ");
+                msg.append("This exceeds the warning threshold of ");
+                msg.append(this.totalQueryTimeWarnThreshold);
+                msg.append("ms. Search limit was upscaled ").append(round-1);
+                msg.append(" time(s).");
+                LOG.warn(msg);
+            }
+            
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Finished with search iterations, needed " + round + " rounds.");
                 
@@ -298,6 +318,14 @@ public class SearcherImpl implements Searcher {
 
     public void setLuceneSearchLimit(int luceneSearchLimit) {
         this.luceneSearchLimit = luceneSearchLimit;
+    }
+
+    public void setTotalQueryTimeWarnThreshold(long totalQueryTimeWarnThreshold) {
+        if (totalQueryTimeWarnThreshold <= 0) {
+            throw new IllegalArgumentException("Argument cannot be zero or negative");
+        }
+        
+        this.totalQueryTimeWarnThreshold = totalQueryTimeWarnThreshold;
     }
     
 }

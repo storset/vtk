@@ -8,6 +8,7 @@
   -
   -->
 <#assign cssClassMap = {
+         "none":"vrtx-uri-menu",
          "vertical":"vrtx-vertical-menu",
          "horizontal":"vrtx-horizontal-menu",
          "tabs":"vrtx-tab-menu" } />
@@ -16,26 +17,54 @@
   <#stop "Unable to render model: required submodel
   'menu' missing">
 </#if>
+
+
+<#-- RECURSIVE MENU BUILD -->
 <ul class="${cssClassMap[menu.label]}">
+  <@listMenu menu=menu />
+</ul>
+
+
+<#-- MACROS: -->
+<#macro listMenu menu>
   <#list menu.items as item>
     <#if item.url?exists>
-      <#if item.active>
-        <#if item.label?exists>
-          <li class="vrtx-active-item ${item.label}">
-            <a href="${item.url?html}">${item.title?html}</a>
-          </li>
-        <#else>
-          <li class="vrtx-active-item">
-            <a href="${item.url?html}">${item.title?html}</a>
-          </li>
-        </#if>
-      <#else>
-        <#if item.label?exists>
-          <li class="${item.label}"><a href="${item.url?html}">${item.title?html}</a></li>
-        <#else>
-          <li><a href="${item.url?html}">${item.title?html}</a></li>
-        </#if>
-      </#if>
+      <@listItem item=item />
     </#if>
   </#list>
-</ul>
+</#macro>
+
+
+<#macro listItem item>
+  <#if item.active>
+    <#if item.label?exists>
+      <li class="vrtx-active-item ${item.label}">
+        <@displayItem item=item/>
+      </li>
+    <#else>
+      <li class="vrtx-active-item">
+        <@displayItem item=item/>
+      </li>
+    </#if>
+  <#else>
+    <#if item.label?exists>
+      <li class="${item.label}">
+      	<@displayItem item=item/>
+      </li>
+    <#else>
+      <li>
+      	<@displayItem item=item/>
+      </li>
+    </#if>
+  </#if>
+</#macro> 
+
+
+<#macro displayItem item>
+  <a href="${item.url?html}">${item.title?html}</a>
+  <#if item.menu?exists>
+    <ul>
+      <@listMenu menu=item.menu />
+    </ul>
+  </#if>
+</#macro>

@@ -216,8 +216,8 @@
     <property name="readTimeoutSeconds" value="${decorating.feedComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.feedComponent.identifier}" />
   </bean>
-
-
+  
+  
   <bean id="decorating.listMenuComponent"
         class="org.vortikal.web.view.decorating.components.ListMenuComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
@@ -231,12 +231,12 @@
     <property name="modelName" value="menu" />
     <property name="description" value="Displays a menu based on the subfolders of a specified folder (path)" />
   </bean>
-
+  
   <bean name="decorating.listMenuComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/list-menu.ftl" />
   </bean>
-
-
+  
+  
   <bean id="decorating.subFolderMenuComponent"
         class="org.vortikal.web.view.decorating.components.SubFolderMenuComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />

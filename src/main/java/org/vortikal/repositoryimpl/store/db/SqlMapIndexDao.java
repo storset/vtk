@@ -73,7 +73,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
         SqlMapClient client = getSqlMapClient();
         try {
-            client.startTransaction();
             String statementId = getSqlMap("orderedPropertySetIteration");
             
             ResourceIdCachingPropertySetRowHandler rowHandler = 
@@ -83,17 +82,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             client.queryWithRowHandler(statementId, rowHandler);
             
             rowHandler.handleLastBufferedRows();
-            client.commitTransaction();
         } catch (SQLException e) {
             throw new DataAccessException(e);
-        } finally {
-            try {
-                client.endTransaction();
-            } catch (SQLException sqle) {
-                throw new DataAccessException("Failed to end transaction", sqle);
-            }
         }
-
     }
     
     public void orderedPropertySetIteration(String startUri, PropertySetHandler handler) 
@@ -101,7 +92,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
         SqlMapClient client = getSqlMapClient();
         try {
-            client.startTransaction();
             String statementId = getSqlMap("orderedPropertySetIterationWithStartUri");
             
             PropertySetRowHandler rowHandler =
@@ -117,15 +107,8 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             client.queryWithRowHandler(statementId, parameters, rowHandler);
             
             rowHandler.handleLastBufferedRows();
-            client.commitTransaction();
         } catch (SQLException e) {
             throw new DataAccessException(e);
-        } finally {
-            try {
-                client.endTransaction();
-            } catch (SQLException sqle) {
-                throw new DataAccessException("Failed to end transaction");
-            }
         }
         
     }

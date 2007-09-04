@@ -218,7 +218,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < components.length; i++) {
 
-            Map<String, String> parameters = components[i].getParameters();
+            Map<String, Object> parameters = components[i].getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                 null, servletRequest, parameters, doctype, locale);
             DecoratorResponseImpl response = new DecoratorResponseImpl(

@@ -32,10 +32,12 @@ package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
 
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -48,9 +50,20 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
     
     private View view;
+    private boolean exposeComponentParameters = false;
+    private String exposedParametersModelName = "componentRequest";
+    
 
-    public void setView(View view) {
+    @Required public void setView(View view) {
         this.view = view;
+    }
+
+    public void setExposeComponentParameters(boolean exposeComponentParameters) {
+        this.exposeComponentParameters = exposeComponentParameters;
+    }
+
+    public void setExposedParametersModelName(String exposedParametersModelName) {
+        this.exposedParametersModelName = exposedParametersModelName;
     }
 
     public final void render(DecoratorRequest request, DecoratorResponse response)
@@ -63,8 +76,18 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     
     /**
      * Process the model prior to view rendering. The default
-     * implementation is to gather all reference data providers (using
-     * <code>getReferenceDataProviders()</code>) and invoke them in order.
+     * implementation performs the following steps:
+     * <ol>
+     *   <li>Gather all reference data providers (using
+     *     <code>getReferenceDataProviders()</code>) and invoke them
+     *     in order
+     *   </li>
+     *   <li>If <code>exposeComponentParameters</code> is set, add an
+     *     entry in the model under the name determined by
+     *     <code>exposedParametersModelName</code>, containing the set
+     *     of decorator request parameters.
+     *   <li>
+     * </ol>
      *
      * @param model the MVC model
      * @param request the decorator request
@@ -88,6 +111,16 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         
         for (int i = 0; i < providers.length; i++) {
             providers[i].referenceData(model, request.getServletRequest());
+        }
+
+        if (this.exposeComponentParameters) {
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            for (Iterator<String> i = request.getRequestParameterNames(); i.hasNext();) {
+                String name = i.next();
+                Object value = request.getParameter(name);
+                parameters.put(name, value);
+            }
+            model.put(this.exposedParametersModelName, parameters);
         }
     }
     

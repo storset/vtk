@@ -58,5 +58,5 @@ public interface DecoratorRequest {
 
     public String getStringParameter(String name);
 
-    public Iterator getRequestParameterNames();
+    public Iterator<String> getRequestParameterNames();
 }

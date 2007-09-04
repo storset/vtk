@@ -89,6 +89,14 @@
     <property name="name" value="manage-url" />
     <property name="description" value="Inserts the admin URL of the current document" />
     <property name="view" ref="decorating.manageURLComponent.view" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="display-only-if-auth"
+               value="If set to 'true', do not display anything unless the user is logged in." />
+      </map>
+    </property>
+    <property name="exposeComponentParameters" value="true" />
+    <property name="exposedParametersModelName" value="config" />
   </bean>
 
   <bean id="decorating.manageURLComponent.view" parent="freemarkerView">
@@ -96,6 +104,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="decorating.manageURLComponent.urlProvider" />
+        <ref bean="resourceContextProvider" />
       </list>
     </property>
   </bean>

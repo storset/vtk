@@ -32,8 +32,9 @@ package org.vortikal.web.view.decorating.components;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
+
 import org.vortikal.web.view.decorating.DecoratorComponent;
 
 /**
@@ -66,7 +67,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         return this.namespace;
     }
 
-    public void setName(String name) {
+    @Required public void setName(String name) {
         this.name = name;
     }
 
@@ -74,7 +75,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         return this.name;
     }
 
-    public void setDescription(String description) {
+    @Required public void setDescription(String description) {
         this.description = description;
     }
 
@@ -82,11 +83,15 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         return this.description;
     }
 
-    protected abstract String getDescriptionInternal();
+    public void setParameterDescriptions(Map<String, String> parameterDescriptions) {
+        this.parameterDescriptions = parameterDescriptions;
+    }
 
     public final Map<String, String> getParameterDescriptions() {
         return this.parameterDescriptions;
     }
+
+    protected abstract String getDescriptionInternal();
 
     protected abstract Map<String, String> getParameterDescriptionsInternal();
 
@@ -97,19 +102,6 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         if (this.parameterDescriptions == null)
             this.parameterDescriptions = getParameterDescriptionsInternal();
 
-        if (this.description == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'description' not set");
-        }
-
-        if (this.namespace == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'namespace' not set");
-        }
-        if (this.name == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'name' not set");
-        }
     }
 
     public String toString() {

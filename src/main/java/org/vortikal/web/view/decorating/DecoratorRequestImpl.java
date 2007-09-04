@@ -46,7 +46,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private HttpServletRequest servletRequest;
 
-    private Map decoratorParameters;
+    private Map<String, Object> decoratorParameters;
     
     private String doctype;
 
@@ -54,7 +54,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     
     public DecoratorRequestImpl(HtmlPage html,
                                 HttpServletRequest servletRequest,
-                                Map decoratorParameters,
+                                Map<String, Object> decoratorParameters,
                                 String doctype, Locale locale) {
         this.html = html;
         this.servletRequest = servletRequest;
@@ -93,8 +93,8 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return this.locale;
     }
     
-    public Iterator getRequestParameterNames() {
-        Set s = new HashSet();
+    public Iterator<String> getRequestParameterNames() {
+        Set<String> s = new HashSet<String>();
         s.addAll(this.decoratorParameters.keySet());
         return s.iterator();
     }

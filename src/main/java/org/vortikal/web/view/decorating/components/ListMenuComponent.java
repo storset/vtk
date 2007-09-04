@@ -134,15 +134,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         
-        // Main query
+        // Build main query
         Search mainsearch = buildMainSearch(menuRequest);
         ResultSet mainResultSet = this.searcher.execute(menuRequest.getToken(), mainsearch);
         ListMenu menu = buildMainMenu(mainResultSet, menuRequest);
         
-        // Sub-queries
+        // Build sub-queries (but only if request is from proper subtree)
         int depth = menuRequest.getDepth();
         String uri = menuRequest.getCurrentURI();
-        if (depth > 1 && !"/".equals(uri)) {
+        if (depth > 1 && !"/".equals(uri) && uri.startsWith(menuRequest.getURI())) {
             String[] uris = URLUtil.splitUriIncrementally(uri);
             
             Search subsearch = buildSubSearch(menuRequest, uris, depth);
@@ -177,15 +177,13 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 // A list of excluded children is provided
                 for (int i = 0; i < excludedChildren.length; i++) {
                     String name = excludedChildren[i];
-                    if (name.indexOf("/") != -1) {
-                        throw new DecoratorComponentException("Parameter '" +
-                                 PARAMETER_EXCLUDE_CHILDREN + 
-                                 "' has invalid child name: '" + name + "'");
+                    // Only exclude top menu folders 
+                    if (name.indexOf("/") == -1) {
+                        name = name.trim();
+                        // XXX: need to escape white space in names:
+                        //name = name.replaceAll(" ", "\\\\ ");
+                        query.append(" AND name != ").append(name).append("");
                     }
-                    name = name.trim();
-                    // XXX: need to escape white space in names:
-                    //name = name.replaceAll(" ", "\\\\ ");
-                    query.append(" AND name != ").append(name).append("");
                 }
             }
         } else {
@@ -249,46 +247,39 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (!uri.equals("/")) {
                 query.append("/");
             }
-            query.append("* AND depth = ").append(i+1).append(")"); // query the subtree below current depth
+            query.append("* AND depth = ").append(i+1).append(")"); // query subtree below current depth
             query.append(")");
         }
-
-        /*
-         * XXX: Change to facilitate relative path to folder
-         */
-        /*
+        
         String[] excludedChildren = menuRequest.getExcludedChildren();
         if (excludedChildren != null) {
             // A list of excluded children is provided
             for (int i = 0; i < excludedChildren.length; i++) {
                 String excludedFolder = excludedChildren[i];
-                if (excludedFolder.indexOf("/") != -1) {
+                if (excludedFolder.startsWith("/")) {
                     throw new DecoratorComponentException("Parameter '" +
                              PARAMETER_EXCLUDE_CHILDREN + 
-                             "' has invalid child name: '" + excludedFolder + "'");
+                             "' has invalid child name: '" + excludedFolder + "' " +
+                             "(folder path must be relative to given 'uri', e.g: [folder,folder/subfolder])");
                 }
-                excludedFolder = excludedFolder.trim();
-                excludedFolder = excludedFolder.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
-                
-                String searchRootURI = menuRequest.getURI();
-                if (!searchRootURI.endsWith("/") {
-                    searchRootURI.concat("/");
-                }
-                
-                excludedFolder = searchRootURI + excludedFolder;
-                query.append(" AND name != ").append(excludedFolder).append("");
-                
-                //query.append("uri = ").append(childURI).append("");
-                if (i < excludedChildren.length - 1) {
-                    query.append(" OR ");
+                // Only add sub-level folders
+                if (excludedFolder.indexOf('/') != -1) {
+                    excludedFolder = excludedFolder.trim();
+                    /*
+                     * XXX: Exclude-query still doesn't work properly if folder name has parentheses of whitespace...
+                     */
+                    excludedFolder = excludedFolder.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
+                    String searchRootURI = menuRequest.getURI();
+                    if (!searchRootURI.endsWith("/")) {
+                        searchRootURI += "/";
+                    }
+                    excludedFolder = searchRootURI + excludedFolder;
+                    query.append(" AND uri != ").append(excludedFolder).append("");                    
                 }
             }
-            query.append(")");
         }
-        */
             
-        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
-        query.append(")");
+        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND ");
         
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropdef);
@@ -467,6 +458,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
         Map<String, MenuItem<String>> activeMatches = new HashMap<String, MenuItem<String>>();
         List<PropertySet> childList = childMap.get(resource.getURI());
+        // if current-child is excluded etc
+        if(childList == null) {
+            return null;
+        }
         for (Iterator iterator = childList.iterator(); iterator.hasNext();) {
             PropertySet subResource = (PropertySet) iterator.next();
             MenuItem<String> item = buildItem(subResource, childMap);

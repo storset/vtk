@@ -1,17 +1,27 @@
 <#--
   - File: manage-link.ftl
   - 
-  - Description: inserts a link to the manage service inside a <div>
+  - Description: inserts a link (href) to the manage service
   -  
   - Required model data:
+  -   manageLink
   -  
   - Optional model data:
-  -   manageLink
+  -   config
+  -   resourceContext
   -
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if !manageLink?exists || !manageLink.url?exists>
-  <#stop "Missing manageLink in model"/>
+  <#stop "Missing 'manageLink' entry in model"/>
 </#if>
-<a class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>
+<#if config?exists
+     && resourceContext?exists
+     && config['display-only-if-auth']?exists
+     && config['display-only-if-auth'] = 'true'
+     && resourceContext.currentPrincipal?exists>
+  <#-- Display nothing -->
+<#else>
+  <a class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>
+</#if>

@@ -103,23 +103,21 @@
     <result property="ancestorIds" column="ancestor_ids" javaType="string"/>
   </resultMap>
   
-  
+  <!-- ChangeLog entry result mapping -->
   <resultMap id="ChangeLogEntry" class="org.vortikal.repositoryimpl.ChangeLogEntry">
-    
     <result property="changeLogEntryId" column="changelog_entry_id" javaType="int"/>
     <result property="loggerId" column="logger_id" javaType="int"/>
     <result property="loggerType" column="logger_type" javaType="int"/>
     <result property="uri" column="uri" />
-    <result property="resourceId" column="resource_id" javaType="int"/>
+    <result property="resourceId" column="resource_id" javaType="int" nullValue="-1"/>
     <result property="operation" column="operation" 
       typeHandler="org.vortikal.repositoryimpl.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback"/>
     <result property="collection" column="is_collection"
       typeHandler="org.vortikal.repositoryimpl.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
     <result property="timestamp" column="timestamp" javaType="date"/>
-    
   </resultMap>
   
-  
+
   <select id="loadResourceByUri" resultMap="Resource">
     select * from vortex_resource where uri = #value#
   </select>
@@ -619,7 +617,7 @@
       operation, timestamp, uri, resource_id, is_collection)
     values (<include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
     #operation,handler=org.vortikal.repositoryimpl.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
-    #timestamp#, #uri#, #resourceId#, #collection,handler=org.vortikal.repositoryimpl.store.db.ibatis.BooleanCharTypeHandlerCallback#)
+    #timestamp#, #uri#, #resourceId:NUMERIC:-1#, #collection,handler=org.vortikal.repositoryimpl.store.db.ibatis.BooleanCharTypeHandlerCallback#)
   </insert>
 
 

@@ -49,19 +49,20 @@
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.write" default="Write" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="write" privilegeHeading=privilegeHeading />
 
-      <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
-      <@permissions.editOrDisplayPrivilege privilegeName="add-comment" privilegeHeading=commentHeading />
-
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
      
       <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
+
+      <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>
+      <@permissions.editOrDisplayPrivilege privilegeName="add-comment" privilegeHeading=commentHeading />
+
       <#assign bindHeading><@vrtx.msg code="permissions.privilege.bind" default="Create resources only" /></#assign>
       <#assign readProHeading><@vrtx.msg code="permissions.privilege.read-processed" default="Read processed only" /></#assign>
       <#if resource.collection>
-        <#assign privilegeList = [{"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
+        <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"bind", "heading": bindHeading}, {"name":"read-processed", "heading":readProHeading }] />
       <#else>
-        <#assign privilegeList = [{"name":"read-processed", "heading":readProHeading }] />
+        <#assign privilegeList = [{"name":"add-comment", "heading":commentHeading }, {"name":"read-processed", "heading":readProHeading }] />
       </#if>        
       <@permissions.editOrDisplayPrivileges privilegeList=privilegeList heading=groupHeading />
 

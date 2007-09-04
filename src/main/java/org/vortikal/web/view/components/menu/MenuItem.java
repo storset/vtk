@@ -39,7 +39,7 @@ package org.vortikal.web.view.components.menu;
  * <li><code>url</code> - the URL string to the item
  * <li><code>label</code> - string identifying the menu item type
  * <li><code>active</code> - boolean flag set if this is the current shown item
- *
+ * </ul>
  */
 public class MenuItem<T extends Comparable<T>>
   implements Comparable<MenuItem<T>> {
@@ -125,7 +125,7 @@ public class MenuItem<T extends Comparable<T>>
     
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(":");
         sb.append(this.title);
         if (this.subMenu != null) {

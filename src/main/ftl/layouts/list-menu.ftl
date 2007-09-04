@@ -65,7 +65,6 @@
   <#if item.menu?exists>
     <#if item.menu.label?exists>
       <ul class="${item.menu.label}">
-        <h1>${item.menu.label}</h1>
         <@listMenu menu=item.menu />
       </ul>
     <#else>

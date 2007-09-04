@@ -241,6 +241,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         for (int i = startDepth; i < uris.length && i < maxDepth; i++) {
             uri = uris[i];
+            // Must escape parentheses and space from file/folder names to build proper query string 
+            uri = uri.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
             
             if (i != startDepth) {
                 query.append(" OR ");
@@ -273,16 +275,18 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             
         query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
         query.append(")");
-
+        
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropdef);
         if (logger.isDebugEnabled()) {
             logger.debug("About to search using query: '" + query + "'");
         }
+        
         Search search = new Search();
         search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
+        
         return search;
     }
     

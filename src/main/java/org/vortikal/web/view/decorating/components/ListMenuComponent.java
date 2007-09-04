@@ -141,8 +141,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         // Sub-queries
         int depth = menuRequest.getDepth();
-        if (depth > 1) {
-            String uri = menuRequest.getCurrentURI();
+        String uri = menuRequest.getCurrentURI();
+        if (depth > 1 && !"/".equals(uri)) {
             String[] uris = URLUtil.splitUriIncrementally(uri);
             
             Search subsearch = buildSubSearch(menuRequest, uris, depth);
@@ -153,7 +153,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 menu.getActiveItem().setSubMenu( submenu );
             }
         }
-        
         model.put(this.modelName, menu);
     }
     
@@ -253,31 +252,38 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             query.append("* AND depth = ").append(i+1).append(")"); // query the subtree below current depth
             query.append(")");
         }
-        
+
         /*
          * XXX: Change to facilitate relative path to folder
-         * 
+         */
+        /*
         String[] excludedChildren = menuRequest.getExcludedChildren();
         if (excludedChildren != null) {
             // A list of excluded children is provided
             for (int i = 0; i < excludedChildren.length; i++) {
-                String name = excludedChildren[i];
-                if (name.indexOf("/") != -1) {
+                String excludedFolder = excludedChildren[i];
+                if (excludedFolder.indexOf("/") != -1) {
                     throw new DecoratorComponentException("Parameter '" +
                              PARAMETER_EXCLUDE_CHILDREN + 
-                             "' has invalid child name: '" + name + "'");
+                             "' has invalid child name: '" + excludedFolder + "'");
                 }
-                name = name.trim();
-                // XXX: need to escape white space in names:
-                //name = name.replaceAll(" ", "\\\\ ");
-                query.append(" AND name != ").append(name).append("");
+                excludedFolder = excludedFolder.trim();
+                excludedFolder = excludedFolder.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
+                
+                String searchRootURI = menuRequest.getURI();
+                if (!searchRootURI.endsWith("/") {
+                    searchRootURI.concat("/");
+                }
+                
+                excludedFolder = searchRootURI + excludedFolder;
+                query.append(" AND name != ").append(excludedFolder).append("");
                 
                 //query.append("uri = ").append(childURI).append("");
-                //if (i < childNames.length - 1) {
-                //    query.append(" OR ");
-                //}
-                
+                if (i < excludedChildren.length - 1) {
+                    query.append(" OR ");
+                }
             }
+            query.append(")");
         }
         */
             

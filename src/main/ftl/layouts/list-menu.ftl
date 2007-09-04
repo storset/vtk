@@ -63,8 +63,15 @@
 <#macro displayItem item>
   <a href="${item.url?html}">${item.title?html}</a>
   <#if item.menu?exists>
-    <ul>
-      <@listMenu menu=item.menu />
-    </ul>
+    <#if item.menu.label?exists>
+      <ul class="${item.menu.label}">
+        <h1>${item.menu.label}</h1>
+        <@listMenu menu=item.menu />
+      </ul>
+    <#else>
+      <ul>
+        <@listMenu menu=item.menu />
+      </ul>    
+    </#if>
   </#if>
 </#macro>

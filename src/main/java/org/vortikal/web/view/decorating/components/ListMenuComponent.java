@@ -396,10 +396,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         String[] childNames = menuRequest.getChildNames();
                 
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
-        
-        
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
-             
         List<PropertySet> childList = new ArrayList<PropertySet>();
         Map<String, MenuItem<String>> nameItemMap = new HashMap<String, MenuItem<String>>();
                 
@@ -437,11 +434,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             childList.add(resource);
         }
         
-        if(childMap.isEmpty())
+        if(childMap.isEmpty()) {
             return null;
-        else
+        }
+        else {
             return buildSubItems(rootResource, childMap, requestURI);
+        }
     }
+    
     
     private ListMenu buildSubItems(PropertySet resource, Map<String, List<PropertySet>> childMap, String requestURI) {
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
@@ -484,6 +484,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         ListMenu<String> submenu = new ListMenu<String>();
         submenu.addAllItems(items);
+        submenu.setLabel(resource.getName());
         return submenu;
     }
     

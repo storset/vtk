@@ -94,7 +94,7 @@
   <!-- Content type assertions -->
 
   <bean id="contentTypeMatchesText" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(application/xml)|(text/(plain|html|xml))" />
+    <property name="pattern" value="(application/(x-)?xml)|(text/(plain|html|xml))" />
   </bean>
 
   <bean id="contentTypeMatchesAnyText" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
@@ -102,8 +102,16 @@
     <property name="exceptionPattern" value="text/rtf" />
   </bean>
 
+  <!-- Assertion that matches on all textual content types: -->
+  <bean id="contentTypeIsTextual" 
+        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/(x-)?xml)|(application/x-php)|(text/(.+))" />
+    <property name="exceptionPattern" value="text/rtf" />
+  </bean>
+
+
   <bean id="contentTypeMatchesXml" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(text|application)/xml" />
+    <property name="pattern" value="(text|application)/(x-)?xml" />
   </bean>
 
   <bean id="contentTypeMatchesHtml" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
@@ -115,12 +123,12 @@
   </bean>
 
   <bean id="contentTypeMatchesXmlOrHtml" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(application/xml)|(text/(xml|html))" />
+    <property name="pattern" value="(application/(x-)?xml)|(text/(xml|html))" />
   </bean>
 
   <bean id="contentTypeMatchesXmlOrHtmlOrCollection"
     class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(application/xml)|(text/(xml|html))|(application/x-vortex-collection)" />
+    <property name="pattern" value="(application/(x-)?xml)|(text/(xml|html))|(application/x-vortex-collection)" />
   </bean>
 
   <bean id="contentTypeMatchesImage" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,8 @@ public class ContentTypeHelper {
     public static boolean isXMLContentType(String contentType) {
         return (contentType != null) &&
             (contentType.startsWith("text/xml")
-             || contentType.startsWith("application/xml"));
+             || contentType.startsWith("application/xml")
+             || contentType.startsWith("application/x-xml"));
     }   
     
 

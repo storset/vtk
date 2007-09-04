@@ -26,13 +26,6 @@
     </property>
   </bean>
 
-  <!-- Assertion that matches on all textual content types: -->
-  <bean id="contentTypeIsTextual" 
-        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="(application/xml)|(application/x-php)|(text/(.+))" />
-    <property name="exceptionPattern" value="text/rtf" />
-  </bean>
-
   <bean id="userSpecifiedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="userSpecifiedCharacterEncoding" />

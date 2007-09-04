@@ -32,7 +32,6 @@ package org.vortikal.repositoryimpl;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Resource;

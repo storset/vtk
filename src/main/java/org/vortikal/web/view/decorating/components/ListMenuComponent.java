@@ -69,6 +69,7 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final int DEFAULT_DEPTH = 1;
+    private static final int DEFAULT_SEARCH_LIMIT = 500;
     
     private static final String STYLE_NONE = "none";
     private static final String STYLE_VERTICAL = "vertical";
@@ -117,7 +118,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_DEPTH_DESC =
         "Specifies the number of levels to retrieve subfolders for. The default value is '1' ";
     
-
+    
     private static Log logger = LogFactory.getLog(ListMenuComponent.class);
     
     private QueryParser queryParser;
@@ -125,7 +126,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private PropertyTypeDefinition titlePropdef;
     private ResourceTypeDefinition collectionResourceType;
     private String modelName = "menu";
-    private int searchLimit = 25;
+    private int searchLimit = DEFAULT_SEARCH_LIMIT;
     private Searcher searcher;
 
 
@@ -189,9 +190,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 }
             }
         } else {
-            /*
-             * XXX: Must also facilitate relative path to children further down the branch!
-             */
             // An explicit list of child names is provided
             for (int i = 0; i < childNames.length; i++) {
                 String name = childNames[i];
@@ -241,7 +239,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         for (int i = startDepth; i < uris.length && i < maxDepth; i++) {
             uri = uris[i];
-            // Must escape parentheses and space from file/folder names to build proper query string 
+            // Must escape space and parentheses from file/folder names to build proper query string 
             uri = uri.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
             
             if (i != startDepth) {
@@ -256,6 +254,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             query.append(")");
         }
         
+        /*
+         * XXX: Change to facilitate relative path to folder
+         * 
         String[] excludedChildren = menuRequest.getExcludedChildren();
         if (excludedChildren != null) {
             // A list of excluded children is provided
@@ -270,8 +271,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 // XXX: need to escape white space in names:
                 //name = name.replaceAll(" ", "\\\\ ");
                 query.append(" AND name != ").append(name).append("");
+                
+                //query.append("uri = ").append(childURI).append("");
+                //if (i < childNames.length - 1) {
+                //    query.append(" OR ");
+                //}
+                
             }
         }
+        */
             
         query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
         query.append(")");
@@ -310,7 +318,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
             
             String url = this.viewService.constructLink(uri);
-            String name = resource.getName();
+            String name = resource.getName().replace(' ', '-');
+            if (name.equals("/")) {
+                name = "root-folder";
+            }
             Property titleProperty = resource.getProperty(this.titlePropdef);
             String title = titleProperty != null ? titleProperty.getStringValue() : name;
             
@@ -325,7 +336,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 
             }
             if (resource.getURI().equals(menuRequest.getURI())) {
-                item.setLabel(title + " parent-folder");
+                item.setLabel(name + " parent-folder");
                 parent = item;
             } else {
                 nameItemMap.put(resource.getName(), item);
@@ -375,8 +386,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return menu;
     }
     
-
-
+    
     private List<MenuItem<String>> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem<String>> nameItemMap) {
         List<MenuItem<String>> result = new ArrayList<MenuItem<String>>();
         for (int i = 0; i < childNames.length; i++) {
@@ -488,17 +498,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         ListMenu<String> submenu = new ListMenu<String>();
         submenu.addAllItems(items);
-        submenu.setLabel(resource.getName());
+        submenu.setLabel(resource.getName().replace(' ', '-'));
         return submenu;
     }
     
-    
-    
+        
     private MenuItem<String> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap) {
         MenuItem<String> item = new MenuItem<String>();
         String uri = resource.getURI();
         String url = this.viewService.constructLink(uri);
-        String name = resource.getName();
+        String name = resource.getName().replace(' ', '-');
         Property titleProperty = resource.getProperty(this.titlePropdef);
         String title = titleProperty != null ? titleProperty.getStringValue() : name;
         item.setUrl(url);

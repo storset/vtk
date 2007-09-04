@@ -233,6 +233,7 @@
     <property name="name" value="uri-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="queryParser" ref="searchParser" />
+    <!-- <property name="searchLimit" value="100" /> -->
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="titlePropdef" ref="titlePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />

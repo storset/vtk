@@ -212,7 +212,9 @@
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />
 
     <!-- Character encoding -->
-    <@propList.editOrDisplayPropertyItem item=aboutItems['userSpecifiedCharacterEncoding'] defaultItem=aboutItems['characterEncoding'] />
+    <#if resource.characterEncoding?exists>
+      <@propList.editOrDisplayPropertyItem item=aboutItems['userSpecifiedCharacterEncoding'] defaultItem=aboutItems['characterEncoding'] />
+    </#if>
 
     <!-- Plaintext Edit on managed xml -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'plaintext-edit' />

@@ -89,34 +89,34 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_INCLUDE_CHILDREN = "include-children";
     private static final String PARAMETER_INCLUDE_CHILDREN_DESC
-        = "An explicit listing of the child resources to include.";
+        = "An explicit listing of the child resources to include. (Only applicable for resources at level 1.)";
 
     private static final String PARAMETER_EXCLUDE_CHILDREN = "exclude-children";
     private static final String PARAMETER_EXCLUDE_CHILDREN_DESC
-        = "A listing of child resources to exclude (cannot be used in conjunction with '" + PARAMETER_INCLUDE_CHILDREN + "')";
+        = "A listing of child resources to exclude (cannot be used in conjunction with '" + PARAMETER_INCLUDE_CHILDREN + "').";
 
     private static final String PARAMETER_INCLUDE_PARENT = "include-parent-folder";
     private static final String PARAMETER_INCLUDE_PARENT_DESC = 
-        "Whether or not to include the selected folder itself in the menu. Defaults to 'false'";
+        "Whether or not to include the selected folder itself in the menu. Defaults to 'false'.";
 
     private static final String PARAMETER_STYLE = "style";
     private static final String PARAMETER_STYLE_DESC = 
         "Defines the style of the menu. Must be one of " + VALID_STYLES.toString()
-        + ". Defaults to " + DEFAULT_STYLE;
+        + ". Defaults to " + DEFAULT_STYLE + ".";
 
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = 
-        "The URI (path) to the selected folder";
+        "The URI (path) to the selected folder.";
 
     private static final String PARAMETER_AUTENTICATED = "authenticated";
     private static final String PARAMETER_AUTENTICATED_DESC = 
         "The default is that only resources readable for everyone is listed. " +
             "If this is set to 'true', the listing is done as the currently " +
-            "logged in user (if any)";
+            "logged in user (if any).";
     
     private static final String PARAMETER_DEPTH = "depth";
     private static final String PARAMETER_DEPTH_DESC =
-        "Specifies the number of levels to retrieve subfolders for. The default value is '1' ";
+        "Specifies the number of levels to retrieve subfolders for. The default value is '1', which retrieves the top level.";
     
     
     private static Log logger = LogFactory.getLog(ListMenuComponent.class);
@@ -141,9 +141,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         // Build sub-queries (but only if request is from proper subtree)
         int depth = menuRequest.getDepth();
-        String uri = menuRequest.getCurrentURI();
-        if (depth > 1 && !"/".equals(uri) && uri.startsWith(menuRequest.getURI())) {
-            String[] uris = URLUtil.splitUriIncrementally(uri);
+        String currentURI = menuRequest.getCurrentURI();
+        String uri = menuRequest.getURI();
+        if (depth > 1 && !currentURI.equals(uri) && currentURI.startsWith(uri)) {
+            String[] uris = URLUtil.splitUriIncrementally(currentURI);
             
             Search subsearch = buildSubSearch(menuRequest, uris, depth);
             ResultSet subResultSet = this.searcher.execute(menuRequest.getToken(), subsearch);
@@ -166,6 +167,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         if (childNames == null) {
             // List all children based on depth:
+            uri = escapeIllegalCharacters(uri);
             query.append("(uri = ").append(uri);
             if (!uri.equals("/")) {
                 query.append("/");
@@ -180,8 +182,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     // Only exclude top menu folders 
                     if (name.indexOf("/") == -1) {
                         name = name.trim();
-                        // XXX: need to escape white space in names:
-                        //name = name.replaceAll(" ", "\\\\ ");
+                        name = escapeIllegalCharacters(name);
                         query.append(" AND name != ").append(name).append("");
                     }
                 }
@@ -194,8 +195,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     throw new DecoratorComponentException("Invalid child name: '" + name + "'");
                 }
                 name = name.trim();
-                // XXX: need to escape white space in names:
-                //name = name.replaceAll(" ", "\\\\ ");
+                name = escapeIllegalCharacters(name);
                 String childURI = URIUtil.makeAbsoluteURI(name, uri);
                 query.append("uri = ").append(childURI).append("");
                 if (i < childNames.length - 1) {
@@ -210,7 +210,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
         query.append(")");
-
+        
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropdef);
         if (logger.isDebugEnabled()) {
@@ -237,7 +237,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         for (int i = startDepth; i < uris.length && i < maxDepth; i++) {
             uri = uris[i];
             // Must escape space and parentheses from file/folder names to build proper query string 
-            uri = uri.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
+            uri = escapeIllegalCharacters(uri);
             
             if (i != startDepth) {
                 query.append(" OR ");
@@ -269,8 +269,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                      /*
                      * XXX: Exclude-query still doesn't work properly if folder name contains parentheses or whitespace...
                      */
-                    excludedFolder = excludedFolder.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
+                    excludedFolder = escapeIllegalCharacters(excludedFolder);
                     String searchRootURI = menuRequest.getURI();
+                    searchRootURI = escapeIllegalCharacters(searchRootURI);
                     if (!searchRootURI.endsWith("/")) {
                         searchRootURI += "/";
                     }
@@ -457,11 +458,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     
-    private ListMenu buildSubItems(PropertySet resource, Map<String, List<PropertySet>> childMap, String requestURI) {
+    private ListMenu buildSubItems(PropertySet rootResource, Map<String, List<PropertySet>> childMap, String requestURI) {
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
         Map<String, MenuItem<String>> activeMatches = new HashMap<String, MenuItem<String>>();
-        List<PropertySet> childList = childMap.get(resource.getURI());
-        // if current-child is excluded etc
+        List<PropertySet> childList = childMap.get(rootResource.getURI());
+        // if current-child is excluded etc.
         if(childList == null) {
             return null;
         }
@@ -472,17 +473,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 item.setSubMenu(buildSubItems(subResource, childMap, requestURI));
                 item.setActive(true);
             }
-            items.add(item);
-        }
-        // Find the active menu item:
-        String[] incrementalPath = URLUtil.splitUriIncrementally(requestURI);
-        for (int i = incrementalPath.length - 1; i >= 0; i--) {
-            String uri = incrementalPath[i];
-            if (activeMatches.containsKey(uri)) {
-                MenuItem activeItem = activeMatches.get(uri);
-                activeItem.setActive(true);
-                break;
+            if (requestURI.equals(subResource.getURI())) {
+                item.setActive(true);
             }
+            items.add(item);
         }
         
         /*
@@ -503,7 +497,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         ListMenu<String> submenu = new ListMenu<String>();
         submenu.addAllItems(items);
-        submenu.setLabel(resource.getName().replace(' ', '-'));
+        submenu.setLabel(rootResource.getName().replace(' ', '-'));
         return submenu;
     }
     
@@ -520,6 +514,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         item.setLabel(name);
         item.setActive(false);
         return item;
+    }
+    
+    
+    // Helper method
+    private String escapeIllegalCharacters(String s) {
+        return s.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
     }
     
 

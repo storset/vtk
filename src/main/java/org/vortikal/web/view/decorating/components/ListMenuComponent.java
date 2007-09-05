@@ -250,8 +250,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             query.append("* AND depth = ").append(i+1).append(")"); // query subtree below current depth
             query.append(")");
         }
-        
+                
         String[] excludedChildren = menuRequest.getExcludedChildren();
+        StringBuilder excludeQuery = new StringBuilder();
         if (excludedChildren != null) {
             // A list of excluded children is provided
             for (int i = 0; i < excludedChildren.length; i++) {
@@ -265,8 +266,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 // Only add sub-level folders
                 if (excludedFolder.indexOf('/') != -1) {
                     excludedFolder = excludedFolder.trim();
-                    /*
-                     * XXX: Exclude-query still doesn't work properly if folder name has parentheses of whitespace...
+                     /*
+                     * XXX: Exclude-query still doesn't work properly if folder name contains parentheses or whitespace...
                      */
                     excludedFolder = excludedFolder.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
                     String searchRootURI = menuRequest.getURI();
@@ -274,13 +275,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                         searchRootURI += "/";
                     }
                     excludedFolder = searchRootURI + excludedFolder;
-                    query.append(" AND uri != ").append(excludedFolder).append("");                    
+                    excludeQuery.append(" AND uri != ").append(excludedFolder)
+                                .append(" AND uri != ").append(excludedFolder).append("/*").append("");
                 }
             }
         }
-            
-        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND ");
-        
+                    
+        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
+        query.append(")").append(excludeQuery); // Safe to add even if empty 
+                
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropdef);
         if (logger.isDebugEnabled()) {
@@ -467,6 +470,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             MenuItem<String> item = buildItem(subResource, childMap);
             if (childMap.containsKey(subResource.getURI())) {
                 item.setSubMenu(buildSubItems(subResource, childMap, requestURI));
+                item.setActive(true);
             }
             items.add(item);
         }

@@ -497,46 +497,6 @@
   </bean>
 
 
-  <bean id="collectionListingHeadDecorator"
-        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
-    <property name="view">
-      <bean id="collectionListingHeadView" parent="freemarkerView">
-        <property name="attributesMap">
-          <map>
-            <entry key="cssURLs">
-              <list>
-                <value>${cssBaseURL}/basic.css</value>
-                <!--value>http://www.uio.no/visuell-profil/css/uio.css</value-->
-                <value>${cssBaseURL}/view-collectionlisting.css</value>
-              </list>
-            </entry>
-          </map>
-        </property>
-        <property name="url" value="layouts/head.ftl" />
-      </bean>
-    </property>
-  </bean>
-
-
-  <bean id="collectionListingHeaderDecorator"
-        class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
-    <property name="view">
-      <bean id="collectionListingHeader" parent="freemarkerView">
-        <property name="url" value="layouts/plain-header.ftl" />
-      </bean>
-    </property>
-  </bean>
-
-
-  <bean id="collectionListingFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
-    <property name="view">
-      <bean id="collectionListingFooterView" parent="freemarkerView">
-        <property name="url" value="layouts/plain-footer.ftl" />
-      </bean>
-    </property>
-  </bean>
-
   <!-- View definitions -->
 
   <bean id="webdavCollectionListingView" parent="freemarkerView">

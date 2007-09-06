@@ -472,7 +472,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     
     private ListMenu buildSubItems(PropertySet rootResource, Map<String, List<PropertySet>> childMap, String requestURI) {
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
-        Map<String, MenuItem<String>> activeMatches = new HashMap<String, MenuItem<String>>();
         List<PropertySet> childList = childMap.get(rootResource.getURI());
         // if current-child is excluded etc.
         if(childList == null) {
@@ -484,9 +483,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             if (childMap.containsKey(subResource.getURI())) {
                 item.setSubMenu(buildSubItems(subResource, childMap, requestURI));
                 item.setActive(true);
-            }
-            if (requestURI.equals(subResource.getURI())) {
-                item.setActive(true);
+            } else {
+                // Necessary to set active the deepest expanded folder for the current subtree
+                // (which will have no pointer to a child list)
+                if (requestURI.startsWith(subResource.getURI())) {
+                  item.setActive(true);
+                }
             }
             items.add(item);
         }

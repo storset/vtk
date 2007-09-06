@@ -92,9 +92,6 @@
   <logger name="java.sql"><level value="info" /></logger>
   <logger name="org.apache.commons.dbcp"><level value="info" /></logger>
   
-  <!-- My stuff -->
-  <!-- <logger name="org.vortikal.repositoryimpl.search.SearcherImpl"><level value="debug" /></logger> -->
-  
   <root>
     <level value ="info"/>
     <appender-ref ref="stdout"/>

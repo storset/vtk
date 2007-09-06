@@ -12,8 +12,20 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
       <action type="add">
-        Added basic support for commenting on resources via a web
-        interface.
+        Added basic support for resource comments
+      </action>
+      <action type="update">
+        Library update: Updgraded Lucene to version 2.2.0
+      </action>
+      <action type="update">
+        Decorating: various bug fixes and minor updates
+      </action>
+      <action type="add">
+        Decorating: new authentication (login/logout) component
+      </action>
+      <action type="update">
+        Repository: better transaction handling using Spring's
+        transaction manager
       </action>
     </release>
 

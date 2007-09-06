@@ -30,8 +30,7 @@
  */
 package org.vortikal.web.view.decorating.components;
 
-
-
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -42,8 +41,10 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -89,7 +90,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
     private static final String PARAMETER_ELEMENT = "element";
     private static final String PARAMETER_ELEMENT_DESC =
         "Selects an element from the included document (used in conjunction with the '"
-        + PARAMETER_FILE + "' parameter). The parameter must be a dot-separated path "
+        + PARAMETER_FILE + "' or '" + PARAMETER_VIRTUAL
+        + "' parameters). The parameter must be a dot-separated path "
         + "from the root element to the desired element: for example, the expression "
         + "'html.body.h1' selects the (first) h1 element in the HTML body.";
 
@@ -284,11 +286,30 @@ public class IncludeComponent extends AbstractDecoratorComponent
                 "Reported content type is '" + servletResponse.getContentType() + "'");
         }
 
-        byte[] bytes = servletResponse.getContentBuffer();
-        response.setCharacterEncoding(servletResponse.getCharacterEncoding());
-        OutputStream out = response.getOutputStream();
-        out.write(bytes);
-        out.close();
+        String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
+
+        if (elementParam != null && ContentTypeHelper.isHTMLOrXHTMLContentType(servletResponse.getContentType())) {
+            byte[] bytes = servletResponse.getContentBuffer();
+            InputStream is = new ByteArrayInputStream(bytes);
+
+            HtmlPage page = this.htmlParser.parse(is, servletResponse.getCharacterEncoding());
+            String result = "";
+                        
+            List<HtmlElement> elements = HtmlSelectUtil.select(page, elementParam);
+            if (elements.size() > 0) {
+                result = elements.get(0).getContent();
+            }
+            Writer writer = response.getWriter();
+            writer.write(result);
+            writer.close();
+            
+        } else {
+            byte[] bytes = servletResponse.getContentBuffer();
+            response.setCharacterEncoding(servletResponse.getCharacterEncoding());
+            OutputStream out = response.getOutputStream();
+            out.write(bytes);
+            out.close();
+        }
     }
     
 

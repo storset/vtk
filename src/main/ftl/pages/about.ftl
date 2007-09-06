@@ -212,7 +212,7 @@
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />
 
     <!-- Character encoding -->
-    <#if resource.characterEncoding?exists>
+    <#if aboutItems['characterEncoding']?exists>
       <@propList.editOrDisplayPropertyItem item=aboutItems['userSpecifiedCharacterEncoding'] defaultItem=aboutItems['characterEncoding'] />
     </#if>
 

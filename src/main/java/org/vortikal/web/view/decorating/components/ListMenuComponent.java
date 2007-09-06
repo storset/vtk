@@ -479,7 +479,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             } else {
                 // Necessary to set active the deepest expanded folder for the current subtree
                 // (which will have no pointer to a child list)
-                if (requestURI.startsWith(subResource.getURI())) {
+                if (subResource.getURI().equals(RequestContext.getRequestContext().getCurrentCollection())) {
                   item.setActive(true);
                 }
             }

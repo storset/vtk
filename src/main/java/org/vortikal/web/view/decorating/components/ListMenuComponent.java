@@ -473,13 +473,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         for (Iterator iterator = childList.iterator(); iterator.hasNext();) {
             PropertySet subResource = (PropertySet) iterator.next();
             MenuItem<String> item = buildItem(subResource, childMap);
-            if (childMap.containsKey(subResource.getURI())) {
+            String subResourceURI = subResource.getURI();
+            if (childMap.containsKey(subResourceURI)) {
                 item.setSubMenu(buildSubItems(subResource, childMap, requestURI, locale));
                 item.setActive(true);
             } else {
                 // Necessary to set active the deepest expanded folder for the current subtree
                 // (which will have no pointer to a child list)
-                if (subResource.getURI().equals(RequestContext.getRequestContext().getCurrentCollection())) {
+                String requestingCollection = RequestContext.getRequestContext().getCurrentCollection();
+                if ( subResourceURI.equals(requestingCollection) || 
+                     requestingCollection.startsWith(subResourceURI+"/") ) {
                   item.setActive(true);
                 }
             }

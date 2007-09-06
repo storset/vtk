@@ -288,6 +288,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 else {
                     excludedFolder = escapeIllegalCharacters(excludedFolder);
                     excludedFolder = searchRootURI + excludedFolder;
+                    excludedFolder += "/";
                     if (menuRequest.getCurrentURI().startsWith(excludedFolder)) {
                         return null;
                     }

@@ -218,6 +218,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             logger.debug("About to search using query: '" + query + "'");
         }
         Search search = new Search();
+        search.setSorting(null);
         search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
@@ -304,6 +305,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         
         Search search = new Search();
+        search.setSorting(null); 
         search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
@@ -420,13 +422,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     
     private ListMenu buildSubMenu(ResultSet rs, MenuRequest menuRequest) {
         String requestURI = menuRequest.getCurrentURI();        
-        String[] childNames = menuRequest.getChildNames();
-                
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
         List<PropertySet> childList = new ArrayList<PropertySet>();
-        Map<String, MenuItem<String>> nameItemMap = new HashMap<String, MenuItem<String>>();
-                
+                        
         String rootURI = null;
         PropertySet rootResource = null;
         
@@ -465,12 +464,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             return null;
         }
         else {
-            return buildSubItems(rootResource, childMap, requestURI);
+            return buildSubItems(rootResource, childMap, requestURI, menuRequest.getLocale());
         }
     }
     
     
-    private ListMenu buildSubItems(PropertySet rootResource, Map<String, List<PropertySet>> childMap, String requestURI) {
+    private ListMenu buildSubItems(PropertySet rootResource, Map<String, List<PropertySet>> childMap, String requestURI, Locale locale) {
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
         List<PropertySet> childList = childMap.get(rootResource.getURI());
         // if current-child is excluded etc.
@@ -481,7 +480,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             PropertySet subResource = (PropertySet) iterator.next();
             MenuItem<String> item = buildItem(subResource, childMap);
             if (childMap.containsKey(subResource.getURI())) {
-                item.setSubMenu(buildSubItems(subResource, childMap, requestURI));
+                item.setSubMenu(buildSubItems(subResource, childMap, requestURI, locale));
                 item.setActive(true);
             } else {
                 // Necessary to set active the deepest expanded folder for the current subtree
@@ -501,13 +500,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                              + java.util.Arrays.asList(childNames));
             }
             items = sortSpecifiedOrder(childNames, nameItemMap);
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Sorting items based on title");
-            }
-            items = sortRegularOrder(items, menuRequest.getLocale());
         }
         */
+        /*
+         * XXX: Only default sort for sub-menu 
+         */
+        if (logger.isDebugEnabled()) {
+            logger.debug("Sorting items based on title");
+        }
+        items = sortRegularOrder(items, locale);
         
         ListMenu<String> submenu = new ListMenu<String>();
         submenu.addAllItems(items);

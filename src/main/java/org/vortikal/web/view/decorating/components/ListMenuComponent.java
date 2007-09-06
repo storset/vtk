@@ -145,13 +145,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         String uri = menuRequest.getURI();
         if (depth > 1 && !currentURI.equals(uri) && currentURI.startsWith(uri)) {
             String[] uris = URLUtil.splitUriIncrementally(currentURI);
-            
             Search subsearch = buildSubSearch(menuRequest, uris, depth);
-            ResultSet subResultSet = this.searcher.execute(menuRequest.getToken(), subsearch);
-            ListMenu submenu = buildSubMenu(subResultSet, menuRequest);
-            
-            if (submenu != null && menu.getActiveItem()!=null) {
-                menu.getActiveItem().setSubMenu( submenu );
+            if (subsearch != null) {
+                ResultSet subResultSet = this.searcher.execute(menuRequest.getToken(), subsearch);
+                ListMenu submenu = buildSubMenu(subResultSet, menuRequest);
+                MenuItem activeItem = menu.getActiveItem();
+                if (submenu != null && menu.getActiveItem() != null) { 
+                    menu.getActiveItem().setSubMenu( submenu );
+                }                
             }
         }
         model.put(this.modelName, menu);
@@ -263,6 +264,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                              "' has invalid child name: '" + excludedFolder + "' " +
                              "(folder path must be relative to given 'uri', e.g: [folder,folder/subfolder])");
                 }
+                
+                String searchRootURI = menuRequest.getURI();
+                searchRootURI = escapeIllegalCharacters(searchRootURI);
+                if (!searchRootURI.endsWith("/")) {
+                    searchRootURI += "/";
+                }
+                
+                excludedFolder = excludedFolder.trim();
                 // Only add sub-level folders
                 if (excludedFolder.indexOf('/') != -1) {
                     excludedFolder = excludedFolder.trim();
@@ -270,14 +279,17 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                      * XXX: Exclude-query still doesn't work properly if folder name contains parentheses or whitespace...
                      */
                     excludedFolder = escapeIllegalCharacters(excludedFolder);
-                    String searchRootURI = menuRequest.getURI();
-                    searchRootURI = escapeIllegalCharacters(searchRootURI);
-                    if (!searchRootURI.endsWith("/")) {
-                        searchRootURI += "/";
-                    }
                     excludedFolder = searchRootURI + excludedFolder;
                     excludeQuery.append(" AND uri != ").append(excludedFolder)
                                 .append(" AND uri != ").append(excludedFolder).append("/*").append("");
+                } 
+                // Check if currentURI is in excluded subtree (if so, nullify subsearch)
+                else {
+                    excludedFolder = escapeIllegalCharacters(excludedFolder);
+                    excludedFolder = searchRootURI + excludedFolder;
+                    if (menuRequest.getCurrentURI().startsWith(excludedFolder)) {
+                        return null;
+                    }
                 }
             }
         }
@@ -497,7 +509,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         ListMenu<String> submenu = new ListMenu<String>();
         submenu.addAllItems(items);
-        submenu.setLabel(rootResource.getName().replace(' ', '-'));
+        //submenu.setLabel(rootResource.getName().replace(' ', '-')); // no need to CSS-class sub-UL 
         return submenu;
     }
     

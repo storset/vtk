@@ -585,6 +585,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             sqlMap = getSqlMap("moveDescendants");
             getSqlMapClient().update(sqlMap, parameters);
 
+            ResourceImpl created = loadResourceInternal(newResource.getURI());
+            for (Property prop: newResource.getProperties()) {
+                created.addProperty(prop);
+            }
+            storeProperties(created);
+
         } catch (SQLException e) {
             throw new DataAccessException(
                 "Error occurred while moving resource: " + resource.getURI()

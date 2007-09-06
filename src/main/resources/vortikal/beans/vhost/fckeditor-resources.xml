@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="fckeditor.distStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
+    <property name="uriPrefix" value="${fckeditor.resources.base}" />
+    <property name="resourceLocation" value="classpath:///vortikal/resources/fckeditor-build" />
+  </bean>
+
+
+</beans>
+

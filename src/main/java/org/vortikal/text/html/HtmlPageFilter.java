@@ -31,18 +31,11 @@
 package org.vortikal.text.html;
 
 
-/**
- * Simple HTML page interface.
- *
- */
-public interface HtmlPage {
+public interface HtmlPageFilter {
 
-    public String getDoctype();
+    public enum NodeResult {
+        keep, exclude, skip
+    }
     
-    public HtmlElement getRootElement();
-    
-    public String getStringRepresentation();
-
-    public void filter(HtmlPageFilter filter);
-
+    public NodeResult filter(HtmlContent node);
 }

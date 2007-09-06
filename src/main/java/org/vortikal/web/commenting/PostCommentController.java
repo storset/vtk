@@ -34,8 +34,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -46,12 +48,15 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.EnclosingHtmlContent;
+import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
+import org.vortikal.text.htmlparser.HtmlElementDescriptor;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -67,10 +72,22 @@ public class PostCommentController extends SimpleFormController {
     private Repository repository = null;
     private String formSessionAttributeName;
     private HtmlPageParser parser;
-    private List<HtmlNodeFilter> nodeFilters;
     private int maxCommentLength = 100000;
     private boolean requireCommentTitle = false;
+    private Set<String> illegalElements = new HashSet<String>();
+    private Map<String, HtmlElementDescriptor> validElements = new HashMap<String, HtmlElementDescriptor>();
+
+    @Required public void setIllegalElements(Set<String> illegalElements) {
+        for (String elem: illegalElements) {
+            this.illegalElements.add(elem);
+        }
+    }
     
+    @Required public void setValidElements(Set<HtmlElementDescriptor> validElements) {
+        for (HtmlElementDescriptor desc: validElements) {
+            this.validElements.put(desc.getName(), desc);
+        }
+    }
 
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
@@ -82,10 +99,6 @@ public class PostCommentController extends SimpleFormController {
     
     public void setFormSessionAttributeName(String formSessionAttributeName) {
         this.formSessionAttributeName = formSessionAttributeName;
-    }
-
-    public void setNodeFilters(List<HtmlNodeFilter> nodeFilters) {
-        this.nodeFilters = nodeFilters;
     }
 
     public void setMaxCommentLength(int maxCommentLength) {
@@ -179,39 +192,112 @@ public class PostCommentController extends SimpleFormController {
 
 
     protected String parseContent(String text) throws Exception {
-
         if (this.parser != null) {
             text = "<html><head></head><body>" + text + "</body></html>";
             InputStream is = new ByteArrayInputStream(text.getBytes("utf-8"));
-            HtmlPage page = null;
+            HtmlPage page = this.parser.parse(is, "utf-8");
 
-            List<HtmlNodeFilter> filters = new ArrayList<HtmlNodeFilter>();
-            if (this.nodeFilters != null) {
-                filters.addAll(this.nodeFilters);
-            }
-            filters.add(new TagEntityFilter());
+            page.filter(new CommentFilter());
 
-            page = this.parser.parse(is, "utf-8", filters);
             if (isEmptyContent(page.getRootElement())) {
                 return null;
             }
 
+            HtmlContent[] toplevel = page.getRootElement().getChildNodes();
             StringBuilder result = new StringBuilder();
-            String content = page.getRootElement().getContent();
-            if ("".equals(content.trim())) {
-                return null;
-            }
 
-            if (!content.trim().startsWith("<p>")) {
-                result.append("<p>").append(content).append("</p>");
-            } else {
-                result.append(content);
+            List<HtmlContent> nodes = trimChildren(page.getRootElement());
+            for (int i = 0; i < nodes.size(); i++) {
+                HtmlContent c = nodes.get(i);
+                
+                String childContent = "";
+
+                if (c instanceof HtmlElement) {
+                    childContent = ((HtmlElement) c).getEnclosedContent();
+                } else if (c instanceof HtmlText) {
+                    childContent = c.getContent();
+                } 
+                if ((i == 0 || i == toplevel.length - 1) && !childContent.trim().startsWith("<")) {
+                    // Wrap top-level text nodes in a <p>:
+                    result.append("<p>").append(childContent).append("</p>");
+                } else {
+                    result.append(childContent);
+                }
             }
             return result.toString();
         }
         return text;
     }
+    
 
+    private List<HtmlContent> trimChildren(HtmlElement root) {
+        List<HtmlContent> result = new ArrayList<HtmlContent>();
+        boolean contentBegun = false;
+        for (HtmlContent child: root.getChildNodes()) {
+            if (!contentBegun && (child instanceof HtmlText)) {
+                String childContent = child.getContent();
+                if (childContent.trim().equals("")) {
+                    continue;
+                } else if (!contentBegun) {
+                    contentBegun = true;
+                }
+            }
+            result.add(child);
+        }
+
+        for (int i = result.size() - 1; i > 0; i--) {
+            HtmlContent c = result.get(i);
+            if (c instanceof HtmlText && "".equals(c.getContent())) {
+                result.remove(i);
+            }
+        }
+
+        return result;
+    }
+    
+
+    private class CommentFilter implements HtmlPageFilter {
+
+        public HtmlPageFilter.NodeResult filter(HtmlContent node) {
+
+            if (node instanceof HtmlComment) {
+                return NodeResult.exclude;
+
+            } else if (node instanceof HtmlText) {
+                return NodeResult.keep;
+
+            } else if (node instanceof HtmlElement) {
+                HtmlElement element = (HtmlElement) node;
+                String name = element.getName().toLowerCase();
+
+                if (illegalElements.contains(name)) {
+                    return NodeResult.exclude;
+                }
+
+                if (validElements.containsKey(name)) {
+                    HtmlElementDescriptor desc = validElements.get(name);
+                    List<HtmlAttribute> filteredAttributes = new ArrayList<HtmlAttribute>();
+                    for (String attribute: desc.getAttributes()) {
+                        for (HtmlAttribute a: element.getAttributes()) {
+                            if (attribute.equals(a.getName().toLowerCase())) {
+                                filteredAttributes.add(a);
+                            }
+                        }
+                    }
+                
+                    HtmlAttribute[] newAttributes = filteredAttributes.<HtmlAttribute>toArray(
+                        new HtmlAttribute[filteredAttributes.size()]);
+                    element.setAttributes(newAttributes);
+                    return NodeResult.keep;
+                }
+
+                // Skip node, continue to process children:
+                return NodeResult.skip;
+            }
+            return NodeResult.keep;
+        }
+    }
+    
     
     private boolean isEmptyContent(HtmlContent node) {
         if (node instanceof EnclosingHtmlContent) {
@@ -231,23 +317,4 @@ public class PostCommentController extends SimpleFormController {
         return false;
     }
     
-    private class TagEntityFilter implements HtmlNodeFilter {
-
-        public HtmlContent filterNode(HtmlContent node) {
-            if (node instanceof HtmlText) {
-                String content = node.getContent();
-                content = content.replaceAll("<", "&lt;");
-                content = content.replaceAll(">", "&gt;");
-                
-                final String newContent = content;
-                return new HtmlText() {
-                    public String getContent() {
-                        return newContent;
-                    }
-                };
-            } 
-            return node;
-        }
-    }
-
 }

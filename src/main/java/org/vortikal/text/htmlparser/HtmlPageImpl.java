@@ -30,8 +30,15 @@
  */
 package org.vortikal.text.htmlparser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageFilter;
+import org.vortikal.text.html.HtmlPageFilter.NodeResult;
 
 
 public class HtmlPageImpl implements HtmlPage {
@@ -54,7 +61,44 @@ public class HtmlPageImpl implements HtmlPage {
     }
 
     public String getStringRepresentation() {
-        return "<" + this.getDoctype() + ">\n" + this.root.getEnclosedContent();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<").append(this.doctype).append(">\n");
+        sb.append(this.root.getEnclosedContent());
+        return sb.toString();
+    }
+
+    public void filter(HtmlPageFilter filter) {
+        List<HtmlContent> toplevel = Arrays.asList(this.root.getChildNodes());
+        List<HtmlContent> filtered = filterContent(toplevel, filter);
+        this.root.setChildNodes(filtered.toArray(new HtmlContent[filtered.size()]));
     }
     
+    
+    private List<HtmlContent> filterContent(List<HtmlContent> nodeList, HtmlPageFilter filter) {
+        List<HtmlContent> resultList = new ArrayList<HtmlContent>();
+
+        for (HtmlContent node: nodeList) {
+            NodeResult result = filter.filter(node);
+
+            if (result == NodeResult.keep) {
+                if (node instanceof HtmlElement) {
+                    HtmlElement element = (HtmlElement) node;
+                    List<HtmlContent> children = Arrays.asList(element.getChildNodes());
+                    List<HtmlContent> filtered = filterContent(children, filter);
+                    element.setChildNodes(filtered.toArray(new HtmlContent[filtered.size()]));
+                }
+                resultList.add(node);
+
+            } else if (result == NodeResult.skip) {
+                if (node instanceof HtmlElement) {
+                    HtmlElement element = (HtmlElement) node;
+                    List<HtmlContent> children = Arrays.asList(element.getChildNodes());
+                    List<HtmlContent> filtered = filterContent(children, filter);
+                    resultList.addAll(filtered);
+                }
+            }
+        }
+        return resultList;
+    }
+
 }

@@ -128,6 +128,16 @@
     <property name="handler" ref="commenting.deleteAllCommentsController" />
   </bean>
 
+  <bean name="commenting.feedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="assertions">
+      <list>
+        <ref bean="commenting.requestParameterIsFeed" />
+      </list>
+    </property>
+    <property name="handler" ref="commenting.displayFeedController" />
+  </bean>
+
   <bean name="commenting.postCommentController"
         class="org.vortikal.web.commenting.PostCommentController"
         parent="requestLocalRepositoryAware">
@@ -139,19 +149,10 @@
     <property name="requireCommentTitle" ref="commenting.titlesEnabled" />
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="nodeFilters" ref="commenting.parser.nodeFilters" />
+    <property name="illegalElements" ref="commenting.illegalHtmlElementSet" />
+    <property name="validElements" ref="commenting.validHtmlElementSet" />
   </bean>
 
-  <bean name="commenting.parser.nodeFilters" class="org.springframework.beans.factory.config.ListFactoryBean">
-    <property name="sourceList">
-      <bean class="org.vortikal.text.htmlparser.EnumerationNodeFilter">
-        <!-- These elements are dropped (removed): -->
-        <property name="illegalElements" ref="commenting.illegalHtmlElementSet" />
-        <!-- These elements are kept (with attribute filtering): -->
-        <property name="validElements" ref="commenting.validHtmlElementSet" />
-      </bean>
-    </property>
-  </bean>
 
   <bean id="commenting.illegalHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
@@ -215,9 +216,6 @@
   </bean>
 
 
-
-
-
   <bean name="commenting.deleteCommentController"
         class="org.vortikal.web.commenting.DeleteCommentController"
         parent="requestLocalRepositoryAware">
@@ -229,6 +227,14 @@
         parent="requestLocalRepositoryAware">
     <property name="deleteAllComments" value="true" />
     <property name="viewName" value="commenting.redirectToDefault" />
+  </bean>
+
+
+  <bean name="commenting.displayFeedController"
+        class="org.vortikal.web.commenting.ListCommentsController"
+        parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="viewName" value="commenting.feedView" />
   </bean>
 
   <bean id="commenting.requestParameterIsAddComment" 
@@ -247,6 +253,12 @@
     class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="delete-all-comments" />
+  </bean>
+
+  <bean id="commenting.requestParameterIsFeed" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="comments-feed" />
   </bean>
 
   <bean id="commenting.isPostRequest"
@@ -273,6 +285,7 @@
     <property name="views">
       <map>
         <entry key="commenting.redirectToDefault" value-ref="commenting.redirectToDefaultView" />
+        <entry key="commenting.feedView" value-ref="commenting.feedView" />
       </map>
     </property>
   </bean>
@@ -291,6 +304,29 @@
         parent="requestLocalRepositoryAware">
     <property name="redirectToService" ref="displayResourceService" />
     <property name="urlAnchor" value="comment-form" />
+  </bean>
+
+
+  <bean id="commenting.feedView" parent="freemarkerView">
+    <property name="url" value="pages/comments-feed.ftl" />
+    <!--
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="viewBreadCrumbProvider" />
+        <ref bean="viewCollectionListingProvider" />
+        <ref bean="resourceTitleProvider" />
+      </list>
+    </property>
+    -->
+    <property name="contentType" value="text/xml;charset=utf-8" />
+    <!--
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs" value-ref="viewCSSURLs" />
+      </map>
+    </property>
+    -->
   </bean>
 
 </beans>

@@ -98,19 +98,15 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
                                 DecoratorResponse response)
         throws Exception {
 
-        if (!(this.view instanceof ReferenceDataProviding)) {
-            return;
-        }
-
-        ReferenceDataProvider[] providers =
+        if (this.view instanceof ReferenceDataProviding) {
+            ReferenceDataProvider[] providers =
                 ((ReferenceDataProviding) this.view).getReferenceDataProviders();
 
-        if (providers == null) {
-            return;
-        }
-        
-        for (int i = 0; i < providers.length; i++) {
-            providers[i].referenceData(model, request.getServletRequest());
+            if (providers != null) {
+                for (int i = 0; i < providers.length; i++) {
+                    providers[i].referenceData(model, request.getServletRequest());
+                }
+            }
         }
 
         if (this.exposeComponentParameters) {

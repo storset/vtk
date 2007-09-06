@@ -16,11 +16,12 @@
 <#if !manageLink?exists || !manageLink.url?exists>
   <#stop "Missing 'manageLink' entry in model"/>
 </#if>
+
 <#if config?exists
      && resourceContext?exists
      && config['display-only-if-auth']?exists
      && config['display-only-if-auth'] = 'true'
-     && resourceContext.currentPrincipal?exists>
+     && !resourceContext.principal?exists>
   <#-- Display nothing -->
 <#else>
   <a class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>

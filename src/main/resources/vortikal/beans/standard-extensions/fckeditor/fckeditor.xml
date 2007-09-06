@@ -4,22 +4,6 @@
 
 <beans>
   
-  <bean id="fckeditor.distStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${fckeditor.resources.base}" />
-    <property name="resourceLocation" value="classpath:///vortikal/resources/fckeditor-build" />
-  </bean>
-
-  <bean id="fckeditor.fckService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="order" value="-9900" />
-    <property name="assertions">
-      <list>
-        <ref bean="fckeditor.modeParameterAssertion" />
-        <ref bean="fckeditor.userAgentAssertion" />
-      </list>
-    </property>
-  </bean>
-
   <bean id="fckeditor.userAgentAssertion" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
     <property name="header" value="User-Agent" />
     <property name="patterns">
@@ -47,6 +31,18 @@
       </list>
     </property>
   </bean>
+
+  <bean id="fckeditor.fckService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9900" />
+    <property name="assertions">
+      <list>
+        <ref bean="fckeditor.modeParameterAssertion" />
+        <ref bean="fckeditor.userAgentAssertion" />
+      </list>
+    </property>
+  </bean>
+
 
   <bean id="fckeditor.lockResourceHandlerInterceptor"
         class="org.vortikal.web.controller.LockResourceHandlerInterceptor"

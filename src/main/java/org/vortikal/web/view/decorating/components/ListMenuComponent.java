@@ -421,8 +421,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     
     
     private ListMenu buildSubMenu(ResultSet rs, MenuRequest menuRequest) {
-        String requestURI = menuRequest.getCurrentURI();        
-        List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
+        String requestURI = menuRequest.getCurrentURI();
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
         List<PropertySet> childList = new ArrayList<PropertySet>();
                         
@@ -431,11 +430,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
-            String url = this.viewService.constructLink(resource.getURI());
-            
-            Property titleProperty = resource.getProperty(this.titlePropdef);
-            String title = titleProperty != null ? titleProperty.getStringValue() : resource.getName();
-            
             String uri = resource.getURI();
             String parentURI = URIUtil.getParentURI(uri);
             
@@ -520,6 +514,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private MenuItem<String> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap) {
         MenuItem<String> item = new MenuItem<String>();
         String uri = resource.getURI();
+        if (!uri.equals("/")) {
+            // Know it's a folder, append "/"
+            uri += "/";
+        }
         String url = this.viewService.constructLink(uri);
         String name = resource.getName().replace(' ', '-');
         Property titleProperty = resource.getProperty(this.titlePropdef);

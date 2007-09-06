@@ -146,15 +146,15 @@ public class IncludeComponent extends AbstractDecoratorComponent
                 "One of parameters 'file' or 'virtual' must be specified");
         }
 
+        if (this.uriPreProcessor != null) {
+            uri = this.uriPreProcessor.process(uri);
+        }
+        
         if (uri.startsWith("http") || uri.startsWith("https")) {
             handleHttpInclude(uri, request, response);
             return;
         }
 
-        if (this.uriPreProcessor != null) {
-            uri = this.uriPreProcessor.process(uri);
-        }
-        
         if (!uri.startsWith("/")) {
             String requestURI = RequestContext.getRequestContext().getResourceURI();
             uri = requestURI.substring(0, requestURI.lastIndexOf("/") + 1) + uri;

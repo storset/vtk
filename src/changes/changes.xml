@@ -8,9 +8,12 @@
 
   <body>
 
-    <release version="0.3.10-SNAPSHOT" date="In SVN" description="Release 0.3.10">
+    <release version="0.3.11-SNAPSHOT" date="In SVN" description="Release 0.3.11">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3.10" date="2007-09-06" description="Release 0.3.10">
       <action type="add">
         Added basic support for resource comments
       </action>

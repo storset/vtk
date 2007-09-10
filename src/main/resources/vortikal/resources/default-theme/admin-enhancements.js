@@ -18,7 +18,12 @@ function enableInput() {
 
 // Used by copyResourceService available from "manageCollectionListingService"
 
+
 function copyMoveAction(action) {
+    copyMoveAction(action, 'DEPRECATED: Du må markere minst ett element for flytting eller kopiering');
+}
+
+function copyMoveAction(action, unCheckedMessage) {
  // document.collectionListingForm.target = "_blank";
  document.collectionListingForm.action = action;
 
@@ -33,7 +38,7 @@ function copyMoveAction(action) {
  if (checked) { 
    document.collectionListingForm.submit();
  } else {
-   alert('Du må markere minst ett element for flytting eller kopiering');
+   alert(unCheckedMessage);
  }
  
 }

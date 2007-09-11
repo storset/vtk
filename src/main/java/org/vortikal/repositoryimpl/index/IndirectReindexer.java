@@ -105,6 +105,10 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
             
             this.temporaryIndex.close();
             
+            
+            // Commit new index contents
+            this.targetIndex.commit();
+            
             return count;
         } catch (IndexException ie) {
             LOG.warn("Re-indexing using temporary index failed: " + ie.getMessage());

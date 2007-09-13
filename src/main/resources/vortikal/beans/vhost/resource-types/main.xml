@@ -31,6 +31,9 @@
   <import resource="studieprogram.xml" />
   <import resource="studieretning.xml" />
   <import resource="utvekslingsavtale.xml" />
+  
+  <!-- Felles / Common -->
+  <import resource="artikkelsamling.xml" />
 
   <!-- UiO  -->
   <import resource="disputas.xml"/>
@@ -63,6 +66,5 @@
   <import resource="mixins/visual-profile.xml" />
   <import resource="mixins/content-description.xml" />
   <import resource="mixins/scientific.xml" />
-  
-  
+    
 </beans>

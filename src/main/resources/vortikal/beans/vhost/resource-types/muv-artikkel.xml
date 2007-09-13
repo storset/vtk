@@ -48,6 +48,13 @@
         <property name="type" ref="TYPE_STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="true" />
+        <property name="defaultValue">
+            <bean class="org.vortikal.repository.resourcetype.Value">
+                <constructor-arg type="java.lang.String">
+                    <value>muv-artikkel</value>
+                </constructor-arg>
+            </bean>
+        </property>
         <property name="contentModificationEvaluator" ref="muvArtikkelTittelEvaluator" />
     </bean>
     

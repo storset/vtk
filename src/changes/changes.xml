@@ -8,6 +8,14 @@
 
   <body>
 
+    <release version="0.3.10.1" date="2007-09-17" description="Release 0.3.10.1">
+      <action type="fix">
+        Repository: Use Spring's SqlMapClientTemplate interface to the
+        iBATIS database layer (instead of direct API usage) in order
+        to avoid certain JDBC connection issues.
+      </action>
+    </release>
+
     <release version="0.3.10" date="2007-09-06" description="Release 0.3.10">
       <action type="add">
         Added basic support for resource comments

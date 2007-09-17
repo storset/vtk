@@ -41,15 +41,17 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.ibatis.SqlMapClientCallback;
+import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.vortikal.repositoryimpl.ChangeLogEntry;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.search.query.security.ResultSecurityInfo;
-import org.vortikal.repositoryimpl.store.DataAccessException;
 import org.vortikal.repositoryimpl.store.IndexDao;
 import org.vortikal.repositoryimpl.store.PropertySetHandler;
 import org.vortikal.security.PrincipalFactory;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 /**
  * New index data accessor based on iBatis.
@@ -68,52 +70,44 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     private int queryAuthorizationBatchSize = 1000;
 
+    
     public void orderedPropertySetIteration(PropertySetHandler handler) 
         throws DataAccessException { 
 
-        SqlMapClient client = getSqlMapClient();
-        try {
-            String statementId = getSqlMap("orderedPropertySetIteration");
-            
-            ResourceIdCachingPropertySetRowHandler rowHandler = 
-                new ResourceIdCachingPropertySetRowHandler(handler,
-                        this.propertyManager, this.principalFactory);
-                
-            client.queryWithRowHandler(statementId, rowHandler);
-            
-            rowHandler.handleLastBufferedRows();
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        }
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
+        String statementId = getSqlMap("orderedPropertySetIteration");
+
+        ResourceIdCachingPropertySetRowHandler rowHandler = 
+            new ResourceIdCachingPropertySetRowHandler(
+                handler, this.propertyManager, this.principalFactory);
+
+        client.queryWithRowHandler(statementId, rowHandler);
+
+        rowHandler.handleLastBufferedRows();
     }
     
     public void orderedPropertySetIteration(String startUri, PropertySetHandler handler) 
         throws DataAccessException {
         
-        SqlMapClient client = getSqlMapClient();
-        try {
-            String statementId = getSqlMap("orderedPropertySetIterationWithStartUri");
-            
-            PropertySetRowHandler rowHandler =
-                new PropertySetRowHandler(handler, this.propertyManager, 
-                                       this.principalFactory);
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
 
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            
-            parameters.put("uri", startUri);
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(startUri, 
-                                        SqlMapDataAccessor.SQL_ESCAPE_CHAR));
-            
-            client.queryWithRowHandler(statementId, parameters, rowHandler);
-            
-            rowHandler.handleLastBufferedRows();
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        }
-        
+        String statementId = getSqlMap("orderedPropertySetIterationWithStartUri");
+
+        PropertySetRowHandler rowHandler = new PropertySetRowHandler(handler,
+                this.propertyManager, this.principalFactory);
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        parameters.put("uri", startUri);
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(startUri,
+                SqlMapDataAccessor.SQL_ESCAPE_CHAR));
+
+        client.queryWithRowHandler(statementId, parameters, rowHandler);
+
+        rowHandler.handleLastBufferedRows();
     }
     
-    public void orderedPropertySetIterationForUris(List<String> uris, 
+    public void orderedPropertySetIterationForUris(final List<String> uris, 
                                               PropertySetHandler handler)
         throws DataAccessException {
         
@@ -121,53 +115,99 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             return;
         }
         
-        SqlMapClient client = getSqlMapClient();
-        try {
-            client.startTransaction();
-            String getSessionIdStatement = getSqlMap("nextTempTableSessionId");
-            
-            Integer sessionId = (Integer)client.queryForObject(getSessionIdStatement);
-            
-            String insertUriTempTableStatement =
-                    getSqlMap("insertUriIntoTempTable");
-            
-            client.startBatch();
-            for (String uri: uris) {
-                Map params = new HashMap();
-                params.put("sessionId", sessionId);
-                params.put("uri", uri);
-                client.insert(insertUriTempTableStatement, params);
-            }
-            int batchCount = client.executeBatch();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Number of inserts batched (uri list): " + batchCount);
-            }
-            
-            String statement = getSqlMap("orderedPropertySetIterationForUris");
-            
-            PropertySetRowHandler rowHandler
-             = new PropertySetRowHandler(handler, this.propertyManager, this.principalFactory);
-            
-            client.queryWithRowHandler(statement, sessionId, rowHandler);
-            
-            rowHandler.handleLastBufferedRows();
-            
-            // Clean-up temp table
-            statement = getSqlMap("deleteFromTempTableBySessionId");
-            client.delete(statement, sessionId);
-            
-            client.commitTransaction();
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        } finally {
-            try {
-                client.endTransaction();
-            } catch (SQLException e) {
-                throw new DataAccessException("Failed to end transaction: ", e);
-            }
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
+
+        String getSessionIdStatement = getSqlMap("nextTempTableSessionId");
+
+        final Integer sessionId = (Integer) client
+                .queryForObject(getSessionIdStatement);
+
+        final String insertUriTempTableStatement = getSqlMap("insertUriIntoTempTable");
+
+        Integer batchCount = (Integer) client
+                .execute(new SqlMapClientCallback() {
+
+                    public Object doInSqlMapClient(SqlMapExecutor sqlMapExec)
+                            throws SQLException {
+
+                        sqlMapExec.startBatch();
+                        for (String uri : uris) {
+                            Map params = new HashMap();
+                            params.put("sessionId", sessionId);
+                            params.put("uri", uri);
+                            sqlMapExec.insert(insertUriTempTableStatement,
+                                    params);
+                        }
+                        int batchCount = sqlMapExec.executeBatch();
+                        return new Integer(batchCount);
+                    }
+                });
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Number of inserts batched (uri list): " + batchCount);
         }
+
+        String statement = getSqlMap("orderedPropertySetIterationForUris");
+
+        PropertySetRowHandler rowHandler = new PropertySetRowHandler(handler,
+                this.propertyManager, this.principalFactory);
+
+        client.queryWithRowHandler(statement, sessionId, rowHandler);
+
+        rowHandler.handleLastBufferedRows();
+
+        // Clean-up temp table
+        statement = getSqlMap("deleteFromTempTableBySessionId");
+        client.delete(statement, sessionId);
+
     }
 
+    private class ResultAuthorizationSqlMapClientCallback 
+        implements SqlMapClientCallback {
+
+        private List<ResultSecurityInfo> batch;
+        private Set<Integer> allIds;
+        private Integer sessionId;
+        private int numberOfEntriesInserted = 0;
+        
+        public ResultAuthorizationSqlMapClientCallback(List<ResultSecurityInfo> batch, 
+                                                Set<Integer> allIds,
+                                                Integer sessionId) {
+            this.batch = batch;
+            this.allIds = allIds;
+            this.sessionId = sessionId;
+        }
+        
+        public Object doInSqlMapClient(SqlMapExecutor sqlMapExec) throws SQLException {
+
+            Map params = new HashMap();
+            String statement = getSqlMap("insertResourceIdIntoTempTable");
+            
+            sqlMapExec.startBatch();
+            for (ResultSecurityInfo rsi: this.batch) {
+                
+                Integer id = rsi.getAclNodeId();
+                if (! this.allIds.add(id)){
+                    continue;
+                }
+                
+                params.put("sessionId", this.sessionId);
+                params.put("resourceId", id);
+                sqlMapExec.insert(statement, params);
+                params.clear();
+                ++this.numberOfEntriesInserted;
+            }
+            int batchCount = sqlMapExec.executeBatch();
+            
+            return new Integer(batchCount);
+        }
+        
+        public int getNumberOfEntriesInserted() {
+            return this.numberOfEntriesInserted;
+        }
+        
+    }
+    
     public void processQueryResultsAuthorization(
                             Set<String> principalNames,
                             List<ResultSecurityInfo> rsiList)
@@ -178,191 +218,142 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                     + rsiList.size() + " elements");
         }
         
-        SqlMapClient client = getSqlMapClient();
-        try {
-            client.startTransaction();
-            String statement = getSqlMap("nextTempTableSessionId");
-            
-            Integer sessionId = (Integer)client.queryForObject(statement);
-            
-            Set<Integer> authorizedIds = new HashSet<Integer>();
-            Set<Integer> allIds = new HashSet<Integer>();
-            
-            int batchSize = this.queryAuthorizationBatchSize;
-            int batchStart = 0;
-            int batchEnd = batchSize > rsiList.size() ? rsiList.size() : batchSize;
-            for (;;) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Processing batch " + batchStart + " to "
-                            + batchEnd);
-                }
-                
-                int n = 0;
-                statement = getSqlMap("insertResourceIdIntoTempTable");
-                client.startBatch();
-                Map params = new HashMap();
-                for (int i=batchStart; i < batchEnd; i++) {
-                    ResultSecurityInfo rsi = rsiList.get(i);
-                    Integer id = rsi.getAclNodeId();
-                    
-                    if (! allIds.add(id)) {
-                        continue;
-                    }
-                    
-                    params.put("sessionId", sessionId);
-                    params.put("resourceId", id);
-                    client.insert(statement, params);
-                    params.clear();
-                    ++n;
-                }
-                int batchCount = client.executeBatch();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Number of inserts batched (query auth): " + batchCount);
-                }
-                
-                params = new HashMap();
-                statement = getSqlMap("queryResultAuthorization");
-                if (n > 0) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Need to check " + n + " entries in database");
-                    }
-                    
-                    params.put("sessionId", sessionId);
-                    // XXX: No no no, iBATIS does not allow Set value iteration, 
-                    //      must wrap in List implementation... :(
-                    params.put("principalNames", new ArrayList(principalNames));
-                    
-                    List<Integer> authorizedList = 
-                                        (List<Integer>)client.queryForList(
-                                                             statement, params);
-                    
-                    for (Integer authorizedId: authorizedList) {
-                        boolean added = authorizedIds.add(authorizedId);
-                        if (LOG.isDebugEnabled()) {
-                            
-                            if (added) {
-                                LOG.debug("Adding ACL node id "
-                                   + authorizedId + " to set of authorized IDs");
-                            }
-                            
-                            LOG.debug("Current ACL node id: " + authorizedId);
-                        }
-                    }
-                    
-                    // Clean up temp table for current batch
-                    statement = getSqlMap("deleteFromTempTableBySessionId");
-                    client.delete(statement, sessionId);
-                    
-                }
-                
-                // Process current batch
-                for (int i = batchStart; i < batchEnd; i++) {
-                    ResultSecurityInfo rsi = rsiList.get(i);
-                    
-                    rsi.setAuthorized(
-                            authorizedIds.contains(rsi.getAclNodeId())
-                          || principalNames.contains(rsi.getOwnerAsUserOrGroupName()));
-                    
-                    if (LOG.isDebugEnabled()) {
-                        if (rsi.isAuthorized()) {
-                            LOG.debug("Authorized resource with ACL node id: "
-                                    + rsi.getAclNodeId());
-                        } else {
-                            LOG.debug("NOT authorized resource with ACL node id: "
-                                    + rsi.getAclNodeId());
-                        }
-                    }
-                }
-                
-                if (batchEnd == rsiList.size()) {
-                    break;
-                }
-                
-                batchStart += batchSize;
-                batchEnd = (batchEnd + batchSize) > rsiList.size() ?
-                        rsiList.size() : batchEnd + batchSize;
-            }
-            
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Set of authorized IDs contains "
-                        + authorizedIds.size() + " elements");
-                LOG.debug("Set of all unique IDs contains "
-                        + allIds.size() + " elements");
-            }
-            
-            client.commitTransaction();
-            
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        } finally {
-            try {
-                client.endTransaction();
-            } catch (SQLException sqle) {
-                throw new DataAccessException("Failed to end transaction", sqle);
-            }
-        }
-        
-    }
-    
-    public List<ChangeLogEntry> getLastChangeLogEntries() {
-        
-        SqlMapClient client = getSqlMapClient();
-        try {
-            client.startTransaction();
-            String statement = getSqlMap("getMaxChangeLogEntryId");
-            
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("loggerId", this.loggerId);
-            params.put("loggerType", this.loggerType);
-            Integer maxId = (Integer) client.queryForObject(statement, params);
-            
-            params.put("maxId", maxId);
-            statement = getSqlMap("getLastChangeLogEntries");
-            
-            List<ChangeLogEntry> entries = 
-                client.queryForList(statement, params);
-            
-            client.commitTransaction();
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
 
-            return entries;
-        } catch (SQLException sqle) {
-            throw new DataAccessException(sqle);
-        } finally {
-            try {
-                client.endTransaction();
-            } catch (SQLException sqle) {
-                throw new DataAccessException("Failed to end transaction", sqle);
+        String statement = getSqlMap("nextTempTableSessionId");
+        
+        Integer sessionId = (Integer)client.queryForObject(statement);
+        
+        Set<Integer> authorizedIds = new HashSet<Integer>();
+        Set<Integer> allIds = new HashSet<Integer>();
+        
+        int batchSize = this.queryAuthorizationBatchSize;
+        int batchStart = 0;
+        int batchEnd = batchSize > rsiList.size() ? rsiList.size() : batchSize;
+        for (;;) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Processing batch " + batchStart + " to " + batchEnd);
             }
+
+            ResultAuthorizationSqlMapClientCallback callback = new ResultAuthorizationSqlMapClientCallback(
+                    rsiList.subList(batchStart, batchEnd), allIds, sessionId);
+
+            Integer batchCount = (Integer) client.execute(callback);
+            int n = callback.getNumberOfEntriesInserted();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Number of inserts batched (query auth): "
+                        + batchCount);
+            }
+
+            Map params = new HashMap();
+            statement = getSqlMap("queryResultAuthorization");
+            if (n > 0) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Need to check " + n + " entries in database");
+                }
+
+                params.put("sessionId", sessionId);
+                // XXX: No no no, iBATIS does not allow Set value iteration,
+                // must wrap in List implementation... :(
+                params.put("principalNames", new ArrayList(principalNames));
+
+                List<Integer> authorizedList = (List<Integer>) client
+                        .queryForList(statement, params);
+
+                for (Integer authorizedId : authorizedList) {
+                    boolean added = authorizedIds.add(authorizedId);
+                    if (LOG.isDebugEnabled()) {
+
+                        if (added) {
+                            LOG.debug("Adding ACL node id " + authorizedId
+                                    + " to set of authorized IDs");
+                        }
+
+                        LOG.debug("Current ACL node id: " + authorizedId);
+                    }
+                }
+
+                // Clean up temp table for current batch
+                statement = getSqlMap("deleteFromTempTableBySessionId");
+                client.delete(statement, sessionId);
+
+            }
+
+            // Process current batch
+            for (int i = batchStart; i < batchEnd; i++) {
+                ResultSecurityInfo rsi = rsiList.get(i);
+
+                rsi.setAuthorized(authorizedIds.contains(rsi.getAclNodeId())
+                        || principalNames.contains(rsi
+                                .getOwnerAsUserOrGroupName()));
+
+                if (LOG.isDebugEnabled()) {
+                    if (rsi.isAuthorized()) {
+                        LOG.debug("Authorized resource with ACL node id: "
+                                + rsi.getAclNodeId());
+                    } else {
+                        LOG.debug("NOT authorized resource with ACL node id: "
+                                + rsi.getAclNodeId());
+                    }
+                }
+            }
+
+            if (batchEnd == rsiList.size()) {
+                break;
+            }
+
+            batchStart += batchSize;
+            batchEnd = (batchEnd + batchSize) > rsiList.size() ? rsiList.size()
+                    : batchEnd + batchSize;
         }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Set of authorized IDs contains " + authorizedIds.size()
+                    + " elements");
+            LOG.debug("Set of all unique IDs contains " + allIds.size()
+                    + " elements");
+        }
+            
+        
     }
     
-    public void removeChangeLogEntries(List<ChangeLogEntry> entries) {
+    public List<ChangeLogEntry> getLastChangeLogEntries()
+        throws DataAccessException {
+        
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
+
+        String statement = getSqlMap("getMaxChangeLogEntryId");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("loggerId", this.loggerId);
+        params.put("loggerType", this.loggerType);
+        Integer maxId = (Integer) client.queryForObject(statement, params);
+
+        params.put("maxId", maxId);
+        statement = getSqlMap("getLastChangeLogEntries");
+
+        List<ChangeLogEntry> entries = client.queryForList(statement, params);
+
+        return entries;
+    }
+    
+    public void removeChangeLogEntries(List<ChangeLogEntry> entries)
+        throws DataAccessException {
         
         int maxId = -1;
         for (ChangeLogEntry entry: entries) {
             maxId = Math.max(maxId, entry.getChangeLogEntryId());
         }
         
-        SqlMapClient client = getSqlMapClient();
-        try {
-            client.startTransaction();
-            String statement = getSqlMap("removeChangeLogEntries");
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("loggerId", this.loggerId);
-            params.put("loggerType", this.loggerType);
-            params.put("maxId", maxId);
-            
-            client.delete(statement, params);
-            client.commitTransaction();
-        } catch (SQLException sqle) {
-            throw new DataAccessException(sqle);
-        } finally {
-            try {
-                client.endTransaction(); 
-            } catch (SQLException sqle) {
-                throw new DataAccessException("Failed to end transaction", sqle);
-            }
-        }
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
+
+        String statement = getSqlMap("removeChangeLogEntries");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("loggerId", this.loggerId);
+        params.put("loggerType", this.loggerType);
+        params.put("maxId", maxId);
+
+        client.delete(statement, params);
     }
 
     @Required

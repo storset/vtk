@@ -30,93 +30,54 @@
  */
 package org.vortikal.repositoryimpl.store.db;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Resource;
 import org.vortikal.repositoryimpl.store.CommentDAO;
-import org.vortikal.repositoryimpl.store.DataAccessException;
 
 public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements CommentDAO {
 
-    public List<Comment> listCommentsByResource(Resource resource) throws DataAccessException {
-        try {
-            String sqlMap = getSqlMap("listCommentsByResource");
+    public List<Comment> listCommentsByResource(Resource resource) {
+        String sqlMap = getSqlMap("listCommentsByResource");
 
-            List<Comment> comments = new ArrayList<Comment>();
-            List theComments =
-                getSqlMapClient().queryForList(sqlMap, resource);
-            for (Object o: theComments) {
-                Comment comment = (Comment) o;
-                comments.add(comment);
-            }
-            return comments;
-
-        } catch (SQLException e) {
-            throw new DataAccessException(
-                "Error occurred while listing comments for resource " + resource, e);
-        } 
+        List<Comment> comments = new ArrayList<Comment>();
+        List theComments =
+            getSqlMapClientTemplate().queryForList(sqlMap, resource);
+        for (Object o: theComments) {
+            Comment comment = (Comment) o;
+            comments.add(comment);
+        }
+        return comments;
     }
 
-    public void delete(Comment comment) throws RuntimeException {
-        try {
-
-            String sqlMap = getSqlMap("deleteComment");
-            getSqlMapClient().delete(sqlMap, comment);
-            
-        } catch (SQLException e) {
-            throw new DataAccessException(
-                "Error occurred while deleting comment: " + comment, e);
-        } 
+    public void delete(Comment comment) {
+        String sqlMap = getSqlMap("deleteComment");
+        getSqlMapClientTemplate().delete(sqlMap, comment);
     }
     
-    public void deleteAll(Resource resource) throws RuntimeException {
-        try {
-            String sqlMap = getSqlMap("deleteAllComments");
-            getSqlMapClient().delete(sqlMap, resource);
-            
-        } catch (SQLException e) {
-            throw new DataAccessException(
-                "Error occurred while deleting all comments on resource " + resource, e);
-        } 
+    public void deleteAll(Resource resource) {
+        String sqlMap = getSqlMap("deleteAllComments");
+        getSqlMapClientTemplate().delete(sqlMap, resource);
     }
 
-    public Comment create(Resource resource, Comment comment) throws RuntimeException {
-        try {
-
-            String sqlMap = getSqlMap("insertComment");
-            getSqlMapClient().insert(sqlMap, comment);
-
-            // XXX: define new semantics for creating a new comment:
-            // client should first obtain a new unique ID, then call
-            // create(comment).
-
-            return comment;
-            
-        } catch (SQLException e) {
-            throw new DataAccessException(
-                "Error occurred while creating comment: "
-                + comment + " on resource " + resource, e);
-        } 
+    public Comment create(Resource resource, Comment comment) {
+        String sqlMap = getSqlMap("insertComment");
+        getSqlMapClientTemplate().insert(sqlMap, comment);
+        // XXX: define new semantics for creating a new comment:
+        // client should first obtain a new unique ID, then call
+        // create(comment).
+        return comment;
     }
     
 
-    public Comment update(Comment comment) throws RuntimeException {
-        try {
-
-            String sqlMap = getSqlMap("updateComment");
-            getSqlMapClient().update(sqlMap, comment);
-
-            sqlMap = getSqlMap("loadCommentById");
-            comment = (Comment) getSqlMapClient().queryForObject(sqlMap, new Integer(comment.getID()));
-            return comment;
-
-        } catch (SQLException e) {
-            throw new DataAccessException(
-                "Error occurred while updating comment: " + comment, e);
-        } 
+    public Comment update(Comment comment) {
+        String sqlMap = getSqlMap("updateComment");
+        getSqlMapClientTemplate().update(sqlMap, comment);
+        sqlMap = getSqlMap("loadCommentById");
+        comment = (Comment) getSqlMapClientTemplate().queryForObject(sqlMap, new Integer(comment.getID()));
+        return comment;
     }
 
 }

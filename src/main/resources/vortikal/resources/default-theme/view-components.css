@@ -356,6 +356,13 @@ div.vrtx-subfolder-menu ul {
   margin: 0;
 }
 
+/*Sublists ++*/
+div.vrtx-subfolder-menu ul ul {
+  float: none;  
+  padding: 0 .5em 0 1em;
+  margin-bottom: 1em;
+}
+
 /* END resource:subfolder-menu */
 
 

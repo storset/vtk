@@ -82,31 +82,6 @@ public class FCKeditorConnector implements Controller {
     }
     
     
-    private static final Filter FILE_FILTER = new Filter() {
-        public boolean isAccepted(Resource resource) {
-            return !resource.isCollection();
-        }
-    };
-
-    private static final Filter COLLECTION_FILTER = new Filter() {
-        public boolean isAccepted(Resource resource) {
-            return resource.isCollection();
-        }
-    };
-
-    private static final Filter IMAGE_FILTER = new Filter() {
-         public boolean isAccepted(Resource resource) {
-             return resource.getContentType().startsWith("image/");
-         }
-    };
-        
-    private static final Filter FLASH_FILTER = new Filter() {
-         public boolean isAccepted(Resource resource) {
-             return resource.getContentType().equalsIgnoreCase("application/x-shockwave-flash");
-         }
-    };
-
-
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         FCKeditorFileBrowserCommand command = new FCKeditorFileBrowserCommand(request);
@@ -141,7 +116,7 @@ public class FCKeditorConnector implements Controller {
                     model.put("folders", listResources(token, command, COLLECTION_FILTER));
                 } catch (Exception e) {
                     model.put("error", 1);
-                    model.put("customMessage", e.getMessage());
+                    model.put("customMessage", getErrorMessage(e));
                 }
                 break;
 
@@ -152,7 +127,7 @@ public class FCKeditorConnector implements Controller {
                     model.put("files", listResources(token, command, fileFilter));
                 } catch (Exception e) {
                     model.put("error", 1);
-                    model.put("customMessage", e.getMessage());
+                    model.put("customMessage", getErrorMessage(e));
                 }
                 break;
 
@@ -310,9 +285,44 @@ public class FCKeditorConnector implements Controller {
     
 
 
+    private String getErrorMessage(Exception e) {
+        String message = e.getMessage();
+        if (message == null) {
+            message = e.getClass().getName();
+        }
+        return message;
+    }
+    
+
     private interface Filter {
         public boolean isAccepted(Resource r);
     }
     
+
+    private static final Filter FILE_FILTER = new Filter() {
+        public boolean isAccepted(Resource resource) {
+            return !resource.isCollection();
+        }
+    };
+
+    private static final Filter COLLECTION_FILTER = new Filter() {
+        public boolean isAccepted(Resource resource) {
+            return resource.isCollection();
+        }
+    };
+
+    private static final Filter IMAGE_FILTER = new Filter() {
+         public boolean isAccepted(Resource resource) {
+             return !resource.isCollection() &&
+                 resource.getContentType().startsWith("image/");
+         }
+    };
+        
+    private static final Filter FLASH_FILTER = new Filter() {
+         public boolean isAccepted(Resource resource) {
+             return !resource.isCollection() &&
+                 resource.getContentType().equalsIgnoreCase("application/x-shockwave-flash");
+         }
+    };
 
 }

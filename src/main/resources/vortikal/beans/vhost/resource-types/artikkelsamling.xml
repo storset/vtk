@@ -27,14 +27,14 @@
     
     <bean id="ARTIKKELSAMLING_NAMESPACE" class="org.vortikal.repository.Namespace">
         <constructor-arg value="artikkelsamling" />
-        <constructor-arg value="http://www.uio.no/xsd/felles/artikkelsamling" />
+        <constructor-arg value="http://www.uio.no/xsd/uio/artikkelsamling" />
     </bean>
     
     <bean id="schemaIsArtikkelsamling" 
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
         <property name="namespace" ref="DEFAULT_NAMESPACE" />
         <property name="name" value="schema" />
-        <property name="pattern" value="http://www.uio.no/xsd/felles/artikkelsamling/v00.*" />
+        <property name="pattern" value="http://www.uio.no/xsd/uio/artikkelsamling/v00.*" />
     </bean>
 
     

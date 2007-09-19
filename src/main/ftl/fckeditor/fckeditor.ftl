@@ -130,7 +130,10 @@
 			["tbody", ["id", "class", "style", "title", "lang", "xml:lang", "dir", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup", "align", "char", "charoff", "valign"]],
 			["tr", ["id", "class", "style", "title", "lang", "xml:lang", "dir", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup", "align", "char", "charoff", "valign", "bgcolor"]],
 			["th", ["id", "class", "style", "title", "lang", "xml:lang", "dir", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup", "abbr", "axis", "headers", "scope", "rowspan", "colspan", "align", "char", "charoff", "valign", "nowrap", "bgcolor", "width", "height"]],
-			["td", ["id", "class", "style", "title", "lang", "xml:lang", "dir", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup", "abbr", "axis", "headers", "scope", "rowspan", "colspan", "align", "char", "charoff", "valign", "nowrap", "bgcolor", "width", "height"]]
+			["td", ["id", "class", "style", "title", "lang", "xml:lang", "dir", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup", "abbr", "axis", "headers", "scope", "rowspan", "colspan", "align", "char", "charoff", "valign", "nowrap", "bgcolor", "width", "height"]],
+                        // Non-standard:
+			["embed", ["id", "class", "style", "title", "lang", "xml:lang", "dir", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup", "declare", "classid", "codebase", "data", "type", "codetype", "archive", "standby", "height", "width", "usemap", "name", "tabindex", "align", "border", "hspace", "vspace", "autostart", "endtime", "href", "src", "loop", "play", "menu", "playcount", "pluginspage", "pluginurl", "starttime", "target", "volume", "hidden", "units"]]
+
 		];
 
 		createFCKEditorInDiv("myEditorDiv", "100%", "100%", "myEditorIstance"); 

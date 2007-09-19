@@ -24,11 +24,9 @@
          <li>
           <a class="item-title" href="${entry.link?html}">${entry.title?html}</a>
 	  <#-- description -->
-	  <#if conf.itemDescription>
+	  <#if conf.itemDescription && (entry.description.value)?exists>
           <div class="item-description">
-            <#list entry.contents as content>
-	       ${content.value} <#--${content.value?html}-->
-	    </#list>
+            ${entry.description.value}
           </div>
           </#if>
           <#if conf.publishedDate?exists && entry.publishedDate?exists>

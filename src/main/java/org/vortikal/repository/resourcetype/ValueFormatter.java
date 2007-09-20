@@ -30,25 +30,24 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.time.FastDateFormat;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 
-public class ValueFormatter implements InitializingBean {
+public class ValueFormatter {
 
-    private String defaultDateFormatKey;
-    private Map namedDateFormats = new HashMap();
+    private FastDateFormat defaultDateFormat;
+    private Map<String, FastDateFormat> namedDateFormats;
 
-    public void setDefaultDateFormatKey(String defaultDateFormatKey) {
-        this.defaultDateFormatKey = defaultDateFormatKey;
+    @Required 
+    public void setDefaultDateFormatKey(FastDateFormat defaultDateFormat) {
+        this.defaultDateFormat = defaultDateFormat;
     }
     
-    public void setNamedDateFormats(Map namedDateFormats) {
+    @Required 
+    public void setNamedDateFormats(Map<String, FastDateFormat> namedDateFormats) {
         this.namedDateFormats = namedDateFormats;
     }
     
@@ -56,20 +55,22 @@ public class ValueFormatter implements InitializingBean {
     public String valueToString(Value value, String format, Locale locale) {
         switch (value.getType()) {
             case PropertyType.TYPE_DATE:
-                if (format == null) {
-                    format = this.defaultDateFormatKey;
-                }
                 FastDateFormat f = null;
+
+                if (format == null) {
+                    f = this.defaultDateFormat;
+                }
                     
                 // Check if format refers to any of the
                 // predefined (named) formats:
-                String key = format + "_" + locale.getLanguage();
-
-                f = (FastDateFormat) this.namedDateFormats.get(key);
                 if (f == null) {
-                    key = format;
-                    f = (FastDateFormat) this.namedDateFormats.get(key);
+                    f = this.namedDateFormats.get(format + "_" + locale.getLanguage());
                 }
+
+                if (f == null) {
+                    f = this.namedDateFormats.get(format);
+                }
+                
                 try {
                     if (f == null) {
                         // Parse the given format
@@ -87,39 +88,5 @@ public class ValueFormatter implements InitializingBean {
                 return value.toString();
         }
     }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.namedDateFormats == null || this.namedDateFormats.isEmpty()) {
-            throw new BeanInitializationException(
-                "JavaBean property 'namedDateFormats' not set");
-        }
-        
-        for (Iterator i = this.namedDateFormats.keySet().iterator(); i.hasNext();) {
-            Object key = i.next();
-            if (!(key instanceof String)) {
-                throw new BeanInitializationException(
-                    "All keys in the 'namedDateFormats' map must be of type java.lang.String"
-                    + "(found " + key.getClass().getName() + ")");
-            }
-            Object value = this.namedDateFormats.get(key);
-            if (!(value instanceof FastDateFormat)) {
-                throw new BeanInitializationException(
-                    "All values in the 'namedDateFormats' map must be of type "
-                    + FastDateFormat.class.getName()
-                    + "(found " + value.getClass().getName() + ")");
-            }
-        }
-
-        if (this.defaultDateFormatKey == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'defaultDateFormatKey' not set");
-        }
-        if (!this.namedDateFormats.containsKey(this.defaultDateFormatKey)) {
-            throw new BeanInitializationException(
-                "The map 'namedDateFormats' must contain an entry specified by the "
-                + "'defaultDateFormatKey' JavaBean property");
-        }
-    }
-
 
 }

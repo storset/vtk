@@ -12,21 +12,4 @@
     <property name="loggerId" value="1" />
   </bean>
 
-  <!-- 
-    Resource change fetcher.  This bean can be used to extract
-    lists of resource changes from the database changelog table.
-    NOTE: 
-    'org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher'
-    
-    is only compatible with the operations produced by the
-    
-    'org.vortikal.repositoryimpl.dao.RepositoryEventDumperImpl'-event dumper.
-  -->
-  <bean id="dbResourceChangeFetcher" 
-        class="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher">
-    <property name="dataSource" ref="repository.dataSource" />
-    <property name="loggerType" value="1" />
-    <property name="loggerId" value="1" />
-  </bean>
-
 </beans>

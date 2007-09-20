@@ -42,7 +42,7 @@ public class ValueFormatter {
     private Map<String, FastDateFormat> namedDateFormats;
 
     @Required 
-    public void setDefaultDateFormatKey(FastDateFormat defaultDateFormat) {
+    public void setDefaultDateFormat(FastDateFormat defaultDateFormat) {
         this.defaultDateFormat = defaultDateFormat;
     }
     

@@ -515,6 +515,19 @@
             </#if>
           </#list>
           </select>
+
+          <#if form.hierarchicalHelpUrl?exists>
+            <script language="javascript" type="text/javascript">
+                function popitup(url) {
+                  var fixedUrl = url + '&selected=' + document.getElementById('value').value;
+	          var newwindow=window.open(fixedUrl,'vocabulary','scrollbars=1');
+	          if (window.focus) {newwindow.focus()}
+	          return false;
+                }
+          </script>
+
+          <a target="vocabulary" href="${form.hierarchicalHelpUrl}" onclick="return popitup('${form.hierarchicalHelpUrl}')" ><@vrtx.msg code="propertyEditor.browse" default="Browse"/></a>
+        </#if>
           </@formInputWrapper>
 
         <#-- Display regular input field for plain values: -->
@@ -540,7 +553,7 @@
               <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
-        <#if form.hierarchicalHelpUrl?exists>
+            <#if form.hierarchicalHelpUrl?exists>
           <script language="javascript" type="text/javascript">
                 function popitup(url) {
                   var fixedUrl = url + '&selected=' + document.getElementById('value').value;

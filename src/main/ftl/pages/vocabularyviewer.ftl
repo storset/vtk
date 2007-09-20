@@ -74,13 +74,15 @@ function getCheckedAsStringValue(node, result) {
 	var nodes = new Array();
 	
 	function treeInit() {
+            document.getElementById("expandcontractdiv").style.visibility = "visible";
+            document.getElementById("insert").style.visibility = "visible";
+	    tree = new YAHOO.widget.TreeView("treeDiv1");
 	  <#if propertyDefinition.multiple>
-      document.getElementById("expandcontractdiv").style.visibility = "visible";
-      document.getElementById("insert").style.visibility = "visible";
-	  tree = new YAHOO.widget.TreeView("treeDiv1");
-      <@createTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes parentchecked=false />
-      tree.draw();
-      </#if>
+            <@createTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes parentchecked=false />
+          <#else>
+            <@createSingleTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes />
+          </#if>
+          tree.draw();
 	}
 
 	function treeNode(i, c) {
@@ -90,6 +92,7 @@ function getCheckedAsStringValue(node, result) {
 	
 	var callback = null;
 
+  <#if propertyDefinition.multiple>
     function checkAll() {
         var topNodes = tree.getRoot().children;
         for(var i=0; i<topNodes.length; ++i) {
@@ -103,6 +106,7 @@ function getCheckedAsStringValue(node, result) {
             topNodes[i].uncheck();
         }
     }
+  </#if>
 </script>
 
 </head>
@@ -122,8 +126,10 @@ function getCheckedAsStringValue(node, result) {
 	  <div style="visibility:hidden" id="expandcontractdiv">
 		<a href="javascript:tree.expandAll()">${vrtx.getMsg("vocabulary.expandall", "Expand all")}</a>
 		<a href="javascript:tree.collapseAll()">${vrtx.getMsg("vocabulary.collapseall", "Collapse all")}</a>
+  <#if propertyDefinition.multiple>
 		<a href="javascript:checkAll()">${vrtx.getMsg("vocabulary.checkall", "Check all")}</a>
 		<a href="javascript:uncheckAll()">${vrtx.getMsg("vocabulary.uncheckall", "Uncheck all")}</a>
+  </#if>
 	  </div>
 <br>
 	  <div id="treeDiv1"><@listNodes nodes=rootNodes />
@@ -169,6 +175,17 @@ function getCheckedAsStringValue(node, result) {
       var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
       <#if node.children?exists>
 	<@createTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected parentchecked=checked />     	         
+      </#if>	
+    </#list>
+  </#macro>
+
+  <#macro createSingleTree nodes parent name selected>
+    <#list nodes as node>
+      <#assign checked=selected?seq_contains(node.entry) />
+      <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+      var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
+      <#if node.children?exists>
+	<@createSingleTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected />     	         
       </#if>	
     </#list>
   </#macro>

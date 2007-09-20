@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -48,6 +49,15 @@ import org.vortikal.text.html.HtmlPageParser;
 
 public class TemplateDecorator implements Decorator {
 
+    private final static String EMPTY_DOCUMENT_START = 
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
+        + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+        + "<html><head></head><body>";
+
+    private final static String EMPTY_DOCUMENT_END = "</body></html>";
+
+    private final static String EMPTY_DOCUMENT = EMPTY_DOCUMENT_START + EMPTY_DOCUMENT_END;
+        
     private static Log logger = LogFactory.getLog(TemplateDecorator.class);
     
     private HtmlPageParser htmlParser;
@@ -160,8 +170,19 @@ public class TemplateDecorator implements Decorator {
     protected HtmlPage parseHtml(Content content, boolean filter) throws Exception {
         long before = System.currentTimeMillis();
         String encoding = content.getOriginalCharacterEncoding();
-        InputStream stream = new java.io.ByteArrayInputStream(
-            content.getContent().getBytes(encoding));
+        String source = content.getContent();
+
+        // Best-effort attempt to parse empty and "markup-less"
+        // documents:
+        if (source == null || "".equals(source.trim())) {
+            source = EMPTY_DOCUMENT;
+        } else if (!source.trim().startsWith("<")) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(EMPTY_DOCUMENT_START).append(source).append(EMPTY_DOCUMENT_END);
+            source = sb.toString();
+        }
+
+        InputStream stream = new ByteArrayInputStream(source.getBytes(encoding));
         HtmlPage html = null;
         if (filter && this.htmlNodeFilters != null) {
             html = this.htmlParser.parse(stream, encoding, this.htmlNodeFilters);

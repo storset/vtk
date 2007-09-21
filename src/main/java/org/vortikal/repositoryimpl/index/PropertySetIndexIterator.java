@@ -35,7 +35,6 @@ import java.io.IOException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
-import org.vortikal.repositoryimpl.index.mapping.DocumentMapperImpl;
 import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
 
 /**

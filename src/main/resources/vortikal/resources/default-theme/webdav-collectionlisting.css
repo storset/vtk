@@ -1,0 +1,8 @@
+div#titleContainer { 
+    padding-bottom: 0.5em;
+}
+
+div.breadcrumb {
+    background: #FFFFFF;
+    padding-left: 0px;
+}

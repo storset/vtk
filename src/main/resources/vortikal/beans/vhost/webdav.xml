@@ -439,9 +439,7 @@
   </bean>
 
 
-
   <!-- View resolver -->
-
   
   <bean id="webdavViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
@@ -465,7 +463,6 @@
     </property>
   </bean>
 
-
   <bean id="webdavCollectionListingViewResolver" parent="viewResolver">
     <property name="views">
       <map>
@@ -483,24 +480,61 @@
     </property>
   </bean>
 
-  <!-- lagt inn -->
   <bean id="webdavCollectionListingViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="decorators">
       <list>
-        <ref bean="collectionListingHeadDecorator" />
-        <ref bean="collectionListingHeaderDecorator" />
-        <ref bean="collectionListingFooterDecorator" />
+        <ref bean="webdavCollectionListingHeadDecorator" />
+        <ref bean="webdavCollectionListingHeaderDecorator" />
+        <ref bean="webdavCollectionListingFooterDecorator" />
         <ref bean="adminURLFooterDecorator" />
       </list>
     </property>
   </bean>
 
+  <bean id="webdavCollectionListingHeadDecorator" 
+        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
+    <property name="view">
+      <bean parent="freemarkerView">
+        <property name="attributesMap">
+          <map>
+            <entry key="cssURLs">
+              <list>
+                <value>${cssBaseURL}/basic.css</value>
+                <value>${cssBaseURL}/webdav-collectionlisting.css</value>
+              </list>
+            </entry>
+          </map>
+        </property>
+        <property name="url" value="layouts/head.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="webdavCollectionListingHeaderDecorator"
+        class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
+    <property name="view">
+      <bean parent="freemarkerView">
+        <property name="url" value="layouts/plain-header.ftl" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="webdavCollectionListingFooterDecorator"
+        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
+    <property name="view">
+      <bean parent="freemarkerView">
+        <property name="url" value="layouts/plain-footer.ftl" />
+      </bean>
+    </property>
+  </bean>
+ 
+
 
   <!-- View definitions -->
 
   <bean id="webdavCollectionListingView" parent="freemarkerView">
-    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="url" value="pages/webdav-collectionlisting.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
@@ -511,7 +545,7 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs" value-ref="viewCSSURLs" />
+        <entry key="cssURLs" value-ref="viewCSSURLs" /> <!-- mmm -->
       </map>
     </property>
   </bean>

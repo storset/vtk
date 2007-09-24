@@ -1,28 +1,62 @@
-div#titleContainer { 
-    padding-bottom: 0.5em;
+div.vrtx-collections {
+  border: 1px solid #ccc;
+  padding: 1em;
+  height: 1%; /* Triggers hasLayout in IE browser */
+  margin: 0 0 2em 0;
 }
 
-div.breadcrumb {
-    background: #FFFFFF;
-    padding-left: 0px;
+div.vrtx-collections:after {
+  content: "."; 
+  display: block; 
+  height: 0; 
+  clear: both; 
+  visibility: hidden;
 }
 
-div.navmarginbrod { 
-    padding-top: 0px;
-    margin-top: 0px;
-    padding-left: 0px;
-    margin-left: 20px;
+div.vrtx-collections h2 {
+  margin: 0 0 .5em 0;
 }
 
-div.body { 
-    padding-left: 29px;
+div.vrtx-collections table {
+  width:100%;
 }
 
-span.signatur {  
-    margin-left: 29px;
+div.vrtx-collections table tr {
+  vertical-align: top;
 }
 
-hr { 
-    margin-left: 29px;
+div.vrtx-collections ul {
+  list-style-type: square;
+  padding: 0 0 0 1em;
+  margin: 0;
+}
+
+div.vrtx-resource {
+  margin: 0 0 .5em 0;  
+  padding: 0 0 .5em 0;  
+}
+
+div.vrtx-resource h3 {
+  margin: 0 0 .25em 0;  
+}
+
+div.vrtx-resource h3 a {
+  color:#000;
+  text-decoration:none;
+}
+
+div.vrtx-resource h3 a:hover {
+  color:#666;
+}
+
+div.vrtx-resource div.vrtx-footer {
+  font-size: .9em;
+  color:#666;
+}
+
+p.sort {
+  float:right;
+  margin: 0 0 1em 1em;
+  font-size: .8em;
 }
 

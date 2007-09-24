@@ -23,7 +23,7 @@
 </#if>
 <#if cssURLs?exists>
 <#list cssURLs as cssURL>
-  <link REL="stylesheet" HREF="${cssURL}">
+  <link rel="stylesheet" href="${cssURL}">
 </#list>
 </#if>
 <#if jsURLs?exists>

@@ -36,6 +36,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 
 /**
+ * XXX: no longer in use.
  * 
  * @author oyviste
  *

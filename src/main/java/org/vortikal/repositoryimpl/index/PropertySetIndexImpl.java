@@ -32,82 +32,36 @@ package org.vortikal.repositoryimpl.index;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMapper;
 import org.vortikal.repositoryimpl.index.mapping.DocumentMappingException;
-import org.vortikal.repositoryimpl.index.mapping.EscapedMultiValueFieldAnalyzer;
 import org.vortikal.repositoryimpl.index.mapping.FieldNameMapping;
-import org.vortikal.repositoryimpl.index.mapping.FieldValueMapper;
 
 /**
  * <code>PropertySet</code> index using Lucene. 
  * 
  * @author oyviste
  */
-public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean {
+public class PropertySetIndexImpl implements PropertySetIndex {
 
     Log logger = LogFactory.getLog(PropertySetIndexImpl.class);
     
     private LuceneIndexManager indexAccessor; // Underlying Lucene index accessor.
     private DocumentMapper documentMapper;
     private PropertyManager propertyManager;
-    private Analyzer analyzer;
 
-    public void afterPropertiesSet() throws BeanInitializationException {
-        this.analyzer = initializePerFieldAnalyzer();
-    }
-    
-    private PerFieldAnalyzerWrapper initializePerFieldAnalyzer() {
-        
-        List<PropertyTypeDefinition> propDefs = this.propertyManager.getResourceTypeTree().getPropertyTypeDefinitions();
-        
-        KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
-        EscapedMultiValueFieldAnalyzer multiValueAnalyzer = 
-            new EscapedMultiValueFieldAnalyzer(FieldValueMapper.MULTI_VALUE_FIELD_SEPARATOR);
-        
-        PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(keywordAnalyzer);
-        
-        for (PropertyTypeDefinition def: propDefs) {
-            String fieldName = FieldNameMapping.getSearchFieldName(def);
-            
-            if (def.isMultiple()) {
-                wrapper.addAnalyzer(fieldName, multiValueAnalyzer);
-            } else {
-                wrapper.addAnalyzer(fieldName, keywordAnalyzer);
-            }
-        }
-        
-        // Special fields
-        wrapper.addAnalyzer(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(FieldNameMapping.ID_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(FieldNameMapping.NAME_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(FieldNameMapping.ANCESTORIDS_FIELD_NAME, multiValueAnalyzer);
-        wrapper.addAnalyzer(FieldNameMapping.RESOURCETYPE_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(FieldNameMapping.URI_FIELD_NAME, keywordAnalyzer);
-        wrapper.addAnalyzer(FieldNameMapping.URI_DEPTH_FIELD_NAME, keywordAnalyzer);
-        
-        return wrapper;
-    }
-    
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
@@ -133,7 +87,7 @@ public class PropertySetIndexImpl implements PropertySetIndex, InitializingBean 
                 }
             }
             
-            this.indexAccessor.getIndexWriter().addDocument(doc, this.analyzer);
+            this.indexAccessor.getIndexWriter().addDocument(doc);
         } catch (DocumentMappingException dme) {
             logger.warn("Could not map property set to index document", dme);
             throw new IndexException("Could not map property set to index document", dme);

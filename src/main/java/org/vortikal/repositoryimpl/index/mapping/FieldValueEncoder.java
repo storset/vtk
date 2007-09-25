@@ -31,9 +31,6 @@
 package org.vortikal.repositoryimpl.index.mapping;
 
 import java.math.BigInteger;
-import java.text.ParseException;
-
-import org.apache.lucene.document.DateTools;
 
 /**
  * Low-level index field value encoder/decoder for some single-value data types.
@@ -58,7 +55,10 @@ public final class FieldValueEncoder {
      * @return
      */
     public static String encodeDateValueToString(long dateValue) {
-        return DateTools.timeToString(dateValue, DateTools.Resolution.SECOND);
+        // Since we're using a resolution of one second, this case can be optimized.
+        // Avoid using Lucene's DateTools class (uses synchronized SimpleDateFormat 
+        // and Calendar internally to support all kinds of other resolutions).
+        return encodeLongToString(dateValue - (dateValue % 1000));
     }
     
     /**
@@ -68,11 +68,8 @@ public final class FieldValueEncoder {
      */
     public static long decodeDateValueFromString(String encodedDateValue) 
         throws FieldValueEncodingException {
-        try {
-            return DateTools.stringToTime(encodedDateValue);
-        } catch (ParseException pe) {
-            throw new FieldValueEncodingException(pe.getMessage());
-        }
+
+        return decodeLongFromString(encodedDateValue);
     }
     
     /**
@@ -85,6 +82,9 @@ public final class FieldValueEncoder {
     public static String encodeIntegerToString(int i) {
         long uint = i + 0x80000000L;
         char[] hex = Long.toHexString(uint).toCharArray();
+
+        // Apply zero-padding, essential for 
+        // keeping lexicographic sorting equal to numeric sorting 
         char[] output = {'0','0','0','0','0','0','0','0'};
         System.arraycopy(hex, 0, output, 8-hex.length, hex.length);
         return String.valueOf(output);
@@ -127,6 +127,8 @@ public final class FieldValueEncoder {
             ulong[i] |= (byte)((l >>> (56-i*8)) & BYTE_MASK);
         }
         
+        // Apply zero-padding, essential for 
+        // keeping lexicographic sorting equal to numeric sorting 
         return unsignedLongToPaddedHexString(ulong);
     }
 

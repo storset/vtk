@@ -77,7 +77,15 @@ public class FieldValueEncoderTestCase extends TestCase {
 
         // Dates stored in index do not have millisecond resolution, so it should be zero
         assertEquals(decoded.get(Calendar.MILLISECOND), 0);
-    }
+        
+        // Test lexicographic sorting
+        String encoded1 = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis());
+        String encoded2 = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis() + 10000);
+        assertTrue(encoded2.compareTo(encoded1) > 0);
+
+        encoded2 = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis() - 10000);
+        assertTrue(encoded2.compareTo(encoded1) < 0);
+}
 
     public void testIntegerEncoding() {
         
@@ -95,6 +103,17 @@ public class FieldValueEncoderTestCase extends TestCase {
         assertEquals(4, encodedBinary.length);
         
         assertEquals(testNumber, FieldValueEncoder.decodeIntegerFromBinary(encodedBinary));
+        
+        // Test lexicographic sorting
+        String encoded1 = FieldValueEncoder.encodeIntegerToString(-4000);
+        String encoded2 = FieldValueEncoder.encodeIntegerToString(4000);
+        
+        assertTrue(encoded2.compareTo(encoded1) > 0);
+        
+        encoded1 = FieldValueEncoder.encodeIntegerToString(200);
+        encoded2 = FieldValueEncoder.encodeIntegerToString(1000);
+        
+        assertTrue(encoded2.compareTo(encoded1) > 0);
     }
     
     public void testLongEncoding() {
@@ -113,5 +132,16 @@ public class FieldValueEncoderTestCase extends TestCase {
         assertEquals(8, encodedBinary.length);
         
         assertEquals(testNumber, FieldValueEncoder.decodeLongFromBinary(encodedBinary));
+
+        // Test lexicographic sorting
+        String encoded1 = FieldValueEncoder.encodeLongToString(-400000000L);
+        String encoded2 = FieldValueEncoder.encodeLongToString(400000000L);
+        
+        assertTrue(encoded2.compareTo(encoded1) > 0);
+        
+        encoded1 = FieldValueEncoder.encodeLongToString(20000000);
+        encoded2 = FieldValueEncoder.encodeLongToString(100000000);
+        
+        assertTrue(encoded2.compareTo(encoded1) > 0);
     }
 }

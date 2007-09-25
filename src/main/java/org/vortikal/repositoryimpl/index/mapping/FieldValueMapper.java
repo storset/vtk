@@ -98,21 +98,12 @@ public final class FieldValueMapper {
      * @return
      */
     public static Field getFieldFromValues(String name, Value[] values) {
-
-        StringBuilder fieldValue = new StringBuilder();
-        for (int i = 0; i < values.length; i++) {
-            String encoded = encodeIndexFieldValue(values[i]);
-            String escaped = escapeCharacter(MULTI_VALUE_FIELD_SEPARATOR, encoded);
-            fieldValue.append(escaped);
-            if (i < values.length - 1) {
-                fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
-            }
+        String[] encodedValues = new String[values.length];
+        for (int i=0; i<values.length; i++) {
+            encodedValues[i] = encodeIndexFieldValue(values[i]);
         }
-
-        Field field = new Field(name, fieldValue.toString(), Field.Store.NO,
-                Field.Index.TOKENIZED);
-
-        return field;
+        
+        return new Field(name, new StringArrayTokenStream(encodedValues));
     }
     
     /**
@@ -154,32 +145,13 @@ public final class FieldValueMapper {
      */
     public static Field getUnencodedMultiValueFieldFromIntegers(String name,
             int[] integers) {
-        StringBuilder fieldValue = new StringBuilder();
-        for (int i = 0; i < integers.length; i++) {
-            fieldValue.append(Integer.toString(integers[i]));
-            if (i < integers.length - 1) {
-                fieldValue.append(MULTI_VALUE_FIELD_SEPARATOR);
-            }
+        
+        String[] values = new String[integers.length];
+        for (int i=0; i<integers.length; i++) {
+            values[i] = Integer.toString(integers[i]);
         }
-
-        return new Field(name, fieldValue.toString(), Field.Store.NO,
-                Field.Index.TOKENIZED);
-    }
-
-    // XXX: Used for re-creating a stored ancestor ids field. Expensive and
-    // currently not in use (see BinaryFieldValueMapper) !
-    public static int[] getIntegersFromUnencodedMultiValueField(Field field) {
-        if ("".equals(field.stringValue()))
-            return new int[0];
-
-        String[] stringValues = field.stringValue().split(
-                Character.toString(MULTI_VALUE_FIELD_SEPARATOR));
-        int[] integers = new int[stringValues.length];
-        for (int i = 0; i < stringValues.length; i++) {
-            integers[i] = Integer.parseInt(stringValues[i]);
-        }
-
-        return integers;
+        
+        return new Field(name, new StringArrayTokenStream(values));
     }
 
     public static int getIntegerFromUnencodedField(Field field) {
@@ -317,6 +289,7 @@ public final class FieldValueMapper {
      * @param c
      * @param s
      * @return
+     * XXX: no longer in use
      */
     public static String unescapeCharacter(char c, String s) {
 
@@ -357,6 +330,7 @@ public final class FieldValueMapper {
      * @param c
      * @param s
      * @return
+     * XXX: no longer in use.
      */
     public static String escapeCharacter(char c, String s) {
         int length = s.length();

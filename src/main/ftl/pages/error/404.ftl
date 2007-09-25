@@ -6,7 +6,7 @@
 <body>
 <h1>404 - Page does not exist</H1>
 <p>
-The web page <strong>${resourceContext.currentURI?if_exists}</strong>
+The web page <strong>${resourceContext.currentURI?html?if_exists}</strong>
 that you seek cannot be found on this web site. Either the link that
 you have used is wrong, or the page is outdated or moved to another
 location.

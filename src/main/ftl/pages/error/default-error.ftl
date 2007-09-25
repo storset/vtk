@@ -7,7 +7,7 @@
 
 <h1>500 - Internal Server Error</h1>
 
-<p>The web page <strong>${(resourceContext.currentURI)?if_exists}</strong>
+<p>The web page <strong>${(resourceContext.currentURI?html)?if_exists}</strong>
 cannot be displayed due to an error.</p>
 
 <#if error.errorDescription?exists>

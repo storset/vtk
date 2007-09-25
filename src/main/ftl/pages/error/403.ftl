@@ -7,7 +7,7 @@
 
 <H1>403 - Access denied</H1>
 
-<P>The web page <STRONG>${resourceContext.currentURI?if_exists}</STRONG>
+<P>The web page <strong>${resourceContext.currentURI?html?if_exists}</strong>
 is restricted to a specific set of users.</P> 
 
 <#if debugErrors?exists && debugErrors>

@@ -187,9 +187,9 @@
 
          // File browser
          var baseFolder = "${resourceContext.parentURI?html}";
-         fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=/desktop/&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=/desktop/&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=/desktop/&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+         fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+         fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
          // Misc setup
          fck.Config['FullPage'] = true;

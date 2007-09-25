@@ -81,6 +81,11 @@
           <property name="modelDataMap">
             <map>
               <entry key="cssURLs" value-ref="plainEditCSSURLs" />
+              <entry key="jsURLs">
+                <list>
+                  <value>${cssBaseURL}/codepress/codepress.js</value>
+                </list>
+              </entry>
             </map>
           </property>
         </bean>

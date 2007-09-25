@@ -16,12 +16,18 @@
   <#stop "Unable to render model: required submodel
   'plaintextEditForm' missing">
 </#if>
-  <!-- p>Note: The resource is currently locked for five minutes 
-  and will be relocked for five minutes every time you save your changes. 
-  This prevents others editing at the same time as you.</p -->
+
+  <#assign type=resourceContext.currentResource.resourceType />
+  <#assign class>class="codepress generic linenumbers-off"</#assign>
+  <#if type=="xhtml10trans" || type=="html">
+    <#assign class>class="codepress html linenumbers-off"</#assign>
+  <#elseif type=="php">
+    <#assign class>class="codepress php linenumbers-off"</#assign>
+  </#if>
+
   <div style="width:99%;">
     <form action="${plaintextEditForm.submitURL}" method="POST">
-      <textarea style="width:100%;" name="content" rows="20" cols="80">${plaintextEditForm.content?html}</textarea>
+      <textarea id="area" style="width:100%;" name="content" rows="20" cols="80" ${class}>${plaintextEditForm.content?html}</textarea>
       <div style="padding-top:7px;">
         <input type="submit" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>">
         <input type="submit" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>">

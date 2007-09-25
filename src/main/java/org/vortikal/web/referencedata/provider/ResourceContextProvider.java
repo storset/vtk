@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,9 @@ import org.vortikal.web.service.Service;
  *   <li><code>currentServiceName</code> - the name of the current
  *   service
  *   <li><code>currentURI</code> - the URI of the requested resource
+ *   <li><code>parentURI</code> - the parent URI of the requested
+ *   resource (<code>null</code>) if the current resource is the root
+ *   resource ('/').
  *   <li><code>currentResource</code> - the requested resource
  *   <li><code>repositoryId</code> - the repository id
  * </ul>
@@ -143,6 +146,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         Principal principal = securityContext.getPrincipal();
 
         Resource resource = null;
+        String parent = null;
         
         if (model != null && this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
@@ -156,10 +160,15 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
        
             } catch (RepositoryException e) { }
         }
+        if (resource != null) {
+            parent = resource.getParent();
+        }
+
         	   
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
+        resourceContextModel.put("parentURI", parent);
         resourceContextModel.put("currentServiceName", currentService.getName());
         resourceContextModel.put("repositoryId", this.repository.getId());
 

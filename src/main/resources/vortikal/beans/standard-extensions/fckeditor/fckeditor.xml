@@ -271,6 +271,9 @@
     <property name="url" value="fckeditor/fckeditor.ftl" />
     <property name="referenceDataProviders">
       <list>
+
+        <ref bean="resourceContextProvider" />
+
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="modelName" value="fckeditorBase" />

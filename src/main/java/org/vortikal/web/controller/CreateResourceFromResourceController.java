@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -168,12 +168,6 @@ public class CreateResourceFromResourceController implements Controller,
         if (this.errorView == null)
             throw new BeanInitializationException("Property 'errorView' required");
 
-        try {
-            this.transformerManager.getTransformer(this.stylesheetIdentifier);
-        } catch (Exception e) {
-            this.logger.warn("Error trying to compile stylesheet '" +
-                             this.stylesheetIdentifier + "'", e);
-        }
     }
 
 

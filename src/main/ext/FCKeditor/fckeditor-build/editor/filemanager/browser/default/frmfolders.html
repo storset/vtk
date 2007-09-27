@@ -175,7 +175,7 @@ function GetFoldersCallBack( fckXml )
 function SetResourceType( type )
 {
 	oConnector.ResourceType = type ;
-	LoadFolders( '/' ) ;
+	LoadFolders( sActiveFolder ) ;
 }
 
 window.onload = function()

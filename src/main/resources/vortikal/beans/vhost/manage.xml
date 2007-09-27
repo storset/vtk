@@ -1484,7 +1484,7 @@
   </bean>
 
   <bean id="manage.refreshLockRequestParameter" class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="mode" />
+    <property name="parameterName" value="action" />
     <property name="parameterValue" value="refresh-lock" />
   </bean>
 

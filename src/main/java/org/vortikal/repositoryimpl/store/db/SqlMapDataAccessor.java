@@ -872,14 +872,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
 
     private void storeLock(ResourceImpl r) {
+
+        // Delete any old persistent locks
+        String sqlMap = getSqlMap("deleteLockByResourceId");
+        getSqlMapClientTemplate().delete(sqlMap, new Integer(r.getID()));
+
         Lock lock = r.getLock();
-        if (lock == null) {
-            // Delete any old persistent locks
-            String sqlMap = getSqlMap("deleteLockByResourceId");
-            getSqlMapClientTemplate().delete(sqlMap, new Integer(r.getID()));
-        }
+
         if (lock != null) {
-            String sqlMap = getSqlMap("loadLockByLockToken");
+            sqlMap = getSqlMap("loadLockByLockToken");
             boolean exists = getSqlMapClientTemplate().queryForObject(
                 sqlMap, lock.getLockToken()) != null;
 

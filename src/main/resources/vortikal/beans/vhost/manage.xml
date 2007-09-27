@@ -1098,10 +1098,28 @@
         <ref bean="manageBreadCrumbProvider" />
         <ref bean="resourceTitleProvider" />
         <ref bean="adminHtmlTitleProvider" />
+
+        <ref bean="expiresSecProvider" />
+
       </list>
     </property>
   </bean>
 
+  <bean id="expiresSecProvider"
+        class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="modelNames">
+      <map>
+        <entry key="http://www.uio.no/header-control"
+               value="expiresSec" />
+      </map>
+    </property>
+    <property name="properties">
+      <list>
+        <value>http://www.uio.no/header-control:expires-sec</value>
+      </list>
+    </property>
+  </bean>
 
   <bean id="defaultManageDecorators" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">

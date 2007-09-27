@@ -668,6 +668,8 @@
     <property name="url" value="kupu/kupu-edit.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <ref bean="manage.refreshLockURLProvider" />
+
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="kupuDrawerService" />

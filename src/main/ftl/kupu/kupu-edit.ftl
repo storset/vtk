@@ -11,6 +11,7 @@
   - Optional model data:
   -
   -->
+<#import "/lib/ping.ftl" as ping />
 <#if !kupuEditForm?exists>
   <#stop "Unable to render model: required submodel
   'kupuEditForm' missing">
@@ -34,6 +35,7 @@
     <!-- This stylesheet should normally be empty.                          -->
     <link href="http://www.uio.no/profil/kupu/kupustyles-override.css" rel="stylesheet" type="text/css"/>
     
+    <@ping.ping url=pingURL['url'] interval=600 />
     
     <!-- needed to override popup-funtions from 'kupubasetools.js' -->
 	<script type="text/javascript" src="${cssBaseURL}/browser-sniffer.js"> </script>

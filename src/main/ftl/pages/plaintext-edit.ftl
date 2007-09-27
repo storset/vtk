@@ -7,15 +7,17 @@
   - contents of a plain-text resource
   - 
   - Required model data:
-  -  
+  -  pingURL
   - Optional model data:
   -
   -->
+<#import "/lib/ping.ftl" as ping />
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
   <title>Plain text edit</title>
+  <@ping.ping url=pingURL['url'] interval=600/>
 </head>
 <body>
 

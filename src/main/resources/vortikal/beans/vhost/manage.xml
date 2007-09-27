@@ -124,6 +124,18 @@
 
 
 
+  <bean id="manage.refreshLockService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="manage.refreshLockRequestParameter" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="manage.refreshLockHandler" />
+    </property>
+  </bean>
+
   <bean id="aboutResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="categories">
@@ -545,6 +557,11 @@
     </property>
   </bean>
   
+  <bean id="manage.refreshLockHandler"
+        class="org.vortikal.web.controller.repository.LockRefreshController"
+        parent="requestLocalRepositoryAware">
+  </bean>
+
   <bean id="tidyCopyAction" 
         class="org.vortikal.web.controller.repository.copy.SimpleFilteringCopyAction"
         parent="requestLocalRepositoryAware">
@@ -1065,13 +1082,7 @@
         <entry key="Expires" value="0" />
       </map>
     </property>
-    <property name="decorators">
-      <list>
-        <ref bean="manageHeadDecorator" />
-        <ref bean="manageHeaderDecorator" />
-        <ref bean="manageFooterDecorator" />
-      </list>
-    </property>
+    <property name="decorators" ref="defaultManageDecorators" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="leaveAdminLinkProvider" />
@@ -1091,6 +1102,17 @@
     </property>
   </bean>
 
+
+  <bean id="defaultManageDecorators" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="manageHeadDecorator" />
+        <ref bean="manageHeaderDecorator" />
+        <ref bean="manageFooterDecorator" />
+      </list>
+    </property>
+  </bean>
+
   <bean id="manageLinkProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
         parent="requestLocalRepositoryAware">
@@ -1105,6 +1127,13 @@
       into the HTML head element.
     </description>
     <property name="view" ref="manageHeadView"/>
+  </bean>
+
+  <bean id="manage.refreshLockURLProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="repository" ref="repository" />
+    <property name="service" ref="manage.refreshLockService" />
+    <property name="modelName" value="pingURL" />
+    <property name="urlName" value="url" />
   </bean>
 
   <bean id="manageHeadView" parent="freemarkerView">
@@ -1454,6 +1483,10 @@
     <property name="parameterValue" value="admin" />
   </bean>
 
+  <bean id="manage.refreshLockRequestParameter" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="mode" />
+    <property name="parameterValue" value="refresh-lock" />
+  </bean>
 
   <bean id="localeParameterEqualsNO"
         class="org.vortikal.web.service.RequestParameterAssertion">

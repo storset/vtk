@@ -274,6 +274,8 @@
 
         <ref bean="resourceContextProvider" />
 
+        <ref bean="manage.refreshLockURLProvider" />
+
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
           <property name="modelName" value="fckeditorBase" />

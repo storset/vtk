@@ -74,13 +74,42 @@
   </bean>
 
 
-  <bean id="editViewResolver" parent="adminViewResolver">
+  <bean id="xmledit.ViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
         <entry key="edit" value-ref="editView" />
       </map>
     </property>
+    <property name="viewWrapper" ref="editViewWrapper" />
   </bean>
+
+  <bean id="editViewWrapper" parent="manageViewWrapper">
+    <!-- Override only the decorator list: -->
+    <property name="decorators" ref="editDecorators" />
+  </bean>
+
+  <bean id="editDecorators" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <!-- Same as defauleManageDecorators, plus one more: -->
+        <ref bean="xmledit.headDecorator" />
+        <ref bean="manageHeadDecorator" />
+        <ref bean="manageHeaderDecorator" />
+        <ref bean="manageFooterDecorator" />
+      </list>
+    </property>
+  </bean>
+  
+
+  <bean id="xmledit.headDecorator"
+        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
+    <property name="view" ref="xmledit.pingView"/>
+  </bean>
+
+  <bean id="xmledit.pingView" parent="freemarkerView">
+    <property name="url" value="layouts/ping.ftl" />
+  </bean>
+
 
   <!-- Add the raw query URL provider to the reference data providers
        for editView (used for debugging XML searches): -->
@@ -107,6 +136,7 @@
     </property>
     <property name="referenceDataProviders">
       <list>
+        <ref bean="manage.refreshLockURLProvider" />
         <ref bean="rawXmlQueryURLProvider" />
         <ref bean="editMessageProvider" />
         <ref bean="editTabHelpURLProvider" />

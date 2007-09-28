@@ -199,6 +199,8 @@
 
          //fck.config['BaseHref'] = '/test';
 
+         fck.Config['SkinPath'] = '${fckeditorBase.url?html}/editor/skins/silver/';
+
          // Create
          div.innerHTML = fck.CreateHtml();
       }

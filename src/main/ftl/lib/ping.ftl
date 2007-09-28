@@ -16,20 +16,32 @@
 <#macro ping url interval=600>
   <script language="JavaScript" type="text/javascript"><!--
      var intervalSec = ${interval};
+     var req;
 
      function ping() {
-        var req;
-        if (window.XMLHttpRequest) {
-           req = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-           req = new ActiveXObject("Microsoft.XMLHTTP");
+        if (req == null) {
+           if (window.XMLHttpRequest) {
+              req = new XMLHttpRequest();
+           } else if (window.ActiveXObject) {
+              req = new ActiveXObject("Microsoft.XMLHTTP");
+           }
         }
         if (req != null) {
+           req.onreadystatechange = callback;
            req.open('HEAD', '${url}', true);
            req.send(null);
-           setTimeout('ping()', intervalSec * 1000);
         }
      }
+
+     function callback() {
+        if (req != null && req.readyState == 4) {
+
+           if (req.status == 200) {
+              setTimeout('ping()', intervalSec * 1000);
+           }
+        }
+     }
+
      ping();
   // -->
   </script>

@@ -18,7 +18,7 @@
     <div class="infomessage"><@vrtx.msg code="${infoMessage}" default="${infoMessage}"/></div>
   </#if>
 
-  <#if expiresSec["expires-sec"]?exists>
+  <#if expiresSec?exists && expiresSec["expires-sec"]?exists>
     <div class="infomessage">
       <#assign delay = expiresSec["expires-sec"]?number / 60>	 
       <#assign delay = delay?string("0.###")>

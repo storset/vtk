@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Acl;
@@ -59,8 +59,8 @@ import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
 import org.vortikal.repositoryimpl.store.CommentDAO;
-import org.vortikal.repositoryimpl.store.DataAccessor;
 import org.vortikal.repositoryimpl.store.ContentStore;
+import org.vortikal.repositoryimpl.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.roles.RoleManager;
@@ -73,23 +73,16 @@ import org.vortikal.util.repository.URIUtil;
  * A (still non-transactional) implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
- * XXX: Cloning and equals must be checked for all domain objects!
  * XXX: implement locking of depth 'infinity'
  * XXX: namespace locking/concurrency
  * XXX: Evaluate exception practice, handling and propagation
- * XXX: transcation demarcation
+ * XXX: transaction demarcation
  * XXX: split dao into multiple daos
  * XXX: externalize caching
  * XXX: duplication of owner and inherited between resource and acl.
  * 
- * On copy/move, name of destination resource may change.
- * This is not a problem until we have properties/content modification 
- * dependent properties, using name to evaluate. Currently only 
- * content type uses name, and only on creation. 
- * 
  */
-public class RepositoryImpl
-  implements Repository, ApplicationContextAware, InitializingBean {
+public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private ApplicationContext context;
     
@@ -932,35 +925,42 @@ public class RepositoryImpl
     }
 
 
+    @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
 
-
+    @Required
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
 
+    @Required
     public void setCommentDAO(CommentDAO commentDAO) {
         this.commentDAO = commentDAO;
     }
 
+    @Required
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
     }
 
+    @Required
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }
 
+    @Required
     public void setId(String id) {
         this.id = id;
     }
 
+    @Required
     public void setLockManager(LockManager lockManager) {
         this.lockManager = lockManager;
     }
     
+    @Required
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
@@ -969,6 +969,7 @@ public class RepositoryImpl
         this.context = context;
     }
 
+    @Required
     public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
     }
@@ -983,43 +984,5 @@ public class RepositoryImpl
     }
     
 
-    public void afterPropertiesSet() {
-        if (this.dao == null) {
-            throw new BeanInitializationException(
-                "Bean property 'dao' must be set");
-        }
-        if (this.commentDAO == null) {
-            throw new BeanInitializationException(
-                "Bean property 'commentDAO' must be set");
-        }
-        if (this.contentStore == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'contentStore' not specified");
-        }
-        if (this.roleManager == null) {
-            throw new BeanInitializationException(
-                "Bean property 'roleManager' must be set");
-        }
-        if (this.tokenManager == null) {
-            throw new BeanInitializationException(
-                "Bean property 'tokenManager' must be set");
-        }
-        if (this.id == null) {
-            throw new BeanInitializationException(
-                "Bean property 'id' must be set");
-        }
-        if (this.lockManager == null) {
-            throw new BeanInitializationException(
-            "Bean property 'lockManager' must be set");
-        }
-        if (this.resourceHelper == null) {
-            throw new BeanInitializationException(
-            "Bean property 'resourceHelper' must be set");
-        }
-        if (this.authorizationManager == null) {
-            throw new BeanInitializationException(
-            "Bean property 'authorizationManager' must be set");
-        }
-    }
 
 }

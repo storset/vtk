@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
@@ -62,14 +63,17 @@ public class MethodInvokingRepositoryEventTrigger
     private String method;
     private Method targetMethod;
 
+    @Required
     public void setRepository(Repository repository)  {
         this.repository = repository;
     }
     
+    @Required
     public void setTargetObject(Object targetObject) {
         this.targetObject = targetObject;
     }
 
+    @Required
     public void setMethod(String method) {
         this.method = method;
     }
@@ -84,18 +88,6 @@ public class MethodInvokingRepositoryEventTrigger
     
 
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not set.");
-        }
-        if (this.method == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'method' not set.");
-        }
-        if (this.targetObject == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'targetObject' not set.");
-        }
         if (this.uri == null && this.uriPattern == null) {
             throw new BeanInitializationException(
                 "One of JavaBean properties 'uri' or 'uriPattern' must be specified.");

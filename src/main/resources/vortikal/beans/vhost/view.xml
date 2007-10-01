@@ -68,12 +68,12 @@
 
 
 
-
   <bean id="viewCollectionListingProvider"
-        class="org.vortikal.web.referencedata.provider.CollectionListingProvider"
+        class="org.vortikal.web.referencedata.provider.SimpleCollectionListingProvider"
         parent="requestLocalRepositoryAware" >
-    <property name="browsingService" ref="viewService" />
-    <property name="retrieveForProcessing" value="true" />
+    <property name="displayService" ref="viewService" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
   </bean>
 
   <bean id="freemarkerView" abstract="true"
@@ -352,6 +352,7 @@
        <map>
          <entry key="VRTX_VALUE_FACTORY" value-ref="valueFactory" />
          <entry key="VRTX_VALUE_FORMATTER" value-ref="valueFormatter" />
+         <entry key="VRTX_RESOURCE_TYPE_TREE" value-ref="resourceTypeTree" />
        </map>
      </property>
    </bean>

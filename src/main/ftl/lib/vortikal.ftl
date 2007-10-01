@@ -128,3 +128,27 @@
     </#if>
   </#compress>
 </#macro>
+
+
+
+<#macro property resource name prefix="" >
+  <#compress>
+    <#if VRTX_RESOURCE_TYPE_TREE?exists>
+      <#if prefix == "">
+        <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name)?exists>
+          <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name) />
+          <#if resource.getProperty(def)?exists>
+            ${resource.getProperty(def).getValue()}
+          </#if>
+        </#if>
+      <#else>
+        <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name)??>
+          <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name) />
+          <#if resource.getProperty(def)?exists>
+            ${resource.getProperty(def).getValue()}
+          </#if>
+        </#if>
+      </#if>
+    </#if>
+  </#compress>
+</#macro>

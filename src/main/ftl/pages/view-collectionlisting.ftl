@@ -50,16 +50,8 @@
   'collectionListing' missing">
 </#if>
 
-<#assign resources = []/>
-<#assign collections = []/>
-
-<#list collectionListing.children as child>
-  <#if child.collection>
-    <#assign collections = collections + [child] />
-   <#else>
-    <#assign resources = resources + [child] />
-  </#if>
-</#list>
+<#assign resources = collectionListing.files />
+<#assign collections = collectionListing.collections />
 
 <#function title r=resourceContext.currentResource>
   <#if r.URI = '/'>
@@ -80,12 +72,16 @@
 </head>
 <body>
     <h1>${title()}</h1> 
-    <#-- p class="description" -->
-      <#-- assign foo = something.in["your"].data[0].model / -->
-      <#-- assign foo = resourceContext.currentResource[1] />
-      <pre><@dumper.dump foo /></pre -->
-    <#-- /p -->
 
+    <#assign description>
+      <@vrtx.property resource=resourceContext.currentResource
+                      prefix="content" name="description"  />
+    </#assign>
+    <#if description?has_content>
+      <p class="description">
+        ${description?html}
+      </p>
+    </#if>
 
   <#if collections?size &gt; 0>
     <#if collections?size &gt; 15>
@@ -128,19 +124,27 @@
     <!-- h2><@vrtx.msg code="viewCollectionListing.resources" default="Resources"/></h2 -->
     <p class="sort">
       <@vrtx.msg code="viewCollectionListing.sortBy" default="Sort by"/>: 
-      <a href="${collectionListing.sortByLinks['name']?html}">
+      <a href="${collectionListing.sortURLs['name']?html}">
         <@vrtx.msg code="viewCollectionListing.name" default="Name"/></a> -
-      <a href="${collectionListing.sortByLinks['last-modified']?html}">
+      <a href="${collectionListing.sortURLs['last-modified']?html}">
         <@vrtx.msg code="viewCollectionListing.lastModified" default="Last Modified"/></a>
     </p>
     <#list resources as r>
       <div class="vrtx-resource">
-        <h3><a class="vrtx-title" href="${r.getURI()?html}">${title(r)}</a></h3> 
+        <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${title(r)}</a></h3>
         <div class="vrtx-footer">
           <span class="vrtx-last-modified"><@vrtx.msg code="viewCollectionListing.lastModified" default="Last modified"/>: ${r.lastModified?string("dd.MM.yyyy")}</span>
         </div>
-      </div>                                
-    </#list>                                           
+        <#assign description>
+          <@vrtx.property resource=r prefix="content" name="description"  />
+        </#assign>
+        <#if description?has_content>
+          <p class="description">
+            ${description?html}
+          </p>
+        </#if>
+      </div>
+    </#list>
    </div>
   </#if>
   </body>

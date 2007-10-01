@@ -38,15 +38,26 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class ResourcePropertyComparator implements Comparator<Resource> {
 
     private PropertyTypeDefinition propDef;
+    private boolean invert = false;
+    
 
     public ResourcePropertyComparator(PropertyTypeDefinition propDef) {
+        this(propDef, false);
+    }
+
+    public ResourcePropertyComparator(PropertyTypeDefinition propDef, boolean invert) {
         if (propDef == null) {
             throw new IllegalArgumentException("Invalid property type definition: " + propDef);
         }
         this.propDef = propDef;
+        this.invert = invert;
     }
-
+    
     public int compare(Resource r1, Resource r2) {
+        if (this.invert) {
+            Resource tmp = r1; r1 = r2; r2 = tmp;
+        }
+
         Property p1 = r1.getProperty(this.propDef);
         if (p1 == null) {
             throw new IllegalArgumentException(

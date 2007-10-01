@@ -121,7 +121,7 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         if (sortBy == null || "".equals(sortBy.trim()) || "title".equals(sortBy)) {
             Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef));
         } else if ("last-modified".equals(sortBy)) {
-            Collections.sort(files, new ResourcePropertyComparator(this.lastModifiedPropDef));
+            Collections.sort(files, new ResourcePropertyComparator(this.lastModifiedPropDef, true));
         }
 
         Map<String, Object> subModel = new HashMap<String, Object>();

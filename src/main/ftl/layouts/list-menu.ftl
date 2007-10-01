@@ -36,29 +36,31 @@
 
 
 <#macro listItem item>
+  <#assign class="" />
+
   <#if item.active>
+    <#assign class="vrtx-active-item" />
     <#if item.label?exists>
-      <li class="vrtx-active-item ${item.label}">
-        <@displayItem item=item/>
-      </li>
-    <#else>
-      <li class="vrtx-active-item">
-        <@displayItem item=item/>
-      </li>
+      <#assign class = class + " " +  item.label?html />
+    </#if>
+    <#if !item.menu?exists>
+      <#assign class = class + " vrtx-current-item" />
     </#if>
   <#else>
     <#if item.label?exists>
-      <li class="${item.label}">
-      	<@displayItem item=item/>
-      </li>
-    <#else>
-      <li>
-      	<@displayItem item=item/>
-      </li>
+      <#assign class = item.label?html />
     </#if>
   </#if>
+  <#if class?has_content>
+    <li class="${class}">
+      <@displayItem item=item/>
+    </li>
+  <#else>
+    <li>
+      <@displayItem item=item/>
+    </li>
+  </#if>
 </#macro> 
-
 
 <#macro displayItem item>
   <a href="${item.url?html}">${item.title?html}</a>

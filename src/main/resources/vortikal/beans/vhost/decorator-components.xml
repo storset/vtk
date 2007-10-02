@@ -198,11 +198,20 @@
 
 
   <bean id="decorating.feedComponent"
-        class="org.vortikal.web.view.decorating.components.SyndicationFeedComponent">
+        class="org.vortikal.web.view.decorating.components.FeedComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feed" />
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
+    <property name="contentCache" ref="decorating.feedComponent.contentCache" />
+  </bean>
+
+  <bean id="decorating.aggregatedFeedComponent"
+        class="org.vortikal.web.view.decorating.components.AggregatedFeedsComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="feeds" />
+    <property name="view" ref="decorating.feedComponent.view" />
+    <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
   </bean>
 

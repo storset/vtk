@@ -95,8 +95,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
      * @exception Exception if an error occurs
      */
     protected void processModel(Map<Object, Object> model, DecoratorRequest request,
-                                DecoratorResponse response)
-        throws Exception {
+                                DecoratorResponse response) throws Exception {
 
         if (this.view instanceof ReferenceDataProviding) {
             ReferenceDataProvider[] providers =
@@ -148,15 +147,6 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         return null;
-    }
-    
-
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        if (this.view == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'view' not set");
-        }
     }
     
 }

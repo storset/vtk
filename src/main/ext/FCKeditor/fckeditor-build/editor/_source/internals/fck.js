@@ -702,10 +702,8 @@ function _FCK_KeystrokeHandler_OnKeystroke( keystroke, keystrokeValue )
 
 	if ( FCK.EditMode == FCK_EDITMODE_WYSIWYG )
 	{
-		if ( keystrokeValue == 'Paste' ){
-			var x = !FCK.Events.FireEvent( 'OnPaste' );
-			return x;
-		}
+		if ( keystrokeValue == 'Paste' )
+			return !FCK.Events.FireEvent( 'OnPaste' ) ;
 	}
 	else
 	{

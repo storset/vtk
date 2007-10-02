@@ -123,8 +123,8 @@ public class URLUtil {
             String s = tokenizer.nextToken();
             elements.add(s);
             StringBuilder path = new StringBuilder();
-            for (Iterator i = elements.iterator(); i.hasNext();) {
-                path.append("/").append((String) i.next());
+            for (String element: elements) {
+                path.append("/").append(element);
             }
             incremental.add(path.toString());
         }

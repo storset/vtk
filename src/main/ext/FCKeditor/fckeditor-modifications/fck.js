@@ -629,8 +629,8 @@ FCK.Events	= new FCKEvents( FCK ) ;
 FCK.GetHTML	= FCK.GetXHTML ;
 
 FCK.CustomCleanWord = function ( oNode, bIgnoreFont, bRemoveStyles ){
-    //return parent.processPaste(oNode);
-	return getContents(oNode, parent.whitelist, 0);
+    return parent.processPaste(oNode);
+    //return getContents(oNode, parent.whitelist, 0);
 }
 
 function getContents(dom, whitelist_elements, depth){

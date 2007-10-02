@@ -629,7 +629,124 @@ FCK.Events	= new FCKEvents( FCK ) ;
 FCK.GetHTML	= FCK.GetXHTML ;
 
 FCK.CustomCleanWord = function ( oNode, bIgnoreFont, bRemoveStyles ){
-	return parent.processPaste(oNode);
+    return parent.processPaste(oNode);
+    //return getContents(oNode, parent.whitelist, 0);
+}
+
+function getContents(dom, whitelist_elements, depth){
+    var nodeXML = '';
+    var i, j;
+    var containingData='';
+    
+    // Gather node information
+    var elementType = dom.nodeName; if(!elementType) elementType = '';
+    var elementValue = dom.nodeValue; if(!elementValue) elementValue = '';
+    elementType = elementType.toLowerCase();
+    
+    // Special types
+    if(elementType == '#text'){
+	return elementValue;
+    }
+    if(elementType == '#comment'){
+        // -repeated formating- nodeXML = '\n';
+        // -repeated formating- for(i=0;i<depth;i++) nodeXML += '\t';
+        nodeXML += "<!--" + elementValue + "-->";
+        return(nodeXML);
+    }
+    
+    // Check if tags are in whitelist
+    var allowtag = false;
+    var tagnr=-1;
+    for(i=0;i<whitelist_elements.length;i++)
+        if(dom.tagName.toLowerCase()==whitelist_elements[i][0].toLowerCase()){
+            allowtag=true;
+            tagnr=i;
+            break;
+        }
+    
+    // Get nodes
+    for(i=0;i<dom.childNodes.length;i++){
+        containingData += getContents(dom.childNodes[i], whitelist_elements, depth+(allowtag?1:0));
+    }
+    
+    // Removal of empty tags
+    var isEmpty = containingData/*.replace(/\s|\xA0/g, '')*/==''; // Check if it is only spaces
+    if(allowtag) if(isEmpty) if(whitelist_elements[tagnr][2]) return ''; // Remove empty tags which should have contents
+    if(allowtag){// Remove tags where no attributes and which should be removed without
+        var attrs = 0;
+        for(i=0;i<dom.attributes.length;i++)
+            for(j=0;j<whitelist_elements[tagnr][1].length;j++)
+                if(dom.attributes[i].value)
+                    if(dom.attributes[i].name.toLowerCase()==whitelist_elements[tagnr][1][j].toLowerCase()){
+                        attrs++;
+                    }
+        if(attrs==0) if(whitelist_elements[tagnr][3]) return containingData;
+    }
+    
+    // Filter
+    if(allowtag){
+        // -repeated formating- nodeXML += '\n';
+        // -repeated formating- for(i=0;i<depth;i++) nodeXML += '\t';
+        nodeXML += "<" + elementType;
+        
+        // Attributes
+        for(i=0;i<dom.attributes.length;i++){
+            var allowattr=false;
+            
+            for(j=0;j<whitelist_elements[tagnr][1].length;j++)
+                if(dom.attributes[i].name.toLowerCase()==whitelist_elements[tagnr][1][j].toLowerCase()){
+                    allowattr=true;
+                    break;
+                }
+            
+            if(allowattr){
+                if(dom.attributes[i].value=='null') continue;
+                if(dom.attributes[i].value==null) continue;
+                if(dom.attributes[i].value=='') continue;
+                nodeXML += " " + dom.attributes[i].name + '="' + dom.attributes[i].value + '"';
+            }
+        }
+        
+        if(!isEmpty) nodeXML += ">";
+        else nodeXML += "/>";
+    }
+    
+    nodeXML += containingData;
+    
+    if(allowtag && !isEmpty){
+        if(containingData.indexOf('<')!=-1){
+            // -repeated formating- nodeXML += '\n';
+            // -repeated formating- for(i=0;i<depth;i++) nodeXML += '\t';
+        }
+        nodeXML += "</" + elementType + ">";
+    }
+    
+    return nodeXML;
+}
+
+function isInvalidElementsAndTags(dom, whitelist_elements){
+    var i, j;
+
+    // Check nodes
+    for(i=0;i<dom.childNodes.length;i++)
+        if(isInvalidElementsAndTags(dom.childNodes[i], whitelist_elements))
+		return true;
+
+    if(!dom.tagName) return false;
+
+    // Check this element
+    var allowtag = false;
+    var tagnr = -1;
+    for(i=0;i<whitelist_elements.length;i++)
+        if(dom.tagName.toLowerCase()==whitelist_elements[i][0].toLowerCase()){
+            allowtag=true;
+            tagnr = i;
+            break;
+        }
+    if(!allowtag && dom.tagName!='BODY'){ /*alert("do not allow tag: " + dom.tagName);*/ return true;}
+
+    // If everything is ok, return false
+    return false;
 }
 
 // Replace all events attributes (like onclick).
@@ -856,9 +973,19 @@ function FCKFocusManager_Win_OnFocus_Area()
 	FCKFocusManager_Win_OnFocus() ;
 }
 
-function FCKFocusManager_Win_OnFocus()
-{
+var lastfocused = 0;
+function FCKFocusManager_Win_OnFocus(){
+	nowtime = (new Date()).getTime();
+	if(nowtime-lastfocused<1000) return;
+	lastfocused = nowtime;
 	FCKFocusManager._ResetTimer() ;
+
+	// Filter XML if necessary
+	if(isInvalidElementsAndTags(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist)){
+		var xhtmlContentType = "<!DOCTYPE " + FCK.EditorDocument.doctype.name + " PUBLIC \"" + FCK.EditorDocument.doctype.publicId + "\" \"" + FCK.EditorDocument.doctype.systemId + "\">";
+		var reshtml = xhtmlContentType + "\n" + getContents(FCK.EditorDocument.getElementsByTagName('html')[0], parent.whitelist, 0);
+		FCK.SetHTML(reshtml);
+	}
 
 	if ( !FCK.HasFocus && !FCKFocusManager.IsLocked )
 	{

@@ -149,14 +149,13 @@ public class PropertyManagerImpl
         } else if (value instanceof Principal) {
             Principal p = (Principal) value;
             prop.setPrincipalValue(p);
-        } else {
-            if (! (value instanceof String)) {
-                throw new ValueFormatException(
+        } else if (! (value instanceof String)) {
+            throw new ValueFormatException(
                     "Supplied value of property [namespaces: "
                     + namespace + ", name: " + name
                     + "] not of any supported type " 
                     + "(type was: " + value.getClass() + ")");
-            }
+        } else {
             prop.setStringValue((String) value);
         } 
         

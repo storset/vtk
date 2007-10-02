@@ -31,7 +31,6 @@
 package org.vortikal.repositoryimpl.index.observation;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +48,7 @@ import org.vortikal.repositoryimpl.store.IndexDao;
 public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     
     private Log logger = LogFactory.getLog(ResourceChangeNotifierImpl.class);
-    private Set observers = new HashSet();
+    private Set<ResourceChangeObserver> observers = new HashSet<ResourceChangeObserver>();
     private IndexDao indexDao;
     
     /**
@@ -65,8 +64,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
             if (changes != null && changes.size() > 0) {
                 // Index changes
                 this.logger.debug("Notifying observers/indexes of resource changes.");
-                for (Iterator iter = this.observers.iterator(); iter.hasNext();) {
-                    ResourceChangeObserver observer = (ResourceChangeObserver) iter.next();
+                for (ResourceChangeObserver observer: this.observers) {
                     
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Notifying observer '" + observer.getObserverId() + "'");
@@ -109,7 +107,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
         return false;
     }
     
-    public void setObservers(Set observers) {
+    public void setObservers(Set<ResourceChangeObserver> observers) {
         synchronized(this) {            // Perhaps overkill, only Spring bean-factory
             this.observers = observers; // code should call this setter during init.
         }

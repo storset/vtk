@@ -30,6 +30,7 @@
   <bean id="documentMapper" class="org.vortikal.repositoryimpl.index.mapping.DocumentMapperImpl">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="valueFactory" ref="valueFactory"/>
+    <property name="contextManager" ref="contextManager" />
   </bean>
 
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
@@ -107,4 +108,37 @@
     <property name="indexDao" ref="repository.indexDao"/>
   </bean>
   
+
+  <!-- Uhtml Context -->
+  <bean id="repository.contextDAO" class="org.vortikal.repositoryimpl.store.db.SqlMapContextDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
+
+  <bean id="contextManager" class="org.vortikal.repositoryimpl.domain.ContextManagerImpl">
+    <property name="notifier" ref="repository.resourceChangeNotifier"/>
+    <property name="contextDAO" ref="repository.contextDAO" />
+    <property name="contextPropertyDefinitions">
+      <list>
+        <ref bean="unitPropDef" />
+        <ref bean="topicPropDef" />
+        <ref bean="editorNamePropDef" />
+        <ref bean="editorEmailPropDef" />
+        <ref bean="editorURLPropDef" />
+      </list>
+    </property>
+    <property name="enabledProp" ref="visualProfileEnabledPropdef" />
+    <property name="definesContextProp" ref="visualProfileCustomDefinedPropdef" />
+  </bean>
+
+  <!--bean id="contextRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uriPattern" value=".*" />
+    <property name="targetObject" ref="contextManager" />
+    <property name="method" value="refresh" />
+  </bean-->
+
+
+
 </beans>

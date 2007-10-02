@@ -42,7 +42,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
@@ -57,6 +56,7 @@ import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repositoryimpl.PropertyManager;
 import org.vortikal.repositoryimpl.PropertySetImpl;
+import org.vortikal.repositoryimpl.domain.ContextManager;
 import org.vortikal.util.repository.URIUtil;
 
 /**
@@ -78,6 +78,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     private ResourceTypeTree resourceTypeTree;
     private PropertyManager propertyManager;
     private ValueFactory valueFactory;
+
+    private ContextManager contextManager;
     
     public void afterPropertiesSet() {
         this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
@@ -230,8 +232,9 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         // Note that the iteration will _only_ contain _stored_ fields.
         String currentName = null;
         List<Field> fields = null;
-        for(Iterator iterator = doc.getFields().iterator(); iterator.hasNext();) {
-            Field field = (Field)iterator.next();
+        
+        for(Iterator<Field> iterator = doc.getFields().iterator(); iterator.hasNext();) {
+            Field field = iterator.next();
             
             // Skip reserved fields
             if (FieldNameMapping.isReservedField(field.name())) {
@@ -268,7 +271,26 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             propSet.addProperty(prop);
         }
         
+        addContext(propSet);
+
         return propSet;
+    }
+
+    private void addContext(PropertySetImpl propSet) {
+        String uri = propSet.getURI();
+        Map<PropertyTypeDefinition, String> context = this.contextManager.getContext(uri);
+
+        if (context == null)
+            return;
+        
+        for (PropertyTypeDefinition propDef : context.keySet()) {
+            String stringValue = context.get(propDef);
+            Property property = this.propertyManager.createProperty(propDef);
+
+            Value value = this.valueFactory.createValue(stringValue, PropertyType.TYPE_STRING);
+            property.setValue(value);
+            propSet.addProperty(property);
+        }
     }
     
     /**
@@ -303,7 +325,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                             + " updating index(es)");
 
             Value value = BinaryFieldValueMapper.getValueFromBinaryField(
-                    (Field) storedValueFields.get(0), this.valueFactory,
+                    storedValueFields.get(0), this.valueFactory,
                     PropertyType.TYPE_STRING);
 
             property.setValue(value);
@@ -411,6 +433,11 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
+    }
+
+    @Required
+    public void setContextManager(ContextManager contextManager) {
+        this.contextManager = contextManager;
     }
 
 }

@@ -11,6 +11,9 @@
     <release version="0.3.11-SNAPSHOT" date="In SVN" description="Release 0.3.11">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="update">
+        Library update: Updgraded Spring to version 2.0.7
+      </action>
     </release>
 
     <release version="0.3.10.1" date="2007-09-17" description="Release 0.3.10.1">

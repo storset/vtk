@@ -20,7 +20,36 @@
    <head>
       <title>FCKeditor</title>
       <style type="text/css">
-       #contents {padding: 0px;}
+
+       div#contents { 
+       margin: 0 !important; padding:0 !important;
+       }
+
+       div.activeTab, div.htmlTitle { 
+       background-color: #f7f7f7;
+       }
+
+       div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
+       background-color: #f7f7f7 !important;
+       }
+
+       div.htmlTitle { 
+       padding: 5px 0 10px 10px;
+       }
+
+       .htmlTitlePrefix { 
+       font-weight: bold;
+       padding-right: 0.5em;
+       }
+
+       #myEditorDiv {
+       padding: 0;
+       margin-right: -2px;
+       margin-left: -2px;
+       margin-bottom: -4px;
+       border: 0;
+       } 
+
       </style>
       <@ping.ping url=pingURL['url'] interval=600 />
    </head>
@@ -35,7 +64,11 @@
 
    <script type="text/javascript" src="${fckeditorBase.url?html}/xmlcleaner.js"></script>
 
-   <div class="activeTab"><b>Tittel: </b><input type="text" id="title" /></div>
+   <div class="fck-fulleditor">
+      <div class="htmlTitle">
+	<span class="htmlTitlePrefix">Tittel:</span><input type="text" id="title" />
+      </div>
+   </div>
    <form action="JavaScript: performSave();">
       <div id="myEditorDiv">FCKeditor lastes...</div>
    </form>
@@ -170,7 +203,7 @@
          // Title
          document.getElementById("title").value = cleanxml.substring(cleanxml.indexOf("<title")+7, cleanxml.indexOf("</title>"));
 
-         // The toolbar: JSON string
+         /* The toolbar: JSON string
          fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
             ['Source','DocProps','-','Save'],\
             ['Cut','Copy','Paste','PasteText','PasteWord','-','SpellCheck'],\
@@ -184,6 +217,12 @@
             ['FontFormat'],\
             ['TextColor','BGColor'],\
             ['FitWindow','-','About']\
+         ]} )"; */
+
+         // The toolbar: JSON string
+          fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
+            ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\
+            ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']\
          ]} )";
          fck.ToolbarSet = "Vortikal";
 
@@ -271,7 +310,7 @@
       var iframeid = "myEditorIstance___Frame";
       
       // value in 'px'
-      var geckoOffset = 320;
+      var geckoOffset = 270;
       var iexplore56offset = 330;
       var iexplore7offset = 350;  // window is slightly smaller due to tabs
       

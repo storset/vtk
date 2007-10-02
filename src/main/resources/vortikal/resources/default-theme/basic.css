@@ -298,6 +298,7 @@ ul.globalMenu li {
 ul.lock {
 	padding-top: 5px;
         margin: 0;
+        padding-left: 0;
 	float:right;
         display: inline;
         list-style-type: none;

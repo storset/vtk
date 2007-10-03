@@ -43,17 +43,28 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComponent {
+public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorComponent {
 
     private static final String PARAMETER_ID = "id";
     private static final String PARAMETER_ID_DESC = 
         "Identifies the property to report. One of 'uri', 'name', 'type' or '<prefix>:<name>' identifying a property.";
 
+    private static final String PARAMETER_URI_LEVEL = "uri-level";
+    private static final String PARAMETER_URI_LEVEL_DESC = "Report property for the resource on this level of the current resource's uri." +
+    		"Root (\"/\") has level 0. If the current resource is on a higher level, nothing is reported.";
+
+    private static final String PARAMETER_URI = "uri";
+    private static final String PARAMETER_URI_DESC = "Report property for resource specified by this (absolute or relative) uri.";
+
+    
     private static final String DESCRIPTION = "Report a property on the current resource, as a formatted and localized string";
+    private static final String DESCRIPTION_RELATIVE = "Report a property on a resource, as specified by either uri or uri-level. " +
+    		"The property is formatted and localized.";
     
     private static final String URL_IDENTIFIER = "url";
     private static final String NAME_IDENTIFIER = "name";
@@ -67,6 +78,7 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
     private ValueFormatter valueFormatter;
 
     private ResourceTypeTree resourceTypeTree;
+    private boolean relative = false;
 
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -77,6 +89,32 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
 
+        if (this.relative) {
+            String uriString = request.getStringParameter(PARAMETER_URI);
+            String uriLevelString = request.getStringParameter(PARAMETER_URI_LEVEL);
+            
+            
+            if (uriString == null && uriLevelString == null) {
+                throw new IllegalArgumentException(PARAMETER_URI + " or " + PARAMETER_URI_LEVEL + " must be specified");
+            }
+
+            if (uriString != null && uriString.trim().equals("") && uriLevelString != null && uriLevelString.trim().equals("")) {
+                throw new IllegalArgumentException("Both " + PARAMETER_URI + " and " + PARAMETER_URI_LEVEL + " cannot be specified");
+            }
+            
+            if (uriLevelString != null) {
+                try {
+                    uri = getParentAtLevel(uri, uriLevelString);
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("uri-level must be a positive integer");
+                } catch (IllegalArgumentException e) {
+                    return;
+                }
+            } else {
+                uri = URIUtil.getAbsolutePath(uriString, uri);
+            }
+        }
+        
         Resource resource = repository.retrieve(token, uri, this.forProcessing);
 
         String id = request.getStringParameter(PARAMETER_ID);
@@ -108,8 +146,7 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
                 prefix = id.substring(0, i);
                 name = id.substring(i + 1);
             }
-            PropertyTypeDefinition def = this.resourceTypeTree
-                    .getPropertyDefinitionByPrefix(prefix, name);
+            PropertyTypeDefinition def = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
 
             if (def == null) {
                 return;
@@ -126,8 +163,7 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
                 Value[] values = prop.getValues();
                 for (int j = 0; j < values.length; j++) {
                     Value value = values[j];
-                    result += this.valueFormatter.valueToString(value, null,
-                            request.getLocale());
+                    result += this.valueFormatter.valueToString(value, null, request.getLocale());
                     if (j != values.length - 1) {
                         result += ", ";
                     }
@@ -147,6 +183,28 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
         } finally {
             writer.close();
         }
+    }
+
+    String getParentAtLevel(String uri, String uriLevelString) 
+        throws NumberFormatException, IllegalArgumentException {
+        
+        int uriLevel = Integer.parseInt(uriLevelString);
+        
+        if (uriLevel < 0) {
+            throw new NumberFormatException("uri-level must be a positive integer");
+        } else if (uriLevel == 0) {
+            return "/";
+        }
+        
+        for (int i = 0; i < uri.length(); i++) {
+            if (uri.charAt(i) == '/' && --uriLevel == -1)
+                    return uri.substring(0, i);
+        }
+      
+        if (uriLevel > 0) {
+            throw new IllegalArgumentException("uri-level cannot be larger than the level of the supplied uri");
+        }
+        return uri;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -179,13 +237,28 @@ public class ResourcePropertiesDecoratorCompontent extends AbstractDecoratorComp
     }
 
     protected String getDescriptionInternal() {
+        if (this.relative)
+            return DESCRIPTION_RELATIVE;
+        
         return DESCRIPTION;
     }
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_ID, PARAMETER_ID_DESC);
+        if (this.relative) {
+            map.put(PARAMETER_URI, PARAMETER_URI_DESC);
+            map.put(PARAMETER_URI_LEVEL, PARAMETER_URI_LEVEL_DESC);
+        }
         return map;
+    }
+
+    public void setUriLevelEnabled(boolean uriLevelEnabled) {
+        this.relative = uriLevelEnabled;
+    }
+
+    public void setRelative(boolean relative) {
+        this.relative = relative;
     }
 
 }

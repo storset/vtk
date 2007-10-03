@@ -75,11 +75,15 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         return this.name;
     }
 
-    @Required public void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
     public final String getDescription() {
+        if (this.description == null) {
+            return getDescriptionInternal();
+        }
+        
         return this.description;
     }
 

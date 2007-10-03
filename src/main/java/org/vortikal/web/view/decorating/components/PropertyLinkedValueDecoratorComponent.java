@@ -49,7 +49,7 @@ import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
-public class PropertyLinkedValueDecoratorCompontent extends ViewRenderingDecoratorComponent {
+public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
     private static final String DESCRIPTION = 
         "Display the value(s) of a string property, with link(s) to search";
     private static final String PARAMETER_TITLE = "title";

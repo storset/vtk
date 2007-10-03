@@ -156,7 +156,7 @@
 
   <!-- To be moved to vortex -->
   <bean id="decorating.keywordsComponent" parent="requestLocalRepositoryAware"
-        class="org.vortikal.web.view.decorating.components.PropertyLinkedValueDecoratorCompontent">
+        class="org.vortikal.web.view.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="keywordsPropDef" />
@@ -167,10 +167,19 @@
 
 
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
-        class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorCompontent">
+        class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="property" />
-    <property name="description" value="Inserts the last modified date of the current document" />
+<!--    <property name="description" value="Inserts the last modified date of the current document" />-->
+    <property name="valueFormatter" ref="valueFormatter" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+  <bean id="decorating.includeResourcePropertyComponent" parent="requestLocalRepositoryAware"
+        class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="property" />
+    <property name="relative" value="true" />
     <property name="valueFormatter" ref="valueFormatter" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>

@@ -262,18 +262,15 @@
          var srcxhtml = oEditor.GetXHTML();
          var title = document.getElementById("title");
 
-         // Clean
-         var pdiv = document.getElementById('parserDiv');
-         var cleanxml = xmlClean(oEditor.GetXHTML(), whitelist_elements, pdiv);
-         //oEditor.SetHTML(cleanxml);
-
          // Title
-         cleanxml = cleanxml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>");
+         srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>");
    
          // Save document
          var xReq = getXmlHttpRequestObject();
          xReq.open("PUT", "${fckSource.putURL}", false);
-         xReq.send(cleanxml);
+         xReq.send(srcxhtml);
+
+         window.status = 'Document saved';
       }
    </script>
 

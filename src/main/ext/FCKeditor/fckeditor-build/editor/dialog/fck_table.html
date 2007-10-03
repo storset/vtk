@@ -65,9 +65,14 @@ window.onload = function()
 			iWidth = parseInt( iWidth.substr(0,iWidth.length - 1), 10 ) ;
 			document.getElementById('selWidthType').value = "percent" ;
 		}
-		else if (iWidth.indexOf('px') >= 0)		// Style Pixel = px
+ 		else if (iWidth.indexOf('px') >= 0)	//	Style Pixel = px
 		{																										  //
 			iWidth = iWidth.substr(0,iWidth.length - 2);
+			document.getElementById('selWidthType').value = "pixels" ;
+		}
+
+ 		else 	// Added by Even: Style Pixel = px is default
+		{																										  //
 			document.getElementById('selWidthType').value = "pixels" ;
 		}
 
@@ -220,12 +225,12 @@ function Ok()
 									<td>
 										<span fcklang="DlgTableWidth">Width</span>:</td>
 									<td>
-										&nbsp;<input id="txtWidth" type="text" maxlength="4" size="3" value="200" name="txtWidth"
+										&nbsp;<input id="txtWidth" type="text" maxlength="4" size="3" value="100" name="txtWidth"
 											onkeypress="return IsDigit(event);" /></td>
 									<td>
 										&nbsp;<select id="selWidthType" name="selWidthType">
-											<option fcklang="DlgTableWidthPx" value="pixels" selected="selected">pixels</option>
-											<option fcklang="DlgTableWidthPc" value="percent">percent</option>
+											<option fcklang="DlgTableWidthPx" value="pixels">pixels</option>
+											<option fcklang="DlgTableWidthPc" value="percent" selected="selected">percent</option>
 										</select></td>
 								</tr>
 								<tr>

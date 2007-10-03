@@ -25,7 +25,7 @@
        margin: 0 !important; padding:0 !important;
        }
 
-       div.activeTab, div.htmlTitle { 
+       div.activeTab { 
        background-color: #f7f7f7;
        }
 
@@ -33,8 +33,10 @@
        background-color: #f7f7f7 !important;
        }
 
-       div.htmlTitle { 
-       padding: 5px 0 10px 10px;
+       span.htmlTitle { 
+       position:relative;
+       left:455px;
+       top:-2px;
        }
 
        .htmlTitlePrefix { 
@@ -43,10 +45,11 @@
        }
 
        #myEditorDiv {
+       margin-top: -27px;
        padding: 0;
        margin-right: -2px;
        margin-left: -2px;
-       margin-bottom: -4px;
+       margin-bottom: -3px;
        border: 0;
        } 
 
@@ -64,11 +67,14 @@
 
    <script type="text/javascript" src="${fckeditorBase.url?html}/xmlcleaner.js"></script>
 
-   <div class="fck-fulleditor">
-      <div class="htmlTitle">
-	<span class="htmlTitlePrefix">Tittel:</span><input type="text" id="title" />
-      </div>
-   </div>
+   <!-- div class="fck-fulleditor">
+     <span class="htmlTitlePrefix">Tittel:</span><input type="text" id="title" />
+   </div -->
+   
+   <span class="htmlTitle">
+     <span class="htmlTitlePrefix">Tittel:</span><input type="text" id="title" />
+   </span>
+
    <form action="JavaScript: performSave();">
       <div id="myEditorDiv">Loading editor...</div>
    </form>
@@ -122,7 +128,7 @@
 
          // The toolbar: JSON string
           fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
-            ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\
+            ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']\
          ]} )";
          fck.ToolbarSet = "Vortikal";
@@ -137,6 +143,10 @@
          fck.Config['FullPage'] = true;
          fck.Config['ToolbarCanCollapse'] = false;
          fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
+
+         fck.Config.DisableFFTableHandles = false;
+         // fck.Config.FirefoxSpellChecker = true;
+	 // fck.Config.BrowserContextMenuOnCtrl = true ;
 
          //fck.config['BaseHref'] = '/test';
 
@@ -196,7 +206,7 @@
       var iframeid = "myEditorIstance___Frame";
       
       // value in 'px'
-      var geckoOffset = 270;
+      var geckoOffset = 240;
       var iexplore56offset = 330;
       var iexplore7offset = 350;  // window is slightly smaller due to tabs
       
@@ -216,12 +226,12 @@
                           else if( editIframe.Document && editIframe.Document.body.clientHeight ) {
                              // Internet Explorer 7
                              if (typeof document.documentElement.style.maxHeight != 'undefined')  // only implemented in IE7+
-                                var offset = iexplore7offset;
+                              var offset = iexplore7offset;
                               // Internet Explorer 5 and 6
                               else
                                  var offset = iexplore56offset;
                               var height = parseInt(document.body.clientHeight) - offset;
-                              editIframe.style.height = height.toString() + "px";
+			      editIframe.style.height = height.toString() + "px";
                               // Mulig "document.body.clientHeight" skal brukes for IE4/IE5...?
                           }
                   }

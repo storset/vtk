@@ -127,7 +127,7 @@
          ]} )";
          fck.ToolbarSet = "Vortikal";
 
-         // File browser
+        // File browser
          var baseFolder = "${resourceContext.parentURI?html}";
          fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
@@ -136,6 +136,7 @@
          // Misc setup
          fck.Config['FullPage'] = true;
          fck.Config['ToolbarCanCollapse'] = false;
+         fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
 
          //fck.config['BaseHref'] = '/test';
 

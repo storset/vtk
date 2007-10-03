@@ -170,7 +170,8 @@ FCKEditingArea.prototype.MakeEditable = function()
 		try
 		{
 			// Disable Firefox 2 Spell Checker.
-			oDoc.body.spellcheck = ( this.FFSpellChecker !== false ) ;
+            // oyviste: do not set 'spellcheck' attribute on body node
+			// oDoc.body.spellcheck = ( this.FFSpellChecker !== false ) ;
 
 			if ( this._BodyHTML )
 			{

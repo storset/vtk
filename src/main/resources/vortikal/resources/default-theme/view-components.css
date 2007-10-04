@@ -262,7 +262,7 @@ ul.vrtx-tab-menu li a:hover{
 /* END include:uri-menu style=[vrtx-tab-menu] */
 
 
-/* START include:feed */
+/* START include:feed, include:feeds */
 
 div.vrtx-feed {
   padding: 1em;
@@ -315,7 +315,11 @@ div.vrtx-feed ul.items li span.published-date {
   white-space: nowrap;
 }
 
-/* END include:feed */
+div.vrtx-feed ul.items li a.channel {
+  font-size: .9em;
+}
+
+/* END include:feed, include:feeds */
 
 
 /* START resource:breadcrumb */

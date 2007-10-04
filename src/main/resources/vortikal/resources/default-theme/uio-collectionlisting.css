@@ -2,8 +2,6 @@ div.breadcrumb {
   font-size: .8em;
 } 
 
-/* legges i uio-collectionlisting.css */
-
 a.vrtx-manage-url {
   display: block;
   margin-top: 1em;
@@ -11,20 +9,20 @@ a.vrtx-manage-url {
   float:right;
   clear:both; 
   margin-right: 20px;
+  margin-bottom: 12px;
 } 
 
-div.body {
-  padding: 15px 20px 0 29px; 
-}
-
 div.navmarginbrod { 
-    padding-top: 0px;
-    margin-top: 0px;
-    padding-left: 0px;
+   margin-top: 0px; 
+/*    padding-left: 0px; */
     margin-left: 20px;
 }
- 
 
+div.body { 
+  padding: 0 20px 0 29px; 
+  margin-top: 12px; 
+}
+ 
 span.signatur {  
     margin-left: 29px;
 }

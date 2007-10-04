@@ -13,24 +13,6 @@
   -
   -->
 
-<#-- TODO:
-* Legge til description for denne mappen og de filene som listes opp
-
-* Sortering (Gorm)
-  - Separert liste liste for resources og collections 
-    (kun resources skal ha muliget for ulik sortering) 
-  - Få sortering til å fungere for title istedenfor name
-
-* Fikse CSS for collections
-
-* Ting som var kommentert tidligere, men ikke husker hva er
-- map with uri and viewUri
-- map with properties for each resource
-- messages based on currentResource's contentLocale insted of application language (locale resolver).
-
--->
-
-
 <#import "/lib/vortikal.ftl" as vrtx />
 <#-- import "/lib/collectionlisting.ftl" as col / -->
 <#import "/lib/dump.ftl" as dumper>
@@ -55,9 +37,9 @@
 
 <#function title r=resourceContext.currentResource>
   <#if r.URI = '/'>
-     <#return resourceContext.repositoryId>
+     <#return resourceContext.repositoryId?html>
   <#else>
-     <#return r.title>
+     <#return r.title?html>
   </#if>
 </#function>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -78,7 +60,7 @@
                       prefix="content" name="description"  />
     </#assign>
     <#if description?has_content>
-      <p class="description">
+      <p class="vrtx-description">
         ${description?html}
       </p>
     </#if>
@@ -99,7 +81,7 @@
 
 
     <div class="vrtx-collections">
-     <#-- h2><@vrtx.msg code="viewCollectionListing.subfolders" default="Subfolders"/></h2 -->
+     <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
      <table>
      <tr>
      <td> 
@@ -119,30 +101,30 @@
 
   <#-- List resources -->
 
-  <#if resources?size &gt; 1>
+  <#if resources?size &gt; 0>
     <div class="vrtx-resources">
     <!-- h2><@vrtx.msg code="viewCollectionListing.resources" default="Resources"/></h2 -->
     <p class="sort">
       <@vrtx.msg code="viewCollectionListing.sortBy" default="Sort by"/>: 
-      <a href="${collectionListing.sortURLs['name']?html}">
-        <@vrtx.msg code="viewCollectionListing.name" default="Name"/></a> -
+      <a href="${collectionListing.sortURLs['title']?html}">
+        <@vrtx.msg code="viewCollectionListing.title" default="Title"/></a> -
       <a href="${collectionListing.sortURLs['last-modified']?html}">
         <@vrtx.msg code="viewCollectionListing.lastModified" default="Last Modified"/></a>
     </p>
     <#list resources as r>
       <div class="vrtx-resource">
         <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${title(r)}</a></h3>
-        <div class="vrtx-footer">
-          <span class="vrtx-last-modified"><@vrtx.msg code="viewCollectionListing.lastModified" default="Last modified"/>: ${r.lastModified?string("dd.MM.yyyy")}</span>
-        </div>
         <#assign description>
           <@vrtx.property resource=r prefix="content" name="description"  />
         </#assign>
         <#if description?has_content>
-          <p class="description">
+          <p class="vrtx-description">
             ${description?html}
           </p>
         </#if>
+        <div class="vrtx-footer">
+          <span class="vrtx-last-modified"><@vrtx.msg code="viewCollectionListing.lastModified" default="Last modified"/>: ${r.lastModified?string("dd.MM.yyyy")}</span>
+        </div>
       </div>
     </#list>
    </div>

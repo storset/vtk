@@ -108,15 +108,15 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         Collections.sort(collections, new ResourcePropertyComparator(this.titlePropDef));
 
         Map<String, URL> sortURLs = new HashMap<String, URL>();
-        URL sortByNameURL = URL.create(request);
-        sortByNameURL.removeParameter("sort-by");
-        sortByNameURL.addParameter("sort-by", "title");
+        URL sortByTitleURL = URL.create(request);
+        sortByTitleURL.removeParameter("sort-by");
+        sortByTitleURL.addParameter("sort-by", "title");
         
         URL sortByLastModifiedURL = URL.create(request);
         sortByLastModifiedURL.removeParameter("sort-by");
         sortByLastModifiedURL.addParameter("sort-by", "last-modified");
 
-        sortURLs.put("name", sortByNameURL);
+        sortURLs.put("title", sortByTitleURL);
         sortURLs.put("last-modified", sortByLastModifiedURL);
 
         String sortBy = request.getParameter("sort-by");

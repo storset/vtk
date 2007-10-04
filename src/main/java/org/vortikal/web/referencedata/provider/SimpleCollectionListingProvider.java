@@ -105,6 +105,8 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
             }
         }
 
+        Collections.sort(collections, new ResourcePropertyComparator(this.titlePropDef));
+
         Map<String, URL> sortURLs = new HashMap<String, URL>();
         URL sortByNameURL = URL.create(request);
         sortByNameURL.removeParameter("sort-by");
@@ -118,10 +120,10 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         sortURLs.put("last-modified", sortByLastModifiedURL);
 
         String sortBy = request.getParameter("sort-by");
-        if (sortBy == null || "".equals(sortBy.trim()) || "title".equals(sortBy)) {
-            Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef));
-        } else if ("last-modified".equals(sortBy)) {
+        if ("last-modified".equals(sortBy)) {
             Collections.sort(files, new ResourcePropertyComparator(this.lastModifiedPropDef, true));
+        } else {
+            Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef));
         }
 
         Map<String, Object> subModel = new HashMap<String, Object>();

@@ -35,8 +35,7 @@
           </span>
           </#if>
           <#if conf.displayChannel?exists>
-          
-            <a href="${feedMapping.getUrl(entry)}" class="channel">${feedMapping.getTitle(entry)?html}</a> 
+            <#if conf.publishedDate?exists && entry.publishedDate?exists> - </#if><a href="${feedMapping.getUrl(entry)}" class="channel">${feedMapping.getTitle(entry)?html}</a> 
           </#if>
          </li>
       </#list>

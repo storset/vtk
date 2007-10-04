@@ -128,7 +128,8 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         feed.setEntries(entries);
         
         Map<SyndEntry, SyndFeed> feedMapping = new HashMap<SyndEntry, SyndFeed>();
-        if ((Boolean)conf.get("displayChannel")) {
+        Object displayChannel = conf.get("displayChannel");
+        if (displayChannel != null && (Boolean)displayChannel) {
             model.put("feedMapping", new FeedMapping(feedMapping));
         }
         
@@ -145,7 +146,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
             }
             entries.addAll(tmpFeed.getEntries());
 
-            if ((Boolean)conf.get("displayChannel")) {
+            if (displayChannel != null && (Boolean)displayChannel) {
                 for (SyndEntry entry : (List<SyndEntry>)tmpFeed.getEntries()) {
                     feedMapping.put(entry, tmpFeed);
                 }

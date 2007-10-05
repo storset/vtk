@@ -192,19 +192,8 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         
         if (uriLevel < 0) {
             throw new NumberFormatException("uri-level must be a positive integer");
-        } else if (uriLevel == 0) {
-            return "/";
-        }
-        
-        for (int i = 0; i < uri.length(); i++) {
-            if (uri.charAt(i) == '/' && --uriLevel == -1)
-                    return uri.substring(0, i);
-        }
-      
-        if (uriLevel > 0) {
-            throw new IllegalArgumentException("uri-level cannot be larger than the level of the supplied uri");
-        }
-        return uri;
+        } 
+        return URIUtil.getAncestorOrSelfAtLevel(uri, uriLevel);
     }
 
     public void afterPropertiesSet() throws Exception {

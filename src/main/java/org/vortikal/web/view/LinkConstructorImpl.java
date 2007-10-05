@@ -30,114 +30,112 @@
  */
 package org.vortikal.web.view;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-public class LinkConstructorImpl implements LinkConstructor,
-		ApplicationContextAware, InitializingBean {
+public class LinkConstructorImpl implements LinkConstructor, ApplicationContextAware {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(LinkConstructorImpl.class);
     
 	private Repository repository;
 	private ApplicationContext context;
 	
-    public String construct(String resourceURI, String parametersCSV, String serviceName) {
-
-        this.logger.debug("About to construct link to service '" + serviceName + "' for resource '"
-                + resourceURI + "' with parameters '" + parametersCSV + "'");
-        
-        String token = SecurityContext.getSecurityContext().getToken();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        
-        Service service = null;
-		Resource resource = null;
-		Map parameters = null;
-
-        String currentUri = RequestContext.getRequestContext().getResourceURI();
-        
-		try {
-            if (resourceURI == null || resourceURI.equals("")) {
-                resourceURI = currentUri;
-            } else {
-                resourceURI = URIUtil.getAbsolutePath(resourceURI, currentUri);
+    public String construct(String resourceUri, String parametersCSV, String serviceName) {
+        try {
+            if (resourceUri != null && URIUtil.isUrl(resourceUri)) {
+                return getUrlFromUrl(resourceUri);
             }
 
-            if (serviceName == null || serviceName.equals(""))
-                service = RequestContext.getRequestContext().getService();
-            else {
+            String uri = RequestContext.getRequestContext().getResourceURI();
+
+            if (isSet(resourceUri)) {
+                uri = URIUtil.getAbsolutePath(resourceUri, uri);
+            }
+            
+            Service service = RequestContext.getRequestContext().getService();
+
+            if (isSet(serviceName))
                 service = getService(serviceName);
-            }
-            
-            if (parametersCSV != null && !parametersCSV.trim().equals("")) {
-                this.logger.debug("Trying to get parameters");
-                parameters = getParametersMap(parametersCSV);
-            }
-            
-            resource = this.repository.retrieve(token, resourceURI, true);
-            
-            this.logger.debug("Trying to construct link to service '" + service.getName()
-                    + "' for resource '" + resource.getURI() + "'");
-            
-            return service.constructLink(resource, principal, parameters, false);
+
+            return createUrl(service, uri, getParametersMap(parametersCSV));
 		
 		} catch (Exception e) {
-            this.logger.warn("Caught exception on link construction", e);
+            logger.info("Caught exception on link construction", e);
+            return "";
 		}
-        return "";
 	}
 
-	private Service getService(String serviceName) {
-        return (Service) this.context.getBean(serviceName, Service.class);
+    private String getUrlFromUrl(String url)
+            throws UnsupportedEncodingException {
+        if (URIUtil.isEscaped(url)) 
+            return url;
+        
+        return URLEncoder.encode(url, "UTF-8");
     }
 
-	private Map getParametersMap(String parametersCSV) {
-		Map parameters = new LinkedHashMap();
-		String[] mappings = parametersCSV.split(",");
-		for (int i = 0; i < mappings.length; i++) {
-			if (mappings[i].indexOf("=") == -1) {
+    private String createUrl(Service service, String uri,
+            Map<String, String> parameters) throws IOException {
+        
+//        String token = SecurityContext.getSecurityContext().getToken();
+//
+//        this.repository.retrieve(token, uri, true);
+
+        return service.constructLink(uri, parameters);
+    }
+
+    private boolean isSet(String value) {
+        return value != null && !value.trim().equals("");
+    }
+
+	private Map<String, String> getParametersMap(String parametersCSV) {
+	    if (parametersCSV == null || parametersCSV.trim().equals(""))
+	        return null;
+	    
+	    Map<String, String> parameters = new LinkedHashMap<String, String>();
+
+	    for (String mapping: parametersCSV.split(",")) {
+			if (mapping.indexOf("=") == -1) {
 				throw new IllegalArgumentException(
-						"Each entry in the parameters string must be in the format "
+				        "Each entry in the parameters string must be in the format "
 						+ "'<paramname>=<paramvalue>'");
 			}	
 
-			String parameterName = mappings[i].substring(0, mappings[i].indexOf("=")).trim();
+			String parameterName = mapping.substring(0, mapping.indexOf("=")).trim();
 			
-			String parameterValue = mappings[i].substring(mappings[i].lastIndexOf("=") + 1).trim();
+			String parameterValue = mapping.substring(mapping.lastIndexOf("=") + 1).trim();
 			parameters.put(parameterName, parameterValue);
 		}
 		return parameters;
 	}
 
-	public void afterPropertiesSet() throws Exception {
-		if (this.context == null) throw new BeanInitializationException(
-				"Property 'applicationContext' must be set");
-		if (this.repository == null) throw new BeanInitializationException(
-		"Property 'repository' must be set");
-	}
+    private Service getService(String serviceName) {
+        return (Service) this.context.getBean(serviceName, Service.class);
+    }
 
+	@Required
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
 	
-	public void setApplicationContext(ApplicationContext context)
-	throws BeansException {
-		this.context = context;	
-	}
+	@Required
+	public void setApplicationContext(ApplicationContext context) throws BeansException {
+	    this.context = context;
+        }
 
 
 }

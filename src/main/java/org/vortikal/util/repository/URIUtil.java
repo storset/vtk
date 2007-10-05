@@ -45,7 +45,6 @@ public class URIUtil {
     
     private static Log logger = LogFactory.getLog(URIUtil.class);
 
-
     /**
      * Makes an absolute path of <code>path</code> relative to
      * <code>resource</code>.  If resource is a collection, the path
@@ -250,7 +249,7 @@ public class URIUtil {
     /** Resolve path relative to base, reworked from AbstractPathBasedURIResolver
      * @param path
      * @param base
-     * @return null if href is a qualified url or base isn't an absolute path, otherwise
+     * @return null if path is a qualified url or base isn't an absolute path, otherwise
      * an '..'-expanded path..
      */
     public static String getAbsolutePath(String path, String base) {
@@ -259,9 +258,9 @@ public class URIUtil {
         if (path == null || path.matches(".+://.+")) return null;
         
         if (path.startsWith("/")) {
-            // hrefs starting with '/' don't care about base
+            // path starting with '/', don't care about base
         } else if (base == null || !base.startsWith("/")) {
-            // Relative hrefs need to be resolved relative to an absolute base
+            // Relative path needs to be resolved relative to an absolute base
             return null;
         } else {
             // Strip the name of the base resource    
@@ -271,11 +270,11 @@ public class URIUtil {
         }
         
         if (path.indexOf("../") > -1) {
-            path = expandPath(path);
+            return expandPath(path);
         }
+
         return path;
     }
-    
     /**
      * Strip the trailing slash from a URI, if there is any.
      * @param uri A URI String
@@ -288,4 +287,61 @@ public class URIUtil {
         return uri;
     }
 
+    public static boolean isUrl(String string) {
+        if (string == null) {
+            return false;
+        }
+        
+        return string.contains("://");
+    }
+
+
+    
+    /**
+     * Verify whether a given string is escaped or not
+     *
+     * @param original given characters
+     * @return true if the given character array is 7 bit ASCII-compatible.
+     */
+    public static boolean isEscaped(String url) {
+        char[] original = url.toCharArray();
+        for (int i = 0; i < original.length; i++) {
+            int c = original[i];
+            if (c > 128) {
+                return false;
+            } else if (c == ' ') {
+                return false;
+            } else if (c == '%') {
+                if (Character.digit(original[++i], 16) == -1 
+                        || Character.digit(original[++i], 16) == -1) {
+                    return false;
+                }
+            }
+        }             
+        
+        return true;
+    }
+
+    public static String getAncestorOrSelfAtLevel(String uri, int uriLevel) {
+        if (uriLevel < 0) {
+            throw new IllegalArgumentException("Uri level must be a positive integer");
+        } 
+
+        if (uriLevel == 0) {
+            return "/";
+        }
+        
+        for (int i = 0; i < uri.length(); i++) {
+            if (uri.charAt(i) == '/' && --uriLevel == -1)
+                    return uri.substring(0, i);
+        }
+      
+        if (uriLevel > 0) {
+            throw new IllegalArgumentException("Uri level cannot be larger than the level of the supplied uri");
+        }
+        return uri;
+    }
+
+
+    
 }

@@ -7,7 +7,12 @@
   - 
   - Required model data:
   -   resourceContext
-  -   collectionListing
+  -   collectionListing:
+  -     collections
+  -     files
+  -     urls
+  -     sortURLs
+  -     sortProperty
   -  
   - Optional model data:
   -
@@ -53,7 +58,7 @@
   <title>${title()}</title>
 </head>
 <body>
-    <h1>${title()}</h1> 
+    <h1>${title()}${collection}</h1> 
 
     <#assign description>
       <@vrtx.property resource=resourceContext.currentResource

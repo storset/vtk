@@ -127,6 +127,7 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         if ("last-modified".equals(sortBy)) {
             Collections.sort(files, new ResourcePropertyComparator(this.lastModifiedPropDef, true));
         } else {
+            sortBy = "title";
             Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef, false, locale));
         }
 
@@ -135,6 +136,7 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         subModel.put("files", files);
         subModel.put("urls", urls);
         subModel.put("sortURLs", sortURLs);
+        subModel.put("sortProperty", sortBy);
 
         model.put(this.modelName, subModel);
     }

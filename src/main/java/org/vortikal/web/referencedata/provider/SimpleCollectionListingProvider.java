@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -105,7 +106,9 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
             }
         }
 
-        Collections.sort(collections, new ResourcePropertyComparator(this.titlePropDef));
+        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+        System.out.println("__locale: " + locale);
+        Collections.sort(collections, new ResourcePropertyComparator(this.titlePropDef, false, locale));
 
         Map<String, URL> sortURLs = new HashMap<String, URL>();
         URL sortByTitleURL = URL.create(request);
@@ -119,11 +122,12 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         sortURLs.put("title", sortByTitleURL);
         sortURLs.put("last-modified", sortByLastModifiedURL);
 
+
         String sortBy = request.getParameter("sort-by");
         if ("last-modified".equals(sortBy)) {
             Collections.sort(files, new ResourcePropertyComparator(this.lastModifiedPropDef, true));
         } else {
-            Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef));
+            Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef, false, locale));
         }
 
         Map<String, Object> subModel = new HashMap<String, Object>();

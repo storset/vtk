@@ -50,6 +50,10 @@ public class FCKeditorFileBrowserCommand {
 
     public FCKeditorFileBrowserCommand(HttpServletRequest request) {
         String currentFolder = request.getParameter("CurrentFolder");
+        if (currentFolder == null) {
+            throw new IllegalArgumentException("Missing parameter 'CurrentFolder'");
+        }
+
         if (!"/".equals(currentFolder) && currentFolder.endsWith("/")) {
             currentFolder = currentFolder.substring(0, currentFolder.length() -1);
         }

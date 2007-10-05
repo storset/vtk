@@ -49,7 +49,7 @@ public class SortingImpl implements Sorting {
         this.sortFields.add(sortField);
     }
     
-    public List getSortFields() {
+    public List<SortField> getSortFields() {
         return this.sortFields;
     }
     

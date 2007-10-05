@@ -34,6 +34,6 @@ import java.util.List;
 
 public interface Sorting {
 
-    public List getSortFields();
+    public List<SortField> getSortFields();
 
 }

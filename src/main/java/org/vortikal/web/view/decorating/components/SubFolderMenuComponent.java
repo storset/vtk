@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -153,7 +154,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
             List<MenuItem<Value>> subList = allItems.subList(startIdx, endIdx);
             ListMenu<Value> m = new ListMenu<Value>();
-            m.setComparator(new ItemValueComparator(menuRequest.isAscendingSort()));
+            m.setComparator(new ItemValueComparator(menuRequest.isAscendingSort(), menuRequest.getLocale()));
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
             m.addAllItems(subList);
@@ -230,7 +231,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         ListMenu<Value> menu = new ListMenu<Value>();
-        menu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort()));
+        menu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort(), menuRequest.getLocale()));
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
@@ -266,7 +267,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
             ListMenu<Value> subMenu = new ListMenu<Value>();
-            subMenu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort()));
+            subMenu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort(), menuRequest.getLocale()));
             for (PropertySet child: children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
@@ -393,13 +394,12 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                     throw new DecoratorComponentException(
                         "Invalid sort field: '" + sortFieldParam + "'");
                 }
-                PropertyTypeDefinition sortProperty = 
+                this.sortProperty = 
                     resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-                if (sortProperty == null) {
+                if (this.sortProperty == null) {
                     throw new DecoratorComponentException("Invalid sort field: '" + sortFieldParam 
                                                           + "': matches no property definition");
                 }
-                this.sortProperty = sortProperty;
                 this.userSpecifiedSorting = true;
             }
 
@@ -422,17 +422,19 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private class ItemValueComparator implements Comparator<MenuItem<Value>> {
 
-        private boolean ascending = false;
+        private Collator collator;
+        private boolean ascending = true;
 
-        public ItemValueComparator(boolean ascending) {
+        public ItemValueComparator(boolean ascending, Locale locale) {
             this.ascending = ascending;
+            this.collator = Collator.getInstance(locale);
         }
         
         public int compare(MenuItem<Value> item1, MenuItem<Value> item2) {
             if (!this.ascending) {
-                return item2.compareTo(item1);
+                return collator.compare(item2.getTitle().getStringValue(), item1.getTitle().getStringValue());
             } 
-            return item1.compareTo(item2);
+            return collator.compare(item1.getTitle().getStringValue(), item2.getTitle().getStringValue());
         }
     }
     

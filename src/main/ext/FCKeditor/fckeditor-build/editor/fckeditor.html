@@ -290,7 +290,27 @@ if ( FCKBrowserInfo.IsGecko )
 	window.onresize = Window_OnResize ;
 }
 
-	</script>
+
+FCK.UpdateSaveButtonEnabledState = function (event) {
+  var Items = FCK.ToolbarSet.Items;
+
+  if (! FCK.SaveButtonToolbarItem) {
+	for (var i=0; i<Items.length; i++) {
+  	  if (Items[i].CommandName == "Save") {
+        FCK.SaveButtonToolbarItem = Items[i]; 
+  	  }
+  	}
+  }
+ 
+  if (FCK.IsDirty()) {
+	FCK.SaveButtonToolbarItem.Enable();		 	
+  } else {
+	FCK.SaveButtonToolbarItem.Disable();
+  }
+}
+FCK.Events.AttachEvent( 'OnSelectionChange', FCK.UpdateSaveButtonEnabledState);
+
+</script>
 </head>
 <body>
 	<table width="100%" cellpadding="0" cellspacing="0" style="height: 100%; table-layout: fixed">

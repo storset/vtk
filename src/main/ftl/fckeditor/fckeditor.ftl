@@ -157,8 +157,14 @@
          xReq.open("PUT", "${fckSource.putURL}", false);
          xReq.send(srcxhtml);
 
+		 // Reset dirty state and update save button immediately
+		 oEditor.ResetIsDirty();
+		 oEditor.UpdateSaveButtonEnabledState(null);
+
          window.status = 'Document saved';
       }
+      
+      
    </script>
 
    <!-- FCKeditor resize script -->

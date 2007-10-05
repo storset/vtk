@@ -30,7 +30,10 @@
  */
 package org.vortikal.util.repository;
 
+import java.text.Collator;
 import java.util.Comparator;
+import java.util.Locale;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -39,6 +42,7 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
 
     private PropertyTypeDefinition propDef;
     private boolean invert = false;
+    private Locale locale = null;
     
 
     public ResourcePropertyComparator(PropertyTypeDefinition propDef) {
@@ -46,13 +50,18 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
     }
 
     public ResourcePropertyComparator(PropertyTypeDefinition propDef, boolean invert) {
+        this(propDef, invert, null);
+    }
+    
+    public ResourcePropertyComparator(PropertyTypeDefinition propDef, boolean invert, Locale locale) {
         if (propDef == null) {
             throw new IllegalArgumentException("Invalid property type definition: " + propDef);
         }
         this.propDef = propDef;
         this.invert = invert;
+        this.locale = locale;
     }
-    
+
     public int compare(Resource r1, Resource r2) {
         if (this.invert) {
             Resource tmp = r1; r1 = r2; r2 = tmp;
@@ -71,7 +80,12 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
                 "resource " + r2 + " has no such property: " + this.propDef);
         }
         
-        return p1.getValue().compareTo(p2.getValue());
+        if (this.locale != null) {
+            Collator collator = Collator.getInstance(this.locale);
+            return collator.compare(p1.getValue().getStringValue(), p2.getValue().getStringValue());
+        } else {
+            return p1.getValue().compareTo(p2.getValue());
+        }
     }
     
     

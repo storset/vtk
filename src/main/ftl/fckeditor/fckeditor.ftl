@@ -80,9 +80,9 @@
    </form>
 
    <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-   <div id="parserDiv" style="height: 0px;" />
+
    <script type="text/javascript">
-      createFCKEditorInDiv("myEditorDiv", "100%", "100%", "myEditorIstance"); 
+      createFCKEditorInDiv("myEditorDiv", "100%", "100%", "myEditorInstance"); 
    
       function getXmlHttpRequestObject(){
          try{
@@ -110,21 +110,6 @@
          // Title
          document.getElementById("title").value = srcxhtml.substring(srcxhtml.indexOf("<title")+7, srcxhtml.indexOf("</title>"));
 
-         /* The toolbar: JSON string
-         fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
-            ['Source','DocProps','-','Save'],\
-            ['Cut','Copy','Paste','PasteText','PasteWord','-','SpellCheck'],\
-            ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],\
-            '/',\
-            ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],\
-            ['OrderedList','UnorderedList','-','Outdent','Indent'],\
-            ['JustifyLeft','JustifyCenter','JustifyRight'],\
-            ['Link','Unlink','Anchor'],\
-            ['Image','Flash','Table','Rule','SpecialChar','PageBreak'],\
-            ['FontFormat'],\
-            ['TextColor','BGColor'],\
-            ['FitWindow','-','About']\
-         ]} )"; */
 
          // The toolbar: JSON string
           fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
@@ -135,9 +120,10 @@
 
         // File browser
          var baseFolder = "${resourceContext.parentURI?html}";
-         fck.Config['LinkBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+         fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+
 
          // Misc setup
          fck.Config['FullPage'] = true;
@@ -152,12 +138,14 @@
 
          fck.Config['SkinPath'] = '${fckeditorBase.url?html}/editor/skins/silver/';
 
+         //alert(fck.Config['Plugins']);
+
          // Create
          div.innerHTML = fck.CreateHtml();
       }
 
       function performSave(){
-         var oEditor = FCKeditorAPI.GetInstance('myEditorIstance');
+         var oEditor = FCKeditorAPI.GetInstance('myEditorInstance');
          var srcxhtml = oEditor.GetXHTML();
          var title = document.getElementById("title");
 
@@ -203,7 +191,7 @@
       
       
       // default variables for resize function
-      var iframeid = "myEditorIstance___Frame";
+      var iframeid = "myEditorInstance___Frame";
       
       // value in 'px'
       var geckoOffset = 240;

@@ -58,7 +58,7 @@
   <title>${title()}</title>
 </head>
 <body>
-    <h1>${title()}${collection}</h1> 
+    <h1>${title()}</h1> 
 
     <#assign description>
       <@vrtx.property resource=resourceContext.currentResource
@@ -110,11 +110,18 @@
     <div class="vrtx-resources">
     <!-- h2><@vrtx.msg code="viewCollectionListing.resources" default="Resources"/></h2 -->
     <p class="sort">
-      <@vrtx.msg code="viewCollectionListing.sortBy" default="Sort by"/>: 
-      <a href="${collectionListing.sortURLs['title']?html}">
-        <@vrtx.msg code="viewCollectionListing.title" default="Title"/></a> -
+      <span class="label"><@vrtx.msg code="viewCollectionListing.sortBy" default="Sort by"/>:</span>
+      <#if collectionListing.sortProperty = 'last-modified'>
+        <a href="${collectionListing.sortURLs['title']?html}">
+          <@vrtx.msg code="viewCollectionListing.title" default="Title"/></a> |
+        <span class="vrtx-active-sort">
+          <@vrtx.msg code="viewCollectionListing.lastModified" default="Last Modified"/></span>
+      <#else>
+        <span class="vrtx-active-sort">
+        <@vrtx.msg code="viewCollectionListing.title" default="Title"/></span> |
       <a href="${collectionListing.sortURLs['last-modified']?html}">
         <@vrtx.msg code="viewCollectionListing.lastModified" default="Last Modified"/></a>
+      </#if>
     </p>
     <#list resources as r>
       <div class="vrtx-resource">

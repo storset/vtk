@@ -29,10 +29,10 @@
         <ref bean="modifiedByPropDef" />
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
+        <ref bean="contentLocalePropDef" />
       </list>
     </property>
   </bean>
-
   
   <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
     <property name="name" value="title" />
@@ -177,5 +177,34 @@
 
   <bean id="lastModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedByEvaluator" />
 
+  <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="contentLocale" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <!-- should have a constraint -->
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>no_NO</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>no_NO_NY</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>en</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
 
 </beans>

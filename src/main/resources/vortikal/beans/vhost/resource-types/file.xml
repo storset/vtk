@@ -14,7 +14,6 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="contentTypePropDef" />
-        <ref bean="contentLocalePropDef" />
         <ref bean="contentLengthPropDef" />
       </list>
     </property>
@@ -34,39 +33,6 @@
   </bean>
 
   <bean id="contentTypeEvaluator" class="org.vortikal.repository.resourcetype.property.ContentTypeEvaluator" />
-
-
-  <bean id="contentLocalePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="contentLocale" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <!-- should have a constraint -->
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="values">
-          <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>no_NO</value>
-              </constructor-arg>
-            </bean>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>no_NO_NY</value>
-              </constructor-arg>
-            </bean>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>en</value>
-              </constructor-arg>
-            </bean>
-          </list>
-        </property>
-      </bean>
-    </property>
-
-  </bean>
-
 
   <bean id="contentLengthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentLength" />

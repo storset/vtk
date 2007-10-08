@@ -14,6 +14,8 @@
   -
   -->
 <#import "/lib/ping.ftl" as ping />
+<#import "/lib/vortikal.ftl" as vrtx />
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -35,14 +37,25 @@
 
        span.htmlTitle { 
        position:relative;
-       left:455px;
-       top:-2px;
+       left:13px;
+       top:51px;
+       color: #444;
+       font-size: 11px;
+       font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
        }
 
        .htmlTitlePrefix { 
-       font-weight: bold;
-       padding-right: 0.5em;
+       font-weight: normal;
+       padding-right: 5px;
        }
+
+       span.htmlTitle input{ 
+       border: 1px solid #bbb;
+       padding-left: 3px;      
+	font-size: 12px;
+	font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
+       }
+
 
        #myEditorDiv {
        margin-top: -27px;
@@ -68,11 +81,11 @@
    <script type="text/javascript" src="${fckeditorBase.url?html}/xmlcleaner.js"></script>
 
    <!-- div class="fck-fulleditor">
-     <span class="htmlTitlePrefix">Tittel:</span><input type="text" id="title" />
+     <span class="htmlTitlePrefix SC_FieldCaption">Tittel:</span><input type="text" id="title" />
    </div -->
-   
+
    <span class="htmlTitle">
-     <span class="htmlTitlePrefix">Tittel:</span><input type="text" id="title" />
+     <span class="htmlTitlePrefix"><@vrtx.msg code="fck.documentTitle" default="Document title" /></span><input type="text" id="title" size="40" />
    </span>
 
    <form action="JavaScript: performSave();">
@@ -114,7 +127,7 @@
          // The toolbar: JSON string
           fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
             ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
-            ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']\
+            ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow'],\'/',\[]\
          ]} )";
          fck.ToolbarSet = "Vortikal";
 

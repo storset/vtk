@@ -58,6 +58,7 @@
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="resourceTypeIsXhtmlTrans" />
         <ref bean="fckeditor.parameterEqualsEdit" />
+        <ref bean="fckeditor.enabledAssertion" />
       </list>
     </property>
     <property name="categories">
@@ -219,6 +220,20 @@
         class="org.vortikal.web.service.RequestURIRegexpAssertion">
     <property name="pattern" value="${fckeditor.browse.base}" />
   </bean>
+
+  <bean id="fckeditor.enabledAssertion" class="org.vortikal.web.service.ConfigurableRequestURIAssertion">
+    <property name="configuration" ref="fckeditor.configurationPropertiesFile" />
+    <property name="matchValue" value="enabled" />
+    <property name="matchOnEmptyConfiguration" value="true" />
+  </bean>
+
+  <bean id="fckeditor.configurationPropertiesFile"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${fckeditor.configFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+
 
   <bean id="fckeditor.modeParameterAssertion"
         class="org.vortikal.web.service.RequestParameterAssertion">

@@ -31,8 +31,10 @@
 package org.vortikal.repositoryimpl.domain;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +42,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repositoryimpl.ChangeLogEntry;
+import org.vortikal.repositoryimpl.ChangeLogEntry.Operation;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeNotifier;
 import org.vortikal.repositoryimpl.index.observation.ResourceChangeObserver;
 import org.vortikal.repositoryimpl.store.ContextDAO;
@@ -175,10 +178,26 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
         }
 
         public void notifyResourceChanges(List<ChangeLogEntry> resourceChanges) {
-            if (resourceChanges != null && !resourceChanges.isEmpty()) {
-                populate();
+            if (resourceChanges == null || resourceChanges.isEmpty()) {
+                return;
             }
 
+            boolean refresh = false;
+            for (ChangeLogEntry entry : resourceChanges) {
+                Operation o = entry.getOperation();
+                if (o.equals(Operation.MODIFIED_PROPS) || 
+                        o.equals(Operation.MODIFIED_CONTENT) ||
+                        o.equals(Operation.DELETED) || 
+                        o.equals(Operation.CREATED)) {
+                    refresh = true;
+                    break;
+                }
+            }
+            
+
+            if (refresh) {
+                populate();
+            }
         }
     }
     

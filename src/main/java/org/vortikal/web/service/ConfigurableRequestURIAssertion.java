@@ -67,7 +67,6 @@ public class ConfigurableRequestURIAssertion implements Assertion {
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        System.out.println("__process: " + match);
         boolean matches = true;
         if (match) {
             matches = matchInternal(url.getPath());

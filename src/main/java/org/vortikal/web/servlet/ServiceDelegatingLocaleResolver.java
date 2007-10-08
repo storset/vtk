@@ -30,32 +30,35 @@
  */
 package org.vortikal.web.servlet;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.LocaleResolver;
+
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
+/**
+ * Looks up locale resolvers in the service tree up towards the root,
+ * and delegates to the locale resolver found. Locale resolvers are
+ * associated with a service using {@link Service#getAttributes
+ * service attributes}.
+ */
 public class ServiceDelegatingLocaleResolver implements LocaleResolver {
 
-    private Map<Service, LocaleResolver> serviceLocaleResolverMap = new HashMap<Service, LocaleResolver>();
+    private String localeResolverAttribute = "localeResolver";
     private LocaleResolver defaultLocaleResolver;
-    
 
-    public void setDefaultLocaleResolver(LocaleResolver defaultLocaleResolver) {
+    @Required public void setDefaultLocaleResolver(LocaleResolver defaultLocaleResolver) {
         this.defaultLocaleResolver = defaultLocaleResolver;
     }
-
-    public void setServiceLocaleResolverMap(Map<Service, LocaleResolver> serviceLocaleResolverMap) {
-        this.serviceLocaleResolverMap = serviceLocaleResolverMap;
+    public void setLocaleResolverAttribute(String localeResolverAttribute) {
+        this.localeResolverAttribute = localeResolverAttribute;
     }
-    
+
     public Locale resolveLocale(HttpServletRequest request) {
         LocaleResolver resolver = mapLocaleResolver(request);
         return resolver.resolveLocale(request);
@@ -64,28 +67,20 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
     public void setLocale(HttpServletRequest request,
                           HttpServletResponse response, Locale locale) {
         LocaleResolver resolver = mapLocaleResolver(request);
-        if (resolver != null)
-            resolver.setLocale(request, response, locale);
-        
+        resolver.setLocale(request, response, locale);
     }
-
 
     private LocaleResolver mapLocaleResolver(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service currentService = requestContext.getService();
         
         while (currentService != null) {
-            if (this.serviceLocaleResolverMap.containsKey(currentService)) {
-                return this.serviceLocaleResolverMap.get(currentService);
+            Object resolver = currentService.getAttribute(this.localeResolverAttribute);
+            if (resolver != null && (resolver instanceof LocaleResolver)) {
+                return (LocaleResolver) resolver;
             }
             currentService = currentService.getParent();
         }
-
         return this.defaultLocaleResolver;
-        
-    }
-    
-    public void addEntry(Service service, LocaleResolver localeResolver) {
-        this.serviceLocaleResolverMap.put(service, localeResolver);
     }
 }

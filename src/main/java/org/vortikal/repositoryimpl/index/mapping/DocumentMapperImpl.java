@@ -271,7 +271,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             propSet.addProperty(prop);
         }
         
-        if (this.contextManager == null) {
+        if (this.contextManager != null) {
             addContext(propSet);
         }
 

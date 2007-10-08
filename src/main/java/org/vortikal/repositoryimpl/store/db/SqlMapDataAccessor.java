@@ -470,13 +470,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                         return null;
                     }
                 });
-//                 getSqlMapClientTemplate().startBatch();
-//                 for (Iterator i = list.iterator(); i.hasNext();) {
-//                     Map map = (Map) i.next();
-//                     sqlMap = getSqlMap("updateAclInheritedFromByResourceId");
-//                     getSqlMapClientTemplate().update(sqlMap, map);
-//                 }
-//                 getSqlMapClientTemplate().executeBatch();
             }
 
         } else {

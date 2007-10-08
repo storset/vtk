@@ -63,16 +63,16 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.HierarchicalValueVocabulary">
+      <!--bean class="org.vortikal.repository.resourcetype.HierarchicalValueVocabulary">
         <property name="stringNodes">
           <list>
             <ref bean="unit.farmakologi" />
             <ref bean="unit.uio" />
           </list>
         </property>
-      </bean>
+      </bean-->
 
-<!--      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">
@@ -332,7 +332,7 @@
             </bean>
           </list>
         </property>
-      </bean>-->
+      </bean>
     </property>
   </bean>
 
@@ -462,18 +462,17 @@
     <constructor-arg value="http://www.uio.no/visual-profile" />
   </bean>
 
-
-
-   <bean id="unitsMessageSource"
+   <!--bean id="unitsMessageSource"
          class="org.springframework.context.support.ResourceBundleMessageSource">
      <property name="basenames">
        <list>
          <value>vortikal.i18n.units</value>
        </list>
      </property>
-   </bean>
+   </bean-->
 
 <!-- generated from uhtml prod db -->
+<!--
     <bean id="unit.farmakologi" class="org.vortikal.repository.resourcetype.HierarchicalNode">
       <property name="entry" value="farmakologi" />
     </bean>
@@ -1043,7 +1042,7 @@
         </list>
       </property>
     </bean>
-
+-->
 
 
 </beans>

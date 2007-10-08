@@ -140,7 +140,7 @@ public class PropertiesResource extends Properties implements InitializingBean,
                 this.logger.warn("Context refreshed, exception while re-loading resource at URI '"
                         + this.uri + "'", e);
             }
-        } else if ((event instanceof ContentModificationEvent) || (event instanceof ResourceCreationEvent)) {
+        } else if (event instanceof ContentModificationEvent) {
             ContentModificationEvent modEvent = (ContentModificationEvent) event;
             if (this.uri.equals(modEvent.getURI())) {
                 try {

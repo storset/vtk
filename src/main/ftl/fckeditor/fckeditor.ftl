@@ -40,7 +40,7 @@
        left:13px;
        top:57px;
        height: 20px;
-       color: #444;
+       color: #333;
        font-size: 11px;
        font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
        }
@@ -87,7 +87,9 @@
    </div -->
 
    <div class="htmlTitle">
+     <a style="float:right; margin-right: 30px;" href="http://www.fckeditor.net">www.fckeditor.net</a>
      <span class="htmlTitlePrefix"><@vrtx.msg code="fck.documentTitle" default="Document title" /></span><input type="text" id="title" size="40" />
+     
    </div>
 
 

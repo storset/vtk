@@ -64,6 +64,11 @@
         <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="localeResolver" value-ref="manageLocaleResolver" />
+      </map>
+    </property>
   </bean>
 
   <bean id="setNorwegianNBLocaleService" class="org.vortikal.web.service.ServiceImpl">
@@ -1612,38 +1617,6 @@
     </property>
     <property name="localeResolver" ref="manageLocaleResolver" />
   </bean>
-
-
-   <!-- Global locale resolver  -->
-
-
-   <bean id="localeResolver"
-         class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
-     <property name="serviceLocaleResolverMap">
-       <map>
-         <entry key-ref="viewService" value-ref="viewServiceLocaleResolver" />
-         <entry key-ref="manageService" value-ref="manageLocaleResolver" />
-       </map>
-     </property>
-     <property name="defaultLocaleResolver" ref="defaultViewLocaleResolver" />
-   </bean>
-
-   <bean id="viewServiceLocaleResolver"
-         class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
-         parent="requestLocalRepositoryAware">
-     <property name="defaultLocale" value="${view.defaultLocale}" />
-   </bean>
-
-   <bean id="defaultViewLocaleResolver"
-         class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
-     <property name="cookieMaxAge" value="315360000" />
-     <property name="cookieName" value="service.view.locale" />
-     <property name="defaultLocale"> 
-       <bean class="java.util.Locale">
-         <constructor-arg value="${view.defaultLocale}" />
-       </bean>
-     </property>
-   </bean>
 
 
    <!-- Locale resolver for manage service  -->

@@ -16,6 +16,7 @@
     <property name="attributes">
       <map>
         <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
+        <entry key="localeResolver" value-ref="manageLocaleResolver" />
       </map>
     </property>
     <property name="assertions">
@@ -36,6 +37,7 @@
     </property>
     <property name="handler" ref="xmlEditHandler" />
   </bean>
+
 
   <bean id="editXslStylesheetAvailable"
         class="org.vortikal.web.service.XmlSchemaXPathAssertion">

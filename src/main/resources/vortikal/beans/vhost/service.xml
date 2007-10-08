@@ -258,8 +258,42 @@
         </bean>
       </list>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="localeResolver" value-ref="viewServiceResourceAwareLocaleResolver" />
+      </map>
+    </property>
   </bean>
 
+
+   <!-- Resource-aware locale resolver (for viewService)  -->
+
+   <bean id="viewServiceResourceAwareLocaleResolver"
+         class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
+         parent="requestLocalRepositoryAware">
+     <property name="defaultLocale" value="${view.defaultLocale}" />
+   </bean>
+
+
+
+   <!-- Global locale resolver: looks for 'localeResolver' service
+        attributes on the current service and ancestors towards the
+        root and uses the first one found. -->
+   <bean id="localeResolver"
+         class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
+     <property name="defaultLocaleResolver" ref="defaultViewCookieLocaleResolver" />
+   </bean>
+
+   <bean id="defaultViewCookieLocaleResolver"
+         class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
+     <property name="cookieMaxAge" value="315360000" />
+     <property name="cookieName" value="service.view.locale" />
+     <property name="defaultLocale"> 
+       <bean class="java.util.Locale">
+         <constructor-arg value="${view.defaultLocale}" />
+       </bean>
+     </property>
+   </bean>
 
   <bean id="collectionListingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />

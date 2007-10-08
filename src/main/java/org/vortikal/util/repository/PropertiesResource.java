@@ -47,7 +47,6 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.event.ContentModificationEvent;
-import org.vortikal.repository.event.ResourceCreationEvent;
 
 
 /**

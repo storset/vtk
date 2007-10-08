@@ -108,6 +108,10 @@ div.vrtx-comments div.comments-text textarea {
   width: 100%; 
 }
 
+#comments-text___Frame { /* FCK input area */
+  border: 1px solid #999;
+}
+
 /* IE6 hacks */
 
 * html div.vrtx-comments div.comments-text {

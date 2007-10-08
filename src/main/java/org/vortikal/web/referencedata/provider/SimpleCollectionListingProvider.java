@@ -107,7 +107,6 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         }
 
         Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        System.out.println("__locale: " + locale);
         Collections.sort(collections, new ResourcePropertyComparator(this.titlePropDef, false, locale));
 
         Map<String, URL> sortURLs = new HashMap<String, URL>();

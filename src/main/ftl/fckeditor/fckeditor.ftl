@@ -35,10 +35,11 @@
        background-color: #f7f7f7 !important;
        }
 
-       span.htmlTitle { 
+       div.htmlTitle { 
        position:relative;
        left:13px;
-       top:51px;
+       top:57px;
+       height: 20px;
        color: #444;
        font-size: 11px;
        font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
@@ -49,7 +50,7 @@
        padding-right: 5px;
        }
 
-       span.htmlTitle input{ 
+       div.htmlTitle input{ 
        border: 1px solid #bbb;
        padding-left: 3px;      
 	font-size: 12px;
@@ -58,14 +59,12 @@
 
 
        #myEditorDiv {
-       margin-top: -27px;
-       padding: 0;
-       margin-right: -2px;
-       margin-left: -2px;
-       margin-bottom: -3px;
+       margin: -22px 0 0 0;
+       padding:0;
        border: 0;
        } 
 
+ 
        #myEditorInstance___Frame {
        } 
 
@@ -87,9 +86,10 @@
      <span class="htmlTitlePrefix SC_FieldCaption">Tittel:</span><input type="text" id="title" />
    </div -->
 
-   <span class="htmlTitle">
+   <div class="htmlTitle">
      <span class="htmlTitlePrefix"><@vrtx.msg code="fck.documentTitle" default="Document title" /></span><input type="text" id="title" size="40" />
-   </span>
+   </div>
+
 
    <form action="JavaScript: performSave();">
       <div id="myEditorDiv">Loading editor...</div>

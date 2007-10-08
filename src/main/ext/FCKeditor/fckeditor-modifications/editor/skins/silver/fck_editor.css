@@ -27,7 +27,7 @@
 
 body
 {
-	padding: 1px 1px 1px 1px;
+	padding: 0px;
 	margin: 0px 0px 0px 0px;
 }
 
@@ -58,7 +58,7 @@ body
 /*	padding: 1px;
 	border-top: #efefde 1px outset;
 	border-bottom: #efefde 1px outset; */
-        border-bottom: 1px solid #999999;
+	border-bottom: 1px solid #999999;
 	padding: 1px;
 }
 
@@ -112,6 +112,7 @@ body
 .TB_SideBorder
 {
 	background-color: transparent;
+        width: 0px ! important;
 }
 
 .TB_Expand, .TB_Collapse

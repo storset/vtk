@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -36,15 +36,18 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.event.ContentModificationEvent;
+import org.vortikal.repository.event.ResourceCreationEvent;
 
 
 /**
@@ -129,9 +132,6 @@ public class PropertiesResource extends Properties implements InitializingBean,
     
 
     public void onApplicationEvent(ApplicationEvent event) {
-        if (!this.lazyInit) {
-            return;
-        }
 
         if (event instanceof ContextRefreshedEvent) {
             try {
@@ -140,7 +140,7 @@ public class PropertiesResource extends Properties implements InitializingBean,
                 this.logger.warn("Context refreshed, exception while re-loading resource at URI '"
                         + this.uri + "'", e);
             }
-        } else if (event instanceof ContentModificationEvent) {
+        } else if ((event instanceof ContentModificationEvent) || (event instanceof ResourceCreationEvent)) {
             ContentModificationEvent modEvent = (ContentModificationEvent) event;
             if (this.uri.equals(modEvent.getURI())) {
                 try {
@@ -176,13 +176,10 @@ public class PropertiesResource extends Properties implements InitializingBean,
         }
         this.clear();
         if (demandResourceAvailability) {
-            InputStream inputStream = repository.getInputStream(token, uri, false);
-            super.load(inputStream);
+            doLoad(token, uri);
         } else {
             try {
-                InputStream inputStream = repository.getInputStream(token, uri, false);
-                super.load(inputStream);
-                
+                doLoad(token, uri);
             } catch (ResourceNotFoundException rnf) {
                 this.logger.warn("Unable to load properties from uri '"
                         + uri + "', repository '" + repository
@@ -202,4 +199,13 @@ public class PropertiesResource extends Properties implements InitializingBean,
 
     }
     
+    private void doLoad(String token, String uri) throws IOException {
+        InputStream inputStream = this.repository.getInputStream(token, uri, false);
+        super.load(inputStream);
+        if (logger.isInfoEnabled()) {
+            logger.info("Loaded properties from resource " + uri);
+        }
+    }
+    
+
 }

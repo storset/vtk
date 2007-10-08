@@ -66,6 +66,9 @@
        border: 0;
        } 
 
+       #myEditorInstance___Frame {
+       } 
+
       </style>
       <@ping.ping url=pingURL['url'] interval=600 />
    </head>
@@ -178,6 +181,7 @@
 
    <!-- FCKeditor resize script -->
    <script type="text/javascript">
+
       /*******************************************************************************************/
       /* Script to dynamically alter IFRAME height, making FCKeditor textarea fit browser window */
       /*******************************************************************************************/
@@ -210,8 +214,8 @@
       
       // value in 'px'
       var geckoOffset = 240;
-      var iexplore56offset = 330;
-      var iexplore7offset = 350;  // window is slightly smaller due to tabs
+      var iexplore56offset = 240;
+      var iexplore7offset = 235;  // window is slightly smaller due to tabs
       
       
       function dyniframesize() {
@@ -228,13 +232,17 @@
                           // Internet Explorer
                           else if( editIframe.Document && editIframe.Document.body.clientHeight ) {
                              // Internet Explorer 7
-                             if (typeof document.documentElement.style.maxHeight != 'undefined')  // only implemented in IE7+
-                              var offset = iexplore7offset;
+                             if (typeof document.documentElement.style.maxHeight != 'undefined') { 
+                                var offset = iexplore7offset;
+                                var height = parseInt(document.documentElement.clientHeight) - offset;
+                              }
                               // Internet Explorer 5 and 6
-                              else
-                                 var offset = iexplore56offset;
-                              var height = parseInt(document.body.clientHeight) - offset;
-			      editIframe.style.height = height.toString() + "px";
+                              else { 
+                                var offset = iexplore56offset;
+                                var height = parseInt(document.body.clientHeight) - offset;
+                              }
+
+                              editIframe.style.height = height.toString() + "px";
                               // Mulig "document.body.clientHeight" skal brukes for IE4/IE5...?
                           }
                   }
@@ -245,6 +253,8 @@
           
           }
       } //end function
+
+
    </script>
     </body>
 </html>

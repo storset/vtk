@@ -32,9 +32,13 @@ package org.vortikal.repository.search.query;
 
 public class UriPrefixQuery implements UriQuery {
 
-    private final String uri;
-    private final boolean inverted;
+    private String uri;
+    private boolean inverted = false;
 
+    public UriPrefixQuery(String uri) {
+        this.uri = uri;
+    }
+    
     public UriPrefixQuery(String uri, boolean inverted) {
         this.uri = uri;
         this.inverted = inverted;

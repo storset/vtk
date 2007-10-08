@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -45,16 +44,25 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
-import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.NameTermQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
+import org.vortikal.repository.search.query.UriOperator;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -66,6 +74,17 @@ import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
+/** <p>The following input is evaluated
+ *  <ul>
+ *  <li>uri - the collection uri to create a menu from</li>
+ *  <li>include-children - if specified, only these child names is search for</li>
+ *  <li>exclude-children - alternative to include-children, exclude named children</li>
+ *  <li>depth - if greater than one and current resource is <b>below</b> uri, build sub menus</li>
+ *  <li>include-parent-folder - include uri collection first in menu</li>
+ *  <li>authenticated - default is listing only read-for-all resources</li>
+ *  </ul> 
+ *
+ */
 public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final int DEFAULT_DEPTH = 1;
@@ -118,10 +137,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_DEPTH_DESC =
         "Specifies the number of levels to retrieve subfolders for. The default value is '1', which retrieves the top level.";
     
-    
     private static Log logger = LogFactory.getLog(ListMenuComponent.class);
     
-    private QueryParser queryParser;
     private Service viewService;
     private PropertyTypeDefinition titlePropdef;
     private ResourceTypeDefinition collectionResourceType;
@@ -129,284 +146,238 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private int searchLimit = DEFAULT_SEARCH_LIMIT;
     private Searcher searcher;
 
-
+    
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         
-        // Build main query
-        Search mainsearch = buildMainSearch(menuRequest);
-        ResultSet mainResultSet = this.searcher.execute(menuRequest.getToken(), mainsearch);
-        ListMenu menu = buildMainMenu(mainResultSet, menuRequest);
-        
-        // Build sub-queries (but only if request is from proper subtree)
-        int depth = menuRequest.getDepth();
-        String currentURI = menuRequest.getCurrentURI();
-        String uri = menuRequest.getURI();
-        if (depth > 1 && !currentURI.equals(uri) && currentURI.startsWith(uri)) {
-            String[] uris = URLUtil.splitUriIncrementally(currentURI);
-            Search subsearch = buildSubSearch(menuRequest, uris, depth);
-            if (subsearch != null) {
-                ResultSet subResultSet = this.searcher.execute(menuRequest.getToken(), subsearch);
-                ListMenu submenu = buildSubMenu(subResultSet, menuRequest);
-                MenuItem activeItem = menu.getActiveItem();
-                if (submenu != null && menu.getActiveItem() != null) { 
-                    menu.getActiveItem().setSubMenu( submenu );
-                }                
-            }
-        }
+        // Build main menu
+        ListMenu<String> menu = buildMainMenu(menuRequest);
         model.put(this.modelName, menu);
-    }
-    
-    
-    private Search buildMainSearch(MenuRequest menuRequest) {
-        String uri = menuRequest.getURI();
-        boolean includeParent = menuRequest.isParentIncluded();
-        String[] childNames = menuRequest.getChildNames();
-        int startDepth = URLUtil.splitUri(uri).length;
-        StringBuffer query = new StringBuffer();
         
-        if (childNames == null) {
-            // List all children based on depth:
-            uri = escapeIllegalCharacters(uri);
-            query.append("(uri = ").append(uri);
-            if (!uri.equals("/")) {
-                query.append("/");
-            }
-            // Main menu query
-            query.append("* AND depth = ").append(startDepth).append(")");
-            String[] excludedChildren = menuRequest.getExcludedChildren();
-            if (excludedChildren != null) {
-                // A list of excluded children is provided
-                for (int i = 0; i < excludedChildren.length; i++) {
-                    String name = excludedChildren[i];
-                    // Only exclude top menu folders 
-                    if (name.indexOf("/") == -1) {
-                        name = name.trim();
-                        name = escapeIllegalCharacters(name);
-                        query.append(" AND name != ").append(name).append("");
-                    }
-                }
-            }
-        } else {
-            // An explicit list of child names is provided
-            for (int i = 0; i < childNames.length; i++) {
-                String name = childNames[i];
-                if (name.indexOf("/") != -1) {
-                    throw new DecoratorComponentException("Invalid child name: '" + name + "'");
-                }
-                name = name.trim();
-                name = escapeIllegalCharacters(name);
-                String childURI = URIUtil.makeAbsoluteURI(name, uri);
-                query.append("uri = ").append(childURI).append("");
-                if (i < childNames.length - 1) {
-                    query.append(" OR ");
-                }
-            }
-        }
-        if (includeParent) {
-            query.insert(0, "(");
-            query.append(")");
-            query.append(" OR uri = ").append(uri);
-        }
-        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
-        query.append(")");
         
-        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
-        select.addPropertyDefinition(this.titlePropdef);
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to search using query: '" + query + "'");
-        }
-        Search search = new Search();
-        search.setSorting(null);
-        search.setQuery(this.queryParser.parse(query.toString()));
-        search.setLimit(this.searchLimit);
-        search.setPropertySelect(select);
+        // Add sub menu?
+        MenuItem<String> activeItem = menu.getActiveItem();
 
-        return search;
+        if (activeItem != null && menuRequest.depth > 1) {
+            ListMenu<String> submenu = buildSubMenu(menuRequest, activeItem);
+            if (submenu != null) { 
+                activeItem.setSubMenu( submenu );
+            }    
+        }         
     }
     
     
-    private Search buildSubSearch(MenuRequest menuRequest, String[] uris, int depth) {
-        int startDepth = URLUtil.splitUri(menuRequest.getURI()).length;
-        StringBuilder query = new StringBuilder();
-        String uri;
-        int maxDepth = startDepth + depth;
-        if (maxDepth > 1) {
-            --maxDepth; // as 'depth = 1' is defined to only list contents of current folder
-        }
-        
-        for (int i = startDepth; i < uris.length && i < maxDepth; i++) {
-            uri = uris[i];
-            // Must escape space and parentheses from file/folder names to build proper query string 
-            uri = escapeIllegalCharacters(uri);
-            
-            if (i != startDepth) {
-                query.append(" OR ");
-            }
-            query.append("(uri = ").append(uri);
-            query.append(" OR (uri = ").append(uri);
-            if (!uri.equals("/")) {
-                query.append("/");
-            }
-            query.append("* AND depth = ").append(i+1).append(")"); // query subtree below current depth
-            query.append(")");
-        }
-                
-        String[] excludedChildren = menuRequest.getExcludedChildren();
-        StringBuilder excludeQuery = new StringBuilder();
-        if (excludedChildren != null) {
-            // A list of excluded children is provided
-            for (int i = 0; i < excludedChildren.length; i++) {
-                String excludedFolder = excludedChildren[i];
-                if (excludedFolder.startsWith("/")) {
-                    throw new DecoratorComponentException("Parameter '" +
-                             PARAMETER_EXCLUDE_CHILDREN + 
-                             "' has invalid child name: '" + excludedFolder + "' " +
-                             "(folder path must be relative to given 'uri', e.g: [folder,folder/subfolder])");
-                }
-                
-                String searchRootURI = menuRequest.getURI();
-                searchRootURI = escapeIllegalCharacters(searchRootURI);
-                if (!searchRootURI.endsWith("/")) {
-                    searchRootURI += "/";
-                }
-                
-                excludedFolder = excludedFolder.trim();
-                // Only add sub-level folders
-                if (excludedFolder.indexOf('/') != -1) {
-                    excludedFolder = excludedFolder.trim();
-                     /*
-                     * XXX: Exclude-query still doesn't work properly if folder name contains parentheses or whitespace...
-                     */
-                    excludedFolder = escapeIllegalCharacters(excludedFolder);
-                    excludedFolder = searchRootURI + excludedFolder;
-                    excludeQuery.append(" AND uri != ").append(excludedFolder)
-                                .append(" AND uri != ").append(excludedFolder).append("/*").append("");
-                } 
-                // Check if currentURI is in excluded subtree (if so, nullify subsearch)
-                else {
-                    excludedFolder = escapeIllegalCharacters(excludedFolder);
-                    excludedFolder = searchRootURI + excludedFolder;
-                    excludedFolder += "/";
-                    if (menuRequest.getCurrentURI().startsWith(excludedFolder)) {
-                        return null;
-                    }
-                }
-            }
-        }
-                    
-        query.insert(0, "type IN " + this.collectionResourceType.getQName() + " AND (");
-        query.append(")").append(excludeQuery); // Safe to add even if empty 
-                
-        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
-        select.addPropertyDefinition(this.titlePropdef);
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to search using query: '" + query + "'");
-        }
-        
-        Search search = new Search();
-        search.setSorting(null); 
-        search.setQuery(this.queryParser.parse(query.toString()));
-        search.setLimit(this.searchLimit);
-        search.setPropertySelect(select);
-        
-        return search;
-    }
-    
-    
-    private ListMenu buildMainMenu(ResultSet rs, MenuRequest menuRequest) {
+    private ListMenu<String> buildMainMenu(MenuRequest menuRequest) {
+
+        ListMenu<String> menu = new ListMenu<String>();
+        menu.setLabel(menuRequest.getStyle());
+
+        Query query = buildMainSearch(menuRequest);
+        ResultSet rs = search(menuRequest.getToken(), query);
+
         String currentURI = menuRequest.getCurrentURI();        
         String[] childNames = menuRequest.getChildNames();
-        
         MenuItem<String> parent = null;
+        
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
-        Map<String, MenuItem<String>> activeMatches = new HashMap<String, MenuItem<String>>();
         Map<String, MenuItem<String>> nameItemMap = new HashMap<String, MenuItem<String>>();
         
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
-            
+
+            MenuItem<String> item = buildItem(resource);
+
             String uri = resource.getURI();
-            if (!uri.equals("/")) {
-                // Know it's a folder, append "/"
-                uri += "/";
-            }
             
-            String url = this.viewService.constructLink(uri);
-            String name = resource.getName().replace(' ', '-');
-            if (name.equals("/")) {
-                name = "root-folder";
-            }
-            Property titleProperty = resource.getProperty(this.titlePropdef);
-            String title = titleProperty != null ? titleProperty.getStringValue() : name;
-            
-            MenuItem<String> item = new MenuItem<String>();
-            item.setUrl(url);
-            item.setTitle(title);
-            item.setLabel(name);
-            item.setActive(false);
-            
-            if (currentURI.startsWith(resource.getURI())) {
-                activeMatches.put(resource.getURI(), item);
-                
-            }
-            if (resource.getURI().equals(menuRequest.getURI())) {
-                item.setLabel(name + " parent-folder");
+            // Parent?
+            if (uri.equals(menuRequest.getURI())) {
                 parent = item;
-            } else {
-                nameItemMap.put(resource.getName(), item);
-                items.add(item);
+                continue;
+            } 
+
+            // Active item?
+            if (isActive(currentURI, uri)) {
+                item.setActive(true);
+                menu.setActiveItem(item);
             }
-        }
-        
-        // Find the active menu item:
-        String[] incrementalPath = URLUtil.splitUriIncrementally(currentURI);
-        MenuItem activeItem = null;
-        for (int i = incrementalPath.length - 1; i >= 0; i--) {
-            String uri = incrementalPath[i];
-            if (activeMatches.containsKey(uri)) {
-                activeItem = activeMatches.get(uri);
-                activeItem.setActive(true);
-                break;
-            }
+
+            nameItemMap.put(resource.getName(), item);
+            items.add(item);
         }
         
         // Sort children:
         if (childNames != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Sorting items based on specified order: "
-                             + java.util.Arrays.asList(childNames));
-            }
             items = sortSpecifiedOrder(childNames, nameItemMap);
         } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Sorting items based on title");
-            }
             items = sortRegularOrder(items, menuRequest.getLocale());
         }
 
-        // Insert parent first in list if exists:
+        // Insert parent first in list
         if (parent != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Found parent item: " + parent);
             }
+            parent.setLabel(parent.getLabel() + " parent-folder");
             items.add(0, parent);
         }
 
-        ListMenu<String> menu = new ListMenu<String>();
         menu.addAllItems(items);
-        menu.setLabel(menuRequest.getStyle());
-        if(activeItem!=null)
-            menu.setActiveItem(activeItem);
+
         return menu;
+    }
+
+    
+    private Query buildMainSearch(MenuRequest menuRequest) {
+        String uri = menuRequest.getURI();
+        int startDepth = URLUtil.splitUri(uri).length;
+        
+        AndQuery query = new AndQuery();
+        
+        String[] childNames = menuRequest.getChildNames();
+
+        if (childNames == null) {
+            // Get all children
+            query.add(getChildrenQuery(uri, startDepth));
+
+            // Excluded children?
+            String[] excludedChildren = menuRequest.getExcludedChildren();
+            if (excludedChildren != null) {
+                query.add(getExcludedChildrenQuery(excludedChildren));
+            }
+
+        } else {
+            query.add(getRequestedChildren(uri, childNames));
+        }
+        
+        if (menuRequest.isParentIncluded()) {
+            OrQuery or = new OrQuery();
+            or.add(query);
+            or.add(new UriTermQuery(uri, UriOperator.EQ));
+            return or;
+        }
+        
+        return query;
+    }
+
+
+    private Query getRequestedChildren(String uri, String[] childNames) {
+
+        if (childNames.length == 1) {
+            String name = childNames[0];
+            return getUriQuery(uri, name);            
+        } 
+        
+        // An explicit list of child names is provided
+        OrQuery orQ = new OrQuery();
+        for (int i = 0; i < childNames.length; i++) {
+            String name = childNames[i];
+            orQ.add(getUriQuery(uri, name));
+        }
+        return orQ;
+
+    }
+
+    private Query getUriQuery(String uri, String name) {
+        if (name.indexOf("/") != -1) {
+            throw new DecoratorComponentException("Invalid child name: '" + name + "'");
+        }
+        name = name.trim();
+        String childURI = URIUtil.makeAbsoluteURI(name, uri);
+        return new UriTermQuery(childURI, UriOperator.EQ);
+    }
+
+
+    private Query getExcludedChildrenQuery(String[] excludedChildren) {
+        AndQuery query = new AndQuery();
+        
+        for (String child: excludedChildren) {
+            if (child.indexOf("/") != -1) {
+                throw new DecoratorComponentException("Invalid excluded child name: '" + child + "'");
+            }
+            child = child.trim();
+            query.add(new NameTermQuery(child, TermOperator.NE));
+        }
+        
+        return query;
+    }
+
+    
+    // List all children based on depth:
+    private Query getChildrenQuery(String uri, int depth) {
+        AndQuery q = new AndQuery();
+
+        if (!uri.equals("/")) {
+            uri += "/";
+        }
+        
+        q.add(new UriPrefixQuery(uri));
+        q.add(new UriDepthQuery(depth));
+
+        return q;
     }
     
     
+    private ResultSet doSubSearch(MenuRequest menuRequest) {
+        
+        OrQuery orQuery = new OrQuery();
+
+        // Starting at level 1 to construct prefix matches
+        int startDepth = URLUtil.splitUri(menuRequest.getURI()).length;
+        
+        String[] uris = URLUtil.splitUriIncrementally(menuRequest.getCurrentURI());
+
+        // Stopping 1 before depth level or on current uri
+        int maxDepth = startDepth + menuRequest.getDepth() - 1;
+        maxDepth = Math.min(maxDepth, uris.length);
+
+        for (int i = startDepth; i < maxDepth; i++) {
+            String uri = uris[i];
+            orQuery.add(getChildrenQuery(uri, i+1));
+        }
+                
+        return search(menuRequest.getToken(), orQuery);
+    }
+
+    private ResultSet search(String token, Query query) {
+
+        // We are searching for collections
+        AndQuery q = new AndQuery();
+        q.add(new TypeTermQuery(this.collectionResourceType.getQName(), TermOperator.IN));
+        q.add(query);
+        
+        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
+        select.addPropertyDefinition(this.titlePropdef);
+        
+        Search search = new Search();
+        search.setSorting(null); 
+        search.setQuery(q);
+        search.setLimit(this.searchLimit);
+        search.setPropertySelect(select);
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("About to search using query: " + query);
+        }
+
+        return this.searcher.execute(token, search);
+    }
+    
+    
+    private boolean isActive(String currentURI, String uri) {
+        return currentURI.equals(uri) || currentURI.startsWith(uri + "/");
+    }
+
+
     private List<MenuItem<String>> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem<String>> nameItemMap) {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Sorting items based on specified order: "
+                         + java.util.Arrays.asList(childNames));
+        }
+
         List<MenuItem<String>> result = new ArrayList<MenuItem<String>>();
-        for (int i = 0; i < childNames.length; i++) {
-            String name = childNames[i].trim();
+        for (String name: childNames) {
+             name = name.trim();
             MenuItem<String> item = nameItemMap.get(name);
             if (item != null) {
                 result.add(item);
@@ -421,92 +392,71 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     
-    private ListMenu buildSubMenu(ResultSet rs, MenuRequest menuRequest) {
-        String requestURI = menuRequest.getCurrentURI();
+    /**
+     * Add sub menu if current uri is below uri
+     */
+    private ListMenu<String> buildSubMenu(MenuRequest menuRequest, MenuItem<String> activeItem) {
+
+        ResultSet rs = doSubSearch(menuRequest);
+
+        if (rs == null || rs.getSize() == 0) {
+            return null;
+        }
+
+
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
-        List<PropertySet> childList = new ArrayList<PropertySet>();
                         
         String rootURI = null;
         PropertySet rootResource = null;
         
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
+
             String uri = resource.getURI();
-            String parentURI = URIUtil.getParentURI(uri);
             
             if(rootURI == null) {
                 rootURI = uri;
                 rootResource = resource;
-            } else {
-                if (URLUtil.splitUri(uri).length < URLUtil.splitUri(rootURI).length) {
-                    rootURI = uri;
-                    rootResource = resource;
-                }
+            } else if (URLUtil.splitUri(uri).length < URLUtil.splitUri(rootURI).length) {
+                rootURI = uri;
+                rootResource = resource;
             }
                         
-            if (!childMap.containsKey(parentURI)) {
-                childMap.put(parentURI, new ArrayList<PropertySet>());
-            }
-            childList = childMap.get(parentURI);
+            String parentURI = URIUtil.getParentURI(uri);
+
+            List<PropertySet> childList = childMap.get(parentURI);
             if (childList == null) {
                 childList = new ArrayList<PropertySet>();
                 childMap.put(parentURI, childList);
             }
             childList.add(resource);
         }
-        
-        if(childMap.isEmpty()) {
-            return null;
-        }
-        else {
-            return buildSubItems(rootResource, childMap, requestURI, menuRequest.getLocale());
-        }
+                
+        return buildSubItems(rootResource.getURI(), childMap, menuRequest);
     }
     
     
-    private ListMenu buildSubItems(PropertySet rootResource, Map<String, List<PropertySet>> childMap, String requestURI, Locale locale) {
+    private ListMenu<String> buildSubItems(String childrenKey, Map<String, List<PropertySet>> childMap, MenuRequest menuRequest) {
+        
         List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
-        List<PropertySet> childList = childMap.get(rootResource.getURI());
-        // if current-child is excluded etc.
-        if(childList == null) {
+        List<PropertySet> children = childMap.get(childrenKey);
+
+        if (children == null) {
             return null;
         }
-        for (Iterator iterator = childList.iterator(); iterator.hasNext();) {
-            PropertySet subResource = (PropertySet) iterator.next();
-            MenuItem<String> item = buildItem(subResource, childMap);
-            String subResourceURI = subResource.getURI();
-            if (childMap.containsKey(subResourceURI)) {
-                item.setSubMenu(buildSubItems(subResource, childMap, requestURI, locale));
-                item.setActive(true);
-            } else {
-                // Necessary to set active the deepest expanded folder for the current subtree
-                // (which will have no pointer to a child list)
-                String requestingCollection = RequestContext.getRequestContext().getCurrentCollection();
-                if ( subResourceURI.equals(requestingCollection) || 
-                     requestingCollection.startsWith(subResourceURI+"/") ) {
-                  item.setActive(true);
-                }
-            }
+        
+        for (PropertySet resource: children) {
+            MenuItem<String> item = buildItem(resource);
+
             items.add(item);
+
+            if (isActive(menuRequest.getCurrentURI(), resource.getURI())) {
+                item.setSubMenu(buildSubItems(resource.getURI(), childMap, menuRequest));
+                item.setActive(true);
+            }
         }
         
-        /*
-        // Sort children:
-        if (childNames != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Sorting items based on specified order: "
-                             + java.util.Arrays.asList(childNames));
-            }
-            items = sortSpecifiedOrder(childNames, nameItemMap);
-        }
-        */
-        /*
-         * XXX: Only default sort for sub-menu 
-         */
-        if (logger.isDebugEnabled()) {
-            logger.debug("Sorting items based on title");
-        }
-        items = sortRegularOrder(items, locale);
+        items = sortRegularOrder(items, menuRequest.getLocale());
         
         ListMenu<String> submenu = new ListMenu<String>();
         submenu.addAllItems(items);
@@ -515,31 +465,33 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
         
-    private MenuItem<String> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap) {
+    private MenuItem<String> buildItem(PropertySet resource) {
         MenuItem<String> item = new MenuItem<String>();
+        
+        // Url
         String uri = resource.getURI();
         if (!uri.equals("/")) {
             // Know it's a folder, append "/"
             uri += "/";
         }
-        String url = this.viewService.constructLink(uri);
-        String name = resource.getName().replace(' ', '-');
+        item.setUrl(this.viewService.constructLink(uri));
+
+        // Label
+        String label = resource.getName().replace(' ', '-');
+        if (label.equals("/")) {
+            label = "root-folder";
+        }
+        item.setLabel(label);
+
+        // Title
         Property titleProperty = resource.getProperty(this.titlePropdef);
-        String title = titleProperty != null ? titleProperty.getStringValue() : name;
-        item.setUrl(url);
+        String title = (titleProperty != null) ? titleProperty.getStringValue() : label;
         item.setTitle(title);
-        item.setLabel(name);
-        item.setActive(false);
+
         return item;
     }
     
     
-    // Helper method
-    private String escapeIllegalCharacters(String s) {
-        return s.replace(" ", "\\ ").replace("(", "\\(").replace(")", "\\)");
-    }
-    
-
     private class MenuRequest {
         private String uri;
         private String currentURI;
@@ -672,73 +624,42 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
 
-    public void setQueryParser(QueryParser queryParser) {
-        this.queryParser = queryParser;
-    }
-
+    @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
     
+    @Required
     public void setTitlePropdef(PropertyTypeDefinition titlePropdef) {
         this.titlePropdef = titlePropdef;
     }
     
+    @Required
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;
     }
     
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-    
+    @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
 
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+    
     public void setSearchLimit(int searchLimit) {
+        if (searchLimit <= 0) {
+            throw new IllegalArgumentException(
+                "JavaBean property 'searchLimit' must be a positive integer");
+        }
         this.searchLimit = searchLimit;
     }
     
 
     protected String getDescriptionInternal() {
-        return null;
+        return "Displays a menu based on the subfolders of a specified folder (path)";
     }
-
-
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        if (this.queryParser == null) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + queryParser + "' not set");
-        }
-        if (this.viewService == null) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + viewService + "' not set");
-        }
-        if (this.titlePropdef == null) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + titlePropdef + "' not set");
-        }
-        if (this.collectionResourceType == null) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + collectionResourceType + "' not set");
-        }
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + modelName + "' not set");
-        }
-        if (this.searcher == null) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + searcher + "' not set");
-        }
-        if (this.searchLimit <= 0) {
-            throw new BeanInitializationException(
-                "JavaBean property '" + searchLimit + "' must be a positive integer");
-        }
-
-    }
-    
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();

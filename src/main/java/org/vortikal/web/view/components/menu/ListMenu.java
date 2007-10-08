@@ -51,7 +51,7 @@ public class ListMenu<T extends Comparable<T>> {
     private String title;
     private String label;
     private List<MenuItem<T>> items = new ArrayList<MenuItem<T>>();
-    private MenuItem activeItem;
+    private MenuItem<T> activeItem;
     private Comparator<MenuItem<T>> comparator;
     
 
@@ -71,11 +71,11 @@ public class ListMenu<T extends Comparable<T>> {
         this.label = label;
     }
     
-    public MenuItem getActiveItem() {
+    public MenuItem<T> getActiveItem() {
         return this.activeItem;
     }
 
-    public void setActiveItem(MenuItem activeItem) {
+    public void setActiveItem(MenuItem<T> activeItem) {
         this.activeItem = activeItem;
     }
     

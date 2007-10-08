@@ -48,8 +48,8 @@ public class MenuItem<T extends Comparable<T>>
     private T title;
     private T sortField;
     private String label;
-    private boolean active;
-    private ListMenu subMenu;
+    private boolean active = false;
+    private ListMenu<T> subMenu;
     
     public boolean isActive() {
         return this.active;
@@ -87,17 +87,19 @@ public class MenuItem<T extends Comparable<T>>
         this.sortField = sortField;
     }
     
-    public void setSubMenu(ListMenu subMenu) {
+    public void setSubMenu(ListMenu<T> subMenu) {
         this.subMenu = subMenu;
     }
 
-    public ListMenu getMenu() {
+    public ListMenu<T> getMenu() {
         return this.subMenu;
     }
     
     public int compareTo(MenuItem<T> other) {
         return this.getSortField().compareTo(other.getSortField());
     }
+    
+    
     
     public boolean equals(Object o) {
         if (!(o instanceof MenuItem)) return false;

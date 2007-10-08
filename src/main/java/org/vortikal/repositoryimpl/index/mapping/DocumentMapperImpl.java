@@ -271,7 +271,9 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             propSet.addProperty(prop);
         }
         
-        addContext(propSet);
+        if (this.contextManager == null) {
+            addContext(propSet);
+        }
 
         return propSet;
     }
@@ -435,7 +437,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         this.valueFactory = valueFactory;
     }
 
-    @Required
     public void setContextManager(ContextManager contextManager) {
         this.contextManager = contextManager;
     }

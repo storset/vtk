@@ -232,7 +232,7 @@
 
   <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
-    <property name="order" value="-1000" />
+    <property name="order" value="-980" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>
@@ -254,7 +254,7 @@
 
   <bean id="createDocumentService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
-    <property name="order" value="-999" />
+    <property name="order" value="-970" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>
@@ -275,7 +275,7 @@
 
   <bean id="createCollectionService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
-    <property name="order" value="-995" />
+    <property name="order" value="-960" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>

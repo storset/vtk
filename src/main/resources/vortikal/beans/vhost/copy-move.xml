@@ -6,7 +6,7 @@
 
   <bean id="copyResourcesService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
-    <property name="order" value="-1000" />
+    <property name="order" value="-990" />
     <property name="categories">
       <set>
         <value>collectionMenu</value>

@@ -13,17 +13,12 @@
          "horizontal":"vrtx-horizontal-menu",
          "tabs":"vrtx-tab-menu" } />
 
-<#if !menu?exists>
-  <#stop "Unable to render model: required submodel
-  'menu' missing">
-</#if>
-
-
 <#-- RECURSIVE MENU BUILD -->
+<#if menu?exists>
 <ul class="${cssClassMap[menu.label]}">
   <@listMenu menu=menu />
 </ul>
-
+</#if>
 
 <#-- MACROS: -->
 <#macro listMenu menu>

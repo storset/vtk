@@ -45,6 +45,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -137,6 +138,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_DEPTH_DESC =
         "Specifies the number of levels to retrieve subfolders for. The default value is '1', which retrieves the top level.";
     
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = 
+        "Defines the starting URI level for the menu (cannot be used with the '"
+        + PARAMETER_URI + "' parameter)";
+    
     private static Log logger = LogFactory.getLog(ListMenuComponent.class);
     
     private Service viewService;
@@ -151,6 +157,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         
+        int currentLevel = URLUtil.splitUriIncrementally(menuRequest.getCurrentFolder()).length - 1;
+
+        if (menuRequest.getDisplayFromLevel() != -1) {
+            if (currentLevel < menuRequest.getDisplayFromLevel()) {
+                return;
+            }
+        }
+
         // Build main menu
         ListMenu<String> menu = buildMainMenu(menuRequest);
         model.put(this.modelName, menu);
@@ -494,7 +508,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     
     private class MenuRequest {
         private String uri;
+        private int displayFromLevel = -1;
         private String currentURI;
+        private String currentFolder;
         private boolean parentIncluded;
         private String[] childNames;
         private String style;
@@ -505,10 +521,28 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         public MenuRequest(DecoratorRequest request) {
             String uri = request.getStringParameter(PARAMETER_URI);
-            if (uri == null) {
-                throw new DecoratorComponentException("Parameter 'uri' not specified");
+            String displayFromLevel = request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL);
+
+            if ((uri == null || "".equals(uri.trim()))
+                 && (displayFromLevel == null || "".equals(displayFromLevel.trim()))) {
+                throw new DecoratorComponentException(
+                    "One of parameters '" + PARAMETER_URI + "' or '" +
+                    PARAMETER_DISPLAY_FROM_LEVEL + "' must be specified");
             }
-            this.uri = uri;
+
+            if (uri != null && !"".equals(uri.trim())) {
+                this.uri = uri;
+            }
+
+            if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
+                int level = Integer.parseInt(displayFromLevel);
+                if (level < 0) {
+                    throw new DecoratorComponentException(
+                        "Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL + "' must be an integer >= 0");
+                }
+                this.displayFromLevel = level;
+                this.uri = "/";
+            }
 
             boolean authenticated = "true".equals(
                 request.getStringParameter(PARAMETER_AUTENTICATED));
@@ -568,6 +602,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
             RequestContext requestContext = RequestContext.getRequestContext();
             this.currentURI = requestContext.getResourceURI();
+            this.currentFolder = requestContext.getCurrentCollection();
             this.locale = request.getLocale();
         }
         
@@ -579,8 +614,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             return this.uri;
         }
         
+        public int getDisplayFromLevel() {
+            return this.displayFromLevel;
+        }
+
         public String getCurrentURI() {
             return this.currentURI;
+        }
+        
+        public String getCurrentFolder() {
+            return this.currentFolder;
         }
         
         public boolean isParentIncluded() {
@@ -670,6 +713,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_INCLUDE_PARENT, PARAMETER_INCLUDE_PARENT_DESC);
         map.put(PARAMETER_AUTENTICATED, PARAMETER_AUTENTICATED_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
+        map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         return map;
     }
 }

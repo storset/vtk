@@ -118,10 +118,10 @@ p.errormessage {
 }
 
 div.infomessage { 
-        font-size: 120%;
+        font-size: 110%;
         font-weight: bold;
-        padding: 5px 0px 5px 0px;
-        border: 2px dotted #CCCCCC;
+        padding: 5px;
+        border: 1px solid #CCCCCC;
         color: #333;
         text-align: center;
         margin-bottom: 5px;

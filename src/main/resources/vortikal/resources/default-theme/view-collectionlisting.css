@@ -5,13 +5,13 @@ div.vrtx-collections {
   margin: 0 0 2em 0;
 }
 
-div.vrtx-collections:after {
+/* div.vrtx-collections:after {
   content: "."; 
   display: block; 
   height: 0; 
   clear: both; 
   visibility: hidden;
-}
+} */
 
 div.vrtx-collections h2 {
   margin: 0 0 .5em 0;

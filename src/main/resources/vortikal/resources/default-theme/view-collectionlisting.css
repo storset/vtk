@@ -27,7 +27,8 @@ div.vrtx-collections table tr {
 
 div.vrtx-collections ul {
   list-style-type: square;
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 div.vrtx-resource {

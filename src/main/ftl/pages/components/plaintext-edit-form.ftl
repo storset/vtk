@@ -26,6 +26,8 @@
   </#if>
 
   <script type="text/javascript" language="Javascript"><!--
+     // XXX: remember to add onclick="updateContent()" to the  submit
+     // button when re-enabling codepress:
      function updateContent() {
         if (area && area.toggleEditor) area.toggleEditor();
      }
@@ -36,7 +38,7 @@
     <form action="${plaintextEditForm.submitURL}" method="POST">
       <textarea id="area" style="width:100%;" name="content" rows="20" cols="80">${plaintextEditForm.content?html}</textarea>
       <div style="padding-top:7px;">
-        <input onclick="updateContent()" type="submit" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>">
+        <input type="submit" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>">
         <input type="submit" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>">
 
         <#if plaintextEditForm.tooltips?exists>

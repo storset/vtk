@@ -73,18 +73,12 @@
    </head>
    <body>
 
-   <!--
+   <#--
         <p>${fckeditorBase.url?html}</p>
         <p>${fckSource.getURL}</p>
         <p>${fckCleanup.url?html}</p>
         <p>${fckBrowse.url}</p>
    -->
-
-   <script type="text/javascript" src="${fckeditorBase.url?html}/xmlcleaner.js"></script>
-
-   <!-- div class="fck-fulleditor">
-     <span class="htmlTitlePrefix SC_FieldCaption">Tittel:</span><input type="text" id="title" />
-   </div -->
 
    <div class="htmlTitle">
      <a style="float:right; margin-right: 30px;" href="http://www.fckeditor.net">www.fckeditor.net</a>
@@ -149,6 +143,7 @@
          fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
 
          fck.Config.DisableFFTableHandles = false;
+	 fck.Config.ForcePasteAsPlainText = false;
          // fck.Config.FirefoxSpellChecker = true;
 	 // fck.Config.BrowserContextMenuOnCtrl = true ;
 

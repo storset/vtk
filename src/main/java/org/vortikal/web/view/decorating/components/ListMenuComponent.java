@@ -514,6 +514,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private String[] excludedChildren;
         
         public MenuRequest(DecoratorRequest request) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            this.currentURI = requestContext.getResourceURI();
+            this.currentFolder = requestContext.getCurrentCollection();
+            this.locale = request.getLocale();
+
+
             String uri = request.getStringParameter(PARAMETER_URI);
             String displayFromLevel = request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL);
 
@@ -535,7 +541,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                         "Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL + "' must be an integer >= 0");
                 }
                 this.displayFromLevel = level;
-                this.uri = "/";
+                this.uri = requestContext.getCurrentCollection();
             }
 
             boolean authenticated = "true".equals(
@@ -594,10 +600,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                         + depthStr);
                 }
             }
-            RequestContext requestContext = RequestContext.getRequestContext();
-            this.currentURI = requestContext.getResourceURI();
-            this.currentFolder = requestContext.getCurrentCollection();
-            this.locale = request.getLocale();
         }
         
         public String[] getExcludedChildren() {

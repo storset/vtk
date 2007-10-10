@@ -565,6 +565,7 @@
   <bean id="manage.refreshLockHandler"
         class="org.vortikal.web.controller.repository.LockRefreshController"
         parent="requestLocalRepositoryAware">
+    <property name="viewName" value="manage.refreshLockView" />
   </bean>
 
   <bean id="tidyCopyAction" 
@@ -1068,6 +1069,8 @@
                value-ref="previewTextView" />
         <entry key="previewFallback"
                value-ref="previewFallbackView" />
+        <entry key="manage.refreshLockView"
+               value-ref="manage.refreshLockView" />
       </map>
     </property>
     <property name="viewWrapper" ref="manageViewWrapper" />
@@ -1187,6 +1190,10 @@
       body element (before any other body content).
     </description>
     <property name="view" ref="manageHeaderView"/>
+  </bean>
+
+  <bean id="manage.refreshLockView" parent="freemarkerView">
+    <property name="url" value="layouts/lock-refresh-response.ftl" />
   </bean>
 
   <bean id="manageHeaderView" parent="freemarkerView">

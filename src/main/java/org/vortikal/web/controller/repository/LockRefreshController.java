@@ -49,6 +49,7 @@ public class LockRefreshController implements Controller {
 
     private Repository repository = null;
     private int timeoutSeconds = 60 * 30;
+    private String viewName = null;
     
     
     @Required public void setRepository(Repository repository) {
@@ -59,7 +60,10 @@ public class LockRefreshController implements Controller {
         this.timeoutSeconds = timeoutSeconds;
     }
     
-
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+    
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -82,6 +86,9 @@ public class LockRefreshController implements Controller {
                 }
             }
         }
+        if (this.viewName != null) {
+            return new ModelAndView(this.viewName);
+        } 
         return null;
     }
     

@@ -28,14 +28,13 @@
         }
         if (req != null) {
            req.onreadystatechange = callback;
-           req.open('HEAD', '${url}', true);
+           req.open('GET', '${url}', true);
            req.send(null);
         }
      }
 
      function callback() {
         if (req != null && req.readyState == 4) {
-
            if (req.status == 200) {
               setTimeout('ping()', intervalSec * 1000);
            }

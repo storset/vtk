@@ -173,10 +173,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         // Add sub menu?
         MenuItem<String> activeItem = menu.getActiveItem();
 
-        if (activeItem != null && menuRequest.depth > 1) {
-            ListMenu<String> submenu = buildSubMenu(menuRequest, activeItem);
+        if (activeItem != null && menuRequest.getDepth() > 1) {
+            ListMenu<String> submenu = buildSubMenu(menuRequest);
             if (submenu != null) { 
-                activeItem.setSubMenu( submenu );
+                activeItem.setSubMenu(submenu);
             }    
         }         
     }
@@ -409,7 +409,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     /**
      * Add sub menu if current uri is below uri
      */
-    private ListMenu<String> buildSubMenu(MenuRequest menuRequest, MenuItem<String> activeItem) {
+    private ListMenu<String> buildSubMenu(MenuRequest menuRequest) {
 
         ResultSet rs = doSubSearch(menuRequest);
 
@@ -421,22 +421,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
                         
         String rootURI = null;
-        PropertySet rootResource = null;
         
-        for (int i = 0; i < rs.getSize(); i++) {
-            PropertySet resource = rs.getResult(i);
+        for (PropertySet resource: rs.getAllResults()) {
 
             String uri = resource.getURI();
-            
-            if(rootURI == null) {
-                rootURI = uri;
-                rootResource = resource;
-            } else if (URLUtil.splitUri(uri).length < URLUtil.splitUri(rootURI).length) {
-                rootURI = uri;
-                rootResource = resource;
-            }
-                        
             String parentURI = URIUtil.getParentURI(uri);
+            
+            if(rootURI == null || URLUtil.splitUri(uri).length < URLUtil.splitUri(rootURI).length) {
+                rootURI = parentURI;
+            } 
+                        
 
             List<PropertySet> childList = childMap.get(parentURI);
             if (childList == null) {
@@ -446,7 +440,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             childList.add(resource);
         }
                 
-        return buildSubItems(rootResource.getURI(), childMap, menuRequest);
+        return buildSubItems(rootURI, childMap, menuRequest);
     }
     
     

@@ -60,6 +60,7 @@ public class SyndFeedLoader extends URLConnectionCacheLoader<SyndFeed> {
         XmlReader xmlReader = new XmlReader(stream);
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(xmlReader);
+        feed.setUri(connection.getURL().toExternalForm());
         return feed;
     }
 }

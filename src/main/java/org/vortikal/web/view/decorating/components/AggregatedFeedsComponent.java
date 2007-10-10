@@ -33,6 +33,7 @@ package org.vortikal.web.view.decorating.components;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import org.jdom.input.JDOMParseException;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
@@ -59,6 +61,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
     }
     
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void processModel(Map<Object, Object> model,
             DecoratorRequest request, DecoratorResponse response)
@@ -139,29 +142,67 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
             url = url.trim();
 
             SyndFeed tmpFeed = null;
-            if (!url.startsWith("/")) {
-                tmpFeed = this.cache.get(url);
-            } else {
-                tmpFeed = this.localFeedFetcher.getFeed(url, request);
+            try {
+                if (!url.startsWith("/")) {
+                    tmpFeed = this.cache.get(url);
+                } else {
+                    tmpFeed = this.localFeedFetcher.getFeed(url, request);
+                }
+            } catch (Exception e) {
+                String m = e.getMessage();
+                if (m == null) {
+                    m = e.getClass().getName();
+                }
+                throw new RuntimeException(
+                        "Could not read feed url " + url + " ("+ m + ")");
             }
             entries.addAll(tmpFeed.getEntries());
 
-            if (displayChannel) {
-                for (SyndEntry entry : (List<SyndEntry>)tmpFeed.getEntries()) {
-                    feedMapping.put(entry, tmpFeed);
-                }
+            for (SyndEntry entry : (List<SyndEntry>)tmpFeed.getEntries()) {
+                feedMapping.put(entry, tmpFeed);
             }
         }
 
-        Collections.sort(entries, new Comparator<SyndEntry>() {
-            public int compare(SyndEntry arg0, SyndEntry arg1) {
-                return arg1.getPublishedDate().compareTo(arg0.getPublishedDate());
+        try {
+            Collections.sort(entries, new Comparator<SyndEntry>() {
+                public int compare(SyndEntry entry1, SyndEntry entry2) {
+                
+                Date pubDate1 = entry1.getPublishedDate();
+                if (pubDate1 == null) {
+                    throw new MissingPublishedDateException(entry1);
+                }
+                Date pubDate2 = entry2.getPublishedDate();
+                if (pubDate2 == null) {
+                    throw new MissingPublishedDateException(entry2);
+                }
+                return pubDate1.compareTo(pubDate2);
             }});
-
+        } catch (MissingPublishedDateException e) {
+            SyndFeed f = feedMapping.get(e.getEntry());
+            throw new MissingPublishedDateException(
+                    "Feed " + f.getUri() + " missing published date. Not possible to sort.");
+        }
+        
         model.put("feed", feed);
         model.put("conf", conf);
     }
 
+    @SuppressWarnings("serial")
+    private class MissingPublishedDateException extends RuntimeException {
+        private SyndEntry entry;
+        
+        public MissingPublishedDateException(String message) {
+            super(message);
+        }
+        public MissingPublishedDateException(SyndEntry entry) {
+            super();
+            this.entry = entry;
+        }
+        public SyndEntry getEntry() {
+            return entry;
+        }
+    } 
+    
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }

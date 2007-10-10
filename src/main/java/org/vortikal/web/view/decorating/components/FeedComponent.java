@@ -161,10 +161,19 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
 
         SyndFeed feed = null;
         
-        if (!url.startsWith("/")) {
-            feed = this.cache.get(url);
-        } else {
-            feed = this.localFeedFetcher.getFeed(url, request);
+        try {
+            if (!url.startsWith("/")) {
+                feed = this.cache.get(url);
+            } else {
+                feed = this.localFeedFetcher.getFeed(url, request);
+            }
+        } catch (Exception e) {
+            String m = e.getMessage();
+            if (m == null) {
+                m = e.getClass().getName();
+            }
+            throw new RuntimeException(
+                    "Could not read feed url " + url + " ("+ m + ")");
         }
 
         model.put("feed", feed);

@@ -38,8 +38,8 @@
     <#if item.label?exists>
       <#assign class = class + " " +  item.label?html />
     </#if>
-    <#if !item.menu?exists>
-      <#assign class = class + " vrtx-current-item" />
+    <#if isCurrent(item)>
+      <#assign class = class + " vrtx-current-item" /> 
     </#if>
   <#else>
     <#if item.label?exists>
@@ -56,6 +56,18 @@
     </li>
   </#if>
 </#macro> 
+
+<#function isCurrent item>
+      <#if !item.menu?exists>
+        <#return true />
+      </#if>
+      <#list item.menu.items as child>
+        <#if child.active>
+          <#return false />
+        </#if>
+      </#list>
+  <#return true />
+</#function>
 
 <#macro displayItem item>
   <a href="${item.url?html}">${item.title?html}</a>

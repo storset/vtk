@@ -63,6 +63,7 @@ public class FCKeditorConnector implements Controller {
     private Service viewService;
     private String browseViewName;
     private String uploadStatusViewName;
+    private int maxUploadSize = 1000000;
     
 
     @Required public void setRepository(Repository repository) {
@@ -79,6 +80,13 @@ public class FCKeditorConnector implements Controller {
     
     @Required public void setUploadStatusViewName(String uploadStatusViewName) {
         this.uploadStatusViewName = uploadStatusViewName;
+    }
+    
+    public void setMaxUploadSize(int maxUploadSize) {
+        if (maxUploadSize <= 0) {
+            throw new IllegalArgumentException("Max upload size must be a positive integer");
+        }
+        this.maxUploadSize = maxUploadSize;
     }
     
     
@@ -189,9 +197,6 @@ public class FCKeditorConnector implements Controller {
         }
     }
     
-    private int maxUploadSize = 1000000;
-    
-
     private ModelAndView uploadFile(FCKeditorFileBrowserCommand command, String token, HttpServletRequest request) {
         Map<String, Object> model = new HashMap<String, Object>();
         
@@ -209,7 +214,7 @@ public class FCKeditorConnector implements Controller {
                 }
             }
             String base = command.getCurrentFolder();
-            String name = uploadItem.getName();
+            String name = cleanupFileName(uploadItem.getName());
 
             if (!"/".equals(base) && !base.endsWith("/")) {
                 base += "/";
@@ -283,6 +288,19 @@ public class FCKeditorConnector implements Controller {
         return  name + "(" + number + ")" + dot + extension;
     }
     
+
+    static String cleanupFileName(String fileName) {
+        if (fileName == null || fileName.trim().equals("")) {
+            return null;
+        }
+        int pos = fileName.lastIndexOf("\\");
+        if (pos > fileName.length() - 2) {
+            return fileName;
+        } else if (pos >= 0) {
+            return fileName.substring(pos + 1, fileName.length());
+        } 
+        return fileName;
+    }
 
 
     private String getErrorMessage(Exception e) {

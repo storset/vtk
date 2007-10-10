@@ -35,12 +35,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -61,16 +58,10 @@ import org.jdom.output.XMLOutputter;
  */
 public final class EvenStructuredText implements StructuredText {
     
-    public EvenStructuredText() {
-        initTagNames();
-    }
-
-    public void setTextMappings(Map customMappings) {
+    public void setTextMappings(Map<String, String> customMappings) {
         this.tagNames = customMappings;
     }
     
-    private Log logger = LogFactory.getLog(this.getClass());
-
     protected String LINE_SEPARATOR = "\n";
     protected String SPACE = " ";
     protected String LISTITEM_MARKER = "-";
@@ -99,32 +90,13 @@ public final class EvenStructuredText implements StructuredText {
     protected char NEWLINE = '\n';
     protected char ESCAPE = '\\';
 
-    protected Map tagNames = new HashMap();
+    protected Map<String, String> tagNames = getEnglishTagNames();
     
     
-    public Set getTagNames() {
+    public Set<String> getTagNames() {
         return this.tagNames.keySet();
     }
     
-    
-    private void initTagNames() {
-        this.tagNames.put("root", "evenstructuredtext");
-        this.tagNames.put("bold", "bold");
-        this.tagNames.put("italic", "it");
-        this.tagNames.put("link", "link");
-        this.tagNames.put("url", "url");
-        this.tagNames.put("url-description", "description");
-        this.tagNames.put("unordered-list", "unsortedlist");
-        this.tagNames.put("ordered-list", "sortedlist");
-        this.tagNames.put("listitem", "listitem");
-        this.tagNames.put("paragraph", "paragraph");
-        this.tagNames.put("reference", "refrence");
-        this.tagNames.put("reference-type", "type");
-        this.tagNames.put("sub", "sub");
-        this.tagNames.put("sup", "sup");
-        this.tagNames.put("newline", "newline");
-    }
-
     
     /*
     protected boolean escapeAtPos(String text, int pos) {
@@ -297,7 +269,7 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
-    // check if certain speacial characters occur before the end pos of the
+    // check if certain special characters occur before the end pos of the
     // current element
     protected boolean endOfBlockLevelElement(String text, int pos, int endPos) {
         int paragraphPos = text.indexOf(this.PARAGRAPH_START, pos);
@@ -475,7 +447,7 @@ public final class EvenStructuredText implements StructuredText {
             endPos = nextNumlist;
 
         while (pos < endPos) {
-            // content will now be basictekst
+            // content will now be basic text
             pos = parseBasicText(text, pos, paragraphElement);
         }
 
@@ -895,9 +867,7 @@ public final class EvenStructuredText implements StructuredText {
 
         StringBuffer buffer = new StringBuffer();
         
-        for (Iterator i = element.getContent().iterator(); i.hasNext();) {
-
-            Object object = i.next();
+        for (Object object: element.getContent()) {
 
             if (object instanceof Element) {
                 Element child = (Element) object;
@@ -1148,7 +1118,7 @@ public final class EvenStructuredText implements StructuredText {
     
     // Various helper methods
     private String lookupTag(String tagName) {
-        String tag = (String) this.tagNames.get(tagName);
+        String tag = this.tagNames.get(tagName);
         if (tag == null)
             tag = tagName;
         return tag;
@@ -1156,9 +1126,8 @@ public final class EvenStructuredText implements StructuredText {
     
     
     private String reverseLookupTag(String mappedTag) {
-        for (Iterator i = this.tagNames.keySet().iterator(); i.hasNext();) {
-            String tagName = (String) i.next();
-            if (((String) this.tagNames.get(tagName)).equals(mappedTag)) {
+        for (String tagName: this.tagNames.keySet()) {
+            if ((this.tagNames.get(tagName)).equals(mappedTag)) {
                 return tagName;
             }
         }
@@ -1228,12 +1197,10 @@ public final class EvenStructuredText implements StructuredText {
                 return;
             }
             
-            // Norwegian XML
+            // Norwegian or english XML (default)
             if ( "no".equals(args[0]) ) {
                 parser.setTextMappings( getNorwegianTagNames() );                
-            } 
-            // English XML (default)
-            else {
+            } else {
                 // error if URI
                 if (args[0].lastIndexOf('/') != -1 
                         || args[0].lastIndexOf('\\') != -1 ) {
@@ -1242,13 +1209,11 @@ public final class EvenStructuredText implements StructuredText {
                 }
                 parser.setTextMappings( getEnglishTagNames() );
             }
-            
+
             // Either parse StructuredText -> XML and back
-            //  or
-            // Parse only XML -> StructuredText 
+            //  or parse only XML -> StructuredText 
             Document doc;
             String structuredtext;
-            // StructuredText -> XML -> StructuredText
             if ( !"-xml".equals(args[1]) ) {
                 File textFile = new File(args[1]);
                 if (!textFile.exists()) {
@@ -1268,9 +1233,7 @@ public final class EvenStructuredText implements StructuredText {
                 Element root = parser.parseStructuredText(text);
                 doc = new Document(root); 
                 structuredtext = parser.parseElement(root);
-            } 
-            // XML -> StructuredText only
-            else {
+            } else {
                 SAXBuilder saxparser = new SAXBuilder();
                 String xmlpath = args[2];
                 if ( xmlpath.startsWith("http") ) {  
@@ -1318,8 +1281,8 @@ public final class EvenStructuredText implements StructuredText {
         
     }
     
-    private static Map getEnglishTagNames() {
-        Map tagNames = new HashMap();
+    private static Map<String, String> getEnglishTagNames() {
+        Map<String, String> tagNames = new HashMap<String, String>();
         tagNames.put("root", "evenstructuredtext");
         tagNames.put("bold", "bold");
         tagNames.put("italic", "it");
@@ -1338,8 +1301,8 @@ public final class EvenStructuredText implements StructuredText {
         return tagNames;
     }
     
-    private static Map getNorwegianTagNames() {
-        Map tagNames = new HashMap();
+    private static Map<String, String> getNorwegianTagNames() {
+        Map<String, String> tagNames = new HashMap<String, String>();
         tagNames.put("root", "fritekst");
         tagNames.put("bold", "fet");
         tagNames.put("italic", "kursiv");

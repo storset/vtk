@@ -71,7 +71,7 @@ public final class DefaultStructuredText implements StructuredText {
 
     protected String WEIGHT_CLOSE = "_";
 
-    protected Map tagNames = new HashMap();
+    protected Map<String, String> tagNames = new HashMap<String, String>();
 
     private boolean includeNewlines = false;
 
@@ -89,7 +89,7 @@ public final class DefaultStructuredText implements StructuredText {
         this.tagNames.put("newline", "br");
     }
 
-    public Set getTagNames() {
+    public Set<String> getTagNames() {
         return this.tagNames.keySet();
     }
 
@@ -97,12 +97,12 @@ public final class DefaultStructuredText implements StructuredText {
         initTagNames();
     }
 
-    public void setTextMappings(Map customMappings) {
+    public void setTextMappings(Map<String, String> customMappings) {
         this.tagNames = customMappings;
     }
 
     private String lookupTag(String tagName) {
-        String tag = (String) this.tagNames.get(tagName);
+        String tag = this.tagNames.get(tagName);
         if (tag == null) {
             tag = tagName;
         }
@@ -110,9 +110,8 @@ public final class DefaultStructuredText implements StructuredText {
     }
 
     private String reverseLookupTag(String mappedTag) {
-        for (Iterator i = this.tagNames.keySet().iterator(); i.hasNext();) {
-            String tagName = (String) i.next();
-            if (((String) this.tagNames.get(tagName)).equals(mappedTag)) { return tagName; }
+        for (String tagName: this.tagNames.keySet()) {
+            if ((this.tagNames.get(tagName)).equals(mappedTag)) { return tagName; }
         }
         return mappedTag;
     }
@@ -138,9 +137,8 @@ public final class DefaultStructuredText implements StructuredText {
         root = splitText(workText, root);
 
         // split list items as well
-        for (Iterator i = root.getChildren(lookupTag("listitem")).iterator(); i
-                .hasNext();) {
-            Element child = (Element) i.next();
+        for (Object o: root.getChildren(lookupTag("listitem"))) {
+            Element child = (Element) o;
             String childText = child.getText();
 
             child.setText(null);
@@ -156,10 +154,10 @@ public final class DefaultStructuredText implements StructuredText {
      */
     private Element groupListItems(Element element) {
         Element root = new Element(element.getName());
-        List children = element.getChildren();
-        ArrayList newChildren = new ArrayList();
-        for (Iterator i = children.iterator(); i.hasNext();) {
-            Element child = (Element) ((Element) i.next()).clone();
+        List<Element> children = element.getChildren();
+        ArrayList<Element> newChildren = new ArrayList<Element>();
+        for (Iterator<Element> i = children.iterator(); i.hasNext();) {
+            Element child = (Element) i.next().clone();
             if (!child.getName().equals(lookupTag("listitem"))) {
                 newChildren.add(child);
             } else {
@@ -167,8 +165,7 @@ public final class DefaultStructuredText implements StructuredText {
                 listElement.addContent((Element) child.clone());
                 Element followingElement = null;
                 while (i.hasNext()) {
-                    Element nextElement = (Element) ((Element) i.next())
-                            .clone();
+                    Element nextElement = (Element) i.next().clone();
                     if (nextElement.getName().equals(lookupTag("listitem"))) {
                         listElement.addContent(nextElement);
                     } else {
@@ -205,9 +202,9 @@ public final class DefaultStructuredText implements StructuredText {
 
         StringBuffer buffer = new StringBuffer();
 
-        for (Iterator i = element.getChildren().iterator(); i.hasNext();) {
+        List<Element> children = element.getChildren();
+        for (Element child: children) {
 
-            Element child = (Element) i.next();
             String tagName = reverseLookupTag(child.getName());
 
             if (tagName.equals("plaintext")) {
@@ -240,10 +237,9 @@ public final class DefaultStructuredText implements StructuredText {
 
             } else if (tagName.equals("list")) {
 
-                for (Iterator items = child.getChildren().iterator(); items
-                        .hasNext();) {
+                List<Element> childChildren = child.getChildren();
+                for (Element listItem: childChildren) {
 
-                    Element listItem = (Element) items.next();
                     if (buffer.length() > 0
                             && buffer.charAt(buffer.length() - 1) != '\n'
                             && buffer.charAt(buffer.length() - 2) != '\n') {

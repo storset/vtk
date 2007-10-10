@@ -37,9 +37,9 @@ import org.jdom.Element;
 
 public interface StructuredText {
 
-    public void setTextMappings(Map customMap);
+    public void setTextMappings(Map<String, String> customMap);
     
-    public Set getTagNames();
+    public Set<String> getTagNames();
 
     public Element parseStructuredText(String structuredText);
 

@@ -157,7 +157,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         
-        int currentLevel = URLUtil.splitUriIncrementally(menuRequest.getCurrentFolder()).length - 1;
+        int currentLevel = URLUtil.splitUriIncrementally(menuRequest.getCurrentFolder()).length;
 
         if (menuRequest.getDisplayFromLevel() != -1) {
             if (currentLevel < menuRequest.getDisplayFromLevel()) {
@@ -526,6 +526,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     "One of parameters '" + PARAMETER_URI + "' or '" +
                     PARAMETER_DISPLAY_FROM_LEVEL + "' must be specified");
             }
+            if ((uri != null && !"".equals(uri.trim()))
+                 && (displayFromLevel != null && !"".equals(displayFromLevel.trim()))) {
+                throw new DecoratorComponentException(
+                    "At most one of parameters '" + PARAMETER_URI + "' or '" +
+                    PARAMETER_DISPLAY_FROM_LEVEL + "' can be specified");
+            }
 
             if (uri != null && !"".equals(uri.trim())) {
                 this.uri = uri;
@@ -533,14 +539,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
             if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
                 int level = Integer.parseInt(displayFromLevel);
-                if (level < 0) {
+                if (level <= 0) {
                     throw new DecoratorComponentException(
-                        "Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL + "' must be an integer >= 0");
+                        "Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL + "' must be an integer > 0");
                 }
 
                 String[] path = URLUtil.splitUriIncrementally(requestContext.getCurrentCollection());
-                if (level < path.length) {
-                    this.uri = path[level];
+                if (level <= path.length) {
+                    this.uri = path[level - 1];
                 }
                 this.displayFromLevel = level;
             }

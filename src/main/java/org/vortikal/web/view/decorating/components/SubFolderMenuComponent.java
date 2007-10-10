@@ -171,7 +171,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     
 
     private Search buildSearch(MenuRequest menuRequest) {
-        String uri = menuRequest.getURI();
+        String uri = menuRequest.getCurrentCollectionUri();
 
         int depth = URLUtil.splitUri(uri).length;
         StringBuilder query = new StringBuilder();
@@ -183,6 +183,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             query.append("/*");
         }
         if (menuRequest.getDepth() > 1) {
+            // Needs search support for this: 
+            // query.append(" AND depth < ").append(menuRequest.getDepth());
             query.append(" AND (");
             for (int i = 0; i < menuRequest.getDepth(); i++) {
                 query.append("depth = ").append(depth + i);
@@ -214,7 +216,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
             String parentURI = URIUtil.getParentURI(resource.getURI());
-            if (parentURI.equals(menuRequest.getURI())) {
+            if (parentURI.equals(menuRequest.getCurrentCollectionUri())) {
                 toplevel.add(resource);
             }
             List<PropertySet> childList = childMap.get(parentURI);
@@ -277,7 +279,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     private class MenuRequest {
-        private String uri;
+        private String currentCollectionUri;
         private String title;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
@@ -290,8 +292,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         public MenuRequest(DecoratorRequest request) {
 
             RequestContext requestContext = RequestContext.getRequestContext();            
-            this.uri = requestContext.getResourceURI();
-            this.uri = requestContext.getCurrentCollection();
+            this.currentCollectionUri = requestContext.getCurrentCollection();
 
             boolean asCurrentUser = "true".equals(
                 request.getStringParameter(PARAMETER_AS_CURRENT_USER));
@@ -338,8 +339,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             this.locale = request.getLocale();
         }
         
-        public String getURI() {
-            return this.uri;
+        public String getCurrentCollectionUri() {
+            return this.currentCollectionUri;
         }
 
         public String getTitle() {

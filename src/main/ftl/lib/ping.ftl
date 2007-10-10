@@ -27,8 +27,8 @@
            }
         }
         if (req != null) {
+           req.open('HEAD', '${url}', true);
            req.onreadystatechange = callback;
-           req.open('GET', '${url}', true);
            req.send(null);
         }
      }

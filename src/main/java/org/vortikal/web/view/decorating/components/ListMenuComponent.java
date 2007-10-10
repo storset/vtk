@@ -417,21 +417,13 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             return null;
         }
 
-
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
                         
-        String rootURI = null;
-        
         for (PropertySet resource: rs.getAllResults()) {
 
             String uri = resource.getURI();
             String parentURI = URIUtil.getParentURI(uri);
             
-            if(rootURI == null || URLUtil.splitUri(uri).length < URLUtil.splitUri(rootURI).length) {
-                rootURI = parentURI;
-            } 
-                        
-
             List<PropertySet> childList = childMap.get(parentURI);
             if (childList == null) {
                 childList = new ArrayList<PropertySet>();
@@ -440,7 +432,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             childList.add(resource);
         }
                 
-        return buildSubItems(rootURI, childMap, menuRequest);
+        int rootDepth = URLUtil.splitUri(menuRequest.getURI()).length;
+        String[] uris = URLUtil.splitUriIncrementally(menuRequest.getCurrentURI());
+        String rootUri = uris[rootDepth];
+        
+
+        return buildSubItems(rootUri, childMap, menuRequest);
     }
     
     

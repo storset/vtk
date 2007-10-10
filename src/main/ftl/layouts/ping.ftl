@@ -12,4 +12,4 @@
 
 <#import "/lib/ping.ftl" as ping />
 
-<@ping.ping url=pingURL['url'] interval=600/>
+<@ping.ping url=pingURL['url'] interval=300/>

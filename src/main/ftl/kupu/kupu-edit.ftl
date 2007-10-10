@@ -35,7 +35,7 @@
     <!-- This stylesheet should normally be empty.                          -->
     <link href="http://www.uio.no/profil/kupu/kupustyles-override.css" rel="stylesheet" type="text/css"/>
     
-    <@ping.ping url=pingURL['url'] interval=600 />
+    <@ping.ping url=pingURL['url'] interval=300 />
     
     <!-- needed to override popup-funtions from 'kupubasetools.js' -->
 	<script type="text/javascript" src="${cssBaseURL}/browser-sniffer.js"> </script>

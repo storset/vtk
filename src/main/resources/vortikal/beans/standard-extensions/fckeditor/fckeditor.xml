@@ -98,6 +98,11 @@
         <ref bean="fckeditor.parameterEqualsBrowse" />
       </list>
     </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheHandlerInterceptor" />
+      </list>
+    </property>
     <property name="handler">
       <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector"
             parent="requestLocalRepositoryAware">

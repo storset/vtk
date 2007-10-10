@@ -537,8 +537,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     throw new DecoratorComponentException(
                         "Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL + "' must be an integer >= 0");
                 }
+
+                String[] path = URLUtil.splitUriIncrementally(requestContext.getCurrentCollection());
+                if (level < path.length) {
+                    this.uri = path[level];
+                }
                 this.displayFromLevel = level;
-                this.uri = requestContext.getCurrentCollection();
             }
 
             boolean authenticated = "true".equals(

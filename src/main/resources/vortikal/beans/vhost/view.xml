@@ -188,24 +188,6 @@
   </bean>
 
 
-  <bean id="collectionListingHtmlTitleProvider" parent="abstractHtmlTitleProvider">
-    <property name="localizationKeys">
-      <map>
-        <entry key="name" value="title.collectionListing" />
-        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.collectionListing" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="previewHtmlTitleProvider" parent="abstractHtmlTitleProvider">
-    <property name="localizationKeys">
-      <map>
-        <entry key="name" value="title.title" />
-        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.title" />
-      </map>
-    </property>
-  </bean>
-
   <bean id="resourceDetailProvider"
         class="org.vortikal.web.referencedata.provider.ResourceDetailProvider"
         parent="requestLocalRepositoryAware">

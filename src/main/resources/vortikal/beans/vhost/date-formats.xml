@@ -120,7 +120,7 @@
   <bean id="valueFormatter"
         class="org.vortikal.repository.resourcetype.ValueFormatter">
     <property name="namedDateFormats" ref="valueFormatterNamedDateformats" />
-    <property name="defaultDateFormat" ref="longDateFormat" />
+    <property name="defaultDateFormatKey" value="long" />
   </bean>
 
   <bean id="valueFormatterNamedDateformats"

@@ -8,6 +8,12 @@
 
   <body>
 
+    <release version="0.3.11.1" date="2007-10-11" description="Release 0.3.11">
+      <action type="fix">
+        Fix for locale-based date formatting.
+      </action>
+    </release>
+
     <release version="0.3.11" date="2007-10-11" description="Release 0.3.11">
       <action type="add">
         Integrated FCKEditor client-side HTML editor as an extension

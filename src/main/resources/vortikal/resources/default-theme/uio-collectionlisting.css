@@ -4,18 +4,15 @@ div.breadcrumb {
 
 a.vrtx-manage-url {
   display: block;
-  margin-top: 1em;
   font-size: .8em;
   float:right;
   clear:both; 
-  margin-right: 20px;
-  margin-bottom: 12px;
+  margin: 0 20px 0 12px;
 } 
 
 div.navmarginbrod { 
    margin-top: 0px; 
-/*    padding-left: 0px; */
-    margin-left: 20px;
+   margin-left: 20px;
 }
 
 div.body { 

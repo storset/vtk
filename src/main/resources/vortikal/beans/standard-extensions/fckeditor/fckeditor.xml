@@ -34,7 +34,7 @@
 
   <bean id="fckeditor.fckService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <property name="order" value="-9900" />
+    <property name="order" value="-9700" />
     <property name="assertions">
       <list>
         <ref bean="fckeditor.modeParameterAssertion" />

@@ -65,7 +65,7 @@ import org.vortikal.util.web.HttpUtil;
  *   header. Default value is <code>true</code>.
  *   <li><code>expiresHeaderProperty</code> - a {@link
  *   PropertyTypeDefinition} of a (numeric) property to look for on
- *   the current resource. If this property exists, its value wlil be
+ *   the current resource. If this property exists, its value will be
  *   used as the HTTP <code>Expires</code> header.
  *   <li><code>includeContentLanguageHeader</code> - whether or not to
  *   to attempt to set the <code>Content-Language</code> HTTP header

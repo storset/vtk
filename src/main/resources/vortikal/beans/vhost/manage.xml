@@ -707,6 +707,12 @@
 
 
   <bean id="indexFileMessageProvider"
+        class="org.vortikal.web.referencedata.provider.IndexFileMessageProvider">
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
+  </bean>
+
+  <!--bean id="indexFileMessageProvider"
         class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
     <description>
       This provider depends on a 'resource' entry being present in the
@@ -715,7 +721,7 @@
     <property name="resourceInModelKey" value="childResource" />
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
-  </bean>
+  </bean-->
 
   <!-- MANAGE controllers -->
 

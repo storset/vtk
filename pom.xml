@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>0.3.11-SNAPSHOT</version>
+  <version>0.3.11</version>
   <name>The Vortikal Web Framework</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
 
@@ -77,8 +77,8 @@
     </notifiers>
   </ciManagement>
   <scm>
-    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/tags/release-0.3.11</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/tags/release-0.3.11</developerConnection>
     <!--url>svn://svn.uio.no/svnroot/vortikal/trunk</url-->
   </scm>
   <licenses>

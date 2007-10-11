@@ -8,11 +8,28 @@
 
   <body>
 
-    <release version="0.3.11-SNAPSHOT" date="In SVN" description="Release 0.3.11">
+    <release version="0.3.12-SNAPSHOT" date="In SVN" description="Release 0.3.12">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3.11" date="2007-10-11" description="Release 0.3.11">
+      <action type="add">
+        Integrated FCKEditor client-side HTML editor as an extension
+        (http://www.fckeditor.net).
+      </action>
+      <action type="add">
+        Implemented a service that prevents lock and session timeout
+        in edit modes
+      </action>
+      <action type="update">
+        Improved collection listing on view
+      </action>
       <action type="update">
         Library update: Updgraded Spring to version 2.0.7
+      </action>
+      <action type="fix">
+        Various minor bug fixes
       </action>
     </release>
 

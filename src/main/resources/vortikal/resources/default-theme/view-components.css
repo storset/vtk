@@ -270,7 +270,7 @@ div.vrtx-feed {
   font-size: .9em;
 }
 
-div.vrtx-feed a.feed-title {
+div.vrtx-feed .feed-title {
   display:block;
   font-size: 1.2em;
   font-weight: 900;

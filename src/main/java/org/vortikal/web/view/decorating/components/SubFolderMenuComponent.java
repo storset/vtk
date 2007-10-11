@@ -50,11 +50,11 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -76,7 +76,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_SORT = "sort";
     private static final String PARAMETER_SORT_DESC =
-        "The name of a property to sort results by. The default sort property is 'title'.";
+        "The name of a property to sort results by. Legal values are ('name', 'title'). "
+        + "The default property is 'title'";
 
     private static final String PARAMETER_SORT_DIRECTION = "direction";
     private static final String PARAMETER_SORT_DIRECTION_DESC =
@@ -124,7 +125,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         Map<String, Object> menuModel = buildMenuModel(menu, menuRequest);
         model.put(this.modelName, menuModel);
         if (logger.isDebugEnabled()) {
-            logger.debug("Built model: : " + model + " from menu: " + menu);
+            logger.debug("Built model: " + model + " from menu: " + menu);
         }
     }
     
@@ -198,9 +199,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
         query.append(" AND type IN ").append(this.collectionResourceType.getName());
 
-        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
-        select.addPropertyDefinition(this.titlePropDef);
-        select.addPropertyDefinition(menuRequest.getSortProperty());
+        WildcardPropertySelect select = new WildcardPropertySelect();
         Search search = new Search();
         search.setQuery(this.queryParser.parse(query.toString()));
         search.setLimit(this.searchLimit);
@@ -258,13 +257,21 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         item.setTitle(title);
         item.setLabel(title.getStringValue());
         item.setActive(false);
-        Property sortProp = resource.getProperty(menuRequest.getSortProperty());
-        if (sortProp == null) {
-            throw new DecoratorComponentException(
-                "Cannot sort on property '" + menuRequest.getSortProperty()
-                + "': no such property on resource '" + resource.getURI() + "'");
+
+        if (menuRequest.isSortByName()) {
+            item.setSortField(new Value(resource.getName()));
+            
+        } else {
+            PropertyTypeDefinition sortPropDef = menuRequest.getSortProperty();
+            Property sortProp = resource.getProperty(sortPropDef);
+            if (sortProp == null) {
+                throw new DecoratorComponentException(
+                    "Cannot sort on property '" + menuRequest.getSortProperty()
+                    + "': no such property on resource '" + resource.getURI() + "'");
+            }
+            item.setSortField(sortProp.getValue());
         }
-        item.setSortField(sortProp.getValue());
+
 
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
@@ -281,9 +288,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private class MenuRequest {
         private String currentCollectionUri;
         private String title;
+        private boolean sortByName = false;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
-        private boolean userSpecifiedSorting = false;
         private int resultSets = 1;
         private int depth = 1;
         private Locale locale;
@@ -347,16 +354,16 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             return this.title;
         }
 
+        public boolean isSortByName() {
+            return this.sortByName;
+        }
+
         public PropertyTypeDefinition getSortProperty() {
             return this.sortProperty;
         }
 
         public boolean isAscendingSort() {
             return this.ascendingSort;
-        }
-
-        public boolean isUserSpecifiedSorting() {
-            return this.userSpecifiedSorting;
         }
 
         public int getResultSets() {
@@ -380,29 +387,18 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
             if (sortFieldParam == null) {
                 this.sortProperty = titlePropDef;
+
+            } else if ("name".equals(sortFieldParam)) {
+                this.sortByName = true;
+
+            } else if ("title".equals(sortFieldParam)) {
+                this.sortProperty = titlePropDef;
             } else {
-                String prefix;
-                String name;
-                
-                String[] splitValues = sortFieldParam.split(":");
-                if (splitValues.length == 2) {
-                    prefix = splitValues[0];
-                    name = splitValues[1];
-                } else if (splitValues.length == 1) {
-                    prefix = null;
-                    name = splitValues[0];
-                } else {
-                    throw new DecoratorComponentException(
-                        "Invalid sort field: '" + sortFieldParam + "'");
-                }
-                this.sortProperty = 
-                    resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
-                if (this.sortProperty == null) {
-                    throw new DecoratorComponentException("Invalid sort field: '" + sortFieldParam 
-                                                          + "': matches no property definition");
-                }
-                this.userSpecifiedSorting = true;
+                throw new DecoratorComponentException(
+                    "Illegal value for parameter '" + PARAMETER_SORT
+                    + "': must be one of ('name', 'title')");
             }
+
 
             String sortDirectionParam = request.getStringParameter(PARAMETER_SORT_DIRECTION);
             if (sortDirectionParam == null) {
@@ -433,9 +429,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         
         public int compare(MenuItem<Value> item1, MenuItem<Value> item2) {
             if (!this.ascending) {
-                return collator.compare(item2.getTitle().getStringValue(), item1.getTitle().getStringValue());
+                return collator.compare(item2.getSortField().getStringValue(), item1.getSortField().getStringValue());
             } 
-            return collator.compare(item1.getTitle().getStringValue(), item2.getTitle().getStringValue());
+            return collator.compare(item1.getSortField().getStringValue(), item2.getSortField().getStringValue());
         }
     }
     

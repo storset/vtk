@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,16 +35,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -52,6 +53,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
+
 
 /**
  * Interceptor for controlling various HTTP response headers.
@@ -268,11 +270,10 @@ public class HeaderControlHandlerInterceptor
 
     protected void setCacheControlHeader(Resource resource, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        if (this.includeNoCacheHeader) {
+        if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting header Cache-Control: no-cache");
-            }
+        } else if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
+            response.setHeader("Cache-Control", "private");
         }
     }
 

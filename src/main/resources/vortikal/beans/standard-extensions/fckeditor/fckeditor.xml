@@ -229,7 +229,7 @@
   <bean id="fckeditor.enabledAssertion" class="org.vortikal.web.service.ConfigurableRequestURIAssertion">
     <property name="configuration" ref="fckeditor.configurationPropertiesFile" />
     <property name="matchValue" value="enabled" />
-    <property name="matchOnEmptyConfiguration" value="true" />
+    <property name="matchOnEmptyConfiguration" value="false" />
   </bean>
 
   <bean id="fckeditor.configurationPropertiesFile"

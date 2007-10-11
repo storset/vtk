@@ -3,6 +3,8 @@
 <div class="vrtx-feed">
   <#if conf.feedTitle?exists>
     <a class="feed-title" href="${feed.link}">${feed.title?html}</a> 
+  <#elseif conf.feedTitleValue?exists>
+    <div class="feed-title">${conf.feedTitleValue?html}</div> 
   </#if>
 
   <#if conf.feedDescription?exists>

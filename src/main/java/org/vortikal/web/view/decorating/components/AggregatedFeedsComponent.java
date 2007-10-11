@@ -41,10 +41,11 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.jdom.input.JDOMParseException;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
+
+import EDU.oswego.cs.dl.util.concurrent.FJTask.Par;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -77,6 +78,11 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
                 "Component parameter 'urls' is required");
         }
 
+        String feedTitle = request.getStringParameter(Parameter.FEED_TITLE.getId());
+        if (feedTitle != null) {
+            conf.put("feedTitleValue", feedTitle.trim());
+        }
+        
         String displayChannelString = request.getStringParameter(Parameter.DISPLAY_CHANNEL.getId()); 
         if (displayChannelString == null || !"false".equals(displayChannelString)) {
             conf.put("displayChannel", true);
@@ -210,6 +216,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
 
     private enum Parameter {
         URLS ("urls", "Comma separated list of feed urls."),
+        FEED_TITLE ("feed-title", "An optional string to show as feed title"),
         DISPLAY_CHANNEL ("display-channel", "Defaults to 'true', displaying the items source feed"), 
         SORT ("sort", "Default sorted by published date. Set to 'item-title' to sort by this instead."),
         PUBLISHED_DATE ("published-date", "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date"),
@@ -239,6 +246,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(Parameter.URLS.getId(), Parameter.URLS.getDesc());
+        map.put(Parameter.FEED_TITLE.getId(), Parameter.FEED_TITLE.getDesc());
         map.put(Parameter.MAX_MESSAGES.getId(), Parameter.MAX_MESSAGES.getDesc());
         map.put(Parameter.DISPLAY_CHANNEL.getId(), Parameter.DISPLAY_CHANNEL.getDesc());
         map.put(Parameter.ITEM_DESCRIPTION.getId(), Parameter.ITEM_DESCRIPTION.getDesc());

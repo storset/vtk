@@ -3,11 +3,12 @@ div.breadcrumb {
 } 
 
 a.vrtx-manage-url {
-  display: block;
+  display: inline;  
   font-size: .8em;
   float:right;
   clear:both; 
-  margin: 0 20px 0 12px;
+  margin: 0 20px 0px 0;
+  padding-bottom:12px;
 } 
 
 div.navmarginbrod { 

@@ -87,6 +87,13 @@ public class MenuItem<T extends Comparable<T>>
         this.sortField = sortField;
     }
     
+    public T getSortField() {
+        if (this.sortField != null) {
+            return this.sortField;
+        }
+        return this.title;
+    }
+
     public void setSubMenu(ListMenu<T> subMenu) {
         this.subMenu = subMenu;
     }
@@ -137,11 +144,4 @@ public class MenuItem<T extends Comparable<T>>
         return sb.toString();
     }
     
-    private T getSortField() {
-        if (this.sortField != null) {
-            return this.sortField;
-        }
-        return this.title;
-    }
-
 }

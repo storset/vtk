@@ -27,14 +27,14 @@
   </bean>
 
   <!-- Document mapper -->
-  <bean id="documentMapper" class="org.vortikal.repositoryimpl.index.mapping.DocumentMapperImpl">
+  <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapperImpl">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="valueFactory" ref="valueFactory"/>
     <!--property name="contextManager" ref="contextManager" /-->
   </bean>
 
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
-  <bean id="systemIndexAccessor" class="org.vortikal.repositoryimpl.index.LuceneIndexManager">
+  <bean id="systemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index"/>
     <property name="forceUnlock" value="true"/>
@@ -42,14 +42,14 @@
   </bean>
 
   <!-- Property set index based on primary Lucene index accessor instance.  -->
-  <bean id="systemIndex" class="org.vortikal.repositoryimpl.index.PropertySetIndexImpl">
+  <bean id="systemIndex" class="org.vortikal.repository.index.PropertySetIndexImpl">
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
   </bean>
 
   <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
-  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repositoryimpl.index.LuceneIndexManager">
+  <bean id="secondarySystemIndexAccessor" class="org.vortikal.repository.index.LuceneIndexManager">
     <property name="storageRootPath" value="${indexStorageRootPath}"/>
     <property name="storageId" value="property_index.secondary"/>
     <property name="maxBufferedDocs" value="100"/>
@@ -61,7 +61,7 @@
   </bean>
 
   <!-- Secondary property set index instance -->
-  <bean id="secondarySystemIndex" class="org.vortikal.repositoryimpl.index.PropertySetIndexImpl">
+  <bean id="secondarySystemIndex" class="org.vortikal.repository.index.PropertySetIndexImpl">
     <property name="indexAccessor" ref="secondarySystemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="propertyManager" ref="propertyManager"/>
@@ -69,14 +69,14 @@
   
   <!-- Factory for building Lucene queries. -->
   <bean id="queryBuilderFactory"
-        class="org.vortikal.repositoryimpl.search.query.QueryBuilderFactoryImpl">
+        class="org.vortikal.repository.search.query.QueryBuilderFactoryImpl">
     <property name="propertyManager" ref="propertyManager"/>
     <property name="indexAccessor" ref="systemIndexAccessor"/>
   </bean>
 
   <!-- Searcher implementation -->
   <bean id="systemIndexSearcher"
-        class="org.vortikal.repositoryimpl.search.SearcherImpl">
+        class="org.vortikal.repository.search.SearcherImpl">
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
@@ -85,7 +85,7 @@
 
   <!-- Query result authorization (ACL checking) -->
   <bean id="queryResultAuthorizationManager"
-        class="org.vortikal.repositoryimpl.search.query.security.DatabaseQueryResultAuthorizationManager">
+        class="org.vortikal.repository.search.query.security.DatabaseQueryResultAuthorizationManager">
     <property name="principalManager" ref="principalManager"/>
     <property name="tokenManager" ref="tokenManager"/>
     <property name="roleManager" ref="roleManager"/>
@@ -102,7 +102,7 @@
 
   <!-- Perform incremental updates on property set index from resource changes. -->
   <bean id="systemIndexUpdater" 
-       class="org.vortikal.repositoryimpl.index.observation.PropertySetIndexUpdater">
+       class="org.vortikal.repository.index.observation.PropertySetIndexUpdater">
     <property name="index" ref="systemIndex"/>
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDao" ref="repository.indexDao"/>
@@ -110,12 +110,12 @@
   
 
   <!-- Uhtml Context -->
-  <!--bean id="repository.contextDAO" class="org.vortikal.repositoryimpl.store.db.SqlMapContextDAO">
+  <!--bean id="repository.contextDAO" class="org.vortikal.repository.store.db.SqlMapContextDAO">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
-  <bean id="contextManager" class="org.vortikal.repositoryimpl.domain.ContextManagerImpl">
+  <bean id="contextManager" class="org.vortikal.repository.domain.ContextManagerImpl">
     <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="contextDAO" ref="repository.contextDAO" />
     <property name="contextPropertyDefinitions">

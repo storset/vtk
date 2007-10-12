@@ -20,7 +20,7 @@
   <!-- Overrides repository.contentStore -->
 
   <bean id="repository.contentStore" 
-        class="org.vortikal.repositoryimpl.dao.MemoryContentStore">
+        class="org.vortikal.repository.dao.MemoryContentStore">
   </bean>
 
 

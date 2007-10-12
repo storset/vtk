@@ -42,9 +42,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repositoryimpl.PropertyImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 

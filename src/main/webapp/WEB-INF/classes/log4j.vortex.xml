@@ -47,17 +47,17 @@
 
   <logger name="org.vortikal.repository"><level value="info" /></logger>
 
-  <logger name="org.vortikal.repositoryimpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.OperationLog"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.AuthorizationManagerImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.PropertyManagerImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.dao"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.dao.JDBCResourceChangeFetcher"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.dao.IndexDataAccessorImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.query"><level value="info" /></logger>
-  <logger name="org.vortikal.repositoryimpl.query.Reindexer"><level value="info" /></logger>
+  <logger name="org.vortikal.repository"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.OperationLog"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.AuthorizationManagerImpl"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.PropertyManagerImpl"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.dao"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.dao.JDBCResourceChangeFetcher"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.dao.IndexDataAccessorImpl"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.query"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.query.Reindexer"><level value="info" /></logger>
 
-  <!--logger name="org.vortikal.repositoryimpl.ns"><level value="trace" /></logger-->
+  <!--logger name="org.vortikal.repository.ns"><level value="trace" /></logger-->
   <logger name="org.vortikal.util.cache"><level value="info" /></logger>
   <logger name="org.vortikal.security"><level value="info" /></logger>
   <logger name="org.vortikal.security.web"><level value="info" /></logger>

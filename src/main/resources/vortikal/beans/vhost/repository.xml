@@ -34,25 +34,25 @@
   <!-- XXX: identify (indexing-related) pointcuts that should be wrapped in transactions: -->
   <!-- Shouldn't need transaction wrapping here, since IndexDao is already being wrapped -->
 <!--  <aop:config>
-    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repositoryimpl.index.observation.ResourceChangePoller.pollChanges(..))"/>
+    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repository.index.observation.ResourceChangePoller.pollChanges(..))"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
   </aop:config>-->
 
   <!-- Query result authorization already wrapped by pointcut for SqlMapIndexDao -->
   <!--
   <aop:config>  
-    <aop:pointcut id="repository.searchAuthorizationPointcut" expression="execution(* org.vortikal.repositoryimpl.search.query.security.QueryResultAuthorizationManager.authorizeQueryResults(..))"/>
+    <aop:pointcut id="repository.searchAuthorizationPointcut" expression="execution(* org.vortikal.repository.search.query.security.QueryResultAuthorizationManager.authorizeQueryResults(..))"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.searchAuthorizationPointcut"/>
   </aop:config> -->
 
   <aop:config>
-    <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repositoryimpl.store.db.SqlMapIndexDao.*(..))"/>
+    <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repository.store.db.SqlMapIndexDao.*(..))"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.sqlMapIndexDaoPointcut"/>
   </aop:config>
 
   <!-- Repository -->
 
-  <bean id="repository" class="org.vortikal.repositoryimpl.RepositoryImpl">
+  <bean id="repository" class="org.vortikal.repository.RepositoryImpl">
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
     <property name="roleManager" ref="roleManager" />
@@ -83,7 +83,7 @@
         class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
     <property name="useTransactionAwareDataSource" value="true" />
     <property name="configLocation"
-              value="classpath:/org/vortikal/repositoryimpl/store/db/ibatis/${sqlDialect}-sql-map-config.xml"/>
+              value="classpath:/org/vortikal/repository/store/db/ibatis/${sqlDialect}-sql-map-config.xml"/>
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
 
@@ -96,7 +96,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="repository.database" class="org.vortikal.repositoryimpl.store.db.SqlMapDataAccessor">
+  <bean id="repository.database" class="org.vortikal.repository.store.db.SqlMapDataAccessor">
     <lookup-method name="createResourceImpl" bean="resourceImpl"/>
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="principalFactory" ref="principalFactory" />
@@ -104,7 +104,7 @@
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
   
-  <bean id="repository.indexDao" class="org.vortikal.repositoryimpl.store.db.SqlMapIndexDao">
+  <bean id="repository.indexDao" class="org.vortikal.repository.store.db.SqlMapIndexDao">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
@@ -118,23 +118,23 @@
     <property name="loggerType" value="3"/>
   </bean>
 
-  <bean id="resourceImpl" class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype">
+  <bean id="resourceImpl" class="org.vortikal.repository.ResourceImpl" scope="prototype">
     <property name="propertyManager" ref="propertyManager" />
     <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
-  <bean id="repository.cache" class="org.vortikal.repositoryimpl.store.Cache">
+  <bean id="repository.cache" class="org.vortikal.repository.store.Cache">
     <property name="maxItems" value="${resourceCacheSize}" />
     <property name="wrappedAccessor" ref="repository.database" />
   </bean>
 
-  <bean id="repository.commentDAO" class="org.vortikal.repositoryimpl.store.db.SqlMapCommentDAO">
+  <bean id="repository.commentDAO" class="org.vortikal.repository.store.db.SqlMapCommentDAO">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
   <!--
-  <bean id="repository.cache" class="org.vortikal.repositoryimpl.store.JBossCacheDataAccessor">
+  <bean id="repository.cache" class="org.vortikal.repository.store.JBossCacheDataAccessor">
     <property name="wrappedAccessor" ref="repository.database" />
     <property name="treeCache" ref="jbossTreeCache" />
   </bean>
@@ -145,7 +145,7 @@
   -->
 
   <bean id="repository.contentStore" 
-        class="org.vortikal.repositoryimpl.store.fs.SimpleFileSystemContentStore">
+        class="org.vortikal.repository.store.fs.SimpleFileSystemContentStore">
     <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
   </bean>
@@ -164,7 +164,7 @@
     <property name="repository" ref="repository.requestLocal" />
   </bean>
 
-  <bean id="lockManager" class="org.vortikal.repositoryimpl.LockManager">
+  <bean id="lockManager" class="org.vortikal.repository.LockManager">
     <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
@@ -182,13 +182,13 @@
     </property>
   </bean>
 
-  <bean id="propertyManager" class="org.vortikal.repositoryimpl.PropertyManagerImpl">
+  <bean id="propertyManager" class="org.vortikal.repository.PropertyManagerImpl">
     <property name="valueFactory" ref="valueFactory"/>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="repositoryResourceHelper"
-        class="org.vortikal.repositoryimpl.RepositoryResourceHelperImpl">
+        class="org.vortikal.repository.RepositoryResourceHelperImpl">
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="propertyManager" ref="propertyManager" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -197,21 +197,21 @@
   </bean>
   
   <bean id="resourceTypeTree"
-        class="org.vortikal.repositoryimpl.ResourceTypeTreeImpl" />
+        class="org.vortikal.repository.ResourceTypeTreeImpl" />
 
   <bean id="contentRepresentationRegistry"
-        class="org.vortikal.repositoryimpl.content.ContentRepresentationRegistry" />
+        class="org.vortikal.repository.content.ContentRepresentationRegistry" />
 
-  <bean id="jdomContentFactory" class="org.vortikal.repositoryimpl.content.JDOMContentFactory" />
+  <bean id="jdomContentFactory" class="org.vortikal.repository.content.JDOMContentFactory" />
 
 
-  <bean id="jtidyContentFactory" class="org.vortikal.repositoryimpl.content.JTidyContentFactory" />
-  <bean id="bufferedImageContentFactory" class="org.vortikal.repositoryimpl.content.BufferedImageContentFactory" />
+  <bean id="jtidyContentFactory" class="org.vortikal.repository.content.JTidyContentFactory" />
+  <bean id="bufferedImageContentFactory" class="org.vortikal.repository.content.BufferedImageContentFactory" />
   <bean id="audioFileContentFactory"
-        class="org.vortikal.repositoryimpl.content.AudioFileContentFactory" />
+        class="org.vortikal.repository.content.AudioFileContentFactory" />
 
 
-  <bean id="authorizationManager" class="org.vortikal.repositoryimpl.AuthorizationManagerImpl">
+  <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManagerImpl">
     <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />
     <property name="lockManager" ref="lockManager" />
@@ -268,18 +268,18 @@
    </bean>
 
 <!--
-  <bean id="repository.importer" class="org.vortikal.repositoryimpl.DataImportUtil">
+  <bean id="repository.importer" class="org.vortikal.repository.DataImportUtil">
     <property name="repository" ref="repository" />
   </bean>
 
 
-  <bean id="repository.evaluator" class="org.vortikal.repositoryimpl.EvaluatorUtil">
+  <bean id="repository.evaluator" class="org.vortikal.repository.EvaluatorUtil">
     <property name="propertyManager" ref="propertyManager" />
     <property name="dataAccessor" ref="repository.database" />
   </bean>
 -->
 
-<!--   <bean class="org.vortikal.repositoryimpl.ResourceImpl" scope="prototype"> -->
+<!--   <bean class="org.vortikal.repository.ResourceImpl" scope="prototype"> -->
 <!--     <property name="propertyManager" ref="propertyManager"/> -->
 <!--     <property name="authorizationManager" ref="authorizationManager" /> -->
 <!--   </bean> -->

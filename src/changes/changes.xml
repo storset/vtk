@@ -8,9 +8,15 @@
 
   <body>
 
-    <release version="0.3.12-SNAPSHOT" date="In SVN" description="Release 0.3.12">
+    <release version="0.4-SNAPSHOT" date="In SVN" description="Release 0.4">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.3.11.1" date="2007-10-11" description="Release 0.3.11">
+      <action type="fix">
+        Fix for locale-based date formatting.
+      </action>
     </release>
 
     <release version="0.3.11" date="2007-10-11" description="Release 0.3.11">

@@ -46,6 +46,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -147,10 +148,10 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
             urlMap = new HashMap();
         }
 
-        String url = null;
+        URL url = null;
         try {
             if (resource != null) {
-                url = this.service.constructLink(resource, principal,
+                url = this.service.constructURL(resource, principal,
                                                  this.matchAssertions);
             }
         } catch (ServiceUnlinkableException ex) { }

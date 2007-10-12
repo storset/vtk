@@ -42,11 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.OrderComparator;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
@@ -62,64 +59,48 @@ import org.vortikal.web.service.Service;
  * Request context initializer. On every request the {@link Service}
  * tree(s) are traversed and assertions are tested until a match is
  * found. The matched service is placed in the {@link RequestContext},
- * which is associated with the request using a threadlocal.
+ * which is associated with the request using a thread local.
  *
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>repository</code> - the {@link Repository content
+ *   <li><code>repository</code> - required {@link Repository content
  *   repository}
- *   <li><code>trustedToken</code> - the token used for initial
- *   resource retrieval. This token should preferably be able to read
+ *   <li><code>trustedToken</code> - required token used for initial
+ *   resource retrieval. This token should be able to read
  *   every resource (see {@link TokenManager#getRegisteredToken} and
  *   {@link org.vortikal.security.roles.RoleManager#READ_EVERYTHING}
- *   <li><code>uriPrefixes</code> - a {@link List} of URI prefixes
- *   under which the web application exists (corresponds to servlet
- *   contexts). The prefixes are stripped off the request URIs.
+ *   <li><code>services</code> - a list of {@link Service services}
+ *   to construct a service tree of.
+ *   <li><code>indexFileResolver</code> - an optional {@link IndexFileResolver}
  * </ul>
  *
  */
-public class RequestContextInitializer
-  implements ContextInitializer, ApplicationContextAware, InitializingBean {
+public class RequestContextInitializer implements ContextInitializer {
 
     // Map containing parent -> children mapping, effectively representing top-down graph of the service trees.
     private Map<Service, List<Service>> childServices = new HashMap<Service, List<Service>>();
     
     private IndexFileResolver indexFileResolver;
     private static Log logger = LogFactory.getLog(RequestContextInitializer.class);
-    private ApplicationContext context = null;
     private List<Service> rootServices = new ArrayList<Service>();
 
     private String trustedToken;
     private Repository repository;
-    public void setRepository(Repository repository) {
+    
+    
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
  
-    
-    public void setTrustedToken(String trustedToken) {
-        this.trustedToken = trustedToken;
-    }
 
-    public void setApplicationContext(ApplicationContext context) {
-        this.context = context;
-    }
-    
+    @SuppressWarnings("unchecked")
+    @Required public void setServices(List<Service> services) {
 
-    public void afterPropertiesSet() {
-        if (this.trustedToken == null) {
-            throw new BeanInitializationException(
-                "Required property 'trustedToken' not set");
+        if (services == null) {
+            throw new IllegalArgumentException("Property 'services' cannot be null");
         }
-
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Required property 'repository' not set");
-        }
-
-        Map<String, Service> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                this.context, Service.class, true, false);
         
-        for (Service service : matchingBeans.values()) {
+        for (Service service : services) {
             Service parent = service.getParent();
             if (parent == null) {
                 this.rootServices.add(service);
@@ -134,7 +115,7 @@ public class RequestContextInitializer
                 }
             }
         }
-        
+
         if (this.rootServices.isEmpty()) {
             throw new BeanInitializationException(
                     "No services defined in context.");
@@ -164,7 +145,9 @@ public class RequestContextInitializer
         }
     }
     
-
+    @Required public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
 
     public void createContext(HttpServletRequest request) throws Exception {
 
@@ -199,8 +182,7 @@ public class RequestContextInitializer
                 
             }
         }
-        for (Iterator iter = this.rootServices.iterator(); iter.hasNext();) {
-            Service service = (Service) iter.next();
+        for (Service service: this.rootServices) {
 
             // Set an initial request context (with the resource, but
             // without the matched service)

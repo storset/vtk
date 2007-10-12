@@ -20,7 +20,13 @@
       <property name="trustedToken" ref="trustedToken" />
       <property name="repository" ref="repository" />
       <property name="indexFileResolver" ref="indexFileResolver" />
+      <property name="services" ref="services" />
    </bean>
+
+   <bean id="services" class="org.vortikal.beans.factory.BeansListingFactoryBean">
+     <property name="targetBeansClass" value="org.vortikal.web.service.Service" />
+   </bean>
+
 
 <bean id="indexFileResolver" class="org.vortikal.web.IndexFileResolver">
   <property name="indexFileList" ref="indexFileList" />

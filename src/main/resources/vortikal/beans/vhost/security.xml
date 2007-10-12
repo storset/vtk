@@ -130,7 +130,18 @@
 
 
   <bean id="principalManager"
-        class="org.vortikal.security.PrincipalManagerImpl" />
+        class="org.vortikal.security.PrincipalManagerImpl">
+    <property name="principalStores">
+      <bean class="org.vortikal.beans.factory.BeansListingFactoryBean">
+        <property name="targetBeansClass" value="org.vortikal.security.PrincipalStore" />
+      </bean>
+    </property>
+    <property name="groupStores">
+      <bean class="org.vortikal.beans.factory.BeansListingFactoryBean">
+        <property name="targetBeansClass" value="org.vortikal.security.GroupStore" />
+      </bean>
+    </property>
+  </bean>
 
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactoryImpl">
     <property name="defaultDomain" value="${defaultPrincipalDomain}" />

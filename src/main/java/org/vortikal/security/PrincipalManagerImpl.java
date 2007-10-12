@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,102 +30,62 @@
  */
 package org.vortikal.security;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.OrderComparator;
-import org.vortikal.security.store.ChainedGroupStore;
-import org.vortikal.security.store.ChainedPrincipalStore;
+import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.cache.SimpleCacheImpl;
 
 
 /**
  * A simple principal manager implementation.
  *
- * XXX: reevaluate lookup strategy for stores!
  */
-public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
-                                             ApplicationContextAware {
+public class PrincipalManagerImpl implements PrincipalManager, InitializingBean {
     
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(PrincipalManagerImpl.class);
 
     private PrincipalStore principalStore;
     private GroupStore groupStore;
     
-    private ApplicationContext applicationContext;
-    
-
-
-
     public void setPrincipalStore(PrincipalStore principalStore) {
         this.principalStore = principalStore;
     }
 
-
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public void setPrincipalStores(List<PrincipalStore> principalStores) {
+        logger.info("Initialized with principal stores: " + principalStores);
+        
+        if (principalStores != null) {
+            this.principalStore = new ChainedPrincipalStore(principalStores); 
+        }
     }
     
-    public void afterPropertiesSet() throws Exception {
-
-        if (this.principalStore == null) {
-            
-            // Try to look up principal stores from the context
-
-            Map<?, PrincipalStore> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                this.applicationContext, PrincipalStore.class, true, false);
-    
-            List<PrincipalStore> stores = new ArrayList<PrincipalStore>(matchingBeans.values());
-            Collections.sort(stores, new OrderComparator());
-
-            if (stores.size() > 0) {
-                this.principalStore = new ChainedPrincipalStore(stores);
-            }
-        }
+    public void setGroupStores(List<GroupStore> groupStores) {
+        logger.info("Initialized with group stores: " + groupStores);
         
+        if (groupStores != null) {
+            this.groupStore = new ChainedGroupStore(groupStores, true); 
+        }
+    }    
+
+    
+    public void afterPropertiesSet() throws Exception {
         if (this.principalStore == null) {
             throw new BeanInitializationException(
                 "JavaBean Property 'principalStore' must be specified");
         }
 
-        if (this.logger.isInfoEnabled()) {
-            this.logger.info("Using principal store " + this.principalStore);
-        }
-
-        if (this.groupStore == null) {
-            
-            // Try to look up principal stores from the context
-
-            Map<?, GroupStore> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-                this.applicationContext, GroupStore.class, true, false);
-    
-            List<GroupStore> stores = new ArrayList<GroupStore>(matchingBeans.values());
-            Collections.sort(stores, new OrderComparator());
-
-            if (stores.size() > 0) {
-                this.groupStore = new ChainedGroupStore(stores, new SimpleCacheImpl(60));
-            }
-        }
-        
         if (this.groupStore == null) {
             throw new BeanInitializationException(
                 "JavaBean Property 'groupStore' must be specified");
         }
-
-        if (this.logger.isInfoEnabled()) {
-            this.logger.info("Using group store " + this.groupStore);
-        }
-
     }
     
     public boolean validatePrincipal(Principal principal)
@@ -147,4 +107,145 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean,
     public Set<Principal> getMemberGroups(Principal principal) {
         return this.groupStore.getMemberGroups(principal);
     }
+
+    private class ChainedPrincipalStore implements PrincipalStore {
+
+        private List<PrincipalStore> managers = null;
+
+        public ChainedPrincipalStore(List<PrincipalStore> managers) {
+            this.managers = managers;
+        }
+
+        public boolean validatePrincipal(Principal principal)
+            throws AuthenticationProcessingException {
+
+            
+            for (PrincipalStore manager: this.managers) {
+                if (manager.validatePrincipal(principal)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public int getOrder() {
+            // XXX: DUMMY - not used, but should be refactored
+            return 0;
+        }
+
+    }
+
+
+    private class ChainedGroupStore implements GroupStore {
+
+        private List<GroupStore> managers;
+
+        // Maintain cache: principal -> item(map(groups)) for
+        // fast group membership lookup
+        private SimpleCache<Principal, GroupItem> cache;
+
+        public ChainedGroupStore(List<GroupStore> managers) {
+            this.managers = managers;
+        }
+
+        public ChainedGroupStore(List<GroupStore> managers, boolean cache) {
+            this.managers = managers;
+            if (cache)
+                this.cache = new SimpleCacheImpl<Principal, GroupItem>(60);
+        }
+        
+        public boolean validateGroup(Principal group)
+            throws AuthenticationProcessingException {
+            for (GroupStore manager: this.managers) {
+                if (manager.validateGroup(group)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+
+        public boolean isMember(Principal principal, Principal group)
+            throws AuthenticationProcessingException {
+
+            if (this.cache == null) {
+                return isMemberUncached(principal, group);
+            }
+            return isMemberCached(principal, group);
+        }
+        
+        public boolean isMemberUncached(Principal principal, Principal group)
+            throws AuthenticationProcessingException {
+
+            for (GroupStore manager: this.managers) {
+                if (manager.validateGroup(group)) {
+                    boolean isMember = manager.isMember(principal, group);
+                    return isMember;
+                }
+            }
+            return false;
+        }
+
+
+        public boolean isMemberCached(Principal principal, Principal group)
+            throws AuthenticationProcessingException {
+
+            String groupName = group.getQualifiedName();
+                
+            GroupItem item = this.cache.get(principal);
+            if (item == null) {
+                item = new GroupItem();
+                this.cache.put(principal, item);
+            }
+
+            Map<String, Object> groupsMap = item.getGroupsMap();
+
+            if (groupsMap.containsKey(groupName)) {
+                boolean isMember = (groupsMap.get(groupName) != null);
+                return isMember;
+            }
+
+
+            for (GroupStore manager: this.managers) {
+                // XXX: We currently have two group stores for the same domain,
+                // Should both member sets be checked? (currently only the first)
+                if (manager.validateGroup(group)) {
+                    boolean isMember = manager.isMember(principal, group);
+
+                    if (isMember) {
+                        item.getGroupsMap().put(groupName, new Object());
+                    } else {
+                        item.getGroupsMap().put(groupName, null);
+                    }
+                    return isMember;
+                }
+            }
+            return false;
+        }
+        
+        public Set<Principal> getMemberGroups(Principal principal) {
+            Set<Principal> groups = new HashSet<Principal>();
+            for (GroupStore manager: this.managers) {
+                Set<Principal> memberGroups = manager.getMemberGroups(principal);
+                if (memberGroups != null) {
+                    groups.addAll(memberGroups);
+                }
+            }
+            return groups;
+        }
+
+        private class GroupItem {
+            private Map<String, Object> groupsMap = new HashMap<String, Object>();
+
+            public Map<String, Object> getGroupsMap() {
+                return this.groupsMap;
+            }
+        }
+        
+        public int getOrder() {
+            // XXX: DUMMY - not used, but should be refactored
+            return 0;
+        }
+    }
+
 }

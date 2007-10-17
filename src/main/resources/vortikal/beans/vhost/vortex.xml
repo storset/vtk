@@ -27,10 +27,9 @@
      <property name="targetBeansClass" value="org.vortikal.web.service.Service" />
    </bean>
 
-
-<bean id="indexFileResolver" class="org.vortikal.web.IndexFileResolver">
-  <property name="indexFileList" ref="indexFileList" />
-</bean>
+   <bean id="indexFileResolver" class="org.vortikal.web.IndexFileResolver">
+     <property name="indexFileList" ref="indexFileList" />
+   </bean>
 
   <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList"

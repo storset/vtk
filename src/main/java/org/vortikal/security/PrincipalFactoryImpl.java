@@ -32,6 +32,8 @@ package org.vortikal.security;
 
 import java.util.Map;
 
+import org.vortikal.security.Principal.Type;
+
 /**
  * Centralized principal factory
  * 
@@ -50,7 +52,7 @@ import java.util.Map;
  *   is a string in which the sequence <code>%u</code> is substituted
  *   with the principal's (short) {@link Principal#getName name},
  *   thereby forming a unique URL for each principal. This URL can be
- *   acessed using the {@link Principal#getURL} method.
+ *   accessed using the {@link Principal#getURL} method.
  * </ul>
  *
  */
@@ -60,17 +62,17 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
 
     private String defaultDomain;
     private String defaultGroupDomain;
-    private Map domainURLMap;
+    private Map<String, String> domainURLMap;
 
     public Principal getUserPrincipal(String id) {
-        return getPrincipal(id, Principal.TYPE_USER);
+        return getPrincipal(id, Principal.Type.USER);
     }
     
     public Principal getGroupPrincipal(String id) {
-        return getPrincipal(id, Principal.TYPE_GROUP);
+        return getPrincipal(id, Principal.Type.GROUP);
     }
     
-    private Principal getPrincipal(String id, int type) {
+    private Principal getPrincipal(String id, Type type) {
         if (id == null) {
             throw new InvalidPrincipalException("Tried to get null principal");
         }
@@ -106,7 +108,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
         String qualifiedName = id;
         
         String defDomain = 
-            (type == Principal.TYPE_GROUP) ? this.defaultGroupDomain : this.defaultDomain;
+            (type == Principal.Type.GROUP) ? this.defaultGroupDomain : this.defaultDomain;
 
         if (id.indexOf(DOMAIN_DELIMITER) > 0) {
 
@@ -130,7 +132,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
 
         String url = null;
         if (domain != null && this.domainURLMap != null) {
-            String pattern = (String) this.domainURLMap.get(domain);
+            String pattern = this.domainURLMap.get(domain);
             if (pattern != null) {
                 url = pattern.replaceAll("%u", name);
             }
@@ -157,7 +159,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
     }
     
 
-    public void setDomainURLMap(Map domainURLMap) {
+    public void setDomainURLMap(Map<String, String> domainURLMap) {
         this.domainURLMap = domainURLMap;
     }
 

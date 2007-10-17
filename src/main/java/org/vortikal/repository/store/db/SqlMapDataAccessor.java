@@ -373,12 +373,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR));
 
         String sqlMap = getSqlMap("discoverAcls");
-        List uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<Map> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
             
         String[] result = new String[uris.size()];
         int n = 0;
-        for (Iterator i = uris.iterator(); i.hasNext();) {
-            Map map = (Map) i.next();
+        for (Map map: uris) {
             result[n++] = (String) map.get("uri");
         }
         return result;
@@ -454,14 +453,13 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             } else {
                 sqlMap = getSqlMap("loadPreviousInheritedFromMap");
 
-                final List list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+                final List<Map> list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
                 final String batchSqlMap = getSqlMap("updateAclInheritedFromByResourceId");
 
                 getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
                     public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                         executor.startBatch();
-                        for (Iterator i = list.iterator(); i.hasNext();) {
-                            Map map = (Map) i.next();
+                        for (Map map: list) {
                             executor.update(batchSqlMap, map);
                         }
                         executor.executeBatch();
@@ -543,12 +541,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("depth", SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
-        List resourceList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<Map> resourceList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
         
         String[] childUris = new String[resourceList.size()];
         int n = 0;
-        for (Iterator i = resourceList.iterator(); i.hasNext();) {
-            Map map = (Map) i.next();
+        for (Map map: resourceList) {
             childUris[n++] = (String) map.get("uri");
         }
 
@@ -570,10 +567,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("depth", SqlDaoUtils.getUriDepth(parent.getURI()) + 2);
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
-        List resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<Map> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
-        for (Iterator i = resourceUris.iterator(); i.hasNext();) {
-            Map map = (Map) i.next();
+        for (Map map: resourceUris) {
             String uri = (String) map.get("uri");
             String parentUri = URIUtil.getParentURI(uri);
             childMap.get(parentUri).add(uri);
@@ -665,25 +661,23 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
 
     private void insertAcl(final ResourceImpl r) {
-        final Map actionTypes = loadActionTypes();
+        final Map<String, Integer> actionTypes = loadActionTypes();
         final Acl newAcl = r.getAcl();
         if (newAcl == null) {
             throw new DataAccessException("Resource " + r + " has no ACL");
         }
-        final Set actions = newAcl.getActions();
+        final Set<RepositoryAction> actions = newAcl.getActions();
         final String sqlMap = getSqlMap("insertAclEntry");
 
         getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
             public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                 executor.startBatch();
-                for (Iterator i = actions.iterator(); i.hasNext();) {
-                    RepositoryAction action = (RepositoryAction) i.next();
+                for (RepositoryAction action: actions) {
                     String actionName = Privilege.getActionName(action);
             
-                    for (Iterator j = newAcl.getPrincipalSet(action).iterator(); j.hasNext();) {
-                        Principal p = (Principal) j.next();
+                    for (Principal p: newAcl.getPrincipalSet(action)) {
 
-                        Integer actionID = (Integer) actionTypes.get(actionName);
+                        Integer actionID = actionTypes.get(actionName);
                         if (actionID == null) {
                             throw new SQLException("insertAcl(): Unable to "
                                                    + "find id for action '" + action + "'");
@@ -693,7 +687,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                         parameters.put("actionId", actionID);
                         parameters.put("resourceId", r.getID());
                         parameters.put("principal", p.getQualifiedName());
-                        parameters.put("isUser", p.getType() == Principal.TYPE_GROUP ? "N" : "Y");
+                        parameters.put("isUser", p.getType() == Principal.Type.GROUP ? "N" : "Y");
                         parameters.put("grantedBy", r.getOwner().getQualifiedName());
                         parameters.put("grantedDate", new Date());
 
@@ -713,9 +707,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Integer> actionTypes = new HashMap<String, Integer>();
 
         String sqlMap = getSqlMap("loadActionTypes");
-        List list = getSqlMapClientTemplate().queryForList(sqlMap, null);
-        for (Iterator i = list.iterator(); i.hasNext();) {
-            Map map = (Map) i.next();
+        List<Map> list = getSqlMapClientTemplate().queryForList(sqlMap, null);
+        for (Map map: list) {
             actionTypes.put((String) map.get("name"), (Integer) map.get("id"));
         }
         return actionTypes;
@@ -734,7 +727,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     private int findNearestACL(String uri) {
         
-        List path = java.util.Arrays.asList(URLUtil.splitUriIncrementally(uri));
+        List<String> path = java.util.Arrays.asList(URLUtil.splitUriIncrementally(uri));
         
         // Reverse list to get deepest URI first
         Collections.reverse(path);
@@ -742,18 +735,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("path", path);
         String sqlMap = getSqlMap("findNearestAclResourceId");
-        List list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<Map> list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
         Map<String, Integer> uris = new HashMap<String, Integer>();
-        for (Iterator i = list.iterator(); i.hasNext();) {
-             Map map = (Map) i.next();
+        for (Map map: list) {
              uris.put((String) map.get("uri"), (Integer) map.get("resourceId"));
         }
 
         int nearestResourceId = -1;
-        for (Iterator i = path.iterator(); i.hasNext();) {
-            String candidateUri = (String) i.next();
+        for (String candidateUri: path) {
             if (uris.containsKey(candidateUri)) {
-                nearestResourceId = ((Integer) uris.get(candidateUri)).intValue();
+                nearestResourceId = uris.get(candidateUri).intValue();
                 break;
             }
         }
@@ -819,16 +810,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameterMap.put("resourceIds", resourceIds);
 
         String sqlMap = getSqlMap("loadAclEntriesByResourceIds");
-        List aclEntries = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+        List<Map> aclEntries = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
             
 
-        for (Iterator i = aclEntries.iterator(); i.hasNext();) {
-            Map map = (Map) i.next();
+        for (Map map: aclEntries) {
 
             Integer resourceId = (Integer) map.get("resourceId");
             String privilege = (String) map.get("action");
 
-            AclImpl acl = (AclImpl) resultMap.get(resourceId);
+            AclImpl acl = resultMap.get(resourceId);
             
             if (acl == null) {
                 acl = new AclImpl();

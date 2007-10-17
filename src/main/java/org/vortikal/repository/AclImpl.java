@@ -144,7 +144,7 @@ public class AclImpl implements Acl {
         
         List<Principal> userList = new ArrayList<Principal>();
         for (Principal p: principals) {
-            if (p.getType() == Principal.TYPE_USER) {
+            if (p.getType() == Principal.Type.USER) {
                 userList.add(p);
             }
             
@@ -159,7 +159,7 @@ public class AclImpl implements Acl {
         
         List<Principal> groupList = new ArrayList<Principal>();
         for (Principal p: principals) {
-            if (p.getType() == Principal.TYPE_GROUP) {
+            if (p.getType() == Principal.Type.GROUP) {
                 groupList.add(p);
             }
         }
@@ -173,7 +173,7 @@ public class AclImpl implements Acl {
         
         List<Principal> principalList = new ArrayList<Principal>();
         for (Principal p: principals) {
-            if (p.getType() == Principal.TYPE_PSEUDO) {
+            if (p.getType() == Principal.Type.PSEUDO) {
                 principalList.add(p);
             }
             

@@ -83,8 +83,8 @@ public class PseudoPrincipal implements Principal {
         return true;
     }
 
-    public int getType() {
-        return Principal.TYPE_PSEUDO;
+    public Type getType() {
+        return Principal.Type.PSEUDO;
     }
 
     public int compareTo(Object o) {

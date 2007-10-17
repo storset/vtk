@@ -36,21 +36,12 @@ package org.vortikal.security;
  */
 public interface Principal extends Comparable, java.io.Serializable {
     
-    /**
-     * Indicates that this Principal represents a named user
-     */
-    public static final int TYPE_USER = 0;
-
-    /**
-     * Indicates that this Principal represents a named group
-     */
-    public static final int TYPE_GROUP = 1;
+    public enum Type {
+       USER, // a named user
+       GROUP, // a named group
+       PSEUDO // a pseudo user
+    }
     
-    /**
-     * Indicates that this Principal represents a pseudo user
-     */
-    public static final int TYPE_PSEUDO = 2;
-
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
      * @return If the domain equals the principalManager's defaultDomain
@@ -92,5 +83,5 @@ public interface Principal extends Comparable, java.io.Serializable {
 
     public boolean isUser();
     
-    public int getType();
+    public Type getType();
 }

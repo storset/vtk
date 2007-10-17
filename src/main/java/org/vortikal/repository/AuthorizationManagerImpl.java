@@ -579,7 +579,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
         for (Principal p: principalList) {
 
-            if (p.getType() == Principal.TYPE_GROUP) {
+            if (p.getType() == Principal.Type.GROUP) {
                 if (this.principalManager.isMember(principal, p)) {
                     return true;
                 }

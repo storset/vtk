@@ -45,7 +45,7 @@ class PrincipalImpl implements Principal {
     private String qualifiedName = null;
     private String domain = null;
     private String url = null;
-    private int type = Principal.TYPE_USER;
+    private Type type = Principal.Type.USER;
     
     public PrincipalImpl(String name, String qualifiedName,
                          String domain, String url) {
@@ -117,15 +117,15 @@ class PrincipalImpl implements Principal {
 
 
     public boolean isUser() {
-        return this.type == Principal.TYPE_USER;
+        return this.type == Principal.Type.USER;
     }
 
 
-    public int getType() {
+    public Type getType() {
         return this.type;
     }
 
-    public void setType(int type) {
+    public void setType(Type type) {
         this.type = type;
     }
     

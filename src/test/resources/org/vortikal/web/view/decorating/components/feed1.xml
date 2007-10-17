@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Feed1</title>
+    <link>http://www.usit.uio.no/it/vortex/nyheter/index.xml</link>
+    <description>Feed1</description>
+    <item><title>Oldest</title>
+      <description>Fletting av RSS, FCKeditor, ny mappelisting og slutt på å miste endringer når du ikke lagrer ofte m.m.</description> 
+      <link>http://www.usit.uio.no/it/vortex/nyheter/2007/versjon-2.0.13.xml</link>
+      <guid isPermaLink="true">http://www.usit.uio.no/it/vortex/nyheter/2007/versjon-2.0.13.xml</guid>
+      <pubDate>Thu, 11 Oct 2007 21:05:00 +0200</pubDate>
+      <dc:date>2007-10-11</dc:date>
+    </item>
+    <item><title>Newest</title>
+      <description>FCK 2.5 Beta ble sluppet i 10. oktober, og den støtter redigering i både Safari 3.0 og Opera 9.5.</description> 
+      <link>http://www.usit.uio.no/it/vortex/nyheter/2007/fck-opera-safari.xml</link>
+      <guid isPermaLink="true">http://www.usit.uio.no/it/vortex/nyheter/2007/fck-opera-safari.xml</guid>
+      
+      <pubDate>Fri, 12 Oct 2007 17:25:00 +0200</pubDate>
+      <dc:date>2007-10-12</dc:date>
+    </item>
+  </channel>
+</rss>

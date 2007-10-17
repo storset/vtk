@@ -45,8 +45,6 @@ import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
-import EDU.oswego.cs.dl.util.concurrent.FJTask.Par;
-
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
@@ -137,6 +135,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         feed.setEntries(entries);
         
         Map<SyndEntry, SyndFeed> feedMapping = new HashMap<SyndEntry, SyndFeed>();
+        
         boolean displayChannel = conf.get("displayChannel") != null && (Boolean)conf.get("displayChannel");
         if (displayChannel) {
             model.put("feedMapping", new FeedMapping(feedMapping));
@@ -144,6 +143,40 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         
         String[] urlArray = urls.split(",");
 
+        parseFeeds(request, entries, feedMapping, urlArray);
+
+        try {
+            sort(entries);
+        } catch (MissingPublishedDateException e) {
+            SyndFeed f = feedMapping.get(e.getEntry());
+            throw new MissingPublishedDateException(
+                    "Feed " + f.getUri() + " missing published date. Not possible to sort.");
+        }
+
+        model.put("feed", feed);
+        model.put("conf", conf);
+    }
+
+
+    void sort(List<SyndEntry> entries) throws MissingPublishedDateException {
+        Collections.sort(entries, new Comparator<SyndEntry>() {
+            public int compare(SyndEntry entry1, SyndEntry entry2) {
+
+                Date pubDate1 = entry1.getPublishedDate();
+                if (pubDate1 == null) {
+                    throw new MissingPublishedDateException(entry1);
+                }
+                Date pubDate2 = entry2.getPublishedDate();
+                if (pubDate2 == null) {
+                    throw new MissingPublishedDateException(entry2);
+                }
+                return pubDate2.compareTo(pubDate1);
+            }});
+    }
+
+
+    void parseFeeds(DecoratorRequest request, List<SyndEntry> entries,
+            Map<SyndEntry, SyndFeed> feedMapping, String[] urlArray) {
         for (String url : urlArray) {
             url = url.trim();
 
@@ -168,33 +201,10 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
                 feedMapping.put(entry, tmpFeed);
             }
         }
-
-        try {
-            Collections.sort(entries, new Comparator<SyndEntry>() {
-                public int compare(SyndEntry entry1, SyndEntry entry2) {
-                
-                Date pubDate1 = entry1.getPublishedDate();
-                if (pubDate1 == null) {
-                    throw new MissingPublishedDateException(entry1);
-                }
-                Date pubDate2 = entry2.getPublishedDate();
-                if (pubDate2 == null) {
-                    throw new MissingPublishedDateException(entry2);
-                }
-                return pubDate1.compareTo(pubDate2);
-            }});
-        } catch (MissingPublishedDateException e) {
-            SyndFeed f = feedMapping.get(e.getEntry());
-            throw new MissingPublishedDateException(
-                    "Feed " + f.getUri() + " missing published date. Not possible to sort.");
-        }
-        
-        model.put("feed", feed);
-        model.put("conf", conf);
     }
 
     @SuppressWarnings("serial")
-    private class MissingPublishedDateException extends RuntimeException {
+    class MissingPublishedDateException extends RuntimeException {
         private SyndEntry entry;
         
         public MissingPublishedDateException(String message) {

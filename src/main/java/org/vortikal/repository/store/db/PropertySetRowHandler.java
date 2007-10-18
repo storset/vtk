@@ -291,7 +291,6 @@ class PropertySetRowHandler implements RowHandler {
                 List<String> values = propMap.get(holder);
                 if (values == null) {
                     values = new ArrayList<String>();
-                    holder.type = ((Integer)row.get("typeId")).intValue();
                     holder.values = values;
                     propMap.put(holder, values);
                 }
@@ -300,8 +299,7 @@ class PropertySetRowHandler implements RowHandler {
 
         }
 
-        for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
-            SqlDaoUtils.PropHolder holder = (SqlDaoUtils.PropHolder) i.next();
+        for (SqlDaoUtils.PropHolder holder: propMap.keySet()) {
             Property property = this.propertyManager.createProperty(
                 holder.namespaceUri, holder.name, 
                 holder.values.toArray(new String[]{}));

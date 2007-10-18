@@ -40,7 +40,7 @@
   <bean id="studieretningStudieretningskodePropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studieretningskode" /> 
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieretningStudieretningskodeEvaluator" />
@@ -54,7 +54,7 @@
  <bean id="studieretningStudieretningsnavnPropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studieretningsnavn" /> 
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieretningStudieretningsnavnEvaluator" />
@@ -68,7 +68,7 @@
   <bean id="studieretningProgramkodeReferansePropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="programkode" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieretningProgramkodeEvaluator" />

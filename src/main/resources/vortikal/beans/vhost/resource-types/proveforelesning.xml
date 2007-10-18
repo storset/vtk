@@ -42,7 +42,7 @@
         
     <bean id="proveforelesningDoktorandFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="doktorand.fornavn" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningDoktorandFornavnEvaluator" />
@@ -55,7 +55,7 @@
 
     <bean id="proveforelesningDoktorandEtternavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="doktorand.etternavn" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningDoktorandEtternavnEvaluator" />
@@ -69,7 +69,7 @@
     <bean id="proveforelesningEmnePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="emne" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningEmneEvaluator" />
@@ -83,7 +83,7 @@
     <bean id="proveforelesningStarttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.start" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningStarttidspunktEvaluator" />
@@ -97,7 +97,7 @@
     <bean id="proveforelesningSluttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.slutt" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningSluttidspunktEvaluator" />
@@ -111,7 +111,7 @@
     <bean id="proveforelesningStedPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.sted" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="proveforelesningStedEvaluator" />

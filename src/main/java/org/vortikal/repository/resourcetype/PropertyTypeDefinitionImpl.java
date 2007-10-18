@@ -34,6 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
@@ -41,7 +42,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private Namespace namespace;
     
     private String name;
-    private int type = PropertyType.TYPE_STRING;
+    private Type type = PropertyType.Type.STRING;
     private boolean multiple = false;
     private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false;
@@ -56,8 +57,9 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private Vocabulary<Value> vocabulary;
 
+
     public void afterPropertiesSet() {
-        
+
     }
     
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
@@ -134,11 +136,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.protectionLevel = protectionLevel;
     }
 
-    public int getType() {
+    public Type getType() {
         return this.type;
     }
 
-    public void setType(int type) {
+    public void setType(Type type) {
         this.type = type;
     }
 

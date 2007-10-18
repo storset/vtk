@@ -40,7 +40,7 @@
 
   <bean id="semesterEmnekodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnekode" /> <!-- mixin? -->
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="semesterEmnekodeEvaluator" />
@@ -53,7 +53,7 @@
 
   <bean id="semesterSemesterPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="semester" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="semesterSemesterEvaluator" />
@@ -65,7 +65,7 @@
 
   <bean id="semesterAarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="aar" />
-    <property name="type" ref="TYPE_INT" />
+    <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="semesterAarEvaluator" />
@@ -78,7 +78,7 @@
 
   <bean id="semesterSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="spraak" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue">

@@ -624,7 +624,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 sb.append("  ");
                 for (int j = 0; j < level; j++)
                     sb.append("  ");
-                String type = PropertyType.PROPERTY_TYPE_NAMES[definition.getType()];
+                String type = definition.getType().toString();
                 sb.append(type);
                 if (definition.isMultiple())
                     sb.append("[]");

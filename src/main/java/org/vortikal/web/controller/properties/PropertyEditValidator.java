@@ -84,7 +84,7 @@ public class PropertyEditValidator implements Validator {
                 Value[] values = this.valueFactory.createValues(
                     splitValues, command.getDefinition().getType());
 
-                if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
+                if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
                     for (Value v: values) {
                         if (!this.principalManager.validatePrincipal(v.getPrincipalValue())) {
                             throw new ValueFormatException("Invalid principal " + v);
@@ -95,7 +95,7 @@ public class PropertyEditValidator implements Validator {
             } else {
                 Value value = this.valueFactory.createValue(
                     formValue, command.getDefinition().getType());
-                if (command.getDefinition().getType() == PropertyType.TYPE_PRINCIPAL) {
+                if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
                     if (!this.principalManager.validatePrincipal(value.getPrincipalValue())) {
                             throw new ValueFormatException("Invalid principal " + value);
                     }

@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -66,7 +67,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         }
     }
     
-    public Value[] createValues(String[] stringValues, int type) 
+    public Value[] createValues(String[] stringValues, Type type) 
         throws ValueFormatException {
         
         if (stringValues == null) {
@@ -82,7 +83,7 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         
     }
     
-    public Value createValue(String stringValue, int type)
+    public Value createValue(String stringValue, Type type)
             throws ValueFormatException {
         
         if (stringValue == null) {
@@ -91,36 +92,36 @@ public class ValueFactoryImpl implements ValueFactory, InitializingBean {
         
         switch (type) {
         
-        case PropertyType.TYPE_STRING:
+        case STRING:
             if (stringValue.length() == 0) {
                 throw new ValueFormatException("Illegal string value: empty");
             }
             return new Value(stringValue);
 
-        case PropertyType.TYPE_BOOLEAN:
+        case BOOLEAN:
             return new Value("true".equalsIgnoreCase(stringValue));
 
-        case PropertyType.TYPE_DATE:
+        case DATE:
             // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
             // Dates are represented as described in the configuration for this bean in the List stringFormats
             Date date = getDateFromStringValue(stringValue);
             return new Value(date);
             
-        case PropertyType.TYPE_INT:
+        case INT:
             try {
                 return new Value(Integer.parseInt(stringValue));
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException(nfe.getMessage());
             }
 
-        case PropertyType.TYPE_LONG:
+        case LONG:
             try {
                 return new Value(Long.parseLong(stringValue));
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException(nfe.getMessage());
             }
             
-        case PropertyType.TYPE_PRINCIPAL:
+        case PRINCIPAL:
             try {
                 Principal principal = this.principalFactory.getUserPrincipal(stringValue);
                 return new Value(principal);

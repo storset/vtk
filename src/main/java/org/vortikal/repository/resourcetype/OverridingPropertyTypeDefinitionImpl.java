@@ -35,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
@@ -99,7 +100,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getProtectionLevel();
     }
 
-    public int getType() {
+    public Type getType() {
         return this.overriddenPropDef.getType();
     }
 

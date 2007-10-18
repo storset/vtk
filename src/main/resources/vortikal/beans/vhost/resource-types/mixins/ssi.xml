@@ -25,7 +25,7 @@
 
   <bean id="containsSSIDirectivesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="containsSSIDirectives" />
-    <property name="type" ref="TYPE_BOOLEAN" />
+    <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="vocabulary">

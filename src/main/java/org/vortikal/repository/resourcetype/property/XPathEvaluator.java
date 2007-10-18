@@ -54,6 +54,7 @@ import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 import org.vortikal.xml.xpath.XPathFunction;
 
@@ -184,7 +185,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
     }
     
 
-    private Value getValue(Object o, int type) {
+    private Value getValue(Object o, Type type) {
         String stringVal = null;
 
         if (o == null) {

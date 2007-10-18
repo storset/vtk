@@ -46,7 +46,7 @@
   <bean id="studieprogramProgramkodePropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="programkode" /> 
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramProgramkodeEvaluator" />
@@ -60,7 +60,7 @@
   <bean id="studieprogramProgramnavnPropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="programnavn" /> 
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramProgramnavnEvaluator" />
@@ -73,7 +73,7 @@
 
   <bean id="studieprogramProgramtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="programtype" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramProgramtypeEvaluator" />
@@ -85,7 +85,7 @@
 
   <bean id="studieprogramAntallaarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="antallaar" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramAntallaarEvaluator" />
@@ -97,7 +97,7 @@
 
   <bean id="studieprogramStudiepoengPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studiepoeng" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramStudiepoengEvaluator" />
@@ -109,7 +109,7 @@
 
   <bean id="studieprogramOmfangoppgavePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="omfangoppgave" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramOmfangoppgaveEvaluator" />
@@ -121,7 +121,7 @@
 
   <bean id="studieprogramSoknadsfristPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="soknadsfrist" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramSoknadsfristEvaluator" />
@@ -133,7 +133,7 @@
 
   <bean id="studieprogramStudieplasserPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studieplasser" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramStudieplasserEvaluator" />
@@ -145,7 +145,7 @@
 
   <bean id="studieprogramSokodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="sokode" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="studieprogramSokodeEvaluator" />

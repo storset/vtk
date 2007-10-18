@@ -63,6 +63,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
@@ -472,10 +473,10 @@ public class ProppatchController extends AbstractWebdavController  {
         }
     }
     
-    protected Value elementToValue(Element element, int type) throws ValueFormatException {
+    protected Value elementToValue(Element element, Type type) throws ValueFormatException {
         String stringValue = element.getText();
         
-        if (type == PropertyType.TYPE_DATE) {
+        if (type == PropertyType.Type.DATE) {
             // Try to be liberal in accepting date formats:
             try {
                 return new Value(WebdavUtil.parsePropertyDateValue(stringValue));
@@ -490,7 +491,7 @@ public class ProppatchController extends AbstractWebdavController  {
         return this.valueFactory.createValue(stringValue, type);
     }
     
-    protected Value[] elementToValues(Element element, int type) throws ValueFormatException {
+    protected Value[] elementToValues(Element element, Type type) throws ValueFormatException {
         
         String[] stringValues;
         Element valuesElement;
@@ -517,7 +518,7 @@ public class ProppatchController extends AbstractWebdavController  {
         }
     
         Value[] values;
-        if (type == PropertyType.TYPE_DATE) {
+        if (type == PropertyType.Type.DATE) {
             values = new Value[stringValues.length];
             try {
                 for (int i=0; i<values.length; i++) {

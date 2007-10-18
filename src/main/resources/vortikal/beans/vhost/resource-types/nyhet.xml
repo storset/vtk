@@ -42,7 +42,7 @@
     <bean id="nyhetTittelPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tittel" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="nyhetTittelEvaluator" />
@@ -56,7 +56,7 @@
     <bean id="nyhetIngressPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="ingress" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="nyhetIngressEvaluator" />
@@ -69,7 +69,7 @@
     <bean id="nyhetIngressbildePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="ingressbilde" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="nyhetIngressbildeEvaluator" />
@@ -81,7 +81,7 @@
 
     <bean id="nyhetDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="dato" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="nyhetDatoEvaluator" />
@@ -94,7 +94,7 @@
     <bean id="nyhetMediaPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="media" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="nyhetMediaEvaluator" />

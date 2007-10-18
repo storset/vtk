@@ -117,7 +117,7 @@ public class HeaderControlHandlerInterceptor
     
     public void setExpiresHeaderProperty(PropertyTypeDefinition expiresHeaderProperty) {
         if (expiresHeaderProperty != null) {
-            if (expiresHeaderProperty.getType() != PropertyType.TYPE_LONG) {
+            if (expiresHeaderProperty.getType() != PropertyType.Type.LONG) {
                 throw new IllegalArgumentException(
                     "expiresHeaderProperty must be a numeric property type definition");
             }
@@ -150,7 +150,7 @@ public class HeaderControlHandlerInterceptor
 
     public void afterPropertiesSet() {
         if (this.expiresHeaderProperty != null) {
-            if (this.expiresHeaderProperty.getType() != PropertyType.TYPE_LONG) {
+            if (this.expiresHeaderProperty.getType() != PropertyType.Type.LONG) {
                 throw new BeanInitializationException(
                     "JavaBean property 'expiresHeaderProperty' must be of type Long");
             }

@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import org.vortikal.repository.resourcetype.PropertyType.Type;
+
 /**
  * Interface for a <code>Value</code> "factory". It currently only does
  * value creation from string representation.
@@ -47,7 +49,7 @@ public interface ValueFactory {
      * @return The Value based on the stringValue and type
      * @throws ValueFormatException
      */
-    public Value createValue(String stringValue, int type)
+    public Value createValue(String stringValue, Type type)
         throws ValueFormatException;
     
 
@@ -58,7 +60,7 @@ public interface ValueFactory {
      * @return An array of Values 
      * @throws ValueFormatException
      */
-    public Value[] createValues(String[] stringValues, int type)
+    public Value[] createValues(String[] stringValues, Type type)
         throws ValueFormatException;
 
 }

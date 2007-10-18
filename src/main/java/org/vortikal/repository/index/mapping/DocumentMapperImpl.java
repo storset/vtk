@@ -289,7 +289,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             String stringValue = context.get(propDef);
             Property property = this.propertyManager.createProperty(propDef);
 
-            Value value = this.valueFactory.createValue(stringValue, PropertyType.TYPE_STRING);
+            Value value = this.valueFactory.createValue(stringValue, PropertyType.Type.STRING);
             property.setValue(value);
             propSet.addProperty(property);
         }
@@ -328,7 +328,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
             Value value = BinaryFieldValueMapper.getValueFromBinaryField(
                     storedValueFields.get(0), this.valueFactory,
-                    PropertyType.TYPE_STRING);
+                    PropertyType.Type.STRING);
 
             property.setValue(value);
         } else {

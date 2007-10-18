@@ -40,7 +40,7 @@
     
     <bean id="artikkelsamlingTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tittel" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="true" />
         <property name="defaultValue">
@@ -59,7 +59,7 @@
 
     <bean id="artikkelsamlingIngressPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="ingress" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="artikkelsamlingIngressEvaluator" />
@@ -71,7 +71,7 @@
     
     <bean id="artikkelsamlingLiteBildeWebadressePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="litebilde.src" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="artikkelsamlingLiteBildeWebadresseEvaluator" />
@@ -83,7 +83,7 @@
     
     <bean id="artikkelsamlingLiteBildeAlternativTekstPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="litebilde.alt" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="artikkelsamlingLiteBildeAlternativTextEvaluator" />

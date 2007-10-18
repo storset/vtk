@@ -3,43 +3,6 @@
 
 <beans>
 
-  <bean id="TYPE_STRING"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_STRING" />
-  </bean>
-
-  <bean id="TYPE_DATE"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_DATE" />
-  </bean>
-
-  <bean id="TYPE_BOOLEAN"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_BOOLEAN" />
-  </bean>
-
-  <bean id="TYPE_LONG"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_LONG" />
-  </bean>
-
-  <bean id="TYPE_INT"
-    class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-      value="org.vortikal.repository.resourcetype.PropertyType.TYPE_INT" />
-  </bean>
-
-  <bean id="TYPE_PRINCIPAL"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField"
-              value="org.vortikal.repository.resourcetype.PropertyType.TYPE_PRINCIPAL" />
-  </bean>
-
-  
   <!-- Pre-defined boolean values for convenience:  -->
   <bean id="VALUE_TRUE" class="org.vortikal.repository.resourcetype.Value">
     <constructor-arg type="boolean">

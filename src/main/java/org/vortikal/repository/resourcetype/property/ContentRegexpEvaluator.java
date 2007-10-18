@@ -93,7 +93,7 @@ public class ContentRegexpEvaluator implements ContentModificationPropertyEvalua
     public boolean contentModification(Principal principal, Property property, 
                                        PropertySet ancestorPropertySet, Content content, 
                                        Date time) {
-        if (property.getDefinition().getType() != PropertyType.TYPE_BOOLEAN) {
+        if (property.getDefinition().getType() != PropertyType.Type.BOOLEAN) {
             throw new PropertyEvaluationException("Type of property " + property
                                                   + " is not boolean, cannot evaluate ");
         }

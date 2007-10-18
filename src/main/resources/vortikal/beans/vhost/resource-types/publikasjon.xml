@@ -43,7 +43,7 @@
     <bean id="publikasjonTittelPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tittel" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="publikasjonTittelEvaluator" />
@@ -57,7 +57,7 @@
     <bean id="publikasjonForfatterePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="ingress" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="publikasjonForfattereEvaluator" />
@@ -70,7 +70,7 @@
 
     <bean id="publikasjonDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="dato" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="publikasjonDatoEvaluator" />
@@ -83,7 +83,7 @@
     <bean id="publikasjonSerienummerPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="serienummer" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="publikasjonSerienummerEvaluator" />
@@ -96,7 +96,7 @@
     <bean id="publikasjonSammendragPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="sammendrag" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="publikasjonSammendragEvaluator" />
@@ -109,7 +109,7 @@
     <bean id="publikasjonFulltekstPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="fulltekst" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="publikasjonFulltekstEvaluator" />

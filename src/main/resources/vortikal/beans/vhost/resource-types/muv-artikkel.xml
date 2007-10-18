@@ -45,7 +45,7 @@
     
     <bean id="muvArtikkelTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tittel" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="true" />
         <property name="defaultValue">
@@ -64,7 +64,7 @@
 
     <bean id="muvArtikkelIngressPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="ingress" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvArtikkelIngressEvaluator" />
@@ -76,7 +76,7 @@
     
     <bean id="muvArtikkelLiteBildeWebadressePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="litebilde.src" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvArtikkelLiteBildeWebadresseEvaluator" />
@@ -88,7 +88,7 @@
     
     <bean id="muvArtikkelLiteBildeAlternativTekstPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="litebilde.alt" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvArtikkelLiteBildeAlternativTextEvaluator" />
@@ -100,7 +100,7 @@
     
     <bean id="muvPubliseringsdatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="publiseringsdato" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvPubliseringsdatoEvaluator" />
@@ -115,7 +115,7 @@
     <!-- Metadata -->
     <bean id="muvArtikkelMetadataEpokePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="metadata.epoke" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvArtikkelMetadataEpokeEvaluator" />
@@ -127,7 +127,7 @@
 
     <bean id="muvArtikkelMetadataMenneskenePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="metadata.menneskene" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvArtikkelMetadataMenneskeneEvaluator" />
@@ -139,7 +139,7 @@
 
     <bean id="muvArtikkelMetadataBygningenePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="metadata.bygningene" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvArtikkelMetadataBygningeneEvaluator" />

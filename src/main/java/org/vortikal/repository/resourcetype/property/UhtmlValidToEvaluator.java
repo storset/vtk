@@ -38,6 +38,7 @@ import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -72,7 +73,7 @@ public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluat
         Value value = null;
 
         if (this.valueFactory != null) {
-            int type = property.getDefinition().getType();
+            Type type = property.getDefinition().getType();
             try {
                 value = this.valueFactory.createValue(validTo, type);
             } catch (Exception e) {

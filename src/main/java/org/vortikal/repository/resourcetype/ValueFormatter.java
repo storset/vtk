@@ -31,31 +31,30 @@
 package org.vortikal.repository.resourcetype;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.time.FastDateFormat;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class ValueFormatter implements InitializingBean {
 
     private String defaultDateFormatKey;
-    private Map namedDateFormats = new HashMap();
+    private Map<String, FastDateFormat> namedDateFormats = new HashMap<String, FastDateFormat>();
 
     public void setDefaultDateFormatKey(String defaultDateFormatKey) {
         this.defaultDateFormatKey = defaultDateFormatKey;
     }
     
-    public void setNamedDateFormats(Map namedDateFormats) {
+    public void setNamedDateFormats(Map<String, FastDateFormat> namedDateFormats) {
         this.namedDateFormats = namedDateFormats;
     }
     
-
     public String valueToString(Value value, String format, Locale locale) {
         switch (value.getType()) {
-            case PropertyType.TYPE_DATE:
+            case DATE:
                 if (format == null) {
                     format = this.defaultDateFormatKey;
                 }
@@ -65,10 +64,10 @@ public class ValueFormatter implements InitializingBean {
                 // predefined (named) formats:
                 String key = format + "_" + locale.getLanguage();
 
-                f = (FastDateFormat) this.namedDateFormats.get(key);
+                f = this.namedDateFormats.get(key);
                 if (f == null) {
                     key = format;
-                    f = (FastDateFormat) this.namedDateFormats.get(key);
+                    f = this.namedDateFormats.get(key);
                 }
                 try {
                     if (f == null) {
@@ -81,7 +80,7 @@ public class ValueFormatter implements InitializingBean {
                     return "Error: " + t.getMessage();
                 }
 
-            case PropertyType.TYPE_PRINCIPAL:
+            case PRINCIPAL:
                 return value.getPrincipalValue().getName();
             default:
                 return value.toString();
@@ -94,22 +93,6 @@ public class ValueFormatter implements InitializingBean {
                 "JavaBean property 'namedDateFormats' not set");
         }
         
-        for (Iterator i = this.namedDateFormats.keySet().iterator(); i.hasNext();) {
-            Object key = i.next();
-            if (!(key instanceof String)) {
-                throw new BeanInitializationException(
-                    "All keys in the 'namedDateFormats' map must be of type java.lang.String"
-                    + "(found " + key.getClass().getName() + ")");
-            }
-            Object value = this.namedDateFormats.get(key);
-            if (!(value instanceof FastDateFormat)) {
-                throw new BeanInitializationException(
-                    "All values in the 'namedDateFormats' map must be of type "
-                    + FastDateFormat.class.getName()
-                    + "(found " + value.getClass().getName() + ")");
-            }
-        }
-
         if (this.defaultDateFormatKey == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'defaultDateFormatKey' not set");

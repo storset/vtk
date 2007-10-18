@@ -128,7 +128,7 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
             "JavaBean property 'propertyTypeDefinition' not set");
         }
         
-        if (this.propertyTypeDefinition.getType() != PropertyType.TYPE_STRING) {
+        if (this.propertyTypeDefinition.getType() != PropertyType.Type.STRING) {
             throw new BeanInitializationException(
                 "JavaBean property 'propertyTypeDefinition' not of required type "
                 + "PropertyType.TYPE_STRING");

@@ -26,7 +26,7 @@
 
   <bean id="expiresSecPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="expires-sec" />
-    <property name="type" ref="TYPE_LONG" />
+    <property name="type" value="LONG" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="false" />
   </bean>

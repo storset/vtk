@@ -40,25 +40,13 @@ import org.vortikal.repository.RepositoryAction;
 
 public final class PropertyType {
 
-    /*
+    /**
      * Property data types
      */ 
+    public enum Type {
+        STRING, INT, LONG, DATE, BOOLEAN, PRINCIPAL;
+    }
     
-    public static final int TYPE_STRING = 0;
-    public static final int TYPE_INT = 1;
-    public static final int TYPE_LONG = 2;
-    public static final int TYPE_DATE = 3;
-    public static final int TYPE_BOOLEAN = 4;
-    public static final int TYPE_PRINCIPAL = 5;
-
-    public static final String[] PROPERTY_TYPE_NAMES = {
-        "String",
-        "Integer",
-        "Long",
-        "Date",
-        "Boolean",
-        "Principal"
-    };
     
     /*
      *  Protection levels

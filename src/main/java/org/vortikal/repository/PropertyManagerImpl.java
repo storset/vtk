@@ -47,6 +47,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
 
@@ -177,7 +178,7 @@ public class PropertyManagerImpl
         prop.setDefinition(def);
         
         // Default type for props is string:
-        int type = PropertyType.TYPE_STRING;
+        Type type = PropertyType.Type.STRING;
 
         if (def != null)
             type = def.getType();

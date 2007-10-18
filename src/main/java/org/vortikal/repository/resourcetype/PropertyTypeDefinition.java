@@ -33,6 +33,7 @@ package org.vortikal.repository.resourcetype;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 
 /**
@@ -46,7 +47,7 @@ public interface PropertyTypeDefinition {
     
     public String getName();
 
-    public int getType();
+    public Type getType();
     
     public boolean isMultiple();
 

@@ -40,7 +40,7 @@
 
     <bean id="treatyTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="title" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="treatyTitleEvaluator" />
@@ -53,7 +53,7 @@
 
     <bean id="treatyDoneAtPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="done-at" />
-        <property name="type" ref="TYPE_STRING" />
+        <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="treatyDoneAtEvaluator" />
@@ -66,7 +66,7 @@
     
     <bean id="treatyDateEnactedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="date-enacted" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="treatyDateEnactedEvaluator" />
@@ -80,7 +80,7 @@
     <bean id="treatyInForcePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="in-force" />
-        <property name="type" ref="TYPE_DATE" />
+        <property name="type" value="DATE" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="treatyInForceEvaluator" />

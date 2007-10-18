@@ -32,12 +32,13 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
 
 public final class Value implements Cloneable, Comparable<Value> {
     
-    private int type = PropertyType.TYPE_STRING;
+    private Type type = PropertyType.Type.STRING;
     private static final long MAX_LENGTH = 2048;
 
     private String stringValue;
@@ -56,29 +57,29 @@ public final class Value implements Cloneable, Comparable<Value> {
                 + MAX_LENGTH + ")");
         }
 
-        this.type = PropertyType.TYPE_STRING;
+        this.type = PropertyType.Type.STRING;
         this.stringValue = stringValue;
     }
     
     public Value(boolean booleanValue) {
-        this.type = PropertyType.TYPE_BOOLEAN;
+        this.type = PropertyType.Type.BOOLEAN;
         this.booleanValue = booleanValue;
     }
 
     public Value(Date dateValue) {
         if (dateValue == null)
             throw new IllegalArgumentException("Value object cannot be null");
-        this.type = PropertyType.TYPE_DATE;
+        this.type = PropertyType.Type.DATE;
         this.dateValue = (Date)dateValue.clone();
     }
 
     public Value(long longValue) {
-        this.type = PropertyType.TYPE_LONG;
+        this.type = PropertyType.Type.LONG;
         this.longValue = longValue;
     }
     
     public Value(int intValue) {
-        this.type = PropertyType.TYPE_INT;
+        this.type = PropertyType.Type.INT;
         this.intValue = intValue;
     }
     
@@ -92,11 +93,11 @@ public final class Value implements Cloneable, Comparable<Value> {
                 + MAX_LENGTH + ")");
         }
 
-        this.type = PropertyType.TYPE_PRINCIPAL;
+        this.type = PropertyType.Type.PRINCIPAL;
         this.principalValue = principalValue;
     }
 
-    public int getType() {
+    public Type getType() {
         return this.type;
     }
     
@@ -128,22 +129,22 @@ public final class Value implements Cloneable, Comparable<Value> {
    public Object getObjectValue() {
         switch (this.type) {
         
-            case PropertyType.TYPE_BOOLEAN:
+            case BOOLEAN:
                 return Boolean.valueOf(this.booleanValue);
             
-            case PropertyType.TYPE_DATE:
+            case DATE:
                 return this.dateValue.clone();
             
-            case PropertyType.TYPE_INT:
+            case INT:
                 return new Integer(this.intValue);
             
-            case PropertyType.TYPE_LONG:
+            case LONG:
                 return new Long(this.longValue);
 
-            case PropertyType.TYPE_STRING:
+            case STRING:
                 return this.stringValue;
             
-            case PropertyType.TYPE_PRINCIPAL:
+            case PRINCIPAL:
                 return this.principalValue;
         }
         
@@ -165,16 +166,16 @@ public final class Value implements Cloneable, Comparable<Value> {
             return false;
         
         switch (this.type) {
-        case PropertyType.TYPE_BOOLEAN:
+        case BOOLEAN:
             return (this.booleanValue == v.getBooleanValue());
-        case PropertyType.TYPE_INT:
+        case INT:
             return (this.intValue == v.getIntValue());
-        case PropertyType.TYPE_LONG:
+        case LONG:
             return (this.longValue == v.getLongValue());
-        case PropertyType.TYPE_DATE:
+        case DATE:
             return (this.dateValue == null && v.getDateValue() == null) ||
                 (this.dateValue != null && this.dateValue.equals(v.getDateValue()));
-        case PropertyType.TYPE_PRINCIPAL:
+        case PRINCIPAL:
             return (this.principalValue == null && v.getPrincipalValue() == null) ||
                 (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
         default:
@@ -184,19 +185,19 @@ public final class Value implements Cloneable, Comparable<Value> {
     }
     
     public int hashCode() {
-        int hash  = 7 * 31 + this.type;
+        int hash  = 7 * 31;
 
         switch (this.type) {
-        case PropertyType.TYPE_BOOLEAN:
-            return hash + (this.booleanValue ? 1231 : 1237);
-        case PropertyType.TYPE_INT:
-            return hash + this.intValue;   
-        case PropertyType.TYPE_LONG:
-            return hash + (int)(this.longValue ^ (this.longValue >>> 32));
-        case PropertyType.TYPE_DATE:    
-            return hash + (this.dateValue == null ? 0 : this.dateValue.hashCode());
-        case PropertyType.TYPE_PRINCIPAL:
-            return hash + (this.principalValue == null ? 0 : this.principalValue.hashCode());
+        case BOOLEAN:
+            return hash + 1 + (this.booleanValue ? 1231 : 1237);
+        case INT:
+            return hash + 2 + this.intValue;   
+        case LONG:
+            return hash + 3 + (int)(this.longValue ^ (this.longValue >>> 32));
+        case DATE:    
+            return hash + 4 + (this.dateValue == null ? 0 : this.dateValue.hashCode());
+        case PRINCIPAL:
+            return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
             
         default:
             return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
@@ -206,15 +207,15 @@ public final class Value implements Cloneable, Comparable<Value> {
     public Object clone() {
 
         switch (this.type) {
-        case PropertyType.TYPE_BOOLEAN:
+        case BOOLEAN:
             return new Value(this.booleanValue);
-        case PropertyType.TYPE_INT:
+        case INT:
             return new Value(this.intValue);   
-        case PropertyType.TYPE_LONG:
+        case LONG:
             return new Value(this.longValue);
-        case PropertyType.TYPE_DATE:    
+        case DATE:    
             return new Value((Date)this.dateValue.clone());
-        case PropertyType.TYPE_PRINCIPAL:
+        case PRINCIPAL:
             return new Value(this.principalValue);
         default:
             return new Value(this.stringValue);
@@ -226,15 +227,15 @@ public final class Value implements Cloneable, Comparable<Value> {
             throw new IllegalArgumentException("Values not of same type");
         }
         switch (this.type) {
-        case PropertyType.TYPE_BOOLEAN:
+        case BOOLEAN:
             return Boolean.valueOf(this.booleanValue).compareTo(other.booleanValue);
-        case PropertyType.TYPE_INT:
+        case INT:
             return Integer.valueOf(this.intValue).compareTo(other.intValue);
-        case PropertyType.TYPE_LONG:
+        case LONG:
             return Long.valueOf(this.longValue).compareTo(other.longValue);
-        case PropertyType.TYPE_DATE:    
+        case DATE:    
             return this.dateValue.compareTo(other.dateValue);
-        case PropertyType.TYPE_PRINCIPAL:
+        case PRINCIPAL:
             return this.principalValue.getQualifiedName().compareTo(
                 other.principalValue.getQualifiedName());
         default:
@@ -247,22 +248,22 @@ public final class Value implements Cloneable, Comparable<Value> {
         StringBuffer sb = new StringBuffer();
 
         switch (this.type) {
-            case PropertyType.TYPE_STRING:
+            case STRING:
                 sb.append(this.stringValue);
                 break;
-            case PropertyType.TYPE_INT:
+            case INT:
                 sb.append(this.intValue);
                 break;
-            case PropertyType.TYPE_LONG:
+            case LONG:
                 sb.append(this.longValue);
                 break;
-            case PropertyType.TYPE_DATE:
+            case DATE:
                 sb.append(this.dateValue);
                 break;
-            case PropertyType.TYPE_BOOLEAN:
+            case BOOLEAN:
                 sb.append(this.booleanValue);
                 break;
-            case PropertyType.TYPE_PRINCIPAL:
+            case PRINCIPAL:
                 sb.append(this.principalValue);
                 break;
             default:
@@ -277,11 +278,11 @@ public final class Value implements Cloneable, Comparable<Value> {
         String representation = null;
         switch (this.type) {
         
-        case PropertyType.TYPE_BOOLEAN:
+        case BOOLEAN:
             representation = this.booleanValue ? "true" : "false";
             break;
             
-        case PropertyType.TYPE_DATE:
+        case DATE:
             Date date = this.dateValue;
             
             if (date == null) {
@@ -292,19 +293,19 @@ public final class Value implements Cloneable, Comparable<Value> {
             representation = Long.toString(date.getTime());
             break;
             
-        case PropertyType.TYPE_INT:
+        case INT:
             representation = Integer.toString(this.intValue);
             break;
             
-        case PropertyType.TYPE_LONG:
+        case LONG:
             representation = Long.toString(this.longValue);
             break;
             
-        case PropertyType.TYPE_STRING:
+        case STRING:
             representation = this.stringValue;
             break;
             
-        case PropertyType.TYPE_PRINCIPAL:
+        case PRINCIPAL:
             Principal principal = this.principalValue;
             if (principal == null) {
                 throw new ValueFormatException(

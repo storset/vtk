@@ -42,7 +42,7 @@
 
   <bean id="utvekslingsavtaleUniversitetPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="universitet" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="utvekslingsavtaleUniversitetEvaluator" />
@@ -55,7 +55,7 @@
 
   <bean id="utvekslingsavtaleLandPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="land" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="utvekslingsavtaleLandEvaluator" />
@@ -70,7 +70,7 @@
   <bean id="utvekslingsavtaleAvtaleeierPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="avtaleeier" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="utvekslingsavtaleAvtaleeierEvaluator" />
@@ -84,7 +84,7 @@
   <bean id="utvekslingsavtaleAvtaletypePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="avtaletype" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="utvekslingsavtaleAvtaletypeEvaluator" />
@@ -97,7 +97,7 @@
   <bean id="utvekslingsavtaleStudienivaPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studieniva" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="utvekslingsavtaleStudienivaEvaluator" />

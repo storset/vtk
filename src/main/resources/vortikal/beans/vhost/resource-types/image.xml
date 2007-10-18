@@ -32,7 +32,7 @@
   <bean id="imageHeightPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="pixelHeight" />
-    <property name="type" ref="TYPE_INT" />
+    <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="imageHeightEvaluator" />
@@ -46,7 +46,7 @@
   <bean id="imageWidthPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="pixelWidth" />
-    <property name="type" ref="TYPE_INT" />
+    <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="imageWidthEvaluator" />

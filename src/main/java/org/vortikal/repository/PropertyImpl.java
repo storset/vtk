@@ -40,6 +40,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
 
@@ -117,7 +118,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Date getDateValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.TYPE_DATE) {
+        if (this.value == null || getType() != PropertyType.Type.DATE) {
             throw new IllegalOperationException("Property " + this + " not of type Date");
         }
         
@@ -130,7 +131,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public String getStringValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.TYPE_STRING) {
+        if (this.value == null || getType() != PropertyType.Type.STRING) {
             throw new IllegalOperationException("Property " + this + " not of type String");
         }
         return this.value.getStringValue();
@@ -147,7 +148,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public long getLongValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.TYPE_LONG) {
+        if (this.value == null || getType() != PropertyType.Type.LONG) {
             throw new IllegalOperationException("Property " + this + " not of type Long");
         }
         return this.value.getLongValue();
@@ -159,14 +160,14 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public int getIntValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.TYPE_INT) {
+        if (this.value == null || getType() != PropertyType.Type.INT) {
             throw new IllegalOperationException("Property " + this + " not of type Integer");
         }
         return this.value.getIntValue();
     }
         
     public boolean getBooleanValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.TYPE_BOOLEAN) {
+        if (this.value == null || getType() != PropertyType.Type.BOOLEAN) {
             throw new IllegalOperationException("Property " + this + " not of type Boolean");
         }
         return this.value.getBooleanValue();
@@ -178,7 +179,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Principal getPrincipalValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.TYPE_PRINCIPAL) {
+        if (this.value == null || getType() != PropertyType.Type.PRINCIPAL) {
             throw new IllegalOperationException("Property " + this + " not of type Principal");
         }
         return this.value.getPrincipalValue();
@@ -291,26 +292,26 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
         if (value.getType() != getType()) {
             throw new ValueFormatException("Illegal value type " + 
-                    PropertyType.PROPERTY_TYPE_NAMES[value.getType()] + 
+                    value.getType() + 
                     " for property " + this + ". Should be " + 
-                    PropertyType.PROPERTY_TYPE_NAMES[getType()]);
+                    getType());
         }
         
         // Check for potential null values
         switch (value.getType()) {
-        case PropertyType.TYPE_PRINCIPAL:
+        case PRINCIPAL:
             if (value.getPrincipalValue() == null) {
                 throw new ValueFormatException(
                     "Principal value of property '" + this + "' cannot be null");
             }
             break;
-        case PropertyType.TYPE_STRING:
+        case STRING:
             if (value.getStringValue() == null) {
                 throw new ValueFormatException(
                     "String value of property '" + this + "' cannot be null");
             }
             break;
-        case PropertyType.TYPE_DATE:
+        case DATE:
             if (value.getDateValue() == null) {
                 throw new ValueFormatException(
                     "Date value of property '" + this + "' cannot be null");
@@ -341,9 +342,9 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
     }
     
-    public int getType() {
+    public Type getType() {
         if (this.propertyTypeDefinition == null)
-            return PropertyType.TYPE_STRING;
+            return PropertyType.Type.STRING;
         
         return this.propertyTypeDefinition.getType();
     }

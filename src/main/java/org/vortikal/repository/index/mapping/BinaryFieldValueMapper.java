@@ -32,14 +32,13 @@ package org.vortikal.repository.index.mapping;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.document.Field;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
  * Map to/from stored binary value fields.
@@ -67,24 +66,24 @@ public final class BinaryFieldValueMapper {
         
         byte[] byteValue = null;
         switch (value.getType()) {
-        case (PropertyType.TYPE_BOOLEAN):
+        case BOOLEAN:
             byteValue = FieldValueEncoder.encodeBooleanToBinary(value.getBooleanValue());
             break;
             
-        case (PropertyType.TYPE_DATE):
+        case DATE:
             byteValue = FieldValueEncoder.encodeDateValueToBinary(value.getDateValue().getTime());
             break;
             
-        case (PropertyType.TYPE_INT):
+        case INT:
             byteValue = FieldValueEncoder.encodeIntegerToBinary(value.getIntValue());
             break;
         
-        case (PropertyType.TYPE_LONG):
+        case LONG:
             byteValue = FieldValueEncoder.encodeLongToBinary(value.getLongValue());
             break;
         
-        case (PropertyType.TYPE_PRINCIPAL):
-        case (PropertyType.TYPE_STRING):
+        case PRINCIPAL:
+        case STRING:
             try {
                 byteValue = value.getNativeStringRepresentation().getBytes(STRING_VALUE_ENCODING);
             } catch (UnsupportedEncodingException ue) {}
@@ -98,7 +97,7 @@ public final class BinaryFieldValueMapper {
     }
 
     /**
-     * For multivalued props
+     * For multi-valued props
      * @param name
      * @param values
      * @return
@@ -127,32 +126,32 @@ public final class BinaryFieldValueMapper {
      * @throws FieldValueEncodingException
      * @throws ValueFormatException
      */
-    public static Value getValueFromBinaryField(Field field, ValueFactory vf, int type)
+    public static Value getValueFromBinaryField(Field field, ValueFactory vf, Type type)
         throws FieldValueEncodingException, ValueFormatException {
         
         byte[] value = field.binaryValue();
     
         switch (type) {
-        case (PropertyType.TYPE_PRINCIPAL):
-        case (PropertyType.TYPE_STRING):
+        case PRINCIPAL:
+        case STRING:
             try {
                 String stringValue = new String(value, STRING_VALUE_ENCODING);
                 return vf.createValue(stringValue, type);
             } catch (UnsupportedEncodingException ue) {} // won't happen
             
-        case (PropertyType.TYPE_BOOLEAN):
+        case BOOLEAN:
             boolean b = FieldValueEncoder.decodeBooleanFromBinary(value);
             return new Value(b);
             
-        case (PropertyType.TYPE_DATE):
+        case DATE:
             long time = FieldValueEncoder.decodeDateValueFromBinary(value);
             return new Value(new Date(time));
             
-        case (PropertyType.TYPE_INT):
+        case INT:
             int n = FieldValueEncoder.decodeIntegerFromBinary(value);
             return new Value(n);
             
-        case (PropertyType.TYPE_LONG):
+        case LONG:
             long l = FieldValueEncoder.decodeLongFromBinary(value);
             return new Value(l);
         }            
@@ -169,7 +168,7 @@ public final class BinaryFieldValueMapper {
      * @throws FieldValueEncodingException
      * @throws ValueFormatException
      */
-    public static Value[] getValuesFromBinaryFields(List fields, ValueFactory vf, int type) 
+    public static Value[] getValuesFromBinaryFields(List<Field> fields, ValueFactory vf, Type type) 
         throws FieldValueEncodingException, ValueFormatException {
         
         if (fields.size() == 0) {
@@ -178,8 +177,8 @@ public final class BinaryFieldValueMapper {
         
         Value[] values = new Value[fields.size()];
         int u = 0;
-        for (Iterator i = fields.iterator(); i.hasNext();) {
-            values[u++] = getValueFromBinaryField((Field)i.next(), vf, type);
+        for (Field field: fields) {
+            values[u++] = getValueFromBinaryField(field, vf, type);
         }
         
         return values;

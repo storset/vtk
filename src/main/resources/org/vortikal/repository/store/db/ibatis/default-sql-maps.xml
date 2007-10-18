@@ -49,8 +49,6 @@
   <resultMap id="Property" class="java.util.HashMap">
     <result property="id" column="extra_prop_entry_id" javaType="int" />
     <result property="resourceId" column="resource_id" javaType="int" />
-    <result property="type" column="prop_type" />
-    <result property="typeId" column="prop_type_id" javaType="int" />
     <result property="name" column="name" />
     <result property="namespaceUri" column="name_space" />
     <result property="value" column="value" />
@@ -377,8 +375,8 @@
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
-      (extra_prop_entry_id, resource_id, prop_type_id, name_space, name, value)
-    values (<include refid="nextExtraPropEntryId" />, #resourceId#, #type#,
+      (extra_prop_entry_id, resource_id, name_space, name, value)
+    values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
             #namespaceUri#, #name#, #value#)
   </insert>
 
@@ -387,7 +385,6 @@
     insert into extra_prop_entry
       (extra_prop_entry_id,
        resource_id,
-       prop_type_id,
        name_space,
        name,
        value)
@@ -396,7 +393,6 @@
       from
         (select
           r.resource_id,
-          p.prop_type_id,
           p.name_space,
           p.name,
           p.value

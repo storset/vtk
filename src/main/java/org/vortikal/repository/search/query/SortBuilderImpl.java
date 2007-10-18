@@ -90,10 +90,10 @@ public class SortBuilderImpl implements SortBuilder {
                 
                 switch (def.getType()) {
                 
-                case PropertyType.TYPE_DATE:
-                case PropertyType.TYPE_BOOLEAN:
-                case PropertyType.TYPE_INT:
-                case PropertyType.TYPE_LONG:
+                case DATE:
+                case BOOLEAN:
+                case INT:
+                case LONG:
                     // These types are all encoded as lexicographically sortable strings
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, org.apache.lucene.search.SortField.STRING, direction);

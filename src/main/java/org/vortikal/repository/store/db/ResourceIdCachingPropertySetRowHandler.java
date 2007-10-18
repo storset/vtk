@@ -90,9 +90,8 @@ class ResourceIdCachingPropertySetRowHandler extends
         int[] ids = new int[ancestorUris.size()];
         
         int c = 0;
-        for (Iterator i = ancestorUris.iterator(); i.hasNext();) {
-            String ancestor = (String)i.next();
-            Integer id = (Integer)this.resourceIdCache.get(ancestor);
+        for (String ancestor: ancestorUris) {
+            Integer id = this.resourceIdCache.get(ancestor);
             
             if (id == null) {
                 throw new IllegalStateException("Needed ID for URI '" + uri 

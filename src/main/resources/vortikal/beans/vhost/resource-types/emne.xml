@@ -49,7 +49,7 @@
 
   <bean id="emneEmnekodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnekode" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneEmnekodeEvaluator" />
@@ -64,7 +64,7 @@
   <bean id="emneEmnenavnPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnenavn" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneEmnenavnEvaluator" />
@@ -78,7 +78,7 @@
   <bean id="emneStudiepoengPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="studiepoeng" />
-    <property name="type" ref="TYPE_INT" />
+    <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneStudiepoengEvaluator" />
@@ -92,7 +92,7 @@
   <bean id="emneUndervisningsSpraakPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="undervisningsspraak" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" /> 
     <property name="defaultValue">
@@ -113,7 +113,7 @@
   <bean id="emneUndervisningsSemesterPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="undervisningssemester" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue">
@@ -134,7 +134,7 @@
   <bean id="emneUndervisningsSemesterBestemteSemestrePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="undervisningssemester.bestemte" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -149,7 +149,7 @@
   <bean id="emneUndervisningsSemesterAnnetPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="undervisningssemester.annet" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterAnnetEvaluator" />
@@ -162,7 +162,7 @@
   <bean id="emneEksamensSemesterPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="eksamenssemester" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue">
@@ -183,7 +183,7 @@
   <bean id="emneEksamensSemesterBestemteSemestrePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="eksamenssemester.bestemte" />
-    <property name="type" ref="TYPE_STRING" /> 
+    <property name="type" value="STRING" /> 
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -198,7 +198,7 @@
   <bean id="emneStatusPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="status" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="emneStatusEvaluator" />
@@ -212,7 +212,7 @@
   <bean id="emneEmnetypePropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="emnetype" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" /> 
     <property name="contentModificationEvaluator" ref="emneEmnetypeEvaluator" />
@@ -226,7 +226,7 @@
   <bean id="emneSpraakPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="spraak" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue">

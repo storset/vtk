@@ -36,7 +36,7 @@
 
   <bean id="contentLengthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="contentLength" />
-    <property name="type" ref="TYPE_LONG" />
+    <property name="type" value="LONG" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="contentModificationEvaluator" ref="contentLengthEvaluator" />

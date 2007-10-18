@@ -389,7 +389,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Property property: propertyList) {
             if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
                 Object value = property.getValue().getObjectValue();
-                if (property.getValue().getType() == PropertyType.TYPE_PRINCIPAL) {
+                if (property.getValue().getType() == PropertyType.Type.PRINCIPAL) {
                     value = ((Principal) value).getQualifiedName();
                 }
                 if (this.logger.isDebugEnabled()) {
@@ -890,9 +890,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                             parameters.put("namespaceUri", property.getNamespace().getUri());
                             parameters.put("name", property.getName());
                             parameters.put("resourceId", r.getID());
-                            parameters.put("type", property.getDefinition() != null
-                                               ? property.getDefinition().getType()
-                                               : PropertyType.TYPE_STRING);
                     
                             if (property.getDefinition() != null
                                 && property.getDefinition().isMultiple()) {
@@ -941,7 +938,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             List<String> values = propMap.get(prop);
             if (values == null) {
                 values = new ArrayList<String>();
-                prop.type = ((Integer) propEntry.get("typeId")).intValue();
                 prop.values = values;
                 propMap.put(prop, values);
             }

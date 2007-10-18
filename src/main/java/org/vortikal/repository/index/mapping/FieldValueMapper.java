@@ -38,6 +38,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.util.cache.ReusableObjectCache;
 import org.vortikal.util.text.SimpleDateFormatCache;
 
@@ -129,7 +130,7 @@ public final class FieldValueMapper {
      * @return
      */
     public static Value getValueFromField(Field field,
-            ValueFactory valueFactory, int type) {
+            ValueFactory valueFactory, Type type) {
         String fieldValue = field.stringValue();
 
         String decodedFieldValue = decodeIndexFieldValueToString(fieldValue,
@@ -159,23 +160,23 @@ public final class FieldValueMapper {
     }
 
     public static String decodeIndexFieldValueToString(String fieldValue,
-            int type) throws FieldValueEncodingException {
+            Type type) throws FieldValueEncodingException {
 
         switch (type) {
 
-        case (PropertyType.TYPE_BOOLEAN):
-        case (PropertyType.TYPE_STRING):
-        case (PropertyType.TYPE_PRINCIPAL):
+        case BOOLEAN:
+        case STRING:
+        case PRINCIPAL:
             return fieldValue; // No need to decode any of these. Native String
             // representation already present in index.
 
-        case (PropertyType.TYPE_DATE):
+        case DATE:
             return Long.toString(FieldValueEncoder.decodeDateValueFromString(fieldValue));
 
-        case (PropertyType.TYPE_INT):
+        case INT:
             return Integer.toString(FieldValueEncoder.decodeIntegerFromString(fieldValue));
 
-        case (PropertyType.TYPE_LONG):
+        case LONG:
             return Long.toString(FieldValueEncoder.decodeLongFromString(fieldValue));
 
         default:
@@ -188,18 +189,18 @@ public final class FieldValueMapper {
             throws FieldValueEncodingException {
 
         switch (value.getType()) {
-        case (PropertyType.TYPE_STRING):
-        case (PropertyType.TYPE_BOOLEAN):
-        case (PropertyType.TYPE_PRINCIPAL):
+        case STRING:
+        case BOOLEAN:
+        case PRINCIPAL:
             return value.getNativeStringRepresentation();
 
-        case (PropertyType.TYPE_DATE):
+        case DATE:
             return FieldValueEncoder.encodeDateValueToString(value.getDateValue().getTime());
 
-        case (PropertyType.TYPE_INT):
+        case INT:
             return FieldValueEncoder.encodeIntegerToString(value.getIntValue());
 
-        case (PropertyType.TYPE_LONG):
+        case LONG:
             return FieldValueEncoder.encodeLongToString(value.getLongValue());
 
         default:
@@ -216,16 +217,16 @@ public final class FieldValueMapper {
      * 
      * Only native string representations are supported by this method.
      */
-    public static String encodeIndexFieldValue(String stringValue, int type)
+    public static String encodeIndexFieldValue(String stringValue, Type type)
             throws ValueFormatException, FieldValueEncodingException {
 
         switch (type) {
-        case (PropertyType.TYPE_STRING):
-        case (PropertyType.TYPE_BOOLEAN):
-        case (PropertyType.TYPE_PRINCIPAL):
+        case STRING:
+        case BOOLEAN:
+        case PRINCIPAL:
             return stringValue;
 
-        case (PropertyType.TYPE_DATE):
+        case DATE:
             try {
                 long l = Long.parseLong(stringValue);
                 return FieldValueEncoder.encodeDateValueToString(l);
@@ -251,7 +252,7 @@ public final class FieldValueMapper {
             
             return FieldValueEncoder.encodeDateValueToString(d.getTime());
 
-        case (PropertyType.TYPE_INT):
+        case INT:
             try {
                 // Validate and encode
                 int n = Integer.parseInt(stringValue);
@@ -263,7 +264,7 @@ public final class FieldValueMapper {
                                 + nfe.getMessage());
             }
 
-        case (PropertyType.TYPE_LONG):
+        case LONG:
             try {
                 // Validate and pad
                 long l = Long.parseLong(stringValue);

@@ -38,7 +38,7 @@
   <bean id="guessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
     <property name="name" value="guessedCharacterEncoding" />
-    <property name="type" ref="TYPE_STRING" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue">

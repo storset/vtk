@@ -66,7 +66,7 @@ public class FieldValueMapperTestCase extends TestCase {
         for (int i = 0; i < dateFormats.length; i++) {
             try {
                 FieldValueMapper.encodeIndexFieldValue(dateStrings[i],
-                        PropertyType.TYPE_DATE);
+                        PropertyType.Type.DATE);
             } catch (Exception e) {
                 fail("Failed to encode index field value for date format '" + dateFormats[i]
                         + "', date string '" + dateStrings[i] + "':"

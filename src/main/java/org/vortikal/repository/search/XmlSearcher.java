@@ -311,7 +311,7 @@ public class XmlSearcher {
         String valueString = this.valueFormatter.valueToString(value, format, locale);
 
         // If string value and format is url, try to create url (if it doesn't start with http?)
-        if (format != null && value.getType() == PropertyType.TYPE_STRING) {
+        if (format != null && value.getType() == PropertyType.Type.STRING) {
 
             if (format.equals("url") && !valueString.startsWith("http")) {
                 if (!valueString.startsWith("/")) {

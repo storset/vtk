@@ -60,11 +60,11 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         PropertyTypeDefinition def = this.ppq.getPropertyDefinition();
         String term = this.ppq.getTerm();
         
-        if (! (def.getType() == PropertyType.TYPE_PRINCIPAL ||
-               def.getType() == PropertyType.TYPE_STRING)) {
+        if (! (def.getType() == PropertyType.Type.PRINCIPAL ||
+               def.getType() == PropertyType.Type.STRING)) {
             throw new QueryBuilderException("Prefix queries are only supported for "
-                + "property types '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_STRING] 
-                + "' and '" + PropertyType.PROPERTY_TYPE_NAMES[PropertyType.TYPE_PRINCIPAL] 
+                + "property types '" + PropertyType.Type.STRING 
+                + "' and '" + PropertyType.Type.PRINCIPAL 
                 + "'. Use range queries for dates and numbers.");
         }
         

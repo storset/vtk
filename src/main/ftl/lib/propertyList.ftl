@@ -399,15 +399,15 @@
         <#if valueItem.property.values?size &lt; 0>
         </#if>
       <#else>
-        <#-- type principal = 5 -->
-        <#if valueItem.definition.type = 5>
+        <#-- type principal -->
+        <#if valueItem.definition.type = "PRINCIPAL">
           <#if valueItem.property.principalValue.URL?exists>
             <a href="${valueItem.property.principalValue.URL?html}">${valueItem.property.principalValue.name?html}</a>
           <#else>
             ${valueItem.property.principalValue.name?html}
           </#if>
-        <#-- type date = 3 -->
-        <#elseif valueItem.definition.type = 3>
+        <#-- type date -->
+        <#elseif valueItem.definition.type = "DATE">
           ${valueItem.property.dateValue?datetime?string.long}
         <#else>
           <#local label>

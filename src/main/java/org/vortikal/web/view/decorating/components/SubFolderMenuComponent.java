@@ -50,11 +50,16 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.WildcardPropertySelect;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
+import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -100,7 +105,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
     
-    private QueryParser queryParser;
     private Service viewService;
     private PropertyTypeDefinition titlePropDef;
     private ResourceTypeDefinition collectionResourceType;
@@ -170,38 +174,29 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
     
-
     private Search buildSearch(MenuRequest menuRequest) {
         String uri = menuRequest.getCurrentCollectionUri();
-
         int depth = URLUtil.splitUri(uri).length;
-        StringBuilder query = new StringBuilder();
+
+        AndQuery mainQuery = new AndQuery();
+        mainQuery.add(new UriPrefixQuery(uri));
         
-        query.append("uri = ").append(uri);
-        if ("/".equals(uri)) {
-            query.append("*");
-        } else {
-            query.append("/*");
-        }
         if (menuRequest.getDepth() > 1) {
             // Needs search support for this: 
-            // query.append(" AND depth < ").append(menuRequest.getDepth());
-            query.append(" AND (");
+            // query.add(new UriDepthTermQuery).append(menuRequest.getDepth(), TermOperator.GT);
+            OrQuery depthQuery = new OrQuery();
             for (int i = 0; i < menuRequest.getDepth(); i++) {
-                query.append("depth = ").append(depth + i);
-                if (i < menuRequest.getDepth() - 1) {
-                    query.append(" OR ");
-                }
+                depthQuery.add(new UriDepthQuery(depth + i));
             }
-            query.append(") ");
         } else {
-            query.append(" AND depth = ").append(depth);
+            mainQuery.add(new UriDepthQuery(depth));
         }
-        query.append(" AND type IN ").append(this.collectionResourceType.getName());
+        mainQuery.add(new TypeTermQuery(this.collectionResourceType.getName(), TermOperator.IN));
 
         WildcardPropertySelect select = new WildcardPropertySelect();
+
         Search search = new Search();
-        search.setQuery(this.queryParser.parse(query.toString()));
+        search.setQuery(mainQuery);
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
         return search;
@@ -435,10 +430,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
     }
     
-    public void setQueryParser(QueryParser queryParser) {
-        this.queryParser = queryParser;
-    }
-
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
@@ -487,10 +478,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        if (this.queryParser == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'queryParser' not set");
-        }
+
         if (this.viewService == null) {
             throw new BeanInitializationException(
                     "JavaBean property 'viewService set");

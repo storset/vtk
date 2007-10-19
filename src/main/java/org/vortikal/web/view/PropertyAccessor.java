@@ -34,22 +34,19 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 
-public class PropertyAccessor implements InitializingBean {
+public class PropertyAccessor {
 
     private Repository repository;
-    private ValueFormatter formatter;
     private ResourceTypeTree resourceTypeTree;
 
     public String propertyValue(String uri, String prefix, String name, String format) {
@@ -86,31 +83,18 @@ public class PropertyAccessor implements InitializingBean {
                 Resource resource = this.repository.retrieve(token, uri, true);
                 Property prop = resource.getProperty(def);
                 if (prop != null)
-                    return formatter.valueToString(prop.getValue(), format, locale);
+                    return prop.getFormattedValue(format, locale);
             } catch (Exception e) {
             }
 
             return "";
     }
 
-    public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) throw new BeanInitializationException(
-        "Property 'repository' must be set");
-        if (this.formatter == null) throw new BeanInitializationException(
-        "Property 'formatter' must be set");
-        if (this.resourceTypeTree == null) throw new BeanInitializationException(
-        "Property 'resourceTypeTree' must be set");
-    }
-
-    public void setFormatter(ValueFormatter formatter) {
-        this.formatter = formatter;
-    }
-
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+    @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
 }

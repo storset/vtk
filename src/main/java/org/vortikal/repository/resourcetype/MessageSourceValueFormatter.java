@@ -32,8 +32,22 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
-public interface ValueFormatter {
+import org.springframework.context.MessageSource;
 
-    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException;
+public class MessageSourceValueFormatter implements ValueFormatter {
+
+    private MessageSource messageSource;
+
+    public MessageSourceValueFormatter(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public String valueToString(Value value, String format, Locale locale)
+            throws IllegalValueTypeException {
+        if ("localized".equals(format)) {
+            return this.messageSource.getMessage(value.toString(), null, value.toString(), locale);
+        }
+        return value.toString();
+    }
 
 }

@@ -32,8 +32,18 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
-public interface ValueFormatter {
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
-    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException;
+public class PrincipalValueFormatter implements ValueFormatter {
+
+    public String valueToString(Value value, String format, Locale locale)
+            throws IllegalValueTypeException {
+
+            if (value.getType() != Type.PRINCIPAL) {
+                throw new IllegalValueTypeException(Type.PRINCIPAL, value.getType());
+            }
+
+            return value.getPrincipalValue().getName();
+    }
 
 }

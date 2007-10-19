@@ -32,8 +32,14 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
-public interface ValueFormatter {
+/**
+ * This value formatter represents all value types by the toString() representation.
+ */
+public class StringValueFormatter implements ValueFormatter {
 
-    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException;
+    public String valueToString(Value value, String format, Locale locale)
+            throws IllegalValueTypeException {
+        return value.toString();
+    }
 
 }

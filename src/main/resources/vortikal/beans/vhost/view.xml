@@ -332,13 +332,14 @@
          class="org.vortikal.web.view.freemarker.MultiTemplateLocationsFreeMarkerConfigurer">
      <property name="sharedVariables">
        <map>
-         <entry key="VRTX_VALUE_FACTORY" value-ref="valueFactory" />
-         <entry key="VRTX_VALUE_FORMATTER" value-ref="valueFormatter" />
+         <entry key="VRTX_VALUE_FORMATTER" value-ref="dateValueFormatter" />
          <entry key="VRTX_RESOURCE_TYPE_TREE" value-ref="resourceTypeTree" />
        </map>
      </property>
    </bean>
      
+   <bean id="dateValueFormatter" class="org.vortikal.repository.resourcetype.DateValueFormatter" />
+
    <bean id="vortikalFreemarkerTemplateLocation" class="org.vortikal.web.view.freemarker.FreeMarkerTemplateLocationImpl">
      <property name="location" value="${templateLoaderPath}" />
    </bean>

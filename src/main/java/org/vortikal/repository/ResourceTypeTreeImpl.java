@@ -58,6 +58,7 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 
 
 public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContextAware, ResourceTypeTree {
@@ -643,6 +644,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
 
     public List<HierarchicalNode<String>> getRootNodes() {
         // XXX: Not implemented yet.
+        return null;
+    }
+
+    public ValueFormatter getValueFormatter() {
+        // XXX Not implemented, needs parameterized value formatter!
         return null;
     }
 

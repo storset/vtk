@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.vortikal.repository.HierarchicalVocabulary;
 
 public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value>, InitializingBean {
@@ -43,6 +44,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
     private List<HierarchicalNode<Value>> nodes;
     private Map<Value, List<Value>> descendantsAndSelfMap = new HashMap<Value, List<Value>>();
     private Value[] allowedValues;
+    private ValueFormatter valueFormatter;
     
     public List<Value> getDescendantsAndSelf(Value entry) {
         return this.descendantsAndSelfMap.get(entry);
@@ -56,6 +58,16 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
         return this.nodes;
     }
     
+    public ValueFormatter getValueFormatter() {
+        return this.valueFormatter;
+    }
+
+    public void setMessageSourceBaseName(String messageSourceBaseName) {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename(messageSourceBaseName);
+        this.valueFormatter = new MessageSourceValueFormatter(messageSource);
+    }
+
     public void setNodes(List<HierarchicalNode<Value>> nodes) {
         this.nodes = nodes;
     }

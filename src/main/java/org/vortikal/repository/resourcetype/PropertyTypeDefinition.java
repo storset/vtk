@@ -71,6 +71,8 @@ public interface PropertyTypeDefinition {
     
     public Vocabulary<Value> getVocabulary();
 
+    public ValueFormatter getValueFormatter();
+    
 }
 
 

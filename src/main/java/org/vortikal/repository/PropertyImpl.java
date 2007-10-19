@@ -33,13 +33,16 @@ package org.vortikal.repository;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
@@ -362,6 +365,28 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             return this.values != null;
         }
         return this.value != null;
+    }
+
+    public String getFormattedValue(String format, Locale locale) {
+
+        if (this.propertyTypeDefinition == null) {
+            return new StringValueFormatter().valueToString(this.value, format, locale);
+        }
+
+        if (!this.propertyTypeDefinition.isMultiple()) {
+            return this.propertyTypeDefinition.getValueFormatter().valueToString(this.value, format, locale);
+        }
+
+        ValueFormatter formatter = this.propertyTypeDefinition.getValueFormatter();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.values.length; i++) {
+            Value value = this.values[i];
+            sb.append(formatter.valueToString(value, format, locale));
+            if (i < this.values.length -1) {
+                sb.append(", ");
+            }
+        } 
+        return sb.toString();
     }
     
 

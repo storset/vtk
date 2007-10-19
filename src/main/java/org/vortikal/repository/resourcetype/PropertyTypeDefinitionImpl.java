@@ -43,6 +43,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     
     private String name;
     private Type type = PropertyType.Type.STRING;
+    private ValueFormatter valueFormatter;
+
     private boolean multiple = false;
     private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false;
@@ -57,9 +59,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private Vocabulary<Value> vocabulary;
 
-
     public void afterPropertiesSet() {
-
+        if (this.valueFormatter == null) {
+            if (this.vocabulary != null && this.vocabulary.getValueFormatter() != null) {
+                this.valueFormatter = this.vocabulary.getValueFormatter();
+            } else {
+                this.valueFormatter = this.type.getDefaultFormatter();
+            }
+        }
     }
     
     public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
@@ -185,6 +192,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     public void setVocabulary(Vocabulary<Value> vocabulary) {
         this.vocabulary = vocabulary;
+    }
+
+    public ValueFormatter getValueFormatter() {
+        return this.valueFormatter;
+    }
+
+    public void setValueFormatter(ValueFormatter valueFormatter) {
+        this.valueFormatter = valueFormatter;
     }
 
 }

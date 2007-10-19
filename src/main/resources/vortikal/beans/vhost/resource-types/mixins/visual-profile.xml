@@ -73,6 +73,7 @@
       </bean-->
 
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.units" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">
@@ -466,16 +467,6 @@
     <constructor-arg value="visual-profile" />
     <constructor-arg value="http://www.uio.no/visual-profile" />
   </bean>
-
-   <!-- Note: enabled to get localization for the old unit structure -->
-   <bean id="unitsMessageSource"
-         class="org.springframework.context.support.ResourceBundleMessageSource">
-     <property name="basenames">
-       <list>
-         <value>vortikal.i18n.units</value>
-       </list>
-     </property>
-   </bean>
 
 <!-- generated from uhtml prod db -->
 <!--

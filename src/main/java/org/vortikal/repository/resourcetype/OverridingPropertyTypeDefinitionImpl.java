@@ -160,4 +160,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getVocabulary();
     }
 
+    public ValueFormatter getValueFormatter() {
+        return this.overriddenPropDef.getValueFormatter();
+    }
+
 }

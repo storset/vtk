@@ -30,8 +30,12 @@
  */
 package org.vortikal.repository;
 
+import org.vortikal.repository.resourcetype.ValueFormatter;
+
 
 public interface Vocabulary<T> {
     
     public T[] getAllowedValues();
+    
+    public ValueFormatter getValueFormatter();
 }

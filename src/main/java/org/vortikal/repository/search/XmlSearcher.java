@@ -56,7 +56,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
@@ -90,8 +90,6 @@ public class XmlSearcher {
 
     private Service linkToService;
     private ResourceTypeDefinition collectionResourceTypeDef;
-
-    private ValueFormatter valueFormatter;
 
     private MessageSource messageSource;
     
@@ -308,7 +306,7 @@ public class XmlSearcher {
     }
 
     private String getFormattedPropertyValue(PropertyTypeDefinition propDef, String uri, Value value, String format, Locale locale) {
-        String valueString = this.valueFormatter.valueToString(value, format, locale);
+        String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
 
         // If string value and format is url, try to create url (if it doesn't start with http?)
         if (format != null && value.getType() == PropertyType.Type.STRING) {
@@ -322,10 +320,7 @@ public class XmlSearcher {
                 } catch (Exception e) {
                     logger.warn(valueString + " led to exception ", e);
                 }
-            } else if (format.equals("localized")) {
-                    String i18nKey = "property." + propDef.getNamespace().getPrefix() + ":" + propDef.getName() + ".value." + value.toString();
-                    valueString = this.messageSource.getMessage(i18nKey, null, value.toString(), locale);
-            }
+            } 
 
         }
         return valueString;
@@ -552,11 +547,6 @@ public class XmlSearcher {
     public void setCollectionResourceTypeDef(
             ResourceTypeDefinition collectionResourceTypeDef) {
         this.collectionResourceTypeDef = collectionResourceTypeDef;
-    }
-
-    @Required
-    public void setValueFormatter(ValueFormatter valueFormatter) {
-        this.valueFormatter = valueFormatter;
     }
 
     @Required

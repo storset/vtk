@@ -132,7 +132,6 @@
 
    <bean id="propertyAccessor" class="org.vortikal.web.view.PropertyAccessor"
          parent="requestLocalRepositoryAware">
-     <property name="formatter" ref="valueFormatter" />
      <property name="resourceTypeTree" ref="resourceTypeTree" />
    </bean>
 
@@ -203,8 +202,6 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultLocale" value="${view.defaultLocale}" />
     <property name="messageSource" ref="messageSource" />
-
-    <property name="valueFormatter" ref="valueFormatter" />
 
     <property name="linkToService" ref="viewService" />
     <property name="collectionResourceTypeDef"

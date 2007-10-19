@@ -13,7 +13,7 @@
   </description>
 
   <import resource="vocabulary.xml" />
-  <import resource="date-formats.xml" />
+  <!--import resource="date-formats.xml" />-->
   <import resource="query.xml" />
   <import resource="security.xml" />
   <import resource="resource-types/main.xml" />

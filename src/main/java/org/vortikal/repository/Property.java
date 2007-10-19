@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.Date;
+import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -89,6 +90,8 @@ public interface Property extends Cloneable {
     public boolean isValueInitialized();
     
     public Object clone() throws CloneNotSupportedException;
+
+    public String getFormattedValue(String format, Locale locale);
 
 }
 

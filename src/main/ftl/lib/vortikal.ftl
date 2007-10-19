@@ -119,10 +119,9 @@
 -->
 <#macro date value format>
   <#compress>
-    <#if VRTX_VALUE_FORMATTER?exists && VRTX_VALUE_FACTORY?exists>
-      <#--local val = VRTX_VALUE_FACTORY.createDateValue(value?string('yyyy-MM-dddd HH:mm:ss')) /-->
-    <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-    <#local val = constructor("org.vortikal.repository.resourcetype.Value", value) />    
+    <#if VRTX_VALUE_FORMATTER?exists>
+      <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+      <#local val = constructor("org.vortikal.repository.resourcetype.Value", value) />    
 
       <#local locale = springMacroRequestContext.getLocale() />
       ${VRTX_VALUE_FORMATTER.valueToString(val, format, locale)}

@@ -34,14 +34,12 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
@@ -75,12 +73,10 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
 
     private boolean forProcessing = true;
 
-    private ValueFormatter valueFormatter;
-
     private ResourceTypeTree resourceTypeTree;
     private boolean relative = false;
 
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
@@ -158,23 +154,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
                 return;
             }
 
-            if (prop.getDefinition().isMultiple()) {
-                result = "";
-                Value[] values = prop.getValues();
-                for (int j = 0; j < values.length; j++) {
-                    Value value = values[j];
-                    result += this.valueFormatter.valueToString(value, null, request.getLocale());
-                    if (j != values.length - 1) {
-                        result += ", ";
-                    }
-                }
-
-            } else {
-
-                Value value = prop.getValue();
-                result = this.valueFormatter.valueToString(value, null, request
-                        .getLocale());
-            }
+            result = prop.getFormattedValue(null, request.getLocale());
         }
 
         Writer writer = response.getWriter();
@@ -196,32 +176,11 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         return URIUtil.getAncestorOrSelfAtLevel(uri, uriLevel);
     }
 
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'repository' not set");
-        }
-        if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'resourceTypeTree' not set");
-        }
-        if (this.valueFormatter == null) {
-            throw new BeanInitializationException(
-                    "JavaBean property 'valueFormatter' not set");
-        }
-    }
-
     public void setForProcessing(boolean forProcessing) {
         this.forProcessing = forProcessing;
     }
 
-    public void setValueFormatter(ValueFormatter valueFormatter) {
-        this.valueFormatter = valueFormatter;
-    }
-
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+    @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
 

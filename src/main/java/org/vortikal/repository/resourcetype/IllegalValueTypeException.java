@@ -30,10 +30,26 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.Locale;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
-public interface ValueFormatter {
+public class IllegalValueTypeException extends RuntimeException {
 
-    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException;
+    private static final long serialVersionUID = 372571040415200282L;
 
+    private PropertyType.Type requiredType;
+    private PropertyType.Type actualType;
+
+    public IllegalValueTypeException(Type requiredType, Type actualType) {
+        super();
+        this.requiredType = requiredType;
+        this.actualType = actualType;
+    }
+
+    public PropertyType.Type getRequiredType() {
+        return requiredType;
+    }
+
+    public PropertyType.Type getActualType() {
+        return actualType;
+    }
 }

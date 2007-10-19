@@ -392,7 +392,9 @@
 
   <#local value>
     <#if valueItem.property?exists>
-      <#if valueItem.definition.multiple>
+      <#if valueItem.definition.vocabulary?exists>
+        ${valueItem.property.getFormattedValue("localized", springMacroRequestContext.locale)}
+      <#elseif valueItem.definition.multiple>
         <#list valueItem.property.values as val>
           ${val?string}<#if val_has_next>, </#if>
         </#list>
@@ -425,6 +427,7 @@
       ${label}
     </#if>
   </#local>
+
   <#local editURL>
     <@propertyItemEditURL item=item toggle=toggle />
   </#local>

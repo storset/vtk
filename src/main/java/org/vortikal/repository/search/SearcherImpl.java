@@ -255,9 +255,10 @@ public class SearcherImpl implements Searcher {
 
         if (sort != null) {
             return searcher.search(query, null, limit, sort);
-        } else {
-            return searcher.search(query, null, limit);
-        }
+        } 
+
+        return searcher.search(query, null, limit);
+
     }
 
     private int authorizeScoreDocs(ScoreDoc[] docs, int scoreDocPos,

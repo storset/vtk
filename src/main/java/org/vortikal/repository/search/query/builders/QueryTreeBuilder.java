@@ -30,11 +30,11 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.vortikal.repository.search.query.AbstractMultipleQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -43,11 +43,6 @@ import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderFactory;
 
 
-/**
- * 
- * @author oyviste
- *
- */
 public class QueryTreeBuilder implements QueryBuilder {
 
     private AbstractMultipleQuery query;
@@ -64,31 +59,25 @@ public class QueryTreeBuilder implements QueryBuilder {
     
     private org.apache.lucene.search.Query buildInternal(Query query) {
         
+        Occur occur = null;
+        
         if (query instanceof AndQuery) {
-            AndQuery andQ = (AndQuery)query;
-            List subQueries = andQ.getQueries();
-            
-            BooleanQuery bq = new BooleanQuery(true);
-            for (Iterator i = subQueries.iterator(); i.hasNext();) {
-                bq.add(buildInternal((Query)i.next()), BooleanClause.Occur.MUST);
-            }
-
-            return bq;
+            occur = BooleanClause.Occur.MUST;
         } else if (query instanceof OrQuery) {
-            OrQuery orQ = (OrQuery)query;
-            List subQueries = orQ.getQueries();
-            
-            BooleanQuery bq = new BooleanQuery(true);
-            for (Iterator i = subQueries.iterator(); i.hasNext();) {
-                bq.add(buildInternal((Query)i.next()), BooleanClause.Occur.SHOULD);
-            }
-
-            return bq;
-            
+            occur = BooleanClause.Occur.SHOULD;
         } else {
-            
             return this.factory.getBuilder(query).buildQuery();
-            
         }
+
+        AbstractMultipleQuery multipleQuery = (AbstractMultipleQuery)query;
+        List<Query> subQueries = multipleQuery.getQueries();
+        
+        BooleanQuery bq = new BooleanQuery(true);
+        for (Query q: subQueries) {
+            bq.add(buildInternal(q), occur);
+        }
+
+        return bq;
+
     }
 }

@@ -31,6 +31,9 @@
 package org.vortikal.repository.search.query;
 
 
+import static org.vortikal.repository.search.query.TermOperator.EQ;
+import static org.vortikal.repository.search.query.TermOperator.NE;
+
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -63,6 +66,7 @@ import org.vortikal.repository.search.query.builders.PropertyRangeQueryBuilder;
 import org.vortikal.repository.search.query.builders.PropertyTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.PropertyWildcardQueryBuilder;
 import org.vortikal.repository.search.query.builders.QueryTreeBuilder;
+import org.vortikal.repository.search.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
@@ -135,8 +139,13 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
        
         else if (query instanceof TypeTermQuery) {
             TypeTermQuery ttq = (TypeTermQuery)query;
-            builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, 
-            ttq.getOperator(), FieldNameMapping.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
+            
+            if (EQ == ttq.getOperator() || NE == ttq.getOperator()) {
+                builder = new TypeTermQueryBuilder(ttq.getTerm(), ttq.getOperator());
+            } else {
+                builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, 
+                        ttq.getOperator(), FieldNameMapping.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
+            }
         }
        
         if (builder == null) {

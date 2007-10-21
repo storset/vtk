@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,73 +30,46 @@
  */
 package org.vortikal.repository.search.query.builders;
 
+import static org.vortikal.repository.search.query.TermOperator.EQ;
+import static org.vortikal.repository.search.query.TermOperator.NE;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.search.query.InversionFilter;
-import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
 
-/**
- * 
- * @author oyviste
- *
- */
-public class NameTermQueryBuilder implements QueryBuilder {
+public class TypeTermQueryBuilder implements QueryBuilder {
 
-    NameTermQuery ntq;
+    private String fieldName = FieldNameMapping.RESOURCETYPE_FIELD_NAME;
+    private Object term;
+    private TermOperator op;
+
     
-    public NameTermQueryBuilder(NameTermQuery q) {
-        this.ntq = q;
-    }
-    
-    public org.apache.lucene.search.Query buildQuery() {
-        String term = this.ntq.getTerm();
-        TermOperator op = this.ntq.getOperator();
-        
-        if (op == TermOperator.EQ) {
-            return new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
+    public TypeTermQueryBuilder(Object term, TermOperator op) {
+        this.term = term;
+
+        if (EQ != op && NE != op) {
+            throw new QueryBuilderException("Unsupported type operator: " + this.op);
         }
         
+        this.op = op;
+    }
+
+
+    public Query buildQuery() throws QueryBuilderException {
+        TermQuery tq = new TermQuery(new Term(fieldName, this.term.toString()));
+
         if (op == TermOperator.NE) {
-            TermQuery tq = 
-                new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
             return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
         } 
-        
-        boolean includeLower = false;
-        boolean includeUpper = false;
-        String upperTerm = null;
-        String lowerTerm = null;
-        
-        if (op == TermOperator.GE) {
-            lowerTerm = term;
-            includeLower = true;
-            includeUpper = true;
-        } else if (op == TermOperator.GT) {
-            lowerTerm = term;
-            includeUpper = true;
-        } else if (op == TermOperator.LE) {
-            upperTerm = term;
-            includeUpper = true;
-            includeLower = true;
-        } else if (op == TermOperator.LT) {
-            upperTerm = term;
-            includeLower = true;
-        } else {
-            throw new QueryBuilderException("Unknown term operator"); 
-        }
-        
-        return new ConstantScoreRangeQuery(FieldNameMapping.NAME_FIELD_NAME, 
-                                           lowerTerm, 
-                                           upperTerm, 
-                                           includeLower, 
-                                           includeUpper);
+
+        return tq;
     }
 
 }

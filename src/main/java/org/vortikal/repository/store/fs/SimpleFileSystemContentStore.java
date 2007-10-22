@@ -200,6 +200,17 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         dstChannel.close();
     }
 
+
+    public void move(String srcURI, String destURI) throws DataAccessException {
+        String fileNameFrom = getLocalFilename(srcURI);
+        String fileNameTo = getLocalFilename(destURI);
+        if (!new File(fileNameFrom).renameTo(new File(fileNameTo))) {
+            throw new DataAccessException("Unable to rename file " +
+                                          fileNameFrom + " to " + fileNameTo);
+        }
+    }
+    
+
     private String getLocalFilename(String uri) {
         return this.repositoryDataDirectory
         + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);

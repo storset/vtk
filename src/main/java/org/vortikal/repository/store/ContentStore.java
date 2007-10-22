@@ -66,4 +66,5 @@ public interface ContentStore {
 
     public void copy(String srcURI, String destURI) throws DataAccessException;
     
+    public void move(String srcURI, String destURI) throws DataAccessException;
 }

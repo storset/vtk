@@ -48,6 +48,8 @@ public interface FileSystemConnection {
 
     public void copy(String srcURI, String destURI) throws ResourceException;
 
+    public void move(String srcURI, String destURI) throws ResourceException;
+
     public void close() throws ResourceException;
 
 

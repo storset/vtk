@@ -175,6 +175,12 @@ public class MemoryContentStore implements ContentStore {
         parent.entries.put(destNodeName, copy);
     }
     
+    public synchronized void move(String srcURI, String destURI) throws DataAccessException {
+        copy(srcURI, destURI);
+        deleteResource(srcURI);
+    }
+    
+
     private String getName(String uri) {
         int i = uri.lastIndexOf(URI_COMPONENT_SEPARATOR);
         if (i == -1) {

@@ -244,4 +244,20 @@ public class FileSystemManagedConnection implements ManagedConnection {
             throw new ResourceException("Unable to copy [" + srcURI + ", " + destURI + "]", e);
         }
     }
+
+
+    public void move(String srcURI, String destURI) throws ResourceException {
+        try {
+            FileMapper mapper = new CascadingFileMapper(
+                this.dataDirectory, this.workDirectory, this.context.getCurrentFileMapper());
+            CopyOperation op = new CopyOperation(srcURI, destURI, mapper);
+            this.context.pushOperation(op, mapper);
+
+            DeleteOperation deleteOp = new DeleteOperation(srcURI, mapper);
+            this.context.pushOperation(deleteOp, mapper);
+
+        } catch (IOException e) {
+            throw new ResourceException("Unable to move [" + srcURI + ", " + destURI + "]", e);
+        }
+    }
 }

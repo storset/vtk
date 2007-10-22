@@ -358,8 +358,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.dao.move(src, newResource);
             newResource = this.dao.load(newResource.getURI());
-            this.contentStore.copy(src.getURI(), newResource.getURI());
-            this.contentStore.deleteResource(src.getURI());
+            this.contentStore.move(src.getURI(), newResource.getURI());
             
             this.context.publishEvent(new ResourceCreationEvent(this, newResource));
 

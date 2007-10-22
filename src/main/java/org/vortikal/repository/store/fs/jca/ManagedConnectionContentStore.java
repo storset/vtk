@@ -161,4 +161,21 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
     
+    public void move(String srcURI, String destURI) throws DataAccessException {
+        FileSystemConnection conn = null;
+        try {
+            conn = this.connectionFactory.getConnection();
+            conn.move(srcURI, destURI);
+        } catch (ResourceException e) {
+            throw new DataAccessException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (ResourceException e) {
+                    throw new DataAccessException(e);
+                }
+            }
+        }
+    }
 }

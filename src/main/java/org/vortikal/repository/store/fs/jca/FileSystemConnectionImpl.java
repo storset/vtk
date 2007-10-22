@@ -48,10 +48,6 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
         this.managedConnection = managedConnection;
     }
 
-//     public void invalidate() {
-//         this.managedConnection = null;
-//     }
-
     public void createResource(String uri, boolean isCollection) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
@@ -100,6 +96,13 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
         this.managedConnection.copy(srcURI, destURI);
     }
     
+    public void move(String srcURI, String destURI) throws ResourceException {
+        if (this.managedConnection == null) {
+            throw new ResourceException("Connection is closed");
+        }
+        this.managedConnection.move(srcURI, destURI);
+    }
+
     public void close() throws ResourceException {
         this.managedConnection.close(this);
         this.managedConnection = null;

@@ -535,12 +535,6 @@
     </dependency>
 
     <dependency>
-      <groupId>groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>1.0</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.ibatis</groupId>
       <artifactId>ibatis-sqlmap</artifactId>
       <version>2.3.0</version>

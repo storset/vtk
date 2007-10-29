@@ -89,7 +89,7 @@
   <distributionManagement>
     <site>
       <id>webdav-site</id>
-      <url>dav:https://www-dav.usit.uio.no/it/vortex/internt/maven/${project.build.finalName}-test</url>
+      <url>dav:https://www-dav.usit.uio.no/it/vortex/internt/maven/${project.build.finalName}</url>
     </site>
     <repository>
       <id>xml.uio.no</id>

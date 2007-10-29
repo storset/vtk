@@ -49,6 +49,6 @@ public interface ComponentInvocation {
      * Gets the decorator component's parameters as (name, value)
      * pairs.
      */
-    public Map getParameters();
+    public Map<String, Object> getParameters();
 
 }

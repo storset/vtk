@@ -73,34 +73,30 @@ public class StandardDecoratorTemplate implements Template {
         }
         
         StringBuilder sb = new StringBuilder();
-        ComponentInvocation[] fragments = this.fragments;        
-        for (int i = 0; i < fragments.length; i++) {
-            
-            try {
-                DecoratorComponent c = fragments[i].getComponent();
 
+        for (ComponentInvocation fragment: this.fragments) {
+            try {
                 String doctype = html.getDoctype();
                 if (doctype == null) {
                     doctype = DEFAULT_DOCTYPE;
                 }
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    html, request, fragments[i].getParameters(), doctype, locale);
+                    html, request, fragment.getParameters(), doctype, locale);
 
-                String chunk = renderComponent(c, decoratorRequest);
+                String chunk = renderComponent(fragment.getComponent(), decoratorRequest);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Included component: " + fragments[i]
+                    logger.debug("Included component: " + fragment
                                  + " with result [" + chunk + "]");
                 }
                 sb.append(chunk);
 
             } catch (Throwable t) {
-                logger.warn("Error including component: " + fragments[i], t);
-                // Include error message in output:
+                logger.warn("Error including component: " + fragment, t);
                 String msg = t.getMessage();
                 if (msg == null) {
                     msg = t.getClass().getName();
                 }
-                sb.append(fragments[i].getComponent().getName());
+                sb.append(fragment.getComponent().getName());
                 sb.append(": ").append(msg);
             }
         }

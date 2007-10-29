@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,11 +50,11 @@ import org.springframework.web.servlet.View;
  */
 public class ConfigurableResponseHeaderWrappingView implements View {
 
-    private Map headers;
+    private Map<String, String> headers;
     private View view;
     
 
-    public void setHeaders(Map headers) {
+    public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
     
@@ -67,11 +66,11 @@ public class ConfigurableResponseHeaderWrappingView implements View {
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
         
-        for (Iterator i = this.headers.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            response.setHeader((String) entry.getKey(), (String) entry.getValue());
+        if (this.headers != null) {
+            for (Map.Entry<String, String> entry: this.headers.entrySet()) {
+                response.setHeader(entry.getKey(), entry.getValue());
+            }
         }
-        
         this.view.render(model, request, response);
     }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,14 @@ import org.springframework.web.servlet.ViewResolver;
 public class MappingViewResolver extends AbstractWrappingViewResolver
   implements ViewResolver {
 
-    private Map views = new HashMap();
+    private Map<String, View> views = new HashMap<String, View>();
     
     protected View resolveViewNameInternal(String viewName, Locale locale) {
 
-        View view = (View) this.views.get(viewName);
-        return view;
+        return this.views.get(viewName);
     }
     
-    public void setViews(Map views) {
+    public void setViews(Map<String, View> views) {
         this.views = views;
     }
 

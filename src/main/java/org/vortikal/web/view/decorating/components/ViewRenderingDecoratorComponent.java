@@ -36,7 +36,6 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
 

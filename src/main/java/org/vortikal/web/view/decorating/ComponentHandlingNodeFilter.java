@@ -114,9 +114,9 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             HtmlElement element = (HtmlElement) node;
             HtmlAttribute[] attributes = element.getAttributes();
             if (attributes.length > 0) {
-                for (int i = 0; i < attributes.length; i++) {
-                    String value = attributes[i].getValue();
-                    if (attributes[i].hasValue()) {
+                for (HtmlAttribute attribute: attributes) {
+                    String value = attribute.getValue();
+                    if (attribute.hasValue()) {
                         try {
                             ComponentInvocation[] parsedValue =
                                 this.contentComponentParser.parseTemplate(
@@ -130,7 +130,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                             }
                         }
                     }
-                    attributes[i].setValue(value);
+                    attribute.setValue(value);
                 }
             }
         } else if (node instanceof HtmlText) {
@@ -168,7 +168,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         Matcher paramMatcher = SSI_PARAMETERS_REGEXP.matcher(
             content.substring(directiveMatcher.end()));
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, Object> parameters = new HashMap<String, Object>();
 
         while (paramMatcher.find()) {
             String name = paramMatcher.group(1);
@@ -183,9 +183,9 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         if (component == null) {
             return null;
         }
-        final Map<String, String> invocationParams = parameters;
+        final Map<String, Object> invocationParams = parameters;
         return new ComponentInvocation() {
-            public Map<String, String> getParameters() {
+            public Map<String, Object> getParameters() {
                 return invocationParams;
             }
             public DecoratorComponent getComponent() {
@@ -205,7 +205,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     }
     
 
-    private String invokeComponentsAsString(ComponentInvocation[] components) {
+    private String invokeComponentsAsString(ComponentInvocation[] componentInvocations) {
         HttpServletRequest servletRequest =
             RequestContext.getRequestContext().getServletRequest();
         
@@ -216,16 +216,17 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         final String doctype = "";
         
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < components.length; i++) {
 
-            Map<String, Object> parameters = components[i].getParameters();
+        for (ComponentInvocation invocation: componentInvocations) {
+
+            Map<String, Object> parameters = invocation.getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                 null, servletRequest, parameters, doctype, locale);
             DecoratorResponseImpl response = new DecoratorResponseImpl(
                 doctype, locale, "utf-8");
             String result = null;
             try {
-                DecoratorComponent component = components[i].getComponent();
+                DecoratorComponent component = invocation.getComponent();
                 if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
                      result = "Invalid component reference: " + component.getNamespace()
                          + ":" + component.getName();
@@ -234,7 +235,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                     result = response.getContentAsString();
                 }
             } catch (Throwable t) {
-                logger.warn("Error invoking component: " + components[i], t);
+                logger.warn("Error invoking component: " + invocation, t);
                 String msg = t.getMessage();
                 if (msg == null) {
                     msg = t.getClass().getName();

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletOutputStream;
@@ -102,7 +101,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     private String forcedOutputEncoding;
     private boolean guessCharacterEncodingFromContent = false;
     private boolean appendCharacterEncodingToContentType = true;
-    private Map staticHeaders = null;
+    private Map<String, Object> staticHeaders = null;
 
     public void setDecorators(Decorator[] decorators) {
         this.decorators = decorators;
@@ -136,7 +135,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
-    public void setStaticHeaders(Map staticHeaders) {
+    public void setStaticHeaders(Map<String, Object> staticHeaders) {
         this.staticHeaders = staticHeaders;
     }
     
@@ -144,7 +143,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
-        List decoratorList = new ArrayList();
+        List<Decorator> decoratorList = new ArrayList<Decorator>();
         
         if (this.decorators != null) {
             for (int i = 0; i < this.decorators.length; i++) {
@@ -176,7 +175,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
 
     private void decorate(Map model, HttpServletRequest request,
-                           List decoratorList, BufferedResponseWrapper bufferedResponse)
+                           List<Decorator> decoratorList, BufferedResponseWrapper bufferedResponse)
         throws Exception {
 
         byte[] contentBuffer = bufferedResponse.getContentBuffer();
@@ -224,9 +223,8 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                                           characterEncoding);
 
         if (this.decorators != null) {
-            for (Iterator iter = decoratorList.iterator(); iter.hasNext();) {
-                Decorator decorator = (Decorator) iter.next();
-                
+            for (Decorator decorator: decoratorList) {
+
                 decorator.decorate(model, request, content);
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Ran content filter " + decorator);
@@ -300,13 +298,12 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             return;
         }
 
-        for (Iterator i = this.staticHeaders.entrySet().iterator(); i.hasNext();) {
+        for (Map.Entry<String, Object> header: this.staticHeaders.entrySet()) {
             
-            Map.Entry entry = (Map.Entry) i.next();
-            if (entry.getValue() instanceof Date) {
-                response.setDateHeader((String) entry.getKey(), ((Date) entry.getValue()).getTime());
+            if (header.getValue() instanceof Date) {
+                response.setDateHeader(header.getKey(), ((Date) header.getValue()).getTime());
             } else {
-                response.setHeader((String) entry.getKey(), ((String) entry.getValue()));
+                response.setHeader(header.getKey(), (String) header.getValue());
             }
         }
     }

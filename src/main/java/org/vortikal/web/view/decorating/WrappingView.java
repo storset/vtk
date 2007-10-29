@@ -114,7 +114,7 @@ public class WrappingView implements View, InitializingBean {
             throw new IllegalArgumentException(
                     "The wrapped view cannot be null");
 
-        List providerList = new ArrayList();
+        List<ReferenceDataProvider> providerList = new ArrayList<ReferenceDataProvider>();
 
         if (this.referenceDataProviders != null) {
             providerList.addAll(Arrays.asList(this.referenceDataProviders));

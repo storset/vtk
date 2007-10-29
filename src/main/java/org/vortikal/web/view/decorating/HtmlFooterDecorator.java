@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ package org.vortikal.web.view.decorating;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 
 /**

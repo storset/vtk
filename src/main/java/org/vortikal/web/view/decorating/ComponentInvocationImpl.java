@@ -36,9 +36,9 @@ import java.util.Map;
 public class ComponentInvocationImpl implements ComponentInvocation {
 
     private DecoratorComponent component;
-    private Map parameters;
+    private Map<String, Object> parameters;
 
-    public ComponentInvocationImpl(DecoratorComponent component, Map parameters) {
+    public ComponentInvocationImpl(DecoratorComponent component, Map<String, Object> parameters) {
         if (component == null) {
             throw new IllegalArgumentException("Component argument is NULL");
         }
@@ -55,7 +55,7 @@ public class ComponentInvocationImpl implements ComponentInvocation {
         return this.component;
     }
 
-    public Map getParameters() {
+    public Map<String, Object> getParameters() {
         return this.parameters;
     }
     

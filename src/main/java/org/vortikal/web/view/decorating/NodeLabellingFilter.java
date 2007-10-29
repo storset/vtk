@@ -33,8 +33,10 @@ package org.vortikal.web.view.decorating;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;

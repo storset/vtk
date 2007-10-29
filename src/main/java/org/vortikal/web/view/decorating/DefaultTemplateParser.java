@@ -35,7 +35,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class DefaultTemplateParser implements TemplateParser {
     public ComponentInvocation[] parseTemplate(Reader reader) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(reader);
         
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         char[] buffer = new char[1024];
 
         int n = 0;
@@ -70,10 +69,10 @@ public class DefaultTemplateParser implements TemplateParser {
 
     private ComponentInvocation[] parseInternal(String s) throws Exception {
 
-        // Look for:
+        // Look for occurrences of:
         // ${namespace:name param1=[value] param2=[value]}
         
-        List fragmentList = new ArrayList();
+        List<ComponentInvocation> fragmentList = new ArrayList<ComponentInvocation>();
 
         int contentIdx = 0;
         while (true) {
@@ -108,8 +107,7 @@ public class DefaultTemplateParser implements TemplateParser {
         String finalChunk = s.substring(contentIdx, s.length());
         addStaticText(fragmentList, finalChunk);
 
-        return (ComponentInvocation[]) fragmentList.toArray(
-            new ComponentInvocation[fragmentList.size()]);
+        return fragmentList.toArray(new ComponentInvocation[fragmentList.size()]);
     }
 
     private ComponentInvocation parseDirective(String s) {
@@ -131,7 +129,6 @@ public class DefaultTemplateParser implements TemplateParser {
             return null;
         }
 
-
         DecoratorComponent component = this.componentResolver.resolveComponent(
             namespace, name);
         if (component == null) {
@@ -139,21 +136,12 @@ public class DefaultTemplateParser implements TemplateParser {
             return null;
         } 
 
-        LinkedHashMap parameters = splitParameterList(s);
+        LinkedHashMap<String, Object> parameters = splitParameterList(s);
         if (parameters == null) {
             logger.info("Malformed parameter list in directive: '" + s + "'");
             return null;
         }
-
-        Map actualParameters = new HashMap();
-        for (Iterator i = parameters.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            String parameterName = (String) entry.getKey();
-            String parameterValue =  (String) entry.getValue();
-
-            actualParameters.put(parameterName, parameterValue);
-        }
-        return new ComponentInvocationImpl(component, actualParameters);
+        return new ComponentInvocationImpl(component, new HashMap<String, Object>(parameters));
     }
 
 
@@ -206,12 +194,13 @@ public class DefaultTemplateParser implements TemplateParser {
     /**
      * Splits a parameter list into a map of <code>(name, value)</code> pairs.
      *
-     * @params the raw parameter list
+     * @params the raw parameter list: should be in the format:
+     * <code>component:ref param1=[value1] param2=[value2] ..</code>
      * @return the parameter map, or <code>null</code> if the
      * parameter list is not well-formed.
      */
-    private LinkedHashMap splitParameterList(String s) {
-        LinkedHashMap result = new LinkedHashMap();
+    private LinkedHashMap<String, Object> splitParameterList(String s) {
+        LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
         int startIdx = 0;
         while (true) {
             int equalsIdx = s.indexOf("=", startIdx);
@@ -234,15 +223,17 @@ public class DefaultTemplateParser implements TemplateParser {
                 // Malformed parameter list:
                 return null;
             }
-            startIdx = valueEndIdx;
             String name = s.substring(nameStartIdx, equalsIdx).trim();
             String value = unescapedSubstring(
                 s, ']', '\\', valueStartIdx, valueEndIdx).trim();
             result.put(name, value);
+
+            startIdx = valueEndIdx;
         }
         return result;
     }
     
+
 
     private int nextIndexOf(String string, char character, char escape, int startIndex) {
         for (int i = startIndex; i < string.length(); i++) {
@@ -262,7 +253,7 @@ public class DefaultTemplateParser implements TemplateParser {
     
     private String unescapedSubstring(String string, char special,
                                      char escape, int startIndex, int endIndex) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = startIndex; i < endIndex; i++) {
             char current = string.charAt(i);
             if (current == escape) {
@@ -280,29 +271,17 @@ public class DefaultTemplateParser implements TemplateParser {
     
 
     private int nextWhitespaceIdx(String s, int startIdx) {
-        int nearest = -1;
         for (int i = startIdx; i < s.length(); i++) {
-            boolean found = false;
             char c = s.charAt(i);
-            switch (c) {
-                case ' ':
-                case '\t':
-                case '\n':
-                    found = true;
-                    break;
-                default:
-                    found = false;
-            }
-            if (found) {
-                nearest = i;
-                break;
+            if (Character.isWhitespace(c)) {
+                return i;
             }
         }
-        return nearest;
+        return -1;
     }
 
     
-    private void addDynamicComponent(List fragmentList, ComponentInvocation inv) {
+    private void addDynamicComponent(List<ComponentInvocation> fragmentList, ComponentInvocation inv) {
         if (logger.isDebugEnabled()) {
             logger.debug("Dynamic component: " + inv);
         }
@@ -310,7 +289,7 @@ public class DefaultTemplateParser implements TemplateParser {
     }
     
 
-    private void addStaticText(List fragmentList, String s) {
+    private void addStaticText(List<ComponentInvocation> fragmentList, String s) {
         if (logger.isDebugEnabled()) {
             logger.debug("Static text: '" + s + "'");
         }
@@ -325,15 +304,15 @@ public class DefaultTemplateParser implements TemplateParser {
             }
         }
         StaticComponent c = new StaticComponent();
-        c.setContent(new StringBuffer(s));
-        fragmentList.add(new ComponentInvocationImpl(c, new HashMap()));
+        c.setContent(new StringBuilder(s));
+        fragmentList.add(new ComponentInvocationImpl(c, new HashMap<String, Object>()));
     }
     
     private class StaticComponent implements DecoratorComponent {
     
-        private StringBuffer content;
+        private StringBuilder content;
     
-        public void setContent(StringBuffer content) {
+        public void setContent(StringBuilder content) {
             this.content = content;
         }
 
@@ -366,7 +345,7 @@ public class DefaultTemplateParser implements TemplateParser {
             return getName();
         }
     
-        public StringBuffer getBuffer() {
+        public StringBuilder getBuffer() {
             return this.content;
         }
         

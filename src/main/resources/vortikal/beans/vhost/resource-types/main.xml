@@ -36,6 +36,7 @@
   <import resource="artikkelsamling.xml" />
 
   <!-- UiO  -->
+  <import resource="artikkel.xml"/>
   <import resource="disputas.xml"/>
   <import resource="proveforelesning.xml"/>
   <import resource="nyhet.xml"/>

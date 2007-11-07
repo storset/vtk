@@ -31,7 +31,6 @@
        <prop key="root@localhost">${password.root@localhost}</prop>
         <prop key="vortex@localhost">${password.vortex@localhost}</prop>
         <prop key="user@localhost">${password.user@localhost}</prop>
-        <prop key="super@localhost">${password.super@localhost}</prop>
         <!-- is not possible to authenticate as: -->
         <prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
       </props>

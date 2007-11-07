@@ -28,8 +28,7 @@
 
   <!-- Document mapper -->
   <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapperImpl">
-    <property name="propertyManager" ref="propertyManager"/>
-    <property name="valueFactory" ref="valueFactory"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <!--property name="contextManager" ref="contextManager" /-->
   </bean>
 
@@ -45,7 +44,6 @@
   <bean id="systemIndex" class="org.vortikal.repository.index.PropertySetIndexImpl">
     <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
-    <property name="propertyManager" ref="propertyManager"/>
   </bean>
 
   <!-- A Lucene index accessor (secondary instance, batch indexing tuned) -->
@@ -64,13 +62,12 @@
   <bean id="secondarySystemIndex" class="org.vortikal.repository.index.PropertySetIndexImpl">
     <property name="indexAccessor" ref="secondarySystemIndexAccessor"/>
     <property name="documentMapper" ref="documentMapper"/>
-    <property name="propertyManager" ref="propertyManager"/>
   </bean>
   
   <!-- Factory for building Lucene queries. -->
   <bean id="queryBuilderFactory"
         class="org.vortikal.repository.search.query.QueryBuilderFactoryImpl">
-    <property name="propertyManager" ref="propertyManager"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="indexAccessor" ref="systemIndexAccessor"/>
   </bean>
 

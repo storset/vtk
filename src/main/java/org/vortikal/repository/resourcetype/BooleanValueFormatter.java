@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,21 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security;
+package org.vortikal.repository.resourcetype;
 
-public interface PrincipalFactory {
+import java.util.Locale;
 
-    /**
-     * Gets a principal object. Principals should be instantiated from
-     * application code using this method exclusively.
-     *
-     * @param id a (possibly fully qualified) principal name
-     * @return a principal object
-     * @throws InvalidPrincipalException when the id is an invalid principal identifier.
-     * 
-     */
-    public Principal getUserPrincipal(String id) throws InvalidPrincipalException;
-    
-    public Principal getGroupPrincipal(String id);
+/**
+ * This value formatter represents all value types by the toString() representation.
+ */
+public class BooleanValueFormatter implements ValueFormatter {
+
+    public String valueToString(Value value, String format, Locale locale)
+            throws IllegalValueTypeException {
+        return value.toString();
+    }
+
+    public Value stringToValue(String string, String format, Locale locale) {
+        return new Value(Boolean.parseBoolean(string));
+    }
 
 }

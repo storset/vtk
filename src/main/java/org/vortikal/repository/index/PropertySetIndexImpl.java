@@ -42,7 +42,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.PropertyManager;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.mapping.DocumentMapper;
@@ -51,8 +50,6 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 
 /**
  * <code>PropertySet</code> index using Lucene. 
- * 
- * @author oyviste
  */
 public class PropertySetIndexImpl implements PropertySetIndex {
 
@@ -60,7 +57,6 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     
     private LuceneIndexManager indexAccessor; // Underlying Lucene index accessor.
     private DocumentMapper documentMapper;
-    private PropertyManager propertyManager;
 
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
@@ -76,8 +72,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                                                 + propertySet.getURI() + "'");
                 logger.debug("Document mapper created the following document: ");
                 
-                for (Iterator iterator = doc.getFields().iterator(); iterator.hasNext();) {
-                    Field field = (Field)iterator.next();
+                for (Iterator<Field> iterator = doc.getFields().iterator(); iterator.hasNext();) {
+                    Field field = iterator.next();
                     if (field.isBinary()) {
                         logger.debug("Field '" + field.name() + "', value: [BINARY]");
                     } else {
@@ -427,11 +423,6 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     @Required
     public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
-    }
-    
-    @Required
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
     }
     
     public String getId() {

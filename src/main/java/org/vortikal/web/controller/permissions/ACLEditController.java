@@ -52,8 +52,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -63,12 +61,11 @@ import org.vortikal.web.service.Service;
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Repository repository;
-    private PrincipalFactory principalFactory;
     private RepositoryAction privilege;
     
     private Map<RepositoryAction, Principal> privilegePrincipalMap;
 
-    private Principal groupingPrincipal = PseudoPrincipal.ALL;
+    private Principal groupingPrincipal = Principal.ALL;
     
     public ACLEditController() {
         setSessionForm(true);
@@ -94,10 +91,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         if (this.repository == null) {
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
-        }
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                "Bean property 'principalManager' must be set");
         }
         if (this.groupingPrincipal == null) {
             throw new BeanInitializationException(
@@ -169,7 +162,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             // Switch grouping when removing individual groups:
             parameters.put("grouped", "false");
 
-            if (!(PseudoPrincipal.OWNER.equals(authorizedUser)
+            if (!(Principal.OWNER.equals(authorizedUser)
                   || this.groupingPrincipal.equals(authorizedUser))) {
 
                 String url = service.constructLink(
@@ -258,11 +251,11 @@ public class ACLEditController extends SimpleFormController implements Initializ
             for (String userName: editCommand.getUserNames()) {
                 Principal principal = null;
                 if (userName.startsWith("pseudo")) {
-                    principal = PseudoPrincipal.getPrincipal(userName);
+                    principal = Principal.getPseudoPrincipal(userName);
                 } else {
-                    principal = this.principalFactory.getUserPrincipal(userName);
+                    principal = new Principal(userName, Principal.Type.USER);
                 }
-                if (!PseudoPrincipal.OWNER.equals(principal)) {
+                if (!Principal.OWNER.equals(principal)) {
                     acl.removeEntry(this.privilege, principal);
                 }
             }
@@ -275,7 +268,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             String[] groupNames = editCommand.getGroupNames();
             
             for (int i = 0; i < groupNames.length; i++) {
-                Principal group = this.principalFactory.getGroupPrincipal(groupNames[i]);
+                Principal group = new Principal(groupNames[i], Principal.Type.GROUP);
                 acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
@@ -283,7 +276,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
             
         } else if (editCommand.getAddUserAction() != null) {
             for (String userName: editCommand.getUserNames()) {
-                Principal principal = this.principalFactory.getUserPrincipal(userName);
+                Principal principal = new Principal(userName, Principal.Type.USER);
                 acl.addEntry(this.privilege, principal);
             }
             ModelAndView mv =  showForm(
@@ -294,7 +287,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         } else if (editCommand.getAddGroupAction() != null) {
             for (String groupName: editCommand.getGroupNames()) {
-                Principal group = this.principalFactory.getGroupPrincipal(groupName);
+                Principal group = new Principal(groupName, Principal.Type.GROUP);
                 acl.addEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
@@ -307,8 +300,5 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
 
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
 }
 

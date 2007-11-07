@@ -42,10 +42,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
-import org.vortikal.repository.PropertyManager;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
@@ -78,21 +76,12 @@ import org.vortikal.util.repository.URIUtil;
  * 
  * @author oyviste
  */
-public final class QueryBuilderFactoryImpl implements QueryBuilderFactory, 
-                                                      InitializingBean {
+public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
 
     Log logger = LogFactory.getLog(QueryBuilderFactoryImpl.class);
     
-    private PropertyManager propertyManager;
     private LuceneIndexManager indexAccessor;
     private ResourceTypeTree resourceTypeTree;
-    
-    public void afterPropertiesSet() throws BeanInitializationException {
-        if (this.propertyManager == null) {
-            throw new BeanInitializationException("Property 'propertyManager' not set.");
-        }
-        this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
-    }
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
         
@@ -235,12 +224,12 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory,
     }
 
     
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-    
-    public void setIndexAccessor(LuceneIndexManager indexAccessor) {
+    @Required public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;
+    }
+
+    @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

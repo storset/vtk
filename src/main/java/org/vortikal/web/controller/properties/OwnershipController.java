@@ -39,7 +39,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -50,8 +50,6 @@ public class OwnershipController extends SimpleFormController implements Initial
     private static Log logger = LogFactory.getLog(OwnershipController.class);
     
     private Repository repository = null;
-    private PrincipalFactory principalFactory;
-    
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -62,11 +60,6 @@ public class OwnershipController extends SimpleFormController implements Initial
             throw new BeanInitializationException(
                 "Bean property 'repository' must be set");
         }
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                "Bean property 'principalFactory' must be set");
-        }
-
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -107,16 +100,11 @@ public class OwnershipController extends SimpleFormController implements Initial
                 logger.debug("Setting new owner '" + ownershipCommand.getOwner() + 
                              "' for resource " + uri);
             }
-            resource.setOwner(this.principalFactory.getUserPrincipal(ownershipCommand.getOwner()));
+            resource.setOwner(new Principal(ownershipCommand.getOwner(), Principal.Type.USER));
             this.repository.store(token, resource);
         }
         ownershipCommand.setDone(true);
     }
-
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-    
 
 }
 

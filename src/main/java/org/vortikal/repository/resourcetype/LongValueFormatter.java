@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security.store;
+package org.vortikal.repository.resourcetype;
 
-import junit.framework.TestCase;
+import java.util.Locale;
 
-import org.vortikal.security.Principal;
+/**
+ * This value formatter represents all value types by the toString() representation.
+ */
+public class LongValueFormatter implements ValueFormatter {
 
-
-public class DomainGroupStoreTestCase extends TestCase {
-
-    private DomainGroupStore store = new DomainGroupStore();
-
-    private Principal group; 
-    private Principal all = Principal.ALL;
-
-    
-    
-    protected void setUp() throws Exception {
-        this.group = new Principal("alle@uio.no", Principal.Type.GROUP);
-
-        this.store.setKnownGroups(new Principal[] {this.group});
+    public String valueToString(Value value, String format, Locale locale)
+            throws IllegalValueTypeException {
+        return value.toString();
     }
 
-
-
-    public void testIsMember() {
-        assertFalse(this.store.isMember(this.all, this.group));
+    public Value stringToValue(String string, String format, Locale locale) {
+        return new Value(Long.parseLong(string));
     }
+
 }

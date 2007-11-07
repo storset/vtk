@@ -68,7 +68,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     public void testChangeAclInheritance() throws Exception {
         RepositoryResourceHelper resourceHelper = getRepositoryResourceHelper();
         DataAccessor dao = getDataAccessor();
-        Principal rootPrincipal = getPrincipalFactory().getUserPrincipal("root@localhost");
+        Principal rootPrincipal = new Principal("root@localhost", Principal.Type.USER);
 
         ResourceImpl root = dao.load("/");
 
@@ -126,7 +126,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     public void testSetLiveProperty() throws Exception {
         RepositoryResourceHelper resourceHelper = getRepositoryResourceHelper();
         DataAccessor dao = getDataAccessor();
-        Principal rootPrincipal = getPrincipalFactory().getUserPrincipal("root@localhost");
+        Principal rootPrincipal = new Principal("root@localhost", Principal.Type.USER);
 
         ResourceImpl root = dao.load("/");
 

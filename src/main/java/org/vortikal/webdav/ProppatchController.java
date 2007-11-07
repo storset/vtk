@@ -498,13 +498,13 @@ public class ProppatchController extends AbstractWebdavController  {
         if ((valuesElement = element.getChild("values", 
                 WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE))!= null) {
                 
-            List children = valuesElement.getChildren(
+            List<Element> children = valuesElement.getChildren(
                 "value", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
             
             stringValues = new String[children.size()];
             int u=0;
-            for (Iterator i = children.iterator(); i.hasNext(); ) {
-                stringValues[u++] = ((Element)i.next()).getText();
+            for (Element e: children) {
+                stringValues[u++] = e.getText();
             }
         } else if (element.getChildren().size() == 0) {
             // Assume values separated by comma (CSV)
@@ -534,11 +534,4 @@ public class ProppatchController extends AbstractWebdavController  {
         return values;
     }
 
-
-
-
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }
-    
 }

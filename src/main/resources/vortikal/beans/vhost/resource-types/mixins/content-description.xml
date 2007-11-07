@@ -37,7 +37,6 @@
 
   <bean id="validToEvaluator"
     class="org.vortikal.repository.resourcetype.property.UhtmlValidToEvaluator">
-    <property name="valueFactory" ref="valueFactory" />
   </bean>
 -->
   <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

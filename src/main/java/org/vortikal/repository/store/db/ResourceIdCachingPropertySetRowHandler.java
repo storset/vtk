@@ -32,14 +32,12 @@ package org.vortikal.repository.store.db;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.repository.PropertyManager;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.store.PropertySetHandler;
-import org.vortikal.security.PrincipalFactory;
 
 /**
  * Property set row handler which caches resource IDs, and generates 
@@ -48,7 +46,6 @@ import org.vortikal.security.PrincipalFactory;
  * This row handler requires all resources from the root uri to exist in the
  * result iteration and be ordered by URI.
  *  
- * @author oyviste
  */
 class ResourceIdCachingPropertySetRowHandler extends
         PropertySetRowHandler {
@@ -56,8 +53,8 @@ class ResourceIdCachingPropertySetRowHandler extends
     private Map<String, Integer> resourceIdCache = new HashMap<String, Integer>();
 
     public ResourceIdCachingPropertySetRowHandler(PropertySetHandler clientHandler,
-            PropertyManager propertyManager, PrincipalFactory principalFactory) {
-        super(clientHandler, propertyManager, principalFactory);
+            ResourceTypeTree resourceTypeTree) {
+        super(clientHandler, resourceTypeTree);
     }
     
     protected void populateAncestorIds(Map row, PropertySetImpl propSet) {

@@ -37,7 +37,6 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.security.roles.RoleManager;
 import org.vortikal.util.repository.URIUtil;
 
@@ -532,7 +531,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             }
 
             // Condition 1:
-            if (principalSet.contains(PseudoPrincipal.ALL)) {
+            if (principalSet.contains(Principal.ALL)) {
                 return;
             }
 
@@ -542,13 +541,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             }
 
             // Condition 2:
-            if (principalSet.contains(PseudoPrincipal.AUTHENTICATED)) {
+            if (principalSet.contains(Principal.AUTHENTICATED)) {
                 return;
             }
 
             // Condition 3:
             if (resource.getOwner().equals(principal)
-                && principalSet.contains(PseudoPrincipal.OWNER)) {
+                && principalSet.contains(Principal.OWNER)) {
                 return;
             }
 

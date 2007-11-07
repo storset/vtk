@@ -33,7 +33,6 @@ package org.vortikal.repository.store.db;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,13 +40,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyManager;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.event.RowHandler;
 
@@ -62,22 +61,20 @@ class PropertySetRowHandler implements RowHandler {
     // Client callback for handling retrieved property set instances 
     protected PropertySetHandler clientHandler;
     
-    protected PropertyManager propertyManager;
-    protected PrincipalFactory principalFactory;
-    
-    
+
     // Need to keep track of current property set ID since many rows from iBATIS
     // can map to a single property set. The iteration from the database is 
     // ordered, so ID change signals a new PropertySet
     protected Integer currentId = null;
     protected List<Map> rowValueBuffer = new ArrayList<Map>();
+
+    private final ResourceTypeTree resourceTypeTree;
     
     public PropertySetRowHandler(PropertySetHandler clientHandler,
-                                 PropertyManager propertyManager,
-                                 PrincipalFactory principalFactory) {
+                                 ResourceTypeTree resourceTypeTree) {
         this.clientHandler = clientHandler;
-        this.propertyManager = propertyManager;
-        this.principalFactory = principalFactory;
+        this.resourceTypeTree = resourceTypeTree;
+      
     }
     
         
@@ -140,126 +137,121 @@ class PropertySetRowHandler implements RowHandler {
         
         // isCollection
         boolean collection = "Y".equals(row.get("isCollection"));
-        Property prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
-                Boolean.valueOf(collection));
-            propertySet.addProperty(prop);
+        PropertyTypeDefinition propDef = 
+            this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME);
+        Property prop = propDef.createProperty(Boolean.valueOf(collection));
+        propertySet.addProperty(prop);
         
         // createdBy
-        Principal createdBy = principalFactory.getUserPrincipal(
-                                                    (String)row.get("createdBy"));
-        prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
-                createdBy);
+        Principal createdBy = new Principal((String)row.get("createdBy"), Principal.Type.USER);
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME);
+        prop = propDef.createProperty(createdBy);
         propertySet.addProperty(prop);
 
         // creationTime 
-        prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
-                (Date)row.get("creationTime"));
-            propertySet.addProperty(prop);
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME);
+        prop = propDef.createProperty((Date)row.get("creationTime"));
+        propertySet.addProperty(prop);
 
         // owner
-        Principal principal = principalFactory.getUserPrincipal((String)row.get("owner"));
-        prop = propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
-            principal);
+        Principal principal = new Principal((String)row.get("owner"), Principal.Type.USER);
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
+        prop = propDef.createProperty(principal);
         propertySet.addProperty(prop);
 
         // contentType
         String string = (String)row.get("contentType");
         if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTTYPE_PROP_NAME,
-                string);
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            prop = propDef.createProperty(string);
             propertySet.addProperty(prop);
         }
         
         // characterEncoding
         string = (String)row.get("characterEncoding");
         if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CHARACTERENCODING_PROP_NAME,
-                string);
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_PROP_NAME);
+            prop = propDef.createProperty(string);
             propertySet.addProperty(prop);
         }
         
         // guessedCharacterEncoding
         string = (String)row.get("guessedCharacterEncoding");
         if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME,
-                string);
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME);
+            prop = propDef.createProperty(string);
             propertySet.addProperty(prop);
         }
         
         // userSpecifiedCharacterEncoding
         string = (String)row.get("userSpecifiedCharacterEncoding");
         if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
-                string);
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME);
+            prop = propDef.createProperty(string);
             propertySet.addProperty(prop);
         }
         
         // contentLanguage
         string = (String)row.get("contentLanguage");
         if (string != null) {
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, 
-                PropertyType.CONTENTLOCALE_PROP_NAME,
-                string);
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME);
+            prop = propDef.createProperty(string);
             propertySet.addProperty(prop);
         }
         
         // lastModified
-        prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
-                (Date)row.get("lastModified"));
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
+        prop = propDef.createProperty((Date)row.get("lastModified"));
         propertySet.addProperty(prop);
 
         // modifiedBy
-        principal = principalFactory.getUserPrincipal((String)row.get("modifiedBy"));
-        prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
-                principal);
+        principal = new Principal((String)row.get("modifiedBy"), Principal.Type.USER);
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
+        prop = propDef.createProperty(principal);
         propertySet.addProperty(prop);
 
         // contentLastModified
-        prop = propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
-            (Date)row.get("contentLastModified"));
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+        prop = propDef.createProperty((Date)row.get("contentLastModified"));
         propertySet.addProperty(prop);
 
         // contentModifiedBy
-        principal = principalFactory.getUserPrincipal((String)row.get("contentModifiedBy"));
-        prop = propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
-            principal);
+        principal = new Principal((String)row.get("contentModifiedBy"), Principal.Type.USER);
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
+        prop = propDef.createProperty(principal);
         propertySet.addProperty(prop);
 
         // propertiesLastModified
-        prop = propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME,
-            (Date)row.get("propertiesLastModified"));
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
+        prop = propDef.createProperty((Date)row.get("propertiesLastModified"));
         propertySet.addProperty(prop);
 
         // propertiesModifiedBy
-        principal = principalFactory.getUserPrincipal((String)row.get("propertiesModifiedBy"));
-        prop = propertyManager.createProperty(
-            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
-            principal);
+        principal = new Principal((String)row.get("propertiesModifiedBy"), Principal.Type.USER);
+        propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
+        prop = propDef.createProperty(principal);
         propertySet.addProperty(prop);
         
         if (!collection) {
             Long contentLength = (Long)row.get("contentLength");
-            prop = propertyManager.createProperty(
-                Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME,
-                contentLength);
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLENGTH_PROP_NAME);
+            prop = propDef.createProperty(contentLength);
             propertySet.addProperty(prop);
         }
         
@@ -300,9 +292,10 @@ class PropertySetRowHandler implements RowHandler {
         }
 
         for (SqlDaoUtils.PropHolder holder: propMap.keySet()) {
-            Property property = this.propertyManager.createProperty(
-                holder.namespaceUri, holder.name, 
-                holder.values.toArray(new String[]{}));
+            Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
+            PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                    namespace, holder.name);
+            Property property = propDef.createProperty(holder.values.toArray(new String[]{}));
             propertySet.addProperty(property);
         }
 

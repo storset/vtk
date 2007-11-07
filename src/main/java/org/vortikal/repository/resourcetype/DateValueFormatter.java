@@ -30,23 +30,34 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.time.FastDateFormat;
 
 public class DateValueFormatter implements ValueFormatter {
 
     private String defaultDateFormatKey = "long";
+    private Locale defaultLocale = new Locale("en");
+    
     private Map<String, FastDateFormat> namedDateFormats = new HashMap<String, FastDateFormat>();
+    private Set<String> recognizedLocales = new HashSet<String>();
 
     public DateValueFormatter() {
-        this.namedDateFormats.put("short", FastDateFormat.getInstance("MMM d, yyyy", new Locale("en")));
+        this.recognizedLocales.add("no");
+        this.recognizedLocales.add("en");
+        
+        this.namedDateFormats.put("short_en", FastDateFormat.getInstance("MMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("short_no", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
-        this.namedDateFormats.put("long", FastDateFormat.getInstance("MMM d, yyyy hh:mm a", new Locale("en")));
+        this.namedDateFormats.put("long_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm a", new Locale("en")));
         this.namedDateFormats.put("long_no", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
-        this.namedDateFormats.put("hours-minutes", FastDateFormat.getInstance("hh:mm a", new Locale("en")));
+        this.namedDateFormats.put("hours-minutes_en", FastDateFormat.getInstance("hh:mm a", new Locale("en")));
         this.namedDateFormats.put("hours-minutes_no", FastDateFormat.getInstance("HH:mm", new Locale("no")));
         this.namedDateFormats.put("iso-8601", FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssZZ", new Locale("en")));
         this.namedDateFormats.put("iso-8601-short", FastDateFormat.getInstance("yyyy-MM-dd", new Locale("en")));
@@ -65,6 +76,9 @@ public class DateValueFormatter implements ValueFormatter {
         
         FastDateFormat f = null;
 
+        if (locale == null || !recognizedLocales.contains(locale.getLanguage())) {
+            locale = this.defaultLocale;
+        }
         // Check if format refers to any of the
         // predefined (named) formats:
         String key = format + "_" + locale.getLanguage();
@@ -86,6 +100,35 @@ public class DateValueFormatter implements ValueFormatter {
             return "Error: " + t.getMessage();
         }
 
+    }
+
+    public Value stringToValue(String string, String format, Locale locale) throws IllegalArgumentException {
+        if (format == null) {
+            format = this.defaultDateFormatKey;
+        }
+        if (locale == null || !recognizedLocales.contains(locale.getLanguage())) {
+            locale = this.defaultLocale;
+        }
+    
+        FastDateFormat fdf = this.namedDateFormats.get(format + "_" + locale.getLanguage());
+        
+        if (fdf == null) {
+            fdf = this.namedDateFormats.get(format);
+        }
+
+        if (fdf != null) {
+            format = fdf.getPattern();
+            locale = fdf.getLocale();
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
+        Date date;
+        try {
+            date = sdf.parse(string);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Unable to parse to date value object: " + string, e);
+        }
+        return new Value(date);
     }
 
 }

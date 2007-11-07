@@ -36,17 +36,14 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jaxen.SimpleFunctionContext;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.SimpleVariableContext;
 import org.jaxen.XPath;
 import org.jaxen.XPathFunctionContext;
 import org.jaxen.jdom.JDOMXPath;
-
 import org.jdom.Attribute;
 import org.jdom.Document;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -65,9 +62,6 @@ import org.vortikal.xml.xpath.XPathFunction;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>expression</code> - the XPath expression
- *   <li><code>valueFactory</code> - an optional {@link ValueFactory}
- *   to apply to the extracted value(s). If not specified, all
- *   extracted values are treated as string values.
  *   <li><code>trimValues</code> - whether or not to trim (remove
  *   leading and trailing whitespace) from (textual) evaluated
  *   values. Default is <code>true</code>.
@@ -82,15 +76,11 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
     private static final Log logger = LogFactory.getLog(XPathEvaluator.class);
     
 
-    private ValueFactory valueFactory;
+    private ValueFactory valueFactory = ValueFactory.getInstance();
     private String expression;
     private boolean trimValues = true;
     private Set<XPathFunction> customFunctions;
     
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }      
-
     public void setExpression(String expression) {
         this.expression = expression;
     }
@@ -125,7 +115,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
             }
             
             if (property.getDefinition().isMultiple()) {
-                List list = xpath.selectNodes(doc);
+                List<Object> list = xpath.selectNodes(doc);
                 if (list.size() == 0) {
                     return false;
                 }
@@ -208,14 +198,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
         if ("".equals(stringVal.trim())) {
             return null;
         }
-        Value value = null;
-        if (this.valueFactory != null) {
-            value = this.valueFactory.createValue(stringVal, type);
-        } else {
-            value = new Value(stringVal);
-        }
-         
-         return value;
+        return this.valueFactory.createValue(stringVal, type);
      }
     
 

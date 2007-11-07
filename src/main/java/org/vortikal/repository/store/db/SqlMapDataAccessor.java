@@ -43,7 +43,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AclImpl;
@@ -62,8 +61,6 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.PseudoPrincipal;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 
@@ -80,15 +77,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private PrincipalFactory principalFactory;
-    
     private boolean optimizedAclCopySupported = false;
 
-    @Required
-    public void setPrincipalFactory(PrincipalFactory principalfactory) {
-        this.principalFactory = principalfactory;
-    }
-    
     public void setOptimizedAclCopySupported(boolean optimizedAclCopySupported) {
         this.optimizedAclCopySupported = optimizedAclCopySupported;
     }
@@ -133,7 +123,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             resource.setLock(locks.get(resource.getURI()));
         }
 
-        populateStandardProperties(this.principalFactory, resource, resourceMap);
+        populateStandardProperties(resource, resourceMap);
         int resourceId = resource.getID();
         sqlMap = getSqlMap("loadPropertiesForResource");
         List<Map<String, Object>> propertyList = 
@@ -349,7 +339,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             ResourceImpl resource = createResourceImpl();
             resource.setUri(uri);
 
-            populateStandardProperties(this.principalFactory, resource, resourceMap);
+            populateStandardProperties(resource, resourceMap);
             
             if (locks.containsKey(uri)) {
                 resource.setLock((LockImpl) locks.get(uri));
@@ -621,7 +611,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Map<String, ?> map: locks) {
             LockImpl lock = new LockImpl(
                 (String) map.get("token"),
-                this.principalFactory.getUserPrincipal((String) map.get("owner")),
+                new Principal((String) map.get("owner"), Principal.Type.USER),
                 (String) map.get("ownerInfo"),
                 (String) map.get("depth"),
                 (Date) map.get("timeout"));
@@ -648,7 +638,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Map map = (Map) i.next();
             LockImpl lock = new LockImpl(
                 (String) map.get("token"),
-                this.principalFactory.getUserPrincipal((String) map.get("owner")),
+                new Principal((String) map.get("owner"), Principal.Type.USER),
                 (String) map.get("ownerInfo"),
                 (String) map.get("depth"),
                 (Date) map.get("timeout"));
@@ -830,11 +820,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Principal p = null;
 
             if (isGroup)
-                p = this.principalFactory.getGroupPrincipal(name);
+                p = new Principal(name, Principal.Type.GROUP);
             else if (name.startsWith("pseudo:"))
-                p = PseudoPrincipal.getPrincipal(name);
+                p = Principal.getPseudoPrincipal(name);
             else
-                p = this.principalFactory.getUserPrincipal(name);
+                p = new Principal(name, Principal.Type.USER);
             RepositoryAction action = Privilege.getActionByName(privilege);
             acl.addEntry(action, p);
         }
@@ -954,8 +944,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     }
     
 
-    public static void populateStandardProperties(PrincipalFactory principalFactory,
-            ResourceImpl resourceImpl,  Map<String, ?> resourceMap) {
+    public void populateStandardProperties(ResourceImpl resourceImpl,  Map<String, ?> resourceMap) {
 
         resourceImpl.setID(((Number)resourceMap.get("id")).intValue());
         
@@ -964,8 +953,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME,
             Boolean.valueOf(collection));
         
-        Principal createdBy = principalFactory.getUserPrincipal(
-            (String) resourceMap.get("createdBy"));
+        Principal createdBy = new Principal(
+            (String) resourceMap.get("createdBy"), Principal.Type.USER);
         resourceImpl.createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME,
                 createdBy);
@@ -974,8 +963,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME,
             resourceMap.get("creationTime"));
 
-        Principal principal = principalFactory.getUserPrincipal(
-            (String) resourceMap.get("owner"));
+        Principal principal = new Principal(
+            (String) resourceMap.get("owner"), Principal.Type.USER);
         resourceImpl.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME,
             principal);
@@ -1024,7 +1013,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
                 resourceMap.get("lastModified"));
 
-        principal = principalFactory.getUserPrincipal((String) resourceMap.get("modifiedBy"));
+        principal = new Principal((String) resourceMap.get("modifiedBy"), Principal.Type.USER);
         resourceImpl.createProperty(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME,
                 principal);
@@ -1033,8 +1022,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME,
             resourceMap.get("contentLastModified"));
 
-        principal = principalFactory.getUserPrincipal(
-            (String) resourceMap.get("contentModifiedBy"));
+        principal = new Principal((String) resourceMap.get("contentModifiedBy"), Principal.Type.USER);
         resourceImpl.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME,
             principal);
@@ -1043,8 +1031,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME,
             resourceMap.get("propertiesLastModified"));
 
-        principal = principalFactory.getUserPrincipal(
-            (String) resourceMap.get("propertiesModifiedBy"));
+        principal = new Principal((String) resourceMap.get("propertiesModifiedBy"), Principal.Type.USER);
         resourceImpl.createProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME,
             principal);
@@ -1108,7 +1095,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         
         Set<Principal> groups = new HashSet<Principal>();
         for (String groupName: groupNames) {
-            Principal group = this.principalFactory.getGroupPrincipal(groupName);
+            Principal group = new Principal(groupName, Principal.Type.GROUP);
             groups.add(group);
         }
             

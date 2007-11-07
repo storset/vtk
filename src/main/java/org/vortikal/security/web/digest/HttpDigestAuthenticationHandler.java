@@ -40,13 +40,10 @@ import org.safehaus.uuid.UUIDGenerator;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.store.MD5PasswordStore;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -68,7 +65,6 @@ import org.vortikal.util.web.HttpUtil;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>principalStore</code> - a {@link MD5PasswordPrincipalStore}
- *   <li><code>principalManager</code> - a {@link PrincipalManager}
  *   <li><code>recognizedDomains</code> - a {@link Set} of principal
  *   domain names, for limiting the set of users that can authenticate
  *   using this authentication handler. Default is <code>null</code>
@@ -95,7 +91,6 @@ public class HttpDigestAuthenticationHandler
     private Log logger = LogFactory.getLog(this.getClass());
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
     private MD5PasswordStore principalStore = null;
-    private PrincipalFactory principalFactory;
     private Set recognizedDomains = null;
     private Set excludedPrincipals = new HashSet();
     private boolean maintainState = false;
@@ -135,10 +130,6 @@ public class HttpDigestAuthenticationHandler
         if (this.principalStore == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'principalStore' not set.");
-        }
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'principalManager' not set.");
         }
         if (this.maintainState && this.stateMap == null) {
             throw new BeanInitializationException(
@@ -183,7 +174,7 @@ public class HttpDigestAuthenticationHandler
         Principal principal = null;
 
         try {
-            principal = this.principalFactory.getUserPrincipal(username);
+            principal = new Principal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -371,7 +362,7 @@ public class HttpDigestAuthenticationHandler
         }
         
 
-        Principal principal = this.principalFactory.getUserPrincipal(username);
+        Principal principal = new Principal(username, Principal.Type.USER);
         if (principal == null) {
             throw new AuthenticationException(
                 "Unable to authenticate principal using HTTP/Digest for request"
@@ -533,9 +524,4 @@ public class HttpDigestAuthenticationHandler
         }
     }
 
-
-
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
 }

@@ -129,14 +129,13 @@ public final class FieldValueMapper {
      * @param type
      * @return
      */
-    public static Value getValueFromField(Field field,
-            ValueFactory valueFactory, Type type) {
+    public static Value getValueFromField(Field field, Type type) {
         String fieldValue = field.stringValue();
 
         String decodedFieldValue = decodeIndexFieldValueToString(fieldValue,
                 type);
 
-        return valueFactory.createValue(decodedFieldValue, type);
+        return ValueFactory.getInstance().createValue(decodedFieldValue, type);
     }
 
     /**

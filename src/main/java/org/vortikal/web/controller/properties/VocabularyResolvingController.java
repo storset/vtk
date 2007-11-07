@@ -73,7 +73,7 @@ public class VocabularyResolvingController implements Controller {
         Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);
 
         PropertyTypeDefinition propDef = 
-            this.resourceTypeTree.findPropertyTypeDefinition(namespace, name);
+            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
 
         Vocabulary<Value> vocabulary = propDef.getVocabulary();
         

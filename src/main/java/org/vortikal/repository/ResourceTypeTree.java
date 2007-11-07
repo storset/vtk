@@ -39,7 +39,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
 
-    public PropertyTypeDefinition findPropertyTypeDefinition(
+    public PropertyTypeDefinition getPropertyTypeDefinition(
             Namespace namespace, String name);
 
     public String getResourceTypeTreeAsString();

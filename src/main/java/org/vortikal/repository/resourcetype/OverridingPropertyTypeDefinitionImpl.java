@@ -33,6 +33,7 @@ package org.vortikal.repository.resourcetype;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -162,6 +163,24 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
 
     public ValueFormatter getValueFormatter() {
         return this.overriddenPropDef.getValueFormatter();
+    }
+
+    public Property createProperty(Object value) throws ValueFormatException {
+        return this.overriddenPropDef.createProperty(value);
+    }
+
+    public Property createProperty(String stringValue)
+            throws ValueFormatException {
+        return this.overriddenPropDef.createProperty(stringValue);
+    }
+
+    public Property createProperty(String[] stringValues)
+            throws ValueFormatException {
+        return this.overriddenPropDef.createProperty(stringValues);
+    }
+
+    public Property createProperty() {
+        return this.overriddenPropDef.createProperty();
     }
 
 }

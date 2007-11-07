@@ -63,9 +63,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
     }
 
     public void setMessageSourceBaseName(String messageSourceBaseName) {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename(messageSourceBaseName);
-        this.valueFormatter = new MessageSourceValueFormatter(messageSource);
+        this.valueFormatter = new MessageSourceValueFormatter(messageSourceBaseName);
     }
 
     public void setNodes(List<HierarchicalNode<Value>> nodes) {

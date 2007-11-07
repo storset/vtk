@@ -42,11 +42,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyManager;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.domain.ContextManager;
@@ -54,7 +52,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.util.repository.URIUtil;
@@ -66,30 +63,18 @@ import org.vortikal.util.repository.URIUtil;
  * XXX: more error-checking
  * TODO: Javadoc
  * 
- * @author oyviste
  */
-public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
+public class DocumentMapperImpl implements DocumentMapper {
 
     private static Log logger = LogFactory.getLog(DocumentMapperImpl.class);
     
     /* Fast lookup from stored field name in index -> PropertyTypeDefinition */
-    private Map<String, PropertyTypeDefinition> fieldNamePropDefMap; 
+    private Map<String, PropertyTypeDefinition> fieldNamePropDefMap = 
+        new HashMap<String, PropertyTypeDefinition>(); 
 
     private ResourceTypeTree resourceTypeTree;
-    private PropertyManager propertyManager;
-    private ValueFactory valueFactory;
 
     private ContextManager contextManager;
-    
-    public void afterPropertiesSet() {
-        this.resourceTypeTree = this.propertyManager.getResourceTypeTree();
-        
-        this.fieldNamePropDefMap = new HashMap<String, PropertyTypeDefinition>();
-        // Populate map for fast lookup of stored index field name -> PropertyTypeDefinition
-        for (PropertyTypeDefinition def: this.resourceTypeTree.getPropertyTypeDefinitions()) {
-            this.fieldNamePropDefMap.put(FieldNameMapping.getStoredFieldName(def), def);
-        }
-    }
     
     public Document getDocument(PropertySetImpl propSet) throws DocumentMappingException {
         Document doc = new Document();
@@ -287,10 +272,9 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         
         for (PropertyTypeDefinition propDef : context.keySet()) {
             String stringValue = context.get(propDef);
-            Property property = this.propertyManager.createProperty(propDef);
-
-            Value value = this.valueFactory.createValue(stringValue, PropertyType.Type.STRING);
-            property.setValue(value);
+            Property property = propDef.createProperty();
+            // XXX: only handles string values in context! 
+            property.setStringValue(stringValue);
             propSet.addProperty(property);
         }
     }
@@ -307,7 +291,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         
         PropertyTypeDefinition def = this.fieldNamePropDefMap.get(fieldName);
         
-        Property property = null;
         if (def == null) {
             // No definition found, make it a String type and log a warning
             String name = 
@@ -315,8 +298,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             String nsPrefix = 
                 FieldNameMapping.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
 
-            property = this.propertyManager.createProperty(
-                                Namespace.getNamespaceFromPrefix(nsPrefix), name);
+            def = this.resourceTypeTree.getPropertyTypeDefinition(Namespace.getNamespaceFromPrefix(nsPrefix), name);
             
             logger.warn("Definition for property '"
                             + nsPrefix
@@ -326,40 +308,34 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                             + " property manager. Config might have been updated without "
                             + " updating index(es)");
 
+        } 
+
+        Property property = def.createProperty();
+            
+        if (def.isMultiple()) { // and indexes haven't been updated to
+            // reflect this.
+
+            Value[] values = BinaryFieldValueMapper
+            .getValuesFromBinaryFields(storedValueFields, def.getType());
+
+            property.setValues(values);
+        } else {
+            if (storedValueFields.size() != 1) {
+                // Fail hard if multiple stored fields found for single
+                // value property
+                throw new FieldValueMappingException(
+                        "Single value property '"
+                        + def.getNamespace().getPrefix()
+                        + FieldNameMapping.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
+                        + def.getName()
+                        + "' has an invalid number of stored values ("
+                        + storedValueFields.size() + ") in index.");
+            }
+
             Value value = BinaryFieldValueMapper.getValueFromBinaryField(
-                    storedValueFields.get(0), this.valueFactory,
-                    PropertyType.Type.STRING);
+                    storedValueFields.get(0), def.getType());
 
             property.setValue(value);
-        } else {
-            property = this.propertyManager.createProperty(def);
-            
-            if (def.isMultiple()) { // and indexes haven't been updated to
-                                    // reflect this.
-
-                Value[] values = BinaryFieldValueMapper
-                        .getValuesFromBinaryFields(storedValueFields,
-                                this.valueFactory, def.getType());
-
-                property.setValues(values);
-            } else {
-                if (storedValueFields.size() != 1) {
-                    // Fail hard if multiple stored fields found for single
-                    // value property
-                    throw new FieldValueMappingException(
-                            "Single value property '"
-                                    + def.getNamespace().getPrefix()
-                                    + FieldNameMapping.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
-                                    + def.getName()
-                                    + "' has an invalid number of stored values ("
-                                    + storedValueFields.size() + ") in index.");
-                }
-
-                Value value = BinaryFieldValueMapper.getValueFromBinaryField(
-                        storedValueFields.get(0), this.valueFactory, def.getType());
-
-                property.setValue(value);
-            }
         }
 
         return property;
@@ -427,18 +403,17 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         return singleField;
     }
 
-    @Required
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-
-    @Required
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }
-
     public void setContextManager(ContextManager contextManager) {
         this.contextManager = contextManager;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+        // Populate map for fast lookup of stored index field name -> PropertyTypeDefinition
+        for (PropertyTypeDefinition def: this.resourceTypeTree.getPropertyTypeDefinitions()) {
+            this.fieldNamePropDefMap.put(FieldNameMapping.getStoredFieldName(def), def);
+        }
     }
 
 }

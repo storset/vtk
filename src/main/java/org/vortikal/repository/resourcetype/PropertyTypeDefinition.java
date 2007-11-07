@@ -31,6 +31,7 @@
 package org.vortikal.repository.resourcetype;
 
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -72,6 +73,42 @@ public interface PropertyTypeDefinition {
     public Vocabulary<Value> getVocabulary();
 
     public ValueFormatter getValueFormatter();
+    
+    
+    
+    /**
+     * Creates (instantiates) a property with a given value, handling only single values.
+     *
+     * @return a property instance
+     * @throws ValueFormatException if the supplied value's type does
+     * not match that of the property definition
+     */
+    public Property createProperty(Object value) throws ValueFormatException;
+
+
+    /**
+     * Creates (instantiates) a property with a given value. 
+     * 
+     * @return a property instance
+     * @throws ValueFormatException if the supplied value isn't representable in the type
+     *  of this property definition
+     */
+    public Property createProperty(String stringValue) throws ValueFormatException;
+    
+    /**
+     * Creates (instantiates) a property with a given set of values. 
+     * 
+     * @return a property instance
+     * @throws ValueFormatException if the supplied values isn't representable in the type
+     *  of this property definition
+     */
+    public Property createProperty(String[] stringValues) throws ValueFormatException;
+
+    /**
+     * Create a {@link Property} instance.
+     */
+    public Property createProperty();
+
     
 }
 

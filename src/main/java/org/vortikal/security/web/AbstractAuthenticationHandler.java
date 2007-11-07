@@ -7,14 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.web.service.Assertion;
@@ -22,7 +20,6 @@ import org.vortikal.web.service.Assertion;
 /**
  * <p>Configurable JavaBean properties:
  * <ul>
- *   <li><code>principalFactory</code> - a {@link PrincipalFactory} (required)
  *   <li><code>recognizedDomains</code> - a {@link Set} specifying the
  *     recognized principal {@link Principal#getDomain domains}. If
  *     this property is not specified, all domains are matched.
@@ -38,7 +35,7 @@ import org.vortikal.web.service.Assertion;
  * </ul>
  */
 public abstract class AbstractAuthenticationHandler implements
-        AuthenticationHandler, Ordered, InitializingBean {
+        AuthenticationHandler, Ordered {
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
@@ -51,8 +48,6 @@ public abstract class AbstractAuthenticationHandler implements
 
     private int order = Integer.MAX_VALUE;
 
-    protected PrincipalFactory principalFactory;
-
     public void setCache(SimpleCache<String, Principal> cache) {
         this.cache = cache;
     }
@@ -61,24 +56,12 @@ public abstract class AbstractAuthenticationHandler implements
         this.recognizedDomains = recognizedDomains;
     }
 
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-
     public void setOrder(int order) {
         this.order = order;
     }
 
     public int getOrder() {
         return this.order;
-    }
-
-    public void afterPropertiesSet() {
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                    "Property 'principalFactory' must be set");
-        }
-
     }
 
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
@@ -95,7 +78,7 @@ public abstract class AbstractAuthenticationHandler implements
         Principal principal = null;
 
         try {
-            principal = this.principalFactory.getUserPrincipal(username);
+            new Principal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -132,7 +115,7 @@ public abstract class AbstractAuthenticationHandler implements
         Principal principal = null;
 
         try {
-            principal = this.principalFactory.getUserPrincipal(username);
+            principal = new Principal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             throw new AuthenticationException("Invalid principal '" + username
                     + "'", e);

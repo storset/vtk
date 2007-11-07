@@ -766,7 +766,6 @@
     <property name="propertyListModelName" value="basicPropList" />
     <property name="propertyMapModelName" value="aboutItems" />
 
-    <property name="valueFactory" ref="valueFactory" />
     <property name="formView" value="admin" />
     <property name="successView" value="redirectToAbout" />
 
@@ -874,7 +873,6 @@
     <property name="commandName" value="ownershipForm" />
     <property name="commandClass" 
               value="org.vortikal.web.controller.properties.OwnershipCommand" />
-    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <bean id="aclInheritanceHandler" 
@@ -887,14 +885,12 @@
         abstract="true"
         class="org.vortikal.web.controller.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
-    <property name="principalFactory" ref="principalFactory" />
     <property name="privilegePrincipalMap" ref="editPrivilegePrincipalMap" />
     <property name="formView" value="permissions" />
     <property name="commandClass" value="org.vortikal.web.controller.permissions.ACLEditCommand" />
     <property name="validator">
       <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
         <property name="principalManager" ref="principalManager" />
-        <property name="principalFactory" ref="principalFactory" />
       </bean>
     </property>
   </bean>

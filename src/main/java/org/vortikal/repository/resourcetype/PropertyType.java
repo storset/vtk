@@ -45,10 +45,10 @@ public final class PropertyType {
      */ 
     public enum Type {
         STRING (new StringValueFormatter()),
-        INT (new StringValueFormatter()), 
-        LONG (new StringValueFormatter()),
+        INT (new IntValueFormatter()), 
+        LONG (new LongValueFormatter()),
         DATE (new DateValueFormatter()), 
-        BOOLEAN (new StringValueFormatter()), 
+        BOOLEAN (new BooleanValueFormatter()), 
         PRINCIPAL (new PrincipalValueFormatter());
 
         private ValueFormatter defaultFormatter;

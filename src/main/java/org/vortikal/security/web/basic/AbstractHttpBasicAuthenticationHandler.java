@@ -33,7 +33,7 @@ package org.vortikal.security.web.basic;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AbstractAuthenticationHandler;
@@ -56,17 +56,10 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
     protected HttpBasicAuthenticationChallenge challenge;
     private boolean requireSecureConnection = true;
     
-    public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
+    @Required public void setChallenge(HttpBasicAuthenticationChallenge challenge) {
         this.challenge = challenge;
     }
     
-    public void afterPropertiesSet() {
-        super.afterPropertiesSet();
-        
-        if (this.challenge == null) {
-            throw new BeanInitializationException("Property 'challenge' must be set");
-        }
-    }
 
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
     throws AuthenticationProcessingException {

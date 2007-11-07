@@ -36,8 +36,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Repository;
@@ -66,7 +65,7 @@ import org.vortikal.web.service.Service;
  *   <li><code>resourceReference</code> - the URL</li>
  * </ul>
  */
-public class ResourceServiceURLController implements InitializingBean, Controller {
+public class ResourceServiceURLController implements Controller {
 
     public static final String DEFAULT_VIEW_NAME = "resourceReference";
     
@@ -74,7 +73,7 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
     private String viewName = DEFAULT_VIEW_NAME;
     private Repository repository = null;
 
-    public void setService(Service service) {
+    @Required public void setService(Service service) {
         this.service = service;
     }
 
@@ -84,23 +83,11 @@ public class ResourceServiceURLController implements InitializingBean, Controlle
     }
     
 
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
     
-    public void afterPropertiesSet() throws Exception {
-        if (this.service == null) {
-            throw new BeanInitializationException(
-                "Bean property 'service' must be set");
-        }
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-    }
-
-
     public ModelAndView handleRequest(HttpServletRequest arg0,
                                       HttpServletResponse arg1) throws Exception {
 

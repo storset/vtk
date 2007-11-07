@@ -33,6 +33,7 @@ package org.vortikal.repository.resourcetype;
 import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.security.Principal;
 
 public class PrincipalValueFormatter implements ValueFormatter {
 
@@ -44,6 +45,10 @@ public class PrincipalValueFormatter implements ValueFormatter {
             }
 
             return value.getPrincipalValue().getName();
+    }
+
+    public Value stringToValue(String string, String format, Locale locale) {
+        return new Value(new Principal(string, Principal.Type.USER));
     }
 
 }

@@ -30,11 +30,17 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Arrays;
+import java.util.Date;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.security.Principal;
 
 
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
@@ -59,6 +65,110 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private Vocabulary<Value> vocabulary;
 
+    private ValueFactory valueFactory = ValueFactory.getInstance();
+
+    
+    public Property createProperty() {
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(namespace);
+        prop.setName(name);
+        
+        prop.setDefinition(this);
+        
+        if (this.getDefaultValue() != null) {
+            prop.setValue(this.getDefaultValue());
+        }
+
+        return prop;
+    }
+
+
+    public Property createProperty(Object value) 
+        throws ValueFormatException {
+
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(this.namespace);
+        prop.setName(this.name);
+        
+        // Set definition (may be null)
+        prop.setDefinition(this);
+        
+        if (value instanceof Date) {
+            Date date = (Date) value;
+            prop.setDateValue(date);
+        } else if (value instanceof Boolean) {
+            Boolean bool = (Boolean) value;
+            prop.setBooleanValue(bool.booleanValue());
+        } else if (value instanceof Long) {
+            Long l = (Long) value;
+            prop.setLongValue(l.longValue());
+        } else if (value instanceof Integer) {
+            Integer i = (Integer)value;
+            prop.setIntValue(i.intValue());
+        } else if (value instanceof Principal) {
+            Principal p = (Principal) value;
+            prop.setPrincipalValue(p);
+        } else if (! (value instanceof String)) {
+            throw new ValueFormatException(
+                    "Supplied value of property [namespaces: "
+                    + namespace + ", name: " + name
+                    + "] not of any supported type " 
+                    + "(type was: " + value.getClass() + ")");
+        } else {
+            prop.setStringValue((String) value);
+        } 
+        
+        return prop;
+    }
+    
+    public Property createProperty(String stringValue) throws ValueFormatException {
+        return createProperty(new String[] {stringValue});
+    }
+    
+    public Property createProperty(String[] stringValues) 
+        throws ValueFormatException {
+
+        PropertyImpl prop = new PropertyImpl();
+        prop.setNamespace(this.namespace);
+        prop.setName(this.name);
+        
+        prop.setDefinition(this);
+        
+        Type type = this.getType();
+        
+        if (this.isMultiple()) {
+            Value[] values = this.valueFactory .createValues(stringValues, type);
+            prop.setValues(values);
+        } else {
+            // Not multi-value, stringValues must be of length 1, otherwise there are
+            // inconsistency problems between data store and config.
+            if (stringValues.length > 1) {
+                throw new ValueFormatException(
+                    "Cannot convert multiple values: " + Arrays.asList(stringValues)
+                    + " to a single-value property"
+                    + " for property " + prop);
+            }
+            
+            Value value = this.valueFactory.createValue(stringValues[0], type);
+            prop.setValue(value);
+        }
+        
+        return prop;
+        
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public void afterPropertiesSet() {
         if (this.valueFormatter == null) {
             if (this.vocabulary != null && this.vocabulary.getValueFormatter() != null) {
@@ -201,5 +311,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setValueFormatter(ValueFormatter valueFormatter) {
         this.valueFormatter = valueFormatter;
     }
+
 
 }

@@ -52,28 +52,28 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     private Lock lock = null;
     private String[] childURIs = null;
     
-    private PropertyManager propertyManager;
     private AuthorizationManager authorizationManager;
+    private ResourceTypeTree resourceTypeTree;
     
     public ResourceImpl() {
         super();
     }
     
-    public ResourceImpl(String uri, PropertyManager propertyManager, 
+    public ResourceImpl(String uri, ResourceTypeTree resourceTypeTree, 
             AuthorizationManager authorizationManager) {
         super();
         this.uri = uri;
-        this.propertyManager = propertyManager;
+        this.resourceTypeTree = resourceTypeTree;
         this.authorizationManager = authorizationManager;
     }
 
     public PrimaryResourceTypeDefinition getResourceTypeDefinition() {
-        return (PrimaryResourceTypeDefinition) this.propertyManager.getResourceTypeTree().getResourceTypeDefinitionByName(this.resourceType);
+        return (PrimaryResourceTypeDefinition) this.resourceTypeTree.getResourceTypeDefinitionByName(this.resourceType);
     }
     
 
     public boolean isOfType(ResourceTypeDefinition type) {
-        return this.propertyManager.getResourceTypeTree().isContainedType(type, this.resourceType);
+        return this.resourceTypeTree.isContainedType(type, this.resourceType);
     }
     
 
@@ -90,7 +90,9 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public Property createProperty(Namespace namespace, String name) {
-        Property prop = this.propertyManager.createProperty(namespace, name);
+        PropertyTypeDefinition propDef = 
+            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        Property prop = propDef.createProperty();
         addProperty(prop);
         return prop;
     }
@@ -109,17 +111,21 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      */
     public Property createProperty(Namespace namespace, String name,
             Object value) throws ValueFormatException {
-        Property prop = this.propertyManager.createProperty(namespace, name, value);
+        PropertyTypeDefinition propDef = 
+            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        Property prop = propDef.createProperty(value);
         addProperty(prop);
         return prop;
     }
 
     public Property createProperty(String namespaceUrl, String name, 
             String[] stringValues) {
-        Property prop = this.propertyManager.createProperty(namespaceUrl, name, stringValues);
+        Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);
+        PropertyTypeDefinition propDef = 
+            this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        Property prop = propDef.createProperty(stringValues);
         addProperty(prop);
         return prop;
-        
     }
 
     public void removeProperty(Namespace namespace, String name) {
@@ -304,7 +310,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     
     public ResourceImpl createCopy(String newUri) {
-        ResourceImpl resource = new ResourceImpl(newUri, this.propertyManager,
+        ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree,
                                                  this.authorizationManager);
         resource.setResourceType(getResourceType());
         for (Property prop: getProperties()) {
@@ -327,7 +333,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (this.lock != null)
             lock = (LockImpl) this.lock.clone();
 
-        ResourceImpl clone = new ResourceImpl(this.uri, this.propertyManager, this.authorizationManager);
+        ResourceImpl clone = new ResourceImpl(this.uri, this.resourceTypeTree, this.authorizationManager);
         clone.setID(this.id);
 
         if (this.acl != null) {
@@ -421,12 +427,12 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return sb.toString();
     }
 
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

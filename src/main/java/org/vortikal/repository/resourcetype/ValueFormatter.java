@@ -36,4 +36,5 @@ public interface ValueFormatter {
 
     public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException;
 
+    public Value stringToValue(String string, String format, Locale locale);
 }

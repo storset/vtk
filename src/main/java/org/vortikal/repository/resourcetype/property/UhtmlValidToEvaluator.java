@@ -50,7 +50,7 @@ import org.w3c.dom.NodeList;
 public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluator {
 
     
-    private ValueFactory valueFactory;
+    private ValueFactory valueFactory = ValueFactory.getInstance();
 
     public boolean contentModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Content content, Date time)
@@ -72,15 +72,11 @@ public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluat
         
         Value value = null;
 
-        if (this.valueFactory != null) {
-            Type type = property.getDefinition().getType();
-            try {
-                value = this.valueFactory.createValue(validTo, type);
-            } catch (Exception e) {
-                return false;
-            }
-        } else {
-            value = new Value(validTo);
+        Type type = property.getDefinition().getType();
+        try {
+            value = this.valueFactory.createValue(validTo, type);
+        } catch (Exception e) {
+            return false;
         }
 
         property.setValue(value);
@@ -124,10 +120,4 @@ public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluat
 
     }
 
-
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }
-
-    
 }

@@ -42,4 +42,8 @@ public class StringValueFormatter implements ValueFormatter {
         return value.toString();
     }
 
+    public Value stringToValue(String string, String format, Locale locale) {
+        return new Value(string);
+    }
+
 }

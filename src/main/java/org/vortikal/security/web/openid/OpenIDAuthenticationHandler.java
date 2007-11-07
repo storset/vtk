@@ -25,10 +25,6 @@
  */
 package org.vortikal.security.web.openid;
 
-
-
-
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,19 +45,16 @@ import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.web.service.Service;
 import java.util.HashMap;
 
 
-
 public class OpenIDAuthenticationHandler
   implements AuthenticationHandler, AuthenticationChallenge, Ordered, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private PrincipalFactory principalFactory;
     private Set recognizedDomains = null;
     private Set excludedPrincipals = new HashSet();
     private int order = Integer.MAX_VALUE;
@@ -104,10 +97,6 @@ public class OpenIDAuthenticationHandler
     }
 
     public void afterPropertiesSet() {
-        if (this.principalFactory == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'principalManager' not set.");
-        }
         if (this.consumerManager == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'consumerManager' not set.");
@@ -249,7 +238,7 @@ public class OpenIDAuthenticationHandler
         if (verified == null) {
             throw new AuthenticationException();
         }
-        Principal principal = this.principalFactory.getUserPrincipal(verified.getIdentifier());
+        Principal principal = new Principal(verified.getIdentifier(), Principal.Type.USER);
         if (logger.isDebugEnabled()) {
             logger.debug("Authenticated principal: " + principal);
         }
@@ -276,7 +265,4 @@ public class OpenIDAuthenticationHandler
         }
     }
 
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
 }

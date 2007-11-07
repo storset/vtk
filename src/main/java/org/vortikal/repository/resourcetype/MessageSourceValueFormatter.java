@@ -30,24 +30,73 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Enumeration;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
-import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 public class MessageSourceValueFormatter implements ValueFormatter {
 
-    private MessageSource messageSource;
+    private String baseName;
+    private ReversableMessageSource messageSource;
+    private String keyPrefix = "value.";
+    private String unsetKey = "unset"; 
+    
+    public MessageSourceValueFormatter(String messageSourceBaseName) {
+        this.baseName = messageSourceBaseName;
+        ReversableMessageSource messageSource = new ReversableMessageSource();
+        messageSource.setBasename(messageSourceBaseName);
 
-    public MessageSourceValueFormatter(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
     public String valueToString(Value value, String format, Locale locale)
             throws IllegalValueTypeException {
         if ("localized".equals(format)) {
-            return this.messageSource.getMessage(value.toString(), null, value.toString(), locale);
+            if (value == null || "".equals(value.toString())) {
+                return this.messageSource.getMessage(this.unsetKey, null, "unset", locale);
+            }
+            
+            return this.messageSource.getMessage(keyPrefix + value.toString(), null, value.toString(), locale);
         }
         return value.toString();
     }
 
+    public Value stringToValue(String string, String format, Locale locale) {
+        if (string == null) {
+            throw new IllegalArgumentException("Cannot get value for 'null' formatted value");
+        }
+        
+        if (!"localized".equals(format)) {
+            return new Value(string);
+        }
+        
+        String value = this.messageSource.getKeyFromMessage(string, locale);
+        if (value == null) {
+            throw new IllegalArgumentException("Unknown formatted value: " + string);
+        }
+        
+        if (this.unsetKey.equals(value)) {
+            return null;
+        }
+        return new Value(value);
+    }
+
+    
+    private class ReversableMessageSource extends ResourceBundleMessageSource {
+        
+        public String getKeyFromMessage(String value, Locale locale) {
+            ResourceBundle resourceBundle = getResourceBundle(baseName, locale);
+            Enumeration<String> keys = resourceBundle.getKeys();
+            while (keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                String keyValue = resourceBundle.getString(key);
+                if (keyValue.equals(value)) {
+                    return key;
+                }
+            }
+            return null;
+        }
+    }
 }

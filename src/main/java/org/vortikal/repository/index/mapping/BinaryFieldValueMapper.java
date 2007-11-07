@@ -42,25 +42,13 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
  * Map to/from stored binary value fields.
- * 
- * TODO: javadoc
- * 
- * @author oyviste
- *
  */
 public final class BinaryFieldValueMapper {
 
     private static final String STRING_VALUE_ENCODING = "UTF-8";
     
-    private BinaryFieldValueMapper() {} // Util
+    private BinaryFieldValueMapper() {} // static Util class, no instances
 
-    /**
-     * 
-     * @param name
-     * @param value
-     * @return
-     * @throws FieldValueEncodingException
-     */
     public static Field getBinaryFieldFromValue(String name, Value value) 
         throws FieldValueEncodingException {
         
@@ -117,17 +105,10 @@ public final class BinaryFieldValueMapper {
         return fields;
     }
     
-    /**
-     * 
-     * @param field
-     * @param vf
-     * @param type
-     * @return
-     * @throws FieldValueEncodingException
-     * @throws ValueFormatException
-     */
-    public static Value getValueFromBinaryField(Field field, ValueFactory vf, Type type)
+    public static Value getValueFromBinaryField(Field field, Type type)
         throws FieldValueEncodingException, ValueFormatException {
+        
+        ValueFactory vf = ValueFactory.getInstance();
         
         byte[] value = field.binaryValue();
     
@@ -159,16 +140,7 @@ public final class BinaryFieldValueMapper {
         throw new FieldValueEncodingException("Unknown type: " + type); 
     }
 
-    /**
-     * 
-     * @param fields
-     * @param vf
-     * @param type
-     * @return
-     * @throws FieldValueEncodingException
-     * @throws ValueFormatException
-     */
-    public static Value[] getValuesFromBinaryFields(List<Field> fields, ValueFactory vf, Type type) 
+    public static Value[] getValuesFromBinaryFields(List<Field> fields, Type type) 
         throws FieldValueEncodingException, ValueFormatException {
         
         if (fields.size() == 0) {
@@ -178,7 +150,7 @@ public final class BinaryFieldValueMapper {
         Value[] values = new Value[fields.size()];
         int u = 0;
         for (Field field: fields) {
-            values[u++] = getValueFromBinaryField(field, vf, type);
+            values[u++] = getValueFromBinaryField(field, type);
         }
         
         return values;

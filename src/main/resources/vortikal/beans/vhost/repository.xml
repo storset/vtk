@@ -99,16 +99,14 @@
   <bean id="repository.database" class="org.vortikal.repository.store.db.SqlMapDataAccessor">
     <lookup-method name="createResourceImpl" bean="resourceImpl"/>
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
   
   <bean id="repository.indexDao" class="org.vortikal.repository.store.db.SqlMapIndexDao">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="principalFactory" ref="principalFactory" />
     <property name="sqlMaps" ref="repository.statementMappings" />
-    <property name="propertyManager" ref="propertyManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
     
     <!-- How many query hits to process for authorization in one batch -->
     <property name="queryAuthorizationBatchSize" value="1000"/>
@@ -119,7 +117,7 @@
   </bean>
 
   <bean id="resourceImpl" class="org.vortikal.repository.ResourceImpl" scope="prototype">
-    <property name="propertyManager" ref="propertyManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="authorizationManager" ref="authorizationManager" />
   </bean>
 
@@ -168,29 +166,9 @@
     <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
-  <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
-    <property name="principalFactory" ref="principalFactory"/>
-    <property name="dateFormats">
-      <list>
-        <value>dd.MM.yyyy HH:mm:ss</value>
-        <value>dd.MM.yyyy HH:mm</value>
-        <value>dd.MM.yyyy</value>
-        <value>yyyy-MM-dddd HH:mm:ss</value>
-        <value>yyyy-MM-dddd HH:mm</value>
-        <value>yyyy-MM-dddd</value>
-      </list>  
-    </property>
-  </bean>
-
-  <bean id="propertyManager" class="org.vortikal.repository.PropertyManagerImpl">
-    <property name="valueFactory" ref="valueFactory"/>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-  </bean>
-
   <bean id="repositoryResourceHelper"
         class="org.vortikal.repository.RepositoryResourceHelperImpl">
     <property name="authorizationManager" ref="authorizationManager" />
-    <property name="propertyManager" ref="propertyManager" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="contentStore" ref="repository.contentStore"/>
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
@@ -274,13 +252,13 @@
 
 
   <bean id="repository.evaluator" class="org.vortikal.repository.EvaluatorUtil">
-    <property name="propertyManager" ref="propertyManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="dataAccessor" ref="repository.database" />
   </bean>
 -->
 
 <!--   <bean class="org.vortikal.repository.ResourceImpl" scope="prototype"> -->
-<!--     <property name="propertyManager" ref="propertyManager"/> -->
+<!--     <property name="resourceTypeTree" ref="resourceTypeTree" /> -->
 <!--     <property name="authorizationManager" ref="authorizationManager" /> -->
 <!--   </bean> -->
 

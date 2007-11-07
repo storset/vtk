@@ -434,7 +434,6 @@
 
   <bean id="webdavProppatchHandler" class="org.vortikal.webdav.ProppatchController"
     parent="requestLocalRepositoryAware">
-    <property name="valueFactory" ref="valueFactory"/>
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
   </bean>
 

@@ -57,6 +57,7 @@ import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 
@@ -156,19 +157,25 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     private String[] primaryResourceTypeNames;
 
 
-    public PropertyTypeDefinition findPropertyTypeDefinition(Namespace namespace, String name) {
-        PropertyTypeDefinition propDef = null;
+    public PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name) {
         Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
 
         if (map != null) {
-            propDef = map.get(name);
+            PropertyTypeDefinition propDef = map.get(name);
+            if (propDef != null) 
+                return propDef;
         }
 
-        if (logger.isDebugEnabled() && propDef == null) {
+        if (logger.isDebugEnabled()) {
             logger.debug("No definition found for property "
-                    + namespace.getPrefix() + ":" + name);
+                    + namespace.getPrefix() + ":" + name + ", returning default");
+        
         }
 
+        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+        propDef.setNamespace(namespace);
+        propDef.setName(name);
+        propDef.afterPropertiesSet();
         return propDef;
     }
 
@@ -224,7 +231,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         if (namespace == null) {
             return null;
         }
-        return findPropertyTypeDefinition(namespace, name);
+        return getPropertyTypeDefinition(namespace, name);
     }
 
     /**

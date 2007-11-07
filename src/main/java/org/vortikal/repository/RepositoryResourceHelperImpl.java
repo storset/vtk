@@ -37,10 +37,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.content.ContentImpl;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -62,14 +59,12 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
 
 
-public class RepositoryResourceHelperImpl 
-    implements RepositoryResourceHelper, InitializingBean {
+public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     private static Log logger = LogFactory.getLog(RepositoryResourceHelperImpl.class);
 
     private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
-    private PropertyManager propertyManager;
     
     // Needed for property-evaluation. Should be a reasonable dependency.
     private ContentStore contentStore;
@@ -78,7 +73,7 @@ public class RepositoryResourceHelperImpl
     public ResourceImpl create(Principal principal, String uri, boolean collection) throws IOException {
 
         ResourceImpl resource = 
-            new ResourceImpl(uri, this.propertyManager, this.authorizationManager);
+            new ResourceImpl(uri, this.resourceTypeTree, this.authorizationManager);
 
         if (collection) {
             resource.setChildURIs(new String[]{});
@@ -286,8 +281,7 @@ public class RepositoryResourceHelperImpl
                     "Resource " + newResource + " not evaluated (resource type: "
                     + newResource.getResourceType() + ")");
             }
-            evaluatedProp = this.propertyManager.createProperty(
-                propDef.getNamespace(), propDef.getName());
+            evaluatedProp = propDef.createProperty();
             evaluatedProp.setValue(defaultValue);
         } 
 
@@ -306,8 +300,7 @@ public class RepositoryResourceHelperImpl
             return null;
         }
         
-        Property property = this.propertyManager.createProperty(
-                    propDef.getNamespace(), propDef.getName());
+        Property property = propDef.createProperty();
 
         Resource newResource = ctx.getNewResource();
 
@@ -364,8 +357,7 @@ public class RepositoryResourceHelperImpl
             }
             // Initialize prop if necessary
             if (prop == null)
-                prop = this.propertyManager.createProperty(
-                    propDef.getNamespace(), propDef.getName());
+                prop = propDef.createProperty();
         
             boolean evaluated =
                 evaluator.contentModification(ctx.getPrincipal(), prop, newResource,
@@ -409,8 +401,7 @@ public class RepositoryResourceHelperImpl
         }
         
         if (property == null)
-            property = this.propertyManager.createProperty(
-                    propDef.getNamespace(), propDef.getName());
+            property = propDef.createProperty();
 
         Resource newResource = ctx.getNewResource();
 
@@ -459,8 +450,7 @@ public class RepositoryResourceHelperImpl
 
         if (evaluator != null) {
             if (property == null)
-                property = this.propertyManager.createProperty(
-                        propDef.getNamespace(), propDef.getName());
+                property = propDef.createProperty();
 
             boolean evaluated = evaluator.propertiesModification(
                     ctx.getPrincipal(), property, newResource, ctx.getTime());
@@ -559,52 +549,23 @@ public class RepositoryResourceHelperImpl
     }
 
     
-    public void afterPropertiesSet() throws Exception {
-        if (this.propertyManager == null) {
-            throw new BeanInitializationException(
-                "Property 'propertyManager' not set.");
-        } 
-        if (this.contentStore == null) {
-            throw new BeanInitializationException(
-                "Property 'contentStore' not set.");
-        }
-        if (this.contentRepresentationRegistry == null) {
-            throw new BeanInitializationException(
-                "Property 'contentRepresentationRegistry' not set.");
-        }
-        if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException(
-                "Property 'resourceTypeTree' not set.");
-        }
-        if (this.authorizationManager == null) {
-            throw new BeanInitializationException(
-                "Property 'authorizationManager' not set.");
-        }
-        
-    }
-
-    
+    @Required
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
     }
 
+    @Required 
     public void setContentRepresentationRegistry(
         ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
     
+    @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
 
-    public ResourceTypeTree getResourceTypeTree() {
-        return this.resourceTypeTree;
-    }
-
-    public void setPropertyManager(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
-    }
-
+    @Required
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }

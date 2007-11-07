@@ -43,7 +43,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
 
 
@@ -78,7 +77,6 @@ public class PropertyConfigurableMD5Store
     private Properties principals;
     private Map groups;
     private String realm;
-    private PrincipalFactory principalFactory;
 
     private int order = Integer.MAX_VALUE;
     
@@ -90,11 +88,6 @@ public class PropertyConfigurableMD5Store
 
     public void setGroups(Map groups) {
         this.groups = groups;
-    }
-    
-
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
     }
     
 

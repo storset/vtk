@@ -31,10 +31,9 @@
 package org.vortikal.repository;
 
 import junit.framework.TestCase;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.vortikal.repository.Repository;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.token.TokenManager;
 
 
@@ -42,7 +41,6 @@ public abstract class AbstractRepositoryTestCase extends TestCase {
 
     private ClassPathXmlApplicationContext context;
     private Repository repository;
-    private PrincipalFactory principalFactory;
     private TokenManager tokenManager;
     
 
@@ -57,7 +55,6 @@ public abstract class AbstractRepositoryTestCase extends TestCase {
                 "/org/vortikal/repository/in-memory-repository.xml"
             });
         this.repository = (Repository) this.context.getBean("repository");
-        this.principalFactory = (PrincipalFactory) this.context.getBean("principalFactory");
         this.tokenManager = (TokenManager) this.context.getBean("tokenManager");
     }
 
@@ -72,10 +69,6 @@ public abstract class AbstractRepositoryTestCase extends TestCase {
 
     protected Repository getRepository() {
         return this.repository;
-    }
-
-    protected PrincipalFactory getPrincipalFactory() {
-        return this.principalFactory;
     }
 
     protected TokenManager getTokenManager() {

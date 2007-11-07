@@ -30,7 +30,6 @@
     <property name="rootRole">
       <set>
         <value>root@localhost</value>
-        <value>super@localhost</value>
       </set>            
     </property>
     <property name="readEverythingRole">
@@ -58,7 +57,6 @@
     <property name="defaultPrincipals">
       <list>
         <ref bean="trustedPrincipal" />
-        <ref bean="superPrincipal" />
         <ref bean="rootPrincipal" />
       </list>
     </property>
@@ -101,7 +99,6 @@
       </set>
     </property>
     <property name="requireSecureConnection" value="${httpBasicAuthenticationHandler.requireSecureConnection}" />
-    <property name="principalFactory" ref="principalFactory" />
     <property name="challenge" ref="httpBasicAuthenticationChallenge" />
     <property name="principalStore" ref="localPrincipalStore"/>
   </bean>
@@ -120,7 +117,6 @@
         <null />
       </set>
     </property>
-    <property name="principalFactory" ref="principalFactory" />
     <property name="principalStore" ref="localPrincipalStore" />
   </bean>
 
@@ -143,13 +139,6 @@
     </property>
   </bean>
 
-  <bean id="principalFactory" class="org.vortikal.security.PrincipalFactoryImpl">
-    <property name="defaultDomain" value="${defaultPrincipalDomain}" />
-    <property name="defaultGroupDomain" value="${defaultGroupDomain}" />
-    <property name="domainURLMap" ref="principalDomainURLMap" />
-  </bean>
-
-
   <bean id="principalDomainURLMap" class="java.util.HashMap">
     <constructor-arg>
       <map>
@@ -169,7 +158,6 @@
 
   <bean id="localPrincipalStore" class="org.vortikal.security.store.PropertyConfigurableMD5Store">
     <property name="order" value="10" />
-    <property name="principalFactory" ref="principalFactory" />
     <property name="realm" value="${authenticationRealm}" />
     <property name="principals" ref="localPrincipals" />
     <property name="groups">
@@ -179,7 +167,6 @@
             <value>root@localhost</value>
             <value>vortex@localhost</value>
             <value>user@localhost</value>
-            <value>super@localhost</value>
           </list>
         </entry>
       </map>
@@ -192,7 +179,6 @@
        <prop key="root@localhost">${password.root@localhost}</prop>
         <prop key="vortex@localhost">${password.vortex@localhost}</prop>
         <prop key="user@localhost">${password.user@localhost}</prop>
-        <prop key="super@localhost">${password.super@localhost}</prop>
         <!-- is not possible to authenticate as: -->
         <prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
       </props>
@@ -204,39 +190,21 @@
 
   <!-- Special principals and tokens -->
 
- <bean id="systemUsersGroup" lazy-init="true" 
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalFactory"/>
-    <property name="targetMethod" value="getGroupPrincipal" />
-    <property name="arguments">
-      <list>
-        <value>system-users@localhost</value>
-      </list>
-    </property>
+  <bean id="systemUsersGroup" class="org.vortikal.security.Principal">
+    <constructor-arg value="system-users@localhost" />
+    <constructor-arg value="GROUP" />
   </bean>
 
 
-  <bean id="uioDomainGroup" lazy-init="true" 
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalFactory"/>
-    <property name="targetMethod" value="getGroupPrincipal" />
-    <property name="arguments">
-      <list>
-        <value>alle@uio.no</value>
-      </list>
-    </property>
+  <bean id="uioDomainGroup" class="org.vortikal.security.Principal">
+    <constructor-arg value="alle@uio.no" />
+    <constructor-arg value="GROUP" />
   </bean>
 
 
-  <bean id="trustedPrincipal" lazy-init="true" 
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalFactory"/>
-    <property name="targetMethod" value="getUserPrincipal" />
-    <property name="arguments">
-      <list>
-        <value>trusteduser@localhost</value>
-      </list>
-    </property>
+  <bean id="trustedPrincipal" class="org.vortikal.security.Principal">
+    <constructor-arg value="trusteduser@localhost" />
+    <constructor-arg value="USER" />
   </bean>
 
   <bean id="trustedToken" lazy-init="true" 
@@ -255,15 +223,9 @@
     </property>
   </bean>
 
-  <bean id="rootPrincipal" 
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalFactory"/>
-    <property name="targetMethod" value="getUserPrincipal" />
-    <property name="arguments">
-      <list>
-        <value>root@localhost</value>
-      </list>
-    </property>
+  <bean id="rootPrincipal" class="org.vortikal.security.Principal">
+    <constructor-arg value="root@localhost" />
+    <constructor-arg value="USER" />
   </bean>
 
   <bean id="writeAllToken"
@@ -282,51 +244,24 @@
     </property>
   </bean>
 
-  <bean id="superPrincipal" 
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="principalFactory" />
-    <property name="targetMethod" value="getUserPrincipal" />
-    <property name="arguments">
-      <list>
-        <value>super@localhost</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="superToken"
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <description>
-      This bean represents a "root" repository token. It is used
-      for applications that require full access
-      to the repository, as the user super@localhost.
-    </description>
-    <property name="targetObject" ref="tokenManager" />
-    <property name="targetMethod" value="getRegisteredToken" />
-    <property name="arguments">
-      <list>
-        <ref bean="superPrincipal" />
-      </list>
-    </property>
-  </bean>
-
   <!-- Pseudo principals: -->
 
   <bean id="PRINCIPAL_ALL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.security.PseudoPrincipal.ALL" />
+              value="org.vortikal.security.Principal.ALL" />
   </bean>
 
   <bean id="PRINCIPAL_AUTHENTICATED"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.security.PseudoPrincipal.AUTHENTICATED" />
+              value="org.vortikal.security.Principal.AUTHENTICATED" />
   </bean>
 
   <bean id="PRINCIPAL_OWNER"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.security.PseudoPrincipal.OWNER" />
+              value="org.vortikal.security.Principal.OWNER" />
   </bean>
 
 

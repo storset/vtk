@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.controller.properties;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,8 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -109,7 +109,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *
  */
 public class PropertyEditController extends SimpleFormController
-  implements ReferenceDataProvider, ReferenceDataProviding, InitializingBean {
+  implements ReferenceDataProvider, ReferenceDataProviding {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -119,7 +119,7 @@ public class PropertyEditController extends SimpleFormController
     private PrincipalManager principalManager;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private PropertyEditHook[] editHooks;
-    private ValueFactory valueFactory;
+    private ValueFactory valueFactory = ValueFactory.getInstance();
     private String dateFormat;
     
     private String propertyListModelName;
@@ -127,23 +127,24 @@ public class PropertyEditController extends SimpleFormController
 
     private Service vocabularyChooserService;
 
-    public void setPropertyListModelName(String propertyListModelName) {
+    @Required public void setPropertyListModelName(String propertyListModelName) {
         this.propertyListModelName = propertyListModelName;
     }
     
-    public void setPropertyMapModelName(String propertyMapModelName) {
+    @Required public void setPropertyMapModelName(String propertyMapModelName) {
         this.propertyMapModelName = propertyMapModelName;
     }
     
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    public void setPrincipalManager(PrincipalManager principalManager) {
+    @Required public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+        setValidator(new PropertyEditValidator(this.principalManager));
     }
 
-    public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
+    @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
     }
     
@@ -151,11 +152,7 @@ public class PropertyEditController extends SimpleFormController
         this.editHooks = editHooks;
     }
     
-    public void setValueFactory(ValueFactory valueFactory) {
-        this.valueFactory = valueFactory;
-    }
-    
-    public void setDateFormat(String dateFormat) {
+    @Required public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
     }
 
@@ -163,39 +160,6 @@ public class PropertyEditController extends SimpleFormController
         return new ReferenceDataProvider[] {this};
     }
     
-
-    public void afterPropertiesSet() {
-        if (this.propertyListModelName == null) {
-            throw new BeanInitializationException(
-            "JavaBean property 'propertyListModelName' not set");
-        }
-        
-        if (this.propertyMapModelName == null) {
-            throw new BeanInitializationException(
-            "JavaBean property 'propertyMapModelName' not set");
-        }
-        
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not set");
-        }
-        if (this.propertyTypeDefinitions == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'propertyTypeDefinitions' not set");
-        }
-        if (this.dateFormat == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'dateFormat' not set");
-        }
-        if (this.principalManager == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'principalManager' not set");
-        }
-        setValidator(new PropertyEditValidator(this.valueFactory,
-                                               this.principalManager));
-    }
-    
-
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
@@ -211,6 +175,11 @@ public class PropertyEditController extends SimpleFormController
             }
         }
 
+        return buildPropertyEditCommand(definition);
+    }
+
+    private Object buildPropertyEditCommand(PropertyTypeDefinition definition)
+            throws IOException {
         if (definition == null) {
             return new PropertyEditCommand(null, null, null, null, null);
         }
@@ -223,6 +192,7 @@ public class PropertyEditController extends SimpleFormController
 
         Property property = resource.getProperty(definition);
         if (property != null) {
+           
             if (definition.isMultiple()) {
                 StringBuffer val = new StringBuffer();
                 Value[] values = property.getValues();
@@ -302,9 +272,8 @@ public class PropertyEditController extends SimpleFormController
         }
         String uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
-        for (int i = 0; i < this.propertyTypeDefinitions.length; i++) {
+        for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
             
-            PropertyTypeDefinition def = this.propertyTypeDefinitions[i];
             if (isFocusedProperty(def, propertyCommand.getNamespace(),
                                   propertyCommand.getName())) {
                 Property property = resource.getProperty(def);

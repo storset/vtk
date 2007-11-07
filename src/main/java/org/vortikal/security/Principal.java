@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,20 @@
  */
 package org.vortikal.security;
 
+import java.util.Map;
+
 
 /**
  * A representation of a principal.
  */
-public interface Principal extends Comparable, java.io.Serializable {
+public class Principal implements Comparable<Principal>, java.io.Serializable {
+    
+    private static final String DOMAIN_DELIMITER = "@";
+
+    private String defaultDomain = "uio.no";
+    private String defaultGroupDomain = "netgroups.uio.no";
+    private Map<String, String> domainURLMap;
+
     
     public enum Type {
        USER, // a named user
@@ -42,29 +51,144 @@ public interface Principal extends Comparable, java.io.Serializable {
        PSEUDO // a pseudo user
     }
     
+    
+    
+    private static final long serialVersionUID = 3257848766467092530L;
+
+    private String name;
+    private String qualifiedName;
+    private String domain;
+    private String url;
+    private Type type = Principal.Type.USER;
+    
+    
+    public static final String NAME_AUTHENTICATED = "pseudo:authenticated";
+    public static final String NAME_ALL = "pseudo:all";
+    public static final String NAME_OWNER = "pseudo:owner";
+    
+    public static Principal OWNER =  new Principal(NAME_OWNER);
+    public static Principal ALL =  new Principal(NAME_ALL);
+    public static Principal AUTHENTICATED =  new Principal(NAME_AUTHENTICATED);
+    
+    private Principal(String name) {
+        this.name = name;
+        this.qualifiedName = name;
+        this.domain = "pseudo:";
+        this.type = Type.PSEUDO;
+    }
+    
+    public static Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {
+        if (NAME_ALL.equals(name)) return ALL;
+        if (NAME_AUTHENTICATED.equals(name)) return AUTHENTICATED;
+        if (NAME_OWNER.equals(name)) return OWNER;
+        throw new InvalidPrincipalException("Pseudo principal with name '"
+                + name + "' doesn't exist");
+    }
+
+    
+    public Principal(String id, Type type) throws InvalidPrincipalException {
+
+        this.type = type;
+
+        if (id == null) {
+            throw new InvalidPrincipalException("Tried to get null principal");
+        }
+
+        id = id.trim();
+        
+        if (id.equals(""))
+            throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
+        
+        if (id.startsWith(DOMAIN_DELIMITER)) {
+            throw new InvalidPrincipalException(
+                "Invalid principal id: " + id + ": "
+                + "must not start with delimiter: '" + DOMAIN_DELIMITER + "'");
+        }
+        if (id.endsWith(DOMAIN_DELIMITER)) {
+            throw new InvalidPrincipalException(
+                "Invalid principal id: " + id + ": "
+                + "must not end with delimiter: '" + DOMAIN_DELIMITER + "'");
+        }
+
+        if (id.indexOf(DOMAIN_DELIMITER) != id.lastIndexOf(DOMAIN_DELIMITER)) {
+            throw new InvalidPrincipalException(
+                "Invalid principal id: " + id + ": "
+                + "must not contain more that one delimiter: '"
+                + DOMAIN_DELIMITER + "'");
+        }
+
+
+        /* Initialize name, domain and qualifiedName to default values
+         * matching a setup "without" domains: */
+        this.name = id;
+        this.qualifiedName = id;
+        
+        String defDomain = 
+            (type == Principal.Type.GROUP) ? this.defaultGroupDomain : this.defaultDomain;
+
+        if (id.indexOf(DOMAIN_DELIMITER) > 0) {
+
+            /* id is a fully qualified principal with a domain part: */
+            this.domain = id.substring(id.indexOf(DOMAIN_DELIMITER) + 1);
+
+            
+            if (defDomain != null && defDomain.equals(domain)) {
+                /* In cases where domain equals default domain, strip
+                 * the domain part off the name: */
+                name = id.substring(0, id.indexOf(DOMAIN_DELIMITER));
+            } 
+                        
+        } else if (defDomain != null) {
+
+            /* id is not a fully qualified principal, but since we
+             * have a default domain, we append it: */
+            domain = defDomain;
+            qualifiedName = name + DOMAIN_DELIMITER + domain;
+        }
+
+        if (domain != null && this.domainURLMap != null) {
+            String pattern = this.domainURLMap.get(domain);
+            if (pattern != null) {
+                this.url = pattern.replaceAll("%u", name);
+            }
+        }
+
+    }
+    
+    public boolean equals(Object another) {
+        if (another instanceof Principal) {
+            String anotherName = ((Principal)another).getQualifiedName();
+            if (getQualifiedName().equals(anotherName)) {
+                return true;
+            }
+        }   
+        return false;
+    }
+    
+
+    public int hashCode() {
+        return this.qualifiedName.hashCode();
+    }
+    
+
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
      * @return If the domain equals the principalManager's defaultDomain
      * it returns the unqualified name, otherwise it returns the qualified name
      */
-    public String getName();
+    public String getName() {
+        return this.name;
+    }
 
-    /**
-     * Gets the unqualified name of the principal, stripped of domain
-     * 
-     * @return the unqualified name of the principal
-     */
-    public String getUnqualifiedName();
-    
-    
     /**
      * Gets the fully qualified name of the principal. If domain is
      * null, just the user name, otherwise 'user@domain'
      * 
      * @return the fully qualified name of the principal
      */
-    public String getQualifiedName();
-
+    public String getQualifiedName() {
+        return this.qualifiedName;
+    }
 
     /**
      * Gets the domain of the principal. May be <code>null</code>.
@@ -72,16 +196,50 @@ public interface Principal extends Comparable, java.io.Serializable {
      * @return the domain of the principal, or <code>null</code> if it
      * has none
      */
-    public String getDomain();
+    public String getDomain() {
+        return this.domain;
+    }
+    
+    public String getURL() {
+        return this.url;
+    }
+    
 
+    public String toString() {
+        return this.qualifiedName;
+    }
 
     /**
-     * If the user has a unique URL, this is it. May be <code>null</code>.
-     *
+     * Gets the unqualified name of the principal, stripped of domain
+     * 
+     * @return the unqualified name of the principal
      */
-    public String getURL();
+    public String getUnqualifiedName() {
+        if (this.domain == null) return this.name;
+        //FIXME: principalmanager's delimiter shouldn't be here!
+        return this.qualifiedName.substring(0, this.qualifiedName.indexOf("@"));
+    }
 
-    public boolean isUser();
-    
-    public Type getType();
+
+    public boolean isUser() {
+        return this.type == Principal.Type.USER;
+    }
+
+
+    public Type getType() {
+        return this.type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public int compareTo(Principal other) {
+        if (other == null) {
+            throw new IllegalArgumentException(
+                "Cannot compare to a null value");
+        }
+        return this.qualifiedName.compareTo(other.getQualifiedName());
+    }
+
 }

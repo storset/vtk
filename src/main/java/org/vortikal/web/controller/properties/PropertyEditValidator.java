@@ -45,14 +45,12 @@ import org.vortikal.security.PrincipalManager;
 
 public class PropertyEditValidator implements Validator {
     
-    private ValueFactory valueFactory;
+    private ValueFactory valueFactory = ValueFactory.getInstance();
     
     private PrincipalManager principalManager;
     
 
-    public PropertyEditValidator(ValueFactory valueFactory,
-                                 PrincipalManager principalManager) {
-        this.valueFactory = valueFactory;
+    public PropertyEditValidator(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
     

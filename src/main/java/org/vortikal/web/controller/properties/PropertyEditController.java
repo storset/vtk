@@ -116,7 +116,6 @@ public class PropertyEditController extends SimpleFormController
     private String toggleRequestParameter = "toggle";
 
     private Repository repository;
-    private PrincipalManager principalManager;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private PropertyEditHook[] editHooks;
     private ValueFactory valueFactory = ValueFactory.getInstance();
@@ -140,8 +139,7 @@ public class PropertyEditController extends SimpleFormController
     }
 
     @Required public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-        setValidator(new PropertyEditValidator(this.principalManager));
+        setValidator(new PropertyEditValidator(principalManager));
     }
 
     @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {

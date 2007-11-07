@@ -518,10 +518,11 @@ public class PropfindView implements View, InitializingBean {
          * XML fragment, and try to build a document from it. If that
          * fails, we assume it is a 'name = value' style property, and
          * build a simple JDOM element from it. */
+        PropertyTypeDefinition propDef = property.getDefinition();
+        String name = propDef.getName();
+        Namespace namespace = Namespace.getNamespace(propDef.getNamespace().getUri());
 
-        Namespace namespace = Namespace.getNamespace(property.getNamespace().getUri());
-
-        if (org.vortikal.repository.Namespace.DEFAULT_NAMESPACE.equals(property.getNamespace())) {
+        if (org.vortikal.repository.Namespace.DEFAULT_NAMESPACE.equals(propDef.getNamespace())) {
             namespace = WebdavConstants.DEFAULT_NAMESPACE;
         }
 
@@ -534,9 +535,9 @@ public class PropfindView implements View, InitializingBean {
             
             try {
         
-                String xml = "<" + property.getName() + " xmlns=\"" +
+                String xml = "<" + name + " xmlns=\"" +
                     namespace.getURI() + "\">" + value + "</" +
-                    property.getName() + ">";
+                    name + ">";
 
                 Document doc = (new SAXBuilder()).build(
                     new StringReader(xml));
@@ -558,8 +559,7 @@ public class PropfindView implements View, InitializingBean {
             }
         }
         
-        Element propElement = new Element(property.getName(),
-                                          namespace);
+        Element propElement = new Element(name, namespace);
         
         // Format dates according to HTTP spec, 
         // use value's native string representation for other types.
@@ -581,12 +581,13 @@ public class PropfindView implements View, InitializingBean {
     private Element buildMultiValueCustomPropertyElement(Property property) {
         Value[] values = property.getValues();
 
-        Namespace namespace = Namespace.getNamespace(property.getNamespace().getUri());
+        PropertyTypeDefinition propDef = property.getDefinition();
+        Namespace namespace = Namespace.getNamespace(propDef.getNamespace().getUri());
 
-        if (org.vortikal.repository.Namespace.DEFAULT_NAMESPACE.equals(property.getNamespace())) {
+        if (org.vortikal.repository.Namespace.DEFAULT_NAMESPACE.equals(propDef.getNamespace())) {
             namespace = WebdavConstants.DEFAULT_NAMESPACE;
         }
-        Element propElement = new Element(property.getName(), namespace);
+        Element propElement = new Element(propDef.getName(), namespace);
         
         Element valuesElement = new Element("values", WebdavConstants.VORTIKAL_PROPERTYVALUES_XML_NAMESPACE);
         

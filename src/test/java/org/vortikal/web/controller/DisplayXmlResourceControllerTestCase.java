@@ -42,9 +42,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -83,13 +85,19 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         super.tearDown();
     }
 
+    private Property getUndefinedProperty(Namespace namespace, String name) {
+        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+        propDef.setNamespace(namespace);
+        propDef.setName(name);
+        propDef.afterPropertiesSet();
+        return propDef.createProperty();
+    }
+
     public void testLastModified() {
 
         long lastModified;
 
-        PropertyImpl schemaProperty = new PropertyImpl();
-        schemaProperty.setNamespace(this.schemaNamespace);
-        schemaProperty.setName(this.schemaPropertyName);
+        Property schemaProperty = getUndefinedProperty(this.schemaNamespace, this.schemaPropertyName);
         schemaProperty.setStringValue(this.faqSchema);
 
         Date lastModifiedExpected = new Date();

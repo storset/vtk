@@ -47,10 +47,6 @@ import org.vortikal.security.Principal;
  */
 public interface Property extends Cloneable {
 
-    public Namespace getNamespace();
-
-    public String getName();
-
     // IllegalOperationException thrown when property is multi-value
     public Value getValue() throws IllegalOperationException;
 

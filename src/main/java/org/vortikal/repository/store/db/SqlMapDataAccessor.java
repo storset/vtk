@@ -377,15 +377,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     private void supplyFixedProperties(Map<String, Object> parameters, PropertySet fixedProperties) {
         List<Property> propertyList = fixedProperties.getProperties(Namespace.DEFAULT_NAMESPACE);
         for (Property property: propertyList) {
-            if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
+            if (PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
                 Object value = property.getValue().getObjectValue();
                 if (property.getValue().getType() == PropertyType.Type.PRINCIPAL) {
                     value = ((Principal) value).getQualifiedName();
                 }
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Copy: fixed property: " + property.getName() + ": " + value);
+                    this.logger.debug("Copy: fixed property: " + property.getDefinition().getName() + ": " + value);
                 }
-                parameters.put(property.getName(), value);
+                parameters.put(property.getDefinition().getName(), value);
             }
         }
     }
@@ -485,7 +485,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Property prop: newResource.getProperties()) {
             created.addProperty(prop);
             Property fixedProp = fixedProperties != null ?
-                fixedProperties.getProperty(prop.getNamespace(), prop.getName()) : null;
+                fixedProperties.getProperty(prop.getDefinition().getNamespace(), prop.getDefinition().getName()) : null;
             if (fixedProp != null) {
                 created.addProperty(fixedProp);
             }
@@ -875,10 +875,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                     executor.startBatch();
                     for (Property property: properties) {
 
-                        if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getName())) {
+                        if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
                             Map<String, Object> parameters = new HashMap<String, Object>();
-                            parameters.put("namespaceUri", property.getNamespace().getUri());
-                            parameters.put("name", property.getName());
+                            parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
+                            parameters.put("name", property.getDefinition().getName());
                             parameters.put("resourceId", r.getID());
                     
                             if (property.getDefinition() != null

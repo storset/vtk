@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="editor.userAgentAssertion" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
+    <property name="header" value="User-Agent" />
+    <property name="patterns">
+      <list>
+        <!-- FIXME: These tests must be improved -->
+
+        <!-- IE -->
+        <value>Mozilla/4\.0 \(compatible; MSIE 7\.0; Windows.*</value>
+        <value>Mozilla/4\.0 \(compatible; MSIE 6\.0; Windows.*</value>
+        <value>Mozilla/4\.0 \(compatible; MSIE 5\.5; Windows.*</value>
+        
+        <!-- Mozilla -->
+        <value>Mozilla/5\.0.*rv:1\.7\..*Gecko.*</value>
+        <value>Mozilla/5\.0.*rv:1\.8\..*Gecko.*</value>
+
+        <!-- Firefox -->
+        <value>Mozilla/5\.0.*Gecko.*Firefox/1\..*</value>
+
+        <!-- Camino -->
+        <value>Mozilla/5\.0.*Gecko.*Camino/.*</value>
+
+        <!-- Opera 9.01 (linux) not working 
+             <value>Mozilla/4\.0 \(compatible; .*\) Opera 9\.01</value>
+        -->
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.service" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9800" />
+    <property name="assertions">
+      <list>
+        <ref bean="editor.modeParameterAssertion" />
+        <ref bean="editor.userAgentAssertion" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="editor.lockResourceHandlerInterceptor"
+        class="org.vortikal.web.controller.LockResourceHandlerInterceptor"
+        parent="requestLocalRepositoryAware">
+  </bean>
+
+
+  <bean id="editor.editService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editor.service" />
+    <property name="order" value="-9800" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="resourceTypeIsXhtmlTrans" />
+        <ref bean="editor.parameterEqualsEdit" />
+      </list>
+    </property>
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map><entry key="tabOrder"><value type="java.lang.Integer">152</value></entry></map>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="editor.lockResourceHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.editHandler" />
+  </bean>
+
+  <bean id="editor.browseService" class="org.vortikal.web.service.ServiceImpl">
+    <!--property name="parent" ref="editor.fckService" /-->
+    <!--property name="parent" ref="webService" /-->
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <ref bean="editor.browseUriAssertion" />
+        <ref bean="editor.parameterEqualsBrowse" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.edit.fckeditor.FCKeditorConnector"
+            parent="requestLocalRepositoryAware">
+        <property name="viewService" ref="viewService" />
+        <property name="browseViewName" value="editor.browseView" />
+        <property name="uploadStatusViewName" value="editor.uploadStatusView" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.getSourceStripHeadersInterceptor"
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+    <property name="includeLastModifiedHeader" value="false" />
+    <property name="includeEtagHeader" value="false" />
+  </bean>
+
+  <bean id="editor.browseUriAssertion"
+        class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value="${fckeditor.browse.base}" />
+  </bean>
+
+  <bean id="editor.modeParameterAssertion"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="mode" />
+    <property name="parameterValue" value="editor" />
+  </bean>
+
+  <bean id="editor.parameterEqualsEdit"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="edit" />
+  </bean>
+
+  <bean id="editor.parameterEqualsBrowse"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="browse" />
+  </bean>
+
+  <bean id="editor.wrappingViewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="editor.editView" value-ref="editor.editView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editor.plainViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="editor.browseView" value-ref="editor.browseView" />
+        <entry key="editor.uploadStatusView" value-ref="editor.uploadStatusView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="editor.editView" parent="freemarkerView">
+    <property name="url" value="editor/editor.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+
+        <ref bean="resourceContextProvider" />
+
+        <ref bean="manage.refreshLockURLProvider" />
+
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="service" ref="viewService" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${fckeditor.resources.base}" />
+          <property name="urlName" value="url" />
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="modelName" value="fckBrowse" />
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${fckeditor.browse.base}" />
+        </bean>
+
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.browseView" parent="freemarkerView">
+    <property name="url" value="fckeditor/browse.ftl" />
+    <property name="contentType" value="text/xml;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.uploadStatusView" parent="freemarkerView">
+    <property name="url" value="fckeditor/upload-status.ftl" />
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="referenceDataProviders">
+      <list>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="editor.editCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${cssBaseURL}/basic.css</value>
+        <value>${cssBaseURL}/tabs.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Editor main controller -->
+  
+  <bean id="editor.editHandler"
+        class="org.vortikal.edit.editor.EditorController"
+        parent="requestLocalRepositoryAware">
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+    <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
+    <property name="titlePropDef" ref="userTitlePropDef" />
+  </bean>
+
+
+</beans>

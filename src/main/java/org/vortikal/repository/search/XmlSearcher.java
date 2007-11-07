@@ -56,7 +56,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
@@ -241,51 +240,47 @@ public class XmlSearcher {
     private void addPropertyToPropertySetElement(String uri, Element propSetElement,
                                                  Property prop, SearchEnvironment envir) {
         
-        PropertyTypeDefinition propertyDefinition = prop.getDefinition();
-
-        if (propertyDefinition == null) {
-            return;
-        }
+        PropertyTypeDefinition propDef = prop.getDefinition();
         
         Document doc = propSetElement.getOwnerDocument();
         
         Element propertyElement = doc.createElement("property");
         
-        String namespaceUri = prop.getNamespace().getUri();
+        String namespaceUri = propDef.getNamespace().getUri();
         if (namespaceUri != null) {
             propertyElement.setAttribute("namespace", namespaceUri);
         }
         
-        String prefix = prop.getNamespace().getPrefix();
+        String prefix = propDef.getNamespace().getPrefix();
         if (prefix != null) {
-            propertyElement.setAttribute("name", prefix + ":" + prop.getName());
+            propertyElement.setAttribute("name", prefix + ":" + propDef.getName());
         } else {
-            propertyElement.setAttribute("name", prop.getName());
+            propertyElement.setAttribute("name", propDef.getName());
         }
         
         Locale locale = envir.getLocale();
 
-        Set<String> formatSet = envir.getFormats().getFormats(propertyDefinition);
+        Set<String> formatSet = envir.getFormats().getFormats(propDef);
         if (!formatSet.contains(null)) {
             // Add default (null) format:
             formatSet.add(null);
         }
 
         for (String format: formatSet) {
-            if (propertyDefinition.isMultiple()) {
+            if (propDef.isMultiple()) {
                 Element valuesElement = doc.createElement("values");
                 if (format != null) {
                     valuesElement.setAttribute("format", format);
                 }
                 for (Value v: prop.getValues()) {
-                    String valueString = getFormattedPropertyValue(propertyDefinition,uri, v, format, locale);
+                    String valueString = getFormattedPropertyValue(propDef,uri, v, format, locale);
                     Element valueElement = valueElement(doc, valueString);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
             } else {
                 Value value = prop.getValue();
-                String valueString = getFormattedPropertyValue(propertyDefinition,uri, value, format, locale);
+                String valueString = getFormattedPropertyValue(propDef,uri, value, format, locale);
                 Element valueElement = valueElement(doc, valueString);
                 if (format != null) {
                     valueElement.setAttribute("format", format);

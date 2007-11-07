@@ -70,9 +70,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     
     public Property createProperty() {
         PropertyImpl prop = new PropertyImpl();
-        prop.setNamespace(namespace);
-        prop.setName(name);
-        
         prop.setDefinition(this);
         
         if (this.getDefaultValue() != null) {
@@ -87,10 +84,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         throws ValueFormatException {
 
         PropertyImpl prop = new PropertyImpl();
-        prop.setNamespace(this.namespace);
-        prop.setName(this.name);
-        
-        // Set definition (may be null)
         prop.setDefinition(this);
         
         if (value instanceof Date) {
@@ -129,9 +122,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         throws ValueFormatException {
 
         PropertyImpl prop = new PropertyImpl();
-        prop.setNamespace(this.namespace);
-        prop.setName(this.name);
-        
         prop.setDefinition(this);
         
         Type type = this.getType();
@@ -157,17 +147,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     public void afterPropertiesSet() {
         if (this.valueFormatter == null) {

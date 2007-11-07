@@ -33,23 +33,28 @@ package org.vortikal.repository.index.mapping;
 import junit.framework.TestCase;
 
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 
 public class FieldNameMappingTestCase extends TestCase {
 
+    private Property getUndefinedProperty(Namespace namespace, String name) {
+        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+        propDef.setNamespace(namespace);
+        propDef.setName(name);
+        propDef.afterPropertiesSet();
+        return propDef.createProperty();
+    }
+
     public void testGetSearchFieldNameProperty() {
         
-        PropertyImpl prop = new PropertyImpl();
-        prop.setName("foo");
-        prop.setNamespace(Namespace.getNamespaceFromPrefix("bar"));
+        Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
         assertEquals("bar:foo", FieldNameMapping.getSearchFieldName(prop));
         
-        prop = new PropertyImpl();
-        prop.setName("lastModified");
-        prop.setNamespace(Namespace.DEFAULT_NAMESPACE);
+        prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
         assertEquals("lastModified", FieldNameMapping.getSearchFieldName(prop));
         
@@ -85,17 +90,13 @@ public class FieldNameMappingTestCase extends TestCase {
 
     public void testGetStoredFieldNameProperty() {
         
-        PropertyImpl prop = new PropertyImpl();
-        prop.setName("foo");
-        prop.setNamespace(Namespace.getNamespaceFromPrefix("bar"));
+        Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
         String fieldName = FieldNameMapping.getStoredFieldName(prop);
         
         assertEquals("_bar:foo", fieldName);
         
-        prop = new PropertyImpl();
-        prop.setName("lastModified");
-        prop.setNamespace(Namespace.DEFAULT_NAMESPACE);
+        prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
         fieldName = FieldNameMapping.getStoredFieldName(prop);
         assertEquals("_lastModified", fieldName);

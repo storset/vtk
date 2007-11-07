@@ -45,6 +45,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -214,12 +215,11 @@ public class ResourcePropertiesValueProvider
             if (this.namespaces[i] != null && "*".equals(this.names[i])) {
 
                 Namespace ns = Namespace.getNamespace(this.namespaces[i]);
-                List expandedProps = resource.getProperties(ns);
-                for (Iterator iter = expandedProps.iterator(); iter.hasNext();) {
-                    Property prop = (Property) iter.next();
-                    subModel.put(prop.getName(),
-                                 maybeLocalizeValue(prop.getNamespace().getUri(),
-                                                    prop.getName(),
+                for (Property prop: resource.getProperties(ns)) {
+                    PropertyTypeDefinition propDef = prop.getDefinition();
+                    subModel.put(propDef.getName(),
+                                 maybeLocalizeValue(propDef.getNamespace().getUri(),
+                                                    propDef.getName(),
                                                     prop.getStringValue(),
                                                     request));
                 }

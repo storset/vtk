@@ -39,7 +39,6 @@ import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
@@ -61,30 +60,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     private static final long serialVersionUID = 3762531209208410417L;
     
     private PropertyTypeDefinition propertyTypeDefinition;
-    private Namespace namespace;
-    private String name;
     private Value value;
     private Value[] values;
     
-    public Namespace getNamespace() {
-        return this.namespace;
-    }
-
-    public void setNamespace(Namespace namespace) {
-        this.namespace = namespace;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Value getValue() {
-        if (this.propertyTypeDefinition != null &&
-            this.propertyTypeDefinition.isMultiple()) {
+        if (this.propertyTypeDefinition.isMultiple()) {
             throw new IllegalOperationException("Property " + this + " is multi-value"); 
         }
         
@@ -92,8 +72,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setValue(Value value) throws ValueFormatException {
-        if (this.propertyTypeDefinition != null &&
-            this.propertyTypeDefinition.isMultiple()) {
+        if (this.propertyTypeDefinition.isMultiple()) {
             throw new ValueFormatException("Property " + this + " is multi-value");
         }
         
@@ -102,8 +81,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public void setValues(Value[] values) throws ValueFormatException {
-        if (this.propertyTypeDefinition == null ||
-            ! this.propertyTypeDefinition.isMultiple()) {
+        if (! this.propertyTypeDefinition.isMultiple()) {
             throw new ValueFormatException("Property " + this + " is not multi-value");
         }
         
@@ -112,8 +90,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public Value[] getValues() {
-        if (this.propertyTypeDefinition == null || 
-            ! this.propertyTypeDefinition.isMultiple()) {
+        if (! this.propertyTypeDefinition.isMultiple()) {
             throw new IllegalOperationException("Property " + this + " is not multi-value");
         }
         
@@ -198,8 +175,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
         // "Dumb" clone, avoid all type checks, just copy data structures
         clone.propertyTypeDefinition = this.propertyTypeDefinition;
-        clone.name = this.name;
-        clone.namespace = this.namespace; // XXX: Do we need to clone namespace ? 
         
         // Values
         if (this.value != null) 
@@ -221,13 +196,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         
         Property otherProp = (Property) obj;
         
-        if (! this.name.equals(otherProp.getName()) || 
-            ! this.namespace.equals(otherProp.getNamespace())) {
+        if (! this.getDefinition().getName().equals(otherProp.getDefinition().getName()) || 
+            ! this.getDefinition().getNamespace().equals(otherProp.getDefinition().getNamespace())) {
             return false;
         }
         
-        if (this.propertyTypeDefinition != null &&
-            this.propertyTypeDefinition.isMultiple()) {
+        if (this.propertyTypeDefinition.isMultiple()) {
             
             // Other prop must also be multiple, otherwise not equal
             if (otherProp.getDefinition() == null ||
@@ -258,9 +232,9 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         StringBuffer sb = new StringBuffer();
 
         sb.append(this.getClass().getName()).append(": ");
-        sb.append("[ ").append(this.namespace);
-        sb.append(":").append(this.name);
-        if (this.propertyTypeDefinition != null && this.propertyTypeDefinition.isMultiple()) {
+        sb.append("[ ").append(this.getDefinition().getNamespace());
+        sb.append(":").append(this.getDefinition().getName());
+        if (this.propertyTypeDefinition.isMultiple()) {
             sb.append(" = {");
             for (int i=0; values != null && i<this.values.length; i++) {
                 sb.append("'").append(this.values[i]).append("'");
@@ -321,19 +295,15 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
         }
         
-        // XXX: Do we want this, or should the client check by itself ?
-        if (this.propertyTypeDefinition == null) {
-            return;
-        }
-        
-        if (this.propertyTypeDefinition.getConstraint() != null) {
-            Constraint constraint = this.propertyTypeDefinition.getConstraint();
+        Constraint constraint = this.propertyTypeDefinition.getConstraint();
+
+        if (constraint != null) {
             constraint.validate(value);
         }
 
-        Vocabulary vocabulary = this.propertyTypeDefinition.getVocabulary();
+        Vocabulary<Value> vocabulary = this.propertyTypeDefinition.getVocabulary();
         if (vocabulary != null && vocabulary.getAllowedValues() != null) {
-            List valuesList = Arrays.asList(vocabulary.getAllowedValues());
+            List<Value> valuesList = Arrays.asList(vocabulary.getAllowedValues());
             if (!valuesList.contains(value)) {
                 ConstraintViolationException e = 
                     new ConstraintViolationException(
@@ -346,9 +316,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public Type getType() {
-        if (this.propertyTypeDefinition == null)
-            return PropertyType.Type.STRING;
-        
         return this.propertyTypeDefinition.getType();
     }
     
@@ -361,17 +328,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public boolean isValueInitialized() {
-        if (this.propertyTypeDefinition != null && this.propertyTypeDefinition.isMultiple()) {
+        if (this.propertyTypeDefinition.isMultiple()) {
             return this.values != null;
         }
         return this.value != null;
     }
 
     public String getFormattedValue(String format, Locale locale) {
-
-        if (this.propertyTypeDefinition == null) {
-            return new StringValueFormatter().valueToString(this.value, format, locale);
-        }
 
         if (!this.propertyTypeDefinition.isMultiple()) {
             return this.propertyTypeDefinition.getValueFormatter().valueToString(this.value, format, locale);

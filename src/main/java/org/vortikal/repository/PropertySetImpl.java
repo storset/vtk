@@ -124,12 +124,13 @@ public class PropertySetImpl implements PropertySet, Cloneable {
 
 
     public void addProperty(Property property) {
-        Map<String, Property> map = this.propertyMap.get(property.getNamespace());
+        PropertyTypeDefinition propDef = property.getDefinition();
+        Map<String, Property> map = this.propertyMap.get(propDef.getNamespace());
         if (map == null) {
             map = new HashMap<String, Property>();
-            this.propertyMap.put(property.getNamespace(), map);
+            this.propertyMap.put(propDef.getNamespace(), map);
         }
-        map.put(property.getName(), property);
+        map.put(propDef.getName(), property);
     }
  
     public Property getProperty(PropertyTypeDefinition type) {

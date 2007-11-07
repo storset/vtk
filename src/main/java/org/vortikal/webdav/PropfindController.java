@@ -301,16 +301,15 @@ public class PropfindController extends AbstractWebdavController {
         
 
             /* Other properties: */
-            List otherProperties = res.getProperties();
-            for (Iterator iter = otherProperties.iterator(); iter.hasNext();) {
-                Property prop = (Property) iter.next();
-                Namespace namespace = prop.getNamespace();
+            List<Property> otherProperties = res.getProperties();
+            for (Property prop: otherProperties) {
+                Namespace namespace = prop.getDefinition().getNamespace();
+                String name = prop.getDefinition().getName();
 
                 if (Namespace.DEFAULT_NAMESPACE.equals(namespace)
-                    && MAPPED_DAV_PROPERTIES.containsValue(prop.getName())) {
+                    && MAPPED_DAV_PROPERTIES.containsValue(name)) {
                     continue;
                 }
-                String name = prop.getName();
                 Element e;
 
                 if (Namespace.DEFAULT_NAMESPACE.equals(namespace)) {

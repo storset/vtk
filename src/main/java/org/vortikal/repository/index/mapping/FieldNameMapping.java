@@ -83,8 +83,8 @@ public class FieldNameMapping {
     
     public static String getSearchFieldName(Property prop) {
         
-        return getSearchFieldName(prop.getName(), 
-                prop.getNamespace().getPrefix());
+        return getSearchFieldName(prop.getDefinition().getName(), 
+                prop.getDefinition().getNamespace().getPrefix());
     }
 
     public static String getSearchFieldName(PropertyTypeDefinition def) {
@@ -102,8 +102,8 @@ public class FieldNameMapping {
     public static String getStoredFieldName(Property property) {
         StringBuilder fieldName = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
         
-        String name = property.getName();
-        String nsPrefix = property.getNamespace().getPrefix();
+        String name = property.getDefinition().getName();
+        String nsPrefix = property.getDefinition().getNamespace().getPrefix();
         
         if (nsPrefix != null) {
             fieldName.append(nsPrefix);

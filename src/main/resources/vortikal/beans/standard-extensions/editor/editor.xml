@@ -205,12 +205,17 @@
   <!-- Editor main controller -->
   
   <bean id="editor.editHandler"
-        class="org.vortikal.edit.editor.EditorController"
+        class="org.vortikal.edit.editor.ResourceEditController"
         parent="requestLocalRepositoryAware">
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
-    <property name="titlePropDef" ref="userTitlePropDef" />
+    <property name="propDefs">
+      <list>
+         <ref bean="userTitlePropDef" />
+         <ref bean="keywordsPropDef" />
+      </list>
+    </property>
   </bean>
 
 

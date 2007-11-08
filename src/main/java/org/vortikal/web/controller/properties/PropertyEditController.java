@@ -176,7 +176,7 @@ public class PropertyEditController extends SimpleFormController
         return buildPropertyEditCommand(definition);
     }
 
-    private Object buildPropertyEditCommand(PropertyTypeDefinition definition)
+    private PropertyEditCommand buildPropertyEditCommand(PropertyTypeDefinition definition)
             throws IOException {
         if (definition == null) {
             return new PropertyEditCommand(null, null, null, null, null);
@@ -190,19 +190,7 @@ public class PropertyEditController extends SimpleFormController
 
         Property property = resource.getProperty(definition);
         if (property != null) {
-           
-            if (definition.isMultiple()) {
-                StringBuffer val = new StringBuffer();
-                Value[] values = property.getValues();
-                for (int i = 0; i < values.length; i++) {
-                    val.append(values[i].toString());
-                    if (i < values.length - 1)
-                        val.append(", ");
-                }
-                value = val.toString();
-            } else {
-                value = getValueAsString(property.getValue());
-            }
+            value = property.getFormattedValue(null, null);
         }
 
         Map<String, String> urlParameters = new HashMap<String, String>();

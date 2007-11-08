@@ -65,17 +65,6 @@
 
     <script language="JavaScript">
       var needToConfirm = true;
-      var command_title = '${command.title}';
-      window.onbeforeunload = confirmExit;
-      
-
-      function confirmExit() {
-        var contentChange = (command_title != document.getElementById("title").value);
-        contentChange = (contentChange || FCKeditorAPI.GetInstance('content').IsDirty());
-        if (needToConfirm && contentChange) {
-          return "You have unsaved changes. Are you sure you want to leave this page?";
-        }
-      }
 
     function performSave() {
       needToConfirm = false;
@@ -91,21 +80,14 @@
     </script>
   </head>
   <body>
-
-    <@spring.bind "command.*"/> 
-    <#if spring.status.error>
-    <div style="padding: 7px;color: #FF0000;">
-      <#list spring.status.errorMessages as error> ${error}<br/> </#list>
-    </div>
-    </#if>
-
     <form action="" method="POST">
      
       <div style="padding: 7px; border: 1px solid #aaa;">
-         Tittel: <@spring.formInput "command.title" />
-       </div>
+        <@handleProps />
+      </div>
+      <br/>
       <div style="padding: 7px; border: 1px solid #aaa;">
-       <@spring.formTextarea "command.content", 'rows="8" cols="60"' />
+       <textarea name="content" rows="8" cols="60" id="content">${command.content}</textarea>
        </div>
        <p>Noe tredje</p>
       <div style="padding: 7px; border: 1px solid #aaa;">
@@ -124,3 +106,39 @@
 
     </body>
 </html>
+
+<#macro handleProps>
+    <script language="JavaScript">
+      window.onbeforeunload = confirmExit;
+
+      function propChange() {
+        <#local keyNames = command.propsMap?keys />
+        <#list keyNames as propDef>
+          <#local name = propDef.name />
+          <#local value = command.propsMap?values[propDef_index] />
+          if ('${value}' != document.getElementById('resource.${name}').value) {
+            return true;
+          }
+        </#list>
+        return false;
+      }
+
+      function confirmExit() {
+        var contentChange = (propChange() || FCKeditorAPI.GetInstance('content').IsDirty());
+        if (needToConfirm && contentChange) {
+          return "You have unsaved changes. Are you sure you want to leave this page?";
+        }
+      }
+    </script>
+
+    <#local keyNames = command.propsMap?keys />
+    <#list keyNames as propDef>
+      <#local name = propDef.name />
+      <#local value = command.propsMap?values[propDef_index] />
+      <#local errors = command.errors?if_exists />
+      <p><#if errors?exists && errors[name]?exists>${errors[name]}<br/></#if>
+         ${name}: <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 
+    </#list>
+
+
+</#macro>

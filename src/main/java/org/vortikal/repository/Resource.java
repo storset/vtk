@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 
@@ -77,6 +78,8 @@ public interface Resource extends PropertySet, Cloneable {
      */
     public Property createProperty(Namespace namespace, String name);
     
+    public Property createProperty(PropertyTypeDefinition propDef);
+
 
     /**
      * Removes a property on this resource.
@@ -85,6 +88,9 @@ public interface Resource extends PropertySet, Cloneable {
      * @param name the name of the property
      */
     public void removeProperty(Namespace namespace, String name);
+    
+    public void removeProperty(PropertyTypeDefinition propDef);
+
     
     /**
      * Gets a resource's serial string.  A serial string is a unique
@@ -296,5 +302,7 @@ public interface Resource extends PropertySet, Cloneable {
     public void setOwner(Principal principal);
 
     public Object clone() throws CloneNotSupportedException;
+
+
 
 }

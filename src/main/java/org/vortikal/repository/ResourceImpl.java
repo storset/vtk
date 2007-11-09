@@ -92,11 +92,15 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     public Property createProperty(Namespace namespace, String name) {
         PropertyTypeDefinition propDef = 
             this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+        return createProperty(propDef);
+    }
+
+    public Property createProperty(PropertyTypeDefinition propDef) {
         Property prop = propDef.createProperty();
         addProperty(prop);
         return prop;
     }
-
+    
     /**
      * Creates and adds a property with a given namespace, name
      * and value. The type is set according to its {@link
@@ -144,6 +148,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
         props.remove(name);
     }
+    
+    public void removeProperty(PropertyTypeDefinition propDef) {
+        removeProperty(propDef.getNamespace(), propDef.getName());
+    }    
 
     public String getParent() {
         return URIUtil.getParentURI(super.uri);

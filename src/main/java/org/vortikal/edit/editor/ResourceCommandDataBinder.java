@@ -33,7 +33,10 @@ package org.vortikal.edit.editor;
 import javax.servlet.ServletRequest;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 
 public class ResourceCommandDataBinder extends ServletRequestDataBinder {
 
@@ -45,12 +48,73 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
     public void bind(ServletRequest request) {
         if (getTarget() instanceof ResourceCommand) {
             ResourceCommand command = (ResourceCommand) getTarget();
-            for (PropertyTypeDefinition propDef: command.getPropsMap().keySet()) {
+            Resource resource = command.getResource();
+            
+            for (PropertyTypeDefinition propDef: command.getEditableProperties()) {
+
                 String value = request.getParameter("resource." + propDef.getName());
-                command.setValue(propDef.getName(), value);
+                Property prop = resource.getProperty(propDef);
+                if (prop == null) {
+                    if (value != null && !value.trim().equals("")) {
+                        try {
+                            prop = resource.createProperty(propDef);
+                            setPropValue(value, prop);
+                            command.setPropChange(true);
+                        } catch (Throwable t) {
+                            command.reject(propDef, t.getMessage());
+                            resource.removeProperty(propDef);
+                        }
+                        continue;
+                    } else if (propDef.isMandatory()) {
+                        command.reject(propDef, propDef.getName() + " is required ");
+                        continue;
+                    }
+                } else if (value == null || value.trim().equals("")) {
+                    if (propDef.isMandatory()) {
+                        command.reject(propDef, propDef.getName() + " is required");
+                        continue;
+                    } 
+                    command.setPropChange(true);
+                    resource.removeProperty(propDef);
+                    continue;
+                } else {
+                    try {
+                        setPropValue(value, prop);
+                        command.setPropChange(true);
+                    } catch (Throwable t) {
+                        command.reject(propDef, t.getMessage());
+                    }
+                }
+            }
+            
+            String content = command.getContent();
+            String suppliedContent = request.getParameter("resource.content");
+            if (suppliedContent == null) suppliedContent = "";
+            if (!content.equals(suppliedContent)) {
+                command.setContent(suppliedContent);
+                command.setContentChange(true);
             }
         }
         super.bind(request);
     }
-   
+
+    
+    private void setPropValue(String valueString, Property prop) {
+        PropertyTypeDefinition propDef = prop.getDefinition();
+
+        if (propDef.isMultiple()) {
+            String[] strings = valueString.split(",");
+            Value[] values = new Value[strings.length];
+
+            int i = 0;
+            for (String string : strings) {
+                values[i++] = propDef.getValueFormatter().stringToValue(string, null, null);
+            }
+            prop.setValues(values);
+        } else {
+            Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
+            prop.setValue(value);
+        }
+    }
+
 }

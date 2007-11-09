@@ -34,33 +34,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class ResourceCommand {
-    private Map<String, String> errors = 
-        new HashMap<String, String>();
 
-    public void reject(PropertyTypeDefinition propDef, String code) {
-        errors.put(propDef.getName(), code);
-    }
-    
-    public Map<String, String> getErrors() {
-        return errors;
-    }
+    /* Content */
     
     private String content;
-
-    private Map<PropertyTypeDefinition, String> propsMap; 
-    
-    private List<Map<String, String>> tooltips;
-
-    public List<Map<String, String>> getTooltips() {
-        return tooltips;
-    }
-
-    public void setTooltips(List<Map<String, String>> tooltips) {
-        this.tooltips = tooltips;
-    }
+    private boolean contentChange = false;
 
     public String getContent() {
         return content;
@@ -70,30 +53,79 @@ public class ResourceCommand {
         this.content = content;
     }
 
-    public Map<PropertyTypeDefinition, String> getPropsMap() {
-        return propsMap;
+    public boolean isContentChange() {
+        return contentChange;
     }
 
-    public void setPropsMap(Map<PropertyTypeDefinition, String> propsMap) {
-        this.propsMap = propsMap;
+    public void setContentChange(boolean contentChange) {
+        this.contentChange = contentChange;
+    }
+
+    /* Resource */
+    
+    private Resource resource;
+    private List<PropertyTypeDefinition> editableProperties;
+    private boolean propChange = false;
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
+    public boolean isPropChange() {
+        return propChange;
+    }
+
+    public void setPropChange(boolean propChange) {
+        this.propChange = propChange;
+    }
+
+    public List<PropertyTypeDefinition> getEditableProperties() {
+        return editableProperties;
+    }
+
+    public void setEditableProperties(
+            List<PropertyTypeDefinition> editableProperties) {
+        this.editableProperties = editableProperties;
+    }
+
+    /* Errors */
+
+    private Map<String, String> errors = new HashMap<String, String>();
+
+    public void reject(PropertyTypeDefinition propDef, String code) {
+        errors.put(propDef.getName(), code);
     }
     
-    public void setValue(String name, String value) {
-        for (PropertyTypeDefinition propDef : this.propsMap.keySet()) {
-            if (propDef.getName().equals(name)) {
-                this.propsMap.put(propDef, value);
-                break;
-            }
-        }
+    public Map<String, String> getErrors() {
+        return errors;
+    }
+    
+
+    /* Tooltips */
+    
+    private List<Map<String, String>> tooltips;
+
+    
+    public List<Map<String, String>> getTooltips() {
+        return tooltips;
     }
 
-    public PropertyTypeDefinition getPropDef(String name) {
-        for (PropertyTypeDefinition propDef : this.propsMap.keySet()) {
-            if (propDef.getName().equals(name)) {
-                return propDef;
-            }
-        }
-        return null;
+    public void setTooltips(List<Map<String, String>> tooltips) {
+        this.tooltips = tooltips;
     }
 
+
+    public String getValue(PropertyTypeDefinition propDef) {
+        Property prop = resource.getProperty(propDef);
+        if (prop == null) {
+            return "";
+        }
+        return prop.getFormattedValue(null, null);
+        
+    }
+    
 }

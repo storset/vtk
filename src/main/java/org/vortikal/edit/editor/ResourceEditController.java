@@ -43,11 +43,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
@@ -61,19 +59,12 @@ public class ResourceEditController extends SimpleFormController {
     private List<Service> tooltipServices;
     private List<PropertyTypeDefinition> propDefs;
     
-    public ResourceEditController() {
-        super();
-        setValidator(new ResourceCommandValidator());
-    }
-
-    
-    
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         if (!((ResourceCommand) command).getErrors().isEmpty()) {
-            Map model = new HashMap();
+            Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
-            return new ModelAndView(getFormView(),model);
+            return new ModelAndView(getFormView(), model);
         }
         return super.onSubmit(command);
     }
@@ -107,10 +98,11 @@ public class ResourceEditController extends SimpleFormController {
         ResourceCommand command = new ResourceCommand();
 
         command.setContent(content);
-
+        command.setEditableProperties(this.propDefs);
+        command.setResource(resource);
+        
         command.setTooltips(resolveTooltips(resource, principal));
 
-        command.setPropsMap(getPropsMap(resource));
         return command;
     }
 
@@ -118,82 +110,29 @@ public class ResourceEditController extends SimpleFormController {
     protected void doSubmitAction(Object command) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
-        Resource resource = this.repository.retrieve(token, uri, false);
 
         ResourceCommand c = (ResourceCommand) command;
 
-        byte[] bytes = c.getContent().getBytes(resource.getCharacterEncoding());
-        resource = this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
-
+        Resource resource = c.getResource();
         
-        Map<PropertyTypeDefinition, String> propsMap = getPropsMap(resource);
-        
-        if (propsMap == null) { 
-            return;
+        if (c.isPropChange()) {
+            resource = this.repository.store(token, resource);
         }
 
-        boolean propChange = false;
-
-        for (PropertyTypeDefinition propDef : c.getPropsMap().keySet()) {
-            String originalValue = propsMap.get(propDef);
-            String newValue = c.getPropsMap().get(propDef);
-            if (originalValue.equals(newValue)) {
-                continue;
-            }
-            propChange = true;
-            
-            Property prop = resource.getProperty(propDef);
-            if (prop == null) {
-                prop = resource.createProperty(propDef.getNamespace(), propDef.getName());
-            } 
-            
-            setPropValue(newValue, prop);
-        }
-
-        if (propChange) {
-            this.repository.store(token, resource);
+        if (c.isContentChange()) {
+            byte[] bytes = c.getContent().getBytes(resource.getCharacterEncoding());
+            this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
         }
     }
 
 
-    private void setPropValue(String valueString, Property prop) {
-        PropertyTypeDefinition propDef = prop.getDefinition();
-
-        if (propDef.isMultiple()) {
-            String[] strings = valueString.split(",");
-            Value[] values = new Value[strings.length];
-
-            int i = 0;
-            for (String string : strings) {
-                values[i++] = propDef.getValueFormatter().stringToValue(string, null, null);
-            }
-            prop.setValues(values);
-        } else {
-            Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
-            prop.setValue(value);
-        }
-    }
-
-
-    private Map<PropertyTypeDefinition, String> getPropsMap(Resource resource) {
-        if (this.propDefs == null) { return null;}
-        Map<PropertyTypeDefinition, String> prodDefsMap = 
-            new HashMap<PropertyTypeDefinition, String>();
-
-        for (PropertyTypeDefinition propDef: this.propDefs) {
-            String formattedValue = "unset";
-
-            Property property = resource.getProperty(propDef);
-            if (property != null) {
-                formattedValue = property.getFormattedValue(null, null);
-            }
-            prodDefsMap.put(propDef, formattedValue);
-        }
-        return prodDefsMap;
-    }
 
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    public void setPropDefs(List<PropertyTypeDefinition> propDefs) {
+        this.propDefs = propDefs;
     }
 
     public void setTooltipServices(List<Service> tooltipServices) {
@@ -219,11 +158,5 @@ public class ResourceEditController extends SimpleFormController {
         }
         return tooltips;
     }
-
-
-    public void setPropDefs(List<PropertyTypeDefinition> propDefs) {
-        this.propDefs = propDefs;
-    }
-
 
 }

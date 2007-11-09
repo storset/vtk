@@ -214,6 +214,7 @@
       <list>
          <ref bean="userTitlePropDef" />
          <ref bean="keywordsPropDef" />
+         <ref bean="descriptionPropDef" />
       </list>
     </property>
   </bean>

@@ -17,9 +17,6 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#assign xhtmlCompliant = true in spring />
-<#assign htmlEscape = true in spring />
-
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -87,7 +84,7 @@
       </div>
       <br/>
       <div style="padding: 7px; border: 1px solid #aaa;">
-       <textarea name="content" rows="8" cols="60" id="content">${command.content}</textarea>
+       <textarea name="content" rows="8" cols="60" id="content">${command.content?html}</textarea>
        </div>
        <p>Noe tredje</p>
       <div style="padding: 7px; border: 1px solid #aaa;">
@@ -112,10 +109,10 @@
       window.onbeforeunload = confirmExit;
 
       function propChange() {
-        <#local keyNames = command.propsMap?keys />
+        <#local keyNames = command.editableProperties />
         <#list keyNames as propDef>
           <#local name = propDef.name />
-          <#local value = command.propsMap?values[propDef_index] />
+          <#local value = command.getValue(propDef) />
           if ('${value}' != document.getElementById('resource.${name}').value) {
             return true;
           }
@@ -131,10 +128,10 @@
       }
     </script>
 
-    <#local keyNames = command.propsMap?keys />
-    <#list keyNames as propDef>
+    <#local keys = command.editableProperties />
+    <#list keys as propDef>
       <#local name = propDef.name />
-      <#local value = command.propsMap?values[propDef_index] />
+      <#local value = command.getValue(propDef) />
       <#local errors = command.errors?if_exists />
       <p><#if errors?exists && errors[name]?exists>${errors[name]}<br/></#if>
          ${name}: <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 

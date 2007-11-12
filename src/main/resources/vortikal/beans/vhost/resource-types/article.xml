@@ -3,11 +3,11 @@
 
 <beans>
 
-  <bean id="articleTypeDefinition"
+  <bean id="articleResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="article"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="xhtml10trans" />
+    <property name="parentTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <ref bean="isArticleAssertion" />
@@ -25,12 +25,19 @@
     </property>
   </bean>
 
+  <bean id="isArticleAssertion" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="type" />    
+    <property name="value" value="article" />
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
 
-  <bean id="nhmEventTypeDefinition"
+  <bean id="eventResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="event"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="articleTypeDefinition" />
+    <property name="parentTypeDefinition" ref="articleResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <ref bean="isEventAssertion" />
@@ -43,6 +50,14 @@
         <ref bean="locationPropDef" />
       </list>
     </property>
+  </bean>
+
+  <bean id="isEventAssertion" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="type" />    
+    <property name="value" value="event" />
+    <property name="checkExistenceOnly" value="false" />
   </bean>
 
   <bean id="articleTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -66,5 +81,47 @@
     <property name="mandatory" value="false"/>
   </bean>
 
+  <bean id="mediaReferencePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="media-ref"/>
+    <property name="type" value="IMAGE_REF"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="authorsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="authors"/>
+    <property name="type" value="STRING"/>
+    <property name="multiple" value="true"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="publishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="published-date"/>
+    <property name="type" value="DATE"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="startDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="start-date"/>
+    <property name="type" value="DATE"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="endDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="end-date"/>
+    <property name="type" value="DATE"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="locationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="name" value="location"/>
+    <property name="type" value="STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
 
 </beans>

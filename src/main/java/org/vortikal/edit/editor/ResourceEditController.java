@@ -113,6 +113,10 @@ public class ResourceEditController extends SimpleFormController {
 
         ResourceCommand c = (ResourceCommand) command;
 
+        if (!c.isSave()) {
+            return;
+        }
+        
         Resource resource = c.getResource();
         
         if (c.isPropChange()) {

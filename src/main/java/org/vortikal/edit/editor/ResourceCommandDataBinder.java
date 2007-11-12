@@ -48,6 +48,14 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
     public void bind(ServletRequest request) {
         if (getTarget() instanceof ResourceCommand) {
             ResourceCommand command = (ResourceCommand) getTarget();
+
+            if (request.getParameter("save") == null) {
+                return;
+            }
+            
+            command.setSave(true);
+
+            
             Resource resource = command.getResource();
             
             for (PropertyTypeDefinition propDef: command.getEditableProperties()) {
@@ -94,8 +102,9 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
                 command.setContent(suppliedContent);
                 command.setContentChange(true);
             }
+        } else {
+            super.bind(request);
         }
-        super.bind(request);
     }
 
     

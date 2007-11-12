@@ -212,12 +212,11 @@
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
     <property name="propDefs">
       <list>
-         <ref bean="userTitlePropDef" />
-         <ref bean="keywordsPropDef" />
-         <ref bean="descriptionPropDef" />
+         <ref bean="articleTitlePropDef" />
+         <ref bean="introductionImagePropDef" />
+         <ref bean="introductionPropDef" />
       </list>
     </property>
   </bean>
-
 
 </beans>

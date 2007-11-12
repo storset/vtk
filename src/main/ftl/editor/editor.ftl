@@ -24,11 +24,10 @@
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />
     <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-
     <script type="text/javascript">
-      window.onload = function()
+      function newEditor(name)
       {
-        var fck = new FCKeditor( 'content' ) ;
+        var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
 
          // The toolbar: JSON string
@@ -57,24 +56,7 @@
 
         fck.ReplaceTextarea() ;
       }
-
-  </script>
-
-    <script language="JavaScript">
-      var needToConfirm = true;
-
-    function performSave() {
-      needToConfirm = false;
-      var oEditor = FCKeditorAPI.GetInstance('content');
-      var srcxhtml = oEditor.GetXHTML();
-      var title = document.getElementById("title");
-
-      // Title
-      // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>");
-      document.getElementById('content').value = srcxhtml;
-    }  
-
-    </script>
+</script>
   </head>
   <body>
     <form action="" method="POST">
@@ -84,11 +66,14 @@
       </div>
       <br/>
       <div style="padding: 7px; border: 1px solid #aaa;">
-       <textarea name="content" rows="8" cols="60" id="content">${command.content?html}</textarea>
+       <textarea name="resource.content" rows="8" cols="60" id="content">${command.content?html}</textarea>
+       <@fck 'resource.content' />
+
        </div>
        <p>Noe tredje</p>
       <div style="padding: 7px; border: 1px solid #aaa;">
-       <input type="submit" onClick="performSave();" value="Lagre og publiser" />
+       <input type="submit" onClick="performSave();" name="save" value="Lagre" />
+       <input type="submit" onClick="performSave();" name="cancel" value="Avbryt" />
         <#if command.tooltips?exists>
           <#list command.tooltips as tooltip>
            <div class="contextual-help"><a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
@@ -132,10 +117,69 @@
     <#list keys as propDef>
       <#local name = propDef.name />
       <#local value = command.getValue(propDef) />
+      <#local type = propDef.type />
       <#local errors = command.errors?if_exists />
-      <p><#if errors?exists && errors[name]?exists>${errors[name]}<br/></#if>
-         ${name}: <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 
+      
+      
+      <p>${name} (${type})<#if errors?exists && errors[name]?exists>${errors[name]}</#if><br/> 
+      <#if type = 'HTML'>
+        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
+        <@fck 'resource.${name}' />
+      <#elseif type = 'IMAGE_REF'>
+    <script language="JavaScript">
+var urlobj;
+function BrowseServer(obj)
+{
+        urlobj = obj;
+        OpenServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
+                screen.width * 0.7,
+                screen.height * 0.7 ) ;
+}
+function OpenServerBrowser( url, width, height )
+{
+        var iLeft = (screen.width  - width) / 2 ;
+        var iTop  = (screen.height - height) / 2 ;
+        var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
+        sOptions += ",width=" + width ;
+        sOptions += ",height=" + height ;
+        sOptions += ",left=" + iLeft ;
+        sOptions += ",top=" + iTop ;
+        var oWindow = window.open( url, "BrowseWindow", sOptions ) ;
+}
+function SetUrl( url, width, height, alt )
+{
+        document.getElementById(urlobj).value = url ;
+        oWindow = null;
+}
+</script>
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /> 
+        <button type="button" onclick="BrowseServer('resource.${name}');">Pick Image</button>
+      </p> 
+      <#else>
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 
+      </#if>
     </#list>
 
+
+</#macro>
+
+<#macro fck content>
+    <script type="text/javascript">
+      var needToConfirm = true;
+
+      newEditor('${content}');
+
+    function performSave() {
+      needToConfirm = false;
+      var oEditor = FCKeditorAPI.GetInstance('${content}');
+      var srcxhtml = oEditor.GetXHTML();
+      // var title = document.getElementById("title");
+
+      // Title
+      // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>");
+      document.getElementById('${content}').value = srcxhtml;
+    }  
+
+    </script>
 
 </#macro>

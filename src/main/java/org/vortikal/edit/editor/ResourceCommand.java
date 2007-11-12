@@ -108,7 +108,6 @@ public class ResourceCommand {
     /* Tooltips */
     
     private List<Map<String, String>> tooltips;
-
     
     public List<Map<String, String>> getTooltips() {
         return tooltips;
@@ -127,5 +126,14 @@ public class ResourceCommand {
         return prop.getFormattedValue(null, null);
         
     }
+
+    private boolean save = false;
+
+    public boolean isSave() {
+        return this.save;
+    }
     
+    public void setSave(boolean save) {
+        this.save = save;
+    }
 }

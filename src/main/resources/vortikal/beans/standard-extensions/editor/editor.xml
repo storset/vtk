@@ -50,13 +50,18 @@
   </bean>
 
 
+  <bean id="resourceTypeIsArticle" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="articleResourceTypeDefinition" />
+  </bean>
+
+
   <bean id="editor.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="editor.service" />
     <property name="order" value="-9800" />
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="resourceTypeIsXhtmlTrans" />
+        <ref bean="resourceTypeIsArticle" />
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>
@@ -210,13 +215,13 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
-    <property name="propDefs">
-      <list>
-         <ref bean="articleTitlePropDef" />
-         <ref bean="introductionImagePropDef" />
-         <ref bean="introductionPropDef" />
-      </list>
-    </property>
+    <property name="editPropertyProvider" ref="editor.editablePropertyProvider" />
+  </bean>
+
+  <bean id="editor.editablePropertyProvider"
+        class="org.vortikal.edit.editor.ResourceTypeEditablePropertyProvider">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="targetResourceType" ref="articleResourceTypeDefinition" />
   </bean>
 
 </beans>

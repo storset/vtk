@@ -125,7 +125,6 @@ public final class Value implements Cloneable, Comparable<Value> {
         return this.stringValue;
     }
  
-        
    public Object getObjectValue() {
         switch (this.type) {
         

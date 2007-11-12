@@ -268,12 +268,28 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
         
         if (value.getType() != getType()) {
-            throw new ValueFormatException("Illegal value type " + 
-                    value.getType() + 
-                    " for property " + this + ". Should be " + 
-                    getType());
+        	switch (value.getType()) {
+        	// FIXME:
+        	case STRING:
+        	case HTML:
+        	case IMAGE_REF:
+        		if (getType() != Type.HTML && getType() != Type.STRING && getType() != Type.IMAGE_REF) {
+        			throw new ValueFormatException("Illegal value type " + 
+        					value.getType() + 
+        					" for property " + this + ". Should be " + 
+        					getType());
+
+        		}
+        		break;
+        	default:
+            	throw new ValueFormatException("Illegal value type " + 
+                        value.getType() + 
+                        " for property " + this + ". Should be " + 
+                        getType());
+        		
+        	}
         }
-        
+        	        
         // Check for potential null values
         switch (value.getType()) {
         case PRINCIPAL:
@@ -283,6 +299,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
             break;
         case STRING:
+        case HTML:
             if (value.getStringValue() == null) {
                 throw new ValueFormatException(
                     "String value of property '" + this + "' cannot be null");

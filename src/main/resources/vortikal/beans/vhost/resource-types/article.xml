@@ -28,7 +28,7 @@
   <bean id="isArticleAssertion" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="type" />    
+    <property name="name" value="xhtml10-type" />    
     <property name="value" value="article" />
     <property name="checkExistenceOnly" value="false" />
   </bean>
@@ -55,7 +55,7 @@
   <bean id="isEventAssertion" 
         class="org.vortikal.web.service.ResourcePropertyAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="type" />    
+    <property name="name" value="xhtml10-type" />    
     <property name="value" value="event" />
     <property name="checkExistenceOnly" value="false" />
   </bean>
@@ -64,7 +64,7 @@
     <property name="name" value="articleTitle"/>
     <property name="type" value="STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="true"/>
+    <property name="mandatory" value="false"/>
   </bean>
 
   <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
@@ -123,5 +123,6 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
   </bean>
+
 
 </beans>

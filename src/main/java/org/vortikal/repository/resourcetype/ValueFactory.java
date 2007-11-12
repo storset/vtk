@@ -109,6 +109,8 @@ public class ValueFactory {
         switch (type) {
 
         case STRING:
+        case HTML:
+        case IMAGE_REF:
             if (stringValue.length() == 0) {
                 throw new ValueFormatException("Illegal string value: empty");
             }

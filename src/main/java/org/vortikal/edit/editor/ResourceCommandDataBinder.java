@@ -109,7 +109,8 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
 
     
     private void setPropValue(String valueString, Property prop) {
-        PropertyTypeDefinition propDef = prop.getDefinition();
+    	try {
+    	PropertyTypeDefinition propDef = prop.getDefinition();
 
         if (propDef.isMultiple()) {
             String[] strings = valueString.split(",");
@@ -124,6 +125,10 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
             Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
             prop.setValue(value);
         }
+    	} catch (Throwable t) {
+    		System.out.println(t.getMessage());
+    		t.printStackTrace();
+    	}
     }
 
 }

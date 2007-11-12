@@ -77,8 +77,6 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class ProppatchController extends AbstractWebdavController  {
 
-    private ValueFactory valueFactory;
-    
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
          
@@ -399,9 +397,9 @@ public class ProppatchController extends AbstractWebdavController  {
                 // Set value of controlled property
                 try {
                     if (def.isMultiple()) {
-                        property.setValues(elementToValues(propertyElement, def.getType()));
+                        property.setValues(elementToValues(propertyElement, def));
                     } else {
-                        property.setValue(elementToValue(propertyElement, def.getType()));
+                        property.setValue(elementToValue(propertyElement, def));
                     }
                 } catch (ValueFormatException e) {
                     this.logger.warn("Could not convert given value(s) for property " 
@@ -473,25 +471,25 @@ public class ProppatchController extends AbstractWebdavController  {
         }
     }
     
-    protected Value elementToValue(Element element, Type type) throws ValueFormatException {
+    protected Value elementToValue(Element element, PropertyTypeDefinition def) throws ValueFormatException {
         String stringValue = element.getText();
         
-        if (type == PropertyType.Type.DATE) {
+        if (def.getType() == PropertyType.Type.DATE) {
             // Try to be liberal in accepting date formats:
             try {
                 return new Value(WebdavUtil.parsePropertyDateValue(stringValue));
             } catch (ParseException e) {
                 try {
-                    return this.valueFactory.createValue(stringValue, type);
+                    return def.getValueFormatter().stringToValue(stringValue, null, null);
                 } catch (Exception vfe) {
                     throw new ValueFormatException(e);
                 }
             }
         } 
-        return this.valueFactory.createValue(stringValue, type);
+        return def.getValueFormatter().stringToValue(stringValue, null, null);
     }
     
-    protected Value[] elementToValues(Element element, Type type) throws ValueFormatException {
+    protected Value[] elementToValues(Element element, PropertyTypeDefinition def) throws ValueFormatException {
         
         String[] stringValues;
         Element valuesElement;
@@ -518,7 +516,7 @@ public class ProppatchController extends AbstractWebdavController  {
         }
     
         Value[] values;
-        if (type == PropertyType.Type.DATE) {
+        if (def.getType() == PropertyType.Type.DATE) {
             values = new Value[stringValues.length];
             try {
                 for (int i=0; i<values.length; i++) {
@@ -528,7 +526,10 @@ public class ProppatchController extends AbstractWebdavController  {
                 throw new ValueFormatException(e.getMessage());
             }
         } else {
-            values = this.valueFactory.createValues(stringValues, type);
+            values = new Value[stringValues.length];
+            for (int i=0; i<values.length; i++) {
+            	values[i] = def.getValueFormatter().stringToValue(stringValues[i], null, null);	
+            }
         }
         
         return values;

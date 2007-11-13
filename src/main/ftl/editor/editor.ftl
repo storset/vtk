@@ -66,7 +66,7 @@
       </div>
       <br/>
       <div style="padding: 7px; border: 1px solid #aaa;">
-       <textarea name="resource.content" rows="8" cols="60" id="content">${command.content?html}</textarea>
+       <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.content?html}</textarea>
        <@fck 'resource.content' />
 
        </div>
@@ -90,6 +90,7 @@
 </html>
 
 <#macro handleProps>
+  <#--
     <script language="JavaScript">
       window.onbeforeunload = confirmExit;
 
@@ -112,6 +113,7 @@
         }
       }
     </script>
+   -->
 
     <#local keys = command.editableProperties />
     <#list keys as propDef>
@@ -126,37 +128,54 @@
         <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
         <@fck 'resource.${name}' />
       <#elseif type = 'IMAGE_REF'>
-    <script language="JavaScript">
-var urlobj;
-function BrowseServer(obj)
-{
-        urlobj = obj;
-        OpenServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
-                screen.width * 0.7,
-                screen.height * 0.7 ) ;
-}
-function OpenServerBrowser( url, width, height )
-{
-        var iLeft = (screen.width  - width) / 2 ;
-        var iTop  = (screen.height - height) / 2 ;
-        var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
-        sOptions += ",width=" + width ;
-        sOptions += ",height=" + height ;
-        sOptions += ",left=" + iLeft ;
-        sOptions += ",top=" + iTop ;
-        var oWindow = window.open( url, "BrowseWindow", sOptions ) ;
-}
-function SetUrl( url, width, height, alt )
-{
-        document.getElementById(urlobj).value = url ;
-        oWindow = null;
-}
-</script>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /> 
-        <button type="button" onclick="BrowseServer('resource.${name}');">Pick Image</button>
+        <script language="JavaScript">
+             var urlobj;
+             var baseFolder = "${resourceContext.parentURI?html}";
+             function BrowseServer(obj)
+             {
+                     urlobj = obj;
+                     OpenServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
+                             screen.width * 0.7,
+                             screen.height * 0.7 ) ;
+             }
+             function OpenServerBrowser( url, width, height )
+             {
+                     var iLeft = (screen.width  - width) / 2 ;
+                     var iTop  = (screen.height - height) / 2 ;
+                     var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
+                     sOptions += ",width=" + width ;
+                     sOptions += ",height=" + height ;
+                     sOptions += ",left=" + iLeft ;
+                     sOptions += ",top=" + iTop ;
+                     var oWindow = window.open( url, "BrowseWindow", sOptions ) ;
+             }
+             function SetUrl( url, width, height, alt )
+             {
+                     document.getElementById(urlobj).value = url ;
+                     oWindow = null;
+                     PreviewImage();
+             }
+
+             function PreviewImage()
+             {
+                     var previewobj = '' + urlobj + '.preview';
+                     var url = document.getElementById(urlobj).value;
+                     if (url) {
+                         document.getElementById(previewobj).innerHTML = 
+                         '<img src="' + url + '" width="100" height="100" />';
+                     }
+             }
+        </script>
+        <input type="text" id="resource.${name}" onblur="PreviewImage(id);" name="resource.${name}" value="${value}" /> 
+        <button type="button" onclick="BrowseServer('resource.${name}');">Browse images</button>
+        <div id="resource.${name}.preview">
+          <#if value != ''>
+            <img src="${value}" width="100" height="100" />
+          </#if>
+        </div>
       </p> 
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 
+        <input type="text" id="resource.${name}.preview" name="resource.${name}" value="${value}" /></p> 
       </#if>
     </#list>
 

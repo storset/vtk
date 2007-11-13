@@ -30,36 +30,39 @@
  */
 package org.vortikal.security;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * A representation of a principal.
+ * A representation of a principal, either user, group or pseudo.
  */
 public class Principal implements Comparable<Principal>, java.io.Serializable {
     
-    private static final String DOMAIN_DELIMITER = "@";
-
-    private String defaultDomain = "uio.no";
-    private String defaultGroupDomain = "netgroups.uio.no";
-    private Map<String, String> domainURLMap;
-
-    
-    public enum Type {
-       USER, // a named user
-       GROUP, // a named group
-       PSEUDO // a pseudo user
-    }
-    
-    
-    
     private static final long serialVersionUID = 3257848766467092530L;
 
+    private static final String DOMAIN_DELIMITER = "@";
+
+    private static String DEFAULT_DOMAIN = "uio.no";
+    private static String DEFAULT_GROUP_DOMAIN = "netgroups.uio.no";
+    private static Map<String, String> DOMAIN_URL_MAP = new HashMap<String, String>();
+
+    static {
+        DOMAIN_URL_MAP.put("uio.no", "http://www.uio.no/sok?person=%u");
+    }
+    
+    public enum Type {
+        USER, // a named user
+        GROUP, // a named group
+        PSEUDO // a pseudo user
+     }
+     
+    
     private String name;
     private String qualifiedName;
     private String domain;
     private String url;
-    private Type type = Principal.Type.USER;
+    private Type type;
     
     
     public static final String NAME_AUTHENTICATED = "pseudo:authenticated";
@@ -88,6 +91,14 @@ public class Principal implements Comparable<Principal>, java.io.Serializable {
     
     public Principal(String id, Type type) throws InvalidPrincipalException {
 
+        if (type == null) {
+            throw new InvalidPrincipalException("Principal must have a type");
+        }
+        
+        if (type == Type.PSEUDO) {
+            throw new InvalidPrincipalException("Principal must be USER or GROUP");
+        }
+        
         this.type = type;
 
         if (id == null) {
@@ -124,7 +135,7 @@ public class Principal implements Comparable<Principal>, java.io.Serializable {
         this.qualifiedName = id;
         
         String defDomain = 
-            (type == Principal.Type.GROUP) ? this.defaultGroupDomain : this.defaultDomain;
+            (type == Principal.Type.GROUP) ? DEFAULT_GROUP_DOMAIN : DEFAULT_DOMAIN;
 
         if (id.indexOf(DOMAIN_DELIMITER) > 0) {
 
@@ -146,8 +157,8 @@ public class Principal implements Comparable<Principal>, java.io.Serializable {
             qualifiedName = name + DOMAIN_DELIMITER + domain;
         }
 
-        if (domain != null && this.domainURLMap != null) {
-            String pattern = this.domainURLMap.get(domain);
+        if (domain != null && DOMAIN_URL_MAP != null) {
+            String pattern = DOMAIN_URL_MAP.get(domain);
             if (pattern != null) {
                 this.url = pattern.replaceAll("%u", name);
             }

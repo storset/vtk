@@ -59,7 +59,7 @@
     </script>
 
     <!-- Yahoo YUI library: -->
-    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css">
+    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
     <script type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
 
@@ -184,7 +184,7 @@
         <#local name2 = 'cal_' + propDef_index />
         <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" />
         <a href="#" onclick="YAHOO.resource.${name2}.calendar.init()">kalender</a>
-        <div id="resource.${name}.calendar"></div>
+        <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
         <script language="JavaScript">
           YAHOO.namespace("resource.${name2}.calendar");
 
@@ -194,7 +194,6 @@
                 YAHOO.resource.${name2}.calendar.cal1.selectEvent.subscribe(function(type, dates) {
                    var date = this._toDate(dates[0][0]);
                    var dateStr = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
-                   alert('selected: ' + dateStr);
                    document.getElementById('resource.${name}').value = dateStr;
                 }, YAHOO.resource.${name2}.calendar.cal1, true);
 

@@ -176,6 +176,15 @@
           <property name="path" value="${fckeditor.browse.base}" />
         </bean>
 
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="yuiBase" />
+          <property name="service" ref="viewService" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${yui.basePath}" />
+          <property name="urlName" value="url" />
+        </bean>
+
       </list>
     </property>
   </bean>

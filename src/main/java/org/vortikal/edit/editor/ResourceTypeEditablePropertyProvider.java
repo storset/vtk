@@ -19,7 +19,7 @@ public class ResourceTypeEditablePropertyProvider implements
 	public List<PropertyTypeDefinition> getEditableProperties(Resource resource) {
 		List<PropertyTypeDefinition> result = new ArrayList<PropertyTypeDefinition>();
 		if (this.resourceTypeTree.isContainedType(this.targetResourceType, resource.getResourceType())) {
-			addPropDefs(resource, result, resource.getResourceTypeDefinition());
+			addPropDefs(resource, result, this.targetResourceType);
 		}
 		
 		return result;

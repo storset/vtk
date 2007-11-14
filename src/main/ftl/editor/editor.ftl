@@ -126,10 +126,10 @@
       <#local name = propDef.name />
       <#local value = command.getValue(propDef) />
       <#local type = propDef.type />
-      <#local errors = command.errors?if_exists />
+      <#local error = command.getError(propDef)?if_exists />
       
       
-      <p>${name} (${type})<#if errors?exists && errors[name]?exists>${errors[name]}</#if><br/> 
+      <p>${name} (${type})<#if error?exists> - ${error}</#if><br/> 
       <#if type = 'HTML'>
         <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
         <@fck 'resource.${name}' />

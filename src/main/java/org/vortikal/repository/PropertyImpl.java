@@ -351,6 +351,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return this.value != null;
     }
 
+    public String getFormattedValue() {
+        return getFormattedValue(null, null);
+    }
+    
     public String getFormattedValue(String format, Locale locale) {
 
         if (!this.propertyTypeDefinition.isMultiple()) {

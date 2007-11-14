@@ -87,6 +87,8 @@ public interface Property extends Cloneable {
     
     public Object clone() throws CloneNotSupportedException;
 
+    public String getFormattedValue();
+    
     public String getFormattedValue(String format, Locale locale);
 
 }

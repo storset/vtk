@@ -56,5 +56,12 @@
     <property name="viewName" value="displayHTMLResource" />
   </bean>
 
+  <bean id="displayArticleHandler" 
+    class="org.vortikal.web.controller.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="displayProcessed" value="true" />
+    <property name="streamToString" value="true" />
+    <property name="viewName" value="displayArticle" />
+  </bean>
 
 </beans>

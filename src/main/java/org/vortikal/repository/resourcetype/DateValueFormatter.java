@@ -126,7 +126,8 @@ public class DateValueFormatter implements ValueFormatter {
         try {
             date = sdf.parse(string);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Unable to parse to date value object: " + string, e);
+            throw new IllegalArgumentException("Unable to parse to date value from '" + string + 
+                    "' object using string format '" + format + "'", e);
         }
         return new Value(date);
     }

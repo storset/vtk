@@ -23,6 +23,7 @@
       <map>
         <entry key="displayHTMLResource"  value-ref="displayResourceView" />
         <entry key="collectionListing" value-ref="collectionListingView" />
+        <entry key="displayArticle"  value-ref="displayArticleView" />
       </map>
     </property>
     <property name="viewWrapper" ref="decoratingViewWrapper" />
@@ -32,6 +33,10 @@
 
 
   <!-- View definitions -->
+
+  <bean id="displayArticleView" parent="freemarkerView">
+    <property name="url" value="pages/article.ftl" />
+  </bean>
 
   <bean id="displayResourceView"
         class="org.vortikal.web.view.DisplayResourceView">

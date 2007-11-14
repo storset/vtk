@@ -94,16 +94,23 @@ public class ResourceCommand {
 
     /* Errors */
 
-    private Map<String, String> errors = new HashMap<String, String>();
+    private Map<PropertyTypeDefinition, String> errors = new HashMap<PropertyTypeDefinition, String>();
 
     public void reject(PropertyTypeDefinition propDef, String code) {
-        errors.put(propDef.getName(), code);
+        this.errors.put(propDef, code);
     }
     
-    public Map<String, String> getErrors() {
-        return errors;
+    public String getError(PropertyTypeDefinition propDef) {
+        return this.errors.get(propDef);
     }
     
+    public boolean hasErrors() {
+        return !this.errors.isEmpty();
+    }
+    
+    public Map<PropertyTypeDefinition, String> getErrors() {
+        return this.errors;
+    }
 
     /* Tooltips */
     

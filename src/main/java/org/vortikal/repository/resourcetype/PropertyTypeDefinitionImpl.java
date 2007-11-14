@@ -67,6 +67,16 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private ValueFactory valueFactory = ValueFactory.getInstance();
 
+    private boolean content = false;
+
+    
+    public boolean isContent() {
+        return this.content;
+    }
+
+    public void setContent(boolean content) {
+        this.content = content;
+    }
     
     public Property createProperty() {
         PropertyImpl prop = new PropertyImpl();

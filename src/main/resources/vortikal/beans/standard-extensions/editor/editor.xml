@@ -224,13 +224,6 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
-    <property name="editPropertyProvider" ref="editor.editablePropertyProvider" />
-  </bean>
-
-  <bean id="editor.editablePropertyProvider"
-        class="org.vortikal.edit.editor.ResourceTypeEditablePropertyProvider">
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="targetResourceType" ref="articleResourceTypeDefinition" />
   </bean>
 
 </beans>

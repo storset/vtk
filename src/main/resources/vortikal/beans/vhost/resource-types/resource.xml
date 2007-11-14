@@ -49,6 +49,7 @@
   </bean>
 
   <bean id="userTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="userTitle"/>
     <property name="type" value="STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>

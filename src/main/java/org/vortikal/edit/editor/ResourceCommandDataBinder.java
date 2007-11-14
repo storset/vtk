@@ -108,8 +108,7 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
     }
 
     
-    private void setPropValue(String valueString, Property prop) {
-    	try {
+    private void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
     	PropertyTypeDefinition propDef = prop.getDefinition();
 
         if (propDef.isMultiple()) {
@@ -125,10 +124,6 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
             Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
             prop.setValue(value);
         }
-    	} catch (Throwable t) {
-    		System.out.println(t.getMessage());
-    		t.printStackTrace();
-    	}
     }
 
 }

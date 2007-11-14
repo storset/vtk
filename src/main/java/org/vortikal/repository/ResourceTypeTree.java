@@ -114,5 +114,5 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
      */
     public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
         PropertyTypeDefinition definition);
-    
+
 }

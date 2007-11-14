@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
@@ -57,11 +58,11 @@ public class ResourceEditController extends SimpleFormController {
     private Repository repository;
     private List<Service> tooltipServices;
     //private List<PropertyTypeDefinition> propDefs;
-    private EditablePropertyProvider editPropertyProvider;
+    private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
     
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-        if (!((ResourceCommand) command).getErrors().isEmpty()) {
+        if (((ResourceCommand) command).hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             return new ModelAndView(getFormView(), model);
@@ -117,6 +118,14 @@ public class ResourceEditController extends SimpleFormController {
             return;
         }
         
+        if (c.hasErrors()) {
+            // Shouldn't happen!
+            for (PropertyTypeDefinition propDef : c.getErrors().keySet()) {
+                System.out.println(propDef.getName() + ": " + c.getError(propDef));
+            }
+            return;
+        }
+        
         Resource resource = c.getResource();
         
         if (c.isPropChange()) {
@@ -158,11 +167,5 @@ public class ResourceEditController extends SimpleFormController {
         }
         return tooltips;
     }
-
-
-
-	@Required public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {
-		this.editPropertyProvider = editPropertyProvider;
-	}
 
 }

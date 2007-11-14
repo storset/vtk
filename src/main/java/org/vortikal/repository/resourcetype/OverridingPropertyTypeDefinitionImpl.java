@@ -183,4 +183,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.createProperty();
     }
 
+    public boolean isContent() {
+        return this.overriddenPropDef.isContent();
+    }
+
 }

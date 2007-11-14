@@ -15,7 +15,6 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="articleTitlePropDef" />
         <ref bean="introductionPropDef" />
         <ref bean="introductionImagePropDef" />
         <ref bean="mediaReferencePropDef" />
@@ -60,14 +59,8 @@
     <property name="checkExistenceOnly" value="false" />
   </bean>
 
-  <bean id="articleTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="name" value="articleTitle"/>
-    <property name="type" value="STRING"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
-  </bean>
-
   <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="introduction"/>
     <property name="type" value="HTML"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -75,6 +68,7 @@
   </bean>
 
   <bean id="introductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="picture"/>
     <property name="type" value="IMAGE_REF"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -82,6 +76,7 @@
   </bean>
 
   <bean id="mediaReferencePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="media-ref"/>
     <property name="type" value="IMAGE_REF"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -89,6 +84,7 @@
   </bean>
 
   <bean id="authorsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="authors"/>
     <property name="type" value="STRING"/>
     <property name="multiple" value="true"/>
@@ -97,6 +93,7 @@
   </bean>
 
   <bean id="publishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="published-date"/>
     <property name="type" value="DATE"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -104,6 +101,7 @@
   </bean>
 
   <bean id="startDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="start-date"/>
     <property name="type" value="DATE"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -111,6 +109,7 @@
   </bean>
 
   <bean id="endDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="end-date"/>
     <property name="type" value="DATE"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -118,6 +117,7 @@
   </bean>
 
   <bean id="locationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
     <property name="name" value="location"/>
     <property name="type" value="STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>

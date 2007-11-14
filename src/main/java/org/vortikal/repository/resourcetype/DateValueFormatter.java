@@ -45,14 +45,14 @@ public class DateValueFormatter implements ValueFormatter {
 
     private String defaultDateFormatKey = "long";
     private Locale defaultLocale = new Locale("en");
-    
+
     private Map<String, FastDateFormat> namedDateFormats = new HashMap<String, FastDateFormat>();
     private Set<String> recognizedLocales = new HashSet<String>();
 
     public DateValueFormatter() {
         this.recognizedLocales.add("no");
         this.recognizedLocales.add("en");
-        
+
         this.namedDateFormats.put("short_en", FastDateFormat.getInstance("MMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("short_no", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
         this.namedDateFormats.put("long_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm a", new Locale("en")));
@@ -65,15 +65,15 @@ public class DateValueFormatter implements ValueFormatter {
     }
 
     public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
-        
+
         if (value.getType() != PropertyType.Type.DATE) {
             throw new IllegalValueTypeException(PropertyType.Type.DATE, value.getType());
         }
-        
+
         if (format == null) {
             format = this.defaultDateFormatKey;
         }
-        
+
         FastDateFormat f = null;
 
         if (locale == null || !recognizedLocales.contains(locale.getLanguage())) {
@@ -102,6 +102,16 @@ public class DateValueFormatter implements ValueFormatter {
 
     }
 
+    private static final String[] FALLBACK_DATE_FORMATS = new String[] {        
+        "dd.MM.yyyy HH:mm:ss",
+        "dd.MM.yyyy HH:mm",
+        "dd.MM.yyyy",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd HH:mm",
+        "yyyy-MM-dd"
+    };
+
+
     public Value stringToValue(String string, String format, Locale locale) throws IllegalArgumentException {
         if (format == null) {
             format = this.defaultDateFormatKey;
@@ -109,9 +119,9 @@ public class DateValueFormatter implements ValueFormatter {
         if (locale == null || !recognizedLocales.contains(locale.getLanguage())) {
             locale = this.defaultLocale;
         }
-    
+
         FastDateFormat fdf = this.namedDateFormats.get(format + "_" + locale.getLanguage());
-        
+
         if (fdf == null) {
             fdf = this.namedDateFormats.get(format);
         }
@@ -120,12 +130,19 @@ public class DateValueFormatter implements ValueFormatter {
             format = fdf.getPattern();
             locale = fdf.getLocale();
         }
-        
+
         SimpleDateFormat sdf = new SimpleDateFormat(format, locale);
         Date date;
         try {
             date = sdf.parse(string);
         } catch (ParseException e) {
+            for (String fallbackFormat : FALLBACK_DATE_FORMATS) {
+                try {
+                    SimpleDateFormat fsdf = new SimpleDateFormat(fallbackFormat, Locale.getDefault());
+                    date = fsdf.parse(string);
+                    return new Value(date);
+                } catch (ParseException t) { }
+            }
             throw new IllegalArgumentException("Unable to parse to date value from '" + string + 
                     "' object using string format '" + format + "'", e);
         }

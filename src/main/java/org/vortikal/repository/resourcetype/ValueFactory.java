@@ -52,9 +52,9 @@ public class ValueFactory {
         "dd.MM.yyyy HH:mm:ss",
         "dd.MM.yyyy HH:mm",
         "dd.MM.yyyy",
-        "yyyy-MM-dddd HH:mm:ss",
-        "yyyy-MM-dddd HH:mm",
-        "yyyy-MM-dddd"
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd HH:mm",
+        "yyyy-MM-dd"
     };
 
     private Log logger = LogFactory.getLog(this.getClass());

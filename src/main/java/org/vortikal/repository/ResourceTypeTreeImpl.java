@@ -55,7 +55,6 @@ import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -345,7 +344,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
     public String getResourceTypeTreeAsString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         printResourceTypes(sb, 0, this.rootResourceTypeDefinition);
         printMixinTypes(sb);
         return sb.toString();
@@ -585,7 +584,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
         
 
-    private void printMixinTypes(StringBuffer sb) {
+    private void printMixinTypes(StringBuilder sb) {
 
         sb.append("\n");
         for (Iterator i = this.mixins.iterator(); i.hasNext();) {
@@ -596,7 +595,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
     }
 
-    private void printResourceTypes(StringBuffer sb, int level,
+    private void printResourceTypes(StringBuilder sb, int level,
             ResourceTypeDefinition def) {
 
         if (level > 0) {
@@ -638,7 +637,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
     }
 
-    private void printPropertyDefinitions(StringBuffer sb, int level, PropertyTypeDefinition[] definitions) {
+    private void printPropertyDefinitions(StringBuilder sb, int level, PropertyTypeDefinition[] definitions) {
         if (definitions.length > 0) {
             for (PropertyTypeDefinition definition: definitions) {
                 sb.append("  ");

@@ -136,8 +136,8 @@ public class DocumentMapperImpl implements DocumentMapper {
             
             // The field(s) used for storing the property value(s) (in binary form) 
             Field[] storedFields = getStoredFieldsFromProperty(property);
-            for (int u=0; u < storedFields.length; u++) {
-               doc.add(storedFields[u]);
+            for (Field storedField: storedFields) {
+                doc.add(storedField);
             }
         }
         

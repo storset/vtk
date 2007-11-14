@@ -190,14 +190,15 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         for (Property suppliedProp: resource.getProperties()) {
             PropertyTypeDefinition propDef = suppliedProp.getDefinition();
             
-            if (propDef == null) {
-                // Dead property, preserve
+            ResourceTypeDefinition[] rts =
+                    resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
+            
+            if (rts == null) {
+                // Dead property, no resource type connected to it.
                 newResource.addProperty(suppliedProp);
             } else if (newResource.getProperty(propDef) == null) {
-                // If it hasn't been set for the new resource, check if zombie
-                ResourceTypeDefinition[] rts = 
-                    resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);
 
+                // If it hasn't been set for the new resource, check if zombie
                 boolean zombie = true;
                 for (ResourceTypeDefinition definition: rts) {
                     if (newResource.isOfType(definition)) {

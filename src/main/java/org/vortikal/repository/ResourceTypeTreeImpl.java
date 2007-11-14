@@ -326,10 +326,22 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
 
     public PrimaryResourceTypeDefinition[] getPrimaryResourceTypesForPropDef(
             PropertyTypeDefinition definition) {
+
+        Map<String, Set<PrimaryResourceTypeDefinition>> nsPropMap =
+                this.propDefPrimaryTypesMap.get(definition.getNamespace());
         
-        Set<PrimaryResourceTypeDefinition> rts = 
-            this.propDefPrimaryTypesMap.get(definition.getNamespace()).get(definition.getName());
-        return rts.toArray(new PrimaryResourceTypeDefinition[rts.size()]);
+        if (nsPropMap != null) {
+            Set<PrimaryResourceTypeDefinition> rts 
+                = nsPropMap.get(definition.getName());
+            
+            if (rts != null){
+                return rts.toArray(new PrimaryResourceTypeDefinition[rts.size()]);
+            }
+        }
+        
+        // No resource type definitions found for the given property type definition
+        // (dead prop)
+        return null;
     }
 
     public String getResourceTypeTreeAsString() {

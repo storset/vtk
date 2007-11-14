@@ -193,7 +193,7 @@
 
                 YAHOO.resource.${name2}.calendar.cal1.selectEvent.subscribe(function(type, dates) {
                    var date = this._toDate(dates[0][0]);
-                   var dateStr = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+                   var dateStr = date.getYear() + '-' + date.getMonth() + '-' + date.getDate();
                    document.getElementById('resource.${name}').value = dateStr;
                 }, YAHOO.resource.${name2}.calendar.cal1, true);
 

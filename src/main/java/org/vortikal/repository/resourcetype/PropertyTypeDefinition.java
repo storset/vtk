@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Locale;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
@@ -53,6 +55,8 @@ public interface PropertyTypeDefinition {
     public Namespace getNamespace();
     
     public String getName();
+    
+    public String getLocalizedName(Locale locale);
 
     public Type getType();
     

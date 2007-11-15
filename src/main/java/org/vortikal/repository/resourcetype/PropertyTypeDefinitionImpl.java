@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
@@ -69,6 +70,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private boolean content = false;
 
+    private TypeLocalizationProvider typeNameProvider = null;
     
     public boolean isContent() {
         return this.content;
@@ -300,6 +302,18 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setValueFormatter(ValueFormatter valueFormatter) {
         this.valueFormatter = valueFormatter;
     }
-
+    
+    public void setTypeLocalizationProvider(
+                                TypeLocalizationProvider typeNameProvider) {
+        this.typeNameProvider = typeNameProvider;
+    }
+    
+    public String getLocalizedName(Locale locale) {
+        if (this.typeNameProvider != null) {
+            return this.typeNameProvider.getLocalizedPropertyName(this, locale);
+        } else {
+            return getName();
+        }
+    }
 
 }

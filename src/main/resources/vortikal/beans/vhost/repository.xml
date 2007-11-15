@@ -175,7 +175,18 @@
   </bean>
   
   <bean id="resourceTypeTree"
-        class="org.vortikal.repository.ResourceTypeTreeImpl" />
+        class="org.vortikal.repository.ResourceTypeTreeImpl" >
+    <property name="typeLocalizationProvider" ref="typeLocalizationProvider"/>
+  </bean>    
+
+  <bean id="typeLocalizationProvider" 
+    class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">
+    <property name="messageSource">
+      <bean class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="vortikal.i18n.resource-types"/>
+      </bean>
+    </property>
+  </bean>
 
   <bean id="contentRepresentationRegistry"
         class="org.vortikal.repository.content.ContentRepresentationRegistry" />

@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Locale;
+
 import org.vortikal.repository.Namespace;
 
 
@@ -38,6 +40,8 @@ public interface ResourceTypeDefinition {
     public String getQName();
     
     public String getName();
+    
+    public String getLocalizedName(Locale locale);
 
     public Namespace getNamespace();
 

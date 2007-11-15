@@ -49,6 +49,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.resourcetype.AbstractResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
@@ -58,6 +59,7 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.TypeLocalizationProvider;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 
 
@@ -66,7 +68,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     private static Log logger = LogFactory.getLog(ResourceTypeTreeImpl.class);
     
     private ApplicationContext applicationContext;
-    
     
     /**
      * The root of the resource type hierarchy
@@ -154,15 +155,17 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      * All primary resource type names (Supports unused getAllowedValues)
      */
     private String[] primaryResourceTypeNames;
-
+    
+    private TypeLocalizationProvider typeLocalizationProvider;
 
     public PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name) {
         Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
 
         if (map != null) {
             PropertyTypeDefinition propDef = map.get(name);
-            if (propDef != null) 
+            if (propDef != null) {
                 return propDef;
+            }
         }
 
         if (logger.isDebugEnabled()) {
@@ -435,6 +438,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 }
                 set.addAll(getDescendantsAndSelf(def));
             }
+            
+            // Inject localized type name provider
+            // XXX: I wanted to avoid having to explicitly configure the dependency for
+            //      every defined resource type ...
+            injectTypeLocalizationProvider(def);
         }
 
         
@@ -442,6 +450,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         for (MixinResourceTypeDefinition def: this.mixins) {
             this.resourceTypeNameMap.put(def.getName(), def);
             addNamespacesAndProperties(def);
+            
+            injectTypeLocalizationProvider(def);
         }
 
         mapPropertyDefinitionsToPrimaryTypes();
@@ -459,6 +469,22 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             // Add only _first_ occurence of property type definition
             if (encounteredIds.add(id)) {
                 propertyTypes.add(propDef);
+            }
+        }
+    }
+    
+    private void injectTypeLocalizationProvider(ResourceTypeDefinition def) {
+        AbstractResourceTypeDefinitionImpl defImpl
+            = (AbstractResourceTypeDefinitionImpl)def;
+        
+        defImpl.setTypeLocalizationProvider(this.typeLocalizationProvider);
+        
+        for (PropertyTypeDefinition propDef: def.getPropertyTypeDefinitions()) {
+            if (propDef instanceof PropertyTypeDefinitionImpl) {
+                PropertyTypeDefinitionImpl propDefImpl
+                    = (PropertyTypeDefinitionImpl)propDef;
+                propDefImpl.setTypeLocalizationProvider(
+                                            this.typeLocalizationProvider);
             }
         }
     }
@@ -669,5 +695,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         // XXX Not implemented, needs parameterized value formatter!
         return null;
     }
+
+    public void setTypeLocalizationProvider(
+            TypeLocalizationProvider typeLocalizationProvider) {
+        this.typeLocalizationProvider = typeLocalizationProvider;
+    }
+
 
 }

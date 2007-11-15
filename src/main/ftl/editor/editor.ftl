@@ -120,16 +120,17 @@
       }
     </script>
    -->
-
+    <#local locale = springMacroRequestContext.getLocale() />
     <#local keys = command.editableProperties />
     <#list keys as propDef>
+      <#local localizedName = propDef.getLocalizedName(locale) />
       <#local name = propDef.name />
       <#local value = command.getValue(propDef) />
       <#local type = propDef.type />
       <#local error = command.getError(propDef)?if_exists />
       
       
-      <p>${name} (${type})<#if error?exists> - ${error}</#if><br/> 
+      <p>${localizedName} (${type})<#if error?exists> - ${error}</#if><br/> 
       <#if type = 'HTML'>
         <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
         <@fck 'resource.${name}' />

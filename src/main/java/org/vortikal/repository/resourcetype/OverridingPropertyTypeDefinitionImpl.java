@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
@@ -76,6 +78,10 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
 
     public String getName() {
         return this.overriddenPropDef.getName();
+    }
+    
+    public String getLocalizedName(Locale locale) {
+        return this.overriddenPropDef.getLocalizedName(locale);
     }
 
     public NameChangePropertyEvaluator getNameModificationEvaluator() {

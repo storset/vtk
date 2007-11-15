@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
@@ -50,6 +52,8 @@ public abstract class AbstractResourceTypeDefinitionImpl
     private String name;
     private Namespace namespace;
     private PropertyTypeDefinition[] propertyTypeDefinitions = new PropertyTypeDefinitionImpl[0];
+    
+    private TypeLocalizationProvider typeLocalizationProvider; 
     
     public void afterPropertiesSet() {
         if (this.name == null) {
@@ -77,6 +81,15 @@ public abstract class AbstractResourceTypeDefinitionImpl
     public String getName() {
         return this.name;
     }
+    
+    public String getLocalizedName(Locale locale) {
+        if (this.typeLocalizationProvider != null) {
+            return this.typeLocalizationProvider.getLocalizedResourceTypeName(
+                                                                   this, locale);
+        } else {
+            return getName();
+        }
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -97,9 +110,13 @@ public abstract class AbstractResourceTypeDefinitionImpl
     public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
     }
+    
+    public void setTypeLocalizationProvider(TypeLocalizationProvider provider) {
+        this.typeLocalizationProvider = provider;
+    }
 
     public String toString() {
-        StringBuffer buffer = new StringBuffer(this.getClass().getName());
+        StringBuilder buffer = new StringBuilder(this.getClass().getName());
         buffer.append("[ namespace = ").append(this.namespace);
         buffer.append(", name = '").append(this.name).append("']");
         return buffer.toString();

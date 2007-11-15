@@ -70,7 +70,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private boolean content = false;
 
-    private TypeLocalizationProvider typeNameProvider = null;
+    private TypeLocalizationProvider typeLocalizationProvider = null;
     
     public boolean isContent() {
         return this.content;
@@ -304,13 +304,13 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
     
     public void setTypeLocalizationProvider(
-                                TypeLocalizationProvider typeNameProvider) {
-        this.typeNameProvider = typeNameProvider;
+                                TypeLocalizationProvider typeLocalizationProvider) {
+        this.typeLocalizationProvider = typeLocalizationProvider;
     }
     
     public String getLocalizedName(Locale locale) {
-        if (this.typeNameProvider != null) {
-            return this.typeNameProvider.getLocalizedPropertyName(this, locale);
+        if (this.typeLocalizationProvider != null) {
+            return this.typeLocalizationProvider.getLocalizedPropertyName(this, locale);
         } else {
             return getName();
         }

@@ -135,7 +135,7 @@
         <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
         <@fck 'resource.${name}' />
       <#elseif type = 'IMAGE_REF'>
-        <script language="JavaScript">
+        <script language="JavaScript"><!--
              var urlobj;
              var baseFolder = "${resourceContext.parentURI?html}";
              function BrowseServer(obj)
@@ -171,7 +171,7 @@
                          document.getElementById(previewobj).innerHTML = 
                          '<img src="' + url + '" width="100" height="100" />';
                      }
-             }
+             } //-->
         </script>
         <input type="text" id="resource.${name}" onblur="PreviewImage(id);" name="resource.${name}" value="${value}" /> 
         <button type="button" onclick="BrowseServer('resource.${name}');">Browse images</button>
@@ -182,30 +182,94 @@
         </div>
       </p> 
       <#elseif type = 'DATE'>
-        <#local name2 = 'cal_' + propDef_index />
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" />
-        <a href="#" onclick="YAHOO.resource.${name2}.calendar.init()">kalender</a>
+      <p>
+        <#local dateVal = value />
+
+        <#if value != "">
+          <#local d = command.resource.getProperty(propDef) />
+
+          <#local dateVal = d.getFormattedValue('yyyy-MM-dd HH:mm:ss', springMacroRequestContext.getLocale()) />
+          <#local year = d.getDateValue()?string("yyyy") />
+          <#local month = d.getDateValue()?string("MM") />
+          <#local jsmonth = ((d.getDateValue()?string("MM"))?number - 1)?string />
+          <#local date = d.getDateValue()?string("dd") />
+        </#if>
+
+        <#local uniqueName = 'cal_' + propDef_index />
+
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()" />
+        <a href="javascript:void(0);" onclick="${uniqueName}_toggle()">calendar</a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
-        <script language="JavaScript">
-          YAHOO.namespace("resource.${name2}.calendar");
 
-          YAHOO.resource.${name2}.calendar.init = function() {
-                YAHOO.resource.${name2}.calendar.cal1 = new YAHOO.widget.Calendar("cal1","resource.${name}.calendar"); 
+        <script language="JavaScript"><!--
 
-                YAHOO.resource.${name2}.calendar.cal1.selectEvent.subscribe(function(type, dates) {
-                   var date = this._toDate(dates[0][0]);
-                   var dateStr = date.getYear() + '-' + date.getMonth() + '-' + date.getDate();
-                   document.getElementById('resource.${name}').value = dateStr;
-                }, YAHOO.resource.${name2}.calendar.cal1, true);
-
-	        YAHOO.resource.${name2}.calendar.cal1.render(); 
+          YAHOO.namespace("resource.${uniqueName}.calendar");
+          var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
+          if (!cal1) {
+             cal1 = YAHOO.resource.${uniqueName}.calendar.cal1 = 
+             new YAHOO.widget.Calendar("cal1", "resource.${name}.calendar");
           }
-        </script>
 
-        <script language="JavaScript">
-          
-        </script>
+         <#if value != "">
+           cal1.cfg.setProperty("selected", "${jsmonth}/${date}/${year}", false);
+           cal1.cfg.setProperty("pagedate", "${jsmonth}/${year}", false);
+         </#if>
 
+          cal1.selectEvent.subscribe( function(type, dates) {
+             var date = this._toDate(dates[0][0]);
+             var year = date.getFullYear();
+             var monthNumber = date.getMonth() + 1;
+             var month = monthNumber < 10 ? '0' + monthNumber  : '' + monthNumber;
+             var day = date.getDate(); if (day < 10 ) day = '0' + day;
+             var dateStr =  year + '-' + month + '-' + day + ' 00:00:00';
+
+             document.getElementById('resource.${name}').value = dateStr;
+             YAHOO.resource.${uniqueName}.calendar.cal1.hide();
+          }, cal1, true);
+
+
+          cal1.syncDates = function() {
+             var input = document.getElementById('resource.${name}').value;
+             var regexp = /(\d\d\d\d)\-(\d\d)-(\d\d)/;
+             var match = regexp.exec(input);
+             
+             if (match) {
+                var d = new Date();
+                d.setYear(match[1]);
+                d.setMonth(match[2]);
+                d.setDate(match[3]);
+
+                this.cfg.setProperty("selected", d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear(), false);
+                this.cfg.setProperty("pagedate", d.getMonth() + "/" + d.getFullYear(), false);
+                this.render();
+             }
+          }
+
+          var ${uniqueName}_hidden = true;
+
+          function ${uniqueName}_show() {
+             var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
+             cal1.render();
+             cal1.show();
+             ${uniqueName}_hidden = false;
+          }
+
+          function ${uniqueName}_hide() {
+             var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
+             cal1.hide();
+             ${uniqueName}_hidden = true;
+          }
+
+          function ${uniqueName}_toggle() {
+             if (${uniqueName}_hidden) {
+                ${uniqueName}_show();
+             } else {
+                ${uniqueName}_hide();
+             }
+          }
+
+          //-->
+        </script>
       </p> 
       <#else>
         <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 

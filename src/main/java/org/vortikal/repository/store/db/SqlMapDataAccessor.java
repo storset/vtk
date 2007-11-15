@@ -521,6 +521,17 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         }
         storeProperties(created);
 
+        if (newResource.isInheritedAcl()) {
+            int nearestAclNode = findNearestACL(newResource.getURI());
+            parameters = new HashMap<String, Object>();
+            parameters.put("uri", newResource.getURI());
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
+                               newResource.getURI(), SQL_ESCAPE_CHAR));
+            parameters.put("inheritedFrom", nearestAclNode);
+
+            sqlMap = getSqlMap("updateAclInheritedFromByUri");
+            getSqlMapClientTemplate().update(sqlMap, parameters);
+        }
     }
     
 

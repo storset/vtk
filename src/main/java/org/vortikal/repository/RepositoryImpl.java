@@ -354,6 +354,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             destParent = this.resourceHelper.contentModification(destParent, principal);
 
             ResourceImpl newResource = src.createCopy(destUri);
+
+            newResource.setAcl(src.getAcl());
+            newResource.setInheritedAcl(src.isInheritedAcl());
+            newResource.setAclInheritedFrom(src.getAclInheritedFrom());
+
             newResource = this.resourceHelper.nameChange(newResource, principal);
 
             this.dao.move(src, newResource);

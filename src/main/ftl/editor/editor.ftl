@@ -164,7 +164,6 @@
              }
 
              function previewImage(urlobj) {
-                     alert('preview: ' + urlobj);
                      var previewobj = urlobj + '.preview';
                      var url = document.getElementById(urlobj).value;
                      if (url) {

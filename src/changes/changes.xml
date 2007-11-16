@@ -8,7 +8,13 @@
 
   <body>
 
-    <release version="0.3.11.1" date="2007-10-11" description="Release 0.3.11">
+    <release version="0.3.11.2-SNAPSHOT" date="In SVN" description="Release 0.3.11.2">
+      <action type="fix">
+        Fix missing ACL inheritance update when moving resources.
+      </action>
+    </release>
+
+    <release version="0.3.11.1" date="2007-10-11" description="Release 0.3.11.1">
       <action type="fix">
         Fix for locale-based date formatting.
       </action>

@@ -231,12 +231,12 @@
 
           cal1.syncDates = function() {
              var input = document.getElementById('resource.${name}').value;
-             var regexp = /(\d\d\d\d)\-(\d\d)-(\d\d)/;
+             var regexp = /(\d+)\-(\d\d)-(\d\d)/;
              var match = regexp.exec(input);
              
              if (match) {
                 var d = new Date();
-                d.setYear(match[1]);
+                d.setFullYear(match[1]);
                 d.setMonth(match[2]);
                 d.setDate(match[3]);
 

@@ -127,10 +127,10 @@
       <#local name = propDef.name />
       <#local value = command.getValue(propDef) />
       <#local type = propDef.type />
-      <#local error = command.getError(propDef)?if_exists />
+      <#local error = command.getError(propDef)?default('') />
       
       
-      <p>${localizedName} (${type})<#if error?exists> - ${error}</#if><br/> 
+      <p>${localizedName} <#if error != ""> ${error}</#if><br/> 
       <#if type = 'HTML'>
         <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
         <@fck 'resource.${name}' />
@@ -138,15 +138,14 @@
         <script language="JavaScript"><!--
              var urlobj;
              var baseFolder = "${resourceContext.parentURI?html}";
-             function BrowseServer(obj)
-             {
+             function browseServer(obj) {
                      urlobj = obj;
-                     OpenServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
+                     openServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
                              screen.width * 0.7,
                              screen.height * 0.7 ) ;
              }
-             function OpenServerBrowser( url, width, height )
-             {
+
+             function openServerBrowser( url, width, height ) {
                      var iLeft = (screen.width  - width) / 2 ;
                      var iTop  = (screen.height - height) / 2 ;
                      var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
@@ -156,25 +155,28 @@
                      sOptions += ",top=" + iTop ;
                      var oWindow = window.open( url, "BrowseWindow", sOptions ) ;
              }
-             function SetUrl( url, width, height, alt )
-             {
+
+             // Callback from the FCKEditor image browser:
+             function SetUrl( url, width, height, alt ) {
                      document.getElementById(urlobj).value = url ;
                      oWindow = null;
-                     PreviewImage();
+                     previewImage(urlobj);
              }
 
-             function PreviewImage()
-             {
-                     var previewobj = '' + urlobj + '.preview';
+             function previewImage(urlobj) {
+                     alert('preview: ' + urlobj);
+                     var previewobj = urlobj + '.preview';
                      var url = document.getElementById(urlobj).value;
                      if (url) {
                          document.getElementById(previewobj).innerHTML = 
                          '<img src="' + url + '" width="100" height="100" />';
+                     } else {
+                         document.getElementById(previewobj).innerHTML = '';
                      }
              } //-->
         </script>
-        <input type="text" id="resource.${name}" onblur="PreviewImage(id);" name="resource.${name}" value="${value}" /> 
-        <button type="button" onclick="BrowseServer('resource.${name}');">Browse images</button>
+        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value}" /> 
+        <button type="button" onclick="browseServer('resource.${name}');">Browse images</button>
         <div id="resource.${name}.preview">
           <#if value != ''>
             <img src="${value}" width="100" height="100" />
@@ -224,7 +226,7 @@
              var dateStr =  year + '-' + month + '-' + day + ' 00:00:00';
 
              document.getElementById('resource.${name}').value = dateStr;
-             YAHOO.resource.${uniqueName}.calendar.cal1.hide();
+             ${uniqueName}_hide();
           }, cal1, true);
 
 

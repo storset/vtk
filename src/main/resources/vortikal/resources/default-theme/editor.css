@@ -33,3 +33,35 @@ iframe {
 label {
         display: block; 
 }
+
+
+
+/* START: YUI calendar */
+
+.yui-calcontainer{
+   font-size: 11px; 
+   position:absolute; 
+   bottom: -1.5em; 
+   left: 25em; 
+   background-color:#f7f7f7;
+   padding-top: 5px;
+}
+
+a.calnavleft{
+  left: 0 !important;
+}
+
+a.calnavright{
+  right: 0 !important;
+}
+
+td.calcell.oom{
+  background-color:#eee !important;
+  color: #666 !important;
+}
+
+.calheader {
+  margin-bottom: 0 !important;
+}
+
+/* END: YUI calendar */

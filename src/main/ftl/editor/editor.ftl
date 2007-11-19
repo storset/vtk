@@ -134,15 +134,26 @@
       <#if type = 'HTML'>
         <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
         <@fck 'resource.${name}' />
+      <#elseif name = 'media-ref'><#-- XXX -->
+        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value}" /> 
+        <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button>
+        
       <#elseif type = 'IMAGE_REF'>
         <script language="JavaScript"><!--
              var urlobj;
              var baseFolder = "${resourceContext.parentURI?html}";
-             function browseServer(obj) {
+             function browseServer(obj, type) {
                      urlobj = obj;
-                     openServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
+                     if (type) {
+                        openServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=' + type + '&Connector=${fckBrowse.url.pathRepresentation}',
                              screen.width * 0.7,
                              screen.height * 0.7 ) ;
+
+                     } else {
+                        openServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
+                             screen.width * 0.7,
+                             screen.height * 0.7 ) ;
+                     }
              }
 
              function openServerBrowser( url, width, height ) {
@@ -165,12 +176,14 @@
 
              function previewImage(urlobj) {
                      var previewobj = urlobj + '.preview';
-                     var url = document.getElementById(urlobj).value;
-                     if (url) {
-                         document.getElementById(previewobj).innerHTML = 
-                         '<img src="' + url + '" width="100" height="100" />';
-                     } else {
-                         document.getElementById(previewobj).innerHTML = '';
+                     if (document.getElementById(previewobj)) {
+                        var url = document.getElementById(urlobj).value;
+                        if (url) {
+                            document.getElementById(previewobj).innerHTML = 
+                            '<img src="' + url + '" width="100" height="100" />';
+                        } else {
+                            document.getElementById(previewobj).innerHTML = '';
+                        }
                      }
              } //-->
         </script>

@@ -29,7 +29,7 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="xhtml10-type" />    
     <property name="value" value="article" />
-    <property name="checkExistenceOnly" value="false" />
+    <property name="checkExistenceOnly" value="true" />
   </bean>
 
   <bean id="eventResourceTypeDefinition"

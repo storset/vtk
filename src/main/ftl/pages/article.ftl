@@ -10,10 +10,19 @@
   -
   -->
 
+<#import "/spring.ftl" as spring />
+
 <#function propValue propName>
 <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
 <#if prop != "">
-  <#return prop.getFormattedValue() />
+  <#local type = prop.definition.type />
+  <#if type = 'DATE'>
+    <#local locale = springMacroRequestContext.getLocale() />
+    <#return prop.getFormattedValue("long", locale) />
+  <#else>
+    <#return prop.formattedValue />
+  </#if>
+
 </#if>
 <#return "" />
 </#function>

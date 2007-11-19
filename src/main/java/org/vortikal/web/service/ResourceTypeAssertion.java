@@ -44,12 +44,14 @@ import org.vortikal.security.Principal;
  *   <li><code>resourceTypeDefinition</code> - the {@link
  *   ResourceTypeDefinition resource type} to match
  *   <li><code>invert</code> - whether to invert the assertion
+ *   <li><code>exactMatch</code> - set to true for equals instead of ofType asserting
  * </ul>
  */
 public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
 
     private ResourceTypeDefinition resourceTypeDefinition;
     private boolean invert = false;
+    private boolean exactMatch = false;
     
     public void setResourceTypeDefinition(ResourceTypeDefinition resourceTypeDefinition) {
         this.resourceTypeDefinition = resourceTypeDefinition;
@@ -71,10 +73,20 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
         if (resource == null)
             return this.invert;
 
-        if (this.invert)
-            return !resource.isOfType(this.resourceTypeDefinition);
+        
+        
+        boolean match = false;
 
-        return resource.isOfType(this.resourceTypeDefinition);
+        if (this.exactMatch) {
+            match = (resource.getResourceTypeDefinition().equals(this.resourceTypeDefinition));
+        } else {
+            match = resource.isOfType(this.resourceTypeDefinition);
+        }
+        
+        if (this.invert)
+            return !match;
+
+        return match;
     }
     
 
@@ -86,6 +98,10 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
         sb.append("; resourceType = ").append(this.resourceTypeDefinition);
         sb.append("; invert = ").append(this.invert);
         return sb.toString();
+    }
+
+    public void setExactMatch(boolean exactMatch) {
+        this.exactMatch = exactMatch;
     }
 
 

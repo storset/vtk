@@ -34,7 +34,6 @@
   <title>About</title>
 </head>
 <body>
-
 <#assign resource = resourceContext.currentResource />
 <#assign defaultHeader = vrtx.getMsg("resource.metadata.about", "About this resource") />
 
@@ -109,12 +108,10 @@
         </td>
       </tr>
 
-
       <!-- ResourceType -->
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("property.resourceType", "Resource type")
-             value = vrtx.getMsg("property.resourceType." + resource.resourceType, 
-                                 resource.resourceType) />
+             value = resourceTypeName() />
 
       <!-- Web address -->
       <#assign url><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
@@ -225,3 +222,9 @@
 
 </body>
 </html>
+
+<#function resourceTypeName>
+    <#local locale = springMacroRequestContext.getLocale() />
+    <#local name = resource.resourceTypeDefinition.getLocalizedName(locale) />
+    <#return name />
+</#function>

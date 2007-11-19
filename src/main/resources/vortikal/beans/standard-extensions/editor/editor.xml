@@ -55,7 +55,7 @@
   </bean>
 
 
-  <bean id="editor.editService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="editorService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="editor.service" />
     <property name="order" value="-9800" />
     <property name="assertions">

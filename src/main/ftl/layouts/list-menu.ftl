@@ -14,10 +14,10 @@
          "tabs":"vrtx-tab-menu" } />
 
 <#-- RECURSIVE MENU BUILD -->
-<#if menu?exists>
-<ul class="${cssClassMap[menu.label]}">
-  <@listMenu menu=menu />
-</ul>
+<#if menu?exists && menu.items?has_content>
+  <ul class="${cssClassMap[menu.label]}">
+    <@listMenu menu=menu />
+  </ul>
 </#if>
 
 <#-- MACROS: -->

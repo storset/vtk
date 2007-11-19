@@ -2,13 +2,11 @@
 
 <#if loginURL?exists>
 <div class="vrtx-login">
-  (&nbsp;<a href="${loginURL?html}"><@vrtx.msg code="decorating.authenticationComponent.login"
-               default="log in" /></a>&nbsp;)
+  ( <a href="${loginURL?html}"><@vrtx.msg code="decorating.authenticationComponent.login" default="Log in"/></a> )
 </div>
 <#elseif logoutURL?exists>
 <div class="vrtx-logout">
   <span class="vrtx-user">${principal.name?html}</span>
-  (&nbsp;<a href="${logoutURL?html}"><@vrtx.msg code="decorating.authenticationComponent.logout"
-               default="log in" /></a>&nbsp;)
+  ( <a href="${logoutURL?html}"><@vrtx.msg code="decorating.authenticationComponent.logout" default="Log out"/></a> )
 </div>
 </#if>

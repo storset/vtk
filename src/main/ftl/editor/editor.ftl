@@ -217,7 +217,7 @@
         <#local uniqueName = 'cal_' + propDef_index />
 
         <input type="text" id="resource.${name}" name="resource.${name}" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        <a href="javascript:void(0);" onclick="${uniqueName}_toggle()">calendar</a>
+        <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
 
         <script type="text/javascript"><!--

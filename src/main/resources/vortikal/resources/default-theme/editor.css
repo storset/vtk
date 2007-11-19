@@ -32,17 +32,31 @@ iframe {
 
 label {
         display: block; 
+       margin-bottom: .2em;
 }
 
 
 
 /* START: YUI calendar */
 
+a.calendar {
+  width: 19px;
+  height: 19px;
+  background: url(calendar.png) no-repeat 0 0;
+  text-decoration: none;
+}
+
+a.calendar span {
+  visibility:hidden;
+}
+
+
 .yui-calcontainer{
    font-size: 11px; 
    position:absolute; 
-   bottom: -1.5em; 
-   left: 25em; 
+   float: none;
+   left: 22em;
+   margin-top: -16em; 
    background-color:#f7f7f7;
    padding-top: 5px;
 }

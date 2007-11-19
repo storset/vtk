@@ -10,10 +10,17 @@
   -
   -->
 
-<#assign title = "Missing title" />
-<#assign titleProp = resource.getPropertyByPrefix("", "userTitle")?if_exists />
-<#if titleProp?exists>
-  <#assign title = titleProp.getFormattedValue() />
+<#function propValue propName>
+<#local prop = resource.getPropertyByPrefix("", propName)?default("") />
+<#if prop != "">
+  <#return prop.getFormattedValue() />
+</#if>
+<#return "" />
+</#function>
+
+<#assign title = propValue("userTitle") />
+<#if title == "">
+  <#assign title = "Missing title" />
 </#if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -53,29 +60,29 @@
   <body>
     <h1>${title}</h1>
 
-    <#assign introductionProp = resource.getPropertyByPrefix("", "introduction")?if_exists />
-    <#if introductionProp?exists>
+    <#assign introduction = propValue("introduction") />
+    <#if introduction != "">
       <div class="introduction">
-        ${introductionProp.getFormattedValue()}
+        ${introduction}
       </div>
     </#if>
 
-    <#assign authorsProp = resource.getPropertyByPrefix("", "authors")?if_exists />
-    <#assign publishedProp = resource.getPropertyByPrefix("", "published-date")?if_exists />
+    <#assign authors = propValue("authors") />
+    <#assign published = propValue("published-date") />
 <div class="byline">
-    <#if authorsProp?exists && publishedProp?exists>
-      Av ${authorsProp.getFormattedValue()} <#--<br />${publishedProp.getFormattedValue()?if_exists}-->
-    <#elseif authorsProp?exists>
-      Av ${authorsProp.getFormattedValue()}
-    <#elseif publishedProp?exists>
-      ${publishedProp.getFormattedValue()?if_exists}
+    <#if authors != "" && published != "">
+      Av ${authors} <br />${published}
+    <#elseif authors != "">
+      Av ${authors}
+    <#elseif published != "">
+      ${published}
     </#if>
 </div>
-        <#assign introductionImageProp = resource.getPropertyByPrefix("", "picture")?if_exists />
-        <#if introductionImageProp?exists>
-          <img class="introduction" src="${introductionImageProp.getFormattedValue()}" alt="ingressbilde" />
+        <#assign introductionImage = propValue("introduction-image") />
+        <#if introductionImage != "">
+          <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
         </#if>
-<div class="bodyText">
+        <div class="bodyText">
     ${resourceString}
 </div>
   </body>

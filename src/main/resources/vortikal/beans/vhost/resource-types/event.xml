@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="eventResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="event"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="articleResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="isEventAssertion" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="startDatePropDef" />
+        <ref bean="endDatePropDef" />
+        <ref bean="locationPropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="isEventAssertion" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="xhtml10-type" />    
+    <property name="value" value="event" />
+    <property name="checkExistenceOnly" value="false" />
+  </bean>
+
+  <bean id="startDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
+    <property name="name" value="start-date"/>
+    <property name="type" value="DATE"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="endDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
+    <property name="name" value="end-date"/>
+    <property name="type" value="DATE"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="locationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="content" value="true" />
+    <property name="name" value="location"/>
+    <property name="type" value="STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+

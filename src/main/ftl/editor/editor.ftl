@@ -132,15 +132,17 @@
       <#local error = command.getError(propDef)?default('') />
       
       
-      <div class="${name}"><label for="resource.${name}">${localizedName}</label> 
-      <#if error != ""><span class="error">${error}</span>
-      </#if> 
+      <div class="${name}">
+        <label for="resource.${name}">${localizedName}</label> 
+      <#if error != ""><span class="error">${error}</span></#if> 
+
       <#if type = 'HTML'>
-        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60">${value?html}</textarea></div>
+        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
+
       <#elseif name = 'media-ref'><#-- XXX -->
         <input type="text" id="resource.${name}"  name="resource.${name}" value="${value}"> 
-        <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button></div>
+        <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button>
         
       <#elseif type = 'IMAGE_REF'>
         <script type="text/javascript"><!--
@@ -198,9 +200,8 @@
             <img src="${value}" width="100" height="100">
           </#if>
         </div>
-      </div> 
       <#elseif type = 'DATE'>
-      <div class="${name}">
+
         <#local dateVal = value />
 
         <#if value != "">
@@ -288,10 +289,10 @@
 
           //-->
         </script>
-      </div> 
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}"></div> 
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}">
       </#if>
+    </div>
     </#list>
 
 

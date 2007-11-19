@@ -29,3 +29,7 @@ input, textarea, iframe {
 iframe {
         border: 1px solid #ddd;
 }
+
+label {
+        display: block; 
+}

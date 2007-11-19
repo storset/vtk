@@ -59,7 +59,7 @@
     </script>
 
     <!-- Yahoo YUI library: -->
-    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
+    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css">
     <script type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
 
@@ -70,16 +70,18 @@
       <div class="properties">
         <@handleProps />
       </div>
-      <br/>
+
       <div class="html-content">
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.content?html}</textarea>
        <@fck 'resource.content' true />
 
        </div>
       <#-- div class="properties"></div -->
+
       <div class="save-cancel">
-       <input type="submit" onClick="performSave();" name="save" value="Lagre" />
-       <input type="submit" onClick="performSave();" name="cancel" value="Avbryt" />
+       <input type="submit" onClick="performSave();" name="save" value="Lagre">
+       <input type="submit" onClick="performSave();" name="cancel" value="Avbryt">
+
         <#if command.tooltips?exists>
           <#list command.tooltips as tooltip>
            <div class="contextual-help"><a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
@@ -97,7 +99,7 @@
 
 <#macro handleProps>
   <#--
-    <script language="JavaScript">
+    <script type="text/javascript">
       window.onbeforeunload = confirmExit;
 
       function propChange() {
@@ -130,16 +132,18 @@
       <#local error = command.getError(propDef)?default('') />
       
       
-      <div class="${name}">${localizedName} <#if error != ""> ${error}</#if><br/> 
+      <div class="${name}"><label for="resource.${name}">${localizedName}</label> 
+      <#if error != ""><span class="error">${error}</span>
+      </#if> 
       <#if type = 'HTML'>
-        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></div>
+        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60">${value?html}</textarea></div>
         <@fck 'resource.${name}' />
       <#elseif name = 'media-ref'><#-- XXX -->
-        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value}" /> 
-        <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button>
+        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value}"> 
+        <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button></div>
         
       <#elseif type = 'IMAGE_REF'>
-        <script language="JavaScript"><!--
+        <script type="text/javascript"><!--
              var urlobj;
              var baseFolder = "${resourceContext.parentURI?html}";
              function browseServer(obj, type) {
@@ -180,18 +184,18 @@
                         var url = document.getElementById(urlobj).value;
                         if (url) {
                             document.getElementById(previewobj).innerHTML = 
-                            '<img src="' + url + '" width="100" height="100" />';
+                            '<img src="' + url + '" width="100" height="100">';
                         } else {
                             document.getElementById(previewobj).innerHTML = '';
                         }
                      }
              } //-->
         </script>
-        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value}" /> 
+        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value}"> 
         <button type="button" onclick="browseServer('resource.${name}');">Browse images</button>
         <div id="resource.${name}.preview">
           <#if value != ''>
-            <img src="${value}" width="100" height="100" />
+            <img src="${value}" width="100" height="100">
           </#if>
         </div>
       </div> 
@@ -211,11 +215,11 @@
 
         <#local uniqueName = 'cal_' + propDef_index />
 
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()" />
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <a href="javascript:void(0);" onclick="${uniqueName}_toggle()">calendar</a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
 
-        <script language="JavaScript"><!--
+        <script type="text/javascript"><!--
 
           YAHOO.namespace("resource.${uniqueName}.calendar");
           var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
@@ -286,7 +290,7 @@
         </script>
       </div> 
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></div> 
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}"></div> 
       </#if>
     </#list>
 
@@ -306,7 +310,7 @@
       // var title = document.getElementById("title");
 
       // Title
-      // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>");
+      <#-- // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>"); -->
       document.getElementById('${content}').value = srcxhtml;
     }  
 

@@ -21,10 +21,10 @@
   </#if>
 </#macro>
 
-<#macro displayMenu menu>
-  <ul>
+<#macro displayMenu menu currentCount>
+  <ul class="resultset-${currentCount?html}">
     <#list menu.itemsSorted as item>
-      <li>
+      <li> 
         <@displayItem item=item />
       </li>
     </#list>
@@ -32,13 +32,15 @@
 </#macro>
 
 <#if subFolderMenu.size &gt; 0>
+  <#assign "counter" = 0>
   <#if subFolderMenu.resultSets?exists>
     <div class="vrtx-subfolder-menu">
       <#if subFolderMenu.title?exists>
         <div class="menu-title">${subFolderMenu.title?html}</div>
       </#if>
       <#list subFolderMenu.resultSets as resultSet>
-        <@displayMenu menu=resultSet />
+        <#assign counter = counter+1>
+        <@displayMenu menu=resultSet currentCount=counter />
       </#list>
     </div>
   </#if>

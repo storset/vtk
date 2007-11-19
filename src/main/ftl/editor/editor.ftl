@@ -25,8 +25,9 @@
     <@ping.ping url=pingURL['url'] interval=300 />
     <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
     <script type="text/javascript">
-      function newEditor(name)
+      function newEditor(name, full)
       {
+        var fullPage = full != null ? full : false; 
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
 
@@ -44,7 +45,7 @@
 
 
          // Misc setup
-         fck.Config['FullPage'] = true;
+         fck.Config['FullPage'] = fullPage;
          fck.Config['ToolbarCanCollapse'] = false;
          fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
 
@@ -73,7 +74,7 @@
       <br/>
       <div style="padding: 7px; border: 1px solid #aaa;">
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.content?html}</textarea>
-       <@fck 'resource.content' />
+       <@fck 'resource.content' true />
 
        </div>
        <p>Noe tredje</p>
@@ -293,11 +294,11 @@
 
 </#macro>
 
-<#macro fck content>
+<#macro fck content fullpage=false>
     <script type="text/javascript">
       var needToConfirm = true;
 
-      newEditor('${content}');
+      newEditor('${content}', ${fullpage?string});
 
     function performSave() {
       needToConfirm = false;

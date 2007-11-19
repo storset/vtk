@@ -1,0 +1,31 @@
+/* Vortex overriding section */
+
+div.activeTab { 
+	background-color: #efefef;
+	border-bottom: 0px; 
+}
+
+div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
+	background-color: #efefef;
+}
+
+#contents {
+        background-color: #efefef;
+}
+
+form.editor {
+        padding:0; margin: 0;
+}
+
+.properties div {
+        margin-bottom: 1em; 
+}
+
+
+input, textarea, iframe {
+        background-color: white;
+}
+
+iframe {
+        border: 1px solid #ddd;
+}

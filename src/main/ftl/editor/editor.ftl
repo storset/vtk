@@ -17,9 +17,8 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
   <head>
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />
@@ -66,19 +65,19 @@
 
   </head>
   <body>
-    <form action="" method="POST">
+    <form class="editor" action="" method="POST">
      
-      <div style="padding: 7px; border: 1px solid #aaa;">
+      <div class="properties">
         <@handleProps />
       </div>
       <br/>
-      <div style="padding: 7px; border: 1px solid #aaa;">
+      <div class="html-content">
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.content?html}</textarea>
        <@fck 'resource.content' true />
 
        </div>
-       <p>Noe tredje</p>
-      <div style="padding: 7px; border: 1px solid #aaa;">
+      <#-- div class="properties"></div -->
+      <div class="save-cancel">
        <input type="submit" onClick="performSave();" name="save" value="Lagre" />
        <input type="submit" onClick="performSave();" name="cancel" value="Avbryt" />
         <#if command.tooltips?exists>
@@ -131,9 +130,9 @@
       <#local error = command.getError(propDef)?default('') />
       
       
-      <p>${localizedName} <#if error != ""> ${error}</#if><br/> 
+      <div class="${name}">${localizedName} <#if error != ""> ${error}</#if><br/> 
       <#if type = 'HTML'>
-        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></p>
+        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60" id="content">${value?html}</textarea></div>
         <@fck 'resource.${name}' />
       <#elseif name = 'media-ref'><#-- XXX -->
         <input type="text" id="resource.${name}"  name="resource.${name}" value="${value}" /> 
@@ -195,9 +194,9 @@
             <img src="${value}" width="100" height="100" />
           </#if>
         </div>
-      </p> 
+      </div> 
       <#elseif type = 'DATE'>
-      <p>
+      <div class="${name}">
         <#local dateVal = value />
 
         <#if value != "">
@@ -285,9 +284,9 @@
 
           //-->
         </script>
-      </p> 
+      </div> 
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></p> 
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" /></div> 
       </#if>
     </#list>
 

@@ -61,6 +61,11 @@ div.picture div {
   
 }
 
+.html-content iframe {
+  height: 300px;
+}
+
+
 /* START: YUI calendar */
 
 a.calendar {

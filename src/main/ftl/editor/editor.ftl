@@ -197,7 +197,7 @@
         <button type="button" onclick="browseServer('resource.${name}');">Browse images</button>
         <div id="resource.${name}.preview">
           <#if value != ''>
-            <img src="${value}" width="100" height="100">
+            <img src="${value}" width="100" height="100" alt="">
           </#if>
         </div>
       <#elseif type = 'DATE'>
@@ -290,7 +290,7 @@
           //-->
         </script>
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}">
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" size="35">
       </#if>
     </div>
     </#list>

@@ -72,8 +72,8 @@
       </div>
 
       <div class="html-content">
-       <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.content?html}</textarea>
-       <@fck 'resource.content' true />
+       <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.bodyAsString?html}</textarea>
+       <@fck 'resource.content' false />
 
        </div>
       <#-- div class="properties"></div -->

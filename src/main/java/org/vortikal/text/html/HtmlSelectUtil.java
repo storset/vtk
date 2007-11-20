@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating.components;
+package org.vortikal.text.html;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,14 +36,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlPage;
 
-class HtmlSelectUtil {
+public class HtmlSelectUtil {
 
     private static final Pattern EXP_PATTERN = Pattern.compile("([a-z]+)\\(([0-9]+)\\)$");
     
-
+    
     public static List<HtmlElement> select(HtmlPage page, String expression) {
         HtmlElement current = page.getRootElement();
 
@@ -87,4 +85,12 @@ class HtmlSelectUtil {
         return elements;
     }
     
+
+    public static HtmlElement selectSingleElement(HtmlPage page, String expression) {
+        List<HtmlElement> elements = select(page, expression);
+        if (elements.isEmpty()) {
+            return null;
+        }
+        return elements.get(0);
+    }
 }

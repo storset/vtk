@@ -48,6 +48,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -56,17 +58,19 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 public class ResourceEditController extends SimpleFormController {
 
     private Repository repository;
+    private HtmlPageParser htmlParser;
     private List<Service> tooltipServices;
     //private List<PropertyTypeDefinition> propDefs;
     private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
     
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-        if (((ResourceCommand) command).hasErrors()) {
+        ResourceCommand resourceCommand = (ResourceCommand) command;
+        if (resourceCommand.hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             return new ModelAndView(getFormView(), model);
-        }
+        } 
         return super.onSubmit(command);
     }
 
@@ -75,7 +79,7 @@ public class ResourceEditController extends SimpleFormController {
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command)
     throws Exception {
-         ServletRequestDataBinder binder = new ResourceCommandDataBinder(command, getCommandName());
+         ServletRequestDataBinder binder = new ResourceCommandDataBinder(command, getCommandName(), this.htmlParser);
          prepareBinder(binder);
          initBinder(request, binder);
          return binder;
@@ -94,8 +98,9 @@ public class ResourceEditController extends SimpleFormController {
         
         byte[] bytes = StreamUtil.readInputStream(is);
         
-        String content = new String(bytes, resource.getCharacterEncoding());
-
+        //String content = new String(bytes, resource.getCharacterEncoding());
+        HtmlPage content = this.htmlParser.parse(new ByteArrayInputStream(bytes), resource.getCharacterEncoding());
+        
         ResourceCommand command = new ResourceCommand();
 
         command.setContent(content);
@@ -133,7 +138,7 @@ public class ResourceEditController extends SimpleFormController {
         }
 
         if (c.isContentChange()) {
-            byte[] bytes = c.getContent().getBytes(resource.getCharacterEncoding());
+            byte[] bytes = c.getContent().getStringRepresentation().getBytes(resource.getCharacterEncoding());
             this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
         }
     }
@@ -142,6 +147,10 @@ public class ResourceEditController extends SimpleFormController {
 
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    @Required public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
     }
 
     public void setTooltipServices(List<Service> tooltipServices) {

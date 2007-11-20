@@ -230,6 +230,7 @@
   <bean id="editor.editHandler"
         class="org.vortikal.edit.editor.ResourceEditController"
         parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />

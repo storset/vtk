@@ -37,19 +37,22 @@ import java.util.Map;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlSelectUtil;
 
 public class ResourceCommand {
 
     /* Content */
     
-    private String content;
+    private HtmlPage content;
     private boolean contentChange = false;
 
-    public String getContent() {
-        return content;
+    public HtmlPage getContent() {
+        return this.content;
     }
 
-    public void setContent(String content) {
+    public void setContent(HtmlPage content) {
         this.content = content;
     }
 
@@ -61,6 +64,15 @@ public class ResourceCommand {
         this.contentChange = contentChange;
     }
 
+    public String getBodyAsString() {
+        List<HtmlElement> elements = HtmlSelectUtil.select(this.content, "html.body");
+        if (elements == null || elements.isEmpty()) {
+            return "";
+        } 
+        return elements.get(0).getContent(); 
+    }
+
+    
     /* Resource */
     
     private Resource resource;

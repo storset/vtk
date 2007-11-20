@@ -55,6 +55,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlSelectUtil;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -256,30 +257,34 @@ public class IncludeComponent extends AbstractDecoratorComponent
                 url.addParameter(param, value);
             }
         }
-        
+
         ConfigurableRequestWrapper requestWrapper =
             new ConfigurableRequestWrapper(servletRequest, url);
-        requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, new Object());
-        String servletName = (String) servletRequest.getAttribute(
-                VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
+		BufferedResponse servletResponse = new BufferedResponse();
 
-        RequestDispatcher rd = this.servletContext.getNamedDispatcher(servletName);
-        if (rd == null) {
-            throw new RuntimeException(
-                "No request dispatcher for name '" + servletName + "' available");
-        }
+		try {
+			requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, new Object());
+			String servletName = (String) servletRequest
+					.getAttribute(VortikalServlet.SERVLET_NAME_REQUEST_ATTRIBUTE);
 
-        BufferedResponse servletResponse = new BufferedResponse();
-        rd.forward(requestWrapper, servletResponse);
-        
-        if (servletResponse.getStatus() != HttpServletResponse.SC_OK) {
-            throw new DecoratorComponentException(
-                "Included resource '" + uri + "' returned HTTP status code "
-                + servletResponse.getStatus());
-        }
+			RequestDispatcher rd = this.servletContext
+					.getNamedDispatcher(servletName);
+			if (rd == null) {
+				throw new RuntimeException("No request dispatcher for name '"
+						+ servletName + "' available");
+			}
 
-        requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, null);
-        
+			rd.forward(requestWrapper, servletResponse);
+
+			if (servletResponse.getStatus() != HttpServletResponse.SC_OK) {
+				throw new DecoratorComponentException("Included resource '"
+						+ uri + "' returned HTTP status code "
+						+ servletResponse.getStatus());
+			}
+		} finally {
+			requestWrapper.setAttribute(INCLUDE_ATTRIBUTE_NAME, null);
+		}
+		
         if (!ContentTypeHelper.isTextContentType(servletResponse.getContentType())) {
             throw new DecoratorComponentException(
                 "Cannot include URI '" + uri + "': not a textual resource. " +

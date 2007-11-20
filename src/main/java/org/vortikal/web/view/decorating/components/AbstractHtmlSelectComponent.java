@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlSelectUtil;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 

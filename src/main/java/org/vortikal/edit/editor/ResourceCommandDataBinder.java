@@ -30,6 +30,8 @@
  */
 package org.vortikal.edit.editor;
 
+import java.io.ByteArrayInputStream;
+
 import javax.servlet.ServletRequest;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -37,11 +39,18 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlSelectUtil;
 
 public class ResourceCommandDataBinder extends ServletRequestDataBinder {
 
-    public ResourceCommandDataBinder(Object target, String objectName) {
+    private HtmlPageParser htmlParser;
+    
+    public ResourceCommandDataBinder(Object target, String objectName, HtmlPageParser htmlParser) {
         super(target, objectName);
+        this.htmlParser = htmlParser;
     }
 
     @Override
@@ -95,17 +104,17 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
                 }
             }
             
-            String content = command.getContent();
+            String content = command.getContent().getStringRepresentation();
             String suppliedContent = request.getParameter("resource.content");
-            if (suppliedContent == null) suppliedContent = "";
             if (!content.equals(suppliedContent)) {
-                command.setContent(suppliedContent);
-                command.setContentChange(true);
+                parseContent(command, suppliedContent);
             }
         } else {
             super.bind(request);
         }
     }
+
+    
 
     
     private void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
@@ -126,4 +135,25 @@ public class ResourceCommandDataBinder extends ServletRequestDataBinder {
         }
     }
 
+    private void parseContent(ResourceCommand command, String suppliedContent) {
+
+        if (suppliedContent == null) suppliedContent = "";
+        try {
+            suppliedContent = "<html><head></head><body>" + suppliedContent + "</body></html>";
+            ByteArrayInputStream in = new ByteArrayInputStream(suppliedContent.getBytes(command.getResource().getCharacterEncoding()));
+            HtmlPage parsed = this.htmlParser.parse(in, command.getResource().getCharacterEncoding());
+
+            HtmlElement body = HtmlSelectUtil.selectSingleElement(command.getContent(), "html.body");
+            HtmlElement suppliedBody = HtmlSelectUtil.selectSingleElement(parsed, "html.body");
+            
+            if (body == null || suppliedBody == null) {
+                throw new RuntimeException("No HTML body to save");
+            }
+            body.setChildNodes(suppliedBody.getChildNodes());
+            command.setContentChange(true);
+        } catch (Throwable t) {
+            throw new RuntimeException("Unable to save content", t);
+        }
+    }
+    
 }

@@ -16,7 +16,16 @@
       </action>
     </release>
 
-    <release version="0.3.11.1" date="2007-10-11" description="Release 0.3.11">
+    <release version="0.3.11.2" date="2007-11-16" description="Release 0.3.11.2">
+      <action type="fix">
+        Fix missing ACL inheritance update when moving resources.
+      </action>
+      <action type="fix">
+        Decorating: fix sorting in the aggregated feeds component.
+      </action>
+    </release>
+
+    <release version="0.3.11.1" date="2007-10-11" description="Release 0.3.11.1">
       <action type="fix">
         Fix for locale-based date formatting.
       </action>

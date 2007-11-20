@@ -37,6 +37,7 @@ import javax.servlet.ServletRequest;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.text.html.HtmlElement;
@@ -68,8 +69,17 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             Resource resource = command.getResource();
             
             for (PropertyTypeDefinition propDef: command.getContentProperties()) {
+                
+                String value = null;
+                if (propDef.getType().equals(PropertyType.Type.DATE)) {
+                    value = request.getParameter("resource." + propDef.getName() + ".date");
+                    String time = request.getParameter("resource." + propDef.getName() + ".time");
+                    if (value != null && time != null) {
+                        value += " " + time;
+                    }
+                } else
+                    value = request.getParameter("resource." + propDef.getName());
 
-                String value = request.getParameter("resource." + propDef.getName());
                 Property prop = resource.getProperty(propDef);
                 if (prop == null) {
                     if (value != null && !value.trim().equals("")) {
@@ -126,7 +136,10 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
 
             int i = 0;
             for (String string : strings) {
-                values[i++] = propDef.getValueFormatter().stringToValue(string, null, null);
+                if (string.trim().equals("")) {
+                    throw new IllegalArgumentException("Value cannot be empty");
+                } 
+                values[i++] = propDef.getValueFormatter().stringToValue(string.trim(), null, null);
             }
             prop.setValues(values);
         } else {

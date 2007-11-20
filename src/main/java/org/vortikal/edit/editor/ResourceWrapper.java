@@ -54,14 +54,31 @@ public class ResourceWrapper implements Resource {
 
     private ResourceWrapperManager resourceManager;
     
-    /* Content */
-    
     private HtmlPage content;
+    private Resource resource;
+    private List<PropertyTypeDefinition> contentProperties;
 
     public ResourceWrapper(ResourceWrapperManager resourceManager) {
         super();
         this.resourceManager = resourceManager;
     }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
+    public List<PropertyTypeDefinition> getContentProperties() {
+        return contentProperties;
+    }
+
+    public void setContentProperties(List<PropertyTypeDefinition> contentProperties) {
+        this.contentProperties = contentProperties;
+    }
+
 
     public HtmlPage getContent() {
         return this.content;
@@ -80,27 +97,6 @@ public class ResourceWrapper implements Resource {
     }
 
     
-    /* Resource */
-    
-    private Resource resource;
-    private List<PropertyTypeDefinition> contentProperties;
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
-    public List<PropertyTypeDefinition> getContentProperties() {
-        return contentProperties;
-    }
-
-    public void setContentProperties(List<PropertyTypeDefinition> contentProperties) {
-        this.contentProperties = contentProperties;
-    }
-
     public String getValueByName(String name) {
         for (Property prop : getProperties()) {
             if (prop.getDefinition().getName().equals(name)) {
@@ -137,7 +133,7 @@ public class ResourceWrapper implements Resource {
     }
     
     
-    /** Resource delegation **/
+    /** Delegation of resource implementation: **/
     
     public Property createProperty(Namespace namespace, String name) {
         return this.resource.createProperty(namespace, name);

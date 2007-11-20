@@ -208,22 +208,27 @@
       <#elseif type = 'DATE'>
 
         <#local dateVal = value />
-
+        <#local time = "" />
         <#if value != "">
-          <#local d = resource.resource.getProperty(propDef) />
+          <#local d = resource.getProperty(propDef) />
 
-          <#local dateVal = d.getFormattedValue('yyyy-MM-dd HH:mm:ss', springMacroRequestContext.getLocale()) />
+          <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
           <#local year = d.getDateValue()?string("yyyy") />
           <#local month = d.getDateValue()?string("MM") />
           <#local jsmonth = ((d.getDateValue()?string("MM"))?number - 1)?string />
           <#local date = d.getDateValue()?string("dd") />
+          <#local time = d.getFormattedValue('HH:mm', springMacroRequestContext.getLocale()) />
+          <#if time == "00:00">
+            <#local time = "" />
+          </#if>
         </#if>
 
         <#local uniqueName = 'cal_' + propDef_index />
 
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
+        <input size="10" type="text" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
+        <input size="5" type="text" id="resource.${name}.time" name="resource.${name}.time" value="${time}">
 
         <script type="text/javascript"><!--
 
@@ -245,7 +250,7 @@
              var monthNumber = date.getMonth() + 1;
              var month = monthNumber < 10 ? '0' + monthNumber  : '' + monthNumber;
              var day = date.getDate(); if (day < 10 ) day = '0' + day;
-             var dateStr =  year + '-' + month + '-' + day + ' 00:00:00';
+             var dateStr =  year + '-' + month + '-' + day;
 
              document.getElementById('resource.${name}').value = dateStr;
              ${uniqueName}_hide();

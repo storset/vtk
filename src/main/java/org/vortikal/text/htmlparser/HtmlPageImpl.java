@@ -62,7 +62,7 @@ public class HtmlPageImpl implements HtmlPage {
 
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<").append("!DOCTYPE ").append(this.doctype).append(">\n");
+        sb.append("<!DOCTYPE ").append(this.doctype).append(">\n");
         sb.append(this.root.getEnclosedContent());
         return sb.toString();
     }

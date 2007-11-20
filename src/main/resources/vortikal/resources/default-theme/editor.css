@@ -28,8 +28,37 @@ iframe {
 }
 
 label {
-        display: block; 
+       display: block;
        margin-bottom: .2em;
+}
+
+.introduction {
+  margin-right: 315px;
+}
+
+.introduction iframe{
+  height: 130px;
+}
+
+
+div.picture {
+  float:right;
+  margin-top: -169px;
+}
+
+div.picture img {
+
+  height: 100px;
+  width: auto;
+}
+
+div.picture div {
+  border: 1px solid #ccc;
+  margin-top: 8px;
+  height: 100px;
+  width: 165px;
+  overflow: hidden;
+  
 }
 
 /* START: YUI calendar */

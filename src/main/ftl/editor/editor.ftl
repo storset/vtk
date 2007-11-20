@@ -77,7 +77,7 @@
       </div>
 
       <div class="html-content">
-       <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.bodyAsString?html}</textarea>
+       <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
        <@fck 'resource.content' true />
 
        </div>
@@ -87,8 +87,8 @@
        <input type="submit" onClick="performSave();" name="save" value="Lagre">
        <input type="submit" onClick="performSave();" name="cancel" value="Avbryt">
 
-        <#if command.tooltips?exists>
-          <#list command.tooltips as tooltip>
+        <#if tooltips?exists>
+          <#list tooltips as tooltip>
            <div class="contextual-help"><a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
               <@vrtx.msg code=tooltip.messageKey default=tooltip.messageKey/>
             </a>
@@ -108,10 +108,10 @@
       window.onbeforeunload = confirmExit;
 
       function propChange() {
-        <#local keyNames = command.editableProperties />
+        <#local keyNames = resource.contentProperties />
         <#list keyNames as propDef>
           <#local name = propDef.name />
-          <#local value = command.getValue(propDef) />
+          <#local value = resource.getValue(propDef) />
           if ('${value}' != document.getElementById('resource.${name}').value) {
             return true;
           }
@@ -128,13 +128,13 @@
     </script>
    -->
     <#local locale = springMacroRequestContext.getLocale() />
-    <#local keys = command.editableProperties />
+    <#local keys = resource.contentProperties />
     <#list keys as propDef>
       <#local localizedName = propDef.getLocalizedName(locale) />
       <#local name = propDef.name />
-      <#local value = command.getValue(propDef) />
+      <#local value = resource.getValue(propDef) />
       <#local type = propDef.type />
-      <#local error = command.getError(propDef)?default('') />
+      <#local error = resource.getError(propDef)?default('') />
       
       
       <div class="${name}">
@@ -210,7 +210,7 @@
         <#local dateVal = value />
 
         <#if value != "">
-          <#local d = command.resource.getProperty(propDef) />
+          <#local d = resource.resource.getProperty(propDef) />
 
           <#local dateVal = d.getFormattedValue('yyyy-MM-dd HH:mm:ss', springMacroRequestContext.getLocale()) />
           <#local year = d.getDateValue()?string("yyyy") />

@@ -30,8 +30,6 @@
  */
 package org.vortikal.edit.editor;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,33 +38,36 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.util.io.StreamUtil;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 public class ResourceEditController extends SimpleFormController {
 
-    private Repository repository;
-    private HtmlPageParser htmlParser;
     private List<Service> tooltipServices;
     //private List<PropertyTypeDefinition> propDefs;
-    private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
+    private ResourceWrapperManager resourceManager;
     
+    
+    
+    public ResourceEditController() {
+        super();
+        setCommandName("resource");
+    }
+
+
+
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-        ResourceCommand resourceCommand = (ResourceCommand) command;
-        if (resourceCommand.hasErrors()) {
+        ResourceEditWrapper resourceWrapper = (ResourceEditWrapper) command;
+        if (resourceWrapper.hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             return new ModelAndView(getFormView(), model);
@@ -79,7 +80,7 @@ public class ResourceEditController extends SimpleFormController {
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command)
     throws Exception {
-         ServletRequestDataBinder binder = new ResourceCommandDataBinder(command, getCommandName(), this.htmlParser);
+         ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(), resourceManager.getHtmlParser());
          prepareBinder(binder);
          initBinder(request, binder);
          return binder;
@@ -89,69 +90,49 @@ public class ResourceEditController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
 
-        String token = SecurityContext.getSecurityContext().getToken();
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String uri = RequestContext.getRequestContext().getResourceURI();
-        
-        Resource resource = this.repository.retrieve(token, uri, false);
-        InputStream is = this.repository.getInputStream(token, uri, false);
-        
-        byte[] bytes = StreamUtil.readInputStream(is);
-        
-        //String content = new String(bytes, resource.getCharacterEncoding());
-        HtmlPage content = this.htmlParser.parse(new ByteArrayInputStream(bytes), resource.getCharacterEncoding());
-        
-        ResourceCommand command = new ResourceCommand();
-
-        command.setContent(content);
-        command.setEditableProperties(this.editPropertyProvider.getEditableProperties(resource));
-        command.setResource(resource);
-        
-        command.setTooltips(resolveTooltips(resource, principal));
-
-        return command;
+        return resourceManager.createResourceEditWrapper();
     }
+
+
+    
+    @Override
+    protected Map referenceData(HttpServletRequest request, Object command,
+            Errors errors) throws Exception {
+        Resource resource = ((ResourceWrapper)command).getResource();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+
+        Map model = super.referenceData(request, command, errors);
+
+        if (model == null) {
+            model = new HashMap();
+        }
+        model.put("tooltips", resolveTooltips(resource, principal));
+        return model;
+    }
+
+
 
     @Override
     protected void doSubmitAction(Object command) throws Exception {
-        String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
 
-        ResourceCommand c = (ResourceCommand) command;
+        ResourceEditWrapper wrapper = (ResourceEditWrapper) command;
 
-        if (!c.isSave()) {
+        if (!wrapper.isSave()) {
             return;
         }
         
-        if (c.hasErrors()) {
+        if (wrapper.hasErrors()) {
             // Shouldn't happen!
-            for (PropertyTypeDefinition propDef : c.getErrors().keySet()) {
-                System.out.println(propDef.getName() + ": " + c.getError(propDef));
+            for (PropertyTypeDefinition propDef : wrapper.getErrors().keySet()) {
+                System.out.println(propDef.getName() + ": " + wrapper.getError(propDef));
             }
             return;
         }
         
-        Resource resource = c.getResource();
-        
-        if (c.isPropChange()) {
-            resource = this.repository.store(token, resource);
-        }
-
-        if (c.isContentChange()) {
-            byte[] bytes = c.getContent().getStringRepresentation().getBytes(resource.getCharacterEncoding());
-            this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
-        }
+        resourceManager.store(wrapper);
     }
 
 
-
-    @Required public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    @Required public void setHtmlParser(HtmlPageParser htmlParser) {
-        this.htmlParser = htmlParser;
-    }
 
     public void setTooltipServices(List<Service> tooltipServices) {
         this.tooltipServices = tooltipServices;
@@ -175,6 +156,12 @@ public class ResourceEditController extends SimpleFormController {
             }
         }
         return tooltips;
+    }
+
+
+
+    @Required public void setResourceManager(ResourceWrapperManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 
 }

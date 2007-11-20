@@ -27,6 +27,22 @@
 <#return "" />
 </#function>
 
+<#function propResource propName>
+<#local prop = resource.getPropertyByPrefix("", propName)?default("") />
+<#if prop != "">
+  <#local def = prop.definition />
+  <#local type = def.type />
+  <#if type = 'IMAGE_REF'>
+    <#local tmpResource = resource.getPropResource(def)?default("") />
+    <#if tmpResource == "">
+      <#return "" />
+    </#if>
+    <#return tmpResource />
+  </#if>
+</#if>
+</#function>
+
+
 <#assign title = propValue("userTitle") />
 <#if title == "">
   <#assign title = "Missing title" />
@@ -87,13 +103,51 @@
       ${published}
     </#if>
 </div>
-        <#assign introductionImage = propValue("introduction-image") />
+        <#assign imageRes = propResource("picture") />
+        <#assign introductionImage = propValue("picture") />
         <#if introductionImage != "">
-          <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
+          <div>
+          <#if imageRes == "">
+            <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
+          <#else>
+            <table style="background-color: #e3e8d8;"><tr><td>
+              <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
+              <#assign desc = imageRes.getValueByName("description")?default("") />
+              <p>${imageRes.title}: ${desc}</p>
+            </td></tr></table>
+          </#if>
+          </div>
         </#if>
-        <div class="bodyText">
-    ${resourceString}
+
+    <#assign start = propValue("start-date") />
+    <#assign end = propValue("end-date") />
+    <#assign location = propValue("location") />
+
+<#if start != "" || end != "" || location != "">
+<div class="eventMicroFormat">
+  <#if start != "">Starter: ${start}<br/></#if>
+  <#if end != "">Slutter: ${end}<br/></#if>
+  <#if location != "">Stad: ${location}<br/></#if>
 </div>
+</#if>
+
+        <div class="bodyText">
+          ${resource.bodyAsString}
+        </div>
+
+
+  <#assign mediaRes = propResource("media-ref") />
+<#if mediaRes != "" && mediaRes.resourceType == 'audio'>
+  <#assign media = propValue("media-ref") />
+  <script type="text/javascript" language="JavaScript" src="${mediaPlayerBase.url?html}/audio-player.js"></script>
+  <object type="application/x-shockwave-flash" data="${mediaPlayerBase.url?html}/player.swf" id="audioplayer1" height="24" width="290">
+    <param name="movie" value="${mediaPlayerBase.url?html}/player.swf"/>
+    <param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
+    <param name="quality" value="high"/>
+    <param name="menu" value="false"/>
+    <param name="wmode" value="transparent"/>
+  </object>
+</#if>
   </body>
 </html>
 

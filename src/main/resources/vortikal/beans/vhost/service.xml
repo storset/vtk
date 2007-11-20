@@ -401,7 +401,6 @@
     <property name="resourceTypeDefinition" ref="articleResourceTypeDefinition" />
   </bean>
 
-
   <!-- **************** -->
   <!-- ASSERTIONS       -->
   <!-- **************** -->

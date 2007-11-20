@@ -111,7 +111,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public String getStringValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.Type.STRING) {
+        if (this.value == null || 
+                (getType() != PropertyType.Type.STRING && 
+                 getType() != PropertyType.Type.IMAGE_REF &&
+                 getType() != PropertyType.Type.HTML)) {
             throw new IllegalOperationException("Property " + this + " not of type String");
         }
         return this.value.getStringValue();

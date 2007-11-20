@@ -57,11 +57,18 @@
   </bean>
 
   <bean id="displayArticleHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="displayProcessed" value="true" />
-    <property name="streamToString" value="true" />
+    class="org.vortikal.edit.editor.ResourceViewController">
     <property name="viewName" value="displayArticle" />
+    <property name="resourceManager" ref="resourceManager"/>
   </bean>
+
+
+  <bean id="resourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="contentResourceType" ref="articleResourceTypeDefinition" />
+  </bean>
+
 
 </beans>

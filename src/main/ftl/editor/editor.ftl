@@ -23,28 +23,33 @@
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />
     <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-    <script type="text/javascript">
-      function newEditor(name, full)
+    <script type="text/javascript"><!--
+      function newEditor(name, completeEditor)
       {
-        var fullPage = full != null ? full : false; 
+        var completeEditor = completeEditor != null ? completeEditor : false; 
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
 
          // The toolbar: JSON string
-          fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
+         if (completeEditor) {
+          fck.Config['ToolbarSets'] = "( {'" + name + "' : [\
             ['PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']]} )";
-         fck.ToolbarSet = "Vortikal";
 
-        // File browser
+         } else {
+          fck.Config['ToolbarSets'] = "( {'" + name + "' : [\
+            ['Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']]} )";
+         }
+         fck.ToolbarSet = name;
+
+         // File browser
          var baseFolder = "${resourceContext.parentURI?html}";
          fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
-
          // Misc setup
-         fck.Config['FullPage'] = fullPage;
+         fck.Config['FullPage'] = false;
          fck.Config['ToolbarCanCollapse'] = false;
          fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
 
@@ -53,9 +58,9 @@
 
          fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
 
-
-        fck.ReplaceTextarea() ;
+         fck.ReplaceTextarea();
       }
+      // -->
     </script>
 
     <!-- Yahoo YUI library: -->
@@ -73,7 +78,7 @@
 
       <div class="html-content">
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${command.bodyAsString?html}</textarea>
-       <@fck 'resource.content' false />
+       <@fck 'resource.content' true />
 
        </div>
       <#-- div class="properties"></div -->
@@ -141,7 +146,7 @@
         <@fck 'resource.${name}' />
 
       <#elseif name = 'media-ref'><#-- XXX -->
-        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value}"> 
+        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}"> 
         <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button>
         
       <#elseif type = 'IMAGE_REF'>
@@ -193,7 +198,7 @@
                      }
              } //-->
         </script>
-        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value}"> 
+        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}"> 
         <button type="button" onclick="browseServer('resource.${name}');">Browse images</button>
         <div id="resource.${name}.preview">
           <#if value != ''>
@@ -290,7 +295,7 @@
           //-->
         </script>
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value}" size="35">
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="35">
       </#if>
     </div>
     </#list>
@@ -298,11 +303,11 @@
 
 </#macro>
 
-<#macro fck content fullpage=false>
+<#macro fck content completeEditor=false>
     <script type="text/javascript">
       var needToConfirm = true;
 
-      newEditor('${content}', ${fullpage?string});
+      newEditor('${content}', ${completeEditor?string});
 
     function performSave() {
       needToConfirm = false;

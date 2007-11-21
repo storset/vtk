@@ -121,8 +121,7 @@
   <#compress>
     <#if VRTX_VALUE_FORMATTER?exists>
       <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-      <#local val = constructor("org.vortikal.repository.resourcetype.Value", value) />    
-
+      <#local val = constructor("org.vortikal.repository.resourcetype.Value", value, false) />
       <#local locale = springMacroRequestContext.getLocale() />
       ${VRTX_VALUE_FORMATTER.valueToString(val, format, locale)}
     <#else>

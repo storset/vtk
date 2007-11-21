@@ -28,18 +28,16 @@
 </#function>
 
 <#function propResource propName>
-<#local prop = resource.getPropertyByPrefix("", propName)?default("") />
-<#if prop != "">
-  <#local def = prop.definition />
-  <#local type = def.type />
-  <#if type = 'IMAGE_REF'>
-    <#local tmpResource = resource.getPropResource(def)?default("") />
-    <#if tmpResource == "">
-      <#return "" />
+  <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
+  <#if prop != "">
+    <#local def = prop.definition />
+    <#local type = def.type />
+    <#if type = 'IMAGE_REF'>
+      <#local tmpResource = resource.getPropResource(def)?default("") />
+      <#return tmpResource />
     </#if>
-    <#return tmpResource />
   </#if>
-</#if>
+  <#return "" />
 </#function>
 
 

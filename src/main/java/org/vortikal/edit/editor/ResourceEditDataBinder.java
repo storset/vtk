@@ -59,12 +59,15 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         if (getTarget() instanceof ResourceEditWrapper) {
             ResourceEditWrapper command = (ResourceEditWrapper) getTarget();
 
-            if (request.getParameter("save") == null) {
+            if (request.getParameter("save") != null) {
+                command.setSave(true);
+            } else if (request.getParameter("savequit") != null) {
+                command.setSave(true);
+                command.setQuit(true);
+            } else {
                 return;
             }
             
-            command.setSave(true);
-
             
             Resource resource = command.getResource();
             

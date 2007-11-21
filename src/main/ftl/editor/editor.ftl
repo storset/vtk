@@ -70,7 +70,7 @@
 
   </head>
   <body>
-    <form class="editor" action="" method="POST">
+    <form id="form" class="editor" action="" method="POST">
      
       <div class="properties">
         <@handleProps />
@@ -83,8 +83,9 @@
        </div>
       <#-- div class="properties"></div -->
 
-      <div class="save-cancel">
-       <input type="submit" onClick="performSave();" name="save" value="Lagre">
+      <div id="submit" class="save-cancel">
+       <input type="submit" onClick="cSave();" name="save" value="Lagre">
+       <input type="submit" onClick="performSave();" name="savequit" value="Lagre og avslutt">
        <input type="submit" onClick="performSave();" name="cancel" value="Avbryt">
 
         <#if tooltips?exists>
@@ -313,6 +314,11 @@
       var needToConfirm = true;
 
       newEditor('${content}', ${completeEditor?string});
+
+    function cSave() {
+      document.getElementById("form").setAttribute("action", "#submit");
+      performSave();
+    }
 
     function performSave() {
       needToConfirm = false;

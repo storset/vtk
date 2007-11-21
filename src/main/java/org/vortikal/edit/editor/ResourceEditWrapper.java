@@ -84,6 +84,7 @@ public class ResourceEditWrapper extends ResourceWrapper {
 
 
     private boolean save = false;
+    private boolean quit = false;
 
     public boolean isSave() {
         return this.save;
@@ -91,6 +92,14 @@ public class ResourceEditWrapper extends ResourceWrapper {
     
     public void setSave(boolean save) {
         this.save = save;
+    }
+
+    public void setQuit(boolean quit) {
+        this.quit = quit;
+    }
+
+    public boolean isQuit() {
+        return quit;
     }
 
 }

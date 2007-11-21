@@ -66,12 +66,26 @@ public class ResourceEditController extends SimpleFormController {
 
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-        ResourceEditWrapper resourceWrapper = (ResourceEditWrapper) command;
-        if (resourceWrapper.hasErrors()) {
+        ResourceEditWrapper wrapper = (ResourceEditWrapper) command;
+        if (wrapper.hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             return new ModelAndView(getFormView(), model);
         } 
+
+        if (!wrapper.isSave()) {
+            return new ModelAndView(getSuccessView(), new HashMap());
+        }
+                
+        resourceManager.store(wrapper);
+
+        if (!wrapper.isQuit()) {
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put(getCommandName(), command);
+            wrapper.setSave(false);
+            return new ModelAndView(getFormView(), model);
+        }
+        
         return super.onSubmit(command);
     }
 
@@ -108,28 +122,6 @@ public class ResourceEditController extends SimpleFormController {
         }
         model.put("tooltips", resolveTooltips(resource, principal));
         return model;
-    }
-
-
-
-    @Override
-    protected void doSubmitAction(Object command) throws Exception {
-
-        ResourceEditWrapper wrapper = (ResourceEditWrapper) command;
-
-        if (!wrapper.isSave()) {
-            return;
-        }
-        
-        if (wrapper.hasErrors()) {
-            // Shouldn't happen!
-            for (PropertyTypeDefinition propDef : wrapper.getErrors().keySet()) {
-                System.out.println(propDef.getName() + ": " + wrapper.getError(propDef));
-            }
-            return;
-        }
-        
-        resourceManager.store(wrapper);
     }
 
 

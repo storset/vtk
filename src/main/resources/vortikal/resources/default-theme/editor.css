@@ -32,22 +32,22 @@ label {
        margin-bottom: .2em;
 }
 
+/* START: introduction */
 .introduction {
-  margin-right: 315px;
+  margin-right: 19em;
 }
 
 .introduction iframe{
-  height: 130px;
+  height: 8.5em;
 }
 
 
 div.picture {
   float:right;
-  margin-top: -169px;
+  margin-top: -10.9em;
 }
 
 div.picture img {
-
   height: 100px;
   width: auto;
 }
@@ -61,9 +61,28 @@ div.picture div {
   
 }
 
+/* END introduction */
+
+/* START time and place */
+
+div.end-date {
+  margin-left: 13em;
+  margin-top: -6.6ex;
+}
+
+div.location {
+  margin-left: 26em;
+  margin-top: -6.6ex;
+}
+
+span.colon {padding: 0 .2em;}
+/* END time and place */
+
+
 .html-content iframe {
   height: 300px;
 }
+
 
 
 /* START: YUI calendar */
@@ -79,13 +98,12 @@ a.calendar span {
   visibility:hidden;
 }
 
-
 .yui-calcontainer{
    font-size: 11px; 
    position:absolute; 
    float: none;
-   left: 22em;
-   margin-top: -16em; 
+   margin-left: 11em;
+   margin-top: -18em; 
    background-color:#f7f7f7;
    padding-top: 5px;
 }

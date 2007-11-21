@@ -39,7 +39,7 @@ import org.vortikal.security.Principal;
 public final class Value implements Cloneable, Comparable<Value> {
     
     private Type type = PropertyType.Type.STRING;
-    private static final long MAX_LENGTH = 2048;
+    public static final long MAX_LENGTH = 2048;
 
     private String stringValue;
     private Date dateValue;

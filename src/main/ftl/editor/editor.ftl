@@ -33,12 +33,12 @@
          // The toolbar: JSON string
          if (completeEditor) {
           fck.Config['ToolbarSets'] = "( {'" + name + "' : [\
-            ['PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
+            ['Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']]} )";
 
          } else {
           fck.Config['ToolbarSets'] = "( {'" + name + "' : [\
-            ['Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']]} )";
+            ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']]} )";
          }
          fck.ToolbarSet = name;
 

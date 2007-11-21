@@ -45,7 +45,7 @@ public final class PropertyType {
      */ 
     public enum Type {
         STRING (new StringValueFormatter()),
-        HTML (new StringValueFormatter()),
+        HTML (new HtmlValueFormatter()),
         IMAGE_REF (new StringValueFormatter()),
         INT (new IntValueFormatter()), 
         LONG (new LongValueFormatter()),

@@ -16,6 +16,7 @@
     <property name="postCommentService" ref="commenting.postCommentService" />
     <property name="deleteCommentService" ref="commenting.deleteCommentService" />
     <property name="deleteAllCommentsService" ref="commenting.deleteAllCommentsService" />
+    <property name="resourceCommentsFeedService" ref="commenting.feedService" />
     <property name="loginService" ref="loginService" />
     <property name="view" ref="commenting.commentsView" />
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
@@ -173,7 +174,7 @@
   <bean id="commenting.validHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="a" />
           <property name="attributes">
             <set>
@@ -181,34 +182,34 @@
             </set>
           </property>
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="p" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="ul" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="li" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="ol" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="em" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="strong" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="cite" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="code" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="strike" />
         </bean>
-        <bean class="org.vortikal.text.htmlparser.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="u" />
         </bean>
       </set>

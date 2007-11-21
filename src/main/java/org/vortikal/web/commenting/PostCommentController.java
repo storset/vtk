@@ -38,25 +38,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.EnclosingHtmlContent;
-import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlElementDescriptor;
 import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
-import org.vortikal.text.htmlparser.HtmlElementDescriptor;
+import org.vortikal.text.html.SimpleHtmlPageFilter;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -74,20 +73,10 @@ public class PostCommentController extends SimpleFormController {
     private HtmlPageParser parser;
     private int maxCommentLength = 100000;
     private boolean requireCommentTitle = false;
-    private Set<String> illegalElements = new HashSet<String>();
-    private Map<String, HtmlElementDescriptor> validElements = new HashMap<String, HtmlElementDescriptor>();
-
-    @Required public void setIllegalElements(Set<String> illegalElements) {
-        for (String elem: illegalElements) {
-            this.illegalElements.add(elem);
-        }
-    }
     
-    @Required public void setValidElements(Set<HtmlElementDescriptor> validElements) {
-        for (HtmlElementDescriptor desc: validElements) {
-            this.validElements.put(desc.getName(), desc);
-        }
-    }
+    private Set<String> illegalElements = new HashSet<String>();
+    private Set<HtmlElementDescriptor> validElements = new HashSet<HtmlElementDescriptor>();
+
 
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
@@ -99,6 +88,18 @@ public class PostCommentController extends SimpleFormController {
     
     public void setFormSessionAttributeName(String formSessionAttributeName) {
         this.formSessionAttributeName = formSessionAttributeName;
+    }
+
+    @Required public void setIllegalElements(Set<String> illegalElements) {
+        for (String elem: illegalElements) {
+            this.illegalElements.add(elem);
+        }
+    }
+    
+    @Required public void setValidElements(Set<HtmlElementDescriptor> validElements) {
+        for (HtmlElementDescriptor desc: validElements) {
+            this.validElements.add(desc);
+        }
     }
 
     public void setMaxCommentLength(int maxCommentLength) {
@@ -197,7 +198,7 @@ public class PostCommentController extends SimpleFormController {
             InputStream is = new ByteArrayInputStream(text.getBytes("utf-8"));
             HtmlPage page = this.parser.parse(is, "utf-8");
 
-            page.filter(new CommentFilter());
+            page.filter(new SimpleHtmlPageFilter(this.illegalElements, this.validElements, false));
 
             if (isEmptyContent(page.getRootElement())) {
                 return null;
@@ -228,7 +229,6 @@ public class PostCommentController extends SimpleFormController {
         }
         return text;
     }
-    
 
     private List<HtmlContent> trimChildren(HtmlElement root) {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
@@ -253,49 +253,6 @@ public class PostCommentController extends SimpleFormController {
         }
 
         return result;
-    }
-    
-
-    private class CommentFilter implements HtmlPageFilter {
-
-        public HtmlPageFilter.NodeResult filter(HtmlContent node) {
-
-            if (node instanceof HtmlComment) {
-                return NodeResult.exclude;
-
-            } else if (node instanceof HtmlText) {
-                return NodeResult.keep;
-
-            } else if (node instanceof HtmlElement) {
-                HtmlElement element = (HtmlElement) node;
-                String name = element.getName().toLowerCase();
-
-                if (illegalElements.contains(name)) {
-                    return NodeResult.exclude;
-                }
-
-                if (validElements.containsKey(name)) {
-                    HtmlElementDescriptor desc = validElements.get(name);
-                    List<HtmlAttribute> filteredAttributes = new ArrayList<HtmlAttribute>();
-                    for (String attribute: desc.getAttributes()) {
-                        for (HtmlAttribute a: element.getAttributes()) {
-                            if (attribute.equals(a.getName().toLowerCase())) {
-                                filteredAttributes.add(a);
-                            }
-                        }
-                    }
-                
-                    HtmlAttribute[] newAttributes = filteredAttributes.<HtmlAttribute>toArray(
-                        new HtmlAttribute[filteredAttributes.size()]);
-                    element.setAttributes(newAttributes);
-                    return NodeResult.keep;
-                }
-
-                // Skip node, continue to process children:
-                return NodeResult.skip;
-            }
-            return NodeResult.keep;
-        }
     }
     
     

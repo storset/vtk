@@ -37,8 +37,10 @@ import java.util.List;
 
 public class HtmlElementDescriptor {
     private String name;
+    private boolean validAsEmpty = false;
     private List<String> attributes = new ArrayList<String>();
 
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -48,7 +50,9 @@ public class HtmlElementDescriptor {
     }
 
     public void setAttributes(List<String> attributes) {
-        if (attributes != null) {
+        if (attributes == null) {
+            this.attributes.clear();
+        } else {
             this.attributes = new ArrayList<String>(attributes);
         }
     }
@@ -57,4 +61,11 @@ public class HtmlElementDescriptor {
         return Collections.unmodifiableList(this.attributes);
     }
     
+    public void setValidAsEmpty(boolean validAsEmpty) {
+        this.validAsEmpty = validAsEmpty;
+    }
+    
+    public boolean isValidAsEmpty() {
+        return this.validAsEmpty;
+    }
 }

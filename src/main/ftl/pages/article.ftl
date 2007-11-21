@@ -108,11 +108,16 @@
           <#if imageRes == "">
             <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
           <#else>
-            <table style="background-color: #e3e8d8;"><tr><td>
+              <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
+              <#assign style = "background-color: #e3e8d8;" />
+              <#if pixelWidth != "">
+                <#assign style = style + "width:" + pixelWidth+ "px;" />
+              </#if>
+            <div style="${style}">
               <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
               <#assign desc = imageRes.getValueByName("description")?default("") />
               <p>${imageRes.title}: ${desc?html}</p>
-            </td></tr></table>
+              </div>
           </#if>
           </div>
         </#if>

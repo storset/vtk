@@ -91,6 +91,7 @@ public class SortBuilderImpl implements SortBuilder {
                 switch (def.getType()) {
                 
                 case DATE:
+                case TIMESTAMP:
                 case BOOLEAN:
                 case INT:
                 case LONG:

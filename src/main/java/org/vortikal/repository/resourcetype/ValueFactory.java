@@ -120,10 +120,13 @@ public class ValueFactory {
             return new Value("true".equalsIgnoreCase(stringValue));
 
         case DATE:
+            Date date = getDateFromStringValue(stringValue);
+            return new Value(date, true);
+        case TIMESTAMP:
             // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
             // Dates are represented as described in the configuration for this bean in the List stringFormats
-            Date date = getDateFromStringValue(stringValue);
-            return new Value(date);
+            Date date2 = getDateFromStringValue(stringValue);
+            return new Value(date2, false);
 
         case INT:
             try {

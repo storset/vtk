@@ -48,6 +48,7 @@ public class DateValueFormatter implements ValueFormatter {
 
     private Map<String, FastDateFormat> namedDateFormats = new HashMap<String, FastDateFormat>();
     private Set<String> recognizedLocales = new HashSet<String>();
+    private boolean date = false;
 
     public DateValueFormatter() {
         this.recognizedLocales.add("no");
@@ -64,16 +65,30 @@ public class DateValueFormatter implements ValueFormatter {
         this.namedDateFormats.put("rfc-822", FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss Z", new Locale("en")));
     }
 
+    public DateValueFormatter(boolean date) {
+        this();
+        this.date = date;
+    }
+
     public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
 
-        if (value.getType() != PropertyType.Type.DATE) {
-            throw new IllegalValueTypeException(PropertyType.Type.DATE, value.getType());
+        if (value.getType() != PropertyType.Type.TIMESTAMP && value.getType() != PropertyType.Type.DATE) {
+            throw new IllegalValueTypeException(PropertyType.Type.TIMESTAMP, value.getType());
         }
 
         if (format == null) {
             format = this.defaultDateFormatKey;
         }
+        Date date = value.getDateValue();
 
+        
+        if (this.date && 
+                value.getType() == PropertyType.Type.DATE && 
+                format.contains("long") &&
+                date.getHours() == 0 && date.getMinutes() == 0) {
+            format = format.replace("long", "short");
+        }
+        
         FastDateFormat f = null;
 
         if (locale == null || !recognizedLocales.contains(locale.getLanguage())) {
@@ -95,7 +110,7 @@ public class DateValueFormatter implements ValueFormatter {
                 // XXX: formatter instances should be cached
                 f = FastDateFormat.getInstance(format, locale);
             }
-            return f.format(value.getDateValue());
+            return f.format(date);
         } catch (Throwable t) {
             return "Error: " + t.getMessage();
         }
@@ -140,13 +155,13 @@ public class DateValueFormatter implements ValueFormatter {
                 try {
                     SimpleDateFormat fsdf = new SimpleDateFormat(fallbackFormat, Locale.getDefault());
                     date = fsdf.parse(string);
-                    return new Value(date);
+                    return new Value(date, this.date);
                 } catch (ParseException t) { }
             }
             throw new IllegalArgumentException("Unable to parse to date value from '" + string + 
                     "' object using string format '" + format + "'", e);
         }
-        return new Value(date);
+        return new Value(date, this.date);
     }
 
 }

@@ -98,7 +98,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public Date getDateValue() throws IllegalOperationException {
-        if (this.value == null || getType() != PropertyType.Type.DATE) {
+        if (this.value == null || (getType() != PropertyType.Type.TIMESTAMP
+                && getType() != PropertyType.Type.DATE)) {
             throw new IllegalOperationException("Property " + this + " not of type Date");
         }
         
@@ -106,7 +107,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public void setDateValue(Date dateValue) throws ValueFormatException {
-        Value v = new Value(dateValue);
+        boolean date = false;
+        if (getType() == PropertyType.Type.DATE) {
+            date = true;
+        }
+        Value v = new Value(dateValue, date);
         setValue(v);
     }
 
@@ -309,6 +314,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
             break;
         case DATE:
+        case TIMESTAMP:
             if (value.getDateValue() == null) {
                 throw new ValueFormatException(
                     "Date value of property '" + this + "' cannot be null");

@@ -206,7 +206,7 @@
             <img src="${value}" width="100" height="100" alt="">
           </#if>
         </div>
-      <#elseif type = 'DATE'>
+      <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />
         <#local time = "" />

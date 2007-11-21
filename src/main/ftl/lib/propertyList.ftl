@@ -409,7 +409,7 @@
             ${valueItem.property.principalValue.name?html}
           </#if>
         <#-- type date -->
-        <#elseif valueItem.definition.type = "DATE">
+        <#elseif valueItem.definition.type = "DATE" || valueItem.definition.type = "TIMESTAMP">
           ${valueItem.property.dateValue?datetime?string.long}
         <#else>
           <#local label>

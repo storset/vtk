@@ -100,7 +100,7 @@
     
     <bean id="muvPubliseringsdatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="publiseringsdato" />
-        <property name="type" value="DATE" />
+        <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="muvPubliseringsdatoEvaluator" />

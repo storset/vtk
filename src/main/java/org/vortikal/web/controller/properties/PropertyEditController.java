@@ -397,7 +397,8 @@ public class PropertyEditController extends SimpleFormController
                     urlParameters.put("namespace", namespaceURI);
                 }
                 urlParameters.put("name", def.getName());
-                if (def.getType() == PropertyType.Type.DATE) {
+                if (def.getType() == PropertyType.Type.TIMESTAMP ||
+                        def.getType() == PropertyType.Type.DATE) {
                     format = this.dateFormat;
                 }
 
@@ -492,7 +493,8 @@ public class PropertyEditController extends SimpleFormController
 
         switch (value.getType()) {
 
-        case DATE:
+        case DATE:    
+        case TIMESTAMP:
             SimpleDateFormat format = new SimpleDateFormat(this.dateFormat);
             Date date = value.getDateValue();
             stringValue = format.format(date);

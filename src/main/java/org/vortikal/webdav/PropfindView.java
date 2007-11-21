@@ -563,7 +563,8 @@ public class PropfindView implements View, InitializingBean {
         
         // Format dates according to HTTP spec, 
         // use value's native string representation for other types.
-        if (property.getValue().getType() == PropertyType.Type.DATE) {
+        if (property.getValue().getType() == PropertyType.Type.TIMESTAMP
+                || property.getValue().getType() == PropertyType.Type.DATE) {
             propElement.setText(WebdavUtil.formatPropertyDateValue(property.getDateValue()));
         } else {
             propElement.setText(property.getValue().getNativeStringRepresentation());    
@@ -597,7 +598,8 @@ public class PropfindView implements View, InitializingBean {
 
             // Format dates according to HTTP spec, 
             // use value's native string representation for other types.
-            if (values[i].getType() == PropertyType.Type.DATE) {
+            if (values[i].getType() == PropertyType.Type.TIMESTAMP ||
+                    values[i].getType() == PropertyType.Type.DATE) {
                 valueElement.setText(WebdavUtil.formatPropertyDateValue(values[i].getDateValue()));
             } else {
                 valueElement.setText(values[i].getNativeStringRepresentation());

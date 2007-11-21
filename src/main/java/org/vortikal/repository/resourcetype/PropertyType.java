@@ -49,7 +49,8 @@ public final class PropertyType {
         IMAGE_REF (new StringValueFormatter()),
         INT (new IntValueFormatter()), 
         LONG (new LongValueFormatter()),
-        DATE (new DateValueFormatter()), 
+        TIMESTAMP (new DateValueFormatter()), 
+        DATE (new DateValueFormatter(true)), 
         BOOLEAN (new BooleanValueFormatter()), 
         PRINCIPAL (new PrincipalValueFormatter());
 

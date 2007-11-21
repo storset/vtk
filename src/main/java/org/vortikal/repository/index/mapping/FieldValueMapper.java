@@ -169,7 +169,8 @@ public final class FieldValueMapper {
             return fieldValue; // No need to decode any of these. Native String
             // representation already present in index.
 
-        case DATE:
+        case DATE:    
+        case TIMESTAMP:
             return Long.toString(FieldValueEncoder.decodeDateValueFromString(fieldValue));
 
         case INT:
@@ -193,7 +194,8 @@ public final class FieldValueMapper {
         case PRINCIPAL:
             return value.getNativeStringRepresentation();
 
-        case DATE:
+        case DATE:    
+        case TIMESTAMP:
             return FieldValueEncoder.encodeDateValueToString(value.getDateValue().getTime());
 
         case INT:
@@ -225,7 +227,8 @@ public final class FieldValueMapper {
         case PRINCIPAL:
             return stringValue;
 
-        case DATE:
+        case DATE:    
+        case TIMESTAMP:
             try {
                 long l = Long.parseLong(stringValue);
                 return FieldValueEncoder.encodeDateValueToString(l);

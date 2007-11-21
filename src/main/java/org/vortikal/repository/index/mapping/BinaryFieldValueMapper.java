@@ -57,8 +57,9 @@ public final class BinaryFieldValueMapper {
         case BOOLEAN:
             byteValue = FieldValueEncoder.encodeBooleanToBinary(value.getBooleanValue());
             break;
-            
-        case DATE:
+
+        case DATE:    
+        case TIMESTAMP:
             byteValue = FieldValueEncoder.encodeDateValueToBinary(value.getDateValue().getTime());
             break;
             
@@ -126,7 +127,11 @@ public final class BinaryFieldValueMapper {
             
         case DATE:
             long time = FieldValueEncoder.decodeDateValueFromBinary(value);
-            return new Value(new Date(time));
+            return new Value(new Date(time), true);
+
+        case TIMESTAMP:
+            long time2 = FieldValueEncoder.decodeDateValueFromBinary(value);
+            return new Value(new Date(time2), false);
             
         case INT:
             int n = FieldValueEncoder.decodeIntegerFromBinary(value);

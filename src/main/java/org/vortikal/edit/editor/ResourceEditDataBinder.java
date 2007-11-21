@@ -74,7 +74,8 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             for (PropertyTypeDefinition propDef: command.getContentProperties()) {
                 
                 String value = null;
-                if (propDef.getType().equals(PropertyType.Type.DATE)) {
+                if (propDef.getType().equals(PropertyType.Type.TIMESTAMP) ||
+                        propDef.getType().equals(PropertyType.Type.DATE)) {
                     value = request.getParameter("resource." + propDef.getName() + ".date");
                     String time = request.getParameter("resource." + propDef.getName() + ".time");
                     if (value != null && time != null) {

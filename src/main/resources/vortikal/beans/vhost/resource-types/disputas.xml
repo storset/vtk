@@ -82,7 +82,7 @@
     <bean id="disputasStarttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.start" />
-        <property name="type" value="DATE" />
+        <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="disputasStarttidspunktEvaluator" />
@@ -96,7 +96,7 @@
     <bean id="disputasSluttidspunktPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
         <property name="name" value="tid-og-sted.slutt" />
-        <property name="type" value="DATE" />
+        <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
         <property name="contentModificationEvaluator" ref="disputasSluttidspunktEvaluator" />

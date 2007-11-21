@@ -66,10 +66,15 @@ public final class Value implements Cloneable, Comparable<Value> {
         this.booleanValue = booleanValue;
     }
 
-    public Value(Date dateValue) {
+    public Value(Date dateValue, boolean date) {
         if (dateValue == null)
             throw new IllegalArgumentException("Value object cannot be null");
-        this.type = PropertyType.Type.DATE;
+
+        if (!date) {
+            this.type = PropertyType.Type.TIMESTAMP;
+        } else {
+            this.type = PropertyType.Type.DATE;
+        }
         this.dateValue = (Date)dateValue.clone();
     }
 
@@ -131,7 +136,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             case BOOLEAN:
                 return Boolean.valueOf(this.booleanValue);
             
-            case DATE:
+            case DATE:    
+            case TIMESTAMP:
                 return this.dateValue.clone();
             
             case INT:
@@ -171,7 +177,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             return (this.intValue == v.getIntValue());
         case LONG:
             return (this.longValue == v.getLongValue());
-        case DATE:
+        case DATE:    
+        case TIMESTAMP:
             return (this.dateValue == null && v.getDateValue() == null) ||
                 (this.dateValue != null && this.dateValue.equals(v.getDateValue()));
         case PRINCIPAL:
@@ -194,6 +201,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case LONG:
             return hash + 3 + (int)(this.longValue ^ (this.longValue >>> 32));
         case DATE:    
+        case TIMESTAMP:    
             return hash + 4 + (this.dateValue == null ? 0 : this.dateValue.hashCode());
         case PRINCIPAL:
             return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
@@ -213,7 +221,9 @@ public final class Value implements Cloneable, Comparable<Value> {
         case LONG:
             return new Value(this.longValue);
         case DATE:    
-            return new Value((Date)this.dateValue.clone());
+            return new Value((Date)this.dateValue.clone(), true);
+        case TIMESTAMP:    
+            return new Value((Date)this.dateValue.clone(), false);
         case PRINCIPAL:
             return new Value(this.principalValue);
         default:
@@ -233,6 +243,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case LONG:
             return Long.valueOf(this.longValue).compareTo(other.longValue);
         case DATE:    
+        case TIMESTAMP:    
             return this.dateValue.compareTo(other.dateValue);
         case PRINCIPAL:
             return this.principalValue.getQualifiedName().compareTo(
@@ -256,7 +267,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             case LONG:
                 sb.append(this.longValue);
                 break;
-            case DATE:
+            case DATE:    
+            case TIMESTAMP:
                 sb.append(this.dateValue);
                 break;
             case BOOLEAN:
@@ -281,7 +293,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             representation = this.booleanValue ? "true" : "false";
             break;
             
-        case DATE:
+        case DATE:    
+        case TIMESTAMP:
             Date date = this.dateValue;
             
             if (date == null) {

@@ -474,10 +474,10 @@ public class ProppatchController extends AbstractWebdavController  {
     protected Value elementToValue(Element element, PropertyTypeDefinition def) throws ValueFormatException {
         String stringValue = element.getText();
         
-        if (def.getType() == PropertyType.Type.DATE) {
+        if (def.getType() == PropertyType.Type.TIMESTAMP || def.getType() == PropertyType.Type.DATE) {
             // Try to be liberal in accepting date formats:
             try {
-                return new Value(WebdavUtil.parsePropertyDateValue(stringValue));
+                return new Value(WebdavUtil.parsePropertyDateValue(stringValue), def.getType() == PropertyType.Type.DATE);
             } catch (ParseException e) {
                 try {
                     return def.getValueFormatter().stringToValue(stringValue, null, null);
@@ -516,11 +516,11 @@ public class ProppatchController extends AbstractWebdavController  {
         }
     
         Value[] values;
-        if (def.getType() == PropertyType.Type.DATE) {
+        if (def.getType() == PropertyType.Type.TIMESTAMP || def.getType() == PropertyType.Type.DATE) {
             values = new Value[stringValues.length];
             try {
                 for (int i=0; i<values.length; i++) {
-                    values[i] = new Value(WebdavUtil.parsePropertyDateValue(stringValues[i]));
+                    values[i] = new Value(WebdavUtil.parsePropertyDateValue(stringValues[i]), def.getType() == PropertyType.Type.DATE);
                 }
             } catch (ParseException e) {
                 throw new ValueFormatException(e.getMessage());

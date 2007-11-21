@@ -16,7 +16,7 @@
 <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
 <#if prop != "">
   <#local type = prop.definition.type />
-  <#if type = 'DATE'>
+  <#if type = 'DATE' || type = 'TIMESTAMP'>
     <#local locale = springMacroRequestContext.getLocale() />
     <#return prop.getFormattedValue("long", locale) />
   <#else>

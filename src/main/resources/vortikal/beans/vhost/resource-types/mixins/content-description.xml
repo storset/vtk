@@ -29,7 +29,7 @@
 
 <!--  <bean id="validToDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="validToDate" /> 
-    <property name="type" value="DATE" />
+    <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="contentModificationEvaluator" ref="validToEvaluator"/>
@@ -41,7 +41,7 @@
 -->
   <bean id="verifiedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
     <property name="name" value="verifiedDate" /> 
-    <property name="type" value="DATE" />
+    <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>

@@ -44,12 +44,6 @@
   </bean>
 
 
-  <bean id="editor.lockResourceHandlerInterceptor"
-        class="org.vortikal.web.controller.LockResourceHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
-  </bean>
-
-
   <bean id="resourceTypeIsArticle" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="articleResourceTypeDefinition" />
   </bean>
@@ -72,11 +66,6 @@
     </property>
     <property name="attributes">
       <map><entry key="tabOrder"><value type="java.lang.Integer">152</value></entry></map>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="editor.lockResourceHandlerInterceptor" />
-      </list>
     </property>
     <property name="handler" ref="editor.editHandler" />
   </bean>

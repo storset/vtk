@@ -35,9 +35,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.FailedDependencyException;
+import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -124,6 +132,19 @@ public class ResourceWrapperManager {
 
     @Required public void setContentResourceType(ResourceTypeDefinition contentResourceType) {
         this.contentResourceType = contentResourceType;
+    }
+
+    public void unlock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException, FailedDependencyException, ResourceLockedException, IllegalOperationException, AuthenticationException, IOException {
+        String token = SecurityContext.getSecurityContext().getToken();
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        this.repository.unlock(token, uri, null);
+    }
+
+    public void lock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException, ResourceLockedException, AuthenticationException, IOException {
+        String token = SecurityContext.getSecurityContext().getToken();
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        this.repository.lock(token, uri, principal.getQualifiedName(), "0", 600, null);
     }
 
 

@@ -43,7 +43,6 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
@@ -78,7 +77,8 @@ public class ResourceEditController extends SimpleFormController {
         }
                 
         resourceManager.store(wrapper);
-
+        resourceManager.unlock();
+        
         if (!wrapper.isQuit()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
@@ -104,6 +104,7 @@ public class ResourceEditController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
 
+        resourceManager.lock();
         return resourceManager.createResourceEditWrapper();
     }
 

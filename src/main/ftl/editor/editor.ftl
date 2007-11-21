@@ -143,7 +143,7 @@
       <#if error != ""><span class="error">${error}</span></#if> 
 
       <#if type = 'HTML'>
-        <textarea id="resource.${name}" name="resource.${name}" rows="8" cols="60">${value?html}</textarea>
+        <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
 
       <#elseif name = 'media-ref'><#-- XXX -->
@@ -234,8 +234,7 @@
         <input size="10" type="text" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
-        <input size="2" maxlength="2" type="text" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}">&nbsp;:&nbsp;
-        <input size="2" maxlength="2" type="text" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+        <input size="2" maxlength="2" type="text" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
         <script type="text/javascript"><!--
 

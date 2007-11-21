@@ -59,25 +59,57 @@
       }
       
       p {line-height: 1.4em; margin-bottom: 0.5em;}
+      
       h1 {
         color: #2b450f;
 	font-size: 26px;
 	font-weight: normal;
       }
+
       h2 {
         font-size: 1em;
         font-weight: bold;
       }
 
-      .introduction {font-weight: bold;line-height: 1.4em;}
-      .introduction img {float:right; margin: 0 0 .5em .5em;}
       .byline {
 	border-top: 1px dotted rgb(160,175,131);
 	font-size: 11px;
 	line-height: 1.2em;
       }
-      .bodyText p {margin-bottom: 18px;
+
+      /* Ingress */
+
+      .introduction {}
+
+      /* Bilde uten bildetekst */
+
+      img.introduction-image {
+      margin: 0.75em 0;
       }
+
+      /* Bilde med bildetekst */
+
+      div.introduction-image {
+      margin: 0.75em 0;
+      border:1px solid #ddd; 
+      }
+
+      div.introduction-image img {
+      }
+
+      div.introduction-image div.text {
+      overflow: hidden;
+      padding: 0.5em; 
+      background-color: #eee;
+      }
+
+      div.introduction-image div.text span.title{
+      font-weight: bold;
+      }
+
+      .bodyText p {margin-bottom: 18px;
+      } 
+           
     </style>
 </head>
   <body>
@@ -88,6 +120,43 @@
       <div class="introduction">
         ${introduction}
       </div>
+    </#if>
+
+    <#assign imageRes = propResource("picture") />
+    <#assign introductionImage = propValue("picture") />
+    <#if introductionImage != "">
+      <#if imageRes == "">
+        <img class="introduction-image" src="${introductionImage}" alt="ingressbilde" />
+      <#else>
+
+        <#assign userTitle = imageRes.getValueByName("userTitle")?default("") />
+        <#assign desc = imageRes.getValueByName("description")?default("") />
+
+	<#if userTitle == "" && desc == "">  
+          <img class="introduction-image" src="${introductionImage}" alt="ingressbilde-2" />
+	<#else>
+          <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
+          <#if pixelWidth != "">
+            <#assign style = "width:" + pixelWidth+ "px;" />
+          </#if>
+	 	 
+          <div class="introduction-image" style="${style}">
+	    <#if userTitle != "">
+	      <img src="${introductionImage}" alt="${userTitle}" />
+	    <#else>
+	      <img src="${introductionImage}" alt="ingressbilde" />
+	    </#if>
+            <div class="text">
+	      <#if userTitle != "">
+		<span class="title">${userTitle}<#if desc != "">: </#if></span>
+	      </#if>
+	      <#if desc != "">
+		<span class="description">${desc}</span>
+	      </#if>
+	    </div> 
+	  </div>
+	</#if>
+      </#if>
     </#if>
 
     <#assign authors = propValue("authors") />
@@ -101,26 +170,6 @@
       ${published}
     </#if>
 </div>
-        <#assign imageRes = propResource("picture") />
-        <#assign introductionImage = propValue("picture") />
-        <#if introductionImage != "">
-          <div>
-          <#if imageRes == "">
-            <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
-          <#else>
-              <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
-              <#assign style = "background-color: #e3e8d8;" />
-              <#if pixelWidth != "">
-                <#assign style = style + "width:" + pixelWidth+ "px;" />
-              </#if>
-            <div style="${style}">
-              <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
-              <#assign desc = imageRes.getValueByName("description")?default("") />
-              <p>${imageRes.title}: ${desc?html}</p>
-              </div>
-          </#if>
-          </div>
-        </#if>
 
     <#assign start = propValue("start-date") />
     <#assign end = propValue("end-date") />

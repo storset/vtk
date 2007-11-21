@@ -58,6 +58,7 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
     private Service deleteCommentService;
     private Service deleteAllCommentsService;
     private Service loginService;
+    private Service resourceCommentsFeedService;
     private String formSessionAttributeName;
     
 
@@ -76,6 +77,10 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
     
     @Required public void setDeleteAllCommentsService(Service deleteAllCommentsService) {
         this.deleteAllCommentsService = deleteAllCommentsService;
+    }
+    
+    public void setResourceCommentsFeedService(Service resourceCommentsFeedService) {
+        this.resourceCommentsFeedService = resourceCommentsFeedService;
     }
     
     public void setLoginService(Service loginService) {
@@ -163,6 +168,12 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
             } catch (Exception e) { }
         }
 
+        if (this.resourceCommentsFeedService != null) {
+            try {
+                URL feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
+                model.put("feedURL", feedURL);
+            } catch (Exception e) { }
+        }
     }
 
 

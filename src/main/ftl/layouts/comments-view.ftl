@@ -49,6 +49,9 @@
       </#assign>
 
     <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
+    <#if feedURL?exists>
+      <a href="${feedURL?html}">RSS</a>
+    </#if>
   </#if>
  </div>
 

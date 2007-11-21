@@ -209,7 +209,8 @@
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />
-        <#local time = "" />
+        <#local hours = "" />
+        <#local minutes = "" />
         <#if value != "">
           <#local d = resource.getProperty(propDef) />
 
@@ -218,9 +219,13 @@
           <#local month = d.getDateValue()?string("MM") />
           <#local jsmonth = ((d.getDateValue()?string("MM"))?number - 1)?string />
           <#local date = d.getDateValue()?string("dd") />
-          <#local time = d.getFormattedValue('HH:mm', springMacroRequestContext.getLocale()) />
-          <#if time == "00:00">
-            <#local time = "" />
+          <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
+          <#if hours = "00">
+            <#local hours = "" />
+          </#if>
+          <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
+          <#if minutes = "00">
+            <#local minutes = "" />
           </#if>
         </#if>
 
@@ -229,7 +234,8 @@
         <input size="10" type="text" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
-        <input size="5" type="text" id="resource.${name}.time" name="resource.${name}.time" value="${time}">
+        <input size="2" maxlength="2" type="text" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}">&nbsp;:&nbsp;
+        <input size="2" maxlength="2" type="text" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
         <script type="text/javascript"><!--
 

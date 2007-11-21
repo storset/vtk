@@ -111,7 +111,7 @@
             <table style="background-color: #e3e8d8;"><tr><td>
               <img class="introduction" src="${introductionImage}" alt="ingressbilde" />
               <#assign desc = imageRes.getValueByName("description")?default("") />
-              <p>${imageRes.title}: ${desc}</p>
+              <p>${imageRes.title}: ${desc?html}</p>
             </td></tr></table>
           </#if>
           </div>

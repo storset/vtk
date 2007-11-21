@@ -67,8 +67,86 @@
         class="org.vortikal.edit.editor.ResourceWrapperManager"
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="articleResourceTypeDefinition" />
   </bean>
 
+
+  <bean id="resourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="keepComments" value="false" />
+    <property name="illegalElements" ref="resourceManager.htmlPropsFilter.illegalHtmlElementSet" />
+    <property name="validElements" ref="resourceManager.htmlPropsFilter.validHtmlElementSet" />
+  </bean>
+
+  <bean id="resourceManager.htmlPropsFilter.illegalHtmlElementSet"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <value>script</value>
+        <value>style</value>
+        <value>form</value>
+        <value>input</value>
+        <value>frameset</value>
+        <value>frame</value>
+        <value>iframe</value>
+        <value>object</value>
+        <value>embed</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="resourceManager.htmlPropsFilter.validHtmlElementSet"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sub" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sup" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+        <!--
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+        </bean>
+        -->
+      </set>
+    </property>
+  </bean>
 
 </beans>

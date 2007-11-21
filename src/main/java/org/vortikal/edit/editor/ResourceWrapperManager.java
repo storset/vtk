@@ -48,6 +48,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
@@ -56,12 +57,17 @@ public class ResourceWrapperManager {
 
     private Repository repository;
     private HtmlPageParser htmlParser;
+    private HtmlPageFilter htmlPropsFilter;
     private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
     private ResourceTypeDefinition contentResourceType;
 
     
     public HtmlPageParser getHtmlParser() {
         return this.htmlParser;
+    }
+    
+    public HtmlPageFilter getHtmlPropsFilter() {
+        return htmlPropsFilter;
     }
 
     public ResourceWrapper createResourceWrapper(String uri) throws IOException, Exception {
@@ -134,6 +140,10 @@ public class ResourceWrapperManager {
         this.contentResourceType = contentResourceType;
     }
 
+    @Required public void setHtmlPropsFilter(HtmlPageFilter htmlPropsFilter) {
+        this.htmlPropsFilter = htmlPropsFilter;
+    }
+
     public void unlock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException, FailedDependencyException, ResourceLockedException, IllegalOperationException, AuthenticationException, IOException {
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
@@ -146,6 +156,5 @@ public class ResourceWrapperManager {
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         this.repository.lock(token, uri, principal.getQualifiedName(), "0", 600, null);
     }
-
 
 }

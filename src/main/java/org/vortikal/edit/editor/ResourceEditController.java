@@ -94,10 +94,11 @@ public class ResourceEditController extends SimpleFormController {
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command)
     throws Exception {
-         ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(), resourceManager.getHtmlParser());
-         prepareBinder(binder);
-         initBinder(request, binder);
-         return binder;
+        ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(), 
+                 resourceManager.getHtmlParser(), resourceManager.getHtmlPropsFilter());
+        prepareBinder(binder);
+        initBinder(request, binder);
+        return binder;
     }
         
     @Override
@@ -124,8 +125,6 @@ public class ResourceEditController extends SimpleFormController {
         model.put("tooltips", resolveTooltips(resource, principal));
         return model;
     }
-
-
 
     public void setTooltipServices(List<Service> tooltipServices) {
         this.tooltipServices = tooltipServices;

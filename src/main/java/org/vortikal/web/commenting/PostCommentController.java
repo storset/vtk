@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.commenting;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,10 +50,9 @@ import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlElementDescriptor;
-import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
-import org.vortikal.text.html.SimpleHtmlPageFilter;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -194,20 +191,22 @@ public class PostCommentController extends SimpleFormController {
 
     protected String parseContent(String text) throws Exception {
         if (this.parser != null) {
-            text = "<html><head></head><body>" + text + "</body></html>";
-            InputStream is = new ByteArrayInputStream(text.getBytes("utf-8"));
-            HtmlPage page = this.parser.parse(is, "utf-8");
-
-            page.filter(new SimpleHtmlPageFilter(this.illegalElements, this.validElements, false));
-
-            if (isEmptyContent(page.getRootElement())) {
+            HtmlFragment fragment = this.parser.parseFragment(text);
+            List<HtmlContent> nodes = fragment.getContent();
+            boolean empty = true;
+            for (HtmlContent c : nodes) {
+                if (!isEmptyContent(c)) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (empty) {
                 return null;
             }
 
-            HtmlContent[] toplevel = page.getRootElement().getChildNodes();
-            StringBuilder result = new StringBuilder();
+            nodes = trimNodes(nodes);
 
-            List<HtmlContent> nodes = trimChildren(page.getRootElement());
+            StringBuilder result = new StringBuilder();
             for (int i = 0; i < nodes.size(); i++) {
                 HtmlContent c = nodes.get(i);
                 
@@ -218,7 +217,7 @@ public class PostCommentController extends SimpleFormController {
                 } else if (c instanceof HtmlText) {
                     childContent = c.getContent();
                 } 
-                if ((i == 0 || i == toplevel.length - 1) && !childContent.trim().startsWith("<")) {
+                if ((i == 0 || i == nodes.size() - 1) && !childContent.trim().startsWith("<")) {
                     // Wrap top-level text nodes in a <p>:
                     result.append("<p>").append(childContent).append("</p>");
                 } else {
@@ -230,19 +229,19 @@ public class PostCommentController extends SimpleFormController {
         return text;
     }
 
-    private List<HtmlContent> trimChildren(HtmlElement root) {
+    private List<HtmlContent> trimNodes(List<HtmlContent> nodes) {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         boolean contentBegun = false;
-        for (HtmlContent child: root.getChildNodes()) {
-            if (!contentBegun && (child instanceof HtmlText)) {
-                String childContent = child.getContent();
+        for (HtmlContent node: nodes) {
+            if (!contentBegun && (node instanceof HtmlText)) {
+                String childContent = node.getContent();
                 if (childContent.trim().equals("")) {
                     continue;
                 } else if (!contentBegun) {
                     contentBegun = true;
                 }
             }
-            result.add(child);
+            result.add(node);
         }
 
         for (int i = result.size() - 1; i > 0; i--) {

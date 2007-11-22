@@ -28,58 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.html;
+package org.vortikal.text.htmlparser;
 
-import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * Simple HTML parser interface.
- */
-public interface HtmlPageParser {
+import org.vortikal.text.html.EnclosingHtmlContent;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPageFilter;
 
-    /**
-     * Parses HTML from an input stream.
-     *
-     * @param in the input stream
-     * @param encoding the character encoding of the stream
-     * @return a the parsed HTML page
-     * @exception Exception if an error occurs
-     */
-    public HtmlPage parse(InputStream in, String encoding) throws Exception;
+public class HtmlFragmentImpl implements HtmlFragment {
 
-
-    /**
-     * Parses HTML from an input stream, applying a node filter.
-     *
-     * @param in the input stream
-     * @param encoding the character encoding of the stream
-     * @return a the parsed HTML page
-     * @exception Exception if an error occurs
-     */
-    public HtmlPage parse(InputStream in, String encoding, HtmlNodeFilter filter)
-        throws Exception;
-
-
-    /**
-     * Parses HTML from an input stream, applying a list of node
-     * filters.
-     *
-     * @param in the input stream
-     * @param encoding the character encoding of the stream
-     * @return a the parsed HTML page
-     * @exception Exception if an error occurs
-     */
-    public HtmlPage parse(InputStream in, String encoding, List<HtmlNodeFilter> filters)
-        throws Exception;
+    private List<HtmlContent> content;
     
-    /**
-     * Parses a (possibly incomplete) HTML fragment from a string.
-     *
-     * @param html the HTML fragment
-     * @return the HTML fragment parsed into a list of HTML nodes
-     * @exception Exception if an error occurs
-     */
-    public HtmlFragment parseFragment(String html) throws Exception;
+    public HtmlFragmentImpl(List<HtmlContent> content) {
+        if (content == null) throw new IllegalArgumentException("Constructor argument cannot be NULL");
+        this.content = content;
+    }
 
+    public List<HtmlContent> getContent() {
+        return Collections.unmodifiableList(this.content);
+    }
+
+    public void filter(HtmlPageFilter filter) {
+        this.content = HtmlPageImpl.filterContent(this.content, filter);
+    }
+    
+    public String getStringRepresentation() {
+        StringBuilder result = new StringBuilder();
+        for (HtmlContent c : this.content) {
+            if (c instanceof EnclosingHtmlContent) {
+                result.append(((EnclosingHtmlContent) c).getEnclosedContent());
+            } else {
+                result.append(c.getContent());
+            }
+        }
+        return result.toString();
+    }
 }

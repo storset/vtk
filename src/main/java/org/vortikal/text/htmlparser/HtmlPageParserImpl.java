@@ -30,8 +30,10 @@
  */
 package org.vortikal.text.htmlparser;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,9 +51,9 @@ import org.htmlparser.lexer.Page;
 import org.htmlparser.tags.DoctypeTag;
 import org.htmlparser.tags.ProcessingInstructionTag;
 import org.htmlparser.util.NodeList;
-
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -95,6 +97,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return parse(in, encoding, filters);
     }
     
+    
 
     public HtmlPage parse(InputStream in, String encoding, List<HtmlNodeFilter> filters)
         throws Exception {
@@ -111,6 +114,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         for (String tag: this.emptyTags) {
             factory.registerTag(new EmptyTag(new String[]{tag}));
         }
+        factory.registerTag(new CompositeTag(new String[] {this.getClass().getName()}));
         parser.setNodeFactory(factory);
 
         NodeList nodeList = parser.parse(null);
@@ -134,6 +138,22 @@ public class HtmlPageParserImpl implements HtmlPageParser {
             rootElement.setChildNodes(new HtmlContent[]{html});
         }
         return new HtmlPageImpl(rootElement, doctype);
+    }
+    
+    public HtmlFragment parseFragment(String html) throws Exception {
+        String className = this.getClass().getName();
+        StringBuilder s = new StringBuilder();
+        s.append("<").append(className).append(">");
+        s.append(html);
+        s.append("</").append(className).append(">");
+        ByteArrayInputStream in = new ByteArrayInputStream(s.toString().getBytes("utf-8"));
+        HtmlPage page = parse(in, "utf-8");
+        HtmlElement root = page.getRootElement();
+        if (!className.equals(root.getName())) {
+            throw new HtmlPageParserException("Unable to parse HTML: invalid document");
+        }
+        List<HtmlContent> content = Arrays.asList(root.getChildNodes());
+        return new HtmlFragmentImpl(content);
     }
 
 
@@ -255,7 +275,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
     private void addAttributes(HtmlElementImpl element, Tag tag) {
         String name = tag.getRawTagName();
-        Vector attrs = tag.getAttributesEx();
+        Vector<?> attrs = tag.getAttributesEx();
         for (int i = 0; i < attrs.size(); i++) {
             Attribute attr = (Attribute) attrs.get(i);
             if (attr != null && !attr.isWhitespace()) {

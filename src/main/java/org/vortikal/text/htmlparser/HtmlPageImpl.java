@@ -74,7 +74,7 @@ public class HtmlPageImpl implements HtmlPage {
     }
     
     
-    private List<HtmlContent> filterContent(List<HtmlContent> nodeList, HtmlPageFilter filter) {
+    static List<HtmlContent> filterContent(List<HtmlContent> nodeList, HtmlPageFilter filter) {
         List<HtmlContent> resultList = new ArrayList<HtmlContent>();
 
         for (HtmlContent node: nodeList) {

@@ -41,6 +41,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
@@ -156,12 +157,11 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             }
             prop.setValues(values);
         } else if (prop.getDefinition().getType() == PropertyType.Type.HTML) { 
-            String html = "<html><head></head><body>" + valueString + "</body></html>";
+            
             try {
-                ByteArrayInputStream in = new ByteArrayInputStream(html.getBytes("utf-8"));
-                HtmlPage page = this.htmlParser.parse(in, "utf-8");
-                page.filter(this.htmlPropsFilter);
-                Value value = new Value(page.getRootElement().getContent());
+                HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
+                fragment.filter(this.htmlPropsFilter);
+                Value value = new Value(fragment.getStringRepresentation());
                 prop.setValue(value);
             } catch (Throwable t) {
                 throw new IllegalArgumentException(t);

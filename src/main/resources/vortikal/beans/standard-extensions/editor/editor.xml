@@ -4,41 +4,12 @@
 
 <beans>
   
-  <bean id="editor.userAgentAssertion" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
-    <property name="header" value="User-Agent" />
-    <property name="patterns">
-      <list>
-        <!-- FIXME: These tests must be improved -->
-
-        <!-- IE -->
-        <value>Mozilla/4\.0 \(compatible; MSIE 7\.0; Windows.*</value>
-        <value>Mozilla/4\.0 \(compatible; MSIE 6\.0; Windows.*</value>
-        <value>Mozilla/4\.0 \(compatible; MSIE 5\.5; Windows.*</value>
-        
-        <!-- Mozilla -->
-        <value>Mozilla/5\.0.*rv:1\.7\..*Gecko.*</value>
-        <value>Mozilla/5\.0.*rv:1\.8\..*Gecko.*</value>
-
-        <!-- Firefox -->
-        <value>Mozilla/5\.0.*Gecko.*Firefox/1\..*</value>
-
-        <!-- Camino -->
-        <value>Mozilla/5\.0.*Gecko.*Camino/.*</value>
-
-        <!-- Opera 9.01 (linux) not working 
-             <value>Mozilla/4\.0 \(compatible; .*\) Opera 9\.01</value>
-        -->
-      </list>
-    </property>
-  </bean>
-
   <bean id="editor.service" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />
     <property name="assertions">
       <list>
         <ref bean="editor.modeParameterAssertion" />
-        <ref bean="editor.userAgentAssertion" />
       </list>
     </property>
   </bean>

@@ -68,7 +68,7 @@
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="articleResourceTypeDefinition" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
   </bean>
 
 

@@ -387,18 +387,18 @@
   </bean>
 
 
-  <bean id="displayArticleService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="displayDocumentService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="displayHTMLResourceService" />
     <property name="assertions">
       <list>
-        <ref bean="resourceTypeIsArticle" />
+        <ref bean="resourceTypeIsDocument" />
       </list>
     </property>
     <property name="handler" ref="displayArticleHandler" />
   </bean>
   
-  <bean id="resourceTypeIsArticle" class="org.vortikal.web.service.ResourceTypeAssertion">
-    <property name="resourceTypeDefinition" ref="articleResourceTypeDefinition" />
+  <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
   </bean>
 
   <!-- **************** -->

@@ -3,11 +3,37 @@
 
 <beans>
 
-  <bean id="articleResourceTypeDefinition"
+  <bean id="documentResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="article"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="isDocumentAssertion" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="introductionPropDef" />
+        <ref bean="introductionImagePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="isDocumentAssertion" 
+        class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="xhtml10-type" />    
+    <property name="value" value="article" />
+    <property name="checkExistenceOnly" value="true" />
+  </bean>
+
+  <bean id="articleResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="article"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="documentResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <ref bean="isArticleAssertion" />
@@ -15,8 +41,6 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="introductionPropDef" />
-        <ref bean="introductionImagePropDef" />
         <ref bean="mediaReferencePropDef" />
         <ref bean="authorsPropDef" />
         <ref bean="publishedDatePropDef" />
@@ -29,7 +53,6 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="xhtml10-type" />    
     <property name="value" value="article" />
-    <property name="checkExistenceOnly" value="true" />
   </bean>
 
   <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

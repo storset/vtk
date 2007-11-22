@@ -234,6 +234,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
             parent.setLabel(parent.getLabel() + " parent-folder");
             items.add(0, parent);
+
+            if (menu.getActiveItem() == null && 
+                    menuRequest.getCurrentURI().startsWith(menuRequest.getURI())) {
+                parent.setActive(true);
+                menu.setActiveItem(parent);
+            }
         }
 
         menu.addAllItems(items);

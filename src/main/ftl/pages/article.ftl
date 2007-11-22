@@ -52,7 +52,7 @@
 
     <style type="text/css">
 
-      body {
+/*      body {
         font-family: arial,helvetica,"helvetica neue",sans-serif;
         font-size: 75%;
         color: #636363;
@@ -75,7 +75,9 @@
 	border-top: 1px dotted rgb(160,175,131);
 	font-size: 11px;
 	line-height: 1.2em;
-      }
+      } 
+
+*/
 
       /* Ingress */
 
@@ -84,14 +86,17 @@
       /* Bilde uten bildetekst */
 
       img.introduction-image {
-      margin: 0.75em 0;
+      float: left;
+      margin: 0em 0.75em 0.5em 0;
+      border:1px solid #ddd; 
       }
 
       /* Bilde med bildetekst */
 
       div.introduction-image {
-      margin: 0.75em 0;
       border:1px solid #ddd; 
+      float: left;
+      margin: 0em 0.75em 0.5em 0;
       }
 
       div.introduction-image img {
@@ -107,20 +112,14 @@
       font-weight: bold;
       }
 
-      .bodyText p {margin-bottom: 18px;
-      } 
+     /* Body /*  
+
+     .bodyText p {} 
            
     </style>
 </head>
   <body>
     <h1>${title}</h1>
-
-    <#assign introduction = propValue("introduction") />
-    <#if introduction != "">
-      <div class="introduction">
-        ${introduction}
-      </div>
-    </#if>
 
     <#assign imageRes = propResource("picture") />
     <#assign introductionImage = propValue("picture") />
@@ -157,6 +156,13 @@
 	  </div>
 	</#if>
       </#if>
+    </#if>
+
+    <#assign introduction = propValue("introduction") />
+    <#if introduction != "">
+      <div class="introduction">
+        ${introduction}
+      </div>
     </#if>
 
     <#assign authors = propValue("authors") />

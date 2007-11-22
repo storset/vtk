@@ -141,16 +141,16 @@
 	 	 
           <div class="introduction-image" style="${style}">
 	    <#if userTitle != "">
-	      <img src="${introductionImage}" alt="${userTitle}" />
+	      <img src="${introductionImage}" alt="${userTitle?html}" />
 	    <#else>
 	      <img src="${introductionImage}" alt="ingressbilde" />
 	    </#if>
             <div class="text">
 	      <#if userTitle != "">
-		<span class="title">${userTitle}<#if desc != "">: </#if></span>
+		<span class="title">${userTitle?html}<#if desc != "">: </#if></span>
 	      </#if>
 	      <#if desc != "">
-		<span class="description">${desc}</span>
+		<span class="description">${desc?html}</span>
 	      </#if>
 	    </div> 
 	  </div>
@@ -169,9 +169,9 @@
     <#assign published = propValue("published-date") />
 <div class="byline">
     <#if authors != "" && published != "">
-      Av ${authors} <br />${published}
+      Av ${authors?html} <br />${published}
     <#elseif authors != "">
-      Av ${authors}
+      Av ${authors?html}
     <#elseif published != "">
       ${published}
     </#if>

@@ -104,33 +104,64 @@
 </html>
 
 <#macro handleProps>
-  <#--
+
     <script type="text/javascript">
       window.onbeforeunload = confirmExit;
 
       function propChange() {
-        <#local keyNames = resource.contentProperties />
-        <#list keyNames as propDef>
+        <#list resource.contentProperties as propDef>
           <#local name = propDef.name />
           <#local value = resource.getValue(propDef) />
-          if ('${value}' != document.getElementById('resource.${name}').value) {
-            return true;
-          }
+          <#local type = propDef.type />
+          <#if type = 'HTML'>
+            if (FCKeditorAPI.GetInstance('resource.${name}').IsDirty()) {
+              return true;
+            }
+          <#elseif type = 'DATE' || type = 'TIMESTAMP'>
+            <#local dateVal = value />
+            <#local hours = "" />
+            <#local minutes = "" />
+            <#if value != "">
+              <#local d = resource.getProperty(propDef) />
+
+              <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
+              <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
+              <#if hours = "00">
+                <#local hours = "" />
+              </#if>
+              <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
+              <#if minutes = "00">
+                <#local minutes = "" />
+              </#if>
+            </#if>
+            if ('${dateVal}' != document.getElementById('resource.${name}').value) {
+              return true;
+            }
+            if ('${hours}' != document.getElementById('resource.${name}.hours').value) {
+              return true;
+            }
+            if ('${minutes}' != document.getElementById('resource.${name}.minutes').value) {
+              return true;
+            }            
+          <#else>
+            if ('${value}' != document.getElementById('resource.${name}').value) {
+              return true;
+            }
+          </#if>
         </#list>
         return false;
       }
 
       function confirmExit() {
-        var contentChange = (propChange() || FCKeditorAPI.GetInstance('content').IsDirty());
+        var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
         if (needToConfirm && contentChange) {
           return "You have unsaved changes. Are you sure you want to leave this page?";
         }
       }
     </script>
-   -->
+
     <#local locale = springMacroRequestContext.getLocale() />
-    <#local keys = resource.contentProperties />
-    <#list keys as propDef>
+    <#list resource.contentProperties as propDef>
       <#local localizedName = propDef.getLocalizedName(locale) />
       <#local name = propDef.name />
       <#local value = resource.getValue(propDef) />

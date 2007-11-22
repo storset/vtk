@@ -46,80 +46,66 @@
   <#assign title = "Missing title" />
 </#if>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head><title>${title}</title>
 
     <style type="text/css">
 
-/*      body {
-        font-family: arial,helvetica,"helvetica neue",sans-serif;
-        font-size: 75%;
-        color: #636363;
-      }
-      
-      p {line-height: 1.4em; margin-bottom: 0.5em;}
-      
-      h1 {
-        color: #2b450f;
-	font-size: 26px;
-	font-weight: normal;
-      }
-
-      h2 {
-        font-size: 1em;
-        font-weight: bold;
-      }
-
-      .byline {
-	border-top: 1px dotted rgb(160,175,131);
-	font-size: 11px;
-	line-height: 1.2em;
-      } 
-
-*/
-
       /* Ingress */
 
-      .introduction {}
+      div.introduction {margin:0;padding:0;}
 
       /* Bilde uten bildetekst */
 
       img.introduction-image {
-      float: left;
-      margin: 0em 0.75em 0.5em 0;
-      border:1px solid #ddd; 
+        float: right;
+        margin: 0 0 0.5em 0.75em;
+        border:1px solid #ddd; 
       }
 
       /* Bilde med bildetekst */
 
       div.introduction-image {
-      border:1px solid #ddd; 
-      float: left;
-      margin: 0em 0.75em 0.5em 0;
+        border:1px solid #ddd; 
+        float: right;
+        margin: 0em 0em 0.5em 0.75em;
       }
 
       div.introduction-image img {
       }
 
       div.introduction-image div.text {
-      overflow: hidden;
-      padding: 0.5em; 
-      background-color: #eee;
+        overflow: hidden;
+        padding: 0.5em; 
+        background-color: #eee;
       }
 
       div.introduction-image div.text span.title{
-      font-weight: bold;
+        font-weight: bold;
       }
 
-     /* Body /*  
+      object {
+        margin-top: -0.5em;
+        margin-bottom: 0.5em;
+      }
 
-     .bodyText p {} 
+      /* Byline */
+
+      hr.byline {
+        display:none;
+      }
+
+     /* Body */  
+
+     div.bodyText {clear:left;} 
            
     </style>
 </head>
   <body>
     <h1>${title}</h1>
+
+    <#-- Image --> 
 
     <#assign imageRes = propResource("picture") />
     <#assign introductionImage = propValue("picture") />
@@ -158,6 +144,8 @@
       </#if>
     </#if>
 
+    <#-- Ingress --> 
+
     <#assign introduction = propValue("introduction") />
     <#if introduction != "">
       <div class="introduction">
@@ -165,47 +153,57 @@
       </div>
     </#if>
 
+    <#-- Media ref --> 
+
+    <#assign mediaRes = propResource("media-ref") />
+
+    <#if mediaRes != "" && mediaRes.resourceType == 'audio'>
+      <#assign media = propValue("media-ref") />
+      <script type="text/javascript" language="JavaScript" src="${mediaPlayerBase.url?html}/audio-player.js"></script>
+      <object type="application/x-shockwave-flash" data="${mediaPlayerBase.url?html}/player.swf" id="audioplayer1" height="24" width="290">
+	<param name="movie" value="${mediaPlayerBase.url?html}/player.swf"/>
+	<param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
+	<param name="quality" value="high"/>
+	<param name="menu" value="false"/>
+	<param name="wmode" value="transparent"/>
+      </object>
+    </#if>
+
+    <#-- Authors and published date --> 
+
     <#assign authors = propValue("authors") />
     <#assign published = propValue("published-date") />
-<div class="byline">
-    <#if authors != "" && published != "">
-      Av ${authors?html} <br />${published}
-    <#elseif authors != "">
-      Av ${authors?html}
-    <#elseif published != "">
-      ${published}
+
+    <#if authors != "" || published != "">
+      <div class="byline">
+	<#if authors != "" && published != "">
+	  Av ${authors?html} <br />${published}
+	<#elseif authors != "">
+	  Av ${authors?html}
+	<#elseif published != "">
+	  ${published}
+	</#if>
+      </div>
     </#if>
-</div>
+
+    <#-- Start-date, end-date and location --> 
 
     <#assign start = propValue("start-date") />
     <#assign end = propValue("end-date") />
     <#assign location = propValue("location") />
 
-<#if start != "" || end != "" || location != "">
-<div class="eventMicroFormat">
-  <#if start != "">Starter: ${start}<br/></#if>
-  <#if end != "">Slutter: ${end}<br/></#if>
-  <#if location != "">Stad: ${location}<br/></#if>
-</div>
-</#if>
+    <#if start != "" || end != "" || location != "">
+      <div class="vevent">
+	<#if start != "">Starter: ${start}<br/></#if>
+	<#if end != "">Slutter: ${end}<br/></#if>
+	<#if location != "">Stad: ${location}<br/></#if>
+      </div>
+    </#if>
 
-        <div class="bodyText">
-          ${resource.bodyAsString}
-        </div>
+    <div class="bodyText">
+      ${resource.bodyAsString}
+    </div>
 
-
-  <#assign mediaRes = propResource("media-ref") />
-<#if mediaRes != "" && mediaRes.resourceType == 'audio'>
-  <#assign media = propValue("media-ref") />
-  <script type="text/javascript" language="JavaScript" src="${mediaPlayerBase.url?html}/audio-player.js"></script>
-  <object type="application/x-shockwave-flash" data="${mediaPlayerBase.url?html}/player.swf" id="audioplayer1" height="24" width="290">
-    <param name="movie" value="${mediaPlayerBase.url?html}/player.swf"/>
-    <param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
-    <param name="quality" value="high"/>
-    <param name="menu" value="false"/>
-    <param name="wmode" value="transparent"/>
-  </object>
-</#if>
   </body>
 </html>
 

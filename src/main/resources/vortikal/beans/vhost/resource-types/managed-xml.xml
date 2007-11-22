@@ -178,7 +178,7 @@
             <property name="expression" value="/portal/title" />
           </bean>
         </entry>
-        <entry key="http://www.uio.no/xsd/common/slideshow/v001/slideshow.xsl">
+        <entry key="http://www.uio.no/xsd/common/slideshow/v001/slideshow.xsd">
           <bean parent="abstractXPathEvaluator">
             <property name="expression" value="concat(vrtx:localize('common.slideshow'),' - ',/slideshow/title)" />
           </bean>

@@ -47,6 +47,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -65,18 +66,25 @@ public class TagsController implements Controller {
         String term = request.getParameter("tag");
         Query query = new PropertyTermQuery(this.propDef, term, TermOperator.EQ);
         search.setQuery(query);
+        search.setPropertySelect(WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
+        
         ResultSet rs = searcher.execute(token, search);
+
+        
         Map model = new HashMap();
+
+        model.put("tag", term);
+
         List<String> urls = new ArrayList<String>();
         model.put("urls", urls);
-        List<String> names = new ArrayList<String>();
-        model.put("names", names);
+        List<PropertySet> resources = new ArrayList<PropertySet>();
+        model.put("resources", resources);
 
         Iterator<PropertySet> iterator = rs.iterator();
         while (iterator.hasNext()) {
             PropertySet next = iterator.next();
             urls.add(next.getURI());
-            names.add(next.getName());
+            resources.add(next);
         } 
         
         return new ModelAndView(this.viewName, model);

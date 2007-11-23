@@ -126,14 +126,13 @@
         
         <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
         <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
-        <#if hours = "00">
-          <#local hours = "" />
-        </#if>
         <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
-        <#if minutes = "00">
+        <#if hours = "00" && minutes = "00">
+          <#local hours = "" />
           <#local minutes = "" />
         </#if>
       </#if>
+
       if ('${dateVal}' != document.getElementById('resource.${name}').value) {
         return true;
       }
@@ -261,11 +260,9 @@
           <#local jsmonth = ((d.getDateValue()?string("MM"))?number - 1)?string />
           <#local date = d.getDateValue()?string("dd") />
           <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
-          <#if hours = "00">
-            <#local hours = "" />
-          </#if>
           <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
-          <#if minutes = "00">
+          <#if hours = "00" && minutes = "00">
+            <#local hours = "" />
             <#local minutes = "" />
           </#if>
         </#if>

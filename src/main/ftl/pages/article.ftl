@@ -174,9 +174,9 @@
     <#assign keywords = resource.getValueByName("keywords")?default("") />
     <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
         <#if keywords != "">
-          <br/>Keywords: 
+          <br/>Tags: 
           <#list tagsProp.values as tag>
-            <a href="./?vrtx=tags&tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
+            <a href="/?vrtx=tags&tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
           </#list>
           <br/>
 

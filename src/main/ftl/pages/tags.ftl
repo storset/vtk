@@ -13,15 +13,20 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+
+<#assign title><@vrtx.msg code="tags.title" args=[tag] /></#assign>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head><title>tags</title>
+ <head><title>${title}</title>
 </head>
 <body>
 
-  <#list names as v>
-    <a href="${urls[v_index]?html}">${v?html}</a><#if v_index &lt; names?size - 1>,<#t/></#if>
-  </#list>
-
+  <h1>${title}</h1>
+  <ul>
+    <#list resources as resource>
+      <li><a href="${urls[resource_index]?html}">${resource.getPropertyByPrefix("","title").getFormattedValue()?html}</a></li>
+    </#list>
+  </ul>
 
 </body>

@@ -53,6 +53,7 @@ import org.vortikal.text.html.HtmlElementDescriptor;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
+import org.vortikal.text.html.SimpleHtmlPageFilter;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -192,6 +193,7 @@ public class PostCommentController extends SimpleFormController {
     protected String parseContent(String text) throws Exception {
         if (this.parser != null) {
             HtmlFragment fragment = this.parser.parseFragment(text);
+            fragment.filter(new SimpleHtmlPageFilter(this.illegalElements, this.validElements, false));
             List<HtmlContent> nodes = fragment.getContent();
             boolean empty = true;
             for (HtmlContent c : nodes) {

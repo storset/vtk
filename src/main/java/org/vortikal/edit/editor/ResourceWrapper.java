@@ -106,6 +106,14 @@ public class ResourceWrapper implements Resource {
         return elements.get(0).getContent(); 
     }
 
+    public Property getPropertyByName(String name) {
+        for (Property prop : getProperties()) {
+            if (prop.getDefinition().getName().equals(name)) {
+                return prop;
+            }
+        }
+        return null;
+    }
     
     public String getValueByName(String name) {
         for (Property prop : getProperties()) {

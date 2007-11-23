@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1"/>
+    <property name="parent" ref="collectionListingService"/>
+    <property name="assertions">
+      <list>
+        <ref bean="tags.tagsParameterAssertion" />
+      </list>
+    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}"/>
+    <property name="handler" ref="tags.tagsHandler" />
+  </bean>
+  
+  <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">
+    <property name="parameterValue" value="tags" />
+  </bean>
+
+  <bean name="tags.tagsHandler"
+        class="org.vortikal.web.controller.TagsController">
+    <property name="viewName" value="tags.tags" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="propDef" ref="keywordsPropDef" />
+  </bean>
+
+  <bean id="tags.viewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="tags.tags"  value-ref="tags.tagsView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="decoratingViewWrapper" />
+  </bean>
+
+  <bean id="tags.tagsView" parent="freemarkerView">
+    <property name="url" value="pages/tags.ftl" />
+  </bean>
+</beans>

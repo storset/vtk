@@ -12,6 +12,7 @@
     the list below.
   </description>
 
+  <import resource="tags.xml" />
   <import resource="vocabulary.xml" />
   <!--import resource="date-formats.xml" />-->
   <import resource="query.xml" />

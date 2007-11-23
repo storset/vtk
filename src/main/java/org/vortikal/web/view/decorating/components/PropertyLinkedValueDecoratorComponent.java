@@ -87,23 +87,23 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         
         String serviceURL = request.getStringParameter(PARAMETER_SERVICEURL);
         
-        if (this.propertyTypeDefinition.isMultiple()) {
-            List<String> valueList = new ArrayList<String>();
-            List<String> urlList = new ArrayList<String>();
+        List<String> valueList = new ArrayList<String>();
+        List<String> urlList = new ArrayList<String>();
 
-            model.put("urls", urlList);
-            model.put("values", valueList);
+        model.put("urls", urlList);
+        model.put("values", valueList);
             
+        if (this.propertyTypeDefinition.isMultiple()) {
             Value[] values = prop.getValues();
-            for (int i = 0; i < values.length; i++) {
-                String s = values[i].getStringValue();
+            for (Value value: values) {
+                String s = value.getStringValue();
                 valueList.add(s);
                 urlList.add(getUrl(s, serviceURL));
             }
         } else {
             String value = prop.getValue().getStringValue();
-            model.put("url", getUrl(value, serviceURL));
-            model.put("value", value);
+            urlList.add(getUrl(value, serviceURL));
+            valueList.add(value);
         }
     }
     

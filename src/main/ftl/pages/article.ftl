@@ -171,11 +171,18 @@
     </#if>
 
     <#-- Authors and published date --> 
+    <#assign keywords = resource.getValueByName("keywords")?default("") />
+    <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
+        <#if keywords != "">
+          <br/>Keywords: 
+          <#list tagsProp.values as tag>
+            <a href="./?vrtx=tags&tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
+          </#list>
+          <br/>
 
     <#assign authors = propValue("authors") />
     <#assign published = propValue("published-date") />
-
-    <#if authors != "" && published != "">
+    <#if authors != "" && published != "" && keywords != "">
       <div class="byline">
         <#if authors != "" && published != "">
           <@vrtx.msg code="article.by" /> ${authors?html} <br />${published}
@@ -184,6 +191,7 @@
         <#elseif published != "">
           ${published}
 	</#if>
+        </#if>
       </div>
     </#if>
 

@@ -73,6 +73,8 @@ public final class BinaryFieldValueMapper {
         
         case PRINCIPAL:
         case STRING:
+        case IMAGE_REF:
+        case HTML:
             try {
                 byteValue = value.getNativeStringRepresentation().getBytes(STRING_VALUE_ENCODING);
             } catch (UnsupportedEncodingException ue) {}
@@ -115,6 +117,8 @@ public final class BinaryFieldValueMapper {
     
         switch (type) {
         case PRINCIPAL:
+        case IMAGE_REF:
+        case HTML:
         case STRING:
             try {
                 String stringValue = new String(value, STRING_VALUE_ENCODING);

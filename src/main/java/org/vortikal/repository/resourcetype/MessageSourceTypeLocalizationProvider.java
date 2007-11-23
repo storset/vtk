@@ -54,7 +54,7 @@ public class MessageSourceTypeLocalizationProvider implements
         } else {
             key = PROPERTY_TYPE_NAME_KEY_PREFIX + name;
         }
-        System.out.println("**Key:" + key);
+
         return this.messageSource.getMessage(key, null, name, locale);
     }
 

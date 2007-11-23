@@ -174,7 +174,7 @@
 
     <#assign authors = propValue("authors") />
     <#assign published = propValue("published-date") />
-<<<<<<< .mine
+
     <#if authors != "" && published != "">
       <div class="byline">
         <#if authors != "" && published != "">
@@ -195,7 +195,7 @@
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
-	<#if start != "">Starter: ${start}<br/></#if>
+	<#if start != ""><@vrtx.msg code="article.starts" />: ${start}<br/></#if>
 	<#if end != "">Slutter: ${end}<br/></#if>
 	<#if location != "">Stad: ${location}<br/></#if>
       </div>

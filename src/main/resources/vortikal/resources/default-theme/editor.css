@@ -31,6 +31,7 @@ iframe {
 label {
        display: block;
        margin-bottom: .2em;
+       white-space: nowrap;
        width:1%;
 }
 

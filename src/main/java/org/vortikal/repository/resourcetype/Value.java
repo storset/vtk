@@ -50,7 +50,7 @@ public final class Value implements Cloneable, Comparable<Value> {
 
     public Value(String stringValue) {
         if (stringValue == null || stringValue.equals(""))
-            throw new IllegalArgumentException("Value object cannot be null");
+            throw new IllegalArgumentException("Value object cannot be null or empty");
         if (stringValue.length() > MAX_LENGTH) {
             throw new ValueFormatException(
                 "String value too large: " + stringValue.length() + " (max size = "

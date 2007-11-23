@@ -31,6 +31,7 @@
 package org.vortikal.edit.editor;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 import javax.servlet.ServletRequest;
 
@@ -77,56 +78,8 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             
             Resource resource = command.getResource();
             
-            for (PropertyTypeDefinition propDef: command.getContentProperties()) {
-                
-                String value = null;
-                if (propDef.getType().equals(PropertyType.Type.TIMESTAMP) ||
-                        propDef.getType().equals(PropertyType.Type.DATE)) {
-                    value = request.getParameter("resource." + propDef.getName() + ".date");
-                    String time = request.getParameter("resource." + propDef.getName() + ".hours");
-                    if (value != null && time != null && !time.trim().equals("")) {
-                        String minutes = request.getParameter("resource." + propDef.getName() + ".minutes");
-                        if (minutes != null && !minutes.trim().equals("")) {
-                            time += ":" + minutes;
-                        }
-                        value += " " + time;
-                    }
-                } else
-                    value = request.getParameter("resource." + propDef.getName());
-
-                Property prop = resource.getProperty(propDef);
-                if (prop == null) {
-                    if (value != null && !value.trim().equals("")) {
-                        try {
-                            prop = resource.createProperty(propDef);
-                            setPropValue(value, prop);
-                            command.setPropChange(true);
-                        } catch (Throwable t) {
-                            command.reject(propDef, t.getMessage());
-                            resource.removeProperty(propDef);
-                        }
-                        continue;
-                    } else if (propDef.isMandatory()) {
-                        command.reject(propDef, propDef.getName() + " is required ");
-                        continue;
-                    }
-                } else if (value == null || value.trim().equals("")) {
-                    if (propDef.isMandatory()) {
-                        command.reject(propDef, propDef.getName() + " is required");
-                        continue;
-                    } 
-                    command.setPropChange(true);
-                    resource.removeProperty(propDef);
-                    continue;
-                } else {
-                    try {
-                        setPropValue(value, prop);
-                        command.setPropChange(true);
-                    } catch (Throwable t) {
-                        command.reject(propDef, t.getMessage());
-                    }
-                }
-            }
+            setProperties(request, command, resource, command.getContentProperties());
+            setProperties(request, command, resource, command.getExtraContentProperties());
             
             String content = command.getContent().getStringRepresentation();
             String suppliedContent = request.getParameter("resource.content");
@@ -135,6 +88,61 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             }
         } else {
             super.bind(request);
+        }
+    }
+
+    private void setProperties(ServletRequest request,
+            ResourceEditWrapper command, Resource resource,
+            List<PropertyTypeDefinition> propDefs) {
+        for (PropertyTypeDefinition propDef: propDefs) {
+            
+            String value = null;
+            if (propDef.getType().equals(PropertyType.Type.TIMESTAMP) ||
+                    propDef.getType().equals(PropertyType.Type.DATE)) {
+                value = request.getParameter("resource." + propDef.getName() + ".date");
+                String time = request.getParameter("resource." + propDef.getName() + ".hours");
+                if (value != null && time != null && !time.trim().equals("")) {
+                    String minutes = request.getParameter("resource." + propDef.getName() + ".minutes");
+                    if (minutes != null && !minutes.trim().equals("")) {
+                        time += ":" + minutes;
+                    }
+                    value += " " + time;
+                }
+            } else
+                value = request.getParameter("resource." + propDef.getName());
+
+            Property prop = resource.getProperty(propDef);
+            if (prop == null) {
+                if (value != null && !value.trim().equals("")) {
+                    try {
+                        prop = resource.createProperty(propDef);
+                        setPropValue(value, prop);
+                        command.setPropChange(true);
+                    } catch (Throwable t) {
+                        command.reject(propDef, t.getMessage());
+                        resource.removeProperty(propDef);
+                    }
+                    continue;
+                } else if (propDef.isMandatory()) {
+                    command.reject(propDef, propDef.getName() + " is required ");
+                    continue;
+                }
+            } else if (value == null || value.trim().equals("")) {
+                if (propDef.isMandatory()) {
+                    command.reject(propDef, propDef.getName() + " is required");
+                    continue;
+                } 
+                command.setPropChange(true);
+                resource.removeProperty(propDef);
+                continue;
+            } else {
+                try {
+                    setPropValue(value, prop);
+                    command.setPropChange(true);
+                } catch (Throwable t) {
+                    command.reject(propDef, t.getMessage());
+                }
+            }
         }
     }
 

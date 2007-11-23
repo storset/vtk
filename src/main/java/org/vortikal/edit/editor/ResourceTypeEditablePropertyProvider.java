@@ -34,29 +34,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition.ContentType;
 
 public class ResourceTypeEditablePropertyProvider implements EditablePropertyProvider {
 	
-	public List<PropertyTypeDefinition> getEditableProperties(Resource resource) {
-	    List<PrimaryResourceTypeDefinition> resourceDefinitions = new ArrayList<PrimaryResourceTypeDefinition>();
+	public List<PropertyTypeDefinition> getContentProperties(Resource resource) {
+        ContentType type = PropertyTypeDefinition.ContentType.CONTENT;
+	    return getPropertyDefinitionsOfType(resource, type);
+	}
+
+    public List<PropertyTypeDefinition> getExtraContentProperties(Resource resource) {
+        ContentType type = PropertyTypeDefinition.ContentType.EXTRA_CONTENT;
+        return getPropertyDefinitionsOfType(resource, type);
+    }
+
+	
+	private List<PropertyTypeDefinition> getPropertyDefinitionsOfType(Resource resource, ContentType type) {
+        List<ResourceTypeDefinition> resourceDefinitions = new ArrayList<ResourceTypeDefinition>();
 	    populateDefinitions(resourceDefinitions, resource.getResourceTypeDefinition());
 	    List<PropertyTypeDefinition> defs = new ArrayList<PropertyTypeDefinition>();
-	    for (PrimaryResourceTypeDefinition resourceDef : resourceDefinitions) {
+	    for (ResourceTypeDefinition resourceDef : resourceDefinitions) {
 	        for (PropertyTypeDefinition propDef: resourceDef.getPropertyTypeDefinitions()) {
-	            if (propDef.isContent()) {
+                if (propDef.getContentType() == type) {
 	                defs.add(propDef);
 	            }
 	        }
 	    }
 	    return defs;
-	}
+    }
 
-	private void populateDefinitions(List<PrimaryResourceTypeDefinition> definitions, PrimaryResourceTypeDefinition resourceTypeDefinition) {
+	private void populateDefinitions(List<ResourceTypeDefinition> definitions, PrimaryResourceTypeDefinition resourceTypeDefinition) {
 	    if (resourceTypeDefinition != null) {
 	        populateDefinitions(definitions, resourceTypeDefinition.getParentTypeDefinition());
 	        definitions.add(resourceTypeDefinition);
+	        List<MixinResourceTypeDefinition> mixins = resourceTypeDefinition.getMixinTypeDefinitions();
+	        if (mixins != null) {
+	            for (MixinResourceTypeDefinition mixin : mixins) {
+                    definitions.add(mixin);
+                }
+	        }
 	    }
     }
 

@@ -68,6 +68,7 @@
   </bean>
 
   <bean id="keywordsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="contentType" value="EXTRA_CONTENT" />
     <property name="name" value="keywords" /> 
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />

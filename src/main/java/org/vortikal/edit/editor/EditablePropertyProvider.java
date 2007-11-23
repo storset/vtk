@@ -37,5 +37,8 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface EditablePropertyProvider {
 
-	public List<PropertyTypeDefinition> getEditableProperties(Resource resource);
+	public List<PropertyTypeDefinition> getContentProperties(Resource resource);
+
+    public List<PropertyTypeDefinition> getExtraContentProperties(Resource resource);
+
 }

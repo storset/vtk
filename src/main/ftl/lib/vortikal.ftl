@@ -23,16 +23,16 @@
  * Example: <@vrtx.msg code="my.message.key" default="My default message" args="['my param']"
  *
  * @param code the code of the localized message
- * @param default the default message if the localized message did not
+ * @param default (optional - set to code if not specified) the default message if the localized message did not
  *        exist for the currently selected locale.
  * @param args (optional) arguments for the message
  *
 -->
-<#macro msg code default args=[] >
+<#macro msg code default=code args=[] >
   <#compress>
     <#local localizer =
     "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext) />
-  ${localizer.msg?html}
+    ${localizer.msg?html}
   </#compress>
 </#macro>
 

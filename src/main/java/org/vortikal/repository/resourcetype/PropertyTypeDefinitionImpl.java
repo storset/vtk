@@ -68,16 +68,20 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private ValueFactory valueFactory = ValueFactory.getInstance();
 
-    private boolean content = false;
+    private ContentType contentType;
 
     private TypeLocalizationProvider typeLocalizationProvider = null;
     
     public boolean isContent() {
-        return this.content;
+        return this.contentType == ContentType.CONTENT;
     }
 
-    public void setContent(boolean content) {
-        this.content = content;
+    public void setContentType(ContentType contentType) {
+            this.contentType = contentType;
+    }
+    
+    public ContentType getContentType() {
+        return this.contentType;
     }
     
     public Property createProperty() {

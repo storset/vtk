@@ -11,8 +11,9 @@
   -->
 
 <#import "/spring.ftl" as spring />
+<#import "/lib/vortikal.ftl" as vrtx />
 
-<#function propValue propName>
+<#function propValue propName resource=resource>
 <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
 <#if prop != "">
   <#local type = prop.definition.type />
@@ -114,7 +115,7 @@
         <img class="introduction-image" src="${introductionImage}" alt="ingressbilde" />
       <#else>
 
-        <#assign userTitle = imageRes.getValueByName("userTitle")?default("") />
+        <#assign userTitle = propValue("userTitle", imageRes) />
         <#assign desc = imageRes.getValueByName("description")?default("") />
 
 	<#if userTitle == "" && desc == "">  
@@ -173,15 +174,15 @@
 
     <#assign authors = propValue("authors") />
     <#assign published = propValue("published-date") />
-
-    <#if authors != "" || published != "">
+<<<<<<< .mine
+    <#if authors != "" && published != "">
       <div class="byline">
-	<#if authors != "" && published != "">
-	  Av ${authors?html} <br />${published}
-	<#elseif authors != "">
-	  Av ${authors?html}
-	<#elseif published != "">
-	  ${published}
+        <#if authors != "" && published != "">
+          <@vrtx.msg code="article.by" /> ${authors?html} <br />${published}
+        <#elseif authors != "">
+          <@vrtx.msg code="article.by" /> ${authors?html}
+        <#elseif published != "">
+          ${published}
 	</#if>
       </div>
     </#if>

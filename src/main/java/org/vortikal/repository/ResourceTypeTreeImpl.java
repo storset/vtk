@@ -31,13 +31,12 @@
 package org.vortikal.repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -291,8 +290,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         // recursive ascent on the parent axis
         while (primaryDef != null) {
             if (def instanceof MixinResourceTypeDefinition) {
-                MixinResourceTypeDefinition[] mixins = primaryDef.getMixinTypeDefinitions();
-                for (MixinResourceTypeDefinition mixin: mixins) {
+                for (MixinResourceTypeDefinition mixin: primaryDef.getMixinTypeDefinitions()) {
                     if (mixin.equals(def)) {
                         return true;
                     }
@@ -349,7 +347,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     public String getResourceTypeTreeAsString() {
         StringBuilder sb = new StringBuilder();
         printResourceTypes(sb, 0, this.rootResourceTypeDefinition);
-        printMixinTypes(sb);
+        sb.append("\n");
+        for (MixinResourceTypeDefinition mixin: this.mixins) {
+            printResourceTypes(sb, 0, mixin);
+            sb.append("\n");
+        }
         return sb.toString();
     }
 
@@ -374,8 +376,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                     MixinResourceTypeDefinition.class, false, false).values();
 
         PrimaryResourceTypeDefinition rootDefinition = null;
-        for (Iterator i = this.primaryTypes.iterator(); i.hasNext();) {
-            PrimaryResourceTypeDefinition def = (PrimaryResourceTypeDefinition)i.next();
+        for (PrimaryResourceTypeDefinition def: this.primaryTypes) {
             if (def.getParentTypeDefinition() == null) {
                 if (rootDefinition != null) {
                     throw new IllegalStateException(
@@ -417,7 +418,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 children.add(def);
             }
             
-            List<MixinResourceTypeDefinition> mixinTypes = Arrays.asList(def.getMixinTypeDefinitions());
+            List<MixinResourceTypeDefinition> mixinTypes = def.getMixinTypeDefinitions();
             
             if (mixinTypes != null) {
                 for (MixinResourceTypeDefinition mix: mixinTypes) {
@@ -474,8 +475,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
     
     private void injectTypeLocalizationProvider(ResourceTypeDefinition def) {
-        AbstractResourceTypeDefinitionImpl defImpl
-            = (AbstractResourceTypeDefinitionImpl)def;
+        AbstractResourceTypeDefinitionImpl defImpl = (AbstractResourceTypeDefinitionImpl)def;
         
         defImpl.setTypeLocalizationProvider(this.typeLocalizationProvider);
         
@@ -610,17 +610,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
         
 
-    private void printMixinTypes(StringBuilder sb) {
-
-        sb.append("\n");
-        for (Iterator i = this.mixins.iterator(); i.hasNext();) {
-            MixinResourceTypeDefinition mixin = (MixinResourceTypeDefinition) i
-                    .next();
-            printResourceTypes(sb, 0, mixin);
-            sb.append("\n");
-        }
-    }
-
     private void printResourceTypes(StringBuilder sb, int level,
             ResourceTypeDefinition def) {
 
@@ -664,7 +653,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
     private void printPropertyDefinitions(StringBuilder sb, int level, PropertyTypeDefinition[] definitions) {
-        if (definitions.length > 0) {
+        if (definitions != null) {
             for (PropertyTypeDefinition definition: definitions) {
                 sb.append("  ");
                 for (int j = 0; j < level; j++)
@@ -681,6 +670,12 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                         sb.append(" (overriding)");
                     }
                 }
+                String localizedName = definition.getLocalizedName(new Locale("en"));
+                sb.append(" ").append(localizedName);
+                localizedName = definition.getLocalizedName(new Locale("no"));
+                sb.append(", ").append(localizedName);
+                localizedName = definition.getLocalizedName(new Locale("nn"));
+                sb.append(", ").append(localizedName);
                 sb.append("\n");
             }
         }

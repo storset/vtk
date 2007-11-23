@@ -57,6 +57,8 @@ public class ResourceWrapper implements Resource {
     private HtmlPage content;
     private Resource resource;
     private List<PropertyTypeDefinition> contentProperties;
+    private List<PropertyTypeDefinition> extraContentProperties;
+
 
     public ResourceWrapper(ResourceWrapperManager resourceManager) {
         super();
@@ -77,6 +79,14 @@ public class ResourceWrapper implements Resource {
 
     public void setContentProperties(List<PropertyTypeDefinition> contentProperties) {
         this.contentProperties = contentProperties;
+    }
+
+    public List<PropertyTypeDefinition> getExtraContentProperties() {
+        return this.extraContentProperties;
+    }
+
+    public void setExtraContentProperties(List<PropertyTypeDefinition> extraContentProperties) {
+        this.extraContentProperties = extraContentProperties;
     }
 
 

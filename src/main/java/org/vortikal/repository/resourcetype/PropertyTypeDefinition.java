@@ -46,12 +46,17 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
  */
 public interface PropertyTypeDefinition {
     
+    public enum ContentType {
+        CONTENT,
+        EXTRA_CONTENT
+    }
+    
     /**
      * Temporary marker for properties that are visualized as content for the resource.
      * Will only have meaning for properties/resources using the new editor regime.
      */
-    public boolean isContent();
-    
+    public ContentType getContentType();
+
     public Namespace getNamespace();
     
     public String getName();

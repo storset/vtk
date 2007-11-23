@@ -71,17 +71,22 @@
   </head>
   <body>
     <form id="form" class="editor" action="" method="POST">
-     
+      <@handleProps />
+
       <div class="properties">
-        <@handleProps />
+        <@propsForm resource.contentProperties />
       </div>
 
       <div class="html-content">
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
+
        <@fck 'resource.content' true />
 
        </div>
-      <#-- div class="properties"></div -->
+
+      <div class="properties">
+        <@propsForm resource.extraContentProperties />
+      </div>
 
       <div id="submit" class="save-cancel">
        <input type="submit" onClick="cSave();" name="save" value="Lagre">
@@ -103,65 +108,71 @@
     </body>
 </html>
 
+<#macro propChangeTests propDefs>
+  <#list propDefs as propDef>
+    <#local name = propDef.name />
+    <#local value = resource.getValue(propDef) />
+    <#local type = propDef.type />
+    <#if type = 'HTML'>
+      if (FCKeditorAPI.GetInstance('resource.${name}').IsDirty()) {
+        return true;
+      }
+    <#elseif type = 'DATE' || type = 'TIMESTAMP'>
+      <#local dateVal = value />
+      <#local hours = "" />
+      <#local minutes = "" />
+      <#if value != "">
+        <#local d = resource.getProperty(propDef) />
+        
+        <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
+        <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
+        <#if hours = "00">
+          <#local hours = "" />
+        </#if>
+        <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
+        <#if minutes = "00">
+          <#local minutes = "" />
+        </#if>
+      </#if>
+      if ('${dateVal}' != document.getElementById('resource.${name}').value) {
+        return true;
+      }
+      if ('${hours}' != document.getElementById('resource.${name}.hours').value) {
+        return true;
+      }
+      if ('${minutes}' != document.getElementById('resource.${name}.minutes').value) {
+        return true;
+      }            
+    <#else>
+      if ('${value}' != document.getElementById('resource.${name}').value) {
+        return true;
+      }
+    </#if>
+  </#list>
+</#macro>
+
 <#macro handleProps>
+  <script type="text/javascript">
+    window.onbeforeunload = confirmExit;
+    
+    function propChange() {
+      <@propChangeTests resource.contentProperties />
+      <@propChangeTests resource.extraContentProperties />
+      return false;
+    }
 
-    <script type="text/javascript">
-      window.onbeforeunload = confirmExit;
-
-      function propChange() {
-        <#list resource.contentProperties as propDef>
-          <#local name = propDef.name />
-          <#local value = resource.getValue(propDef) />
-          <#local type = propDef.type />
-          <#if type = 'HTML'>
-            if (FCKeditorAPI.GetInstance('resource.${name}').IsDirty()) {
-              return true;
-            }
-          <#elseif type = 'DATE' || type = 'TIMESTAMP'>
-            <#local dateVal = value />
-            <#local hours = "" />
-            <#local minutes = "" />
-            <#if value != "">
-              <#local d = resource.getProperty(propDef) />
-
-              <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
-              <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
-              <#if hours = "00">
-                <#local hours = "" />
-              </#if>
-              <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
-              <#if minutes = "00">
-                <#local minutes = "" />
-              </#if>
-            </#if>
-            if ('${dateVal}' != document.getElementById('resource.${name}').value) {
-              return true;
-            }
-            if ('${hours}' != document.getElementById('resource.${name}.hours').value) {
-              return true;
-            }
-            if ('${minutes}' != document.getElementById('resource.${name}.minutes').value) {
-              return true;
-            }            
-          <#else>
-            if ('${value}' != document.getElementById('resource.${name}').value) {
-              return true;
-            }
-          </#if>
-        </#list>
-        return false;
+    function confirmExit() {
+      var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
+      if (needToConfirm && contentChange) {
+        return "You have unsaved changes. Are you sure you want to leave this page?";
       }
+    }
+  </script>
+</#macro>
 
-      function confirmExit() {
-        var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
-        if (needToConfirm && contentChange) {
-          return "You have unsaved changes. Are you sure you want to leave this page?";
-        }
-      }
-    </script>
-
+<#macro propsForm propDefs>
     <#local locale = springMacroRequestContext.getLocale() />
-    <#list resource.contentProperties as propDef>
+    <#list propDefs as propDef>
       <#local localizedName = propDef.getLocalizedName(locale) />
       <#local name = propDef.name />
       <#local value = resource.getValue(propDef) />
@@ -170,9 +181,8 @@
       
       
       <div class="${name}">
-        <label for="resource.${name}">${localizedName}</label> 
       <#if error != ""><span class="error">${error}</span></#if> 
-
+      <label for="resource.${name}">${localizedName}</label> 
       <#if type = 'HTML'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
@@ -262,10 +272,10 @@
 
         <#local uniqueName = 'cal_' + propDef_index />
 
-        <input size="10" type="text" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
+        <input size="10"  style="display: inline;" type="text" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
-        <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
-        <input size="2" maxlength="2" type="text" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+        <div  style="display: inline;" id="resource.${name}.calendar" class="yui-skin-sam"></div>
+        <input style="display: inline;" size="2" maxlength="2" type="text" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input  style="display: inline;" size="2" maxlength="2" type="text" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
         <script type="text/javascript"><!--
 
@@ -341,14 +351,11 @@
       </#if>
     </div>
     </#list>
-
-
 </#macro>
 
 <#macro fck content completeEditor=false>
     <script type="text/javascript">
       var needToConfirm = true;
-
       newEditor('${content}', ${completeEditor?string});
 
     function cSave() {

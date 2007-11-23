@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.BeanInitializationException;
@@ -37,7 +39,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
 
 /**
- * XXX: We should consider re-modelling some of this wrt. to mixins and regular
+ * XXX: We should consider re-modeling some of this wrt. to mixins and regular
  *      resource types (with the current model, implementations of 
  *      MixinResourceTypeDefinitoin are required to implement getMixinTypeDefinitions, 
  *      but that does not really make sense, since mixins should not have their
@@ -46,8 +48,8 @@ import org.vortikal.repository.Namespace;
 public abstract class AbstractResourceTypeDefinitionImpl
   implements ResourceTypeDefinition, InitializingBean {
 
-    protected final static MixinResourceTypeDefinition[] EMPTY_MIXIN_TYPE_LIST =
-        new MixinResourceTypeDefinition[0];
+    protected final static List<MixinResourceTypeDefinition> EMPTY_MIXIN_TYPE_LIST =
+        new ArrayList<MixinResourceTypeDefinition>();
     
     private String name;
     private Namespace namespace;

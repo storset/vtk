@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.List;
+
 import org.vortikal.web.service.RepositoryAssertion;
 
 
@@ -37,7 +39,7 @@ public interface PrimaryResourceTypeDefinition extends ResourceTypeDefinition {
 
     public PrimaryResourceTypeDefinition getParentTypeDefinition();
 
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions();
+    public List<MixinResourceTypeDefinition> getMixinTypeDefinitions();
 
     public RepositoryAssertion[] getAssertions();
 

@@ -30,13 +30,15 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.List;
+
 import org.vortikal.web.service.RepositoryAssertion;
 
 
 public class PrimaryResourceTypeDefinitionImpl
   extends AbstractResourceTypeDefinitionImpl implements PrimaryResourceTypeDefinition {
 
-    private MixinResourceTypeDefinition[] mixinTypeDefinitions;
+    private List<MixinResourceTypeDefinition> mixinTypeDefinitions;
 
     private PrimaryResourceTypeDefinition parentTypeDefinition;
     private RepositoryAssertion[] assertions;
@@ -57,14 +59,14 @@ public class PrimaryResourceTypeDefinitionImpl
         this.assertions = assertions;
     }
 
-    public MixinResourceTypeDefinition[] getMixinTypeDefinitions() {
+    public List<MixinResourceTypeDefinition> getMixinTypeDefinitions() {
         if (this.mixinTypeDefinitions == null) {
             return AbstractResourceTypeDefinitionImpl.EMPTY_MIXIN_TYPE_LIST;
         }
         return this.mixinTypeDefinitions;
     }
 
-    public void setMixinTypeDefinitions(MixinResourceTypeDefinition[] mixinTypeDefinitions) {
+    public void setMixinTypeDefinitions(List<MixinResourceTypeDefinition> mixinTypeDefinitions) {
         this.mixinTypeDefinitions = mixinTypeDefinitions;
     }
 

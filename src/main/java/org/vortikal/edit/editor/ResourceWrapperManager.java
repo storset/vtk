@@ -108,7 +108,8 @@ public class ResourceWrapperManager {
         
             wrapper.setContent(content);
         }
-        wrapper.setContentProperties(this.editPropertyProvider.getEditableProperties(resource));
+        wrapper.setContentProperties(this.editPropertyProvider.getContentProperties(resource));
+        wrapper.setExtraContentProperties(this.editPropertyProvider.getExtraContentProperties(resource));
         wrapper.setResource(resource);
     }
 

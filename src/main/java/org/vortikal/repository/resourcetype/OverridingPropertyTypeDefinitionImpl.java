@@ -189,8 +189,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.createProperty();
     }
 
-    public boolean isContent() {
-        return this.overriddenPropDef.isContent();
+    public ContentType getContentType() {
+        return this.overriddenPropDef.getContentType();
     }
 
 }

@@ -355,7 +355,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     
     public boolean isValueInitialized() {
         if (this.propertyTypeDefinition.isMultiple()) {
-            return this.values != null;
+            if (this.values == null) return false;
+            for (Value v : this.values) {
+                if (v == null) return false;
+            }
+            return true;
         }
         return this.value != null;
     }

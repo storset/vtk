@@ -67,6 +67,7 @@ public interface HtmlPageParser {
      *
      * @param in the input stream
      * @param encoding the character encoding of the stream
+     * @param filters the list of node filters
      * @return a the parsed HTML page
      * @exception Exception if an error occurs
      */
@@ -82,4 +83,16 @@ public interface HtmlPageParser {
      */
     public HtmlFragment parseFragment(String html) throws Exception;
 
+ 
+    /**
+     * Parses a (possibly incomplete) HTML fragment from a string, 
+     * applying a list of node filters.
+     *
+     * @param html the HTML fragment
+     * @return the HTML fragment parsed into a list of HTML nodes
+     * @param filters the list of node filters
+     * @exception Exception if an error occurs
+     */
+    public HtmlFragment parseFragment(String html, List<HtmlNodeFilter> filters) 
+        throws Exception;
 }

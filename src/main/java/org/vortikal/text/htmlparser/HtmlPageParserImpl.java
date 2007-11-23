@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,13 +142,17 @@ public class HtmlPageParserImpl implements HtmlPageParser {
     }
     
     public HtmlFragment parseFragment(String html) throws Exception {
+        return parseFragment(html, Collections.<HtmlNodeFilter>emptyList());
+    }
+    
+    public HtmlFragment parseFragment(String html, List<HtmlNodeFilter> filters) throws Exception {
         String className = this.getClass().getName();
         StringBuilder s = new StringBuilder();
         s.append("<").append(className).append(">");
         s.append(html);
         s.append("</").append(className).append(">");
         ByteArrayInputStream in = new ByteArrayInputStream(s.toString().getBytes("utf-8"));
-        HtmlPage page = parse(in, "utf-8");
+        HtmlPage page = parse(in, "utf-8", filters);
         HtmlElement root = page.getRootElement();
         if (!className.equals(root.getName())) {
             throw new HtmlPageParserException("Unable to parse HTML: invalid document");

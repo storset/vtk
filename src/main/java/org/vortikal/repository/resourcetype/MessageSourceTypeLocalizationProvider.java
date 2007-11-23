@@ -39,6 +39,7 @@ public class MessageSourceTypeLocalizationProvider implements
                                             TypeLocalizationProvider  {
 
     public static final String PROPERTY_TYPE_NAME_KEY_PREFIX = "proptype.name.";
+    public static final String PROPERTY_TYPE_DESC_KEY_PREFIX = "proptype.description.";
     public static final String RESOURCE_TYPE_NAME_KEY_PREFIX = "resourcetype.name.";
     
     private MessageSource messageSource;
@@ -56,6 +57,20 @@ public class MessageSourceTypeLocalizationProvider implements
         }
 
         return this.messageSource.getMessage(key, null, name, locale);
+    }
+
+    public String getPropertyDescription(PropertyTypeDefinition def,
+            Locale locale) {
+        String key = null;
+        String prefix = def.getNamespace().getPrefix();
+        String name = def.getName();
+        if (prefix != null){
+            key = PROPERTY_TYPE_DESC_KEY_PREFIX + prefix + ":" + name;
+        } else {
+            key = PROPERTY_TYPE_DESC_KEY_PREFIX + name;
+        }
+
+        return this.messageSource.getMessage(key, null, null, locale);
     }
 
     public String getLocalizedResourceTypeName(ResourceTypeDefinition def,
@@ -77,5 +92,6 @@ public class MessageSourceTypeLocalizationProvider implements
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
+
 
 }

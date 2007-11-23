@@ -63,6 +63,8 @@ public interface PropertyTypeDefinition {
     
     public String getLocalizedName(Locale locale);
 
+    public String getDescription(Locale locale);
+
     public Type getType();
     
     public boolean isMultiple();

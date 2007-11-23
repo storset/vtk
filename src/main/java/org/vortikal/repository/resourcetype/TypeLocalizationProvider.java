@@ -48,7 +48,9 @@ public interface TypeLocalizationProvider {
      */
     public String getLocalizedPropertyName(PropertyTypeDefinition def,
                                            Locale locale);
-    
+
+    public String getPropertyDescription(PropertyTypeDefinition def, Locale locale);
+
     /**
      * Return a localized name of the resource type.
      * 
@@ -63,4 +65,5 @@ public interface TypeLocalizationProvider {
     public String getLocalizedResourceTypeName(ResourceTypeDefinition def,
                                                Locale locale);
 
+    
 }

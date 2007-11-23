@@ -193,4 +193,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getContentType();
     }
 
+    public String getDescription(Locale locale) {
+        return this.overriddenPropDef.getDescription(locale);
+    }
+
 }

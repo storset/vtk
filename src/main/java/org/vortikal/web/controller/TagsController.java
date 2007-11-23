@@ -63,17 +63,24 @@ public class TagsController implements Controller {
             HttpServletResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Search search = new Search();
-        String term = request.getParameter("tag");
-        Query query = new PropertyTermQuery(this.propDef, term, TermOperator.EQ);
+        String tag = request.getParameter("tag");
+
+        Map model = new HashMap();
+
+        if (tag == null || tag.trim().equals("")) {
+            model.put("error", "No tags specified");
+            return new ModelAndView(this.viewName, model);
+        }
+        
+        Query query = new PropertyTermQuery(this.propDef, tag, TermOperator.EQ);
         search.setQuery(query);
         search.setPropertySelect(WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
         ResultSet rs = searcher.execute(token, search);
 
         
-        Map model = new HashMap();
 
-        model.put("tag", term);
+        model.put("tag", tag);
 
         List<String> urls = new ArrayList<String>();
         model.put("urls", urls);

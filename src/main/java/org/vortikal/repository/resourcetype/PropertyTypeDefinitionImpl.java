@@ -315,9 +315,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public String getLocalizedName(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getLocalizedPropertyName(this, locale);
-        } else {
-            return getName();
-        }
+        }         
+        return getName();
     }
 
+    public String getDescription(Locale locale) {
+        if (this.typeLocalizationProvider != null) {
+            return this.typeLocalizationProvider.getPropertyDescription(this, locale);
+        } 
+        return null;
+    }
 }

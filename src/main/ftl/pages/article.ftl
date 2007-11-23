@@ -223,9 +223,9 @@
     <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
     <#if keywords != "">
       <div class="keywords">
-	<@vrtx.msg code="article.keywords" />:
+        ${tagsProp.definition.getLocalizedName(springMacroRequestContext.locale)}:
 	<#list tagsProp.values as tag>
-          <a href="./?vrtx=tags&amp;tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
+          <a href="/?vrtx=tags&amp;tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
 	</#list>
       </div>
     </#if>

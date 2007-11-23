@@ -173,6 +173,7 @@
     <#local locale = springMacroRequestContext.getLocale() />
     <#list propDefs as propDef>
       <#local localizedName = propDef.getLocalizedName(locale) />
+      <#local description = propDef.getDescription(locale)?default("") />
       <#local name = propDef.name />
       <#local value = resource.getValue(propDef) />
       <#local type = propDef.type />
@@ -345,6 +346,9 @@
         </script>
       <#else>
         <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
+        <#if description != "">
+          ( ${description} )
+        </#if>
       </#if>
     </div>
     </#list>

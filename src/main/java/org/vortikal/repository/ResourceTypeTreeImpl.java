@@ -670,12 +670,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                         sb.append(" (overriding)");
                     }
                 }
-                String localizedName = definition.getLocalizedName(new Locale("en"));
-                sb.append(" ").append(localizedName);
-                localizedName = definition.getLocalizedName(new Locale("no"));
-                sb.append(", ").append(localizedName);
-                localizedName = definition.getLocalizedName(new Locale("nn"));
-                sb.append(", ").append(localizedName);
                 sb.append("\n");
             }
         }

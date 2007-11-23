@@ -49,7 +49,7 @@ public final class Value implements Cloneable, Comparable<Value> {
     private Principal principalValue;
 
     public Value(String stringValue) {
-        if (stringValue == null)
+        if (stringValue == null || stringValue.equals(""))
             throw new IllegalArgumentException("Value object cannot be null");
         if (stringValue.length() > MAX_LENGTH) {
             throw new ValueFormatException(

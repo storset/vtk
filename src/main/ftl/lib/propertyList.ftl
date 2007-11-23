@@ -424,7 +424,7 @@
       <#local label>
       <#if valueItem.definition.vocabulary?exists && valueItem.definition.vocabulary.valueFormatter?exists>
         <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />    
-        ${valueItem.definition.vocabulary.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", ""), "localized", springMacroRequestContext.locale)}
+        ${valueItem.definition.vocabulary.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", "unset"), "localized", springMacroRequestContext.locale)}
       <#else>
         <@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" />
       </#if>

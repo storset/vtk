@@ -119,7 +119,7 @@
         <#assign desc = imageRes.getValueByName("description")?default("") />
 
 	<#if userTitle == "" && desc == "">  
-          <img class="introduction-image" src="${introductionImage}" alt="ingressbilde-2" />
+          <img class="introduction-image" src="${introductionImage}" alt="ingressbilde" />
 	<#else>
           <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
           <#if pixelWidth != "">

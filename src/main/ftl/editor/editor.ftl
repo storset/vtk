@@ -344,7 +344,7 @@
           //-->
         </script>
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="35">
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
       </#if>
     </div>
     </#list>

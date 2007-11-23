@@ -41,8 +41,8 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="authorsPropDef" />
         <ref bean="mediaReferencePropDef" />
+        <ref bean="authorsPropDef" />
         <ref bean="publishedDatePropDef" />
       </list>
     </property>
@@ -72,7 +72,7 @@
   </bean>
 
   <bean id="mediaReferencePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="contentType" value="EXTRA_CONTENT" />
+    <property name="contentType" value="CONTENT" />
     <property name="name" value="media-ref"/>
     <property name="type" value="IMAGE_REF"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
@@ -80,7 +80,7 @@
   </bean>
 
   <bean id="authorsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="contentType" value="EXTRA_CONTENT" />
+    <property name="contentType" value="CONTENT" />
     <property name="name" value="authors"/>
     <property name="type" value="STRING"/>
     <property name="multiple" value="true"/>

@@ -13,13 +13,13 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#function propValue propName resource=resource>
+<#function propValue propName resource=resource format="long">
 <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
 <#if prop != "">
   <#local type = prop.definition.type />
   <#if type = 'DATE' || type = 'TIMESTAMP'>
     <#local locale = springMacroRequestContext.getLocale() />
-    <#return prop.getFormattedValue("long", locale) />
+    <#return prop.getFormattedValue(format, locale) />
   <#else>
     <#return prop.formattedValue />
   </#if>
@@ -97,6 +97,13 @@
         display:none;
       }
 
+      /* Start, slutt og sted */
+
+      abbr {
+        text-decoration: none;
+        border-bottom: 0;
+      }
+
      /* Body */  
 
      div.bodyText {clear:left;} 
@@ -171,18 +178,10 @@
     </#if>
 
     <#-- Authors and published date --> 
-    <#assign keywords = resource.getValueByName("keywords")?default("") />
-    <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
-        <#if keywords != "">
-          <br/>Tags: 
-          <#list tagsProp.values as tag>
-            <a href="/?vrtx=tags&tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
-          </#list>
-          <br/>
 
     <#assign authors = propValue("authors") />
     <#assign published = propValue("published-date") />
-    <#if authors != "" && published != "" && keywords != "">
+    <#if authors != "" || published != "">
       <div class="byline">
         <#if authors != "" && published != "">
           <@vrtx.msg code="article.by" /> ${authors?html} <br />${published}
@@ -191,27 +190,45 @@
         <#elseif published != "">
           ${published}
 	</#if>
-        </#if>
       </div>
     </#if>
 
     <#-- Start-date, end-date and location --> 
 
     <#assign start = propValue("start-date") />
+    <#assign startiso8601 = propValue("start-date", resource, "iso-8601") />
     <#assign end = propValue("end-date") />
+    <#assign endiso8601 = propValue("end-date", resource, "iso-8601") />
     <#assign location = propValue("location") />
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
-	<#if start != ""><@vrtx.msg code="article.starts" />: ${start}<br/></#if>
-	<#if end != ""><@vrtx.msg code="article.ends" />: ${end}<br/></#if>
-	<#if location != ""><@vrtx.msg code="article.location" />: ${location}<br/></#if>
+        <span class="summary" style="display:none;">${title}</span>
+	<#if start != ""><#-- @vrtx.msg code="article.starts" />: -->
+	  <abbr class="dtstart" title="${startiso8601}">${start}</abbr>
+	</#if>
+	<#if end != ""><#-- @vrtx.msg code="article.ends" />: -->	  
+	  - <abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#if location != "">,<#-- @vrtx.msg code="article.location" />: -->
+	  <span class="location">${location}</span><br/></#if>
       </div>
     </#if>
 
     <div class="bodyText">
       ${resource.bodyAsString}
     </div>
+
+    <#-- Keywords -->
+
+    <#assign keywords = resource.getValueByName("keywords")?default("") />
+    <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
+    <#if keywords != "">
+      <div class="keywords">
+	<@vrtx.msg code="article.keywords" />:
+	<#list tagsProp.values as tag>
+          <a href="./?vrtx=tags&amp;tag=${tag.stringValue?html}">${tag.stringValue?html}</a>
+	</#list>
+      </div>
+    </#if>
 
   </body>
 </html>

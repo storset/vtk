@@ -21,7 +21,8 @@
   <tx:advice id="repository.txAdvice" transaction-manager="repository.transactionManager">
     <tx:attributes>
       <!--tx:method name="get*" read-only="true" /-->
-      <tx:method name="*" no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" />
+      <!--tx:method name="*" no-rollback-for="org.vortikal.repository.RepositoryException,org.vortikal.security.AuthenticationException" /-->
+      <tx:method name="*" />
     </tx:attributes>
   </tx:advice>
 

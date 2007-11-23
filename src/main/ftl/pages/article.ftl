@@ -86,22 +86,31 @@
         font-weight: bold;
       }
 
-      object {
+      object#audioplayer1 {
         margin-top: -0.5em;
         margin-bottom: 0.5em;
       }
 
-      /* Byline */
-
-      hr.byline {
-        display:none;
+      object#videoplayer1, embed {
+        margin-bottom: 1em;
       }
+
+      /* Byline */
 
       /* Start, slutt og sted */
 
       abbr {
         text-decoration: none;
         border-bottom: 0;
+      }
+
+     /* Media-ref */  
+
+      a.mediaref {
+        white-space: nowrap;
+        width: 1%;
+        margin-bottom: 1em;
+        display: block;
       }
 
      /* Body */  
@@ -164,9 +173,9 @@
     <#-- Media ref --> 
 
     <#assign mediaRes = propResource("media-ref") />
+    <#assign media = propValue("media-ref") />
 
     <#if mediaRes != "" && mediaRes.resourceType == 'audio'>
-      <#assign media = propValue("media-ref") />
       <script type="text/javascript" language="JavaScript" src="${mediaPlayerBase.url?html}/audio-player.js"></script>
       <object type="application/x-shockwave-flash" data="${mediaPlayerBase.url?html}/player.swf" id="audioplayer1" height="24" width="290">
 	<param name="movie" value="${mediaPlayerBase.url?html}/player.swf"/>
@@ -175,6 +184,17 @@
 	<param name="menu" value="false"/>
 	<param name="wmode" value="transparent"/>
       </object>
+    <#elseif mediaRes.contentType == 'video/mpeg' || mediaRes.contentType == 'video/quicktime'>
+      <object id="videoplayer1" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="320" height="255" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+        <param name="src" value="${media}"/>
+        <param name="autoplay" value="false"/>
+        <param name="controller" value="true"/>
+        <param name="loop" value="false"/>
+        <embed id="videoplayer1" src="${media}" width="320" height="255" autoplay="false" controller="true" loop="false" pluginspage="http://www.apple.com/quicktime/download/">
+        </embed>
+      </object>
+    <#else>
+      <a class="mediaref" href="${media}"><@vrtx.msg code="article.media-file" /></a>
     </#if>
 
     <#-- Authors and published date --> 
@@ -209,7 +229,7 @@
 	</#if>
 	<#if end != ""><#-- @vrtx.msg code="article.ends" />: -->	  
 	  - <abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#if location != "">,<#-- @vrtx.msg code="article.location" />: -->
-	  <span class="location">${location}</span><br/></#if>
+	  <span class="location">${location}</span></#if>
       </div>
     </#if>
 

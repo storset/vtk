@@ -26,6 +26,10 @@
         margin: 0 0.75em 0.5em 0;
         border:1px solid #ddd; 
       }
+
+      .entry {
+        float:left;
+      }
     </style>
 </head>
 <body>
@@ -36,12 +40,12 @@
     <p>${error}</p>
   </#if>
   <#if resources?exists>
-  <ul>
     <#list resources as resource>
-      <div>
-      <p><a href="${urls[resource_index]?html}">${resource.getPropertyByPrefix("","title").getFormattedValue()?html}</a></p>
+      <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
         <#assign introProp = resource.getPropertyByPrefix("","introduction")?default("") />
         <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
+      <div class="entry">
+      <p><a href="${urls[resource_index]?html}">${resourceTitle?html}</a></p>
         <#if introImageProp != "">
           <img class="introduction-image" width="100" height="100" src="${introImageProp.formattedValue}" />
         </#if>        
@@ -50,6 +54,5 @@
         </#if>
       </div>
     </#list>
-  </ul>
   </#if>
 </body>

@@ -44,7 +44,7 @@
 
 <#assign title = propValue("userTitle") />
 <#if title == "">
-  <#assign title = "Missing title" />
+  <#assign title = vrtx.msg code="missingTitle" />
 </#if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -196,8 +196,8 @@
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
 	<#if start != ""><@vrtx.msg code="article.starts" />: ${start}<br/></#if>
-	<#if end != "">Slutter: ${end}<br/></#if>
-	<#if location != "">Stad: ${location}<br/></#if>
+	<#if end != ""><@vrtx.msg code="article.ends" />: ${end}<br/></#if>
+	<#if location != ""><@vrtx.msg code="article.location" />: ${location}<br/></#if>
       </div>
     </#if>
 

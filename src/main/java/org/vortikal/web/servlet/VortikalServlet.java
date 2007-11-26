@@ -579,7 +579,7 @@ public class VortikalServlet extends DispatcherServlet {
         }
 
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (message != null) sb.append(message).append(" ");
         sb.append("Message: ").append(t.getMessage()).append(" - ");
         sb.append("Full request URL: [").append(requestURL).append("], ");

@@ -71,7 +71,7 @@
  * @param args (optional) arguments for the message
  *
 -->
-<#function getMsg code default args=[] >
+<#function getMsg code default=code args=[] >
     <#assign localizer =
     "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext) />
   <#return localizer.msg/>

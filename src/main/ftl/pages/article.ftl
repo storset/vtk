@@ -34,8 +34,7 @@
     <#local def = prop.definition />
     <#local type = def.type />
     <#if type = 'IMAGE_REF'>
-      <#local tmpResource = resource.getPropResource(def)?default("") />
-      <#return tmpResource />
+      <#return resource.getPropResource(def)?default("") />
     </#if>
   </#if>
   <#return "" />
@@ -128,14 +127,14 @@
     <#assign introductionImage = propValue("picture") />
     <#if introductionImage != "">
       <#if imageRes == "">
-        <img class="introduction-image" src="${introductionImage}" alt="<@vrtx.msg code="article.introductionImageAlt">" />
+        <img class="introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
       <#else>
 
         <#assign userTitle = propValue("userTitle", imageRes) />
         <#assign desc = imageRes.getValueByName("description")?default("") />
 
 	<#if userTitle == "" && desc == "">  
-          <img class="introduction-image" src="${introductionImage}" alt="<@vrtx.msg code="article.introductionImageAlt">" />
+          <img class="introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
 	<#else>
           <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
           <#if pixelWidth != "">
@@ -146,7 +145,7 @@
 	    <#if userTitle != "">
 	      <img src="${introductionImage}" alt="${userTitle?html}" />
 	    <#else>
-	      <img src="${introductionImage}" alt="<@vrtx.msg code="article.introductionImageAlt">" />
+	      <img src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
 	    </#if>
             <div class="text">
 	      <#if userTitle != "">
@@ -184,7 +183,7 @@
 	<param name="menu" value="false"/>
 	<param name="wmode" value="transparent"/>
       </object>
-    <#elseif mediaRes.contentType == 'video/mpeg' || mediaRes.contentType == 'video/quicktime'>
+    <#elseif (mediaRes != "" && (mediaRes.contentType == 'video/mpeg' || mediaRes.contentType == 'video/quicktime'))>
       <object id="videoplayer1" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="320" height="255" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
         <param name="src" value="${media}"/>
         <param name="autoplay" value="false"/>

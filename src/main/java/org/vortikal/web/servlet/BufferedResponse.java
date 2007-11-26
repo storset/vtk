@@ -334,14 +334,12 @@ public class BufferedResponse implements HttpServletResponse {
     }
     
     /**
-     * Copy metadata and contents of buffered response to another response.
+     * Write metadata and contents of buffered response to another response.
      * 
-     * @param response
-     * @throws IOException
      */
     public void writeTo(HttpServletResponse response, boolean closeOutputStream) 
         throws IOException {
-        // Render/copy metadata
+        // Write/copy metadata
         response.setContentLength(this.getContentLength());
         response.setContentType(this.getContentType());
         response.setStatus(this.getStatus());
@@ -358,6 +356,8 @@ public class BufferedResponse implements HttpServletResponse {
                 response.setIntHeader(header, ((Integer)value).intValue());
             } else if (value instanceof Date) {
                 response.setDateHeader(header, ((Date)value).getTime());
+            } else {
+                response.setHeader(header, value.toString());
             }
         }
         
@@ -365,7 +365,7 @@ public class BufferedResponse implements HttpServletResponse {
             response.addCookie(cookie);
         }
 
-        // Render/copy content
+        // Write/copy content
         OutputStream out = null;
         try {
             out = response.getOutputStream();

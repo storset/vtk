@@ -49,6 +49,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -150,13 +151,12 @@ public class FileUploadController extends SimpleFormController {
             Resource newResource = this.repository.createDocument(token, itemURI);
 
             String contentType = uploadItem.getContentType();
-            if (contentType != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting content type of resource to " + contentType);
-                }
-                newResource.setContentType(contentType);
-                this.repository.store(token, newResource);
+            
+            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
+                contentType = MimeHelper.map(newResource.getName());
             }
+            newResource.setContentType(contentType);
+            this.repository.store(token, newResource);
 
             InputStream inStream = uploadItem.getInputStream();
             this.repository.storeContent(token, itemURI, inStream);

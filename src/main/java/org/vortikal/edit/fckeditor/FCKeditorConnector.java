@@ -51,6 +51,7 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -233,6 +234,15 @@ public class FCKeditorConnector implements Controller {
             InputStream inStream = uploadItem.getInputStream();
             this.repository.storeContent(token, uri, inStream);
 
+            Resource newResource = this.repository.retrieve(token, uri, true);
+            
+            String contentType = uploadItem.getContentType();
+            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
+                contentType = MimeHelper.map(newResource.getName());
+            }
+            newResource.setContentType(contentType);
+            this.repository.store(token, newResource);
+            
             URL fileURL = this.viewService.constructURL(uri);
 
             model.put("existed", existed);

@@ -150,7 +150,8 @@ function getCheckedAsStringValue(node, result) {
   <#macro listNodes nodes>
     <ul>
       <#list nodes as node>
-        <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
+
         <li>${node.entry?string} - ${displayName}
           <#if node.children?exists><@listNodes nodes=node.children /></#if>
         </li>
@@ -160,7 +161,7 @@ function getCheckedAsStringValue(node, result) {
   
   <#macro listNodesForAC nodes>
       <#list nodes as node>
-        <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
         ["${displayName}", "${node.entry?string}"], ["${node.entry?string}", "${displayName}"]<#if node.children?exists>, <@listNodesForAC nodes=node.children /></#if><#if node_has_next>, </#if>
       </#list>
   </#macro>
@@ -171,7 +172,7 @@ function getCheckedAsStringValue(node, result) {
       <#if !checked>
 	<#assign checked=selected?seq_contains(node.entry) />
       </#if>
-      <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
       var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
       <#if node.children?exists>
 	<@createTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected parentchecked=checked />     	         
@@ -182,7 +183,7 @@ function getCheckedAsStringValue(node, result) {
   <#macro createSingleTree nodes parent name selected>
     <#list nodes as node>
       <#assign checked=selected?seq_contains(node.entry) />
-      <#assign displayName = vrtx.getMsg(localePrefix + ".value." + node.entry?string, node.entry?string) />
+        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
       var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
       <#if node.children?exists>
 	<@createSingleTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected />     	         

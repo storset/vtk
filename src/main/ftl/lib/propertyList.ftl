@@ -422,12 +422,7 @@
     <#else>
       <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
       <#local label>
-      <#if valueItem.definition.vocabulary?exists && valueItem.definition.vocabulary.valueFormatter?exists>
-        <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />    
-        ${valueItem.definition.vocabulary.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", "unset"), "localized", springMacroRequestContext.locale)}
-      <#else>
         <@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" />
-      </#if>
       </#local>
       ${label}
     </#if>
@@ -508,20 +503,12 @@
           <#list form.possibleValues as alternative>
             <#if alternative?has_content>
               <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />    
-              <#local label>
-                ${item.definition.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", alternative), "localized", springMacroRequestContext.locale)}
-                <#--@vrtx.msg code="${localizedValueLookupKeyPrefix}.value.${alternative}"
-                           default="${alternative}" /-->
-              </#local>
-              <option value="${alternative}" 
-                      <#if form.value?has_content && form.value = alternative>selected="true"</#if>
-                      label="${label}">${label}</option>
+              <#local label>${item.definition.valueFormatter.valueToString(constructor("org.vortikal.repository.resourcetype.Value", alternative), "localized", springMacroRequestContext.locale)}</#local>
+              <option value="${alternative}" <#if form.value?has_content && form.value = alternative>selected="true"</#if> label="${label}">${label}</option>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
               <#local label><@vrtx.msg code="${localizedValueLookupKeyPrefix}.unset" default="${defaultNotSet}" /></#local>
-              <option id="unset" value=""
-                 <#if !form.value?has_content>selected="true"</#if>
-                 label="${label}">${label}</option>
+              <option id="unset" value="" <#if !form.value?has_content>selected="true"</#if> label="${label}">${label}</option>
             </#if>
           </#list>
           </select>

@@ -78,7 +78,7 @@ public abstract class AbstractAuthenticationHandler implements
         Principal principal = null;
 
         try {
-            new Principal(username, Principal.Type.USER);
+            principal = new Principal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             return false;
         }

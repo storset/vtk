@@ -171,8 +171,8 @@
 
     <#-- Media ref --> 
 
-    <#assign mediaRes = propResource("media-ref") />
-    <#assign media = propValue("media-ref") />
+    <#assign mediaRes = propResource("media") />
+    <#assign media = propValue("media") />
 
     <#if mediaRes != "" && mediaRes.resourceType == 'audio'>
       <script type="text/javascript" language="JavaScript" src="${mediaPlayerBase.url?html}/audio-player.js"></script>

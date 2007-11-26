@@ -187,7 +187,7 @@
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
 
-      <#elseif name = 'media-ref'><#-- XXX -->
+      <#elseif name = 'media'><#-- XXX -->
         <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}"> 
         <button type="button" onclick="browseServer('resource.${name}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         

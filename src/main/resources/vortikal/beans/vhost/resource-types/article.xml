@@ -41,7 +41,7 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="mediaReferencePropDef" />
+        <ref bean="mediaPropDef" />
         <ref bean="authorsPropDef" />
         <ref bean="publishedDatePropDef" />
       </list>
@@ -71,9 +71,9 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="mediaReferencePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
-    <property name="contentType" value="CONTENT" />
-    <property name="name" value="media-ref"/>
+  <bean id="mediaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <property name="contentType" value="EXTRA_CONTENT" />
+    <property name="name" value="media"/>
     <property name="type" value="IMAGE_REF"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>

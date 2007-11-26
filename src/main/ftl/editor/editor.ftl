@@ -258,7 +258,6 @@
           <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
           <#local year = d.getDateValue()?string("yyyy") />
           <#local month = d.getDateValue()?string("MM") />
-          <#local jsmonth = ((d.getDateValue()?string("MM"))?number - 1)?string />
           <#local date = d.getDateValue()?string("dd") />
           <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
           <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
@@ -271,7 +270,7 @@
         <#local uniqueName = 'cal_' + propDef_index />
 
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
+        <a class="calendar" id="${uniqueName}.calendar.href" href="javascript:void(0);" onclick="${uniqueName}_show(); return false;"><span>cal</span></a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
         <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
@@ -285,8 +284,8 @@
           }
 
          <#if value != "">
-           cal1.cfg.setProperty("selected", "${jsmonth}/${date}/${year}", false);
-           cal1.cfg.setProperty("pagedate", "${jsmonth}/${year}", false);
+           cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
+           cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
          </#if>
 
           cal1.selectEvent.subscribe( function(type, dates) {
@@ -342,6 +341,18 @@
              }
           }
 
+          function ${uniqueName}_click(e) {
+              if (!${uniqueName}_hidden && "${uniqueName}.calendar.href" != e.target.id) {
+                 ${uniqueName}_hide();
+              }
+              return true;
+          }
+
+          if (window.addEventListener) {
+             window.addEventListener("click", ${uniqueName}_click, false);
+          } else if (window.attachEvent) {
+             window.attachEvent("onclick", ${uniqueName}_click);
+          }
           //-->
         </script>
       <#else>

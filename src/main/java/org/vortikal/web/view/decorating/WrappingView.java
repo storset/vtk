@@ -21,7 +21,7 @@ import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 /**
  * Wrapper class for view, running {@link ReferenceDataProvider referenceDataProviders}
  * before the wrapped view is run (and the necessary model is available),
- * wrapping the view in an optional {@ling ViewWrapper}
+ * wrapping the view in an optional {@link ViewWrapper}
  * 
  * @see AbstractWrappingViewResolver, ViewWrapper, ReferenceDataProvider, 
  * @see ReferenceDataProviding

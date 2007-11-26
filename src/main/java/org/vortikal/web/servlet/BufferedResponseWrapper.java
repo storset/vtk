@@ -33,6 +33,8 @@ package org.vortikal.web.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -55,6 +57,8 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
     private String characterEncoding = null;    
     private boolean isCommitted = false;
 
+    private static final Pattern CONTENT_TYPE_VALUE_PATTERN = 
+                                    Pattern.compile(".+/.+;.*charset.*=.+");
 
     /**
      * Creates a buffered response wrapper with no limit on the buffer size.
@@ -180,7 +184,7 @@ public class BufferedResponseWrapper extends HttpServletResponseWrapper {
 
 
     private void processContentTypeHeader(String value) {
-        if (value.matches(".+/.+;.*charset.*=.+")) {
+        if (CONTENT_TYPE_VALUE_PATTERN.matcher(value).matches()) {
 
             String contentType = value.substring(
                 0, value.indexOf(";")).trim();

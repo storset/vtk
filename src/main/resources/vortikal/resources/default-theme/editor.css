@@ -37,7 +37,13 @@ label {
 
 /* START: introduction */
 .introduction {
-  margin-right: 19em;
+   margin-right: 21em; 
+    
+}
+
+.introduction textarea{
+  height: 10.5em; /* Used when fck-editor is disabled */
+  width: 100%;
 }
 
 .introduction iframe{
@@ -48,6 +54,8 @@ label {
 div.picture {
   float:right;
   margin-top: -10.9em;
+  white-space: nowrap;
+  width: 20em;
 }
 
 div.picture img {
@@ -56,7 +64,7 @@ div.picture img {
 }
 
 div.picture div {
-  border: 1px solid #ccc;
+  border: 1px solid #ccc; 
   margin-top: 8px;
   height: 105px;
   width: 170px;
@@ -66,25 +74,56 @@ div.picture div {
 
 /* END introduction */
 
-/* START time and place */
-
-div.end-date {
-  margin-left: 13em;
-  margin-top: -3.7em;
-}
-
-div.location {
-  margin-left: 26em;
-  margin-top: -3.71em;
-}
-
-span.colon {padding: 0 .2em;}
-/* END time and place */
-
-
 .html-content iframe {
   height: 300px;
 }
+
+
+
+/* START time and place */
+
+div.end-date {
+  margin-left: 12em;
+  margin-top: -3.7em;
+}
+
+* html div.end-date {
+  margin-left: 12em;
+  margin-top: -7.6ex;
+}
+
+div.location {
+  margin-left: 24em;
+  margin-top: -3.71em;
+}
+
+* html div.location {
+  margin-left: 24em;
+  margin-top: -7.6ex;
+}
+
+input.date {
+  width: 6.5em;
+}
+
+* html input.date {
+  width: 5em;
+}
+
+input.hours, input.minutes {
+  width: 1.5em;
+}
+
+
+div.yui-skin-sam{
+  display:inline;
+}
+
+span.colon {
+  padding: 0 .2em;
+}
+
+/* END time and place */
 
 
 

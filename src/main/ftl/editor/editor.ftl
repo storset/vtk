@@ -241,7 +241,7 @@
              } //-->
         </script>
         <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}"> 
-        <button type="button" onclick="browseServer('resource.${name}');">Browse images</button>
+        <button type="button" onclick="browseServer('resource.${name}');"><@vrtx.msg code="editor.browseImages"/></button>
         <div id="resource.${name}.preview">
           <#if value != ''>
             <img src="${value}" width="100" height="100" alt="">
@@ -270,10 +270,10 @@
 
         <#local uniqueName = 'cal_' + propDef_index />
 
-        <input size="10"  style="display: inline;" type="text" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
+        <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <a class="calendar" href="javascript:void(0);" onclick="${uniqueName}_toggle()"><span>cal</span></a>
-        <div  style="display: inline;" id="resource.${name}.calendar" class="yui-skin-sam"></div>
-        <input style="display: inline;" size="2" maxlength="2" type="text" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input  style="display: inline;" size="2" maxlength="2" type="text" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+        <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
+        <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
         <script type="text/javascript"><!--
 
@@ -315,7 +315,7 @@
 
                 this.cfg.setProperty("selected", d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear(), false);
                 this.cfg.setProperty("pagedate", d.getMonth() + "/" + d.getFullYear(), false);
-                this.render();
+                // this.render();
              }
           }
 

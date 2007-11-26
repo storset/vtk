@@ -89,9 +89,9 @@
       </div>
 
       <div id="submit" class="save-cancel">
-       <input type="submit" onClick="cSave();" name="save" value="Lagre">
-       <input type="submit" onClick="performSave();" name="savequit" value="Lagre og avslutt">
-       <input type="submit" onClick="performSave();" name="cancel" value="Avbryt">
+       <input type="submit" onClick="cSave();" name="save" value="<@vrtx.msg code="editor.save">">
+       <input type="submit" onClick="performSave();" name="savequit" value="<@vrtx.msg code="editor.saveAndQuit">">
+       <input type="submit" onClick="performSave();" name="cancel" value="<@vrtx.msg code="editor.cancel">">
 
         <#if tooltips?exists>
           <#list tooltips as tooltip>
@@ -189,7 +189,7 @@
 
       <#elseif name = 'media-ref'><#-- XXX -->
         <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}"> 
-        <button type="button" onclick="browseServer('resource.${name}', 'Media');">Browse media files</button>
+        <button type="button" onclick="browseServer('resource.${name}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"></button>
         
       <#elseif type = 'IMAGE_REF'>
         <script type="text/javascript"><!--

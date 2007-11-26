@@ -88,7 +88,6 @@
     extends="Resource">
     
     <!-- Some columns from 'extra_prop_entry' -->
-    <result property="typeId" column="prop_type_id" javaType="int" />
     <result property="name" column="name" />
     <result property="namespace" column="name_space" />
     <result property="value" column="value" />
@@ -351,10 +350,8 @@
 
   <select id="loadPropertiesForResource" parameterClass="int" resultMap="Property">
     select
-      p.*,
-      t.prop_type_name as prop_type
+      p.*
     from extra_prop_entry p
-      inner join prop_type t on p.prop_type_id = t.prop_type_id
     where resource_id = #value#
     order by p.extra_prop_entry_id
   </select>
@@ -363,10 +360,8 @@
   <select id="loadPropertiesForChildren" parameterClass="java.util.Map"
           resultMap="Property">
     select
-      p.*,
-      t.prop_type_name as prop_type
+      p.*
     from extra_prop_entry p
-      inner join prop_type t on p.prop_type_id = t.prop_type_id
     where p.resource_id in
       (select resource_id from vortex_resource
         where uri like #uriWildcard# escape '@' and depth = #depth#)
@@ -698,7 +693,7 @@
   
   <select id="orderedPropertySetIteration" resultMap="ResourceAndExtraProperties">
     select r.*, 
-    p.prop_type_id, p.name_space, p.name, p.value from vortex_resource r
+    p.name_space, p.name, p.value from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
     order by r.uri, p.extra_prop_entry_id
   </select>
@@ -708,7 +703,6 @@
     
     select resource_ancestor_ids(r.uri) AS ancestor_ids, 
            r.*,
-           p.prop_type_id,
            p.name_space,
            p.name,
            p.value from vortex_resource r
@@ -722,7 +716,6 @@
                     resultMap="ResourceAndExtraPropertiesWithAncestorIds">
     select resource_ancestor_ids(r.uri) AS ancestor_ids, 
            r.*,
-           p.prop_type_id,
            p.name_space,
            p.name,
            p.value

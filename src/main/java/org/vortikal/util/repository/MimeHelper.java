@@ -92,7 +92,7 @@ public class MimeHelper {
         }
 
         return fileName.substring(fileName.lastIndexOf(".") + 1,
-            fileName.length());
+            fileName.length()).toLowerCase();
     }
 
     protected static void load() {

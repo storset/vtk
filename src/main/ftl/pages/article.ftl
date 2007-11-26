@@ -54,11 +54,11 @@
 
       /* Ingress */
 
-      div.introduction {margin:0;padding:0;}
+      div.vrtx-introduction {margin:0;padding:0;}
 
       /* Bilde uten bildetekst */
 
-      img.introduction-image {
+      img.vrtx-introduction-image {
         float: right;
         margin: 0 0 0.5em 0.75em;
         border:1px solid #ddd; 
@@ -66,22 +66,22 @@
 
       /* Bilde med bildetekst */
 
-      div.introduction-image {
+      div.vrtx-introduction-image {
         border:1px solid #ddd; 
         float: right;
         margin: 0em 0em 0.5em 0.75em;
       }
 
-      div.introduction-image img {
+      div.vrtx-introduction-image img {
       }
 
-      div.introduction-image div.text {
+      div.vrtx-introduction-image div.vrtx-imagetext {
         overflow: hidden;
         padding: 0.5em; 
         background-color: #eee;
       }
 
-      div.introduction-image div.text span.title{
+      div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle{
         font-weight: bold;
       }
 
@@ -105,7 +105,7 @@
 
      /* Media-ref */  
 
-      a.mediaref {
+      a.vrtx-media {
         white-space: nowrap;
         width: 1%;
         margin-bottom: 1em;
@@ -114,7 +114,7 @@
 
      /* Body */  
 
-     div.bodyText {clear:left;} 
+     div.vrtx-bodytext {clear:left;} 
            
     </style>
 </head>
@@ -127,32 +127,32 @@
     <#assign introductionImage = propValue("picture") />
     <#if introductionImage != "">
       <#if imageRes == "">
-        <img class="introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
+        <img class="vrtx-introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
       <#else>
 
         <#assign userTitle = propValue("userTitle", imageRes) />
         <#assign desc = imageRes.getValueByName("description")?default("") />
 
 	<#if userTitle == "" && desc == "">  
-          <img class="introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
+          <img class="vrtx-introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
 	<#else>
           <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
           <#if pixelWidth != "">
             <#assign style = "width:" + pixelWidth+ "px;" />
           </#if>
 	 	 
-          <div class="introduction-image" style="${style}">
+          <div class="vrtx-introduction-image" style="${style}">
 	    <#if userTitle != "">
 	      <img src="${introductionImage}" alt="${userTitle?html}" />
 	    <#else>
 	      <img src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
 	    </#if>
-            <div class="text">
+            <div class="vrtx-imagetext">
 	      <#if userTitle != "">
-		<span class="title">${userTitle?html}<#if desc != "">: </#if></span>
+		<span class="vrtx-imagetitle">${userTitle?html}<#if desc != "">: </#if></span>
 	      </#if>
 	      <#if desc != "">
-		<span class="description">${desc?html}</span>
+		<span class="vrtx-imagedescription">${desc?html}</span>
 	      </#if>
 	    </div> 
 	  </div>
@@ -164,7 +164,7 @@
 
     <#assign introduction = propValue("introduction") />
     <#if introduction != "">
-      <div class="introduction">
+      <div class="vrtx-introduction">
         ${introduction}
       </div>
     </#if>
@@ -193,7 +193,7 @@
         </embed>
       </object>
     <#else>
-      <a class="mediaref" href="${media}"><@vrtx.msg code="article.media-file" /></a>
+      <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
     </#if>
 
     <#-- Authors and published date --> 
@@ -201,7 +201,7 @@
     <#assign authors = propValue("authors") />
     <#assign published = propValue("published-date") />
     <#if authors != "" || published != "">
-      <div class="byline">
+      <div class="vrtx-byline">
         <#if authors != "" && published != "">
           <@vrtx.msg code="article.by" /> ${authors?html} <br />${published}
         <#elseif authors != "">
@@ -232,7 +232,7 @@
       </div>
     </#if>
 
-    <div class="bodyText">
+    <div class="vrtx-bodytext">
       ${resource.bodyAsString}
     </div>
 
@@ -241,7 +241,7 @@
     <#assign keywords = resource.getValueByName("keywords")?default("") />
     <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
     <#if keywords != "">
-      <div class="keywords">
+      <div class="vrtx-keywords">
         ${tagsProp.definition.getLocalizedName(springMacroRequestContext.locale)}:
 	<#list tagsProp.values as tag>
           <a href="/?vrtx=tags&amp;tag=${tag.stringValue?html}">${tag.stringValue?html}</a>

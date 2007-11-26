@@ -339,7 +339,7 @@ public class BufferedResponse implements HttpServletResponse {
      * @param response
      * @throws IOException
      */
-    public void copyTo(HttpServletResponse response, boolean closeOutputStream) 
+    public void writeTo(HttpServletResponse response, boolean closeOutputStream) 
         throws IOException {
         // Render/copy metadata
         response.setContentLength(this.getContentLength());

@@ -31,6 +31,7 @@
 package org.vortikal.web.servlet;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -208,6 +209,10 @@ public class BufferedResponse implements HttpServletResponse {
     public void addCookie(Cookie cookie) {
         this.cookies.add(cookie);
     }
+    
+    public List<Cookie> getCookies() {
+        return this.cookies;
+    }
 
     public boolean containsHeader(String header) {
         return this.headers.containsKey(header);
@@ -325,6 +330,50 @@ public class BufferedResponse implements HttpServletResponse {
         } else {
             this.contentType = value;
             this.headers.put(CONTENT_TYPE, value);
+        }
+    }
+    
+    /**
+     * Copy metadata and contents of buffered response to another response.
+     * 
+     * @param response
+     * @throws IOException
+     */
+    public void copyTo(HttpServletResponse response, boolean closeOutputStream) 
+        throws IOException {
+        // Render/copy metadata
+        response.setContentLength(this.getContentLength());
+        response.setContentType(this.getContentType());
+        response.setStatus(this.getStatus());
+        response.setLocale(this.getLocale());
+        
+        Map <String, Object> headers = this.getHeaders();
+        for (Map.Entry<String, Object> entry: headers.entrySet()) {
+            
+            String header = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                response.setHeader(header, (String)value);
+            } else if (value instanceof Integer) {
+                response.setIntHeader(header, ((Integer)value).intValue());
+            } else if (value instanceof Date) {
+                response.setDateHeader(header, ((Date)value).getTime());
+            }
+        }
+        
+        for (Cookie cookie: this.getCookies()) {
+            response.addCookie(cookie);
+        }
+
+        // Render/copy content
+        OutputStream out = null;
+        try {
+            out = response.getOutputStream();
+            out.write(this.getContentBuffer());
+        } finally {
+            if (closeOutputStream && out != null){
+                out.close();
+            }
         }
     }
     

@@ -216,20 +216,27 @@
 
     <#assign start = propValue("start-date") />
     <#assign startiso8601 = propValue("start-date", resource, "iso-8601") />
+    <#assign startshort = propValue("start-date", resource, "short") />
     <#assign end = propValue("end-date") />
     <#assign endiso8601 = propValue("end-date", resource, "iso-8601") />
+    <#assign endshort = propValue("end-date", resource, "short") />
+    <#assign endhoursminutes = propValue("end-date", resource, "hours-minutes") />
     <#assign location = propValue("location") />
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
         <span class="summary" style="display:none;">${title}</span>
-	<#if start != ""><#-- @vrtx.msg code="article.starts" />: -->
+	<#if start != "">
 	  <abbr class="dtstart" title="${startiso8601}">${start}</abbr>
 	</#if>
-	<#if end != ""><#-- @vrtx.msg code="article.ends" />: -->	  
-	  - <abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#if location != "">,<#-- @vrtx.msg code="article.location" />: -->
-	  <span class="location">${location}</span></#if>
-      </div>
+	<#if end != "">
+	  <#if startshort == endshort>
+          - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#else>
+	  - <abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#if location != "">,
+	    <span class="location">${location}</span>
+	  </#if>
+	</#if>
+     </div>
     </#if>
 
     <div class="vrtx-bodytext">

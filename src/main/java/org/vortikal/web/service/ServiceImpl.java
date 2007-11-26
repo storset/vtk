@@ -285,7 +285,7 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
 
     
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 		
         sb.append(getClass().getName()).append(": ").append(this.name);;
         return sb.toString();

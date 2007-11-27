@@ -275,7 +275,7 @@
 
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <script type="text/javascript" language="Javascript"><!--
-        document.write('<a class="calendar" id="${uniqueName}.calendar.href" onclick="${uniqueName}_show(); return false;"><span>cal</span></a>');
+        document.write('<a class="calendar" id="${uniqueName}.calendar.href"><span>cal</span></a>');
         document.write('<div id="resource.${name}.calendar" class="yui-skin-sam"></div>');
         // -->
         </script>
@@ -356,8 +356,11 @@
               } else if (e.srcElement) {
                  target = e.srcElement;
               }
-              if (!${uniqueName}_hidden && "${uniqueName}.calendar.href" != target.id) {
+              var inCalendar = "${uniqueName}.calendar.href" == target.id;
+              if (!${uniqueName}_hidden && !inCalendar) {
                  ${uniqueName}_hide();
+              } else if (inCalendar) {
+                 ${uniqueName}_toggle();
               }
               return true;
           }

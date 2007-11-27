@@ -1071,11 +1071,19 @@
                value-ref="previewTextView" />
         <entry key="previewFallback"
                value-ref="previewFallbackView" />
+      </map>
+    </property>
+    <property name="viewWrapper" ref="manageViewWrapper" />
+  </bean>
+
+  <bean id="manage.plainViewResolver"
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
         <entry key="manage.refreshLockView"
                value-ref="manage.refreshLockView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="manageViewWrapper" />
   </bean>
 
   <!-- Manage wrapping -->

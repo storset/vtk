@@ -11,8 +11,26 @@
     <release version="0.4-SNAPSHOT" date="In SVN" description="Release 0.4">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Added two generalized document types, "article" and "event",
+        based on XHTML 1.0 transitional, with corresponding editor and
+        view mode.
+      </action>
       <action type="update">
-        Merged og.vortikal.repositoryimpl tree into org.vortikal.repository
+        Old property type DATE is renamed to TIMESTAMP, and new
+        property types DATE (as a subvariant of TIMESTAMP), and
+        IMAGE_REF are added.
+      </action>
+      <action type="update">
+        Decorating: the "uri-menu" component no longer produces markup
+        when no sub folders are found.
+      </action>
+      <action type="add">
+        Added Javascript-based syntax highlighting to the plain text
+        editor.
+      </action>
+      <action type="update">
+        Merged og.vortikal.repositoryimpl tree into org.vortikal.repository.
       </action>
     </release>
 

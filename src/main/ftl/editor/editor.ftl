@@ -244,7 +244,7 @@
                         var url = document.getElementById(urlobj).value;
                         if (url) {
                             document.getElementById(previewobj).innerHTML = 
-                            '<img src="' + url + '" width="100" height="100">';
+                            '<img src="' + url + '" alt="preview">';
                         } else {
                             document.getElementById(previewobj).innerHTML = '';
                         }
@@ -256,7 +256,7 @@
         document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
         document.write('<div id="resource.${name}.preview">');
           <#if value != ''>
-            document.write('<img src="${value}" width="100" height="100" alt="">');
+            document.write('<img src="${value}"  alt="preview">');
           </#if>
         document.write('</div>');
         // -->

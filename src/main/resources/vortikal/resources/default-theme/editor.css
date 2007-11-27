@@ -69,7 +69,7 @@ div.introduction {
   clear:left;
   float: left; 
   width: 500px;  
-  margin-right: 1em;
+  margin-right: 1.2em;
 }
 
 div.introduction textarea {
@@ -192,8 +192,8 @@ a.calendar span {
    font-size: 11px; 
    position:absolute; 
    float: none;
-   margin-left: 10.8em;
-   margin-top: -18em; 
+   margin-left: 10.5em;
+   margin-top: -18.5em; 
    background-color:#f7f7f7;
    padding-top: 5px;
    padding-left: -1px;

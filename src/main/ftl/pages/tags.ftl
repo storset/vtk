@@ -1,14 +1,14 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: article.ftl
+  - File: tags.ftl
   - 
   - Description: Article view
   - 
   - Required model data:
   -   resource
   -
-  -->
+-->
 
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
@@ -22,7 +22,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>${title}</title>
-
+  
   <style type="text/css">
     ul.tag-element-list { 
       margin: 0px;
@@ -53,6 +53,10 @@
       padding: 5px 0px 0px 0px;
       font-size: 125%;
     }
+    
+    .italic {
+      font-style: italic;
+    }
   </style>
 </head>
 
@@ -72,13 +76,18 @@
 	        
 	      <li>
             <#if introImageProp != "">
-              <a href="${urls[resource_index]?html}" style="float:left;">
-                <img class="introduction-image" width="100" height="100" alt="image" src="${introImageProp.formattedValue}" />
+              <a href="${urls[resource_index]?html}">
+                <img class="introduction-image" 
+                     width="100" height="100"
+                     alt="IMG for ${title}"
+                     src="${introImageProp.formattedValue}" />
               </a>
             </#if>
           
             <div class="title">
-              <a href="${urls[resource_index]?html}">${resourceTitle?html}</a>
+              <a href="${urls[resource_index]?html}">
+                ${resourceTitle?html}
+              </a>
             </div>
           
             <#if introProp != "">
@@ -89,7 +98,7 @@
 	  </ul>
 	<#else>
       <p>
-        No resources tagged with "${tag}".
+        ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag}</span>.
       </p>
   </#if>
 </body>

@@ -187,7 +187,6 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
-    <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />
   </bean>
 
 </beans>

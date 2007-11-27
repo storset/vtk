@@ -11,9 +11,12 @@
   * @param url the url to access 
   * @param interval the ping interval in seconds. The default value is
   *        600 (10 minutes)
+  * @param method the request method (usually "HEAD" or "GET", the
+  *        default is "GET" ("HEAD" causes Firefox to occasionally hang 
+  *        waiting for the request to complete).
   *
   -->
-<#macro ping url interval=600>
+<#macro ping url interval=600 method="GET">
   <script language="JavaScript" type="text/javascript"><!--
      var intervalSec = ${interval};
      var req;
@@ -27,7 +30,7 @@
            }
         }
         if (req != null) {
-           req.open('HEAD', '${url}', true);
+           req.open('${method}', '${url}', true);
            req.onreadystatechange = callback;
            req.send(null);
         }

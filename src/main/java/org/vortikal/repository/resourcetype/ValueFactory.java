@@ -59,10 +59,8 @@ public class ValueFactory {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    
-    
-    private ValueFactory() {
-    }
+    // Singleton
+    private ValueFactory() {}
 
     public static ValueFactory getInstance() {
         return INSTANCE;

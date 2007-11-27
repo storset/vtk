@@ -70,7 +70,6 @@ public final class PropertyType {
      *  Protection levels
      */
     
-    
     // Write privilege needed to edit prop
     public static final RepositoryAction PROTECTION_LEVEL_ACL_WRITE =
         RepositoryAction.WRITE;

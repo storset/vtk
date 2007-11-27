@@ -77,7 +77,7 @@ public final class BinaryFieldValueMapper {
         case HTML:
             try {
                 byteValue = value.getNativeStringRepresentation().getBytes(STRING_VALUE_ENCODING);
-            } catch (UnsupportedEncodingException ue) {}
+            } catch (UnsupportedEncodingException ue) {} // Should never occur.
             break;
         
         default: throw new FieldValueEncodingException("Unknown type: " + value.getType()); 
@@ -123,7 +123,7 @@ public final class BinaryFieldValueMapper {
             try {
                 String stringValue = new String(value, STRING_VALUE_ENCODING);
                 return vf.createValue(stringValue, type);
-            } catch (UnsupportedEncodingException ue) {} // won't happen
+            } catch (UnsupportedEncodingException ue) {} // Won't happen.
             
         case BOOLEAN:
             boolean b = FieldValueEncoder.decodeBooleanFromBinary(value);
@@ -144,7 +144,7 @@ public final class BinaryFieldValueMapper {
         case LONG:
             long l = FieldValueEncoder.decodeLongFromBinary(value);
             return new Value(l);
-        }            
+        }
 
         throw new FieldValueEncodingException("Unknown type: " + type); 
     }

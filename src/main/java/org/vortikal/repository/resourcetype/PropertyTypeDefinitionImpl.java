@@ -43,7 +43,11 @@ import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
-
+/**
+ * Implementation of {@link PropertyTypeDefinition}
+ * @see PropertyTypeDefinition 
+ *
+ */
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
 
     private Namespace namespace;

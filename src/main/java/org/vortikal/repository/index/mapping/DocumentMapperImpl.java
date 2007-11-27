@@ -42,13 +42,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
+import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.domain.ContextManager;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -312,8 +312,7 @@ public class DocumentMapperImpl implements DocumentMapper {
 
         Property property = def.createProperty();
             
-        if (def.isMultiple()) { // and indexes haven't been updated to
-            // reflect this.
+        if (def.isMultiple()) {
 
             Value[] values = BinaryFieldValueMapper
             .getValuesFromBinaryFields(storedValueFields, def.getType());

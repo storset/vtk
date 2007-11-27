@@ -70,10 +70,10 @@ public final class Value implements Cloneable, Comparable<Value> {
         if (dateValue == null)
             throw new IllegalArgumentException("Value object cannot be null");
 
-        if (!date) {
-            this.type = PropertyType.Type.TIMESTAMP;
+        if (date) {
+            this.type = PropertyType.Type.DATE;            
         } else {
-            this.type = PropertyType.Type.DATE;
+            this.type = PropertyType.Type.TIMESTAMP;
         }
         this.dateValue = (Date)dateValue.clone();
     }
@@ -147,6 +147,8 @@ public final class Value implements Cloneable, Comparable<Value> {
                 return new Long(this.longValue);
 
             case STRING:
+            case HTML:
+            case IMAGE_REF:
                 return this.stringValue;
             
             case PRINCIPAL:
@@ -255,10 +257,12 @@ public final class Value implements Cloneable, Comparable<Value> {
     
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         switch (this.type) {
             case STRING:
+            case HTML:
+            case IMAGE_REF:
                 sb.append(this.stringValue);
                 break;
             case INT:
@@ -314,6 +318,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             break;
             
         case STRING:
+        case HTML:
+        case IMAGE_REF:
             representation = this.stringValue;
             break;
             

@@ -300,7 +300,9 @@ public class XmlSearcher {
             return valueElement;
     }
 
-    private String getFormattedPropertyValue(PropertyTypeDefinition propDef, String uri, Value value, String format, Locale locale) {
+    private String getFormattedPropertyValue(PropertyTypeDefinition propDef, 
+                                             String uri, Value value, String format, 
+                                             Locale locale) {
         String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
 
         // If string value and format is url, try to create url (if it doesn't start with http?)

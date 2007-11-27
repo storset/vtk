@@ -34,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.lucene.document.Field;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -165,9 +164,11 @@ public final class FieldValueMapper {
 
         case BOOLEAN:
         case STRING:
+        case HTML:
+        case IMAGE_REF:
         case PRINCIPAL:
-            return fieldValue; // No need to decode any of these. Native String
-            // representation already present in index.
+            return fieldValue; // No need to decode any of these. 
+                               // Index string representation already in native format.
 
         case DATE:    
         case TIMESTAMP:
@@ -190,6 +191,8 @@ public final class FieldValueMapper {
 
         switch (value.getType()) {
         case STRING:
+        case HTML:
+        case IMAGE_REF:
         case BOOLEAN:
         case PRINCIPAL:
             return value.getNativeStringRepresentation();
@@ -223,6 +226,8 @@ public final class FieldValueMapper {
 
         switch (type) {
         case STRING:
+        case HTML:
+        case IMAGE_REF:
         case BOOLEAN:
         case PRINCIPAL:
             return stringValue;

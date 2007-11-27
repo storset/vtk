@@ -24,24 +24,35 @@
   <title>${title}</title>
 
   <style type="text/css">
-    ul.tag-element-list {margin:0;padding:0 0 10px 0;display:block;}
-    ul.tag-element-list li{clear:both;margin:0;padding:10px 0 5px 0;list-style:none;}
-    ul.tag-element-list li p{margin:0;padding:0;}
-    ul.tag-element-list li ul {margin:0;padding:0;}
-
-    ul.tag-element-list img{float:left;padding:3px 10px 10px 0;border:0px solid #fff;}
+    ul.tag-element-list { 
+      margin: 0px;
+      padding: 0px 0px 10px 0px;
+      display: block;
+    }
     
-    /*
-    img.introduction-image {
+    ul.tag-element-list li {
+      list-style: none;
+      clear: both;
+      margin: 0px;
+      padding: 10px 0px 5px 0px;
+    }
+    
+    ul.tag-element-list li p {
+      margin: 0px;
+      padding: 0px;
+    }
+    
+    ul.tag-element-list img {
       float: left;
-      margin: 0 0.75em 0.5em 0;
-      border:1px solid #ddd; 
+      padding: 5px 10px 10px 0px;
+      border: none;
     }
-     
-    .entry {
-      float:left;
+    
+    ul.tag-element-list div.title {
+      margin: 0px;
+      padding: 5px 0px 0px 0px;
+      font-size: 125%;
     }
-    */
   </style>
 </head>
 
@@ -60,21 +71,20 @@
 	      <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
 	        
 	      <li>
-	          <#if introImageProp != "">
-	            <a href="${urls[resource_index]?html}" style="float:left;">
-	              <img class="introduction-image" width="100" height="100" alt="image" src="${introImageProp.formattedValue}" />
-	            </a>
-	          </#if>
-	          
-	          <h2>
-	            <a href="${urls[resource_index]?html}">${resourceTitle?html}</a>
-	          </h2>
-	          
-	          <#if introProp != "">
-	            ${introProp.formattedValue}
-	          </#if>
-	          
-	        </li>
+            <#if introImageProp != "">
+              <a href="${urls[resource_index]?html}" style="float:left;">
+                <img class="introduction-image" width="100" height="100" alt="image" src="${introImageProp.formattedValue}" />
+              </a>
+            </#if>
+          
+            <div class="title">
+              <a href="${urls[resource_index]?html}">${resourceTitle?html}</a>
+            </div>
+          
+            <#if introProp != "">
+              ${introProp.formattedValue}
+            </#if>
+          </li>
 	    </#list>
 	  </ul>
 	<#else>

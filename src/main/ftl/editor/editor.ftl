@@ -187,7 +187,7 @@
       <#local error = resource.getError(propDef)?default('') />
       
       
-      <div class="${name}">
+      <div class="${name} property-item">
       <#if error != ""><span class="error">${error}</span></#if> 
       <label for="resource.${name}">${localizedName}</label> 
       <#if type = 'HTML'>

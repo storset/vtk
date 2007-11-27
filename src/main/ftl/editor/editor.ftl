@@ -104,19 +104,8 @@
        <input type="submit" onClick="cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
        <input type="submit" onClick="performSave();" name="savequit" value="${vrtx.getMsg("editor.saveAndQuit")}">
        <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
-
-        <#if tooltips?exists>
-          <#list tooltips as tooltip>
-           <div class="contextual-help"><a href="javascript:void(0);" onclick="javascript:open('${tooltip.url?html}', 'componentList', 'width=650,height=450,resizable=yes,right=0,top=0,screenX=0,screenY=0,scrollbars=yes');">
-              <@vrtx.msg code=tooltip.messageKey default=tooltip.messageKey/>
-            </a>
-           </div>
-          </#list>
-        </#if>
-
       </div>
      </form>
-
     </body>
 </html>
 

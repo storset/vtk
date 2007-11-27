@@ -113,6 +113,9 @@ public class FCKeditorConnector implements Controller {
             case Flash:
                 fileFilter = FLASH_FILTER;
                 break;
+            case Media:
+                fileFilter = MEDIA_FILTER;
+                break;
             default:
                 fileFilter = FILE_FILTER;
                 break;
@@ -346,6 +349,14 @@ public class FCKeditorConnector implements Controller {
          }
     };
         
+    private static final Filter MEDIA_FILTER = new Filter() {
+        public boolean isAccepted(Resource resource) {
+            return !resource.isCollection() &&
+                (resource.getContentType().startsWith("audio/") 
+                        || resource.getContentType().startsWith("video/"));
+        }
+   };
+       
     private static final Filter FLASH_FILTER = new Filter() {
          public boolean isAccepted(Resource resource) {
              return !resource.isCollection() &&

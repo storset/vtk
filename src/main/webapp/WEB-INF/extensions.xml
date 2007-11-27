@@ -11,5 +11,6 @@
   <import resource="classpath:/vortikal/beans/standard-extensions/kupu/kupu.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/fckeditor/fckeditor.xml" />
   <import resource="classpath:/vortikal/beans/standard-extensions/commenting/commenting.xml" />
+  <import resource="classpath:/vortikal/beans/standard-extensions/editor/editor.xml"/>
 
 </beans>

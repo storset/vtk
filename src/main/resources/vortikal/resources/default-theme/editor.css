@@ -1,61 +1,87 @@
 /* Vortex overriding section */
 
 div.activeTab { 
-	background-color: #efefef;
-	border-bottom: 0px; 
+  background-color: #efefef;
+  border-bottom: 0px; 
 }
 
 div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
-	background-color: #efefef;
+  background-color: #efefef;
 }
 
 #contents {
-        background-color: #efefef;
+  background-color: #efefef;
 }
 
 form.editor {
-        padding:0; margin: 0;
-        margin-top: -8px;
-}
-
-.properties div, div.html-content {
-        margin-bottom: 1em; 
+  padding:0; 
+  margin: 0;
+  margin-top: -8px;
 }
 
 
 iframe {
-        background-color: white;
-        border: 1px solid #ddd;
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+* html div.html-content iframe {
+  margin: -1px; /* Fix for vertical scrollbar in IE6 */
 }
 
 label {
-       display: block;
-       margin-bottom: .2em;
-       white-space: nowrap;
-       width:1%;
+  display: block;
+  margin-bottom: .2em;
+  white-space: nowrap;
+  width:1%;
 }
 
-/* START: introduction */
-.introduction {
-   margin-right: 21em; 
-    
+
+div.properties {
+ clear:both;
+ /* margin-bottom: 1em; */ 
+ heigt: 1%; /* For IE */
 }
 
-.introduction textarea{
+div.properties:after {
+  clear:both;
+  content:".";
+  display:block;
+  visibility:hidden;
+  height: 0;
+}
+
+div.property-item {
+  margin-bottom: 1em;
+}
+
+
+div.introduction {
+  clear:left;
+  float: left; 
+  width: 500px;  
+  margin-right: 1em;
+}
+
+div.introduction textarea {
   height: 10.5em; /* Used when fck-editor is disabled */
-  width: 100%;
+  width: 500px;  
 }
 
-.introduction iframe{
+div.introduction iframe{
   height: 8.5em;
 }
 
-
 div.picture {
-  float:right;
-  margin-top: -10.9em;
+  float:left;
+  clear:right;
   white-space: nowrap;
-  width: 20em;
+  margin-bottom: 1em;
+}
+
+div.picture input{
+  width: 15em;
+  margin-right: .25em;
 }
 
 div.picture img {
@@ -65,41 +91,44 @@ div.picture img {
 
 div.picture div {
   border: 1px solid #ccc; 
-  margin-top: 8px;
+  margin-top: 6px;
   height: 105px;
-  width: 170px;
+  width: 203px;
   overflow: hidden;
-  
 }
 
-/* END introduction */
+div.authors, div.published-date{ 
+  clear: left; 
+  float: left;
+  white-space: nowrap;
+}
 
-.html-content iframe {
+
+div.html-content {
+ clear:both;
+ margin: 0 0 1em 0; 
+}
+
+div.html-content textarea {
+ width: 100%;
+ height: 20em;
+}
+
+div.html-content iframe {
   height: 300px;
 }
 
 
-
 /* START time and place */
 
-div.end-date {
-  margin-left: 12em;
-  margin-top: -3.7em;
+div.start-date, div.end-date, div.location {
+  float:left;
+  margin-right: 1em;
+  white-space: nowrap;
 }
 
-* html div.end-date {
-  margin-left: 12em;
-  margin-top: -7.6ex;
-}
-
-div.location {
-  margin-left: 24em;
-  margin-top: -3.71em;
-}
-
-* html div.location {
-  margin-left: 24em;
-  margin-top: -7.6ex;
+div.start-date {
+ clear:left;
 }
 
 input.date {
@@ -123,8 +152,7 @@ span.colon {
   padding: 0 .2em;
 }
 
-/* END time and place */
-
+/* END: time and place */
 
 
 /* START: YUI calendar */
@@ -144,7 +172,7 @@ a.calendar span {
    font-size: 11px; 
    position:absolute; 
    float: none;
-   margin-left: 11em;
+   margin-left: 10.8em;
    margin-top: -18em; 
    background-color:#f7f7f7;
    padding-top: 5px;

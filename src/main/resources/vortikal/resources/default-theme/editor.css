@@ -64,17 +64,21 @@ div.introduction {
 }
 
 div.introduction textarea {
-  height: 10.5em; /* Used when fck-editor is disabled */
+  height: 17.5ex; /* Used when fck-editor is disabled */
   width: 500px;  
 }
 
-div.introduction iframe{
-  height: 8.5em;
+div.introduction iframe {
+  height: 13ex;
+}
+
+* html div.introduction iframe{
+  height: 90pt;
 }
 
 div.picture {
   float:left;
-  clear:right;
+  clear:right; /*IE7*/
   white-space: nowrap;
   margin-bottom: 1em;
 }
@@ -84,17 +88,24 @@ div.picture input{
   margin-right: .25em;
 }
 
-div.picture img {
-  height: 100px;
-  width: auto;
+div.picture img { 
+  height: 10ex;
+}
+
+* html div.picture img {
+ height: 70pt;
 }
 
 div.picture div {
-  border: 1px solid #ccc; 
-  margin-top: 6px;
-  height: 105px;
-  width: 203px;
+  /* border: 1px solid #ccc; */ 
+  margin-top: 7px;
+  height: 10ex;
   overflow: hidden;
+ }
+
+* html div.picture div {
+  margin-top: 5px;
+  height: 71pt;
 }
 
 div.authors, div.published-date{ 
@@ -176,6 +187,15 @@ a.calendar span {
    margin-top: -18em; 
    background-color:#f7f7f7;
    padding-top: 5px;
+   padding-left: -1px;
+   padding-right: -1px;
+   padding-bottom: -1px;
+   border: 1px solid #ccc;
+}
+
+* html .yui-calcontainer{ 
+   margin-left: 0em;
+   margin-top: -16.5em; 
 }
 
 a.calnavleft{

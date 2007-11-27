@@ -24,33 +24,33 @@
   <title>${title}</title>
   
   <style type="text/css">
-    ul.tag-element-list { 
+    ul.tagged-resources { 
       margin: 0px;
       padding: 0px 0px 10px 0px;
       display: block;
     }
     
-    ul.tag-element-list li {
+    ul.tagged-resources li {
       list-style: none;
       clear: both;
       margin: 0px;
       padding: 10px 0px 5px 0px;
     }
     
-    ul.tag-element-list li p {
+    ul.tagged-resources li p {
       margin: 0px;
       padding: 0px;
     }
     
-    ul.tag-element-list img {
+    ul.tagged-resources img {
       float: left;
-      padding: 5px 10px 10px 0px;
+      padding: 5px 10px 5px 0px;
       border: none;
     }
     
-    ul.tag-element-list div.title {
+    ul.tagged-resources div.title {
       margin: 0px;
-      padding: 5px 0px 0px 0px;
+      padding: 5px 0px 5px 0px;
       font-size: 125%;
     }
     
@@ -68,7 +68,7 @@
   </#if>
   
   <#if resources?exists && resources?has_content>
-	  <ul class="tag-element-list">
+	  <ul class="tagged-resources">
 	    <#list resources as resource>
 	      <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
 	      <#assign introProp = resource.getPropertyByPrefix("","introduction")?default("") />

@@ -161,7 +161,7 @@
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="keywordsPropDef" />
     <property name="description" value="Inserts the resource keywords, linked to search" />
-    <property name="defaultURLpattern" value="http://www.uio.no/sok?type=query&amp;qt=keywords%3A%v" />
+    <property name="defaultURLpattern" value="./?vrtx=tags&amp;tag=%v" />
     <property name="view" ref="decorating.keywordsComponent.view" />
   </bean>
 

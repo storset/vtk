@@ -116,13 +116,19 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
 
     public String getStringValue() throws IllegalOperationException {
-        if (this.value == null || 
-                (getType() != PropertyType.Type.STRING && 
-                 getType() != PropertyType.Type.IMAGE_REF &&
-                 getType() != PropertyType.Type.HTML)) {
-            throw new IllegalOperationException("Property " + this + " not of type String");
+        if (this.value == null) {
+            throw new IllegalOperationException("Property " + this + " has a null value");
         }
-        return this.value.getStringValue();
+        
+        switch (getType()) {
+        case STRING:
+        case HTML:
+        case IMAGE_REF:
+            return this.value.getStringValue();
+            
+        default:
+            throw new IllegalOperationException("Property " + this + " not a string type");
+        }
     }
 
     public void setStringValue(String stringValue) throws ValueFormatException {
@@ -268,20 +274,23 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             validateValue(values[i]);
         }
     }
-    
+
     private void validateValue(Value value) throws ValueFormatException,
                                                 ConstraintViolationException {
         if (value == null) {
-            throw new ValueFormatException("A property must have non null value");
+            throw new ValueFormatException("A property cannot have a null value");
         }
         
         if (value.getType() != getType()) {
         	switch (value.getType()) {
-        	// FIXME:
+
+            // FIXME: ugly..    
         	case STRING:
         	case HTML:
         	case IMAGE_REF:
-        		if (getType() != Type.HTML && getType() != Type.STRING && getType() != Type.IMAGE_REF) {
+        		if (getType() != Type.HTML 
+        		    && getType() != Type.STRING 
+        		    && getType() != Type.IMAGE_REF) {
         			throw new ValueFormatException("Illegal value type " + 
         					value.getType() + 
         					" for property " + this + ". Should be " + 
@@ -294,7 +303,6 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
                         value.getType() + 
                         " for property " + this + ". Should be " + 
                         getType());
-        		
         	}
         }
         	        
@@ -307,6 +315,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             }
             break;
         case STRING:
+        case IMAGE_REF:
         case HTML:
             if (value.getStringValue() == null) {
                 throw new ValueFormatException(

@@ -89,6 +89,7 @@
       </div>
 
       <div class="html-content">
+      <label for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
 
        <@fck 'resource.content' true />

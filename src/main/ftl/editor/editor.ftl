@@ -51,14 +51,21 @@
          // Misc setup
          fck.Config['FullPage'] = false;
          fck.Config['ToolbarCanCollapse'] = false;
-         fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
+         fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
 
          fck.Config.DisableFFTableHandles = false;
 	 fck.Config.ForcePasteAsPlainText = false;
 
          fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
 
+
          fck.ReplaceTextarea();
+
+
+      }
+      function FCKeditor_OnComplete(editorInstance) {
+          // Get around bug: http://dev.fckeditor.net/ticket/1482
+          editorInstance.ResetIsDirty();
       }
       // -->
     </script>
@@ -270,7 +277,7 @@
         <#local uniqueName = 'cal_' + propDef_index />
 
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        <a class="calendar" id="${uniqueName}.calendar.href" href="javascript:void(0);" onclick="${uniqueName}_show(); return false;"><span>cal</span></a>
+        <a class="calendar" id="${uniqueName}.calendar.href" onclick="${uniqueName}_show(); return false;"><span>cal</span></a>
         <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
         <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
@@ -342,7 +349,14 @@
           }
 
           function ${uniqueName}_click(e) {
-              if (!${uniqueName}_hidden && "${uniqueName}.calendar.href" != e.target.id) {
+              if (!e) var e = window.event;
+              var target;
+              if (e.target) {
+                 target = e.target;
+              } else if (e.srcElement) {
+                 target = e.srcElement;
+              }
+              if (!${uniqueName}_hidden && "${uniqueName}.calendar.href" != target.id) {
                  ${uniqueName}_hide();
               }
               return true;
@@ -351,7 +365,7 @@
           if (window.addEventListener) {
              window.addEventListener("click", ${uniqueName}_click, false);
           } else if (window.attachEvent) {
-             window.attachEvent("onclick", ${uniqueName}_click);
+             document.attachEvent('onclick', ${uniqueName}_click);
           }
           //-->
         </script>
@@ -369,6 +383,7 @@
     <script type="text/javascript">
       var needToConfirm = true;
       newEditor('${content}', ${completeEditor?string});
+      
 
     function cSave() {
       document.getElementById("form").setAttribute("action", "#submit");

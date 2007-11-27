@@ -37,14 +37,19 @@
   <bean id="displayArticleView" parent="freemarkerView">
     <property name="url" value="pages/article.ftl" />
     <property name="referenceDataProviders">
-        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-          <property name="repository" ref="repository" />
-          <property name="modelName" value="mediaPlayerBase" />
-          <property name="service" ref="viewService" />
-          <property name="uri" value="/" />
-          <property name="appendPath" value="${mediaplayer.basePath}" />
-          <property name="urlName" value="url" />
-        </bean>
+      <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+        <property name="repository" ref="repository" />
+        <property name="modelName" value="mediaPlayerBase" />
+        <property name="service" ref="viewService" />
+        <property name="uri" value="/" />
+        <property name="appendPath" value="${mediaplayer.basePath}" />
+        <property name="urlName" value="url" />
+      </bean>      
+    </property>    
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURL" value="${cssBaseURL}/view-article.css" />
+      </map>
     </property>
   </bean>
 

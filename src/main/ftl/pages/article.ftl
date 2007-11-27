@@ -49,74 +49,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head><title>${title}</title>
-
-    <style type="text/css">
-
-      /* Ingress */
-
-      div.vrtx-introduction {margin:0;padding:0;}
-
-      /* Bilde uten bildetekst */
-
-      img.vrtx-introduction-image {
-        float: right;
-        margin: 0 0 0.5em 0.75em;
-        border:1px solid #ddd; 
-      }
-
-      /* Bilde med bildetekst */
-
-      div.vrtx-introduction-image {
-        border:1px solid #ddd; 
-        float: right;
-        margin: 0em 0em 0.5em 0.75em;
-      }
-
-      div.vrtx-introduction-image img {
-      }
-
-      div.vrtx-introduction-image div.vrtx-imagetext {
-        overflow: hidden;
-        padding: 0.5em; 
-        background-color: #eee;
-      }
-
-      div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle{
-        font-weight: bold;
-      }
-
-      object#audioplayer1 {
-        margin-top: -0.5em;
-        margin-bottom: 0.5em;
-      }
-
-      object#videoplayer1, embed {
-        margin-bottom: 1em;
-      }
-
-      /* Byline */
-
-      /* Start, slutt og sted */
-
-      abbr {
-        text-decoration: none;
-        border-bottom: 0;
-      }
-
-     /* Media-ref */  
-
-      a.vrtx-media {
-        white-space: nowrap;
-        width: 1%;
-        margin-bottom: 1em;
-        display: block;
-      }
-
-     /* Body */  
-
-     div.vrtx-bodytext {clear:left;} 
-           
-    </style>
+    <#if cssURL?exists>
+      <link rel="stylesheet" type="text/css" media="screen" href="${cssURL?html}" />
+    </#if>
 </head>
   <body>
     <h1>${title}</h1>

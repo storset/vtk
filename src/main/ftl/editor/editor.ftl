@@ -248,12 +248,15 @@
              } //-->
         </script>
         <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}"> 
-        <button type="button" onclick="browseServer('resource.${name}');"><@vrtx.msg code="editor.browseImages"/></button>
-        <div id="resource.${name}.preview">
+        <script type="text/javascript" language="Javascript"><!--
+        document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
+        document.write('<div id="resource.${name}.preview">');
           <#if value != ''>
-            <img src="${value}" width="100" height="100" alt="">
+            document.write('<img src="${value}" width="100" height="100" alt="">');
           </#if>
-        </div>
+        document.write('</div>');
+        // -->
+        </script>
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />
@@ -277,11 +280,14 @@
         <#local uniqueName = 'cal_' + propDef_index />
 
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        <a class="calendar" id="${uniqueName}.calendar.href" onclick="${uniqueName}_show(); return false;"><span>cal</span></a>
-        <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
+        <script type="text/javascript" language="Javascript"><!--
+        document.write('<a class="calendar" id="${uniqueName}.calendar.href" onclick="${uniqueName}_show(); return false;"><span>cal</span></a>');
+        document.write('<div id="resource.${name}.calendar" class="yui-skin-sam"></div>');
+        // -->
+        </script>
         <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
-        <script type="text/javascript"><!--
+        <script type="text/javascript" language="Javascript"><!--
 
           YAHOO.namespace("resource.${uniqueName}.calendar");
           var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;

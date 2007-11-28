@@ -11,6 +11,9 @@
     <release version="0.4-SNAPSHOT" date="In SVN" description="Release 0.4">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="update">
+        Library update: Updgraded Spring to version 2.5
+      </action>
       <action type="add">
         Added two generalized document types, "article" and "event",
         based on XHTML 1.0 transitional, with corresponding editor and

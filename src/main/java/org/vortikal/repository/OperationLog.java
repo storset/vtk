@@ -42,7 +42,7 @@ public class OperationLog {
     private static Log writeLogger = LogFactory.getLog(
         OperationLog.class.getName() + ".write");
 
-    public static void info(String operation, String parameters,
+    public static void info(RepositoryOperation operation, String parameters,
                             String token, Principal principal) {
         StringBuffer msg = new StringBuffer();
         msg.append(operation).append(parameters);
@@ -51,12 +51,12 @@ public class OperationLog {
         if (logger.isDebugEnabled()) {
             logger.debug(msg.toString());
         }
-        if (writeLogger.isDebugEnabled() && RepositoryOperations.WRITE_OPERATIONS.contains(operation)) {
+        if (writeLogger.isDebugEnabled() && operation.isWrite()) {
             writeLogger.debug(msg.toString());
         }
     }
 
-    public static void success(String operation, String parameters,
+    public static void success(RepositoryOperation operation, String parameters,
                                String token, Principal principal) {
         StringBuffer msg = new StringBuffer();
         msg.append(operation).append(parameters);
@@ -65,12 +65,12 @@ public class OperationLog {
         if (logger.isDebugEnabled()) {
             logger.debug(msg.toString());
         }
-        if (writeLogger.isDebugEnabled() && RepositoryOperations.WRITE_OPERATIONS.contains(operation)) {
+        if (writeLogger.isDebugEnabled() && operation.isWrite()) {
             writeLogger.debug(msg.toString());
         }
     }
 
-    public static void failure(String operation, String parameters,
+    public static void failure(RepositoryOperation operation, String parameters,
                                String message, String token,
         Principal principal) {
         StringBuffer msg = new StringBuffer();
@@ -82,10 +82,9 @@ public class OperationLog {
         if (logger.isDebugEnabled()) {
             logger.debug(msg.toString());
         }
-        if (writeLogger.isDebugEnabled() && RepositoryOperations.WRITE_OPERATIONS.contains(operation)) {
+        if (writeLogger.isDebugEnabled() && operation.isWrite()) {
             writeLogger.debug(msg.toString());
         }
     }
 
-    
 }

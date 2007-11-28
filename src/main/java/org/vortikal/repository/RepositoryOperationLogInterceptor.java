@@ -71,80 +71,81 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             return invocation.proceed();
         }
 
-        String operation = invocation.getMethod().getName();
-        Object[] args = invocation.getArguments();
+        RepositoryOperation operation = RepositoryOperation.byName(invocation.getMethod().getName());
+        if (operation == null) {
+            // Unknown repository operation (wrt. logging)
+            return invocation.proceed();
+        }
 
         // Should generalize more, but just do it like this in the first iteration.
         // TODO: shred unnecessary operation logging to simplify things (remove quirks) ..
         
         // Handle quirks first
-        if (RepositoryOperations.SET_READ_ONLY.equals(operation)) {
-            return dispatchAndLogSetReadOnly(invocation);
+        if (RepositoryOperation.SET_READ_ONLY == operation) {
+            return dispatchAndLogSetReadOnly(invocation, operation);
         }
 
-        if (RepositoryOperations.EXISTS.equals(operation)) {
-            return dispatchAndLogExists(invocation);
+        if (RepositoryOperation.EXISTS == operation) {
+            return dispatchAndLogExists(invocation, operation);
         }
-        
-        String token = null;
+
+        Object[] args = invocation.getArguments();
+        String token = (String)args[0];
         String params = null;
         
         // Reduce avg. overhead by putting most common ops early in list ..
-        if (RepositoryOperations.RETRIEVE.equals(operation)            ||
-            RepositoryOperations.LIST_CHILDREN.equals(operation)       ||
-            RepositoryOperations.GET_INPUTSTREAM.equals(operation)     ||
-            RepositoryOperations.LOCK.equals(operation)                ||
-            RepositoryOperations.UNLOCK.equals(operation)              ||
-            RepositoryOperations.CREATE_DOCUMENT.equals(operation)     ||
-            RepositoryOperations.CREATE_COLLECTION.equals(operation)   ||
-            RepositoryOperations.CREATE.equals(operation)              ||
-            RepositoryOperations.DELETE.equals(operation)              ||
-            RepositoryOperations.STORE_CONTENT.equals(operation)) {            
-            
-            token = (String)args[0];
-            String uri = (String)args[1];
-            
+        if (operation == RepositoryOperation.RETRIEVE                ||
+                operation == RepositoryOperation.LIST_CHILDREN       ||
+                operation == RepositoryOperation.GET_INPUTSTREAM     ||
+                operation == RepositoryOperation.LOCK                ||
+                operation == RepositoryOperation.UNLOCK              ||
+                operation == RepositoryOperation.CREATE_DOCUMENT     ||
+                operation == RepositoryOperation.CREATE_COLLECTION   ||
+                operation == RepositoryOperation.CREATE              ||
+                operation == RepositoryOperation.DELETE              ||
+                operation == RepositoryOperation.STORE_CONTENT       ||
+                operation == RepositoryOperation.GET_COMMENTS) {            
+
+            String uri = (String)args[1];            
             params = "(" + uri + ")";
-        } else if (RepositoryOperations.COPY.equals(operation) ||
-                   RepositoryOperations.MOVE.equals(operation)) {
             
-            token = (String)args[0];
+        } else if (RepositoryOperation.COPY == operation ||
+                   RepositoryOperation.MOVE == operation) {
+            
             String srcUri = (String)args[1];
             String dstUri = (String)args[2];
             params = "(" + srcUri + ", " + dstUri + ")";
             
-        } else if (RepositoryOperations.STORE.equals(operation)               ||
-                   RepositoryOperations.STORE_ACL.equals(operation)           ||
-                   RepositoryOperations.ADD_COMMENT.equals(operation)         ||
-                   RepositoryOperations.DELETE_COMMENT.equals(operation)      ||
-                   RepositoryOperations.DELETE_ALL_COMMENTS.equals(operation) ||
-                   RepositoryOperations.UPDATE_COMMENT.equals(operation)) {
+        } else if (RepositoryOperation.STORE == operation               ||
+                RepositoryOperation.STORE_ACL == operation           ||
+                RepositoryOperation.ADD_COMMENT == operation         ||
+                RepositoryOperation.DELETE_COMMENT == operation      ||
+                RepositoryOperation.DELETE_ALL_COMMENTS == operation ||
+                RepositoryOperation.UPDATE_COMMENT == operation) {
 
-            token = (String)args[0];
             Resource resource = (Resource)args[1];
             String uri = resource.getURI();
             params = "(" + uri + ")";
 
-        } else {
-            // Unknown repository operation (wrt. logging)
-            return invocation.proceed();
         }
         
         // Dispatch to intercepted method and log result
         return dispatchAndLog(invocation, params, operation, token, getPrincipal(token));
     }
     
+
+
     private Object dispatchAndLog(MethodInvocation mi, 
                                   String params, 
-                                  String op, 
+                                  RepositoryOperation op, 
                                   String token, 
                                   Principal principal) throws Throwable {
         
         Object retVal = null;
         try {
             retVal = mi.proceed();
-            
             OperationLog.success(op, params, token, principal);
+            return retVal;
             
         } catch (ReadOnlyException roe) {
             OperationLog.failure(op, params, "read-only", token, principal);
@@ -181,12 +182,9 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             OperationLog.failure(op, params, io.getMessage(), token, principal);
             throw io;
         }
-        
-        return retVal;
     }
     
-    private Object dispatchAndLogSetReadOnly(MethodInvocation mi) throws Throwable {
-        String op = RepositoryOperations.SET_READ_ONLY;
+    private Object dispatchAndLogSetReadOnly(MethodInvocation mi, RepositoryOperation op) throws Throwable {
         Object[] args = mi.getArguments();
         
         String token = (String)args[0];
@@ -194,19 +192,16 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         
         try {
             mi.proceed();
+            OperationLog.success(op, "(" + readOnly + ")", token, getPrincipal(token));
+            return null;
         } catch (AuthorizationException ae) {
             OperationLog.failure(op, "(" + readOnly + ")", "not authorized", token, 
                     getPrincipal(token));
             throw ae;
         }
-        
-        OperationLog.success(op, "(" + readOnly + ")", token, getPrincipal(token));
-        
-        return null;
     }
     
-    private Object dispatchAndLogExists(MethodInvocation mi) throws Throwable {
-        String op = RepositoryOperations.EXISTS;
+    private Object dispatchAndLogExists(MethodInvocation mi, RepositoryOperation op) throws Throwable {
         Object[] args = mi.getArguments();
         
         String token = (String) args[0];
@@ -221,7 +216,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             OperationLog.info(op, "(" + uri + "): false",
                     token, getPrincipal(token));
         }
-        
         return retVal;
     }
     

@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 
@@ -79,6 +80,7 @@ public class TextualRequestDumper extends AbstractRequestFilter {
 
             StringBuilder dump = new StringBuilder();
             dump.append("\n--- Begin request: ").append(request.getRequestURI());
+            dump.append("\n--- Principal: ").append(SecurityContext.getSecurityContext().getPrincipal());
             dump.append("\n--- Headers:\n");
             Enumeration<?> headers = request.getHeaderNames(); 
             while (headers.hasMoreElements()) {
@@ -86,9 +88,11 @@ public class TextualRequestDumper extends AbstractRequestFilter {
                 dump.append(header).append(": ").append(request.getHeader(header)).append("\n");
             }                
             dump.append("\n--- Body:\n");
-            String body = new String(buffer, request.getCharacterEncoding());
+            String encoding = request.getCharacterEncoding();
+            if (encoding == null) encoding = "utf-8";
+            String body = new String(buffer, encoding);
             dump.append(body);
-            dump.append("\n---End request\n\n");
+            dump.append("\n--- End request\n\n");
             logger.debug(dump);
             return new org.vortikal.util.io.ServletInputStream(
                     new ByteArrayInputStream(buffer));

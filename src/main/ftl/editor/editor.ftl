@@ -167,7 +167,7 @@
       if (needToConfirm && contentChange) {
         confirmed = confirm('You have unsaved changes. Are you sure you want to leave this page?');
       }
-      if (confirmed) {
+      if (confirmed && needToConfirm) {
       <#assign url = unlockURL['url']?default("") />
       <#if url != "">
         var req;

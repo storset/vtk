@@ -149,6 +149,14 @@
           </property>
         </bean>
 
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+            </map>
+          </property>
+        </bean>
+
       </list>
     </property>
   </bean>
@@ -177,6 +185,14 @@
         <value>${cssBaseURL}/basic.css</value>
         <value>${cssBaseURL}/tabs.css</value>
         <value>${cssBaseURL}/editor.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${cssBaseURL}/fck_editorarea.css</value>
       </list>
     </constructor-arg>
   </bean>

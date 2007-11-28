@@ -49,7 +49,7 @@ label {
 div.properties {
  clear:both;
  /* margin-bottom: 1em; */ 
- heigt: 1%; /* For IE */
+ height: 1%; /* For IE */
 }
 
 div.properties:after {
@@ -117,14 +117,11 @@ div.picture img {
 }
 
 div.picture div {
-  /* border: 1px solid #ccc; */ 
-
- 
+  /* border: 1px solid #ccc; */  
   overflow: hidden;
  }
 
 * html div.picture div {
- 
   height: 71pt;
 }
 
@@ -137,7 +134,7 @@ div.authors, div.published-date{
 
 div.html-content {
  clear:both;
- margin: 0 0 1em 0; 
+ margin-bottom: 1em; 
 }
 
 div.html-content textarea {
@@ -146,15 +143,13 @@ div.html-content textarea {
 }
 
 * html div.html-content iframe {
-  height: 300px; 
+  height: 20em; 
 } 
 
 #resource\.content___Frame{
   height: 20em;
 }
 
-iframe html body {  font-size: 1.6em !important;
-}
 /* START time and place */
 
 div.start-date, div.end-date, div.location {

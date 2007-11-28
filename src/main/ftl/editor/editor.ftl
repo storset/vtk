@@ -153,37 +153,45 @@
 
 <#macro handleProps>
   <script type="text/javascript">
-    window.onbeforeunload = confirmExit;
-    
     function propChange() {
       <@propChangeTests resource.contentProperties />
       <@propChangeTests resource.extraContentProperties />
       return false;
     }
 
-    function confirmExit() {
-      var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
-      var confirmed = true;
-      if (needToConfirm && contentChange) {
-        confirmed = confirm('You have unsaved changes. Are you sure you want to leave this page?');
-      }
-      if (confirmed && needToConfirm) {
-      <#assign url = unlockURL['url']?default("") />
-      <#if url != "">
+  <#assign url = unlockURL['url']?default("") />
+  <#if url != "">
+    function doUnlock(event) {
+      if (needToConfirm) {
         var req;
-     if (window.XMLHttpRequest) {
-       req = new XMLHttpRequest();
-     } else if (window.ActiveXObject) {
-        req = new ActiveXObject("Microsoft.XMLHTTP");
-     }
-     var url = '${url}';
-     if (req != null) {
-       req.open('GET', url, false);
-       req.send(null);
-     }
-     </#if>
+        if (window.XMLHttpRequest) {
+          req = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        var url = '${url}';
+        if (req != null) {
+          req.open('GET', url, false);
+          req.send(null);
+        }
       }
     }
+
+    window.onunload = doUnlock;
+   </#if>
+
+    function doConfirm(event) {
+      if (!needToConfirm) {
+        return;
+      }
+      var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
+      if (contentChange) {
+        return 'You have unsaved changes. Are you sure you want to leave this page?';
+      }
+    }
+
+    window.onbeforeunload = doConfirm;
+
   </script>
 </#macro>
 

@@ -73,18 +73,20 @@ public class ResourceEditController extends SimpleFormController {
         } 
 
         if (!wrapper.isSave()) {
+            resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap());
         }
                 
         resourceManager.store(wrapper);
-        resourceManager.unlock();
         
         if (!wrapper.isQuit()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             wrapper.setSave(false);
             return new ModelAndView(getFormView(), model);
-        }
+        } 
+        
+        resourceManager.unlock();
         
         return super.onSubmit(command);
     }

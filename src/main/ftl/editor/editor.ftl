@@ -318,8 +318,8 @@
          <#if value != "">
            cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
            cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
-           cal1.render();
          </#if>
+         cal1.render();
 
           cal1.selectEvent.subscribe( function(type, dates) {
              var date = this._toDate(dates[0][0]);

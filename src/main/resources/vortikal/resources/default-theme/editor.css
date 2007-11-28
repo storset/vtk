@@ -144,9 +144,9 @@ div.html-content textarea {
  height: 20em;
 }
 
-/* div.html-content iframe {
-/* height: 300px; */
-} */
+* html div.html-content iframe {
+  height: 300px; 
+} 
 
 #resource\.content___Frame{
   height: 20em;

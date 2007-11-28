@@ -156,12 +156,13 @@
   <bean id="kupu.putController"
         class="org.vortikal.webdav.PutController"
         parent="requestLocalRepositoryAware">
-    <property name="maxUploadSize" value="1000000" />
+    <property name="maxUploadSize" value="10000000" />
     <property name="supportIfHeaders" value="false" />
     <property name="obeyClientCharacterEncoding" value="false" />
     <property name="removeUserSpecifiedCharacterEncoding" value="true" />
     <property name="requestFilters">
       <list>
+        <ref bean="kupu.debugLogFilter" />
         <ref bean="kupu.translateHeadersSaveFilter" />
         <ref bean="kupu.replaceContentTypeFilter" />
         <ref bean="${kupu.saveFilter}" />
@@ -198,6 +199,11 @@
         class="org.vortikal.web.filter.XSLTInputStreamFilter">
     <property name="stylesheet" value="${kupu.xsltSaveFilter.styleshet}" />
     <property name="debug" value="${kupu.xsltSaveFilter.debug}" />
+  </bean>
+
+  <bean id="kupu.debugLogFilter"
+        class="org.vortikal.web.filter.TextualRequestDumper">
+    <property name="logName" value="org.vortikal.edit.kupu.debug" />
   </bean>
 
 

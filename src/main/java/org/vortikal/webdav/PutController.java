@@ -119,7 +119,7 @@ public class PutController extends AbstractWebdavController {
          
         if (this.maxUploadSize > 0) {
             request = new UploadLimitInputStreamFilter(this.maxUploadSize).
-                filterRequest(request);;
+                filterRequest(request);
         }
 
         if (this.requestFilters != null) {

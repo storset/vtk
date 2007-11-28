@@ -162,7 +162,7 @@
       return false;
     }
 
-  <#assign url = unlockURL['url']?default("") />
+  <#--assign url = unlockURL['url']?default("") />
   <#if url != "">
     function doUnlock(event) {
       if (needToConfirm) {
@@ -181,7 +181,7 @@
     }
 
     window.onunload = doUnlock;
-   </#if>
+   </#if-->
 
     function doConfirm(event) {
       if (!needToConfirm) {

@@ -141,6 +141,18 @@
     </property>
   </bean>
 
+  <bean id="manage.unlockService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="manage.unlockRequestParameter" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="manage.unlockHandler" />
+    </property>
+  </bean>
+
   <bean id="aboutResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="categories">
@@ -566,6 +578,13 @@
         class="org.vortikal.web.controller.repository.LockRefreshController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="manage.refreshLockView" />
+  </bean>
+
+  <bean id="manage.unlockHandler"
+        class="org.vortikal.web.controller.repository.LockRefreshController"
+        parent="requestLocalRepositoryAware">
+    <property name="unlock" value="true" />
+    <property name="viewName" value="manage.unlockView" />
   </bean>
 
   <bean id="tidyCopyAction" 
@@ -1082,6 +1101,8 @@
       <map>
         <entry key="manage.refreshLockView"
                value-ref="manage.refreshLockView" />
+        <entry key="manage.unlockView"
+               value-ref="manage.unlockView" />
       </map>
     </property>
   </bean>
@@ -1172,6 +1193,13 @@
     <property name="urlName" value="url" />
   </bean>
 
+  <bean id="manage.unlockURLProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="repository" ref="repository" />
+    <property name="service" ref="manage.unlockService" />
+    <property name="modelName" value="unlockURL" />
+    <property name="urlName" value="url" />
+  </bean>
+
   <bean id="manageHeadView" parent="freemarkerView">
     <property name="attributesMap">
       <map>
@@ -1204,6 +1232,10 @@
 
   <bean id="manage.refreshLockView" parent="freemarkerView">
     <property name="url" value="layouts/lock-refresh-response.ftl" />
+  </bean>
+
+  <bean id="manage.unlockView" parent="freemarkerView">
+    <property name="url" value="layouts/lock-unlock-response.ftl" />
   </bean>
 
   <bean id="manageHeaderView" parent="freemarkerView">
@@ -1526,6 +1558,11 @@
   <bean id="manage.refreshLockRequestParameter" class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="action" />
     <property name="parameterValue" value="refresh-lock" />
+  </bean>
+
+  <bean id="manage.unlockRequestParameter" class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="unlock" />
   </bean>
 
   <bean id="localeParameterEqualsNO"

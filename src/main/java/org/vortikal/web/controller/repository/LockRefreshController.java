@@ -50,6 +50,7 @@ public class LockRefreshController implements Controller {
     private Repository repository = null;
     private int timeoutSeconds = 60 * 30;
     private String viewName = null;
+    private boolean unlock = false;
     
     
     @Required public void setRepository(Repository repository) {
@@ -69,27 +70,35 @@ public class LockRefreshController implements Controller {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
 
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
         
         Lock lock = resource.getLock();
-        if (lock != null) {
-            if (lock.getPrincipal().equals(principal)) {
+        Principal principal = securityContext.getPrincipal();
+
+        if (lock != null && lock.getPrincipal().equals(principal)) {
+            if (this.unlock) {
+                this.repository.unlock(token, resource.getURI(), lock.getLockToken());
+            } else {
                 long now = System.currentTimeMillis();
-                
+
                 if (lock.getTimeout().getTime() < now + this.timeoutSeconds * 1000) {
                     // Refresh lock:
                     resource = this.repository.lock(token, resource.getURI(), lock.getOwnerInfo(),
-                                                    lock.getDepth(), this.timeoutSeconds, lock.getLockToken());
+                            lock.getDepth(), this.timeoutSeconds, lock.getLockToken());
                 }
             }
         }
+        
         if (this.viewName != null) {
             return new ModelAndView(this.viewName);
         } 
         return null;
+    }
+
+    public void setUnlock(boolean unlock) {
+        this.unlock = unlock;
     }
     
 }

@@ -163,8 +163,25 @@
 
     function confirmExit() {
       var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
+      var confirmed = true;
       if (needToConfirm && contentChange) {
-        return "You have unsaved changes. Are you sure you want to leave this page?";
+        confirmed = confirm('You have unsaved changes. Are you sure you want to leave this page?');
+      }
+      if (confirmed) {
+      <#assign url = unlockURL['url']?default("") />
+      <#if url != "">
+        var req;
+     if (window.XMLHttpRequest) {
+       req = new XMLHttpRequest();
+     } else if (window.ActiveXObject) {
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+     }
+     var url = '${url}';
+     if (req != null) {
+       req.open('GET', url, false);
+       req.send(null);
+     }
+     </#if>
       }
     }
   </script>

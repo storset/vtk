@@ -293,6 +293,7 @@
          <#if value != "">
            cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
            cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
+           cal1.render();
          </#if>
 
           cal1.selectEvent.subscribe( function(type, dates) {
@@ -321,7 +322,7 @@
 
                 this.cfg.setProperty("selected", d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear(), false);
                 this.cfg.setProperty("pagedate", d.getMonth() + "/" + d.getFullYear(), false);
-                // this.render();
+                this.render();
              }
           }
 
@@ -329,7 +330,6 @@
 
           function ${uniqueName}_show() {
              var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
-             cal1.render();
              cal1.show();
              ${uniqueName}_hidden = false;
           }

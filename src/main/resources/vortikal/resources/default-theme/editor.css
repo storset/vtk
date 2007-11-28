@@ -15,10 +15,11 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 
 #contents h2 {
   margin-top: 0;
-  font-size: 125%;
+  font-size: 115%;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #aaaaaa;
+  margin-bottom: 1.5em;
 }
 
 form.editor {

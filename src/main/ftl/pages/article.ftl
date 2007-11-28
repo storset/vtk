@@ -41,7 +41,7 @@
 </#function>
 
 
-<#assign title = propValue("userTitle") />
+<#assign title = propValue("userTitle")?html />
 <#if title == "">
   <#assign title = vrtx.getMsg("article.missingTitle") />
 </#if>

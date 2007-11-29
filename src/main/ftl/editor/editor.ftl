@@ -210,7 +210,6 @@
       
       
       <div class="${name} property-item">
-      <#if error != ""><span class="error">${error}</span></#if> 
       <label for="resource.${name}">${localizedName}</label> 
       <#if type = 'HTML'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
@@ -406,6 +405,8 @@
           <span class="input-description">(${description})</span>
         </#if>
       </#if>
+      <#if error != ""><span class="error">${error}</span></#if> 
+
     </div>
     </#list>
 </#macro>

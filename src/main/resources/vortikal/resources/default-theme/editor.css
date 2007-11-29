@@ -37,6 +37,10 @@ iframe {
   margin: -1px; /* Fix for vertical scrollbar in IE6 */
 }
 
+span.error{
+  color: red;
+}
+
 label {
   display: block;
   margin-bottom: .2em;

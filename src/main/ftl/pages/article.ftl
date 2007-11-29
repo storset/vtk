@@ -161,6 +161,7 @@
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
+        <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />: </span>
         <span class="summary" style="display:none;">${title}</span>
 	<#if start != "">
 	  <abbr class="dtstart" title="${startiso8601}">${start}</abbr>

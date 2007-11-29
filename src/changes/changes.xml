@@ -11,7 +11,13 @@
     <release version="0.4.0.1-SNAPSHOT" date="In SVN" description="Release 0.4.0.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
-
+      <action type="fix">
+        Various minor fixes
+      </action>
+      <action type="add">
+        Add "flattened" formating option to XML searcher for HTML
+        property types.
+      </action>
     </release>
 
     <release version="0.4" date="2007-11-29" description="Release 0.4">

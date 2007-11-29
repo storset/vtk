@@ -62,14 +62,14 @@
     <#assign introductionImage = propValue("picture") />
     <#if introductionImage != "">
       <#if imageRes == "">
-        <img class="vrtx-introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
+        <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
       <#else>
 
         <#assign userTitle = propValue("userTitle", imageRes) />
         <#assign desc = imageRes.getValueByName("description")?default("") />
 
 	<#if userTitle == "" && desc == "">  
-          <img class="vrtx-introduction-image" src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
+          <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
 	<#else>
           <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
           <#if pixelWidth != "">
@@ -80,7 +80,7 @@
 	    <#if userTitle != "">
 	      <img src="${introductionImage}" alt="${userTitle?html}" />
 	    <#else>
-	      <img src="${introductionImage}" alt="vrtx.getMsg("article.introductionImageAlt")" />
+	      <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
 	    </#if>
             <div class="vrtx-imagetext">
 	      <#if userTitle != "">

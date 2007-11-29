@@ -188,6 +188,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             for (int i = 0; i < menuRequest.getDepth(); i++) {
                 depthQuery.add(new UriDepthQuery(depth + i));
             }
+            mainQuery.add(depthQuery);
         } else {
             mainQuery.add(new UriDepthQuery(depth));
         }

@@ -15,14 +15,24 @@
 <#macro displayItem item>
   <#if item.menu?exists>
     <a href="${item.url?html}">${item.label}</a>
-    <@displayMenu item.menu />
+    <@displaySubMenu item.menu />
   <#else>
     <a href="${item.url?html}">${item.label}</a>
   </#if>
 </#macro>
 
-<#macro displayMenu menu currentCount>
+<#macro displayParentMenu menu currentCount>
   <ul class="resultset-${currentCount?html}">
+    <#list menu.itemsSorted as item>
+      <li> 
+        <@displayItem item=item />
+      </li>
+    </#list>
+  </ul>
+</#macro>
+
+<#macro displaySubMenu menu>
+  <ul>
     <#list menu.itemsSorted as item>
       <li> 
         <@displayItem item=item />
@@ -40,7 +50,7 @@
       </#if>
       <#list subFolderMenu.resultSets as resultSet>
         <#assign counter = counter+1>
-        <@displayMenu menu=resultSet currentCount=counter />
+        <@displayParentMenu menu=resultSet currentCount=counter />
       </#list>
     </div>
   </#if>

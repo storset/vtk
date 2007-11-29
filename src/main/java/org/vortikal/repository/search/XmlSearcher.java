@@ -57,11 +57,17 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlContent;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.text.html.HtmlText;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
@@ -80,6 +86,9 @@ public class XmlSearcher {
     
     private static Log logger = LogFactory.getLog(XmlSearcher.class);
 
+    private HtmlPageParser htmlParser;
+    private Map<String, String> htmlEntityMap;
+    
     private Searcher searcher;
     private Parser parser;
     private ResourceTypeTree resourceTypeTree;
@@ -186,6 +195,7 @@ public class XmlSearcher {
             errorElement.appendChild(text);
 
         }
+        
         return doc;
     }
     
@@ -273,40 +283,33 @@ public class XmlSearcher {
                     valuesElement.setAttribute("format", format);
                 }
                 for (Value v: prop.getValues()) {
-                    String valueString = getFormattedPropertyValue(propDef,uri, v, format, locale);
-                    Element valueElement = valueElement(doc, valueString);
+                    Element valueElement = getPropertyElement(propDef,uri, v, format, locale, doc);
                     valuesElement.appendChild(valueElement);
                 }
                 propertyElement.appendChild(valuesElement);
             } else {
                 Value value = prop.getValue();
-                String valueString = getFormattedPropertyValue(propDef,uri, value, format, locale);
-                Element valueElement = valueElement(doc, valueString);
+                Element valueElement = getPropertyElement(propDef,uri, value, format, locale, doc);
                 if (format != null) {
                     valueElement.setAttribute("format", format);
                 }
-
                 propertyElement.appendChild(valueElement);
             }
         }
-        propSetElement.appendChild(propertyElement);        
+        propSetElement.appendChild(propertyElement);
     }
 
     
-    private Element valueElement(Document doc, String formattedValue) {
-            Element valueElement = doc.createElement("value");
-            Text text = doc.createTextNode(formattedValue);
-            valueElement.appendChild(text);
-            return valueElement;
-    }
 
-    private String getFormattedPropertyValue(PropertyTypeDefinition propDef, 
+    private Element getPropertyElement(PropertyTypeDefinition propDef, 
                                              String uri, Value value, String format, 
-                                             Locale locale) {
+                                             Locale locale, Document doc) {
+
         String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
 
+        Node node = null;
         // If string value and format is url, try to create url (if it doesn't start with http?)
-        if (format != null && value.getType() == PropertyType.Type.STRING) {
+        if (format != null && propDef.getType() == PropertyType.Type.STRING) {
 
             if (format.equals("url") && !valueString.startsWith("http")) {
                 if (!valueString.startsWith("/")) {
@@ -319,8 +322,82 @@ public class XmlSearcher {
                 }
             } 
 
+        } else if (format != null && propDef.getType() == PropertyType.Type.HTML) {
+            if (format.equals("flattened")) {
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
+                    for (HtmlContent c : fragment.getContent()) {
+                        sb.append(flatten(c));
+                    }
+                    System.out.println("flattened: [" + sb.toString() + "]");
+                    node = doc.createTextNode(sb.toString());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } 
+          
+        if (node == null) {
+            node = doc.createTextNode(valueString);
         }
-        return valueString;
+        Element valueElement = doc.createElement("value");
+        valueElement.appendChild(node);
+        return valueElement;
+    }
+    
+    private String flatten(HtmlContent c) {
+        StringBuilder sb = new StringBuilder();
+        if (c instanceof HtmlElement) {
+            HtmlElement htmlElement = (HtmlElement) c;
+            for (HtmlContent child : htmlElement.getChildNodes()) {
+                sb.append(flatten(child));
+            }
+        } else if (c instanceof HtmlText) {
+            String content = c.getContent();
+            sb.append(processHtmlEntities(content));
+        }
+        return sb.toString();
+    }
+    
+    private String processHtmlEntities(String content) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < content.length(); i++) {
+            char ch = content.charAt(i);
+            if (ch == '&') {
+                int j = i + 1;
+
+                String entity = null;
+                while (j < content.length()) {
+                    boolean validChar = validEntityCharAtIndex(content, j);
+                    if (!validChar && content.charAt(j) == ';' && j > i + 1) {
+                        entity = content.substring(i + 1, j);
+                        i = j;
+                        break;
+                    } else if (!validChar) {
+                        break;
+                    }
+                    j++;
+                }
+                if (entity != null) {
+                    if (this.htmlEntityMap.containsKey(entity)) {
+                        result.append(this.htmlEntityMap.get(entity));
+                    } else {
+                        result.append("&").append(entity).append(";");
+                    }
+                } 
+            } else {
+                result.append(ch);
+            }
+        }
+        return result.toString();
+    }
+    
+    private boolean validEntityCharAtIndex(String content, int i) {
+        if (i >= content.length()) return false;
+        char c = content.charAt(i);
+        return i < content.length() && c != ';' 
+            && (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c));
     }
     
 
@@ -558,5 +635,13 @@ public class XmlSearcher {
 
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
+
+    public void setHtmlEntityMap(Map<String, String> htmlEntityMap) {
+        this.htmlEntityMap = htmlEntityMap;
     }
 }

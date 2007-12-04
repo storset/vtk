@@ -30,6 +30,9 @@
  */
 package org.vortikal.repository.search;
 
+import static org.vortikal.repository.resourcetype.PropertyType.Type.IMAGE_REF;
+import static org.vortikal.repository.resourcetype.PropertyType.Type.STRING;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -309,7 +312,7 @@ public class XmlSearcher {
 
         Node node = null;
         // If string value and format is url, try to create url (if it doesn't start with http?)
-        if (format != null && propDef.getType() == PropertyType.Type.STRING) {
+        if (format != null && (propDef.getType() == STRING || propDef.getType() == IMAGE_REF)) {
 
             if (format.equals("url") && !valueString.startsWith("http")) {
                 if (!valueString.startsWith("/")) {

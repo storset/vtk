@@ -163,16 +163,14 @@
       <div class="vevent">
         <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />: </span>
         <span class="summary" style="display:none;">${title}</span>
-	<#if start != "">
-	  <abbr class="dtstart" title="${startiso8601}">${start}</abbr>
-	</#if>
-	<#if end != "">
-	  <#if startshort == endshort>
-          - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#else>
-	  - <abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#if location != "">,
-	    <span class="location">${location}</span>
-	  </#if>
-	</#if>
+        <#if start != "">
+          <abbr class="dtstart" title="${startiso8601}">${start}</abbr>
+        </#if>
+        <#if end != "">
+          - <#if startshort == endshort>
+          <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#else>
+          <abbr class="dtend" title="${endiso8601}">${end}</abbr></#if></#if>
+          <#if location != "">, <span class="location">${location}</span></#if>
      </div>
     </#if>
 

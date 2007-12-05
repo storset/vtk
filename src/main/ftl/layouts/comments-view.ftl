@@ -129,13 +129,15 @@
         </#list>
         </p>
       <#if commenting.richEditorEnabled>
-        <script type="text/javascript">
+        <script type="text/javascript"><!--
+
           function editor() {
              document.getElementById("comment-syntax-desc").style.display = "none";
              document.getElementById("comments-text-div").style.margin = "0";
              loadEditor();
           }
           document.write("<p><a class=\"javascript-editor\" href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="Use HTML-editor" /></a></p>");
+          // -->
         </script>
       </#if>      
       </div>
@@ -169,10 +171,9 @@
         <input type="submit" id="submit-comment-button" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" /> (<@vrtx.msg code="commenting.as"
                     default="as" /> <span class="user">${principal?html}</span>)</div>
       </form>
+
       <#if commenting.richEditorEnabled>
-        <@fck.editorInTextarea textarea="comments-text"
-                               validElements=config.validHtmlElements
-                               runOnLoad=false fckeditorBase=fckeditorBase />
+        <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
       </#if>
     </#if>
 

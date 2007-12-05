@@ -21,7 +21,7 @@
     <property name="assertions">
       <list>
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="resourceTypeIsDocument" />
+        <ref bean="resourceTypeInXhtmlTrans" />
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>
@@ -37,8 +37,6 @@
   </bean>
 
   <bean id="editor.browseService" class="org.vortikal.web.service.ServiceImpl">
-    <!--property name="parent" ref="editor.fckService" /-->
-    <!--property name="parent" ref="webService" /-->
     <property name="order" value="-999" />
     <property name="assertions">
       <list>

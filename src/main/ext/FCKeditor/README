@@ -1,0 +1,19 @@
+Integration of FCKEditor in Vortikal
+
+http://www.fckeditor.net/
+
+This directory contains three sub-directories:
+
+  o fckeditor-org: the original distribution(s) of FCKEditor
+  o fckeditor-modifications: the local source modifications
+  o fckeditor-build: the resulting "merge" between the previous
+    directories.
+
+All local modifications should be made in fckeditor-modifications and
+then copied to fckeditor-build (or the other way around :) 
+
+No modifications should be made in fckeditor-org.
+
+For the FCKEditor license, see 
+
+fckeditor-org/fckeditor-<version>/license.txt

@@ -42,36 +42,12 @@
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="url" />
         </bean>
-        <bean class="org.vortikal.web.referencedata.provider.AssertionResultProvider" parent="requestLocalRepositoryAware">
-          <property name="assertion" ref="commenting.fckUserAgentAssertion" />
-          <property name="modelName" value="commenting" />
-          <property name="variable" value="richEditorEnabled" />
-        </bean>
       </list>
     </property>
     <property name="attributesMap">
       <map>
         <entry key="config" value-ref="commenting.freemarkerConfig" />       
       </map>
-    </property>
-  </bean>
-
-  <bean id="commenting.fckUserAgentAssertion" class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
-    <property name="header" value="User-Agent" />
-    <property name="patterns" ref="commenting.fckUserAgentRegexpList" />
-  </bean>
-
-  <bean id="commenting.fckUserAgentRegexpList" class="org.vortikal.context.CSVListFactoryBean">
-    <property name="csvList">
-      <value>
-        Mozilla/4\.0 \(compatible; MSIE 7\.0; Windows.*,
-        Mozilla/4\.0 \(compatible; MSIE 6\.0; Windows.*,
-        Mozilla/4\.0 \(compatible; MSIE 5\.5; Windows.*,
-        Mozilla/5\.0.*rv:1\.7\..*Gecko.*,
-        Mozilla/5\.0.*rv:1\.8\..*Gecko.*,
-        Mozilla/5\.0.*Gecko.*Firefox/1\..*,
-        Mozilla/5\.0.*Gecko.*Camino/.*
-      </value>
     </property>
   </bean>
 

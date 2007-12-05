@@ -12,7 +12,12 @@
 <#macro declareEditor>
   <#if !__editorDeclared?exists>
     <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-    <#--script>alert(FCKeditor_IsCompatibleBrowser());</script-->
+    <script type="text/javascript"><!--
+      function editorAvailable() {
+        return FCKeditor_IsCompatibleBrowser();
+      }
+      // -->
+    </script>
     <#assign __editorDeclared = true />
   </#if>
 </#macro>

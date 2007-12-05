@@ -26,6 +26,7 @@
 <#if !commentsEnabled && comments?size = 0>
   <#-- display nothing -->
 <#else>
+<@fck.declareEditor />
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">
@@ -128,7 +129,6 @@
           </#compress>&gt;<#if element_has_next>, </#if>
         </#list>
         </p>
-      <#if commenting.richEditorEnabled>
         <script type="text/javascript"><!--
 
           function editor() {
@@ -136,10 +136,11 @@
              document.getElementById("comments-text-div").style.margin = "0";
              loadEditor();
           }
+          if (editorAvailable()) {
           document.write("<p><a class=\"javascript-editor\" href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="Use HTML-editor" /></a></p>");
+          }
           // -->
         </script>
-      </#if>      
       </div>
       <form action="${postCommentURL?string?html}#comment-form" method="post">
         <#if config.titlesEnabled>
@@ -172,9 +173,7 @@
                     default="as" /> <span class="user">${principal?html}</span>)</div>
       </form>
 
-      <#if commenting.richEditorEnabled>
-        <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
-      </#if>
+      <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
     </#if>
 
   </div>

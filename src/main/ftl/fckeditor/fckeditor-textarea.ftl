@@ -45,7 +45,7 @@
         fckSkin='editor/skins/silver/'>
 
     <#if !__editorDeclared?exists>
-      <@edeclareEditor />
+      <@declareEditor />
     </#if>
 
     <script type="text/javascript">

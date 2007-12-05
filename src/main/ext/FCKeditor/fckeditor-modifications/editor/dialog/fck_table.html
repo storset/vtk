@@ -65,7 +65,7 @@ window.onload = function()
 			iWidth = parseInt( iWidth.substr(0,iWidth.length - 1), 10 ) ;
 			document.getElementById('selWidthType').value = "percent" ;
 		}
- 		else if (iWidth.indexOf('px') >= 0)	//	Style Pixel = px
+		else if (iWidth.indexOf('px') >= 0)		// Style Pixel = px
 		{																										  //
 			iWidth = iWidth.substr(0,iWidth.length - 2);
 			document.getElementById('selWidthType').value = "pixels" ;
@@ -88,7 +88,8 @@ window.onload = function()
 		document.getElementById('txtSummary').value     = GetAttribute( table, 'summary', '' ) ;
 //		document.getElementById('cmbFontStyle').value	= table.className ;
 
-		if (table.caption) document.getElementById('txtCaption').value = table.caption.innerHTML ;
+		var eCaption = oEditor.FCKDomTools.GetFirstChild( table, 'CAPTION' ) ;
+		if ( eCaption ) document.getElementById('txtCaption').value = eCaption.innerHTML ;
 
 		document.getElementById('txtRows').disabled    = true ;
 		document.getElementById('txtColumns').disabled = true ;
@@ -136,8 +137,10 @@ function Ok()
 	}
 	else if ( bExists && eCaption )
 	{
+		// TODO: It causes an IE internal error if using removeChild or
+		// table.deleteCaption() (see #505).
 		if ( oEditor.FCKBrowserInfo.IsIE )
-			eCaption.innerHTML = '' ;	// TODO: It causes an IE internal error if using removeChild or table.deleteCaption().
+			eCaption.innerHTML = '' ;
 		else
 			eCaption.parentNode.removeChild( eCaption ) ;
 	}
@@ -154,8 +157,7 @@ function Ok()
 			{
 				var oCell = oRow.insertCell(-1) ;
 				if ( oEditor.FCKBrowserInfo.IsGeckoLike )
-					oCell.innerHTML = GECKO_BOGUS ;
-				//oCell.innerHTML = "&nbsp;" ;
+					oEditor.FCKTools.AppendBogusBr( oCell ) ;
 			}
 		}
 
@@ -225,12 +227,12 @@ function Ok()
 									<td>
 										<span fcklang="DlgTableWidth">Width</span>:</td>
 									<td>
-										&nbsp;<input id="txtWidth" type="text" maxlength="4" size="3" value="100" name="txtWidth"
+										&nbsp;<input id="txtWidth" type="text" maxlength="4" size="3" value="200" name="txtWidth"
 											onkeypress="return IsDigit(event);" /></td>
 									<td>
 										&nbsp;<select id="selWidthType" name="selWidthType">
-											<option fcklang="DlgTableWidthPx" value="pixels">pixels</option>
-											<option fcklang="DlgTableWidthPc" value="percent" selected="selected">percent</option>
+											<option fcklang="DlgTableWidthPx" value="pixels" selected="selected">pixels</option>
+											<option fcklang="DlgTableWidthPc" value="percent">percent</option>
 										</select></td>
 								</tr>
 								<tr>

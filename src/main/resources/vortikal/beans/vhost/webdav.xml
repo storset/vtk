@@ -66,6 +66,7 @@
   <!-- DAV handler services: -->
 
   <bean id="webdavCollectionListingService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1" />
     <property name="parent" ref="webdavService" />
     <property name="assertions">
       <list>
@@ -79,6 +80,7 @@
   </bean>
 
   <bean id="webdavCollectionListingHeadService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-1" />
     <property name="parent" ref="webdavService" />
     <property name="assertions">
       <list>

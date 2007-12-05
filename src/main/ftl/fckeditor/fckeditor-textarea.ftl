@@ -1,3 +1,23 @@
+<#if !fckeditorBase?exists>
+  <#stop "fckeditorBase attribute must exist in model" />
+</#if>
+
+
+<#--
+ * editorInTextArea
+ * 
+ * Writes a <script> reference to the main fckeditor.js file
+ *
+ -->
+<#macro declareEditor>
+  <#if !__editorDeclared?exists>
+    <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
+    <#--script>alert(FCKeditor_IsCompatibleBrowser());</script-->
+    <#assign __editorDeclared = true />
+  </#if>
+</#macro>
+
+
 <#--
  * editorInTextArea
  *
@@ -15,54 +35,48 @@
  *
 -->
 
-<#macro editorInTextarea fckeditorBase textarea  runOnLoad=true
-          validElements=[{"name":"b", "attributes":[]},
-                         {"name":"strong", "attributes":[]},
-                         {"name":"i", "attributes":[]},
-                         {"name":"em", "attributes":[]},
-                         {"name":"a", "attributes":["href"]},
-                         {"name":"ul", "attributes":[]},
-                         {"name":"ol", "attributes":[]},
-                         {"name":"li", "attributes":[]},
-                         {"name": "p", "attributes":[]}]
-          toolbarElements=["Source", "Bold", "Italic", "Underline",
-                           "StrikeThrough", "OrderedList",
-                           "UnorderedList", "Link", "Unlink"]
-          fckSkin="editor/skins/silver/">
+<#macro editorInTextarea
+        textarea
+        toolbar='Complete'
+        fullpage=false
+        collapseToolbar=false
+        runOnLoad=true
+        enableFileBrowsers=false
+        fckSkin='editor/skins/silver/'>
 
-    <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
+    <#if !__editorDeclared?exists>
+      <@edeclareEditor />
+    </#if>
+
     <script type="text/javascript">
       var initialized = false;
 
-      <#-- XXX: this whitelist is currently unused, filtering is done server-side: -->
-      var whitelist_elements = [
-        <#compress>
-        <#list validElements as element>
-          ["${element.name?html}"
-          <#if (element.attributes)?exists && (element.attributes)?size &gt; 0>
-            [<#list element.attributes as attr>
-              "${attr?html}"<#if attr_has_next>, </#if>
-            </#list>]
-          </#if>
-          ]<#if element_has_next>, </#if>
-        </#list>];
-        </#compress>
-
-
       function loadEditor() {
           if (initialized) return;
-          var editor = new FCKeditor("${textarea}");
-          editor.BasePath = "${fckeditorBase.url?html}/";
-          editor.Config['ToolbarSets'] = "( {'MinimalToolbar' : [\
-                 [<#list toolbarElements as elem>'${elem}'<#if elem_has_next>,</#if></#list>]\
-	      ]} )";
-          editor.ToolbarSet = "MinimalToolbar";
-          editor.Config['FullPage'] = false;
-          editor.Config['ToolbarCanCollapse'] = false;
+          var editor = new FCKeditor('${textarea}');
+          editor.BasePath = '${fckeditorBase.url?html}/';
+          editor.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
+          editor.ToolbarSet = '${toolbar}';
+          editor.Config['FullPage'] = ${fullpage?string};
+          editor.Config['ToolbarCanCollapse'] = ${collapseToolbar?string};
           editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
-          editor.Config.LinkBrowser = false;
-          editor.Config.LinkUpload = false;
+          editor.Config.LinkBrowser = ${enableFileBrowsers?string};
+          editor.Config.LinkUpload = ${enableFileBrowsers?string};
+          editor.Config.ImageBrowser = ${enableFileBrowsers?string};
+          editor.Config.ImageUpload = ${enableFileBrowsers?string};
+          editor.Config.FlashBrowser = ${enableFileBrowsers?string};
+          editor.Config.FlashUpload = ${enableFileBrowsers?string};
+
+         <#if enableFileBrowsers && !fckBrowse?exists>
+           <#stop "parameter 'enableFileBrowsers' requires that model attribute 'fckBrowse' exists">
+         <#elseif enableFileBrowsers>
+           var baseFolder = "${resourceContext.parentURI?html}";
+           editor.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+           editor.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+           editor.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+         </#if>
           editor.ReplaceTextarea();
+
           initialized = true;
       }
       <#if runOnLoad>

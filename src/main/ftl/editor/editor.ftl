@@ -1,5 +1,4 @@
 <#ftl strip_whitespace=true>
-
 <#--
   - File: fckeditor.ftl
   - 
@@ -29,18 +28,13 @@
         var completeEditor = completeEditor != null ? completeEditor : false; 
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
+        fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
 
-         // The toolbar: JSON string
          if (completeEditor) {
-          fck.Config['ToolbarSets'] = "( {'" + name + "' : [\
-            ['Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
-            ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']]} )";
-
+            fck.ToolbarSet = 'Complete';
          } else {
-          fck.Config['ToolbarSets'] = "( {'" + name + "' : [\
-            ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']]} )";
+            fck.ToolbarSet = 'Inline';
          }
-         fck.ToolbarSet = name;
 
          // File browser
          var baseFolder = "${resourceContext.parentURI?html}";
@@ -63,8 +57,6 @@
 	 </#if>
 
          fck.ReplaceTextarea();
-
-
       }
       function FCKeditor_OnComplete(editorInstance) {
           // Get around bug: http://dev.fckeditor.net/ticket/1482

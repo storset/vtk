@@ -15,150 +15,62 @@
   -->
 <#import "/lib/ping.ftl" as ping />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/fckeditor/fckeditor-textarea.ftl" as fck />
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
    <head>
       <title>FCKeditor</title>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/editor.css">
       <style type="text/css">
+        textarea {
+           width: 100%;
+           height: 20em;
+        }
+        iframe {
+           height: 40em; 
+        } 
+        div.htmlTitle { 
+           padding-bottom: 1em;
+        }
 
-       div#contents { 
-       margin: 0 !important; padding:0 !important;
-       }
-
-       div.activeTab { 
-       background-color: #f7f7f7;
-       }
-
-       div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
-       background-color: #f7f7f7 !important;
-       }
-
-       div.htmlTitle { 
-       position:relative;
-       left:13px;
-       top:57px;
-       height: 20px;
-       color: #333;
-       font-size: 11px;
-       font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
-       }
-
-       .htmlTitlePrefix { 
-       font-weight: normal;
-       padding-right: 5px;
-       }
-
-       div.htmlTitle input{ 
-       border: 1px solid #bbb;
-       padding-left: 3px;      
-	font-size: 12px;
-	font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
-       }
-
-
-       #myEditorDiv {
-       margin: -22px 0 0 0;
-       padding:0;
-       border: 0;
-       } 
-
- 
-       #myEditorInstance___Frame {
-       } 
-
-      </style>
+        </style>
       <@ping.ping url=pingURL['url'] interval=300 />
+      <@fck.declareEditor />
    </head>
    <body>
 
-   <#--
-        <p>${fckeditorBase.url?html}</p>
-        <p>${fckSource.getURL}</p>
-        <p>${fckCleanup.url?html}</p>
-        <p>${fckBrowse.url}</p>
-   -->
-
-   <div class="htmlTitle">
-     <a style="float:right; margin-right: 30px;" href="http://www.fckeditor.net">www.fckeditor.net</a>
-     <span class="htmlTitlePrefix"><@vrtx.msg code="fck.documentTitle" default="Document title" /></span><input type="text" id="title" size="40" />
-     
-   </div>
-
-
    <form action="JavaScript: performSave();">
-      <div id="myEditorDiv">Loading editor...</div>
+      <div class="htmlTitle">
+      <label for="title"><@vrtx.msg code="fck.documentTitle" default="Document title" /></label> 
+      <input type="text" id="title" size="40" />
+      </div>
+     <textarea id="file-content" name="content" rows="40" cols="80">Loading editor...</textarea>
    </form>
 
-   <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-
    <script type="text/javascript">
-      createFCKEditorInDiv("myEditorDiv", "100%", "100%", "myEditorInstance"); 
    
-      function getXmlHttpRequestObject(){
-         try{
+      function getXmlHttpRequestObject() {
+         try {
             var ret = new ActiveXObject("Microsoft.XMLHTTP");
             return ret;
-         }catch(e){
+         } catch(e){
             return new XMLHttpRequest();
          }
       }
-   
-      function createFCKEditorInDiv(editorDiv, w, h, editorinstancename){
-         var div = document.getElementById(editorDiv);
-         var fck = new FCKeditor(editorinstancename, w, h);
-         fck.BasePath = "${fckeditorBase.url?html}/";
-   
-         var srcxhtml;
-         /* Load XHTML from source document */{
-            var xReq = getXmlHttpRequestObject();
-            xReq.open("GET", "${fckSource.getURL}", false);
-            xReq.send(null);
-            srcxhtml = xReq.responseText;
-         }
-         fck.Value = srcxhtml;
+      
+      var xReq = getXmlHttpRequestObject();
+      xReq.open("GET", "${fckSource.getURL}", false);
+      xReq.send(null);
+      srcxhtml = xReq.responseText;
+      document.getElementById("file-content").value = srcxhtml;
 
-         // Title
-         document.getElementById("title").value = srcxhtml.substring(srcxhtml.indexOf("<title")+7, srcxhtml.indexOf("</title>"));
+      // Title
+      document.getElementById("title").value = srcxhtml.substring(srcxhtml.indexOf("<title")+7, srcxhtml.indexOf("</title>"));
 
-
-         // The toolbar: JSON string
-          fck.Config['ToolbarSets'] = "( {'Vortikal' : [\
-            ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],\'/',\
-            ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow'],\'/',\[]\
-         ]} )";
-         fck.ToolbarSet = "Vortikal";
-
-        // File browser
-         var baseFolder = "${resourceContext.parentURI?html}";
-         fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
-
-
-         // Misc setup
-         fck.Config['FullPage'] = true;
-         fck.Config['ToolbarCanCollapse'] = false;
-         fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre' ;        
-
-         fck.Config.DisableFFTableHandles = false;
-	 fck.Config.ForcePasteAsPlainText = false;
-         // fck.Config.FirefoxSpellChecker = true;
-	 // fck.Config.BrowserContextMenuOnCtrl = true ;
-
-         //fck.config['BaseHref'] = '/test';
-
-         fck.Config['SkinPath'] = '${fckeditorBase.url?html}/editor/skins/silver/';
-
-         //alert(fck.Config['Plugins']);
-
-         // Create
-         div.innerHTML = fck.CreateHtml();
-      }
-
-      function performSave(){
-         var oEditor = FCKeditorAPI.GetInstance('myEditorInstance');
+      function performSave() {
+         var oEditor = FCKeditorAPI.GetInstance('file-content');
          var srcxhtml = oEditor.GetXHTML();
          var title = document.getElementById("title");
 
@@ -173,8 +85,10 @@
          window.status = 'Document saved';
       }
       
-      
    </script>
+
+   <@fck.editorInTextarea textarea="file-content" fullpage=true toolbar="Vortikal" enableFileBrowsers=true />
+
 
    <!-- FCKeditor resize script -->
    <script type="text/javascript">
@@ -185,6 +99,7 @@
       
       
       // Initialize resize script:
+      
       resizeEditorIframe();
       
       

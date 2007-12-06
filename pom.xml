@@ -112,6 +112,10 @@
       <url>http://xml.uio.no/vortex/maven2</url>
     </repository>
 
+    <repository>
+      <id>Apache snapshot repo</id>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+    </repository>
     <!--repository>
       <id>local-bundle</id>
       <url>file://${basedir}/bundled-repo</url>
@@ -240,7 +244,7 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-surefire-plugin</artifactId>
 	<configuration>
-	  <skip>false</skip>
+	  <skip>true</skip>
 	  <forkMode>pertest</forkMode>
 	  <useFile>false</useFile>
           <systemProperties>
@@ -638,6 +642,23 @@
       <scope>runtime</scope>
     </dependency>
     
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <version>1.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.4.3</version>
+    </dependency>
+
+
     <!-- Code dependencies not used runtime = provided -->
     <dependency>
       <groupId>pdfbox</groupId>

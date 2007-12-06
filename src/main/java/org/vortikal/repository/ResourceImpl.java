@@ -133,6 +133,18 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return prop;
     }
 
+    public Property createProperty(String prefix, String name, List<String> values) {
+        PropertyTypeDefinition propDef = 
+            this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+        if (propDef == null) {
+            return null;
+        }
+        Property prop = propDef.createProperty(values.toArray(new String[values.size()]));
+        addProperty(prop);
+        return prop;
+    }
+
+    
     public void removeProperty(Namespace namespace, String name) {
         Map<String, Property> props = this.propertyMap.get(namespace);
         

@@ -104,6 +104,12 @@
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
   </bean>
   
+  <bean id="repository.contentStore" 
+        class="org.vortikal.repository.store.fs.SimpleFileSystemContentStore">
+    <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
+    <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
+  </bean>
+
   <bean id="repository.indexDao" class="org.vortikal.repository.store.db.SqlMapIndexDao">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
@@ -142,13 +148,6 @@
         init-method="startService" destroy-method="stopService">
   </bean>
   -->
-
-  <bean id="repository.contentStore" 
-        class="org.vortikal.repository.store.fs.SimpleFileSystemContentStore">
-    <property name="urlEncodeFileNames" value="${urlEncodeFileNames}" />
-    <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
-  </bean>
-
 
   <bean id="repository.requestLocal" class="org.vortikal.web.RequestLocalRepository">
     <property name="repository" ref="repository"/>

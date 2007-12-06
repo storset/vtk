@@ -1,0 +1,15 @@
+<nt = 'http://www.jcp.org/jcr/nt/1.0'>
+<mix = 'http://www.jcp.org/jcr/mix/1.0'>
+<vrtx = 'http://www.uio.no/vrtx'>
+
+[vrtx:hierarchyNode] > nt:hierarchyNode, mix:versionable, mix:lockable
+- vrtx:resourceType (STRING) mandatory
+- vrtx:collection (STRING) mandatory
+- * (UNDEFINED)
+- * (UNDEFINED) multiple
+
+[vrtx:folder] > vrtx:hierarchyNode
++ * (vrtx:hierarchyNode)
+
+[vrtx:file] > vrtx:hierarchyNode
+- vrtx:content (BINARY) mandatory primary

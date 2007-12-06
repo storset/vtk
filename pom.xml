@@ -112,10 +112,6 @@
       <url>http://xml.uio.no/vortex/maven2</url>
     </repository>
 
-    <repository>
-      <id>Apache snapshot repo</id>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-    </repository>
     <!--repository>
       <id>local-bundle</id>
       <url>file://${basedir}/bundled-repo</url>
@@ -125,6 +121,12 @@
       <id>repo1.maven.org</id>
       <url>http://repo1.maven.org/maven2</url>
     </repository>
+
+    <repository>
+      <id>Apache snapshot repo</id>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+    </repository>
+
   </repositories>
   
   <packaging>jar</packaging>

@@ -56,6 +56,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.Workspace;
@@ -89,13 +90,14 @@ import org.vortikal.security.SecurityContext;
 
 public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
 
+    private static final Log logger = LogFactory.getLog(JcrDao.class);
+
     private static final String VRTX_PREFIX = "vrtx:";
     private static final String VRTX_FILE_NAME = "vrtx:file";
     private static final String VRTX_FOLDER_NAME = "vrtx:folder";
 
     private static final String RESOURCE_TYPES_FILE = "resource-types.cnd";
 
-    private static final Log logger = LogFactory.getLog(JcrDao.class);
 
     private static final String VRTX_ROOT = "/vrtx";
 
@@ -163,14 +165,14 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
         if (VRTX_ROOT.equals(path)) {
             return "/";
         }
-        return path.substring(VRTX_ROOT.length());
+        return unescapeIllegalJcrChars(path.substring(VRTX_ROOT.length()));
     }
-
     private String uriToPath(String uri) {
         if ("/".equals(uri)) {
             return VRTX_ROOT;
         }
-        return VRTX_ROOT + uri;
+        return VRTX_ROOT + escapeIllegalJcrChars(uri);
+         
     }
 
     public void delete(ResourceImpl resource) throws DataAccessException {
@@ -201,7 +203,7 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
                 Node lockNode = session.getRootNode().getNode("locks");  
                 lockNode = lockNode.getNode(node.getLock().getNode().getUUID());
                 if (lockNode.getProperty("owner").getString().equals(session.getUserID()))
-                    session.addLockToken(lockNode.getProperty("lockToken").getString());
+                    session.addLockToken(lockNode.getProperty("jcrLockToken").getString());
             } 
         }
     }
@@ -277,7 +279,7 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
         }
         if (node.isLocked()) {
             Lock lock = node.getLock();
-            resource.setLock(getLock(lock));
+            resource.setLock(getLock(lock, node.getSession()));
         }
 
         if (resource.isCollection()) {
@@ -290,13 +292,19 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
 
     }
 
-    private org.vortikal.repository.Lock getLock(Lock lock) {
-        String depth = lock.isDeep() ? "infinity" : "0";
-        Date timeout = new Date(System.currentTimeMillis() + 600000);
-
+    private org.vortikal.repository.Lock getLock(Lock lock, Session session) throws PathNotFoundException, RepositoryException {
+        Node lockNode = session.getRootNode().getNode("locks");  
+        String uuid = lock.getNode().getUUID();
+        Node node = lockNode.getNode(uuid);
+        String token = node.getProperty("lockToken").getString();
+        String ownerInfo = node.getProperty("ownerInfo").getString();
+        String owner = node.getProperty("owner").getString();
+        String depth = node.getProperty("depth").getString();
+        Date timeOut = new Date(Long.parseLong(node.getProperty("timeOut").getString()));
+        
+        logger.debug("Building lock for '" + uuid + "': " + node.getProperty("owner").getString() + ", " + token);
         org.vortikal.repository.LockImpl vLock = new org.vortikal.repository.LockImpl(
-                lock.getLockToken(), new Principal(lock.getLockOwner(),
-                        Principal.Type.USER), null, depth, timeout);
+                token, new Principal(owner, Principal.Type.USER), ownerInfo, depth, timeOut);
 
         return vLock;
     }
@@ -366,7 +374,7 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
             aquireLockToken(session, node);
 
             String primaryResourceType = (resource.isCollection()) ? VRTX_FOLDER_NAME : VRTX_FILE_NAME;
-            node = node.addNode(resource.getName(), primaryResourceType);
+            node = node.addNode(escapeIllegalJcrChars(resource.getName()), primaryResourceType);
 
             for (org.vortikal.repository.Property prop : resource.getProperties()) {
                 String propName = jcrPropName(prop);
@@ -421,6 +429,8 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
             
             String lockUri = pathToUri(node.getLock().getNode().getPath());
             return new String[] { lockUri };
+        } catch (PathNotFoundException e) {
+            return new String[0];
         } catch (RepositoryException e) {
             throw new DataAccessException(e);
         } finally {
@@ -447,22 +457,10 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
             // Lock handling currently requires 0 depth...
             org.vortikal.repository.Lock lock = r.getLock();
             if (lock != null && !node.holdsLock()) {
-                node.lock(false, false);
-                synchronized (this.keepAliveSession) {
-                  Node lockNode = session.getRootNode().getNode("locks");  
-                  lockNode = lockNode.addNode(node.getUUID());
-                  lockNode.setProperty("lockToken", node.getLock().getLockToken());
-                  lockNode.setProperty("owner", session.getUserID());
-                  session.save();
-                } 
+                lock(session, node, lock); 
                 return;
             } else if (lock == null && node.holdsLock()) {
-                node.unlock();
-                synchronized (this.keepAliveSession) {
-                    Node lockNode = session.getRootNode().getNode("locks");  
-                    lockNode.getNode(node.getUUID()).remove();
-                    session.save();
-                } 
+                unlock(session, node); 
                 return;
             }
 
@@ -508,6 +506,41 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
             throw new DataAccessException(e);
         } finally {
             session.logout();
+        }
+    }
+
+    private void unlock(Session session, Node node) throws RepositoryException {
+        node.unlock();
+        synchronized (this.keepAliveSession) {
+            Node lockNode = session.getRootNode().getNode("locks");  
+            Node node2 = lockNode.getNode(node.getUUID());
+            logger.debug("Unlocking '" + node.getPath() + "': " + node2.getProperty("owner").getString());
+            node2.remove();
+            session.save();
+        }
+    }
+
+    private void lock(Session session, Node node, org.vortikal.repository.Lock lock)
+            throws UnsupportedRepositoryOperationException, LockException,
+            AccessDeniedException, InvalidItemStateException,
+            RepositoryException, PathNotFoundException, ItemExistsException,
+            VersionException, ConstraintViolationException,
+            ValueFormatException, NoSuchNodeTypeException {
+
+        node.lock(false, false);
+
+        logger.debug("Locking '" + node.getPath() + "', '"+ node.getUUID()+ "': " + node.getLock().getLockToken() + ", " + session.getUserID());
+
+        synchronized (this.keepAliveSession) {
+          Node lockNode = session.getRootNode().getNode("locks");  
+          lockNode = lockNode.addNode(node.getUUID());
+          lockNode.setProperty("jcrLockToken", node.getLock().getLockToken());
+          lockNode.setProperty("lockToken", lock.getLockToken());
+          lockNode.setProperty("depth", lock.getDepth());
+          lockNode.setProperty("ownerInfo", lock.getOwnerInfo());
+          lockNode.setProperty("owner", lock.getPrincipal().getQualifiedName());
+          lockNode.setProperty("timeOut", lock.getTimeout().getTime());
+          session.save();
         }
     }
 
@@ -682,4 +715,78 @@ public class JcrDao implements ContentStore, DataAccessor, DisposableBean {
         keepAliveSession.save();
     }
 
+    
+    
+    
+    /**
+     * Escapes all illegal JCR name characters of a string.
+     * The encoding is loosely modeled after URI encoding, but only encodes
+     * the characters it absolutely needs to in order to make the resulting
+     * string a valid JCR name.
+     * Use {@link #unescapeIllegalJcrChars(String)} for decoding.
+     * <p/>
+     * QName EBNF:<br>
+     * <xmp>
+     * simplename ::= onecharsimplename | twocharsimplename | threeormorecharname
+     * onecharsimplename ::= (* Any Unicode character except: '.', '/', ':', '[', ']', '*', ''', '"', '|' or any whitespace character *)
+     * twocharsimplename ::= '.' onecharsimplename | onecharsimplename '.' | onecharsimplename onecharsimplename
+     * threeormorecharname ::= nonspace string nonspace
+     * string ::= char | string char
+     * char ::= nonspace | ' '
+     * nonspace ::= (* Any Unicode character except: '/', ':', '[', ']', '*', ''', '"', '|' or any whitespace character *)
+     * </xmp>
+     *
+     * @param name the name to escape
+     * @return the escaped name
+     */
+    public static String escapeIllegalJcrChars(String path) {
+        StringBuffer buffer = new StringBuffer(path.length() * 2);
+        for (int i = 0; i < path.length(); i++) {
+            char ch = path.charAt(i);
+            if (ch == '%' || ch == ':' || ch == '[' || ch == ']'
+                || ch == '*' || ch == '\'' || ch == '"' || ch == '|'
+                || (ch == '.' && path.length() < 3)
+                || (ch == ' ' && (i == 0 || i == path.length() - 1))
+                || ch == '\t' || ch == '\r' || ch == '\n') {
+                buffer.append('%');
+                buffer.append(Character.toUpperCase(Character.forDigit(ch / 16, 16)));
+                buffer.append(Character.toUpperCase(Character.forDigit(ch % 16, 16)));
+            } else {
+                buffer.append(ch);
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Unescapes previously escaped jcr chars.
+     * <p/>
+     * Please note, that this does not exactly the same as the url related
+     * {@link #unescape(String)}, since it handles the byte-encoding
+     * differently.
+     *
+     * @param name the name to unescape
+     * @return the unescaped name
+     */
+    public static String unescapeIllegalJcrChars(String path) {
+        StringBuffer buffer = new StringBuffer(path.length());
+        int i = path.indexOf('%');
+        while (i > -1 && i + 2 < path.length()) {
+            buffer.append(path.toCharArray(), 0, i);
+            int a = Character.digit(path.charAt(i + 1), 16);
+            int b = Character.digit(path.charAt(i + 2), 16);
+            if (a > -1 && b > -1) {
+                buffer.append((char) (a * 16 + b));
+                path = path.substring(i + 3);
+            } else {
+                buffer.append('%');
+                path = path.substring(i + 1);
+            }
+            i = path.indexOf('%');
+        }
+        buffer.append(path);
+        return buffer.toString();
+    }
+
+    
 }

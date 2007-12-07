@@ -47,6 +47,8 @@
 
   <logger name="org.vortikal.repository"><level value="info" /></logger>
 
+  <logger name="org.vortikal.repository.store.jcr"><level value="debug" /></logger>
+
   <logger name="org.vortikal.repository.OperationLog"><level value="info" /></logger>
   <logger name="org.vortikal.repository.AuthorizationManagerImpl"><level value="info" /></logger>
   <logger name="org.vortikal.repository.PropertyManagerImpl"><level value="info" /></logger>

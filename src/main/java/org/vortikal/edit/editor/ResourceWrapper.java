@@ -48,7 +48,6 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlSelectUtil;
 
 public class ResourceWrapper implements Resource {
 
@@ -99,7 +98,7 @@ public class ResourceWrapper implements Resource {
     }
 
     public String getBodyAsString() {
-        List<HtmlElement> elements = HtmlSelectUtil.select(this.content, "html.body");
+        List<HtmlElement> elements = this.content.select("html.body");
         if (elements == null || elements.isEmpty()) {
             return "";
         } 

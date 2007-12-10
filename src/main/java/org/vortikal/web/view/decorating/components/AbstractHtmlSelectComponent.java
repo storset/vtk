@@ -36,7 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlSelectUtil;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
 
@@ -62,7 +61,7 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
         }
 
         HtmlPage page = request.getHtmlPage();
-        List<HtmlElement> elements = HtmlSelectUtil.select(page, expression);
+        List<HtmlElement> elements = page.select(expression);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Processing elements: " + elements);

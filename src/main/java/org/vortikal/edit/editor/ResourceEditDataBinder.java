@@ -46,7 +46,6 @@ import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlSelectUtil;
 
 public class ResourceEditDataBinder extends ServletRequestDataBinder {
 
@@ -189,8 +188,8 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             ByteArrayInputStream in = new ByteArrayInputStream(suppliedContent.getBytes(command.getResource().getCharacterEncoding()));
             HtmlPage parsed = this.htmlParser.parse(in, command.getResource().getCharacterEncoding());
 
-            HtmlElement body = HtmlSelectUtil.selectSingleElement(command.getContent(), "html.body");
-            HtmlElement suppliedBody = HtmlSelectUtil.selectSingleElement(parsed, "html.body");
+            HtmlElement body = command.getContent().selectSingleElement("html.body");
+            HtmlElement suppliedBody = parsed.selectSingleElement("html.body");
             
             if (body == null || suppliedBody == null) {
                 throw new RuntimeException("No HTML body to save");

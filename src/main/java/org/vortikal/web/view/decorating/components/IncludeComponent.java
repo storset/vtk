@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +45,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -55,7 +55,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlSelectUtil;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
@@ -207,7 +206,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
             HtmlPage page = this.htmlParser.parse(is, characterEncoding);
             String result = "";
                         
-            List<HtmlElement> elements = HtmlSelectUtil.select(page, elementParam);
+            List<HtmlElement> elements = page.select(elementParam);
             if (elements.size() > 0) {
                 result = elements.get(0).getContent();
             }
@@ -300,7 +299,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
             HtmlPage page = this.htmlParser.parse(is, servletResponse.getCharacterEncoding());
             String result = "";
                         
-            List<HtmlElement> elements = HtmlSelectUtil.select(page, elementParam);
+            List<HtmlElement> elements = page.select(elementParam);
             if (elements.size() > 0) {
                 result = elements.get(0).getContent();
             }

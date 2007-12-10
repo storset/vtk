@@ -101,4 +101,12 @@ public class HtmlPageImpl implements HtmlPage {
         return resultList;
     }
 
+    public List<HtmlElement> select(String expression) {
+        return HtmlSelectUtil.select(this, expression);
+    }
+
+    public HtmlElement selectSingleElement(String expression) {
+        return HtmlSelectUtil.selectSingleElement(this, expression);
+    }
+
 }

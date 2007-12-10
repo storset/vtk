@@ -30,6 +30,8 @@
  */
 package org.vortikal.text.html;
 
+import java.util.List;
+
 
 /**
  * Simple HTML page interface.
@@ -44,5 +46,8 @@ public interface HtmlPage {
     public String getStringRepresentation();
 
     public void filter(HtmlPageFilter filter);
+    
+    public List<HtmlElement> select(String expression);
 
+    public HtmlElement selectSingleElement(String expression);
 }

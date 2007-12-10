@@ -43,11 +43,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
 import org.vortikal.web.service.URL;
 
 public class SimpleCollectionListingProvider implements ReferenceDataProvider {
@@ -88,7 +90,7 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-
+        Principal principal = securityContext.getPrincipal();
 
         Resource[] children = this.repository.listChildren(token, uri, true);
         List<Resource> collections = new ArrayList<Resource>();
@@ -96,14 +98,15 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
         Map<String, URL> urls = new HashMap<String, URL>();
         
         for (Resource child: children) {
-            URL url = this.displayService.constructURL(child.getURI());
-            urls.put(child.getURI(), url);
-
-            if (child.isCollection()) {
-                collections.add(child);
-            } else {
-                files.add(child);
-            }
+            try {
+                URL url = this.displayService.constructURL(child, principal);
+                urls.put(child.getURI(), url);
+                if (child.isCollection()) {
+                    collections.add(child);
+                } else {
+                    files.add(child);
+                }
+            } catch (ServiceUnlinkableException e) { }
         }
 
         Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();

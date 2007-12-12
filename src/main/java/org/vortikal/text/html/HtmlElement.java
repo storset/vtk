@@ -81,6 +81,24 @@ public interface HtmlElement extends EnclosingHtmlContent {
     
 
     /**
+     * Adds a node at the end of this node's list of children.
+     */
+    public void addContent(HtmlContent child);
+    
+
+    /**
+     * Adds a node at a specified position in this node's list 
+     * of children.
+     */
+    public void addContent(int pos, HtmlContent child);
+
+    
+    /**
+     * Removes the specified child node.
+     */
+    public void removeContent(HtmlContent child);
+    
+    /**
      * Gets the contents of this node as a string. A filter is applied
      * to decide inclusion of child content.
      *

@@ -43,6 +43,7 @@
 <#macro editorInTextarea
         textarea
         toolbar='Complete'
+        fontFormats='p;h1;h2;h3;h4;h5;h6;pre'
         fullpage=false
         collapseToolbar=false
         runOnLoad=true
@@ -62,6 +63,7 @@
           editor.BasePath = '${fckeditorBase.url?html}/';
           editor.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
           editor.ToolbarSet = '${toolbar}';
+          editor.Config['FontFormats'] = '${fontFormats}';
           editor.Config['FullPage'] = ${fullpage?string};
           editor.Config['ToolbarCanCollapse'] = ${collapseToolbar?string};
           editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';

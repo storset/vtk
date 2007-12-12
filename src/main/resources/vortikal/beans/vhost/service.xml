@@ -391,7 +391,8 @@
     <property name="parent" ref="displayHTMLResourceService" />
     <property name="assertions">
       <list>
-        <ref bean="resourceTypeInXhtmlTrans" />
+        <!--ref bean="resourceTypeInXhtmlTrans" /-->
+        <ref bean="resourceTypeIsDocument" />
       </list>
     </property>
     <property name="handler" ref="displayArticleHandler" />

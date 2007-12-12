@@ -74,7 +74,6 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                 return;
             }
             
-            
             Resource resource = command.getResource();
             
             setProperties(request, command, resource, command.getContentProperties());
@@ -90,7 +89,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
-    private void setProperties(ServletRequest request,
+    protected void setProperties(ServletRequest request,
             ResourceEditWrapper command, Resource resource,
             List<PropertyTypeDefinition> propDefs) {
         for (PropertyTypeDefinition propDef: propDefs) {
@@ -148,7 +147,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
     
 
     
-    private void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
+    protected void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
     	PropertyTypeDefinition propDef = prop.getDefinition();
 
         if (propDef.isMultiple()) {
@@ -180,7 +179,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
-    private void parseContent(ResourceEditWrapper command, String suppliedContent) {
+    protected void parseContent(ResourceEditWrapper command, String suppliedContent) {
 
         if (suppliedContent == null) suppliedContent = "";
         try {
@@ -200,5 +199,13 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             throw new RuntimeException("Unable to save content", t);
         }
     }
+
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
     
+    protected HtmlPageParser getHtmlParser() {
+        return htmlParser;
+    }
+
 }

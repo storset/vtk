@@ -34,20 +34,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
+import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlPageFilter.NodeResult;
 
 
 public class HtmlPageImpl implements HtmlPage {
 
     private String doctype;
-
     private HtmlElement root;
+    private boolean xhtml;
     
-    public HtmlPageImpl(HtmlElement root, String doctype) {
+    public HtmlPageImpl(HtmlElement root, String doctype, boolean xhtml) {
+        if (root == null) {
+            throw new IllegalArgumentException("Root element cannot be NULL");
+        }
+        
         this.root = root;
         this.doctype = doctype;
     }
@@ -109,4 +115,15 @@ public class HtmlPageImpl implements HtmlPage {
         return HtmlSelectUtil.selectSingleElement(this, expression);
     }
 
+    public HtmlElement createElement(String name) {
+        return new HtmlElementImpl(name, this.xhtml);
+    }
+
+    public HtmlText createTextNode(String content) {
+        return new HtmlTextImpl(content);
+    }
+    public HtmlComment createComment(String comment) {
+        return new HtmlCommentImpl(createTextNode(comment));
+    }
 }
+

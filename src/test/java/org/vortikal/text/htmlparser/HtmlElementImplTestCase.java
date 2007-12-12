@@ -38,8 +38,8 @@ import junit.framework.TestCase;
 public class HtmlElementImplTestCase extends TestCase {
 
     public void testUppercaseElementName() {
-        HtmlElementImpl element = new HtmlElementImpl("lala", false, false);
-        element.addContent(new HtmlElementImpl("LALA", false, false));
+        HtmlElementImpl element = new HtmlElementImpl("lala",  false);
+        element.addContent(new HtmlElementImpl("LALA", false));
         
         HtmlElement[] childElements = element.getChildElements("lala");
         assertNotNull(childElements);

@@ -28,33 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.html;
+package org.vortikal.edit.editor;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.ServletRequestDataBinder;
 
-/**
- * Simple HTML page interface.
- *
- */
-public interface HtmlPage {
+public class StructuredXHtmlEditController extends ResourceEditController {
 
-    public String getDoctype();
-    
-    public HtmlElement getRootElement();
-    
-    public String getStringRepresentation();
-
-    public void filter(HtmlPageFilter filter);
-    
-    public List<HtmlElement> select(String expression);
-
-    public HtmlElement selectSingleElement(String expression);
-    
-    public HtmlElement createElement(String name);
-
-    public HtmlText createTextNode(String content);
-
-    public HtmlComment createComment(String comment);
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request,
+            Object command) throws Exception {
+        ResourceWrapperManager resourceManager = getResourceManager();
+        ServletRequestDataBinder binder = new StructuredXHtmlEditDataBinder(command, getCommandName(), 
+                resourceManager.getHtmlParser(), resourceManager.getHtmlPropsFilter());
+       prepareBinder(binder);
+       initBinder(request, binder);
+       return binder;
+    }
 
 }

@@ -51,7 +51,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 public class ResourceEditController extends SimpleFormController {
 
     private List<Service> tooltipServices;
-    //private List<PropertyTypeDefinition> propDefs;
     private ResourceWrapperManager resourceManager;
     
     
@@ -61,6 +60,9 @@ public class ResourceEditController extends SimpleFormController {
         setCommandName("resource");
     }
 
+    protected ResourceWrapperManager getResourceManager() {
+        return this.resourceManager;
+    }
 
 
     @Override
@@ -87,20 +89,18 @@ public class ResourceEditController extends SimpleFormController {
         } 
         
         resourceManager.unlock();
-        
         return super.onSubmit(command);
     }
-
 
 
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command)
     throws Exception {
         ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(), 
-                 resourceManager.getHtmlParser(), resourceManager.getHtmlPropsFilter());
-        prepareBinder(binder);
-        initBinder(request, binder);
-        return binder;
+                resourceManager.getHtmlParser(), resourceManager.getHtmlPropsFilter());
+       prepareBinder(binder);
+       initBinder(request, binder);
+       return binder;
     }
         
     @Override

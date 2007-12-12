@@ -42,7 +42,7 @@ import org.vortikal.text.html.HtmlPage;
 
 class HtmlSelectUtil {
 
-    private static final Pattern EXP_PATTERN = Pattern.compile("([a-z]+)\\(([0-9]+)\\)$");
+    private static final Pattern EXP_PATTERN = Pattern.compile("([a-z0-9]+)\\(([0-9]+)\\)$");
     
     
     public static List<HtmlElement> select(HtmlPage page, String expression) {
@@ -70,9 +70,7 @@ class HtmlSelectUtil {
             }
 
             List<HtmlElement> list = new ArrayList<HtmlElement>();
-            
-            for (int j = 0; j < elements.size(); j++) {
-                HtmlElement elem = elements.get(j);
+            for (HtmlElement elem : elements) {
                 HtmlElement[] children = elem.getChildElements(name);
                 if (elementIdx == -1) {
                     list.addAll(Arrays.asList(children));

@@ -10,21 +10,17 @@
     <property name="assertions">
       <list>
         <ref bean="editor.modeParameterAssertion" />
-      </list>
-    </property>
-  </bean>
-
-
-  <bean id="editorService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="editor.service" />
-    <property name="order" value="-9800" />
-    <property name="assertions">
-      <list>
         <ref bean="requiresWritePermissionAssertion" />
         <ref bean="resourceTypeInXhtmlTrans" />
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>
+  </bean>
+
+
+  <bean id="editor.abstractEditService" class="org.vortikal.web.service.ServiceImpl" abstract="true">
+    <property name="parent" ref="editor.service" />
+    <property name="order" value="-9800" />
     <property name="categories">
       <set>
         <value>tabMenu</value>
@@ -33,8 +29,26 @@
     <property name="attributes">
       <map><entry key="tabOrder"><value type="java.lang.Integer">152</value></entry></map>
     </property>
+  </bean>
+
+  <bean id="editor.structuredXhtmlEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsXhtmlTrans" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.structuredXhtmlEditHandler" />
+  </bean>
+
+  <bean id="editor.documentEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsDocument" />
+      </list>
+    </property>
     <property name="handler" ref="editor.editHandler" />
   </bean>
+
 
   <bean id="editor.browseService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-999" />
@@ -92,6 +106,7 @@
     <property name="views">
       <map>
         <entry key="editor.editView" value-ref="editor.editView" />
+        <entry key="editor.structuredXhtmlView" value-ref="editor.structuredXhtmlView" />
       </map>
     </property>
   </bean>
@@ -104,6 +119,7 @@
       </map>
     </property>
   </bean>
+
 
   <bean id="editor.editView" parent="freemarkerView">
     <property name="url" value="editor/editor.ftl" />
@@ -159,6 +175,11 @@
     </property>
   </bean>
 
+  <bean id="editor.structuredXhtmlView" parent="editor.editView">
+    <property name="url" value="editor/structured-xhtml-editor.ftl" />
+  </bean>
+
+
   <bean id="editor.browseView" parent="freemarkerView">
     <property name="url" value="fckeditor/browse.ftl" />
     <property name="contentType" value="text/xml;charset=utf-8" />
@@ -197,6 +218,13 @@
 
   <!-- Editor main controller -->
   
+  <bean id="editor.structuredXhtmlEditHandler"
+        class="org.vortikal.edit.editor.StructuredXHtmlEditController">
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="formView" value="editor.structuredXhtmlView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
   <bean id="editor.editHandler"
         class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="resourceManager" />

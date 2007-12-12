@@ -31,10 +31,7 @@
 package org.vortikal.text.htmlparser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.vortikal.text.html.EnclosingHtmlContent;
 import org.vortikal.text.html.HtmlAttribute;
@@ -44,19 +41,15 @@ import org.vortikal.text.html.HtmlNodeFilter;
 
 
 public class HtmlElementImpl implements HtmlElement {
-    private boolean empty;
     private boolean xhtml;
 
     private String name;
     private List<HtmlAttribute> attributes = new ArrayList<HtmlAttribute>();
     private List<HtmlContent> contentList = new ArrayList<HtmlContent>();
-    private List<HtmlElement> childElements = new ArrayList<HtmlElement>();
-    private Map<String, List<HtmlElement>> namedChildMap = new HashMap<String, List<HtmlElement>>();
         
-    public HtmlElementImpl(String name, boolean empty, boolean xhtml) {
+    public HtmlElementImpl(String name, boolean xhtml) {
         this.name = name;
         this.xhtml = xhtml;
-        this.empty = empty;
     }
 
     public String getName() {
@@ -64,14 +57,30 @@ public class HtmlElementImpl implements HtmlElement {
     }
         
     public HtmlElement[] getChildElements() {
-        return this.childElements.toArray(
-            new HtmlElement[this.childElements.size()]);
+        List<HtmlElement> childElements = getChildElementsInternal();
+        return childElements.toArray(
+            new HtmlElement[childElements.size()]);
+    }
+    
+    private List<HtmlElement> getChildElementsInternal() {
+        List<HtmlElement> result = new ArrayList<HtmlElement>();
+        for (HtmlContent c : this.contentList) {
+            if (c instanceof HtmlElement) {
+                result.add((HtmlElement)c);
+            }
+        }
+        return result;
     }
         
     public HtmlElement[] getChildElements(String name) {
-        List<HtmlElement> list = this.namedChildMap.get(name.toLowerCase());
-        if (list == null) {
-            list = new ArrayList<HtmlElement>();
+        List<HtmlElement> list = new ArrayList<HtmlElement>();
+        for (HtmlContent c : this.contentList) {
+            if (c instanceof HtmlElement) {
+                HtmlElement e = (HtmlElement) c;
+                if (e.getName().toLowerCase().equals(name)) {
+                    list.add((HtmlElement) c);
+                }
+            }
         }
         return list.toArray(new HtmlElement[list.size()]);
     }
@@ -82,18 +91,15 @@ public class HtmlElementImpl implements HtmlElement {
     }
     
     public void setChildNodes(HtmlContent[] childNodes) {
-        this.namedChildMap = new HashMap<String, List<HtmlElement>>();
         this.contentList = new ArrayList<HtmlContent>();
-        this.childElements = new ArrayList<HtmlElement>();
-        for (int i = 0; i < childNodes.length; i++) {
-            addContent(childNodes[i]);
+        for (HtmlContent c : childNodes) {
+            addContent(c);
         }
     }
 
     public HtmlContent[] getChildNodes(HtmlNodeFilter filter) {
         List<HtmlContent> list = new ArrayList<HtmlContent>();
-        for (int i = 0; i < this.contentList.size(); i++) {
-            HtmlContent content = this.contentList.get(i);
+        for (HtmlContent content : this.contentList) {
             content = filter.filterNode(content);
             if (content != null) {
                 list.add(content);
@@ -104,19 +110,18 @@ public class HtmlElementImpl implements HtmlElement {
     
 
     public void addContent(HtmlContent child) {
-        this.contentList.add(child);
-        if (child instanceof HtmlElement) {
-            HtmlElement theChild = (HtmlElement) child;
-            this.childElements.add(theChild);
-            List<HtmlElement> childList = this.namedChildMap.get(theChild.getName().toLowerCase());
-            if (childList == null) {
-                childList = new ArrayList<HtmlElement>();
-                this.namedChildMap.put(theChild.getName().toLowerCase(), childList);
-            }
-            childList.add(theChild);
-        }
+        addContent(this.contentList.size(), child);
+    }
+    
+    public void addContent(int pos, HtmlContent child) {
+        this.contentList.add(pos, child);
     }
 
+    public void removeContent(HtmlContent child) {
+        this.contentList.remove(child);
+    }
+
+    
     public HtmlAttribute[] getAttributes() {
         return this.attributes.toArray(
             new HtmlAttribute[this.attributes.size()]);
@@ -137,8 +142,7 @@ public class HtmlElementImpl implements HtmlElement {
 
     public String getContent() {
         StringBuilder sb = new StringBuilder();
-        for (Iterator i = this.contentList.iterator(); i.hasNext();) {
-            HtmlContent child = (HtmlContent) i.next();
+        for (HtmlContent child : this.contentList) {
             if (child instanceof EnclosingHtmlContent) {
                 sb.append(((EnclosingHtmlContent) child).getEnclosedContent());
             } else {
@@ -150,8 +154,7 @@ public class HtmlElementImpl implements HtmlElement {
         
     public String getContent(HtmlNodeFilter filter) {
         StringBuilder sb = new StringBuilder();
-        for (Iterator i = this.contentList.iterator(); i.hasNext();) {
-            HtmlContent child = (HtmlContent) i.next();
+        for (HtmlContent child : this.contentList) {
             child = filter.filterNode(child);
             if (child != null) {
                 if (child instanceof HtmlElement) {
@@ -171,8 +174,7 @@ public class HtmlElementImpl implements HtmlElement {
         sb.append("<").append(this.name);
         HtmlAttribute[] attributes = getAttributes();
         if (attributes.length > 0) {
-            for (int i = 0; i < attributes.length; i++) {
-                HtmlAttribute attr = attributes[i];
+            for (HtmlAttribute attr : attributes) {
                 if (attr.hasValue()) {
                     sb.append(" ").append(attr.getName()).append("=\"");
                     sb.append(attr.getValue()).append("\"");
@@ -183,10 +185,10 @@ public class HtmlElementImpl implements HtmlElement {
                 }
             }
         }
-        if (this.empty && this.xhtml) {
+        if (this.contentList.isEmpty() && this.xhtml) {
             sb.append("/>");
         }
-        else if (this.empty) {
+        else if (this.contentList.isEmpty()) {
             sb.append(">");
         } else {
             sb.append(">").append(getContent());
@@ -200,8 +202,7 @@ public class HtmlElementImpl implements HtmlElement {
         sb.append("<").append(this.name);
         HtmlAttribute[] attributes = getAttributes();
         if (attributes.length > 0) {
-            for (int i = 0; i < attributes.length; i++) {
-                HtmlAttribute attr = attributes[i];
+            for (HtmlAttribute attr : attributes) {
                 if (attr.hasValue()) {
                     sb.append(" ").append(attr.getName()).append("=\"");
                     sb.append(attr.getValue()).append("\"");
@@ -212,10 +213,10 @@ public class HtmlElementImpl implements HtmlElement {
                 }
             }
         }
-        if (this.empty && this.xhtml) {
+        if (this.contentList.isEmpty() && this.xhtml) {
             sb.append("/>");
         }
-        else if (this.empty) {
+        else if (this.contentList.isEmpty()) {
             sb.append(">");
         } else {
             sb.append(">").append(getContent(filter));
@@ -227,5 +228,6 @@ public class HtmlElementImpl implements HtmlElement {
     public String toString() {
         return this.name;
     }
+
         
 }

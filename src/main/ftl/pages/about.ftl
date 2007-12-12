@@ -216,6 +216,9 @@
     <!-- Plaintext Edit on managed xml -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'plaintext-edit' />
 
+    <!-- Plaintext Edit on managed xml -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'xhtml10-type' />
+
   </#if>
   </table>
   </div>

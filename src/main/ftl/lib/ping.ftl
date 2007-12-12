@@ -44,7 +44,7 @@
         }
      }
 
-     ping();
+     setTimeout('ping()', intervalSec * 1000);
   // -->
   </script>
 </#macro>

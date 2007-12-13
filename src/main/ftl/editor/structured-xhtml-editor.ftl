@@ -15,7 +15,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
-
     <title>Editor</title>
     <@fck.declareEditor />
     <@ping.ping url=pingURL['url'] interval=300 />
@@ -34,9 +33,19 @@
   </head>
   <body>
     <form method="POST" action="#submit">
-      <div class="htmlTitle">
-        <label for="title"><@vrtx.msg code="fck.documentTitle" default="Document title" /></label> 
-        <input type="text" name="resource.userTitle" size="40" value="${userTitle}" />
+
+      <#-- Preserve properties not edited here: -->
+      <#list resource.contentProperties + resource.extraContentProperties as propDef>
+        <#if propDef.name != 'userTitle'>
+          <input type="hidden" name="resource.${propDef.name}"  value="${resource.getValue(propDef)?html}" /> 
+        </#if>
+      </#list>
+
+      <div class="properties">
+        <div class="htmlTitle property-item">
+          <label for="title"><@vrtx.msg code="fck.documentTitle" default="Document title" /></label> 
+          <input type="text" name="resource.userTitle" size="40" value="${userTitle}" />
+        </div>
       </div>
 
       <div class="html-content">

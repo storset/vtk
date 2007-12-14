@@ -308,6 +308,13 @@
 
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="documentURL" />
+          <property name="service" ref="viewService" />
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
           <property name="modelName" value="fckSource" />
           <property name="service" ref="fckeditor.getSourceService" />
           <property name="urlName" value="getURL" />
@@ -333,8 +340,31 @@
           <property name="path" value="${fckeditor.browse.base}" />
         </bean>
 
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="editor.editCSSURLs" />
+            </map>
+          </property>
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+            </map>
+          </property>
+        </bean>
+
       </list>
     </property>
+
+  </bean>
+
+  <bean id="fckeditor.fckEditorAreaCSSURL" class="java.lang.String">
+    <constructor-arg>
+      <value>${cssBaseURL}/fck_editorarea.css</value>
+    </constructor-arg>
   </bean>
 
   <bean id="fckeditor.browseView" parent="freemarkerView">
@@ -360,6 +390,7 @@
       <list>
         <value>${cssBaseURL}/basic.css</value>
         <value>${cssBaseURL}/tabs.css</value>
+        <value>${cssBaseURL}/editor.css</value>
       </list>
     </constructor-arg>
   </bean>

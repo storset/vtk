@@ -67,12 +67,16 @@
           editor.Config['FullPage'] = ${fullpage?string};
           editor.Config['ToolbarCanCollapse'] = ${collapseToolbar?string};
           editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
+          editor.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL?html}';
           editor.Config.LinkBrowser = ${enableFileBrowsers?string};
           editor.Config.LinkUpload = ${enableFileBrowsers?string};
           editor.Config.ImageBrowser = ${enableFileBrowsers?string};
           editor.Config.ImageUpload = ${enableFileBrowsers?string};
           editor.Config.FlashBrowser = ${enableFileBrowsers?string};
           editor.Config.FlashUpload = ${enableFileBrowsers?string};
+          editor.Config.BaseHref = '${fckeditorBase.documentURL?html}';
+
+
 
          <#if enableFileBrowsers && !fckBrowse?exists>
            <#stop "parameter 'enableFileBrowsers' requires that model attribute 'fckBrowse' exists">

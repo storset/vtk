@@ -51,9 +51,10 @@
 	 fck.Config.ForcePasteAsPlainText = false;
 
          fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
+         fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';
 
 	 <#if fckEditorAreaCSSURL?exists>
-           fck.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL[0]?html}';
+           fck.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL?html}';
 	 </#if>
 
          fck.ReplaceTextarea();

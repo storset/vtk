@@ -140,6 +140,13 @@
           <property name="urlName" value="url" />
         </bean>
 
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="documentURL" />
+          <property name="service" ref="viewService" />
+        </bean>
+
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="modelName" value="fckBrowse" />
           <property name="service" ref="editor.browseService" />
@@ -208,11 +215,9 @@
     </constructor-arg>
   </bean>
 
-  <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
+  <bean id="editor.fckEditorAreaCSSURL" class="java.lang.String">
     <constructor-arg>
-      <list>
-        <value>${cssBaseURL}/fck_editorarea.css</value>
-      </list>
+      <value>${cssBaseURL}/fck_editorarea.css</value>
     </constructor-arg>
   </bean>
 

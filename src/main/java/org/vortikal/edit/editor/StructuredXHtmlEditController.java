@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 public class StructuredXHtmlEditController extends ResourceEditController {
-
+    
     protected ServletRequestDataBinder createBinder(HttpServletRequest request,
             Object command) throws Exception {
         ResourceWrapperManager resourceManager = getResourceManager();

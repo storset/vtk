@@ -74,7 +74,7 @@
 
         <@fck.editorInTextarea textarea='resource.content'
                                fontFormats='p;h2;h3;h4;h5;h6;pre'
-                               fullpage=true enableFileBrowsers=true />
+                               fullpage=false enableFileBrowsers=true />
       </div>
       <script type="text/javascript" language="Javascript"><!--
         dirtyChecks['resource.content'] = function() {

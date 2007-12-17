@@ -47,12 +47,9 @@ public class StructuredXHtmlEditDataBinder extends ResourceEditDataBinder {
 
     protected void parseContent(ResourceEditWrapper command,
             String suppliedContent) {
-        HtmlPageParser parser = getHtmlParser();
-        String encoding = command.getCharacterEncoding();
+        super.parseContent(command, suppliedContent);
         try {
-            ByteArrayInputStream is = new ByteArrayInputStream(suppliedContent.getBytes(encoding));
-            HtmlPage page = parser.parse(is, encoding);
-
+            HtmlPage page = command.getContent();
             String userTitle = command.getValueByName("userTitle");
             if (userTitle != null) {
                 HtmlElement head = page.selectSingleElement("html.head");

@@ -31,9 +31,14 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,6 +63,12 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private Properties decorationConfiguration;
     private PropertyTypeDefinition parseableContentPropDef;
     private Repository repository; 
+    private Map<String, RegexpCacheItem> regexpCache = new HashMap<String, RegexpCacheItem>();
+    
+    private class RegexpCacheItem {
+        String string;
+        Pattern compiled;
+    }
     
     public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
@@ -87,18 +98,69 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
     }
 
-
-
     public DecorationDescriptor resolve(HttpServletRequest request,
                                         Locale locale) throws Exception {
 
-        boolean tidy = false;
-        boolean parse = true;
-        Template template = null;
-
+        InternalDescriptor descriptor = new InternalDescriptor();
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
+        String paramString = checkRegexpMatch(uri);
+        if (paramString == null) {
+            paramString = checkPathMatch(uri);
+        }
+        if (paramString != null) {
+            populateDescriptor(descriptor, locale, paramString);
+        }
+        
+        // Checking if there is a reason to parse content
+        if (this.parseableContentPropDef != null && descriptor.parse) {
+            Resource resource = null;
+            String token = SecurityContext.getSecurityContext().getToken();
+            try {
+                resource = this.repository.retrieve(token, uri, true);
+            } catch (Exception e) {
+                throw new RuntimeException("Unrecoverable error when decorating '" + uri + "'", e);
+            }
+            
+            if (resource.getProperty(this.parseableContentPropDef) == null) {
+                descriptor.parse = false;
+            }
+        }
+        return descriptor;
+    }
+
+    private String checkRegexpMatch(String uri) {
+        Enumeration<?> keys = this.decorationConfiguration.propertyNames();
+        while (keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            if (!key.startsWith("regexp[")) {
+                continue;
+            }
+
+            RegexpCacheItem cached = this.regexpCache.get(key);
+            if (cached == null || !cached.string.equals(key)) {
+                cached = new RegexpCacheItem();
+                cached.string = key;
+                cached.compiled = parseRegexpParam(key);
+                synchronized(this.regexpCache) {
+                    this.regexpCache.put(key, cached);
+                }
+            }
+            if (cached.compiled == null) {
+                continue;
+            }
+            
+            Matcher m = cached.compiled.matcher(uri);
+            if (m.find()) {
+                return this.decorationConfiguration.getProperty(key);
+            } 
+        }
+        return null;
+    }
+
+    private String checkPathMatch(String uri) {
         String[] path = URLUtil.splitUriIncrementally(uri);
         for (int i = path.length - 1; i >= 0; i--) {
             String prefix = path[i];
@@ -109,54 +171,47 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                     logger.debug("Found match for URI prefix '" + prefix
                                  + "': descriptor: '" + value + "'");
                 }
-                String[] params = value.split(",");
-                for (int j = 0; j < params.length; j++) {
-                    String param = params[j].trim();
-                    if ("NONE".equals(param)) {
-                        tidy = false;
-                        parse = false;
-                        template = null;
-                        break;
-                    } else if ("TIDY".equals(param)) {
-                        tidy = true;
-                    } else if ("NOPARSING".equals(param)) {
-                        parse = false;
-                    } else {
-                        template = resolveTemplateReference(locale, param);
-                    }
-                }
-                break;
+                return value;
             }
         }
-        
-        // Checking if there is a reason to parse content
-        if (this.parseableContentPropDef != null && parse) {
-            Resource resource = null;
-            String token = SecurityContext.getSecurityContext().getToken();
-            try {
-                resource = this.repository.retrieve(token, uri, true);
-            } catch (Exception e) {
-                throw new RuntimeException("Unrecovrable error when decorating '" + uri + "'", e);
-            }
-            
-            if (resource.getProperty(this.parseableContentPropDef) == null) {
-                parse = false;
-            }
-        }
-        
-        return new InternalDescriptor(tidy, parse, template);
+        return null;
     }
-
+    
+    // Example: regexp[/foo/bar/.*\.html]
+    private Pattern parseRegexpParam(String s) {
+        try {
+            String regexp = s.substring("regexp[".length(), s.length() - 1);
+            return Pattern.compile(regexp, Pattern.DOTALL);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+    
+    private void populateDescriptor(InternalDescriptor descriptor, Locale locale, 
+                                    String paramString) throws Exception {
+        String[] params = paramString.split(",");
+        for (String param : params) {
+            if ("NONE".equals(param)) {
+                descriptor.tidy = false;
+                descriptor.parse = false;
+                descriptor.template = null;
+                break;
+            } else if ("TIDY".equals(param)) {
+                descriptor.tidy = true;
+            } else if ("NOPARSING".equals(param)) {
+                descriptor.parse = false;
+            } else {
+                descriptor.template = resolveTemplateReference(locale, param);
+            }
+        }
+        
+    }
+    
 
     private class InternalDescriptor implements DecorationDescriptor {
-        private boolean tidy, parse;
-        private Template template;
-
-        public InternalDescriptor(boolean tidy, boolean parse, Template template) {
-            this.tidy = tidy;
-            this.parse = parse;
-            this.template = template;
-        }
+        private boolean tidy = false;
+        private boolean parse = true;
+        private Template template = null;
         
         public boolean decorate() {
             return this.template != null || this.tidy || this.parse;

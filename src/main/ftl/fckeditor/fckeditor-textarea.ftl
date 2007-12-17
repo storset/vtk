@@ -63,11 +63,17 @@
           editor.BasePath = '${fckeditorBase.url?html}/';
           editor.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
           editor.ToolbarSet = '${toolbar}';
+          <#if enableFileBrowsers && !fckBrowse?exists>
+           <#stop "parameter 'enableFileBrowsers' requires that model attribute 'fckBrowse' exists">
+          <#elseif enableFileBrowsers>
+          var baseFolder = "${resourceContext.parentURI?html}";
+          editor.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+          editor.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+          editor.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+          </#if>
           editor.Config['FontFormats'] = '${fontFormats}';
           editor.Config['FullPage'] = ${fullpage?string};
           editor.Config['ToolbarCanCollapse'] = ${collapseToolbar?string};
-          editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
-          editor.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL?html}';
           editor.Config.LinkBrowser = ${enableFileBrowsers?string};
           editor.Config.LinkUpload = ${enableFileBrowsers?string};
           editor.Config.ImageBrowser = ${enableFileBrowsers?string};
@@ -75,17 +81,10 @@
           editor.Config.FlashBrowser = ${enableFileBrowsers?string};
           editor.Config.FlashUpload = ${enableFileBrowsers?string};
           editor.Config.BaseHref = '${fckeditorBase.documentURL?html}';
+          editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
+          editor.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL?html}';
 
 
-
-         <#if enableFileBrowsers && !fckBrowse?exists>
-           <#stop "parameter 'enableFileBrowsers' requires that model attribute 'fckBrowse' exists">
-         <#elseif enableFileBrowsers>
-           var baseFolder = "${resourceContext.parentURI?html}";
-           editor.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-           editor.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-           editor.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
-         </#if>
           editor.ReplaceTextarea();
 
           initialized = true;

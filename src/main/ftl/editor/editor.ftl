@@ -45,7 +45,11 @@
          // Misc setup
          fck.Config['FullPage'] = false;
          fck.Config['ToolbarCanCollapse'] = false;
-         fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
+         <#if resource.resourceTypeDefinition.name == 'xhtml10trans'>
+           fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
+         <#else>
+           fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
+         </#if>
 
          fck.Config.DisableFFTableHandles = false;
 	 fck.Config.ForcePasteAsPlainText = false;

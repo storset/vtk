@@ -31,13 +31,13 @@
     </property>
   </bean>
 
-  <bean id="editor.structuredXhtmlEditService" parent="editor.abstractEditService">
+  <bean id="editor.unstructuredXhtmlEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
         <ref bean="resourceTypeIsXhtmlTrans" />
       </list>
     </property>
-    <property name="handler" ref="editor.structuredXhtmlEditHandler" />
+    <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
   </bean>
 
   <bean id="editor.documentEditService" parent="editor.abstractEditService">
@@ -106,7 +106,6 @@
     <property name="views">
       <map>
         <entry key="editor.editView" value-ref="editor.editView" />
-        <entry key="editor.structuredXhtmlView" value-ref="editor.structuredXhtmlView" />
       </map>
     </property>
   </bean>
@@ -182,11 +181,6 @@
     </property>
   </bean>
 
-  <bean id="editor.structuredXhtmlView" parent="editor.editView">
-    <property name="url" value="editor/structured-xhtml-editor.ftl" />
-  </bean>
-
-
   <bean id="editor.browseView" parent="freemarkerView">
     <property name="url" value="fckeditor/browse.ftl" />
     <property name="contentType" value="text/xml;charset=utf-8" />
@@ -221,12 +215,12 @@
     </constructor-arg>
   </bean>
 
-  <!-- Editor main controller -->
+  <!-- Editor main controllers -->
   
-  <bean id="editor.structuredXhtmlEditHandler"
-        class="org.vortikal.edit.editor.StructuredXHtmlEditController">
-    <property name="resourceManager" ref="resourceManager" />
-    <property name="formView" value="editor.structuredXhtmlView" />
+  <bean id="editor.unstructuredXhtmlEditHandler"
+        class="org.vortikal.edit.editor.UnstructuredXHtmlEditController">
+    <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
+    <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
 
@@ -236,5 +230,44 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
+
+  <bean id="editor.unstructuredXhtmlResourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="contentProperties">
+          <list>
+            <ref bean="titlePropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- Experimental "structured XHTML editor" (with managed title and h1:
+
+  <bean id="editor.structuredXhtmlEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsXhtmlTrans" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.structuredXhtmlEditHandler" />
+  </bean>
+  <bean id="editor.structuredXhtmlEditHandler"
+        class="org.vortikal.edit.editor.StructuredXHtmlEditController">
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="formView" value="editor.structuredXhtmlView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="editor.structuredXhtmlView" parent="editor.editView">
+    <property name="url" value="editor/structured-xhtml-editor.ftl" />
+  </bean>
+  -->
 
 </beans>

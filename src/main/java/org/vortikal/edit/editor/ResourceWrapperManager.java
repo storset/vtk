@@ -158,4 +158,8 @@ public class ResourceWrapperManager {
         this.repository.lock(token, uri, principal.getQualifiedName(), "0", 600, null);
     }
 
+    public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {
+        this.editPropertyProvider = editPropertyProvider;
+    }
+
 }

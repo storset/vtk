@@ -208,7 +208,7 @@
       
       <div class="${name} property-item">
       <label for="resource.${name}">${localizedName}</label> 
-      <#if type = 'HTML' && name != 'userTitle'>
+      <#if type = 'HTML' && name != 'userTitle' && name != 'title'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
 

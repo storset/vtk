@@ -17,13 +17,13 @@
 <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
 <#if prop != "">
   <#local type = prop.definition.type />
-  <#if type = 'DATE' || type = 'TIMESTAMP'>
+<#--  <#if type = 'DATE' || type = 'TIMESTAMP'>-->
     <#local locale = springMacroRequestContext.getLocale() />
     <#return prop.getFormattedValue(format, locale) />
-  <#else>
+<#--  <#else>
     <#return prop.formattedValue />
   </#if>
-
+-->
 </#if>
 <#return "" />
 </#function>
@@ -41,9 +41,12 @@
 </#function>
 
 
-<#assign title = propValue("userTitle")?html />
+<#assign title = propValue("userTitle", resource, "flattened") />
+<#assign h1 = propValue("userTitle") />
+
 <#if title == "">
   <#assign title = vrtx.getMsg("article.missingTitle") />
+  <#assign h1 = title />
 </#if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -54,7 +57,7 @@
     </#if>
 </head>
   <body>
-    <h1>${title}</h1>
+    <h1>${h1}</h1>
 
     <#-- Image --> 
 

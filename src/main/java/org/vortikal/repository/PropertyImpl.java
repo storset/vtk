@@ -42,6 +42,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.repository.resourcetype.ValueSeparator;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
@@ -384,12 +385,15 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
 
         ValueFormatter formatter = this.propertyTypeDefinition.getValueFormatter();
+        ValueSeparator separator = this.propertyTypeDefinition.getValueSeparator();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.values.length; i++) {
             Value value = this.values[i];
             sb.append(formatter.valueToString(value, format, locale));
-            if (i < this.values.length -1) {
-                sb.append(", ");
+            if (i < this.values.length - 2) {
+                sb.append(separator.getIntermediateSeparator(value, locale));
+            } else if (i == this.values.length - 2) {
+                sb.append(separator.getFinalSeparator(value, locale));
             }
         } 
         return sb.toString();

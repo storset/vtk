@@ -55,7 +55,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private String name;
     private Type type = PropertyType.Type.STRING;
     private ValueFormatter valueFormatter;
-
+    private ValueSeparator valueSeparator;
+    
     private boolean multiple = false;
     private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false;
@@ -175,6 +176,9 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
             } else {
                 this.valueFormatter = this.type.getDefaultFormatter();
             }
+        }
+        if (this.valueSeparator == null) {
+            this.valueSeparator = new CommaValueSeparator();
         }
     }
     
@@ -328,5 +332,13 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
             return this.typeLocalizationProvider.getPropertyDescription(this, locale);
         } 
         return null;
+    }
+
+    public ValueSeparator getValueSeparator() {
+        return this.valueSeparator;
+    }
+
+    public void setValueSeparator(ValueSeparator valueSeparator) {
+        this.valueSeparator = valueSeparator;
     }
 }

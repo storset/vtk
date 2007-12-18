@@ -5,7 +5,7 @@
 
   <bean id="documentResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="article"/>
+    <property name="name" value="document"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
     <property name="assertions">
@@ -86,6 +86,11 @@
     <property name="multiple" value="true"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
+    <property name="valueSeparator" ref="authorsValueSeparator" />
+  </bean>
+
+  <bean id="authorsValueSeparator" class="org.vortikal.repository.resourcetype.EnumerationValueSeparator">
+    <constructor-arg value="vortikal.beans.vhost.resource-types.authors" />
   </bean>
 
   <bean id="publishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">

@@ -115,7 +115,10 @@
     <#local value = resource.getValue(propDef) />
     <#local type = propDef.type />
     <#if type = 'HTML'>
-      if (FCKeditorAPI.GetInstance('resource.${name}').IsDirty()) {
+      var fck = FCKeditorAPI.GetInstance('resource.${name}');
+      if (fck && fck.IsDirty()) {
+        return true;
+      } else if ('${value}' != document.getElementById('resource.${name}').value) {
         return true;
       }
     <#elseif type = 'DATE' || type = 'TIMESTAMP'>
@@ -181,9 +184,12 @@
    </#if-->
 
     function doConfirm(event) {
+
+    var f = propChange();
       if (!needToConfirm) {
         return;
       }
+
       var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
       if (contentChange) {
         return 'You have unsaved changes. Are you sure you want to leave this page?';
@@ -191,7 +197,6 @@
     }
 
     window.onbeforeunload = doConfirm;
-
   </script>
 </#macro>
 

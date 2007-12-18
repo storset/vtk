@@ -91,7 +91,7 @@ public interface PropertyTypeDefinition {
 
     public ValueFormatter getValueFormatter();
     
-    public ValueSeparator getValueSeparator();
+    public ValueSeparator getValueSeparator(String format);
     
     
     /**

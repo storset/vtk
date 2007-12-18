@@ -137,7 +137,7 @@
     </#if>
     <#-- Authors and published date --> 
 
-    <#assign authors = propValue("authors") />
+    <#assign authors = propValue("authors", resource, "enumerated") />
     <#assign published = propValue("published-date") />
     <#if authors != "" || published != "">
       <div class="vrtx-byline">

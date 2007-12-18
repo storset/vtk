@@ -197,8 +197,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getDescription(locale);
     }
 
-    public ValueSeparator getValueSeparator() {
-        return this.overriddenPropDef.getValueSeparator();
+    public ValueSeparator getValueSeparator(String format) {
+        return this.overriddenPropDef.getValueSeparator(format);
     }
 
 }

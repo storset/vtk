@@ -32,7 +32,9 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Namespace;
@@ -55,7 +57,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private String name;
     private Type type = PropertyType.Type.STRING;
     private ValueFormatter valueFormatter;
-    private ValueSeparator valueSeparator;
+    private ValueSeparator defaultValueSeparator = new CommaValueSeparator();
+    private Map<String, ValueSeparator> valueSeparators = new HashMap<String, ValueSeparator>();
     
     private boolean multiple = false;
     private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
@@ -176,9 +179,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
             } else {
                 this.valueFormatter = this.type.getDefaultFormatter();
             }
-        }
-        if (this.valueSeparator == null) {
-            this.valueSeparator = new CommaValueSeparator();
         }
     }
     
@@ -334,11 +334,16 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return null;
     }
 
-    public ValueSeparator getValueSeparator() {
-        return this.valueSeparator;
+    public ValueSeparator getValueSeparator(String format) {
+        ValueSeparator separator = this.valueSeparators.get(format);
+        if (separator != null) {
+            return separator;
+        }
+        return this.defaultValueSeparator;
     }
 
-    public void setValueSeparator(ValueSeparator valueSeparator) {
-        this.valueSeparator = valueSeparator;
+
+    public void setValueSeparators(Map<String, ValueSeparator> valueSeparators) {
+        this.valueSeparators = valueSeparators;
     }
 }

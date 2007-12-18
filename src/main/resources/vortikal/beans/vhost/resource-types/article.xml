@@ -86,7 +86,11 @@
     <property name="multiple" value="true"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
-    <property name="valueSeparator" ref="authorsValueSeparator" />
+    <property name="valueSeparators">
+      <map>
+        <entry key="enumerated" value-ref="authorsValueSeparator" />
+      </map>
+    </property>
   </bean>
 
   <bean id="authorsValueSeparator" class="org.vortikal.repository.resourcetype.EnumerationValueSeparator">

@@ -385,7 +385,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         }
 
         ValueFormatter formatter = this.propertyTypeDefinition.getValueFormatter();
-        ValueSeparator separator = this.propertyTypeDefinition.getValueSeparator();
+        ValueSeparator separator = this.propertyTypeDefinition.getValueSeparator(format);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.values.length; i++) {
             Value value = this.values[i];

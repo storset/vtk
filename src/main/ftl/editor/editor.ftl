@@ -81,6 +81,9 @@
       <@vrtx.msg code="editor.edit" args=[resource.resourceTypeDefinition.getLocalizedName(springMacroRequestContext.getLocale())?lower_case] />
     </#assign>
     <h2>${header}</h2>
+
+    <a style="float: right; font-size: 80%;" href="${editorHelpURL}" target="_sweet_new"><@vrtx.msg code="editor.help"/></a>
+
     <form id="form" class="editor" action="" method="POST">
       <@handleProps />
 

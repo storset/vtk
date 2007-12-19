@@ -135,7 +135,7 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         if (html instanceof HtmlElement) {
             rootElement = (HtmlElement) html;
         } else {
-            rootElement = new HtmlElementImpl("html", xhtml);
+            rootElement = new HtmlElementImpl("html", xhtml, false);
             rootElement.setChildNodes(new HtmlContent[]{html});
         }
         return new HtmlPageImpl(rootElement, doctype, xhtml);
@@ -216,8 +216,8 @@ public class HtmlPageParserImpl implements HtmlPageParser {
                 name = name.substring(0, name.length() - 1);
             }
 
-            //boolean empty = tag.isEmptyXmlTag() || (tag instanceof EmptyTag);
-            HtmlElementImpl element = new HtmlElementImpl(name, xhtml);
+            boolean empty = tag.isEmptyXmlTag() || (tag instanceof EmptyTag);
+            HtmlElementImpl element = new HtmlElementImpl(name, xhtml, empty);
 
             if (tag.isEndTag()) {
                 return null;

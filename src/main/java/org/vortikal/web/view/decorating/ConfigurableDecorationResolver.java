@@ -171,7 +171,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                     logger.debug("Found match for URI prefix '" + prefix
                                  + "': descriptor: '" + value + "'");
                 }
-                return value;
+                return value.trim();
             }
         }
         return null;
@@ -191,6 +191,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                                     String paramString) throws Exception {
         String[] params = paramString.split(",");
         for (String param : params) {
+            param = param.trim();
             if ("NONE".equals(param)) {
                 descriptor.tidy = false;
                 descriptor.parse = false;

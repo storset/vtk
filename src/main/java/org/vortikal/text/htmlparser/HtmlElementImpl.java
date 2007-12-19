@@ -44,12 +44,14 @@ public class HtmlElementImpl implements HtmlElement {
     private boolean xhtml;
 
     private String name;
+    private boolean emptyTag = false;
     private List<HtmlAttribute> attributes = new ArrayList<HtmlAttribute>();
     private List<HtmlContent> contentList = new ArrayList<HtmlContent>();
         
-    public HtmlElementImpl(String name, boolean xhtml) {
+    public HtmlElementImpl(String name, boolean xhtml, boolean emptyTag) {
         this.name = name;
         this.xhtml = xhtml;
+        this.emptyTag = emptyTag;
     }
 
     public String getName() {
@@ -185,10 +187,10 @@ public class HtmlElementImpl implements HtmlElement {
                 }
             }
         }
-        if (this.contentList.isEmpty() && this.xhtml) {
+        if (this.contentList.isEmpty() && this.emptyTag && this.xhtml) {
             sb.append("/>");
         }
-        else if (this.contentList.isEmpty()) {
+        else if (this.contentList.isEmpty() && this.emptyTag) {
             sb.append(">");
         } else {
             sb.append(">").append(getContent());
@@ -213,10 +215,10 @@ public class HtmlElementImpl implements HtmlElement {
                 }
             }
         }
-        if (this.contentList.isEmpty() && this.xhtml) {
+        if (this.contentList.isEmpty() && this.emptyTag && this.xhtml) {
             sb.append("/>");
         }
-        else if (this.contentList.isEmpty()) {
+        else if (this.contentList.isEmpty() && this.emptyTag) {
             sb.append(">");
         } else {
             sb.append(">").append(getContent(filter));

@@ -116,7 +116,7 @@ public class HtmlPageImpl implements HtmlPage {
     }
 
     public HtmlElement createElement(String name) {
-        return new HtmlElementImpl(name, this.xhtml);
+        return new HtmlElementImpl(name, this.xhtml, false);
     }
 
     public HtmlText createTextNode(String content) {

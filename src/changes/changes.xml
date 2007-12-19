@@ -8,9 +8,15 @@
 
   <body>
 
-    <release version="0.4.1-SNAPSHOT" date="In SVN" description="Release 0.4.1">
+    <release version="0.4.1.1-SNAPSHOT" date="In SVN" description="Release 0.4.1.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="fix">
+        Minor bugixes
+      </action>
+    </release>
+
+    <release version="0.4.1" date="2007-12-19" description="Release 0.4.1">
       <action type="update">
         Upgraded FCKEditor to version 2.5
       </action>

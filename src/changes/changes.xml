@@ -14,6 +14,12 @@
       <action type="update">
         Upgraded FCKEditor to version 2.5
       </action>
+      <action type="fix">
+        FCKeditor: Various minor fixes
+      </action>
+      <action type="fix">
+        Decorating: Various minor fixes
+      </action>
     </release>
 
     <release version="0.4.0.1" date="2007-11-29" description="Release 0.4.0.1">

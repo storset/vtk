@@ -4,12 +4,12 @@
 <beans>
 
   <!--
-      Required by both fckeditor.xml and commenting.xml (and any beans
+      Required by both editor.xml and commenting.xml (and any beans
       that use either the full FCKeditor or the textarea-only
       variant).
   -->
   <bean id="fckeditor.distStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${fckeditor.resources.base}" />
+    <property name="uriPrefix" value="${editor.fck.resources}" />
     <property name="resourceLocation" value="classpath:///vortikal/resources/fckeditor-build" />
   </bean>
 

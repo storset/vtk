@@ -38,7 +38,7 @@
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider" parent="requestLocalRepositoryAware">
           <property name="service" ref="viewService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${fckeditor.resources.base}" />
+          <property name="appendPath" value="${editor.fck.resources}" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="url" />
         </bean>

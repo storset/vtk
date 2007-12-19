@@ -81,7 +81,7 @@
 
   <bean id="editor.browseUriAssertion"
         class="org.vortikal.web.service.RequestURIRegexpAssertion">
-    <property name="pattern" value="${fckeditor.browse.base}" />
+    <property name="pattern" value="${editor.fck.browse}" />
   </bean>
 
   <bean id="editor.modeParameterAssertion"
@@ -135,7 +135,7 @@
           <property name="modelName" value="fckeditorBase" />
           <property name="service" ref="viewService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${fckeditor.resources.base}" />
+          <property name="appendPath" value="${editor.fck.resources}" />
           <property name="urlName" value="url" />
         </bean>
 
@@ -149,7 +149,7 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="modelName" value="fckBrowse" />
           <property name="service" ref="editor.browseService" />
-          <property name="path" value="${fckeditor.browse.base}" />
+          <property name="path" value="${editor.fck.browse}" />
         </bean>
 
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
@@ -165,6 +165,7 @@
           <property name="modelDataMap">
             <map>
               <entry key="cssURLs" value-ref="editor.editCSSURLs" />
+              <entry key="editorHelpURL" value="${editor.helpURL}" />
             </map>
           </property>
         </bean>
@@ -241,7 +242,7 @@
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="contentProperties">
           <list>
-            <ref bean="titlePropDef" />
+            <ref bean="htmlTitlePropDef" />
           </list>
         </property>
       </bean>

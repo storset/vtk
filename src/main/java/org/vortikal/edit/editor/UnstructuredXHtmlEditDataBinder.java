@@ -51,7 +51,7 @@ public class UnstructuredXHtmlEditDataBinder extends ResourceEditDataBinder {
         try {
             HtmlPage page = command.getContent();
             
-            String inputTitle = command.getValueByName("title");
+            String inputTitle = command.getValueByName("htmlTitle");
             if (inputTitle != null) {
                 HtmlElement head = page.selectSingleElement("html.head");
                 HtmlElement title = page.selectSingleElement("html.head.title");

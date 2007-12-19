@@ -118,7 +118,7 @@
       var fck = FCKeditorAPI.GetInstance('resource.${name}');
       if (fck && fck.IsDirty()) {
         return true;
-      } else if ('${value}' != document.getElementById('resource.${name}').value) {
+      } else if ('${value?js_string}' != document.getElementById('resource.${name}').value) {
         return true;
       }
     <#elseif type = 'DATE' || type = 'TIMESTAMP'>
@@ -147,7 +147,7 @@
         return true;
       }            
     <#else>
-      if ('${value}' != document.getElementById('resource.${name}').value) {
+      if ('${value?js_string}' != document.getElementById('resource.${name}').value) {
         return true;
       }
     </#if>

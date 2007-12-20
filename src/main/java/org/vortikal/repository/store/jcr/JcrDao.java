@@ -74,7 +74,7 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.compact.CompactNodeTypeDefReader;
 import org.apache.jackrabbit.core.nodetype.compact.ParseException;
-import org.apache.jackrabbit.namespace.NamespaceMapping;
+import org.apache.jackrabbit.spi.commons.namespace.NamespaceMapping;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AclImpl;

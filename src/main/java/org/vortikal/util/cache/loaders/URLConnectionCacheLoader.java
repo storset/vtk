@@ -30,6 +30,7 @@
  */
 package org.vortikal.util.cache.loaders;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -76,7 +77,11 @@ public abstract class URLConnectionCacheLoader <O>
         String address = url.toString();
         URLConnection connection = new URL(address).openConnection();
         setConnectionProperties(connection);
-        return handleConnection(connection);        
+        try {
+            return handleConnection(connection);
+        } catch (FileNotFoundException e) {
+            return null;
+        }
     }
 
 

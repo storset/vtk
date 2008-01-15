@@ -167,7 +167,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
             cacheItem(identifier);
         }
         item = this.cache.get(identifier);
-        if (item.getTimestamp().getTime() + this.cacheTimeout >= System.currentTimeMillis()) {
+        if (item.getTimestamp().getTime() + this.cacheTimeout <= System.currentTimeMillis()) {
             if (this.asynchronousRefresh) {
                 triggerAsynchronousRefresh(identifier);
             } else {
@@ -188,7 +188,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         long now = System.currentTimeMillis();
 
         if (item == null ||
-            (item.getTimestamp().getTime() + this.cacheTimeout >= now)) {
+            (item.getTimestamp().getTime() + this.cacheTimeout <= now)) {
             V object = this.loader.load(identifier);
             this.cache.put(identifier, new Item(identifier, object));
         }
@@ -254,7 +254,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         for (Map.Entry<K, Item> entry: this.cache.entrySet()) {
             K identifier = entry.getKey();
             Item item =  entry.getValue();
-            long now = new Date().getTime();
+            long now = System.currentTimeMillis();
             if (item.getTimestamp().getTime() + this.cacheTimeout < now) {
                 refreshList.add(identifier);
             }

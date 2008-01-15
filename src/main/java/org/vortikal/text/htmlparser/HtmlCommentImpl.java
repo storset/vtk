@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -37,12 +37,9 @@ import org.vortikal.text.html.HtmlText;
 public class HtmlCommentImpl implements HtmlComment {
 
     private HtmlText content;
-    private String completeContent;
-    private HtmlContent[] contentList;
 
     public HtmlCommentImpl(HtmlText content) {
         this.content = content;
-        this.contentList = new HtmlContent[] {this.content};
     }
 
     public String getContent() {
@@ -50,7 +47,7 @@ public class HtmlCommentImpl implements HtmlComment {
     }
     
     public String getEnclosedContent() {
-        return "<!--" + this.completeContent + "-->";
+        return "<!--" + this.content.getContent() + "-->";
     }
     
     public void setContent(HtmlText content) {
@@ -58,7 +55,6 @@ public class HtmlCommentImpl implements HtmlComment {
     }
     
     public HtmlContent[] getChildNodes() {
-        return this.contentList;
+        return new HtmlContent[] {this.content};
     }
-    
 }

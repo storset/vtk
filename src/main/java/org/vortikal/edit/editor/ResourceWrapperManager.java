@@ -100,12 +100,7 @@ public class ResourceWrapperManager {
         Resource resource = this.repository.retrieve(token, uri, forProcessing);
         if (resource.isOfType(this.contentResourceType)) {
             InputStream is = this.repository.getInputStream(token, uri, forProcessing);
-        
-            byte[] bytes = StreamUtil.readInputStream(is);
-        
-            //String content = new String(bytes, resource.getCharacterEncoding());
-            HtmlPage content = this.htmlParser.parse(new ByteArrayInputStream(bytes), resource.getCharacterEncoding());
-        
+            HtmlPage content = this.htmlParser.parse(is, resource.getCharacterEncoding());
             wrapper.setContent(content);
         }
         wrapper.setContentProperties(this.editPropertyProvider.getContentProperties(resource));

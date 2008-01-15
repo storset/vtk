@@ -23,8 +23,7 @@
     <@ping.ping url=pingURL['url'] interval=300 />
     <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
     <script type="text/javascript"><!--
-      function newEditor(name, completeEditor)
-      {
+      function newEditor(name, completeEditor) {
         var completeEditor = completeEditor != null ? completeEditor : false; 
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
@@ -63,10 +62,27 @@
 
          fck.ReplaceTextarea();
       }
+
       function FCKeditor_OnComplete(editorInstance) {
           // Get around bug: http://dev.fckeditor.net/ticket/1482
           editorInstance.ResetIsDirty();
+          if ('resource.content' == editorInstance.Name) {
+             enableSubmit();
+          }
       }
+
+      function disableSubmit() {
+           document.getElementById("saveButton").disabled = true;
+           document.getElementById("saveAndQuitButton").disabled = true;
+           return true;
+      }
+
+      function enableSubmit() {
+           document.getElementById("saveButton").disabled = false;
+           document.getElementById("saveAndQuitButton").disabled = false;
+           return true;
+      }
+
       // -->
     </script>
 
@@ -111,10 +127,14 @@
       </div>
 
       <div id="submit" class="save-cancel">
-       <input type="submit" onClick="cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
-       <input type="submit" onClick="performSave();" name="savequit" value="${vrtx.getMsg("editor.saveAndQuit")}">
+       <input type="submit" id="saveButton" onClick="cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+       <input type="submit" id="saveAndQuitButton" onClick="performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
        <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
+      <script type="text/javascript" language="Javascript"><!--
+         disableSubmit();
+        // -->
+      </script>
      </form>
     </body>
 </html>

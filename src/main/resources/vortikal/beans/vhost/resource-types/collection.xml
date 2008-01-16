@@ -54,6 +54,7 @@
     <property name="mandatory" value="false" />
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">

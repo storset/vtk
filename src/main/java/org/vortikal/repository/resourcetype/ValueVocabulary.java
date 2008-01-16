@@ -32,11 +32,13 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.List;
 
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Vocabulary;
 
-public class ValueVocabulary implements Vocabulary<Value> {
+public class ValueVocabulary implements Vocabulary<Value>, InitializingBean {
 
+    private PropertyType.Type type = PropertyType.Type.STRING;
+    private String messageSourceBaseName;
     private Value[] allowedValues;
     private ValueFormatter valueFormatter;
     
@@ -48,13 +50,23 @@ public class ValueVocabulary implements Vocabulary<Value> {
         this.allowedValues = allowedValues.toArray(new Value[allowedValues.size()]);
     }
 
+    
+    public void setMessageSourceBaseName(String messageSourceBaseName) {
+        this.messageSourceBaseName = messageSourceBaseName;
+    }
+
     public ValueFormatter getValueFormatter() {
         return this.valueFormatter;
     }
 
-    public void setMessageSourceBaseName(String messageSourceBaseName) {
-        this.valueFormatter = new MessageSourceValueFormatter(messageSourceBaseName);
-    }
     
+    public void setType(PropertyType.Type type) {
+        this.type = type;
+    }
 
+    public void afterPropertiesSet() throws Exception {
+        if (this.messageSourceBaseName != null) {
+            this.valueFormatter = new MessageSourceValueFormatter(this.messageSourceBaseName, this.type);
+        } 
+    }
 }

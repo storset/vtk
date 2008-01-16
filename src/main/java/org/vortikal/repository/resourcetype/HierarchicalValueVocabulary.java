@@ -36,11 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 
 public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value>, InitializingBean {
 
+    private PropertyType.Type type = PropertyType.Type.STRING;
+    private String messageSourceBaseName;
     private List<HierarchicalNode<Value>> nodes;
     private Map<Value, List<Value>> descendantsAndSelfMap = new HashMap<Value, List<Value>>();
     private Value[] allowedValues;
@@ -63,7 +65,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
     }
 
     public void setMessageSourceBaseName(String messageSourceBaseName) {
-        this.valueFormatter = new MessageSourceValueFormatter(messageSourceBaseName);
+        this.messageSourceBaseName = messageSourceBaseName;
     }
 
     public void setNodes(List<HierarchicalNode<Value>> nodes) {
@@ -79,6 +81,10 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
         for (HierarchicalNode<String> stringNode : stringNodes) {
             this.nodes.add(buildNode(stringNode));
         }
+    }
+
+    public void setType(PropertyType.Type type) {
+        this.type = type;
     }
 
     private HierarchicalNode<Value> buildNode(HierarchicalNode<String> stringNode) {
@@ -114,6 +120,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
         }
         
         this.allowedValues = values.toArray(new Value[values.size()]);
+        this.valueFormatter = new MessageSourceValueFormatter(messageSourceBaseName, this.type);
     }
 
     private List<Value> buildDescendants(HierarchicalNode<Value> node) {
@@ -132,4 +139,5 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
         
         return descendantsAndSelf;
     }
+
 }

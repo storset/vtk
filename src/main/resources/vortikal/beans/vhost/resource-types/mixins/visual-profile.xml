@@ -31,6 +31,7 @@
     <property name="mandatory" value="false" />
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
         <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.enabled" />
         <property name="values">
           <list>
@@ -49,6 +50,7 @@
     <property name="mandatory" value="false" />
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
         <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.custom" />
         <property name="values">
           <list>

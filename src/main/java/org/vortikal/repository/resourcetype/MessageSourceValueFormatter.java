@@ -41,14 +41,17 @@ public class MessageSourceValueFormatter implements ValueFormatter {
     private String baseName;
     private ReversableMessageSource messageSource;
     private String keyPrefix = "value.";
-    private String unsetKey = "unset"; 
+    private String unsetKey = "unset";
+    private PropertyType.Type type;
+
     
-    public MessageSourceValueFormatter(String messageSourceBaseName) {
+    public MessageSourceValueFormatter(String messageSourceBaseName, PropertyType.Type type) {
         this.baseName = messageSourceBaseName;
         ReversableMessageSource messageSource = new ReversableMessageSource();
         messageSource.setBasename(messageSourceBaseName);
 
         this.messageSource = messageSource;
+        this.type = type;
     }
 
     public String valueToString(Value value, String format, Locale locale)
@@ -69,7 +72,7 @@ public class MessageSourceValueFormatter implements ValueFormatter {
         }
         
         if (!"localized".equals(format)) {
-            return new Value(string);
+            return stringToValueInternal(string);
         }
         
         String value = this.messageSource.getKeyFromMessage(string, locale);
@@ -80,9 +83,18 @@ public class MessageSourceValueFormatter implements ValueFormatter {
         if (this.unsetKey.equals(value)) {
             return null;
         }
-        return new Value(value);
+        return stringToValueInternal(value);
     }
 
+    private Value stringToValueInternal(String stringValue) {
+        switch (this.type) {
+        case BOOLEAN:
+            return new Value(Boolean.parseBoolean(stringValue));
+
+        default:
+            return new Value(stringValue);
+        }
+    }
     
     private class ReversableMessageSource extends ResourceBundleMessageSource {
         

@@ -31,6 +31,8 @@
 package org.vortikal.web.view.freemarker;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -70,6 +72,7 @@ public class FreeMarkerView
         this.debug = debug;
     }
 
+    
     protected void doRender(Map model, HttpServletRequest request,
                             HttpServletResponse response) throws Exception {
         BufferedResponseWrapper wrapper = new BufferedResponseWrapper(response);
@@ -114,6 +117,30 @@ public class FreeMarkerView
 
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
+    }
+    
+    /**
+     * Allows to set a list whose elements are either reference data 
+     * providers or nested lists of reference data providers.
+     */
+    public void setReferenceDataProviderList(List<?> l) {
+        List<ReferenceDataProvider> result = new ArrayList<ReferenceDataProvider>();
+        addReferenceDataProviders(l, result);
+        if (result.size() > 0) {
+            this.referenceDataProviders = result.toArray(new ReferenceDataProvider[result.size()]);
+        }
+    }
+    
+    private void addReferenceDataProviders(List<?> source, List<ReferenceDataProvider> result) {
+        
+        for (Object object : source) {
+            if (object instanceof ReferenceDataProvider) {
+                ReferenceDataProvider r = (ReferenceDataProvider) object;
+                result.add(r);
+            } else if (object instanceof List<?>) {
+                addReferenceDataProviders((List<?>) object, result);
+            }
+        }
     }
 
     public String toString() {

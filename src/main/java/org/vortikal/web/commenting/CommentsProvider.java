@@ -33,10 +33,10 @@ package org.vortikal.web.commenting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
@@ -44,14 +44,14 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
-import org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent;
 
 
-public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorComponent {
+public class CommentsProvider implements ReferenceDataProvider {
     
     private Repository repository;
     private Service postCommentService;
@@ -91,23 +91,9 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
         this.formSessionAttributeName = formSessionAttributeName;
     }
     
-
-
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request,
-                                DecoratorResponse response) throws Exception {
-
-        super.processModel(model, request, response);
-
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
-        Service currentService = RequestContext.getRequestContext().getService();
-
-        model.put("principal", principal);
-
+    public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
         if (this.formSessionAttributeName != null) {
 
-            HttpServletRequest servletRequest = request.getServletRequest();
             if (servletRequest.getSession(false) != null) {
                 Map map = (Map) servletRequest.getSession(false).getAttribute(
                     this.formSessionAttributeName);
@@ -117,6 +103,13 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
                 }
             }
         }
+
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        String token = SecurityContext.getSecurityContext().getToken();
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        Service currentService = RequestContext.getRequestContext().getService();
+
+        model.put("principal", principal);
 
         Resource resource = repository.retrieve(token, uri, true);
         List<Comment> comments = repository.getComments(token, resource);
@@ -176,9 +169,9 @@ public class ListCommentsDecoratorComponent extends ViewRenderingDecoratorCompon
         }
     }
 
-
     protected Map<String, String> getParameterDescriptionsInternal() {
         return java.util.Collections.<String, String>emptyMap();
     }
+
 
 }

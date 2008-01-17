@@ -193,6 +193,8 @@
       </div>
     </#if>
 
+    <#-- Comments -->
+    <#include "/layouts/comments-view.ftl" />
   </body>
 </html>
 

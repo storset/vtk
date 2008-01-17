@@ -36,7 +36,9 @@
 
   <bean id="displayArticleView" parent="freemarkerView">
     <property name="url" value="pages/article.ftl" />
-    <property name="referenceDataProviders">
+    <property name="referenceDataProviderList">
+      <list>
+      <ref bean="commenting.commentsView.referenceDataProviders" />
       <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
         <property name="repository" ref="repository" />
         <property name="modelName" value="mediaPlayerBase" />
@@ -45,6 +47,7 @@
         <property name="appendPath" value="${mediaplayer.basePath}" />
         <property name="urlName" value="url" />
       </bean>      
+      </list>
     </property>    
     <property name="attributesMap">
       <map>

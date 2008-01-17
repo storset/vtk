@@ -39,7 +39,7 @@
       <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
     <#else>
       ${header}
-    </#if><sup>BETA</sup>
+    </#if>
 
 
     <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
@@ -97,7 +97,7 @@
   </#list>
 
   <div class="add-comment" id="comment-form">
-    <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /><sup>BETA</sup></div>
+    <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
 
 
     <#if !commentsEnabled>

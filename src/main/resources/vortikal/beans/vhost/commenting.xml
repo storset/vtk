@@ -187,10 +187,10 @@
           <property name="name" value="ol" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
-          <property name="name" value="em" />
+          <property name="name" value="i" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
-          <property name="name" value="strong" />
+          <property name="name" value="b" />
         </bean>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="cite" />

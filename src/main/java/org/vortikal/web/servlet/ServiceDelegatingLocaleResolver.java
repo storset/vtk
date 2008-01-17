@@ -30,13 +30,15 @@
  */
 package org.vortikal.web.servlet;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.LocaleResolver;
-
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -52,16 +54,25 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
     private String localeResolverAttribute = "localeResolver";
     private LocaleResolver defaultLocaleResolver;
 
+    private Map<String, Locale> localeTranslationMap = new HashMap<String, Locale>();
+    
     @Required public void setDefaultLocaleResolver(LocaleResolver defaultLocaleResolver) {
         this.defaultLocaleResolver = defaultLocaleResolver;
     }
     public void setLocaleResolverAttribute(String localeResolverAttribute) {
         this.localeResolverAttribute = localeResolverAttribute;
     }
+    public void setLocaleTranslationMap(Map<String, Locale> localeTranslationMap) {
+        this.localeTranslationMap = localeTranslationMap;
+    }
 
     public Locale resolveLocale(HttpServletRequest request) {
         LocaleResolver resolver = mapLocaleResolver(request);
-        return resolver.resolveLocale(request);
+        Locale locale = resolver.resolveLocale(request); 
+        if (this.localeTranslationMap.containsKey(locale.toString())) {
+            locale = this.localeTranslationMap.get(locale.toString());
+        }
+        return locale;
     }
 
     public void setLocale(HttpServletRequest request,

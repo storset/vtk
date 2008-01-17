@@ -275,13 +275,21 @@
    </bean>
 
 
-
    <!-- Global locale resolver: looks for 'localeResolver' service
         attributes on the current service and ancestors towards the
         root and uses the first one found. -->
    <bean id="localeResolver"
          class="org.vortikal.web.servlet.ServiceDelegatingLocaleResolver">
      <property name="defaultLocaleResolver" ref="defaultViewCookieLocaleResolver" />
+     <property name="localeTranslationMap">
+       <map>
+         <entry key="no_NO_NY">
+           <bean id="locale.nn" class="java.util.Locale">
+             <constructor-arg><value>nn</value></constructor-arg>
+           </bean>
+         </entry>
+       </map>
+     </property>
    </bean>
 
    <bean id="defaultViewCookieLocaleResolver"

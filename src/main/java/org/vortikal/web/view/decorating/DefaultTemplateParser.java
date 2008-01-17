@@ -226,8 +226,13 @@ public class DefaultTemplateParser implements TemplateParser {
             String name = s.substring(nameStartIdx, equalsIdx).trim();
             String value = unescapedSubstring(
                 s, ']', '\\', valueStartIdx, valueEndIdx).trim();
-            result.put(name, value);
 
+            value = value.replaceAll("&amp;", "&");
+            value = value.replaceAll("&quot;", "\"");
+            value = value.replaceAll("&lt;", "<");
+            value = value.replaceAll("&gt;", ">");
+
+            result.put(name, value);
             startIdx = valueEndIdx;
         }
         return result;

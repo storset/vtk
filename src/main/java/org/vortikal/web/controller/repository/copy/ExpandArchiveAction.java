@@ -33,7 +33,9 @@ package org.vortikal.web.controller.repository.copy;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -46,7 +48,10 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -124,16 +129,31 @@ public class ExpandArchiveAction implements CopyAction {
                     Namespace ns = Namespace.DEFAULT_NAMESPACE;
                     propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, propName);
                 }
-                System.out.println("prop: [" + propName + "] prefix = [" + prefix + "], propDef: [" + propDef + "], valueString: [" + attributes.get(key) + "]");
 
                 if (propDef != null) {
                     String valueString = (String) attributes.get(key);
-                    
+             
                     Property prop = resource.getProperty(propDef);
                     if (prop == null) {
                         prop = resource.createProperty(propDef);
                     }
-                    prop.setValue(propDef.getValueFormatter().stringToValue(valueString, null, null));
+                    ValueFormatter valueFormatter = propDef.getValueFormatter();
+                    String format = null;
+                    if (propDef.getType() == PropertyType.Type.DATE) {
+                        format = "iso-8601";
+                    }
+                    
+                    if (propDef.isMultiple()) {
+
+                        List<Value> values = new ArrayList<Value>();
+                        String[] splitValues = valueString.split(",");
+                        for (String val : splitValues) {
+                            values.add(valueFormatter.stringToValue(val.trim(), format, null));
+                        }
+                        prop.setValues(values.toArray(new Value[values.size()]));
+                    } else {
+                        prop.setValue(valueFormatter.stringToValue(valueString.trim(), format, null));
+                    }
                     modified = true;
                 }
             }

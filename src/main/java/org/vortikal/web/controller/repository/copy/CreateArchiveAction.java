@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 
 public class CreateArchiveAction implements CopyAction {
@@ -117,7 +118,11 @@ public class CreateArchiveAction implements CopyAction {
                 entry += prefix + "_";
             }
             entry += property.getDefinition().getName() + ": ";
-            entry += escapeNewlines(property.getFormattedValue());
+            if (property.getDefinition().getType() == PropertyType.Type.DATE) {
+                entry += escapeNewlines(property.getFormattedValue("iso-8601", null));
+            } else {
+                entry += escapeNewlines(property.getFormattedValue());
+            }
             out.println(entry);
         }
 

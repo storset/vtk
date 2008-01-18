@@ -8,9 +8,7 @@
 
   <body>
 
-    <release version="0.4.2-SNAPSHOT" date="In SVN" description="Release 0.4.2">
-      <!-- add 'action' entries here, newest on top: -->
-      <!-- type: update|fix|add|remove -->
+    <release version="0.4.2-SNAPSHOT" date="2008-01-18" description="Release 0.4.2">
       <action type="add">
         Added simple JAR-based archive/import tool.
       </action>

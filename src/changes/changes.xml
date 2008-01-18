@@ -12,6 +12,9 @@
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
       <action type="add">
+        Added simple JAR-based archive/import tool.
+      </action>
+      <action type="add">
         Enabled comments by default for resources of type 'article'.
       </action>
       <action type="fix">

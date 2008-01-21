@@ -781,23 +781,23 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 + "resources " + java.util.Arrays.asList(resources));
         }
 
-        for (int i = 0; i < resources.length; i++) {
+        for (ResourceImpl resource: resources) {
             AclImpl acl = null;
 
-            if (resources[i].getAclInheritedFrom() != -1) {
-                acl = map.get(resources[i].getAclInheritedFrom());
+            if (resource.getAclInheritedFrom() != -1) {
+                acl = map.get(resource.getAclInheritedFrom());
             } else {
-                acl = map.get(resources[i].getID());
+                acl = map.get(resource.getID());
             }
 
             if (acl == null) {
                 throw new DataAccessException(
-                    "Resource " + resources[i] + " has no ACL entry (ac_inherited_from = "
-                    + resources[i].getAclInheritedFrom() + ")");
+                    "Resource " + resource + " has no ACL entry (ac_inherited_from = "
+                    + resource.getAclInheritedFrom() + ")");
             }
 
             acl = (AclImpl) acl.clone();
-            resources[i].setAcl(acl);
+            resource.setAcl(acl);
         }
     }
     

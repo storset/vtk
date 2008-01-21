@@ -2,7 +2,17 @@
 <mix = 'http://www.jcp.org/jcr/mix/1.0'>
 <vrtx = 'http://www.uio.no/vrtx'>
 
+[vrtx:principal] > nt:hierarchyNode
+- vrtx:principalType (STRING)
+
+[vrtx:action] > nt:hierarchyNode
++ * (vrtx:principal)
+
+[vrtx:acl] > nt:hierarchyNode
++ * (vrtx:action)
+
 [vrtx:hierarchyNode] > nt:hierarchyNode, mix:versionable, mix:lockable
++ vrtx:acl (vrtx:acl)
 - vrtx:resourceType (STRING) mandatory
 - vrtx:collection (STRING) mandatory
 - * (UNDEFINED)
@@ -13,3 +23,12 @@
 
 [vrtx:file] > vrtx:hierarchyNode
 - vrtx:content (BINARY) mandatory primary
+
+[vrtx:lock] > nt:hierarchyNode
+- vrtx:jcrLockToken (STRING) mandatory
+- vrtx:lockToken (STRING) mandatory
+- vrtx:depth (STRING) mandatory
+- vrtx:ownerInfo (STRING) mandatory
+- vrtx:owner (STRING) mandatory
+- vrtx:timeOut (STRING) mandatory
+

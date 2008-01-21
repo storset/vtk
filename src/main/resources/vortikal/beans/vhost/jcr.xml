@@ -21,12 +21,19 @@
         name="repository.contentStore"
         class="org.vortikal.repository.store.jcr.JcrDao">
     <lookup-method name="createResourceImpl" bean="resourceImpl"/>
-    <property name="repository" ref="jcrRepository" />
-  </bean>
+    <property name="nodeTypesDefinition" value="classpath:org/vortikal/repository/store/jcr/resource-types.cnd" />
+    <property name="repository" ref="jcr.repository" />
+ </bean>
 
-  <bean id="jcrRepository" class="org.apache.jackrabbit.core.TransientRepository">
-    <constructor-arg value="${jcrRepoDir}/repo.xml" />
-    <constructor-arg value="${jcrRepoDir}/data" />
+<bean id="jcr.repository" class="org.vortikal.repository.store.jcr.JackrabbitRepositoryFactoryBean">
+    <property name="config" value="classpath:org/vortikal/repository/store/jcr/repository.xml" />
+    <property name="home" value="${jcrRepoDir}" />
+</bean>
+<!-- 
+  <bean id="jcr.repository" 
+        class="org.vortikal.repository.store.jcr.JackrabbitRepository">
+    <property name="config" value="classpath:org/vortikal/repository/store/jcr/repository.xml" />
+    <property name="home" value="${jcrRepoDir}" />
   </bean>
-
+-->
 </beans>

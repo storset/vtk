@@ -66,6 +66,8 @@ import javax.jcr.lock.Lock;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionException;
 
 import org.apache.commons.logging.Log;
@@ -102,6 +104,7 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
 
     // Resource items
     private static final String VRTX_PREFIX = "vrtx:";
+    private static final String VRTX_PREFIX_SEPARATOR = ";";
     private static final String VRTX_FILE_NAME = "vrtx:file";
     private static final String VRTX_FOLDER_NAME = "vrtx:folder";
     private static final String CONTENT = "vrtx:content";
@@ -287,7 +290,7 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
             name = name.substring(VRTX_PREFIX.length());
 
             String prefix = null;
-            int sepIndex = name.indexOf(':');
+            int sepIndex = name.indexOf(VRTX_PREFIX_SEPARATOR);
             if (sepIndex != -1) {
                 prefix = name.substring(0, sepIndex);
                 name = name.substring(sepIndex + 1);
@@ -489,7 +492,7 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
         String propName = prop.getDefinition().getName();
         String prefix = prop.getDefinition().getNamespace().getPrefix();
         if (prefix != null) {
-            propName = prefix + ":" + propName;
+            propName = prefix + VRTX_PREFIX_SEPARATOR + propName;
         }
         propName = VRTX_PREFIX + propName;
         return propName;
@@ -705,18 +708,39 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
     }
 
     public String[] discoverACLs(String uri) throws DataAccessException {
-//        Session session = getSession();
-//        
-//        try {
-//            session.getWorkspace().getQueryManager().createQuery(statement, language)
-//            
-            return new String[] { uri };
-//            
-//        } finally {
-//            session.logout();
-//        }
+        Session session = getSession();
         
+        try {
+            StringBuilder stmt = new StringBuilder();
+            stmt.append("/jcr:root");
+            stmt.append(VRTX_ROOT);
+            stmt.append(uri);
+            if ("/".equals(uri)) {
+                stmt.append("/");
+            } else {
+                stmt.append("//");
+            }
+            stmt.append(VRTX_ACL_NAME);
+
+            Query query = session.getWorkspace().getQueryManager().createQuery(stmt.toString(), Query.XPATH); 
+            
+            QueryResult result = query.execute();
+            NodeIterator nodes = result.getNodes();
+            List<String> resultList = new ArrayList<String>();
+            while (nodes.hasNext()) {
+                Node node = nodes.nextNode();
+                String aclNode = pathToUri(node.getParent().getPath());
+                resultList.add(aclNode);
+            }
+            return resultList.toArray(new String[resultList.size()]);
+            
+        } catch (RepositoryException e) {
+            throw new DataAccessException(e);
+        } finally {
+            session.logout();
+        }
     }
+
     public Set<Principal> discoverGroups() throws DataAccessException {
         return new HashSet<Principal>();
     }

@@ -114,8 +114,9 @@ public class CopyController extends SimpleFormController
         }
 
         String copyToCollection = URIUtil.getParentURI(uri);
+        if (copyToCollection == null) copyToCollection = "/";
         String baseUri = copyToCollection;
-        if (!baseUri.endsWith("/")) baseUri += "/";
+        if (!"/".equals(baseUri) && !baseUri.endsWith("/")) baseUri += "/";
         String copyUri = baseUri + copyCommand.getName();
 
         copyAction.process(uri, copyUri);

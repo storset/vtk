@@ -66,13 +66,13 @@ public class CreateArchiveAction implements CopyAction {
         if (!resource.isCollection()) {
             throw new RuntimeException("Cannot archive a single Resource, must be a collection");
         }
+        InputStream jar = createArchive(token, resource);
         Resource dest = this.repository.createDocument(token, copyUri);
-        InputStream jar = createArchive(token, resource, dest);
         this.repository.storeContent(token, dest.getURI(), jar);
     }
 
     
-    private InputStream createArchive(String token, Resource r, Resource dest) throws Exception {
+    private InputStream createArchive(String token, Resource r) throws Exception {
         
         File outFile = File.createTempFile("vrtx-archive", "jar");
         FileOutputStream out = new FileOutputStream(outFile);

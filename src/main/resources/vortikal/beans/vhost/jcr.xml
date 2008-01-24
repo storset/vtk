@@ -26,7 +26,7 @@
  </bean>
 
 <bean id="jcr.repository" class="org.vortikal.repository.store.jcr.JackrabbitRepositoryFactoryBean">
-    <property name="config" value="classpath:org/vortikal/repository/store/jcr/repository.xml" />
+    <property name="config" value="${jcr.repoConfig}" />
     <property name="home" value="${jcrRepoDir}" />
 </bean>
 <!-- 

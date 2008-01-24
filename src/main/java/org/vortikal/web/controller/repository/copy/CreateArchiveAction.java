@@ -43,11 +43,15 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.web.URLUtil;
 
 public class CreateArchiveAction implements CopyAction {
 
@@ -63,28 +67,30 @@ public class CreateArchiveAction implements CopyAction {
             throw new RuntimeException("Cannot archive a single Resource, must be a collection");
         }
         Resource dest = this.repository.createDocument(token, copyUri);
-        InputStream jar = createArchive(token, resource.getParent(), resource, dest);
+        InputStream jar = createArchive(token, resource, dest);
         this.repository.storeContent(token, dest.getURI(), jar);
     }
 
     
-    private InputStream createArchive(String token, String base, Resource r, Resource dest) throws Exception {
+    private InputStream createArchive(String token, Resource r, Resource dest) throws Exception {
         
         File outFile = File.createTempFile("vrtx-archive", "jar");
         FileOutputStream out = new FileOutputStream(outFile);
         BufferedOutputStream bo = new BufferedOutputStream(out);
 
-        Manifest manifest = createManifest(token, base, r);
+        int rootLevel = URLUtil.splitUri(r.getURI()).length;
+        
+        Manifest manifest = createManifest(token, rootLevel, r);
         JarOutputStream jo = new JarOutputStream(bo, manifest);
 
-        addEntry(token, base, r, jo);
+        addEntry(token, rootLevel, r, jo);
 
         jo.close();
         bo.close();
         return new FileInputStream(outFile);
     }
 
-    private Manifest createManifest(String token, String base, Resource r) throws Exception {
+    private Manifest createManifest(String token, int rootLevel, Resource r) throws Exception {
 
         File tmp = File.createTempFile("tmp-manifest", "vrtx");
         PrintWriter out = new PrintWriter(new FileOutputStream(tmp));
@@ -92,21 +98,33 @@ public class CreateArchiveAction implements CopyAction {
         out.println("Manifest-Version: 1.0");
         out.println("Created-By: vrtx");
         out.println("X-vrtx-archive-version: 1.0");
+        out.println("X-vrtx-archive-encoded: true"); 
         
-        addManifestEntry(token, base, r, out);
+        addManifestEntry(token, rootLevel, r, out);
         out.flush();
         out.close();
 
         return new Manifest(new FileInputStream(tmp));
     }
     
-
-    private void addManifestEntry(String token, String base, Resource r, PrintWriter out) throws Exception {
-        String path = r.isCollection() ? r.getURI() + "/" : r.getURI();
-        path = path.substring(base.length());
+    private String getJarPath(Resource resource, int fromLevel) {
+        String path = resource.getURI();
+        String[] splitPath = URLUtil.splitUri(path);
+        StringBuilder result = new StringBuilder("/");
+        for (int i = fromLevel; i < splitPath.length; i++) {
+            if (i != 0) result.append(splitPath[i]);
+            if (i < splitPath.length - 1 && !"/".equals(splitPath[i])) result.append("/");
+        }
+        if (resource.isCollection() && !"/".equals(result.toString())) result.append("/"); 
+        return result.toString();
+    }
+    
+    private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
+        String path = getJarPath(r, fromLevel);
         
         out.println("");
-        out.println("Name: " + escapeNewlines(path));
+        out.println("Name: " + encodeValue(path));
+
         List<Property> properties = r.getProperties();
         for (Property property : properties) {
             if (property.getDefinition() == null) {
@@ -119,49 +137,92 @@ public class CreateArchiveAction implements CopyAction {
             }
             entry += property.getDefinition().getName() + ": ";
             if (property.getDefinition().getType() == PropertyType.Type.DATE) {
-                entry += escapeNewlines(property.getFormattedValue("iso-8601", null));
+                entry += encodeValue(property.getFormattedValue("iso-8601", null));
             } else {
-                entry += escapeNewlines(property.getFormattedValue());
+                entry += encodeValue(property.getFormattedValue());
             }
             out.println(entry);
         }
+        
+        if (!r.isInheritedAcl()) {
+            Acl acl = r.getAcl();
+            for (RepositoryAction action : acl.getActions()) {
+                StringBuilder entry = new StringBuilder("X-vrtx-acl-");
+                entry.append(action).append(": ");
 
+                boolean empty = true;
+
+                Principal[] users = acl.listPrivilegedUsers(action);
+                for (int i = 0; i < users.length; i++) {
+                    Principal user = users[i];
+                    if (i > 0) entry.append(",");
+                    entry.append("u:").append(user.getQualifiedName());
+                    empty = false;
+                }
+                
+                Principal[] groups = acl.listPrivilegedGroups(action);
+                for (int i = 0; i < groups.length; i++) {
+                    Principal group = groups[i];
+                    if (!empty || i > 0) entry.append(",");
+                    entry.append("g:").append(group.getQualifiedName());
+                    empty = false;
+                }
+                
+                Principal[] pseudos = acl.listPrivilegedPseudoPrincipals(action);
+                for (int i = 0; i < pseudos.length; i++) {
+                    Principal pseudo = pseudos[i];
+                    if (!empty || i > 0) entry.append(",");
+                    entry.append("p:").append(pseudo.getQualifiedName());
+                    empty = false;
+                }
+                if (!empty) out.println(entry);
+            }
+        }
+        
         if (r.isCollection()) {
             Resource[] children = this.repository.listChildren(token, r.getURI(), false);
             for (Resource child: children) {
-                addManifestEntry(token, base, child, out);
+                addManifestEntry(token, fromLevel, child, out);
             }
         }
     }
 
-    private String escapeNewlines(String s) {
-        return s.replaceAll("\\n", "\\\\n");
-    }
+
     
-    private void addEntry(String token, String base, Resource r, JarOutputStream jo) throws Exception {
+    private String encodeValue(String s) throws Exception {
+        // &esc; --> &esc;&esc;
+        // \r\n --> &esc;rn
+        // \r --> &esc;r
+        // \n --> &esc;n
 
-        String path = r.isCollection() ? r.getURI() + "/" : r.getURI();
-        path = path.substring(base.length());
+        s = s.replaceAll("&esc;", "&esc;&esc;");
+        s = s.replaceAll("\r\n", "&esc;rn");
+        s = s.replaceAll("\r", "&esc;r");
+        s = s.replaceAll("\n", "&esc;n");
 
-        System.out.println("add: " + path);
+        return s;
+    }
+
+    
+    private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut) throws Exception {
+
+        String path = getJarPath(r, fromLevel);
 
         JarEntry je = new JarEntry(path);
-        jo.putNextEntry(je);
-
+        jarOut.putNextEntry(je);
         if (r.isCollection()) {
             Resource[] children = this.repository.listChildren(token, r.getURI(), false);
             for (Resource child: children) {
-                addEntry(token, base, child, jo);
+                addEntry(token, fromLevel, child, jarOut);
             }
         } else {
             InputStream is = this.repository.getInputStream(token, r.getURI(), false);
             BufferedInputStream bi = new BufferedInputStream(is);
 
             byte[] buf = new byte[1024];
-            int anz;
-         
-            while ((anz = bi.read(buf)) != -1) {
-                jo.write(buf, 0, anz);
+            int n;
+            while ((n = bi.read(buf)) != -1) {
+                jarOut.write(buf, 0, n);
             }
             bi.close();
         }

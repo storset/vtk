@@ -43,15 +43,19 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
@@ -73,7 +77,11 @@ public class ExpandArchiveAction implements CopyAction {
         String base = copyUri;
 
         InputStream source = this.repository.getInputStream(token, uri, false);
-        JarInputStream zis = new JarInputStream(new BufferedInputStream(source));
+        JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
+        
+        boolean decodeValues = 
+        "true".equals(jarIn.getManifest().getMainAttributes().getValue("X-vrtx-archive-encoded"));
+
         JarEntry entry;
         Set<String> dirCache = new HashSet<String>();
         String[] basePath = URLUtil.splitUriIncrementally(base);
@@ -81,7 +89,7 @@ public class ExpandArchiveAction implements CopyAction {
             dirCache.add(basePath[i]);
         }         
 
-        while((entry = zis.getNextJarEntry()) != null) {
+        while((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
             String resourceURI = entryPath.startsWith("/") ? 
                     base + entryPath : base + "/" + entryPath; 
@@ -94,78 +102,160 @@ public class ExpandArchiveAction implements CopyAction {
             createDirectoryStructure(token, dir, dirCache);
 
             if (!entry.isDirectory()) {
-                writeFile(token, resourceURI, zis);
+                writeFile(token, resourceURI, jarIn);
             }
-            storeProps(token, entry, resourceURI);
+            storePropsAndPermissions(token, entry, resourceURI, decodeValues);
         }
-        zis.close();
+        jarIn.close();
     }
 
-    private void storeProps(String token, JarEntry entry, String resourceURI) throws Exception {
+    
+    private void storePropsAndPermissions(String token, JarEntry entry, String resourceURI, boolean decode) throws Exception {
         Attributes attributes = entry.getAttributes();
         if (attributes == null) {
             return;
         }
 
         Resource resource = this.repository.retrieve(token, resourceURI, false);
-        boolean modified = false;
+        boolean propsModified = false;
+        boolean aclModified = false;
         
         for (Object key : attributes.keySet()) {
             
             String name = key.toString();
             if (name.startsWith("X-vrtx-prop-")) {
-                String propName = name.substring("X-vrtx-prop-".length());
-                String prefix = null;
-                int underscoreIdx = propName.indexOf('_');
-                if (underscoreIdx > 0) {
-                    prefix = propName.substring(0, underscoreIdx);
-                    propName = propName.substring(underscoreIdx + 1);
+                if (setProperty(resource, name, attributes, decode)) {
+                    propsModified = true;
                 }
-
-                PropertyTypeDefinition propDef;
-                if (prefix != null) {
-                    propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, propName);
-                } else {
-                    Namespace ns = Namespace.DEFAULT_NAMESPACE;
-                    propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, propName);
-                }
-
-                if (propDef != null) {
-                    String valueString = (String) attributes.get(key);
-             
-                    Property prop = resource.getProperty(propDef);
-                    if (prop == null) {
-                        prop = resource.createProperty(propDef);
-                    }
-                    ValueFormatter valueFormatter = propDef.getValueFormatter();
-                    String format = null;
-                    if (propDef.getType() == PropertyType.Type.DATE) {
-                        format = "iso-8601";
-                    }
-                    
-                    if (propDef.isMultiple()) {
-
-                        List<Value> values = new ArrayList<Value>();
-                        String[] splitValues = valueString.split(",");
-                        for (String val : splitValues) {
-                            values.add(valueFormatter.stringToValue(val.trim(), format, null));
-                        }
-                        prop.setValues(values.toArray(new Value[values.size()]));
-                    } else {
-                        prop.setValue(valueFormatter.stringToValue(valueString.trim(), format, null));
-                    }
-                    modified = true;
+            } else if (name.startsWith("X-vrtx-acl")) {
+                if (setAclEntry(resource, name, attributes, decode)) {
+                    aclModified = true;
                 }
             }
         }
-        if (modified) {
+        if (propsModified) {
             this.repository.store(token, resource);
         }
+        if (aclModified) {
+            this.repository.storeACL(token, resource);
+        }
+    }
+
+    private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode) throws Exception {
+        String propName = name.substring("X-vrtx-prop-".length());
+        String prefix = null;
+        int underscoreIdx = propName.indexOf('_');
+        if (underscoreIdx > 0) {
+            prefix = propName.substring(0, underscoreIdx);
+            propName = propName.substring(underscoreIdx + 1);
+        }
+
+        PropertyTypeDefinition propDef;
+        if (prefix != null) {
+            propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, propName);
+        } else {
+            Namespace ns = Namespace.DEFAULT_NAMESPACE;
+            propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, propName);
+        }
+
+        if (propDef == null) {
+            return false;
+        }
+        
+        String valueString = attributes.getValue(name);
+        if (decode) {
+            valueString = decodeValue(valueString);
+        }
+
+        Property prop = resource.getProperty(propDef);
+        if (prop == null) {
+            prop = resource.createProperty(propDef);
+        }
+        ValueFormatter valueFormatter = propDef.getValueFormatter();
+        String format = null;
+        if (propDef.getType() == PropertyType.Type.DATE) {
+            format = "iso-8601";
+        }
+
+        if (propDef.isMultiple()) {
+            List<Value> values = new ArrayList<Value>();
+            String[] splitValues = valueString.split(",");
+            for (String val : splitValues) {
+                values.add(valueFormatter.stringToValue(val.trim(), format, null));
+            }
+            prop.setValues(values.toArray(new Value[values.size()]));
+        } else {
+            prop.setValue(valueFormatter.stringToValue(valueString.trim(), format, null));
+        }
+        return true;
+    }
+
+    private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode) throws Exception {
+        String actionName = name.substring("X-vrtx-acl-".length());
+        RepositoryAction action = Privilege.getActionByName(actionName);
+
+        
+        String values = attributes.getValue(name);
+        if (decode) {
+            values = decodeValue(values);
+        }
+        String[] list = values.split(",");
+
+        Acl acl = resource.getAcl();
+        acl.clear();
+        for (String value: list) {
+            String principalName = value.substring(2);
+            Principal p = null;
+            char type = values.charAt(0);
+            switch (type) {
+            case 'p':
+                p = Principal.getPseudoPrincipal(principalName);
+                break;
+            case 'u':
+                p = new Principal(principalName, Principal.Type.USER);
+                break;
+            case 'g':
+                p = new Principal(principalName, Principal.Type.GROUP);
+                break;
+            }
+            if (p != null ) {
+                resource.setInheritedAcl(false);
+                acl.addEntry(action, p);
+            }
+        }
+        return !resource.isInheritedAcl();
     }
     
     private void writeFile(String token, String uri, ZipInputStream is) throws Exception {
         this.repository.createDocument(token, uri);
         this.repository.storeContent(token, uri, new PartialZipStream(is));
+    }
+    
+
+    private String decodeValue(String s) throws Exception {
+        // &esc;rn --> \r\n
+        // &esc;r --> \r
+        // &esc;n --> \n
+        // &esc;&esc; --> &esc;
+        
+        s = s.replaceAll("&esc;rn", "\r\n");
+        s = s.replaceAll("&esc;r", "\r");
+        s = s.replaceAll("&esc;n", "\n");
+        s = s.replaceAll("&esc;&esc;", "&esc;");
+
+        // s = insertLineContinuations(s);
+        return s;
+    }
+    
+    
+    private void createDirectoryStructure(String token, String dir, Set<String> dirCache) throws Exception {
+        String[] path = URLUtil.splitUriIncrementally(dir);
+        for (String elem : path) {
+            if (!dirCache.contains(elem)) {
+                this.repository.createCollection(token, elem);
+                dirCache.add(elem);
+            }
+        }
     }
     
     private class PartialZipStream extends InputStream {
@@ -209,16 +299,6 @@ public class ExpandArchiveAction implements CopyAction {
         }
     }
 
-    private void createDirectoryStructure(String token, String dir, Set<String> dirCache) throws Exception {
-        String[] path = URLUtil.splitUriIncrementally(dir);
-        for (String elem : path) {
-            if (!dirCache.contains(elem)) {
-                this.repository.createCollection(token, elem);
-                dirCache.add(elem);
-            }
-        }
-    }
-    
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }

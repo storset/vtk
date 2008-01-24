@@ -187,24 +187,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     }
 
 
-    public String[] listSubTree(ResourceImpl parent) {
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(),
-                                                                    SQL_ESCAPE_CHAR));
-        String sqlMap = getSqlMap("listSubTree");
-        List<Map<String, String>> list = 
-            getSqlMapClientTemplate().queryForList(sqlMap, parameters);
-            
-        String[] uris = new String[list.size()];
-        int n = 0;
-        for (Map<String, String> map: list) {
-            uris[n++] = map.get("uri");
-        }
-        return uris;
-
-    }
-
     public void storeACL(ResourceImpl r) {
         updateACL(r);
     }

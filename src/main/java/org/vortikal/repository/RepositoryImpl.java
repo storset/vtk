@@ -32,8 +32,12 @@ package org.vortikal.repository;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Collections;
 import java.util.List;
 
@@ -82,6 +86,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
     private URIValidator uriValidator = new URIValidator();
+    
+    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     
     private String id;
 
@@ -577,14 +583,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.contentStore.storeContent(uri, new java.io.BufferedInputStream(
                                       new java.io.FileInputStream(tempFile)));
-
             r = this.resourceHelper.contentModification(r, principal);
                 
             this.dao.store(r);
-
-//             if (true == true) {
-//                 throw new RuntimeException("Please roll back..");
-//             }
 
             ContentModificationEvent event = new ContentModificationEvent(
                 this, (Resource) r.clone(), original);
@@ -884,24 +885,20 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
      * XXX: should be handled on the client side?
      */
     private File writeTempFile(String name, InputStream byteStream) throws IOException {
-        byteStream = new java.io.BufferedInputStream(byteStream);
-        String prefix = "tmpfile-" + name;
-        File tempFile = File.createTempFile(prefix, null);
-        java.io.OutputStream stream = new java.io.FileOutputStream(tempFile);
-
-        // XXX: Review impl.
-        /* Write the input data to the resource: */
-        byte[] buffer = new byte[100000];
-        int n = 0;
-
-        while ((n = byteStream.read(buffer, 0, buffer.length)) != -1) {
-            stream.write(buffer, 0, n);
+        ReadableByteChannel src = Channels.newChannel(byteStream);
+        File tempFile = File.createTempFile("tmpfile-" + name, null, this.tempDir);
+        FileChannel dest = new FileOutputStream(tempFile).getChannel();
+        int chunk = 100000;
+        long pos = 0;
+        while (true) {
+            long n = dest.transferFrom(src, pos, chunk);
+            if (n == 0) {
+                break;
+            }
+            pos += n;
         }
-
-        stream.flush();
-        stream.close();
-        byteStream.close();
-            
+        src.close();
+        dest.close();
         return tempFile;
     }
     
@@ -965,6 +962,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.resourceHelper = resourceHelper;
     }
 
+    public void setTempDir(String tempDirPath) {
+        File tempDir = new File(tempDirPath);
+        if (tempDir.exists() && tempDir.isDirectory()) {
+            this.tempDir = tempDir;
+        }
+    }
+    
     public void setMaxComments(int maxComments) {
         if (maxComments < 0) {
             throw new IllegalArgumentException(

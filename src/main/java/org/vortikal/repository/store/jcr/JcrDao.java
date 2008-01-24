@@ -95,7 +95,6 @@ import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.security.Principal.Type;
 
 public class JcrDao implements ContentStore, DataAccessor, InitializingBean, DisposableBean {
@@ -150,21 +149,22 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
     }
     
     Session getSession() {
-        String name = "anonymous";
-        try {
-            name = SecurityContext.getSecurityContext().getPrincipal().getQualifiedName();
-        } catch (Throwable t) {
-            // Anonymous access...
-        }
-
-        Credentials credentials = new SimpleCredentials(name, "".toCharArray());
-        try {
-            return repository.login(credentials);
-        } catch (LoginException e) {
-            throw new DataAccessException(e);
-        } catch (RepositoryException e) {
-            throw new DataAccessException(e);
-        }
+        return getSystemSession();
+//        String name = "anonymous";
+//        try {
+//            name = SecurityContext.getSecurityContext().getPrincipal().getQualifiedName();
+//        } catch (Throwable t) {
+//            // Anonymous access...
+//        }
+//
+//        Credentials credentials = new SimpleCredentials(name, "".toCharArray());
+//        try {
+//            return repository.login(credentials);
+//        } catch (LoginException e) {
+//            throw new DataAccessException(e);
+//        } catch (RepositoryException e) {
+//            throw new DataAccessException(e);
+//        }
     }
 
     public void copy(ResourceImpl resource, ResourceImpl dest,
@@ -186,7 +186,6 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
         } finally {
             session.logout();
         }
-
     }
 
     private String pathToUri(String path) {
@@ -685,8 +684,7 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
             }
             session.save();
         } catch (RepositoryException e) {
-            // XXX Auto-generated catch block
-            e.printStackTrace();
+            throw new DataAccessException(e);
         } finally {
             session.logout();
         }
@@ -704,7 +702,7 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
     }
 
     public void deleteExpiredLocks() throws DataAccessException {
-        // XXX Auto-generated method stub
+        // TODO: implement
     }
 
     public String[] discoverACLs(String uri) throws DataAccessException {
@@ -745,24 +743,19 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
         return new HashSet<Principal>();
     }
 
-    public String[] listSubTree(ResourceImpl parent) throws DataAccessException {
-        // Never called
-        return null;
-    }
-
     // Content store:
 
     public void copy(String srcURI, String destURI) throws DataAccessException {
-        // Never called
+        // ContentStore.copy() ignored
     }
 
     public void createResource(String uri, boolean isCollection)
             throws DataAccessException {
-        // Never called
+        // ContentStore.createResource() ignored
     }
 
     public void deleteResource(String uri) throws DataAccessException {
-        // Never called
+        // ContentStore.deleteResource() ignored
     }
 
     public long getContentLength(String uri) throws DataAccessException {
@@ -800,7 +793,7 @@ public class JcrDao implements ContentStore, DataAccessor, InitializingBean, Dis
     }
 
     public void move(String srcURI, String destURI) throws DataAccessException {
-        // Never called
+        // ContentStore.move() ignored
     }
 
     public void afterPropertiesSet() 

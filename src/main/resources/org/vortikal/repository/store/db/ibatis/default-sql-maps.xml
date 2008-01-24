@@ -583,11 +583,6 @@
   </select>
   
   
-  <select id="listSubTree" parameterClass="java.util.Map" resultMap="Uri">
-    select uri from vortex_resource where uri like #uriWildcard# escape '@'
-  </select>
-  
-  
   <insert id="insertChangeLogEntriesRecursively" 
           parameterClass="java.util.Map">
     insert into changelog_entry 

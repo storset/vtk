@@ -83,11 +83,6 @@ public interface DataAccessor {
     public void delete(ResourceImpl resource) throws DataAccessException;
 
 
-    /**
-     * Lists all descendants of a collection resource, sorted by URI
-     */
-    public String[] listSubTree(ResourceImpl parent) throws DataAccessException;
-
 
     /**
      * Deletes all expired locks (should be called periodically)

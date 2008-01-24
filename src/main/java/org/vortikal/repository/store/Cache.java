@@ -468,10 +468,6 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public String[] listSubTree(ResourceImpl parent) throws DataAccessException {
-        return this.wrappedAccessor.listSubTree(parent);
-    }
-
     public void deleteExpiredLocks() throws DataAccessException {
         this.wrappedAccessor.deleteExpiredLocks();
     }

@@ -63,6 +63,7 @@
     <property name="contentStore" ref="repository.contentStore" />
     <property name="lockManager" ref="lockManager" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
+    <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
 

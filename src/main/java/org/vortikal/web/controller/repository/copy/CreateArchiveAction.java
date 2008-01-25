@@ -44,11 +44,13 @@ import java.util.jar.Manifest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
@@ -119,31 +121,55 @@ public class CreateArchiveAction implements CopyAction {
         return result.toString();
     }
     
+    
     private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
-        String path = getJarPath(r, fromLevel);
+        StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
+        encode(path);
+        ensure72Bytes(path);
         
         out.println("");
-        out.println("Name: " + encodeValue(path));
+        out.println("Name: " + path);
 
-        List<Property> properties = r.getProperties();
-        for (Property property : properties) {
-            if (property.getDefinition() == null) {
-                continue;
-            }
-            String prefix = property.getDefinition().getNamespace().getPrefix();
-            String entry = "X-vrtx-prop-";
-            if (prefix != null) {
-                entry += prefix + "_";
-            }
-            entry += property.getDefinition().getName() + ": ";
-            if (property.getDefinition().getType() == PropertyType.Type.DATE) {
-                entry += encodeValue(property.getFormattedValue("iso-8601", null));
-            } else {
-                entry += encodeValue(property.getFormattedValue());
-            }
-            out.println(entry);
-        }
+        addProperties(r, out);        
+        addAcl(r, out);
         
+        if (r.isCollection()) {
+            Resource[] children = this.repository.listChildren(token, r.getURI(), false);
+            for (Resource child: children) {
+                addManifestEntry(token, fromLevel, child, out);
+            }
+        }
+    }
+
+    private void addProperties(Resource r, PrintWriter out) throws Exception {
+        List<Property> properties = r.getProperties();
+        int propCounter = 0;
+        for (Property property : properties) {
+            PropertyTypeDefinition propDef = property.getDefinition();
+            Namespace namespace = propDef.getNamespace();
+            
+            StringBuilder entry = new StringBuilder("X-vrtx-prop-");
+            entry.append(propCounter).append(": ");
+            entry.append("prefix:");
+            if (namespace.getPrefix() != null) {
+                entry.append(namespace.getPrefix());
+            }
+            entry.append(" ");
+            entry.append("name:").append(propDef.getName()).append(" ");
+            if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
+                entry.append(property.getFormattedValue("yyyy-MM-dd'T'HH:mm:ssZZ", null));
+            } else {
+                entry.append(property.getFormattedValue());
+            }
+            
+            encode(entry);
+            ensure72Bytes(entry);
+            out.println(entry);
+            propCounter++;
+        }
+    }
+    
+    private void addAcl(Resource r, PrintWriter out) throws Exception {
         if (!r.isInheritedAcl()) {
             Acl acl = r.getAcl();
             for (RepositoryAction action : acl.getActions()) {
@@ -175,34 +201,67 @@ public class CreateArchiveAction implements CopyAction {
                     entry.append("p:").append(pseudo.getQualifiedName());
                     empty = false;
                 }
-                if (!empty) out.println(entry);
-            }
-        }
-        
-        if (r.isCollection()) {
-            Resource[] children = this.repository.listChildren(token, r.getURI(), false);
-            for (Resource child: children) {
-                addManifestEntry(token, fromLevel, child, out);
+                
+                if (!empty) {
+                    encode(entry);
+                    ensure72Bytes(entry);
+                    out.println(entry.toString());
+                }
             }
         }
     }
-
 
     
-    private String encodeValue(String s) throws Exception {
-        // &esc; --> &esc;&esc;
-        // \r\n --> &esc;rn
-        // \r --> &esc;r
-        // \n --> &esc;n
-
-        s = s.replaceAll("&esc;", "&esc;&esc;");
-        s = s.replaceAll("\r\n", "&esc;rn");
-        s = s.replaceAll("\r", "&esc;r");
-        s = s.replaceAll("\n", "&esc;n");
-
-        return s;
+    private void ensure72Bytes(StringBuilder s) throws Exception {
+        int i = 0;
+        int count = 0;
+        while (i < s.length()) {
+            int delta = s.substring(i, i+1).getBytes("utf-8").length;
+            if (count + delta > 72) {
+                s.insert(i, "\n ");
+                i += 2;
+                count = 0;
+            } else {
+                i++;
+                count += delta;
+            }
+        }
     }
-
+    
+    
+    /**
+     * Flatten "\r" and "\n" (not allowed in manifest entries)
+     */
+    private void encode(StringBuilder s) {
+        // '_' --> '_esc_u_'
+        // '\r' --> '_esc_r_'
+        // '\n' --> '_esc_n_'
+        int i = 0;
+        while (i < s.length()) {
+            char c = s.charAt(i);
+            switch (c) {
+            case '_':
+                s.delete(i, i + 1);
+                s.insert(i, "_esc_u_");
+                i += 7;
+                break;
+            case '\r':
+                s.delete(i, i + 1);
+                s.insert(i, "_esc_r_");
+                i += 7;
+                break;
+            case '\n':
+                s.delete(i, i + 1);
+                s.insert(i, "_esc_n_");
+                i += 7;
+                break;
+            default:
+                i++;
+                break;
+            }
+        }
+    }
+    
     
     private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut) throws Exception {
 

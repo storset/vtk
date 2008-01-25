@@ -40,11 +40,11 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipInputStream;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -78,9 +78,16 @@ public class ExpandArchiveAction implements CopyAction {
 
         InputStream source = this.repository.getInputStream(token, uri, false);
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
-        
+        Manifest manifest = jarIn.getManifest();
+        Attributes mainAttributes = manifest.getMainAttributes();
+
+        String archiveVersion = mainAttributes.getValue("X-vrtx-archive-version"); 
+        if (archiveVersion != null && !"1.0".equals(archiveVersion)) {
+            throw new RuntimeException("Incompatible archive version: " + archiveVersion);
+        }
+            
         boolean decodeValues = 
-        "true".equals(jarIn.getManifest().getMainAttributes().getValue("X-vrtx-archive-encoded"));
+        "true".equals(mainAttributes.getValue("X-vrtx-archive-encoded"));
 
         JarEntry entry;
         Set<String> dirCache = new HashSet<String>();
@@ -142,30 +149,14 @@ public class ExpandArchiveAction implements CopyAction {
     }
 
     private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode) throws Exception {
-        String propName = name.substring("X-vrtx-prop-".length());
-        String prefix = null;
-        int underscoreIdx = propName.indexOf('_');
-        if (underscoreIdx > 0) {
-            prefix = propName.substring(0, underscoreIdx);
-            propName = propName.substring(underscoreIdx + 1);
-        }
-
-        PropertyTypeDefinition propDef;
-        if (prefix != null) {
-            propDef = this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, propName);
-        } else {
-            Namespace ns = Namespace.DEFAULT_NAMESPACE;
-            propDef = this.resourceTypeTree.getPropertyTypeDefinition(ns, propName);
-        }
-
-        if (propDef == null) {
-            return false;
-        }
-        
         String valueString = attributes.getValue(name);
         if (decode) {
             valueString = decodeValue(valueString);
         }
+        PropertyTypeDefinition propDef = parsePropDef(valueString);
+        if (propDef == null) return false;
+        String rawValue = parseRawValue(valueString);
+        if (rawValue == null || "".equals(rawValue)) return false;
 
         Property prop = resource.getProperty(propDef);
         if (prop == null) {
@@ -173,22 +164,66 @@ public class ExpandArchiveAction implements CopyAction {
         }
         ValueFormatter valueFormatter = propDef.getValueFormatter();
         String format = null;
-        if (propDef.getType() == PropertyType.Type.DATE) {
-            format = "iso-8601";
+        if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
+            format = "yyyy-MM-dd'T'HH:mm:ssZZ";
         }
 
         if (propDef.isMultiple()) {
             List<Value> values = new ArrayList<Value>();
-            String[] splitValues = valueString.split(",");
+            String[] splitValues = rawValue.split(",");
             for (String val : splitValues) {
                 values.add(valueFormatter.stringToValue(val.trim(), format, null));
             }
             prop.setValues(values.toArray(new Value[values.size()]));
         } else {
-            prop.setValue(valueFormatter.stringToValue(valueString.trim(), format, null));
+            prop.setValue(valueFormatter.stringToValue(rawValue.trim(), format, null));
         }
         return true;
     }
+    
+    private PropertyTypeDefinition parsePropDef(String valueString) {
+        if (!valueString.startsWith("prefix:")) {
+            return null;
+        }
+            
+        String prefix = null;
+        int idx = "prefix:".length();
+        if (valueString.charAt(idx) == ' ') {
+            idx++;
+        } else {
+            int i = idx;
+            while (valueString.charAt(i) != ' ') {
+                i++;
+            }
+            prefix = valueString.substring("prefix:".length(), i);
+            idx = i + 1;
+        }
+
+        String name = null;
+
+        if (!valueString.substring(idx).startsWith("name:")) {
+            return null;
+        }
+        idx += "name:".length();
+        int nameEndIdx = idx;
+        while (valueString.charAt(nameEndIdx) != ' ') {
+            nameEndIdx++;
+        }
+        name = valueString.substring(idx, nameEndIdx);
+        return this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
+    }
+
+    private String parseRawValue(String valueString) {
+        // Assume correctly formatted string
+        int idx = "prefix:".length();
+        while (valueString.charAt(idx) != ' ') idx++;
+        idx++;
+        idx += "name:".length();
+        while (valueString.charAt(idx) != ' ') idx++;
+        idx++;
+        return valueString.substring(idx);
+    }
+    
 
     private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode) throws Exception {
         String actionName = name.substring("X-vrtx-acl-".length());
@@ -232,21 +267,12 @@ public class ExpandArchiveAction implements CopyAction {
     }
     
 
-    private String decodeValue(String s) throws Exception {
-        // &esc;rn --> \r\n
-        // &esc;r --> \r
-        // &esc;n --> \n
-        // &esc;&esc; --> &esc;
-        
-        s = s.replaceAll("&esc;rn", "\r\n");
-        s = s.replaceAll("&esc;r", "\r");
-        s = s.replaceAll("&esc;n", "\n");
-        s = s.replaceAll("&esc;&esc;", "&esc;");
-
-        // s = insertLineContinuations(s);
+    private String decodeValue(String s) {
+        s = s.replaceAll("_esc_n_", "\n");
+        s = s.replaceAll("_esc_r_", "\r");
+        s = s.replaceAll("_esc_u_", "_");
         return s;
-    }
-    
+    }    
     
     private void createDirectoryStructure(String token, String dir, Set<String> dirCache) throws Exception {
         String[] path = URLUtil.splitUriIncrementally(dir);

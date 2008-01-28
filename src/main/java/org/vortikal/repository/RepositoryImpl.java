@@ -963,10 +963,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     public void setTempDir(String tempDirPath) {
-        File tempDir = new File(tempDirPath);
-        if (tempDir.exists() && tempDir.isDirectory()) {
-            this.tempDir = tempDir;
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " does not exist");
         }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
     }
     
     public void setMaxComments(int maxComments) {
@@ -977,7 +983,4 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         this.maxComments = maxComments;
     }
-    
-
-
 }

@@ -58,6 +58,7 @@ import org.vortikal.util.web.URLUtil;
 public class CreateArchiveAction implements CopyAction {
 
     private Repository repository;
+    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     
     public void process(String uri, String copyUri) throws Exception {
 
@@ -68,35 +69,43 @@ public class CreateArchiveAction implements CopyAction {
         if (!resource.isCollection()) {
             throw new RuntimeException("Cannot archive a single Resource, must be a collection");
         }
-        InputStream jar = createArchive(token, resource);
-        Resource dest = this.repository.createDocument(token, copyUri);
-        this.repository.storeContent(token, dest.getURI(), jar);
+        File jar = null;
+        try {
+            jar = createArchive(token, resource);
+            Resource dest = this.repository.createDocument(token, copyUri);        
+            InputStream in = new FileInputStream(jar);
+            this.repository.storeContent(token, dest.getURI(), in);
+        } finally {
+            if (jar != null) jar.delete();
+        }
     }
-
     
-    private InputStream createArchive(String token, Resource r) throws Exception {
+    private File createArchive(String token, Resource r) throws Exception {
         
-        File outFile = File.createTempFile("vrtx-archive", "jar");
+        File outFile = File.createTempFile("vrtx-archive", "jar", this.tempDir);
         FileOutputStream out = new FileOutputStream(outFile);
         BufferedOutputStream bo = new BufferedOutputStream(out);
 
         int rootLevel = URLUtil.splitUri(r.getURI()).length;
         
-        Manifest manifest = createManifest(token, rootLevel, r);
-        JarOutputStream jo = new JarOutputStream(bo, manifest);
-
-        addEntry(token, rootLevel, r, jo);
-
-        jo.close();
-        bo.close();
-        return new FileInputStream(outFile);
+        File tmp = null;
+        try {
+            tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
+            PrintWriter manifestOut = new PrintWriter(new FileOutputStream(tmp));
+            writeManifest(token, rootLevel, r, manifestOut);
+            Manifest manifest = new Manifest(new FileInputStream(tmp));
+            JarOutputStream jo = new JarOutputStream(bo, manifest);
+            addEntry(token, rootLevel, r, jo);
+            jo.close();
+            bo.close();
+            return outFile;
+        } finally {
+            if (tmp != null) tmp.delete();
+        }
     }
 
-    private Manifest createManifest(String token, int rootLevel, Resource r) throws Exception {
+    private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out) throws Exception {
 
-        File tmp = File.createTempFile("tmp-manifest", "vrtx");
-        PrintWriter out = new PrintWriter(new FileOutputStream(tmp));
-        
         out.println("Manifest-Version: 1.0");
         out.println("Created-By: vrtx");
         out.println("X-vrtx-archive-version: 1.0");
@@ -106,7 +115,6 @@ public class CreateArchiveAction implements CopyAction {
         out.flush();
         out.close();
 
-        return new Manifest(new FileInputStream(tmp));
     }
     
     private String getJarPath(Resource resource, int fromLevel) {
@@ -290,6 +298,20 @@ public class CreateArchiveAction implements CopyAction {
     
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+
+    public void setTempDir(String tempDirPath) {
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " does not exist");
+        }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
     }
 
     

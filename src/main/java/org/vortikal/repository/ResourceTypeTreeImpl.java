@@ -517,7 +517,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             if (propDefMap.get(propDef.getName()) == null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Registering property type definition "
-                            + propDef.getName());
+                            + propDef + " with namespace : " + namespace);
                 }
 
                 propDefMap.put(propDef.getName(), propDef);
@@ -621,9 +621,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 sb.append("  ");
             sb.append("+--");
         }
-
-        sb.append("[").append(def.getNamespace()).append("] ").append(
-                def.getName());
+        sb.append(" ");
+        sb.append(def.getName());
+        if (def.getNamespace() != Namespace.DEFAULT_NAMESPACE) {
+            sb.append(" [ns: ").append(def.getNamespace().getUri()).append("]");
+        }
         if (def instanceof MixinResourceTypeDefinition) {
             sb.append(" (mixin)");
         }
@@ -640,8 +642,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             }
         }
 
-        PropertyTypeDefinition[] definitions = def.getPropertyTypeDefinitions();
-        printPropertyDefinitions(sb, level, definitions);
+        PropertyTypeDefinition[] propDefs = def.getPropertyTypeDefinitions();
+        printPropertyDefinitions(sb, level, def, propDefs);
         
         List<PrimaryResourceTypeDefinition> children = this.parentChildMap.get(def);
 
@@ -652,17 +654,25 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
     }
 
-    private void printPropertyDefinitions(StringBuilder sb, int level, PropertyTypeDefinition[] definitions) {
-        if (definitions != null) {
-            for (PropertyTypeDefinition definition: definitions) {
+    private void printPropertyDefinitions(StringBuilder sb, int level, 
+            ResourceTypeDefinition resourceType, PropertyTypeDefinition[] propDefs) {
+        if (propDefs != null) {
+            for (PropertyTypeDefinition definition: propDefs) {
                 sb.append("  ");
                 for (int j = 0; j < level; j++)
                     sb.append("  ");
+
+                if (resourceType.getNamespace() != Namespace.DEFAULT_NAMESPACE) {
+                    sb.append(resourceType.getNamespace().getPrefix()).append(":");
+                }
+                sb.append(definition.getName());
+                sb.append(" ");
+                
                 String type = definition.getType().toString();
-                sb.append(type);
+                sb.append("(").append(type.toLowerCase());
                 if (definition.isMultiple())
                     sb.append("[]");
-                sb.append(" ").append(definition.getName());
+                sb.append(") ");
                 if (definition instanceof OverridablePropertyTypeDefinition) {
                     if (definition instanceof OverridablePropertyTypeDefinitionImpl) {
                         sb.append(" (overridable)");

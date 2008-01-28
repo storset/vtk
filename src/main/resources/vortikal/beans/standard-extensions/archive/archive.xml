@@ -48,6 +48,7 @@
 
   <bean id="manage.createArchiveAction" class="org.vortikal.web.controller.repository.copy.CreateArchiveAction">
     <property name="repository" ref="repository" />
+    <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
 

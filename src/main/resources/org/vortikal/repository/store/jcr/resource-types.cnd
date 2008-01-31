@@ -11,7 +11,8 @@
 [vrtx:acl] > nt:hierarchyNode
 + * (vrtx:action)
 
-[vrtx:hierarchyNode] > nt:hierarchyNode, mix:versionable, mix:lockable
+// [vrtx:hierarchyNode] > nt:hierarchyNode, mix:versionable, mix:lockable
+[vrtx:hierarchyNode] > nt:hierarchyNode, mix:referenceable, mix:lockable
 + vrtx:acl (vrtx:acl)
 - vrtx:resourceType (STRING) mandatory
 - vrtx:collection (STRING) mandatory

@@ -14,6 +14,7 @@
         <entry key="redirectToPermissions" value-ref="redirectToPermissionView" />
         <entry key="redirectToPreviewCollection" value-ref="redirectToPreviewCollectionView" />
         <entry key="displayResource" value-ref="displayResourceView" />
+        <entry key="collectionListingAsFeed" value-ref="collectionListingAsFeedView" />
       </map>
     </property>
   </bean>

@@ -32,9 +32,14 @@ package org.vortikal.edit.fckeditor;
 
 import java.io.File;
 import java.io.InputStream;
+import java.text.Collator;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,11 +47,10 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -56,10 +60,7 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 
-
 public class FCKeditorConnector implements Controller {
-
-            
     private Repository repository;
     private Service viewService;
     private String browseViewName;
@@ -98,6 +99,8 @@ public class FCKeditorConnector implements Controller {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
+        Locale locale = RequestContextUtils.getLocale(request);
+        
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("currentFolder", ensureTrailingSlash(command.getCurrentFolder()));
         model.put("command", command.getCommand().name());
@@ -125,7 +128,7 @@ public class FCKeditorConnector implements Controller {
         switch (c) {
             case GetFolders:
                 try {
-                    model.put("folders", listResources(token, command, COLLECTION_FILTER));
+                    model.put("folders", listResources(token, command, COLLECTION_FILTER, locale));
                 } catch (Exception e) {
                     model.put("error", 1);
                     model.put("customMessage", getErrorMessage(e));
@@ -135,8 +138,8 @@ public class FCKeditorConnector implements Controller {
             case GetFoldersAndFiles:
                 
                 try {
-                    model.put("folders", listResources(token, command, COLLECTION_FILTER));
-                    model.put("files", listResources(token, command, fileFilter));
+                    model.put("folders", listResources(token, command, COLLECTION_FILTER, locale));
+                    model.put("files", listResources(token, command, fileFilter, locale));
                 } catch (Exception e) {
                     model.put("error", 1);
                     model.put("customMessage", getErrorMessage(e));
@@ -158,13 +161,15 @@ public class FCKeditorConnector implements Controller {
         return new ModelAndView(this.browseViewName, model);
     }
     
-    private Map<String, Map> listResources(String token, FCKeditorFileBrowserCommand command,
-                                           Filter filter) throws Exception {
+    private Map<String, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
+                                           Filter filter, Locale locale) throws Exception {
 
         Resource[] children = this.repository.listChildren(
             token, command.getCurrentFolder(), true);
 
-        Map<String, Map> result = new HashMap<String, Map>();
+        Comparator comparator = Collator.getInstance(locale);
+        Map<String, Map<String, Object>> result = new TreeMap<String, Map<String, Object>>(comparator);
+
         for (Resource r: children) {
             if (!filter.isAccepted(r)) {
                 continue;
@@ -363,5 +368,4 @@ public class FCKeditorConnector implements Controller {
                  resource.getContentType().equalsIgnoreCase("application/x-shockwave-flash");
          }
     };
-
 }

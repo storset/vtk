@@ -99,13 +99,8 @@ public class DeleteCommentController extends AbstractController implements Initi
         if (this.deleteAllComments) {
             this.repository.deleteAllComments(token, resource);
         } else {
-            int id = -1;
-            try {
-                id = Integer.parseInt(request.getParameter("comment-id"));
-            } catch (Throwable t) {
-                throw new ResourceNotFoundException("No such comment");
-            }
-
+            String id = request.getParameter("comment-id");
+            if (id == null) throw new ResourceNotFoundException("Missing comment-id");
             List<Comment> comments = this.repository.getComments(token, resource);
             Comment comment = findComment(id, comments);
             if (comment == null) {
@@ -120,9 +115,9 @@ public class DeleteCommentController extends AbstractController implements Initi
         return new ModelAndView(this.viewName, model);
     }
 
-    private Comment findComment(int id, List<Comment> comments) {
+    private Comment findComment(String id, List<Comment> comments) {
         for (Comment c: comments) {
-            if (id == c.getID()) {
+            if (c.getID().equals(id)) {
                 return c;
             }
         }

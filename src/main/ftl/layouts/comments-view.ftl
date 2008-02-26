@@ -61,11 +61,11 @@
   <#assign rowclass="even" />
 
     <#list comments as comment>
-      <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?c}">
+      <div class="vrtx-comment ${rowclass}" id="comment-${comment.ID?html}">
         <#if config.titlesEnabled>
           <div class="comment-title">
             <#if baseCommentURL?exists>
-              <a href="${(baseCommentURL + '#comment-' + comment.ID?c)?html}">${comment.title?html}</a>
+              <a href="${(baseCommentURL + '#comment-' + comment.ID)?html}">${comment.title?html}</a>
               <#else>
                 ${comment.title?html}
               </#if>
@@ -83,13 +83,13 @@
       <div class="comment-info">
         ${comment.author?html} -
         <@vrtx.date value=comment.time format='long' />
-        <#if deleteCommentURLs[comment.ID?c]?exists>
+        <#if deleteCommentURLs[comment.ID?html]?exists>
           <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>
           <#assign confirmation>
             <@vrtx.msg code="commenting.delete.confirmation" 
                        default="Are you sure you want to delete this comment?" />
           </#assign>
-          (&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID?c]?html}">${message}</a>&nbsp;)
+          (&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID]?html}">${message}</a>&nbsp;)
         </#if>
       </div>
     </div>

@@ -52,17 +52,17 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         return comments;
     }
 
-    public void delete(Comment comment) {
+    public void deleteComment(Comment comment) {
         String sqlMap = getSqlMap("deleteComment");
         getSqlMapClientTemplate().delete(sqlMap, comment);
     }
     
-    public void deleteAll(Resource resource) {
+    public void deleteAllComments(Resource resource) {
         String sqlMap = getSqlMap("deleteAllComments");
         getSqlMapClientTemplate().delete(sqlMap, resource);
     }
 
-    public Comment create(Resource resource, Comment comment) {
+    public Comment createComment(Resource resource, Comment comment) {
         String sqlMap = getSqlMap("insertComment");
         getSqlMapClientTemplate().insert(sqlMap, comment);
         // XXX: define new semantics for creating a new comment:
@@ -72,7 +72,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
     }
     
 
-    public Comment update(Comment comment) {
+    public Comment updateComment(Comment comment) {
         String sqlMap = getSqlMap("updateComment");
         getSqlMapClientTemplate().update(sqlMap, comment);
         sqlMap = getSqlMap("loadCommentById");

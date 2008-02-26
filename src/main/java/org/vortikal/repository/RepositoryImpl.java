@@ -39,8 +39,11 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -68,7 +71,6 @@ import org.vortikal.util.repository.URIUtil;
  * XXX: namespace locking/concurrency
  * XXX: Evaluate exception practice, handling and propagation
  * XXX: transaction demarcation
- * XXX: split dao into multiple daos
  * XXX: externalize caching
  * XXX: duplication of owner and inherited between resource and acl.
  * 
@@ -93,6 +95,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private int maxComments = 1000;
 
+    private PeriodicThread periodicThread;
+    
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
     }
@@ -723,7 +727,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setContent(text);
             comment.setApproved(true);
 
-            comment = this.commentDAO.create(original, comment);
+            comment = this.commentDAO.createComment(original, comment);
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -749,7 +753,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
-            this.commentDAO.delete(comment);
+            this.commentDAO.deleteComment(comment);
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
@@ -774,7 +778,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
-            this.commentDAO.deleteAll(resource);
+            this.commentDAO.deleteAllComments(resource);
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
@@ -812,7 +816,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
-            comment = this.commentDAO.update(comment);
+            comment = this.commentDAO.updateComment(comment);
             return comment;
 
         } catch (IOException e) {
@@ -833,7 +837,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         ResourceImpl resource = this.dao.load(uri);
 
         if (resource != null) { 
-            throw new IllegalOperationException("Resource already exists");
+            throw new ResourceOverwriteException("Resource already exists");
         }
 
         String parentURI = URIUtil.getParentURI(uri);
@@ -912,6 +916,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.setReadOnly(readOnly);
     }
 
+    
+    private void periodicJob() {
+        if (!this.isReadOnly()) {
+            this.dao.deleteExpiredLocks(new Date());
+        }
+    }
 
     @Required
     public void setTokenManager(TokenManager tokenManager) {
@@ -983,4 +993,47 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         this.maxComments = maxComments;
     }
+    
+    public void init() {
+        this.periodicThread = new PeriodicThread(600);
+        this.periodicThread.start();
+    }
+
+    public void destroy() {
+        this.periodicThread.kill();
+    }    
+
+    private static Log periodicLogger = LogFactory.getLog(PeriodicThread.class);
+
+
+    
+    private class PeriodicThread extends Thread {
+
+        private long sleepSeconds;
+        private boolean alive = true;
+    
+        public PeriodicThread(long sleepSeconds) {
+            this.sleepSeconds = sleepSeconds;
+        }
+
+        public void kill() {
+            this.alive = false;
+            this.interrupt();
+        }
+        
+        public void run() {
+            while (this.alive) {
+                try {
+                    sleep(1000 * this.sleepSeconds);
+                    periodicJob();
+                } catch (InterruptedException e) {
+                    this.alive = false;
+                } catch (Throwable t) {
+                    periodicLogger.warn("Caught exception in cleanup thread", t);
+                }
+            }
+            periodicLogger.info("Terminating refresh thread");
+        }
+    }
+
 }

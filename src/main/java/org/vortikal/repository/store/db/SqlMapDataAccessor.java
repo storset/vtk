@@ -140,9 +140,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     }
 
 
-    public void deleteExpiredLocks() {
+    public void deleteExpiredLocks(Date d) {
         String sqlMap = getSqlMap("deleteExpiredLocks");
-        getSqlMapClientTemplate().update(sqlMap, new Date());
+        getSqlMapClientTemplate().update(sqlMap, d);
     }
 
     

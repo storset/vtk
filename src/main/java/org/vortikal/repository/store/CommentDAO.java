@@ -39,12 +39,12 @@ public interface CommentDAO {
 
     public List<Comment> listCommentsByResource(Resource resource) throws RuntimeException;
 
-    public void delete(Comment comment) throws RuntimeException;
+    public void deleteComment(Comment comment) throws RuntimeException;
 
-    public void deleteAll(Resource resource) throws RuntimeException;
+    public void deleteAllComments(Resource resource) throws RuntimeException;
 
-    public Comment create(Resource resource, Comment comment) throws RuntimeException;
+    public Comment createComment(Resource resource, Comment comment) throws RuntimeException;
 
-    public Comment update(Comment comment) throws RuntimeException;
+    public Comment updateComment(Comment comment) throws RuntimeException;
 
 }

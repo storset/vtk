@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.vortikal.repository.ChangeLogEntry;
@@ -87,7 +88,7 @@ public interface DataAccessor {
     /**
      * Deletes all expired locks (should be called periodically)
      */
-    public void deleteExpiredLocks() throws DataAccessException;
+    public void deleteExpiredLocks(Date expireDate) throws DataAccessException;
 
 
     /**

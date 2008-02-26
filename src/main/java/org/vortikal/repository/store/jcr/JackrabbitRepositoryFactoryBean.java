@@ -32,13 +32,11 @@ package org.vortikal.repository.store.jcr;
 
 import java.io.File;
 
-import javax.jcr.Credentials;
-import javax.jcr.LoginException;
-import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.springframework.beans.factory.FactoryBean;
@@ -50,6 +48,7 @@ public class JackrabbitRepositoryFactoryBean implements FactoryBean {
     private Resource config;
     private String home;
     private Repository repository;
+    private static Log logger = LogFactory.getLog(JackrabbitRepositoryFactoryBean.class);
     
     public synchronized Object getObject() throws Exception {
         if (this.repository != null) {
@@ -58,12 +57,13 @@ public class JackrabbitRepositoryFactoryBean implements FactoryBean {
         
         File homeDir = new File(this.home);
         if (!homeDir.exists()) {
+            logger.info("Repository home directory does not exist, creating:" + homeDir.getAbsolutePath());
             homeDir.mkdirs();
         }
         // Load the configuration and create the repository
-        RepositoryConfig rc = RepositoryConfig.create(config.getInputStream(),
+        logger.info("Reading repository config from " + this.config);
+        RepositoryConfig rc = RepositoryConfig.create(this.config.getInputStream(),
                 home);
-
         this.repository = new InternalRepo(rc);
         return this.repository;
     }
@@ -87,6 +87,7 @@ public class JackrabbitRepositoryFactoryBean implements FactoryBean {
     private class InternalRepo extends RepositoryImpl {
         public InternalRepo(RepositoryConfig rc) throws RepositoryException {
             super(rc);
+            logger.info("Configs: " + rc.getWorkspaceConfigs());
         }
     }
 

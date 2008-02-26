@@ -37,7 +37,7 @@ public final class Comment {
 
     private String uri;
 
-    private int id = -1;
+    private String id = null;
 
     private Date time;
     private String author;
@@ -45,11 +45,11 @@ public final class Comment {
     private String content;
     private boolean approved = false;
 
-    public int getID() {
+    public String getID() {
         return this.id;
     }
     
-    public void setID(int id) {
+    public void setID(String id) {
         this.id = id;
     }
     

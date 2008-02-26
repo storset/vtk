@@ -31,6 +31,7 @@
 package org.vortikal.repository.store;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -468,8 +469,8 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    public void deleteExpiredLocks() throws DataAccessException {
-        this.wrappedAccessor.deleteExpiredLocks();
+    public void deleteExpiredLocks(Date expireDate) throws DataAccessException {
+        this.wrappedAccessor.deleteExpiredLocks(expireDate);
     }
     
 

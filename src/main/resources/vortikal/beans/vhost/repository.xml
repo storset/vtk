@@ -209,40 +209,6 @@
     <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
-  <!-- Quartz scheduled jobs -->
-
-  <bean id="repository.schedulerFactory"
-        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="triggers">
-      <list>
-        <ref local="repository.unlockSimpleTrigger"/>
-      </list>
-    </property>
-  </bean>
-
-
-  <bean id="repository.unlockSimpleTrigger"
-        class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="jobDetail">
-      <!-- see the example of method invoking job above -->    
-      <ref bean="repository.cleanupLocksJobDetail"/>
-    </property>
-    <property name="startDelay">
-      <!-- 60 seconds -->
-      <value>60000</value>
-    </property>
-    <property name="repeatInterval">
-      <!-- repeat every 600 seconds -->
-      <value>600000</value>
-    </property>
-  </bean>
-
-  <bean id="repository.cleanupLocksJobDetail" 
-        class="org.vortikal.scheduling.quartz.VortikalMethodInvokingJobDetailFactoryBean">
-    <property name="group" value="repository" />
-    <property name="targetObject"><ref bean="repository.database"/></property>
-    <property name="targetMethod"><value>deleteExpiredLocks</value></property>
-  </bean>
 
    <bean id="messageSource"
          class="org.vortikal.web.context.ChildDelegatingMessageSource">

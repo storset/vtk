@@ -19,6 +19,12 @@
                             "http://jackrabbit.apache.org/dtd/repository-1.2.dtd">
 <!-- Example Repository Configuration File -->
 <Repository>
+
+    <DataStore class="org.apache.jackrabbit.core.data.FileDataStore">
+        <param name="path" value="${rep.home}/repository/global-datastore"/>
+        <param name="minRecordLength" value="100"/>
+    </DataStore>
+
     <!--
         virtual file system where the repository stores global state
         (e.g. registered namespaces, custom node types, etc.)
@@ -58,7 +64,7 @@
         workspace configuration template:
         used to create the initial workspace if there's no workspace yet
     -->
-    <Workspace name="Jackrabbit Core">
+    <Workspace name="template_ws">
         <!--
             virtual file system of the workspace:
             class: FQN of class implementing the FileSystem interface
@@ -70,10 +76,16 @@
             persistence manager of the workspace:
             class: FQN of class implementing the PersistenceManager interface
         -->
+        <!--
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.db.DerbyPersistenceManager">
           <param name="url" value="jdbc:derby:${wsp.home}/db;create=true"/>
-          <param name="schemaObjectPrefix" value="Jackrabbit Core_"/>
+          <param name="schemaObjectPrefix" value="ws_"/>
         </PersistenceManager>
+        -->
+
+        <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.BundleFsPersistenceManager">
+        </PersistenceManager>
+
         <!--
             Search index and the file system it uses.
             class: FQN of class implementing the QueryHandler interface
@@ -101,10 +113,16 @@
             a 'normal' persistence manager, but this could change in future
             implementations.
         -->
+        <!--
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.db.DerbyPersistenceManager">
           <param name="url" value="jdbc:derby:${rep.home}/version/db;create=true"/>
           <param name="schemaObjectPrefix" value="version_"/>
         </PersistenceManager>
+        -->
+
+        <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.BundleFsPersistenceManager">
+        </PersistenceManager>
+
     </Versioning>
 
     <!--

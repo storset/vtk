@@ -31,14 +31,14 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -129,7 +129,55 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
     }
 
 
+    private void loadRecursively(Resource r, Set<Resource> result) throws Exception {
+        if (r.isOfType(this.templateResourceType)) {
+            result.add(r);
+        }
+        if (r.isCollection()) {
+            Resource[] children =
+                this.repository.listChildren(null, r.getURI(), true);
+            for (Resource child : children) {
+                loadRecursively(child, result);
+            }           
+        }
+    }
+    
     public synchronized void load() throws Exception {
+
+        Map<String, Template> map = new HashMap<String, Template>();
+
+        Resource base = this.repository.retrieve(null, this.collectionName, true);
+        Set<Resource> templatesResources = new HashSet<Resource>();
+        loadRecursively(base, templatesResources);
+
+        int numTemplates = 0;
+
+        for (Resource resource: templatesResources) {
+
+            TemplateSource templateSource =
+                new RepositoryTemplateSource(resource.getURI(), this.repository, null);
+
+            try {
+                Template template = new StandardDecoratorTemplate(this.templateParser, templateSource);
+                String name = resource.getURI().substring(this.collectionName.length() + 1);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Loaded template '" + name + "'");
+                }
+                map.put(name, template);
+                numTemplates++;
+            } catch (Throwable t) {
+                logger.info("Unable to compile template from resource " + resource, t);
+            }
+        }
+        if (logger.isInfoEnabled()) {
+            logger.info("Loaded " + numTemplates + " template(s) from collection '"
+                        + this.collectionName + "'");
+        }
+
+        this.templatesMap = map;
+    }
+    
+    public synchronized void old_load() throws Exception {
 
         Map<String, Template> map = new HashMap<String, Template>();
         Resource[] resources =
@@ -162,7 +210,6 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
 
         this.templatesMap = map;
     }
-    
 
 }
 

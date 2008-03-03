@@ -11,19 +11,33 @@
 [vrtx:acl] > nt:hierarchyNode
 + * (vrtx:action)
 
-// [vrtx:hierarchyNode] > nt:hierarchyNode, mix:versionable, mix:lockable
-[vrtx:hierarchyNode] > nt:hierarchyNode, mix:referenceable, mix:lockable
+[vrtx:comment] > nt:hierarchyNode
+- vrtx:commentAuthor (STRING) mandatory
+- vrtx:commentTitle (STRING)
+- vrtx:commentTime (DATE) mandatory
+- vrtx:commentBody (BINARY) mandatory
+
+[vrtx:comments] > nt:hierarchyNode
++ * (vrtx:comment)
+
+// [vrtx:hierarchyNode] > nt:hierarchyNode, mix:referenceable, mix:lockable
+[vrtx:hierarchyNode] > nt:hierarchyNode, mix:versionable, mix:lockable
 + vrtx:acl (vrtx:acl)
++ vrtx:comments (vrtx:comments)
 - vrtx:resourceType (STRING) mandatory
 - vrtx:collection (STRING) mandatory
 - * (UNDEFINED)
+version
 - * (UNDEFINED) multiple
+version
 
 [vrtx:folder] > vrtx:hierarchyNode
 + * (vrtx:hierarchyNode)
+version
 
 [vrtx:file] > vrtx:hierarchyNode
 - vrtx:content (BINARY) mandatory primary
+version
 
 [vrtx:lock] > nt:hierarchyNode
 - vrtx:jcrLockToken (STRING) mandatory
@@ -32,4 +46,5 @@
 - vrtx:ownerInfo (STRING) mandatory
 - vrtx:owner (STRING) mandatory
 - vrtx:timeOut (STRING) mandatory
+- vrtx:nodeRef (REFERENCE) mandatory
 

@@ -78,7 +78,18 @@ public class StreamReader implements CommandReader {
 
     public String readLine(PrintStream out) throws IOException {
         out.print(this.prompt);
-        return this.reader.readLine();
+        StringBuilder result = new StringBuilder();
+        while (true) {
+            String line = this.reader.readLine();
+            if (line.endsWith("\\")) {
+                result.append(line.substring(0, line.length() - 1));
+                out.print("> ");
+            } else {
+                result.append(line);
+                break;
+            }
+        }
+        return result.toString(); 
     }
     
 

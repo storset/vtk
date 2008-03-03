@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="twiki2html.service" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="displayResourceService" />
+    <property name="assertions">
+      <list>
+        <ref bean="twiki2html.fileNameAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="twiki2html.handler" />
+  </bean>
+
+  <bean id="twiki.previewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="twiki2html.fileNameAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="previewIframeHandler" />
+  </bean>
+
+
+  <bean id="twiki2html.fileNameAssertion"
+        class="org.vortikal.web.service.ResourceURIRegexpAssertion">
+    <property name="pattern" value=".*\.twiki" />
+  </bean>
+
+
+
+  <bean id="twiki2html.handler" class="org.vortikal.web.controller.DisplayResourceController"
+        parent="requestLocalRepositoryAware">
+    <property name="viewName" value="twiki2html.view" />
+    <property name="displayProcessed" value="true" />
+  </bean>
+
+  <bean id="twiki2html.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="twiki2html.view"  value-ref="twiki2html.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="twiki2html.view" class="org.vortikal.web.view.DoxiaHtmlView">
+    <property name="parserClass" value="org.apache.maven.doxia.module.twiki.TWikiParser" />
+    <property name="sourceKey" value="resourceStream" />
+  </bean>
+
+</beans>

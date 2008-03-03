@@ -547,7 +547,11 @@ public class Cache implements DataAccessor, InitializingBean {
         this.hits += hits;
         this.misses += misses;
     }
+
     
+    public void dump(java.io.PrintStream out) {
+        this.items.dump(out);
+    }
 
     private class Items {
         private Map<String, Item> map = new ConcurrentReaderHashMap();
@@ -656,18 +660,13 @@ public class Cache implements DataAccessor, InitializingBean {
             }
         }
 
-        private String dump() {
-            StringBuffer s = new StringBuffer();
+        public void dump(java.io.PrintStream out) {
             Item i = this.in;
 
             while (i != null) {
-                s.append("[");
-                s.append(i.getResource().getURI());
-                s.append("]");
+                out.println(i.getResource().getURI());
                 i = i.older;
             }
-
-            return s.toString();
         }
     }
 

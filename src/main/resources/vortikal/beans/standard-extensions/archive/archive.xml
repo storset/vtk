@@ -48,6 +48,7 @@
 
   <bean id="manage.createArchiveAction" class="org.vortikal.web.controller.repository.copy.CreateArchiveAction">
     <property name="repository" ref="repository" />
+    <property name="archiver" ref="manage.archiver" />
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
@@ -101,8 +102,14 @@
 
   <bean id="manage.expandArchiveAction" class="org.vortikal.web.controller.repository.copy.ExpandArchiveAction">
     <property name="repository" ref="repository" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="archiver" ref="manage.archiver" />
   </bean>
 
+
+  <bean id="manage.archiver" class="org.vortikal.util.repository.ResourceArchiver">
+    <property name="repository" ref="repository" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
 
 </beans>

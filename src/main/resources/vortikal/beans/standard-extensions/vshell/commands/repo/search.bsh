@@ -1,0 +1,32 @@
+getDescription() {
+    return "Searches the repository";
+}
+
+
+getUsage() {
+    return "repo search <query:string>";
+}
+
+void execute(context, args, out) {
+
+    repo = context.get("context").getBean("repository");
+    token = context.get("context").getBean("writeAllToken");
+    indexSearcher = context.get("context").getBean("systemIndexSearcher");
+    queryParserFactory = context.get("context").getBean("queryParserFactory");
+
+    queryExp = args.get("query");
+
+    parser = queryParserFactory.getParser();
+    query = parser.parse(queryExp);
+
+    search = new org.vortikal.repository.search.Search();
+    search.setQuery(query);
+
+    rs = indexSearcher.execute(token, search);
+
+    for (r: rs.getAllResults()) {
+        out.println(r.getURI());
+    }
+}
+
+

@@ -1,0 +1,33 @@
+
+getDescription() {
+    return "Creates a JAR archive";
+}
+
+getUsage() {
+    return "archive create <file:string> <uri:string>";
+}
+
+
+void execute(context, args, out) {
+    repo = context.get("context").getBean("repository");
+    token = context.get("context").getBean("writeAllToken");
+    archiver = context.get("context").getBean("manage.archiver");
+    
+    file = args.get("file");
+    uri = args.get("uri");
+
+    org.vortikal.util.repository.ResourceArchiver.EventListener listener =
+        new org.vortikal.util.repository.ResourceArchiver.EventListener() {
+            
+            archived(String uri) {
+                out.println(uri);
+            }
+            expanded(String uri) {
+                out.println(uri);
+            }
+    };
+
+    stream = new java.io.FileOutputStream(file);
+    resource = repo.retrieve(token, uri, true);
+    archiver.createArchive(token, resource, stream, listener);
+}

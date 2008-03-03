@@ -1,0 +1,26 @@
+getDescription() {
+    return "Deletes the ACL on a resource";
+}
+
+getUsage() {
+    return "repo acl delete <uri:string>";
+}
+
+void execute(context, args, out) {
+
+    repo = context.get("context").getBean("repository");
+    token = context.get("context").getBean("writeAllToken");
+
+    uri = args.get("uri");
+
+    r = repo.retrieve(token, uri, true);
+    acl = r.getAcl();
+    if (r.isInheritedAcl()) {
+        out.print("ACL is already inherited");
+        return;
+    }
+    r.setInheritedAcl(true);
+    repo.storeACL(token, r);
+
+    out.println("ACL deleted");
+}

@@ -1,0 +1,65 @@
+getDescription() {
+    return "Grants or revokes permissions on a resource";
+}
+
+getUsage() {
+    return "repo acl update <operation:string> <permission:string> <uri:string> <principals:string...>";
+}
+
+void execute(context, args, out) {
+
+    repo = context.get("context").getBean("repository");
+    token = context.get("context").getBean("writeAllToken");
+
+    operation = args.get("operation");
+
+    if (!("grant".equals(operation) || "revoke".equals(operation))) {
+        out.println("Valid operations are 'grant' or 'revoke'");
+        return;
+    }
+
+    perm = args.get("permission");
+    uri = args.get("uri");
+    principalList = args.get("principals");
+
+    if (!repo.exists(token, uri)) {
+        out.println("No such resource");
+        return;
+    }
+
+    r = repo.retrieve(token, uri, true);
+
+    principals = new ArrayList();
+
+    for (p: principalList.split(" ")) {
+        if (p.startsWith("g:")) {
+
+            principals.add(new org.vortikal.security.Principal(
+                           p.substring(2), org.vortikal.security.Principal.Type.GROUP));
+        } else if (p.startsWith("pseudo:")) {
+            principals.add(org.vortikal.security.Principal.getPseudoPrincipal(p));
+        } else {
+            principals.add(new org.vortikal.security.Principal(
+                          p, org.vortikal.security.Principal.Type.USER));
+        }
+    }
+
+    action = org.vortikal.repository.Privilege.getActionByName(perm);
+    
+    acl = r.getAcl();
+    if (r.isInheritedAcl()) {
+        out.print("removing ACL inheritance");
+        r.setInheritedAcl(false);
+    }
+
+    for (p: principals) {
+        if ("grant".equals(operation)) {
+            acl.addEntry(action, p);
+        } else {
+            acl.removeEntry(action, p);
+        }
+    }
+
+    repo.storeACL(token, r);
+    out.println("ACL stored");
+}

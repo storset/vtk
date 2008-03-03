@@ -1,0 +1,96 @@
+
+getDescription() {
+    return "...";
+}
+
+getUsage() {
+    return "repo ls [<uri:string>] [<revision:string>]";
+}
+
+void execute(org.vortikal.shell.vshell.VShellContext c, String[] args, java.io.PrintStream out) {
+
+    repo = c.get("context").getBean("repository");
+    token = c.get("context").getBean("writeAllToken");
+
+    command = args[0];
+    
+    if ("cat".equals(command)) {
+        uri = args[1];
+        cat(uri);
+
+    } else if ("cd".equals(command)) {
+        uri = null;
+        if (args.length > 1) uri = args[1];
+        cd(c, repo, token, uri, out);
+
+    } else if ("ls".equals(command)) {
+        uri = null;
+        if (args.length > 1) uri = args[1];
+        ls(c, repo, token, uri, out);
+        
+    } else if ("info".equals(command)) {
+        uri = args[1];
+        info(repo, token, uri, out);
+
+    } else if ("find".equals(command)) {
+        uri = args[1];
+        find(repo, token, uri, out);
+
+    } else if ("search".equals(command)) {
+        query = args[1];
+        search(context, repo, token, query, out);
+
+    } else {
+        out.println("Unknown command: '" + command + "'");
+    }
+
+
+}
+
+
+
+
+
+
+
+
+pwd(context, out) {
+    cwd = context.get("cwd");
+    if (cwd == null) cwd = "/";
+    out.println(cwd);
+}
+
+cd(context, repo, token, uri, out) {
+    if (uri == null) {
+        context.set("cwd", "/");
+        return;
+    }
+
+    cwd = context.get("cwd");
+    if (cwd == null) {
+        cwd = "/";
+    }
+
+    path = args[0];
+    uri = path;
+    
+    if ("..".equals(uri)) {
+        uri = org.vortikal.util.repository.URIUtil.getParentURI(cwd);
+        if (uri == null) uri = "/";
+
+    } else if (!uri.startsWith("/")) {
+        uri = cwd + (cwd.endsWith("/") ? path : "/" + path);
+    }
+
+    if (!repo.exists(token, uri)) {
+        out.println("No such resource: " + path);
+        return;
+    }
+    context.set("cwd", uri);
+
+}
+
+
+
+
+

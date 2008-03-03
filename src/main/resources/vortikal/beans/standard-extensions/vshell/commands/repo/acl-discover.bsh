@@ -1,0 +1,18 @@
+getDescription() {
+    return "Discovers ACLs below a resource";
+}
+
+getUsage() {
+    return "repo acl discover <uri:string>";
+}
+
+void execute(context, args, out) {
+
+    backend = context.get("context").getBean("repository.cache");
+    
+    uri = args.get("uri");
+    aclNodes = backend.discoverACLs(uri);
+    for (n: aclNodes) {
+        out.println(n);
+    }
+}

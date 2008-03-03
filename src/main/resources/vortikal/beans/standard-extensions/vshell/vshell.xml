@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+
+   <bean id="vshell.console" class="org.vortikal.shell.vshell.VShell">
+      <property name="initFilesCSV" value="${vshell.InitFiles}" />
+      <property name="runEvalLoop" value="${vshell.RunEvalLoop}" />
+      <property name="consoleHandler">
+        <bean class="org.vortikal.shell.SocketHandlerThread">
+          <property name="port" value="${vshell.listenPort}" />
+          <property name="listenAddress" value="${vshell.listenAddress}" />
+        </bean>
+      </property>
+      <property name="securityContext">
+        <bean class="org.vortikal.security.SecurityContext">
+          <constructor-arg ref="writeAllToken" />
+          <constructor-arg ref="rootPrincipal" />
+        </bean>
+      </property>
+   </bean>
+
+
+   <lang:bsh id="vshell.repo.cat"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/cat.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+     <!--lang:property name="message" value="" /-->
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.find"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/find.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.info"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/info.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.ls"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/ls.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.search"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/search.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.acl-update"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/acl-update.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.acl-delete"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/acl-delete.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.acl-discover"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/acl-discover.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.cache"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/cache.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.repo.readonly"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/readonly.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.archive.create"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/archive/create.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.archive.expand"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/archive/expand.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.jcr.info"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/jcr/info.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.jcr.search"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/jcr/search.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.jcr.checkin"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/jcr/checkin.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.jcr.checkout"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/jcr/checkout.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+</beans>

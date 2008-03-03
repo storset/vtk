@@ -143,6 +143,9 @@ public abstract class AbstractConsole
         this.context = ctx;
     }
     
+    protected ApplicationContext getApplicationContext() {
+        return this.context;
+    }
     
     public final void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;

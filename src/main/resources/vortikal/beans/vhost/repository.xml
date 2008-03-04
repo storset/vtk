@@ -173,7 +173,7 @@
         class="org.vortikal.repository.RepositoryResourceHelperImpl">
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="contentStore" ref="repository.contentStore"/>
+    <property name="contentStore" ref="${repository.contentStore}"/>
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
   

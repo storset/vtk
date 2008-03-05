@@ -32,13 +32,15 @@ package org.vortikal.web.view.decorating.components;
 
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
-
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
@@ -51,7 +53,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     private View view;
     private boolean exposeComponentParameters = false;
     private String exposedParametersModelName = "componentRequest";
-    
+    private Set<String> exposedParameters = new HashSet<String>();
 
     @Required public void setView(View view) {
         this.view = view;
@@ -59,6 +61,10 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     public void setExposeComponentParameters(boolean exposeComponentParameters) {
         this.exposeComponentParameters = exposeComponentParameters;
+    }
+    
+    public void setExposedParameters(Set<String> exposedParameters) {
+        this.exposedParameters = exposedParameters;
     }
 
     public void setExposedParametersModelName(String exposedParametersModelName) {
@@ -83,8 +89,10 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
      *   </li>
      *   <li>If <code>exposeComponentParameters</code> is set, add an
      *     entry in the model under the name determined by
-     *     <code>exposedParametersModelName</code>, containing the set
-     *     of decorator request parameters.
+     *     <code>exposedParametersModelName</code>, containing either 
+     *     the full set of component parameters or a specified set, 
+     *     depending on whether the config parameter <code>exposedParameters</code>
+     *     is specified.
      *   <li>
      * </ol>
      *
@@ -111,6 +119,11 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
             Map<String, Object> parameters = new HashMap<String, Object>();
             for (Iterator<String> i = request.getRequestParameterNames(); i.hasNext();) {
                 String name = i.next();
+                if (!this.exposedParameters.isEmpty() 
+                        && !this.exposedParameters.contains(name)) {
+                    continue;
+                }
+
                 Object value = request.getParameter(name);
                 parameters.put(name, value);
             }

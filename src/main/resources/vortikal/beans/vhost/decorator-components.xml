@@ -186,6 +186,19 @@
     <property name="name" value="breadcrumb" />
     <property name="view" ref="decorating.breadcrumbComponent.view" />
     <property name="description" value="Inserts a breadcrumb trail to the current document" />
+    <property name="exposeComponentParameters" value="true" />
+    <property name="exposedParametersModelName" value="config" />
+    <property name="exposedParameters">
+      <set>
+        <value>downcase</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="downcase"
+               value="If set to 'true', display breadcrumb elements in lower-case. The default is 'false'." />
+      </map>
+    </property>
   </bean>
 
 

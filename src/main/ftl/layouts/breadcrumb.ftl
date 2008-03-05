@@ -18,4 +18,9 @@
   'breadcrumb' missing">
 </#if>
 
-<@brdcrmb.breadCrumb crumbs=breadcrumb />
+<#assign downcaseElements = false />
+<#if (config.downcase)?exists && (config.downcase) = 'true'>
+  <#assign downcaseElements = true />
+</#if>
+
+<@brdcrmb.breadCrumb crumbs=breadcrumb downcase=downcaseElements />

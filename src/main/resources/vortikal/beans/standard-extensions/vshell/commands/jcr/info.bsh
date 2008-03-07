@@ -23,6 +23,18 @@ void execute(context, args, out) {
     }
 }
 
+propval(value, type, out) {
+    if (PropertyType.BINARY == type) {
+        out.print("binary value: [");
+        buf = org.vortikal.util.io.StreamUtil.readInputStream(value.getStream());
+        out.print(new String(buf, "utf-8"));
+        out.print("]");
+    } else {
+        out.print("value: " + value.getString());
+    } 
+}
+
+
 info(session, path, out) {
     node = session.getItem(path);
     if (node instanceof javax.jcr.Property) {
@@ -31,6 +43,16 @@ info(session, path, out) {
         def = prop.getDefinition();
         out.println("definition: " + def.getName());
         out.println("onparentversion: " + OnParentVersionAction.nameFromValue(def.getOnParentVersion()));
+        if (prop.getDefinition().isMultiple()) {
+            for (val: prop.getValues()) {
+                propval(val, prop.getType(), out);
+                out.println(",");
+            }
+        } else {
+            propval(prop.getValue(), prop.getType(), out);
+            out.println("");
+        } 
+
         return;
     } 
 

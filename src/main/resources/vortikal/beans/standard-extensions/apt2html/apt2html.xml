@@ -13,12 +13,22 @@
     <property name="handler" ref="apt2html.handler" />
   </bean>
 
+  <bean id="apt2html.previewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="apt2html.fileNameAssertion" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="previewIframeHandler" />
+    </property>
+  </bean>
+
   <bean id="apt2html.fileNameAssertion"
         class="org.vortikal.web.service.ResourceURIRegexpAssertion">
     <property name="pattern" value=".*\.apt$" />
   </bean>
-
-
 
   <bean id="apt2html.handler" class="org.vortikal.web.controller.DisplayResourceController"
         parent="requestLocalRepositoryAware">

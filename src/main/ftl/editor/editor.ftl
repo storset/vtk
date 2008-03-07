@@ -222,7 +222,7 @@
 
       var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
       if (contentChange) {
-        return 'You have unsaved changes. Are you sure you want to leave this page?';
+        return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
       }
     }
 

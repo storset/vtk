@@ -81,6 +81,7 @@
           <property name="modelDataMap">
             <map>
               <entry key="cssURLs" value-ref="plainEditCSSURLs" />
+              <entry key="md5jsURL" value="${cssBaseURL}/md5/md5.js" />
             </map>
           </property>
         </bean>

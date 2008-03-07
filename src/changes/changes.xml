@@ -41,9 +41,6 @@
       <action type="fix">
         Fix crash in collection listing RSS feed service.
       </action>
-      <action type="update">
-        Library update: Updgraded Spring to version 2.5.2
-      </action>
     </release>
 
     <release version="0.4.2" date="2008-01-18" description="Release 0.4.2">

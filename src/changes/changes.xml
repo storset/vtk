@@ -11,6 +11,39 @@
     <release version="0.4.3-SNAPSHOT" date="In SVN" description="Release 0.4.3">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Added HTML transformation for resources of type APT (Almost
+        Plain Text) and TWiki syntax. Based on Maven's Doxia content
+        generation framework: http://maven.apache.org/doxia/
+      </action>
+      <action type="add">
+        Added a simple command shell ("vshell"), a more high-level
+        alternative to using BeanShell directly.
+      </action>
+      <action type="add">
+        Add confirmation dialog when user leaves plain text edit with
+        unsaved changes.
+      </action>
+      <action type="add">
+        Decorating: add option to downcase path elements in the
+        breadcrumb component.
+      </action>
+      <action type="add">
+        Decorating: add support for catalog structures under
+        "/vrtx/decorating/templates".
+      </action>
+      <action type="update">
+        Upgraded Yahoo YUI to version 2.5.0.
+      </action>
+      <action type="fix">
+        Archive tool: various minor fixes.
+      </action>
+      <action type="fix">
+        Fix crash in collection listing RSS feed service.
+      </action>
+      <action type="update">
+        Library update: Updgraded Spring to version 2.5.2
+      </action>
     </release>
 
     <release version="0.4.2" date="2008-01-18" description="Release 0.4.2">

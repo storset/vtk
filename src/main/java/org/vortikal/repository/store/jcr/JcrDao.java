@@ -162,10 +162,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             workspace.copy(path, newPath);
 
             if (!copyACLs) {
-                String[] acls = discoverACLs(dest.getURI());
-                for (String aclUri : acls) {
-                    String aclNodePath = uriToPath(aclUri);
-                    Node node = (Node) session.getItem(aclNodePath);
+                String[] acls = discoverACLs(newResource.getURI());
+                for (String resourceWithAclUri : acls) {
+                    String resourceWithAclPath = uriToPath(resourceWithAclUri);
+                    
+                    Node node = (Node) session.getItem(resourceWithAclPath);
                     if (node.hasNode(VRTX_ACL_NAME)) {
                         node.getNode(VRTX_ACL_NAME).remove();
                     }
@@ -760,7 +761,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             stmt.append(uri);
             if (!"/".equals(uri)) {
                 stmt.append("/");
-            } 
+            }
             stmt.append("%'");
             
             Query query = session.getWorkspace().getQueryManager().createQuery(stmt.toString(), Query.SQL); 

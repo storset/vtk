@@ -60,5 +60,5 @@ public class PropertyWildcardQuery extends AbstractPropertyQuery {
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
-    
+
 }

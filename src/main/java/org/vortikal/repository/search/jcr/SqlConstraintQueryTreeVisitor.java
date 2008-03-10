@@ -141,7 +141,24 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     
 
     public Object visit(NamePrefixQuery npQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("NamePrefixQuery not supported, yet");
+        StringBuilder buffer = checkDataParam(data);
+        
+        String nameValuePrefix = npQuery.getTerm();
+        
+        buffer.append(" ");
+        if (npQuery.isInverted()) {
+            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
+        }
+        
+        buffer.append(JcrDaoConstants.RESOURCE_NAME).append(" ");
+        buffer.append(SqlConstraintOperator.LIKE).append(" ");
+        buffer.append("'").append(nameValuePrefix).append("%'");
+        
+        if (npQuery.isInverted()) {
+            buffer.append(")");
+        }
+        
+        return buffer;
     }
 
     public Object visit(NameRangeQuery nrQuery, Object data) throws UnsupportedQueryException {
@@ -153,7 +170,17 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(NameTermQuery ntQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("NameTermQuery not supported, yet");
+        StringBuilder buffer = checkDataParam(data);
+        
+        TermOperator op = ntQuery.getOperator();
+        String nameValue = ntQuery.getTerm();
+        
+        buffer.append(" ");
+        buffer.append(JcrDaoConstants.RESOURCE_NAME).append(" ");
+        buffer.append(getBinaryConstraintOperator(op)).append(" ");
+        buffer.append("'").append(nameValue).append("'");
+        
+        return buffer;
     }
 
     public Object visit(PropertyExistsQuery peQuery, Object data) throws UnsupportedQueryException {
@@ -205,25 +232,12 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         String value = ptQuery.getTerm();
         String propName = getJcrPropertyName(def);
         
-        
         TermOperator op = ptQuery.getOperator();
         
         buffer.append(" ");
         buffer.append(propName);
         buffer.append(" ");
-        if (op == TermOperator.EQ) {
-            buffer.append(SqlConstraintOperator.EQUAL);            
-        } else if (op == TermOperator.NE) {
-            buffer.append(SqlConstraintOperator.NOT_EQUAL);
-        } else if (op == TermOperator.GE) {
-            buffer.append(SqlConstraintOperator.GREATER_EQUAL);
-        } else if (op == TermOperator.GT) {
-            buffer.append(SqlConstraintOperator.GREATER);
-        } else if (op == TermOperator.LE) {
-            buffer.append(SqlConstraintOperator.LESS_EQUAL);
-        } else if (op == TermOperator.LT) {
-            buffer.append(SqlConstraintOperator.LESS);
-        }
+        buffer.append(getBinaryConstraintOperator(op));
         buffer.append(" ");
         
         buffer.append(getSqlPropertyValueExpression(def, value));
@@ -232,7 +246,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(PropertyWildcardQuery pwQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("PropertyWildcardQuery not supported, yet");
+        throw new UnsupportedQueryException("PropertyWildcardQuery is not supported, yet.");
     }
 
     public Object visit(TypeTermQuery ttQuery, Object data) throws UnsupportedQueryException {
@@ -347,13 +361,36 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         return JcrDaoConstants.VRTX_PREFIX + propName;
     }
     
+    private SqlConstraintOperator getBinaryConstraintOperator(TermOperator op) 
+        throws UnsupportedQueryException {
+        
+        SqlConstraintOperator sqlOp = null;
+        
+        if (op == TermOperator.EQ) {
+            sqlOp = SqlConstraintOperator.EQUAL;            
+        } else if (op == TermOperator.NE) {
+            sqlOp = SqlConstraintOperator.NOT_EQUAL;
+        } else if (op == TermOperator.GE) {
+            sqlOp = SqlConstraintOperator.GREATER_EQUAL;
+        } else if (op == TermOperator.GT) {
+            sqlOp = SqlConstraintOperator.GREATER;
+        } else if (op == TermOperator.LE) {
+            sqlOp = SqlConstraintOperator.LESS_EQUAL;
+        } else if (op == TermOperator.LT) {
+            sqlOp = SqlConstraintOperator.LESS;
+        } else {
+            throw new UnsupportedQueryException("Unsupported term operator: " + op);
+        }
+        
+        return sqlOp;
+    }
+    
     private String getSqlPropertyValueExpression(PropertyTypeDefinition def, 
                                                             String termValue) { 
 
         // XXX: JcrDao adds all node properties as type strings.
         // Therefore, there is not yet support for sorting on numbers, dates and so on.
         // Neither is range queries or greater/less comparisons on these types.
-        
         return "'" + termValue + "'";
         
 //        switch (def.getType()) {

@@ -20,6 +20,7 @@ public class JcrDaoConstants {
     public static final String VRTX_FOLDER_NAME = "vrtx:folder";
     public static final String CONTENT = "vrtx:content";
     public static final String RESOURCE_TYPE = "vrtx:resourceType";
+    public static final String RESOURCE_NAME = "vrtx:resourceName";
     public static final String VRTX_LOCK_NAME = "vrtx:lock";
 
     // Acl item names

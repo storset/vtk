@@ -104,6 +104,7 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.util.repository.URIUtil;
 
 public class JcrDao implements ContentStore, DataAccessor, CommentDAO, InitializingBean, DisposableBean {
 
@@ -268,7 +269,9 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             
             String name = prop.getName();
 
-            if (name.equals(JcrDaoConstants.RESOURCE_TYPE) || name.equals(JcrDaoConstants.CONTENT)) {
+            if (name.equals(JcrDaoConstants.RESOURCE_TYPE) 
+                   || name.equals(JcrDaoConstants.CONTENT)
+                   || name.equals(JcrDaoConstants.RESOURCE_NAME)) {
                 continue;
             }
 
@@ -564,6 +567,10 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             }
 
             node.setProperty(JcrDaoConstants.RESOURCE_TYPE, r.getResourceType());
+            
+            // Add resource name explicitly for searchability (not used when mapping nodes to resources)
+            // jcr:name is not suitable for this.
+            node.setProperty(JcrDaoConstants.RESOURCE_NAME, URIUtil.getResourceName(r.getURI()));
 
             session.save();
 //            if (node.isCheckedOut() || node.isNodeType("mix:versionable")) {

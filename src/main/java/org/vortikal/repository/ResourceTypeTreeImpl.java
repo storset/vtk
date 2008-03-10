@@ -207,9 +207,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         }
         return children;
     }
-    
+
+    // XXX: This method shouldn't be named "descendantsAndSelf" because it 
+    //      DOES NOT return self, only the descendants.
     public List<String> getDescendantsAndSelf(String entry) {
-        return this.resourceTypeDescendantNames.get(entry);
+         return this.resourceTypeDescendantNames.get(entry);
     }
 
     public String[] getAllowedValues() {

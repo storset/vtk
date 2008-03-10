@@ -102,12 +102,11 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
             buffer.append(query.accept(this, data));
             
             if (iterator.hasNext()) {
-                buffer.append(" AND ");
+                buffer.append(" ").append(SqlConstraintOperator.AND).append(" ");
             }
         }
         --this.currentDepth;
         if (this.currentDepth > 0) buffer.append(")");
-        buffer.append(" ");
         
         return buffer;
     }
@@ -124,12 +123,11 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
             buffer.append(query.accept(this, data));
             
             if (iterator.hasNext()) {
-                buffer.append(" OR ");
+                buffer.append(" ").append(SqlConstraintOperator.OR).append(" ");
             }
         }
         --this.currentDepth;
         if (this.currentDepth > 0) buffer.append(")");
-        buffer.append(" ");
         
         return buffer;
     }
@@ -154,31 +152,39 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     public Object visit(PropertyExistsQuery peQuery, Object data) throws UnsupportedQueryException {
         StringBuilder buffer = checkDataParam(data);
         
-        PropertyTypeDefinition def = peQuery.getPropertyDefinition();
-        
-        String propName = def.getName();
-        String prefix = def.getNamespace().getPrefix();
-        if (prefix != null) {
-            propName = prefix + JcrDaoConstants.VRTX_PREFIX_SEPARATOR + propName;
-        }
-        propName = JcrDaoConstants.VRTX_PREFIX + propName;
+        String propName = getJcrPropertyName(peQuery.getPropertyDefinition());
         
         buffer.append(" ");
         
-        buffer.append(propName).append(" ");
+        buffer.append(propName);
         if (peQuery.isInverted()) {
-            buffer.append(SqlConstraintOperator.IS_NULL);
+            buffer.append(" ").append(SqlConstraintOperator.UNARY_IS_NULL).append(" ");
         } else {
-            buffer.append(SqlConstraintOperator.IS_NOT_NULL);
+            buffer.append(" ").append(SqlConstraintOperator.UNARY_IS_NOT_NULL).append(" ");
         }
-        
-        buffer.append(" ");
         
         return buffer;
     }
 
     public Object visit(PropertyPrefixQuery ppQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("PropertyPrefixQuery not supported, yet");
+        
+        StringBuilder buffer = checkDataParam(data);
+        
+        String propValuePrefix = ppQuery.getTerm();
+        String propName = getJcrPropertyName(ppQuery.getPropertyDefinition());
+        
+        buffer.append(" ");
+        if (ppQuery.isInverted()) {
+            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
+        }
+        buffer.append(propName).append(" ");
+        buffer.append(SqlConstraintOperator.LIKE).append(" ");
+        buffer.append("'").append(propValuePrefix).append("%'");
+        if (ppQuery.isInverted()) {
+            buffer.append(")");
+        }
+        
+        return buffer;
     }
 
     public Object visit(PropertyRangeQuery prQuery, Object data) throws UnsupportedQueryException {
@@ -201,25 +207,27 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         buffer.append(" ");
         if (operator == TermOperator.NI) {
-            buffer.append(SqlConstraintOperator.NOT).append(" (");
+            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
         } else if (operator != TermOperator.IN){
             throw new UnsupportedQueryException("Unsupported type operator: "+ operator);
         }
 
-        buffer.append(JcrDaoConstants.RESOURCE_TYPE).append(" = ");
+        buffer.append(JcrDaoConstants.RESOURCE_TYPE).append(" ");
+        buffer.append(SqlConstraintOperator.EQUAL).append(" ");
         buffer.append("'").append(typeName).append("'");
         
         // Get list of descendant type names
         // XXX: method in ResourceTypeTree is named wrongly, it does not return self, only descendants.
         List<String> descendantNames = this.resourceTypeTree.getDescendantsAndSelf(typeName);
         if (descendantNames != null && !descendantNames.isEmpty()) {
-            buffer.append(" OR ");
+            buffer.append(" ").append(SqlConstraintOperator.OR).append(" ");
             Iterator iterator = descendantNames.iterator();
             while (iterator.hasNext()) {
-                buffer.append(JcrDaoConstants.RESOURCE_TYPE).append(" = ");
+                buffer.append(JcrDaoConstants.RESOURCE_TYPE).append(" ");
+                buffer.append(SqlConstraintOperator.EQUAL).append(" ");
                 buffer.append("'").append(iterator.next()).append("'");
                 if (iterator.hasNext()){
-                    buffer.append(" OR ");
+                    buffer.append(" ").append(SqlConstraintOperator.OR).append(" ");
                 }
             }
         }
@@ -227,7 +235,6 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         if (operator == TermOperator.NI) {
             buffer.append(")");
         }
-        buffer.append(" ");
         
         return buffer;
     }
@@ -243,24 +250,27 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         // XXX: Path prefix queries are quite slow with JackRabbit (or so it seems).
         
-        // XXX: Inversion on path prefix seems to *not* work at all (looks like
-        //      JackRabbit ignores NOT before a LIKE on jcr:path).
-        
         StringBuilder buffer = checkDataParam(data);
         
         String jcrPathPrefix = JcrPathUtil.uriToPath(upQuery.getUri());
         
-        buffer.append(" ").append("jcr:path ");
+        buffer.append(" ");
         if (upQuery.isInverted()) {
-            buffer.append(SqlConstraintOperator.NOT).append(" ");
+            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
         }
+        
+        buffer.append("jcr:path ");
         buffer.append(SqlConstraintOperator.LIKE).append(" ");
         buffer.append("'").append(jcrPathPrefix);        
         if (!jcrPathPrefix.endsWith("/")) {
             buffer.append("/");
         }
-        buffer.append("%' ");
-           
+        buffer.append("%'");
+        
+        if (upQuery.isInverted()) {
+            buffer.append(")");
+        }
+
         return buffer;
     }
 
@@ -270,21 +280,31 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         UriOperator op = utQuery.getOperator();
         buffer.append(" ");
-        buffer.append("jcr:path ");
-        if (op == UriOperator.EQ) {
-            buffer.append(SqlConstraintOperator.EQUAL);
-        } else if (op == UriOperator.NE){
-            buffer.append(SqlConstraintOperator.NOT_EQUAL); 
-        } else {
+        if (op == UriOperator.NE){
+            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
+        } else if (op != UriOperator.EQ){
             throw new UnsupportedQueryException("Unsupported UriOperator: " + op);
         }
-        buffer.append(" ");
         
         String jcrPath = JcrPathUtil.uriToPath(utQuery.getUri());
-        
+        buffer.append("jcr:path ").append(SqlConstraintOperator.EQUAL).append(" ");
         buffer.append("'").append(jcrPath).append("'");
+        
+        if (op == UriOperator.NE) {
+            buffer.append(")");
+        }
         
         return buffer;
     }
-
+    
+    private String getJcrPropertyName(PropertyTypeDefinition def){
+        String propName = def.getName();
+        String prefix = def.getNamespace().getPrefix();
+        if (prefix != null) {
+            propName = prefix + JcrDaoConstants.VRTX_PREFIX_SEPARATOR + propName;
+        }
+       
+        return JcrDaoConstants.VRTX_PREFIX + propName;
+    }
+    
 }

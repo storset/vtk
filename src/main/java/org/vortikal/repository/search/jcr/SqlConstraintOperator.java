@@ -39,9 +39,11 @@ public enum SqlConstraintOperator {
     GREATER_EQUAL(">="),
     NOT_EQUAL("<>"),
     LIKE("LIKE"),
-    IS_NULL("IS NULL"),
-    IS_NOT_NULL("IS NOT NULL"),
-    NOT("NOT");
+    UNARY_IS_NULL("IS NULL"),
+    UNARY_IS_NOT_NULL("IS NOT NULL"),
+    OR("OR"),
+    AND("AND"),
+    UNARY_NOT("NOT");
     
     private String operator;
     

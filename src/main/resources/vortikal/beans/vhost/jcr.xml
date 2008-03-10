@@ -18,7 +18,7 @@
        remember to set the jcrRepoDir variable
   -->
   <bean id="repository.jcrDao" 
-        name="repository.contentStore"
+        name="repository.contentStore, repository.jcrCommentDao"
         class="org.vortikal.repository.store.jcr.JcrDao">
     <lookup-method name="createResourceImpl" bean="resourceImpl"/>
     <property name="nodeTypesDefinition" value="classpath:org/vortikal/repository/store/jcr/resource-types.cnd" />
@@ -29,5 +29,6 @@
    <property name="config" value="${jcr.repoConfig}" />
    <property name="home" value="${jcrRepoDir}" />
  </bean>
+
 
 </beans>

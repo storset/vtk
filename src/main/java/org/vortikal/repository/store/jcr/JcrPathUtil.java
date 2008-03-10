@@ -43,7 +43,7 @@ public class JcrPathUtil {
      * @return the escaped name
      */
     public static String escapeIllegalJcrChars(String path) {
-        StringBuffer buffer = new StringBuffer(path.length() * 2);
+        StringBuilder buffer = new StringBuilder(path.length() * 2);
         for (int i = 0; i < path.length(); i++) {
             char ch = path.charAt(i);
             if (ch == '%' || ch == ':' || ch == '[' || ch == ']'
@@ -73,7 +73,7 @@ public class JcrPathUtil {
      * @return the unescaped name
      */
     public static String unescapeIllegalJcrChars(String path) {
-        StringBuffer buffer = new StringBuffer(path.length());
+        StringBuilder buffer = new StringBuilder(path.length());
         int i = path.indexOf('%');
         while (i > -1 && i + 2 < path.length()) {
             buffer.append(path.toCharArray(), 0, i);

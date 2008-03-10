@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  
+  <bean id="queryParserFactory"
+    class="org.vortikal.repository.search.QueryParserFactoryImpl">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+  
+  <bean id="searchParser" class="org.vortikal.repository.search.ParserImpl">
+    <property name="parserFactory" ref="queryParserFactory" />
+    <property name="queryStringPreProcessor" ref="queryStringPreProcessor" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+  
+  <bean id="queryStringPreProcessor"
+    class="org.vortikal.repository.search.preprocessor.QueryStringPreProcessorImpl">
+    <property name="expressionEvaluators">
+      <list>
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentDepthExpressionEvaluator" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
+          parent="requestLocalRepositoryAware" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="systemIndexSearcher"
+    class="org.vortikal.repository.search.jcr.JcrSqlSearcherImpl">
+    <property name="jcrDao" ref="repository.jcrDao"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+  </bean>
+
+</beans>

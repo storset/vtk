@@ -32,6 +32,6 @@ package org.vortikal.repository.search.jcr;
 
 public interface SqlSourceType {
 
-    public String getSoureceType();
+    public String getSourceType();
     
 }

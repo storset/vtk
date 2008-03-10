@@ -59,7 +59,7 @@ public class SqlQueryAssembler {
         StringBuilder buffer = new StringBuilder();
         
         buffer.append("SELECT ").append(columns.getColumnSelection()).append(" ");
-        buffer.append("FROM ").append(sourceType.getSoureceType()).append(" ");
+        buffer.append("FROM ").append(sourceType.getSourceType()).append(" ");
         buffer.append("WHERE ").append(constraints).append(" ");
         buffer.append(ordering.getOrdering());
         

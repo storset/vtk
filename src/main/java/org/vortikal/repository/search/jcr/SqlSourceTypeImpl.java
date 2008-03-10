@@ -41,7 +41,7 @@ public class SqlSourceTypeImpl implements SqlSourceType {
         this.search = search;
     }
     
-    public String getSoureceType() {
+    public String getSourceType() {
         // XXX: needs fixing, need to determine if any type in collection criterion is present in query tree.
         // or something .. 
         

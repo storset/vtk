@@ -109,35 +109,6 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
     private static final Log logger = LogFactory.getLog(JcrDao.class);
 
-    // The root node
-    private static final String VRTX_ROOT = "/vrtx";
-    private static final String LOCKS_ROOT = "/locks";
-
-    // Resource items
-    private static final String VRTX_PREFIX = "vrtx:";
-    private static final String VRTX_PREFIX_SEPARATOR = ";";
-    private static final String VRTX_FILE_NAME = "vrtx:file";
-    private static final String VRTX_FOLDER_NAME = "vrtx:folder";
-    private static final String CONTENT = "vrtx:content";
-    private static final String RESOURCE_TYPE = "vrtx:resourceType";
-
-
-    private static final String VRTX_LOCK_NAME = "vrtx:lock";
-
-    // Acl item names
-    private static final String VRTX_ACL_NAME = "vrtx:acl";
-    private static final String VRTX_ACTION_NAME = "vrtx:action";
-    private static final String VRTX_PRINCIPAL_NAME = "vrtx:principal";
-    private static final String VRTX_PRINCIPAL_TYPE_NAME = "vrtx:principalType";
-
-    // Comment item names
-    private static final String VRTX_COMMENTS_NAME = "vrtx:comments";
-    private static final String VRTX_COMMENT_NAME = "vrtx:comment";
-    private static final String VRTX_COMMENT_AUTHOR = "vrtx:commentAuthor";
-    private static final String VRTX_COMMENT_TITLE = "vrtx:commentTitle";
-    private static final String VRTX_COMMENT_TIME = "vrtx:commentTime";
-    private static final String VRTX_COMMENT_BODY = "vrtx:commentBody";
-    
     protected Repository repository;
     
     private org.springframework.core.io.Resource nodeTypesDefinition;
@@ -145,17 +116,14 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     // Session keeping repo alive (and used during initialization)
     Session systemSession;
 
-    protected final String rootUser = "root@localhost";
-
-
     public void copy(ResourceImpl resource, ResourceImpl dest,
             PropertySet newResource, boolean copyACLs,
             PropertySet fixedProperties) throws DataAccessException {
 
         Session session = getSession();
 
-        String path = uriToPath(resource.getURI());
-        String newPath = uriToPath(newResource.getURI());
+        String path = JcrPathUtil.uriToPath(resource.getURI());
+        String newPath = JcrPathUtil.uriToPath(newResource.getURI());
 
         try {
             Workspace workspace = session.getWorkspace();
@@ -164,11 +132,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             if (!copyACLs) {
                 String[] acls = discoverACLs(newResource.getURI());
                 for (String resourceWithAclUri : acls) {
-                    String resourceWithAclPath = uriToPath(resourceWithAclUri);
+                    String resourceWithAclPath = JcrPathUtil.uriToPath(resourceWithAclUri);
                     
                     Node node = (Node) session.getItem(resourceWithAclPath);
-                    if (node.hasNode(VRTX_ACL_NAME)) {
-                        node.getNode(VRTX_ACL_NAME).remove();
+                    if (node.hasNode(JcrDaoConstants.VRTX_ACL_NAME)) {
+                        node.getNode(JcrDaoConstants.VRTX_ACL_NAME).remove();
                     }
                 }
             }
@@ -187,7 +155,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public void delete(ResourceImpl resource) throws DataAccessException {
 
         Session session = getSession();
-        String path = uriToPath(resource.getURI());
+        String path = JcrPathUtil.uriToPath(resource.getURI());
         try {
             Node node = (Node)session.getItem(path);
             if (node.isLocked()) {
@@ -211,10 +179,10 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             throws RepositoryException {
         if (node.isLocked()) {
             synchronized (this.systemSession) {
-                Node lockNode = (Node) session.getItem(LOCKS_ROOT);  
+                Node lockNode = (Node) session.getItem(JcrDaoConstants.LOCKS_ROOT);  
                 lockNode = lockNode.getNode(node.getLock().getNode().getUUID());
                 //if (lockNode.getProperty(VRTX_PREFIX + "owner").getString().equals(session.getUserID()))
-                    session.addLockToken(lockNode.getProperty(VRTX_PREFIX + "jcrLockToken").getString());
+                    session.addLockToken(lockNode.getProperty(JcrDaoConstants.VRTX_PREFIX + "jcrLockToken").getString());
             }
         }
     }
@@ -222,7 +190,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public ResourceImpl load(String uri) throws DataAccessException {
         Session session = getSession();
 
-        String path = uriToPath(uri);
+        String path = JcrPathUtil.uriToPath(uri);
 
         try {
             Node node = (Node) session.getItem(path);
@@ -239,7 +207,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public PropertySet load(String uri, String revision) throws DataAccessException {
         Session session = getSession();
 
-        String path = uriToPath(uri);
+        String path = JcrPathUtil.uriToPath(uri);
 
         try {
             Node node = (Node) session.getItem(path);
@@ -262,10 +230,10 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
         for (NodeIterator i = node.getNodes(); i.hasNext();) {
             Node child = i.nextNode();
-            if (child.getName().equals(VRTX_ACL_NAME)) {
+            if (child.getName().equals(JcrDaoConstants.VRTX_ACL_NAME)) {
                 continue;
             }
-            String uri = pathToUri(child.getPath());
+            String uri = JcrPathUtil.pathToUri(child.getPath());
             children.add(uri);
         }
         return children.toArray(new String[children.size()]);
@@ -278,8 +246,9 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         return resource;
     }
     
-    private ResourceImpl nodeToResource(Node node) throws RepositoryException {
-        String uri = pathToUri(node.getPath());
+    // XXX: made public
+    public ResourceImpl nodeToResource(Node node) throws RepositoryException {
+        String uri = JcrPathUtil.pathToUri(node.getPath());
 
         ResourceImpl resource = createResourceImpl();
         resource.setUri(uri);
@@ -289,24 +258,24 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     }
 
     private void setProperties(ResourceImpl resource, Node node) throws RepositoryException {
-        String resourceType = node.getProperty(RESOURCE_TYPE).getString();
-        if (logger.isTraceEnabled()) logger.trace("Prop: " + RESOURCE_TYPE + " value: " + resourceType);
+        String resourceType = node.getProperty(JcrDaoConstants.RESOURCE_TYPE).getString();
+        if (logger.isTraceEnabled()) logger.trace("Prop: " + JcrDaoConstants.RESOURCE_TYPE + " value: " + resourceType);
 
         resource.setResourceType(resourceType);
 
-        for (PropertyIterator properties = node.getProperties(VRTX_PREFIX + "*"); properties.hasNext();) {
+        for (PropertyIterator properties = node.getProperties(JcrDaoConstants.VRTX_PREFIX + "*"); properties.hasNext();) {
             Property prop = properties.nextProperty();
             
             String name = prop.getName();
 
-            if (name.equals(RESOURCE_TYPE) || name.equals(CONTENT)) {
+            if (name.equals(JcrDaoConstants.RESOURCE_TYPE) || name.equals(JcrDaoConstants.CONTENT)) {
                 continue;
             }
 
-            name = name.substring(VRTX_PREFIX.length());
+            name = name.substring(JcrDaoConstants.VRTX_PREFIX.length());
 
             String prefix = null;
-            int sepIndex = name.indexOf(VRTX_PREFIX_SEPARATOR);
+            int sepIndex = name.indexOf(JcrDaoConstants.VRTX_PREFIX_SEPARATOR);
             if (sepIndex != -1) {
                 prefix = name.substring(0, sepIndex);
                 name = name.substring(sepIndex + 1);
@@ -347,17 +316,17 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         if (parent.isSame(node)) {
             resource.setAclInheritedFrom(-1);
         } else {
-            // Ok, this isn't all right
+            // XXX: Ok, this isn't all right
             resource.setAclInheritedFrom(parent.getUUID().hashCode());
         }
         
-        for (NodeIterator i = aclNode.getNodes(VRTX_PREFIX + "*"); i.hasNext();) {
+        for (NodeIterator i = aclNode.getNodes(JcrDaoConstants.VRTX_PREFIX + "*"); i.hasNext();) {
             Node actionNode = i.nextNode();
-            RepositoryAction action = Privilege.getActionByName(actionNode.getName().substring(VRTX_PREFIX.length()));
-            for (NodeIterator i2 = actionNode.getNodes(VRTX_PREFIX + "*"); i2.hasNext();) {
+            RepositoryAction action = Privilege.getActionByName(actionNode.getName().substring(JcrDaoConstants.VRTX_PREFIX.length()));
+            for (NodeIterator i2 = actionNode.getNodes(JcrDaoConstants.VRTX_PREFIX + "*"); i2.hasNext();) {
                 Node principalNode = i2.nextNode();
-                String name = unescapeIllegalJcrChars(principalNode.getName().substring(VRTX_PREFIX.length()));
-                Type type = Principal.Type.valueOf(principalNode.getProperty(VRTX_PRINCIPAL_TYPE_NAME).getString());
+                String name = JcrPathUtil.unescapeIllegalJcrChars(principalNode.getName().substring(JcrDaoConstants.VRTX_PREFIX.length()));
+                Type type = Principal.Type.valueOf(principalNode.getProperty(JcrDaoConstants.VRTX_PRINCIPAL_TYPE_NAME).getString());
 
                 Principal principal = null;
                 if (type == Principal.Type.GROUP) {
@@ -376,23 +345,23 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
     private Node getAclNode(Node node) throws RepositoryException {
         try {
-            return node.getNode(VRTX_ACL_NAME);
+            return node.getNode(JcrDaoConstants.VRTX_ACL_NAME);
         } catch (PathNotFoundException e) {
             return getAclNode(node.getParent());
         }
     }
 
     private org.vortikal.repository.Lock getLock(Lock lock, Session session) throws PathNotFoundException, RepositoryException {
-        Node lockNode = (Node) session.getItem(LOCKS_ROOT);
+        Node lockNode = (Node) session.getItem(JcrDaoConstants.LOCKS_ROOT);
         String uuid = lock.getNode().getUUID();
         Node node = lockNode.getNode(uuid);
-        String token = node.getProperty(VRTX_PREFIX + "lockToken").getString();
-        String ownerInfo = node.getProperty(VRTX_PREFIX + "ownerInfo").getString();
-        String owner = node.getProperty(VRTX_PREFIX + "owner").getString();
-        String depth = node.getProperty(VRTX_PREFIX + "depth").getString();
-        Date timeOut = new Date(Long.parseLong(node.getProperty(VRTX_PREFIX + "timeOut").getString()));
+        String token = node.getProperty(JcrDaoConstants.VRTX_PREFIX + "lockToken").getString();
+        String ownerInfo = node.getProperty(JcrDaoConstants.VRTX_PREFIX + "ownerInfo").getString();
+        String owner = node.getProperty(JcrDaoConstants.VRTX_PREFIX + "owner").getString();
+        String depth = node.getProperty(JcrDaoConstants.VRTX_PREFIX + "depth").getString();
+        Date timeOut = new Date(Long.parseLong(node.getProperty(JcrDaoConstants.VRTX_PREFIX + "timeOut").getString()));
         
-        if (logger.isTraceEnabled()) logger.trace("Building lock for '" + uuid + "': " + node.getProperty(VRTX_PREFIX + "owner").getString() + ", " + token);
+        if (logger.isTraceEnabled()) logger.trace("Building lock for '" + uuid + "': " + node.getProperty(JcrDaoConstants.VRTX_PREFIX + "owner").getString() + ", " + token);
         org.vortikal.repository.LockImpl vLock = new org.vortikal.repository.LockImpl(
                 token, new Principal(owner, Principal.Type.USER), ownerInfo, depth, timeOut);
 
@@ -411,7 +380,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             throws DataAccessException {
         Session session = getSession();
 
-        String parentPath = uriToPath(parent.getURI());
+        String parentPath = JcrPathUtil.uriToPath(parent.getURI());
 
         try {
             List<ResourceImpl> children = new ArrayList<ResourceImpl>();
@@ -420,7 +389,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             
             for (NodeIterator i = node.getNodes(); i.hasNext();) {
                 Node child = i.nextNode();
-                if (child.getName().equals(VRTX_ACL_NAME)) {
+                if (child.getName().equals(JcrDaoConstants.VRTX_ACL_NAME)) {
                     continue;
                 }
                 children.add(nodeToResource(child));
@@ -440,8 +409,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
         Session session = getSession();
 
-        String path = uriToPath(resource.getURI());
-        String newPath = uriToPath(newResource.getURI());
+        String path = JcrPathUtil.uriToPath(resource.getURI());
+        String newPath = JcrPathUtil.uriToPath(newResource.getURI());
 
 
         try {
@@ -459,14 +428,14 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public void create(ResourceImpl resource) {
         Session session = getSession();
 
-        String parentPath = uriToPath(resource.getParent());
+        String parentPath = JcrPathUtil.uriToPath(resource.getParent());
 
         try {
             Node node = (Node) session.getItem(parentPath);
             acquireLockToken(session, node);
 
-            String primaryResourceType = (resource.isCollection()) ? VRTX_FOLDER_NAME : VRTX_FILE_NAME;
-            node = node.addNode(escapeIllegalJcrChars(resource.getName()), primaryResourceType);
+            String primaryResourceType = (resource.isCollection()) ? JcrDaoConstants.VRTX_FOLDER_NAME : JcrDaoConstants.VRTX_FILE_NAME;
+            node = node.addNode(JcrPathUtil.escapeIllegalJcrChars(resource.getName()), primaryResourceType);
 
             for (org.vortikal.repository.Property prop : resource.getProperties()) {
                 String propName = jcrPropName(prop);
@@ -482,10 +451,10 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 }
             }
 
-            node.setProperty(RESOURCE_TYPE, resource.getResourceType());
+            node.setProperty(JcrDaoConstants.RESOURCE_TYPE, resource.getResourceType());
 
             if (!resource.isCollection()) {
-                node.setProperty(CONTENT, new ByteArrayInputStream(new byte[0]));
+                node.setProperty(JcrDaoConstants.CONTENT, new ByteArrayInputStream(new byte[0]));
             }
             session.save();
         } catch (PathNotFoundException e) {
@@ -502,9 +471,9 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         String propName = prop.getDefinition().getName();
         String prefix = prop.getDefinition().getNamespace().getPrefix();
         if (prefix != null) {
-            propName = prefix + VRTX_PREFIX_SEPARATOR + propName;
+            propName = prefix + JcrDaoConstants.VRTX_PREFIX_SEPARATOR + propName;
         }
-        propName = VRTX_PREFIX + propName;
+        propName = JcrDaoConstants.VRTX_PREFIX + propName;
         return propName;
     }
 
@@ -512,7 +481,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public String[] discoverLocks(String uri) throws DataAccessException {
         Session session = getSession();
 
-        String path = uriToPath(uri);
+        String path = JcrPathUtil.uriToPath(uri);
 
         try {
 
@@ -521,7 +490,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 return new String[0];
             }
             
-            String lockUri = pathToUri(node.getLock().getNode().getPath());
+            String lockUri = JcrPathUtil.pathToUri(node.getLock().getNode().getPath());
             return new String[] { lockUri };
         } catch (PathNotFoundException e) {
             return new String[0];
@@ -536,7 +505,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public void store(ResourceImpl r) throws DataAccessException {
         Session session = getSession();
 
-        String path = uriToPath(r.getURI());
+        String path = JcrPathUtil.uriToPath(r.getURI());
 
         try {
             Node node = null;
@@ -579,11 +548,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
             List<Property> toRemove = new ArrayList<Property>();
 
-            for (PropertyIterator i = node.getProperties(VRTX_PREFIX + "*"); i.hasNext();) {
+            for (PropertyIterator i = node.getProperties(JcrDaoConstants.VRTX_PREFIX + "*"); i.hasNext();) {
                 Property p = i.nextProperty();
 
                 String name = p.getName();
-                if (!name.equals(CONTENT) && !vProps.contains(name)) {
+                if (!name.equals(JcrDaoConstants.CONTENT) && !vProps.contains(name)) {
                     toRemove.add(p);
                 }
             }
@@ -594,7 +563,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 }
             }
 
-            node.setProperty(RESOURCE_TYPE, r.getResourceType());
+            node.setProperty(JcrDaoConstants.RESOURCE_TYPE, r.getResourceType());
 
             session.save();
 //            if (node.isCheckedOut() || node.isNodeType("mix:versionable")) {
@@ -612,9 +581,9 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private void unlock(Session session, Node node) throws RepositoryException {
         node.unlock();
         synchronized (this.systemSession) {
-            Node lockNode = (Node) session.getItem(LOCKS_ROOT);
+            Node lockNode = (Node) session.getItem(JcrDaoConstants.LOCKS_ROOT);
             Node node2 = lockNode.getNode(node.getUUID());
-            if (logger.isDebugEnabled()) logger.debug("Unlocking '" + node.getPath() + "': " + node2.getProperty(VRTX_PREFIX + "owner").getString());
+            if (logger.isDebugEnabled()) logger.debug("Unlocking '" + node.getPath() + "': " + node2.getProperty(JcrDaoConstants.VRTX_PREFIX + "owner").getString());
             node2.remove();
             session.save();
         }
@@ -632,15 +601,15 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         if (logger.isDebugEnabled()) logger.debug("Locking '" + node.getPath() + "', '"+ node.getUUID()+ "': " + node.getLock().getLockToken() + ", " + session.getUserID());
 
         synchronized (this.systemSession) {
-            Node lockNode = (Node) session.getItem(LOCKS_ROOT);
-            lockNode = lockNode.addNode(node.getUUID(), VRTX_LOCK_NAME);
-            lockNode.setProperty(VRTX_PREFIX + "jcrLockToken", node.getLock().getLockToken());
-            lockNode.setProperty(VRTX_PREFIX + "lockToken", lock.getLockToken());
-            lockNode.setProperty(VRTX_PREFIX + "depth", lock.getDepth());
-            lockNode.setProperty(VRTX_PREFIX + "ownerInfo", lock.getOwnerInfo());
-            lockNode.setProperty(VRTX_PREFIX + "owner", lock.getPrincipal().getQualifiedName());
-            lockNode.setProperty(VRTX_PREFIX + "timeOut", lock.getTimeout().getTime());
-            lockNode.setProperty(VRTX_PREFIX + "nodeRef", node);
+            Node lockNode = (Node) session.getItem(JcrDaoConstants.LOCKS_ROOT);
+            lockNode = lockNode.addNode(node.getUUID(), JcrDaoConstants.VRTX_LOCK_NAME);
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "jcrLockToken", node.getLock().getLockToken());
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "lockToken", lock.getLockToken());
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "depth", lock.getDepth());
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "ownerInfo", lock.getOwnerInfo());
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "owner", lock.getPrincipal().getQualifiedName());
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "timeOut", lock.getTimeout().getTime());
+            lockNode.setProperty(JcrDaoConstants.VRTX_PREFIX + "nodeRef", node);
             session.save();
         }
     }
@@ -648,13 +617,13 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public void storeContent(String uri, InputStream byteStream) {
         Session session = getSession();
 
-        String path = uriToPath(uri);
+        String path = JcrPathUtil.uriToPath(uri);
         
         try {
             Node node = (Node) session.getItem(path);
             acquireLockToken(session, node);
             node.checkout();
-            node.setProperty(CONTENT, byteStream);
+            node.setProperty(JcrDaoConstants.CONTENT, byteStream);
             session.save();
 //            node.checkin();
         } catch (PathNotFoundException e) {
@@ -672,11 +641,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         Acl newAcl = r.getAcl();
         boolean isInherited = r.isInheritedAcl();
         try {
-            Node node = (Node)session.getItem(uriToPath(r.getURI()));
+            Node node = (Node)session.getItem(JcrPathUtil.uriToPath(r.getURI()));
             Node aclNode = null;
 
             try {
-                aclNode = node.getNode(VRTX_ACL_NAME);
+                aclNode = node.getNode(JcrDaoConstants.VRTX_ACL_NAME);
             } catch (PathNotFoundException e) {
                 if (isInherited) {
                     // Was inherited, is inherited..
@@ -694,13 +663,14 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 return;
             }
             
-            aclNode = node.addNode(VRTX_ACL_NAME, VRTX_ACL_NAME);
+            aclNode = node.addNode(JcrDaoConstants.VRTX_ACL_NAME, JcrDaoConstants.VRTX_ACL_NAME);
 
             for (RepositoryAction action : newAcl.getActions()) {
-                Node actionNode = aclNode.addNode(VRTX_PREFIX + action.toString(), VRTX_ACTION_NAME);
+                Node actionNode = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + action.toString(), JcrDaoConstants.VRTX_ACTION_NAME);
                 for (Principal principal : newAcl.getPrincipalSet(action)) {
-                    Node principalNode = actionNode.addNode(VRTX_PREFIX + escapeIllegalJcrChars(principal.getQualifiedName()), VRTX_PRINCIPAL_NAME);
-                    principalNode.setProperty(VRTX_PRINCIPAL_TYPE_NAME, principal.getType().name());
+                    Node principalNode = actionNode.addNode(JcrDaoConstants.VRTX_PREFIX 
+                            + JcrPathUtil.escapeIllegalJcrChars(principal.getQualifiedName()), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
+                    principalNode.setProperty(JcrDaoConstants.VRTX_PRINCIPAL_TYPE_NAME, principal.getType().name());
                 }
             }
             session.save();
@@ -739,7 +709,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 Property nodeRef = lockNode.getProperty("vrtx:nodeRef");
                 Node node = nodeRef.getNode();
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Lock expired: " + pathToUri(node.getPath()));
+                    logger.debug("Lock expired: " + JcrPathUtil.pathToUri(node.getPath()));
                 }
                 acquireLockToken(session, node);
                 unlock(session, node);
@@ -757,7 +727,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         try {
             StringBuilder stmt = new StringBuilder();
             stmt.append("select * from vrtx:acl where jcr:path like '");
-            stmt.append(VRTX_ROOT);
+            stmt.append(JcrDaoConstants.VRTX_ROOT);
             stmt.append(uri);
             if (!"/".equals(uri)) {
                 stmt.append("/");
@@ -771,7 +741,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             List<String> resultList = new ArrayList<String>();
             while (nodes.hasNext()) {
                 Node node = nodes.nextNode();
-                String aclNode = pathToUri(node.getParent().getPath());
+                String aclNode = JcrPathUtil.pathToUri(node.getParent().getPath());
                 resultList.add(aclNode);
             }
             return resultList.toArray(new String[resultList.size()]);
@@ -805,11 +775,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public long getContentLength(String uri) throws DataAccessException {
         Session session = getSession();
 
-        String path = uriToPath(uri);
+        String path = JcrPathUtil.uriToPath(uri);
         
         try {
             Node node = (Node) session.getItem(path);
-            return node.getProperty(CONTENT).getLength();
+            return node.getProperty(JcrDaoConstants.CONTENT).getLength();
         } catch (PathNotFoundException e) {
             throw new DataAccessException(e);
         } catch (RepositoryException e) {
@@ -822,11 +792,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public InputStream getInputStream(String uri) throws DataAccessException {
         Session session = getSession();
 
-        String path = uriToPath(uri);
+        String path = JcrPathUtil.uriToPath(uri);
 
         try {
             Node node = (Node) session.getItem(path);
-            return node.getProperty(CONTENT).getStream();
+            return node.getProperty(JcrDaoConstants.CONTENT).getStream();
         } catch (PathNotFoundException e) {
             throw new DataAccessException(e);
         } catch (RepositoryException e) {
@@ -846,16 +816,16 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public Comment createComment(Resource resource, Comment comment) throws RuntimeException {
         Session session = getSession();
         try {
-            Node resourceNode = (Node)session.getItem(uriToPath(resource.getURI()));
+            Node resourceNode = (Node)session.getItem(JcrPathUtil.uriToPath(resource.getURI()));
             Node commentsNode = null;
-            if (resourceNode.hasNode(VRTX_COMMENTS_NAME)) {
-                commentsNode = resourceNode.getNode(VRTX_COMMENTS_NAME);
+            if (resourceNode.hasNode(JcrDaoConstants.VRTX_COMMENTS_NAME)) {
+                commentsNode = resourceNode.getNode(JcrDaoConstants.VRTX_COMMENTS_NAME);
             } else {
-                commentsNode = resourceNode.addNode(VRTX_COMMENTS_NAME, VRTX_COMMENTS_NAME);
+                commentsNode = resourceNode.addNode(JcrDaoConstants.VRTX_COMMENTS_NAME, JcrDaoConstants.VRTX_COMMENTS_NAME);
             }
             int id = 0;
             for (NodeIterator i = commentsNode.getNodes(); i.hasNext(); i.next()) id++;
-            Node commentNode = commentsNode.addNode(String.valueOf(id), VRTX_COMMENT_NAME);
+            Node commentNode = commentsNode.addNode(String.valueOf(id), JcrDaoConstants.VRTX_COMMENT_NAME);
             populateCommentNode(commentNode, comment);
 
             session.save();
@@ -870,8 +840,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public void deleteComment(Comment comment) throws RuntimeException {
         Session session = getSession();
         try {
-            Node resourceNode = (Node) session.getItem(uriToPath(comment.getURI()));
-            Node commentsNode = resourceNode.getNode(VRTX_COMMENTS_NAME);
+            Node resourceNode = (Node) session.getItem(JcrPathUtil.uriToPath(comment.getURI()));
+            Node commentsNode = resourceNode.getNode(JcrDaoConstants.VRTX_COMMENTS_NAME);
             Node commentNode = commentsNode.getNode(comment.getID());
             commentNode.remove();
             session.save();
@@ -885,8 +855,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public Comment updateComment(Comment comment) throws RuntimeException {
         Session session = getSession();
         try {
-            Node resourceNode = (Node) session.getItem(uriToPath(comment.getURI()));
-            Node commentsNode = resourceNode.getNode(VRTX_COMMENTS_NAME);
+            Node resourceNode = (Node) session.getItem(JcrPathUtil.uriToPath(comment.getURI()));
+            Node commentsNode = resourceNode.getNode(JcrDaoConstants.VRTX_COMMENTS_NAME);
             Node commentNode = commentsNode.getNode(comment.getID());
 
             PropertyIterator props = commentNode.getProperties();
@@ -906,8 +876,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public void deleteAllComments(Resource resource) throws RuntimeException {
         Session session = getSession();
         try {
-            Node resourceNode = (Node) session.getItem(uriToPath(resource.getURI()));
-            Node commentsNode = resourceNode.getNode(VRTX_COMMENTS_NAME);
+            Node resourceNode = (Node) session.getItem(JcrPathUtil.uriToPath(resource.getURI()));
+            Node commentsNode = resourceNode.getNode(JcrDaoConstants.VRTX_COMMENTS_NAME);
             commentsNode.remove();
             session.save();
         } catch (RepositoryException e) {
@@ -921,11 +891,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     public List<Comment> listCommentsByResource(Resource resource) throws RuntimeException {
         Session session = getSession();
         try {
-            Node resourceNode = (Node) session.getItem(uriToPath(resource.getURI()));
-            if (!resourceNode.hasNode(VRTX_COMMENTS_NAME)) {
+            Node resourceNode = (Node) session.getItem(JcrPathUtil.uriToPath(resource.getURI()));
+            if (!resourceNode.hasNode(JcrDaoConstants.VRTX_COMMENTS_NAME)) {
                 return Collections.emptyList();
             }
-            Node commentsNode = resourceNode.getNode(VRTX_COMMENTS_NAME);
+            Node commentsNode = resourceNode.getNode(JcrDaoConstants.VRTX_COMMENTS_NAME);
             NodeIterator comments = commentsNode.getNodes();
             List<Comment> result = new ArrayList<Comment>();
             while (comments.hasNext()) {
@@ -945,15 +915,15 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         String content = comment.getContent();
         Date time = comment.getTime();
         String title = comment.getTitle();
-        commentNode.setProperty(VRTX_COMMENT_AUTHOR, author);
+        commentNode.setProperty(JcrDaoConstants.VRTX_COMMENT_AUTHOR, author);
         if (title != null) {
-            commentNode.setProperty(VRTX_COMMENT_TITLE, title);
+            commentNode.setProperty(JcrDaoConstants.VRTX_COMMENT_TITLE, title);
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(time);
-        commentNode.setProperty(VRTX_COMMENT_TIME, cal);
+        commentNode.setProperty(JcrDaoConstants.VRTX_COMMENT_TIME, cal);
         try {
-            commentNode.setProperty(VRTX_COMMENT_BODY, new ByteArrayInputStream(
+            commentNode.setProperty(JcrDaoConstants.VRTX_COMMENT_BODY, new ByteArrayInputStream(
                     content.getBytes("utf-8")));
         } catch (UnsupportedEncodingException e) { }            
         
@@ -962,13 +932,13 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private Comment nodeToComment(Node node) throws RepositoryException {
         Comment c = new Comment();
         c.setID(node.getName());
-        c.setAuthor(node.getProperty(VRTX_COMMENT_AUTHOR).getString());
-        if (node.hasProperty(VRTX_COMMENT_TITLE)) {
-            c.setTitle(node.getProperty(VRTX_COMMENT_TITLE).getString());
+        c.setAuthor(node.getProperty(JcrDaoConstants.VRTX_COMMENT_AUTHOR).getString());
+        if (node.hasProperty(JcrDaoConstants.VRTX_COMMENT_TITLE)) {
+            c.setTitle(node.getProperty(JcrDaoConstants.VRTX_COMMENT_TITLE).getString());
         }
-        c.setContent(node.getProperty(VRTX_COMMENT_BODY).getString());
-        c.setTime(node.getProperty(VRTX_COMMENT_TIME).getDate().getTime());
-        String uri = pathToUri(node.getParent().getParent().getPath());
+        c.setContent(node.getProperty(JcrDaoConstants.VRTX_COMMENT_BODY).getString());
+        c.setTime(node.getProperty(JcrDaoConstants.VRTX_COMMENT_TIME).getDate().getTime());
+        String uri = JcrPathUtil.pathToUri(node.getParent().getParent().getPath());
         c.setURI(uri);
         return c;
     }
@@ -995,7 +965,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         }
     }
     
-    private Session getSession() {
+    // XXX Made public (JcrSqlSearcherImpl)
+    public Session getSession() {
         //return getSystemSession();
         String name = "anonymous";
         try {
@@ -1014,90 +985,6 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         }
     }
 
-    private String pathToUri(String path) {
-        if (VRTX_ROOT.equals(path)) {
-            return "/";
-        }
-        return unescapeIllegalJcrChars(path.substring(VRTX_ROOT.length()));
-    }
-    
-    private String uriToPath(String uri) {
-        if ("/".equals(uri)) {
-            return VRTX_ROOT;
-        }
-        return VRTX_ROOT + escapeIllegalJcrChars(uri);
-    }
-
-    /**
-     * Escapes all illegal JCR name characters of a string.
-     * The encoding is loosely modeled after URI encoding, but only encodes
-     * the characters it absolutely needs to in order to make the resulting
-     * string a valid JCR name.
-     * Use {@link #unescapeIllegalJcrChars(String)} for decoding.
-     * <p/>
-     * QName EBNF:<br>
-     * <xmp>
-     * simplename ::= onecharsimplename | twocharsimplename | threeormorecharname
-     * onecharsimplename ::= (* Any Unicode character except: '.', '/', ':', '[', ']', '*', ''', '"', '|' or any whitespace character *)
-     * twocharsimplename ::= '.' onecharsimplename | onecharsimplename '.' | onecharsimplename onecharsimplename
-     * threeormorecharname ::= nonspace string nonspace
-     * string ::= char | string char
-     * char ::= nonspace | ' '
-     * nonspace ::= (* Any Unicode character except: '/', ':', '[', ']', '*', ''', '"', '|' or any whitespace character *)
-     * </xmp>
-     *
-     * @param name the name to escape
-     * @return the escaped name
-     */
-    public static String escapeIllegalJcrChars(String path) {
-        StringBuffer buffer = new StringBuffer(path.length() * 2);
-        for (int i = 0; i < path.length(); i++) {
-            char ch = path.charAt(i);
-            if (ch == '%' || ch == ':' || ch == '[' || ch == ']'
-                || ch == '*' || ch == '\'' || ch == '"' || ch == '|'
-                || (ch == '.' && path.length() < 3)
-                || (ch == ' ' && (i == 0 || i == path.length() - 1))
-                || ch == '\t' || ch == '\r' || ch == '\n') {
-                buffer.append('%');
-                buffer.append(Character.toUpperCase(Character.forDigit(ch / 16, 16)));
-                buffer.append(Character.toUpperCase(Character.forDigit(ch % 16, 16)));
-            } else {
-                buffer.append(ch);
-            }
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Unescapes previously escaped jcr chars.
-     * <p/>
-     * Please note, that this does not exactly the same as the url related
-     * {@link #unescape(String)}, since it handles the byte-encoding
-     * differently.
-     *
-     * @param name the name to unescape
-     * @return the unescaped name
-     */
-    public static String unescapeIllegalJcrChars(String path) {
-        StringBuffer buffer = new StringBuffer(path.length());
-        int i = path.indexOf('%');
-        while (i > -1 && i + 2 < path.length()) {
-            buffer.append(path.toCharArray(), 0, i);
-            int a = Character.digit(path.charAt(i + 1), 16);
-            int b = Character.digit(path.charAt(i + 2), 16);
-            if (a > -1 && b > -1) {
-                buffer.append((char) (a * 16 + b));
-                path = path.substring(i + 3);
-            } else {
-                buffer.append('%');
-                path = path.substring(i + 1);
-            }
-            i = path.indexOf('%');
-        }
-        buffer.append(path);
-        return buffer.toString();
-    }
-
     public void destroy() throws Exception {
         if (this.systemSession != null) {
             systemSession.logout();
@@ -1109,9 +996,9 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         this.systemSession = getSystemSession();
         
         try {
-            Item item = systemSession.getItem(VRTX_ROOT);
+            Item item = systemSession.getItem(JcrDaoConstants.VRTX_ROOT);
             if (!item.isNode()) {
-                throw new DataAccessException("Vortex root node '" + VRTX_ROOT + "' in jcr repo is property");
+                throw new DataAccessException("Vortex root node '" + JcrDaoConstants.VRTX_ROOT + "' in jcr repo is property");
             }
         } catch (PathNotFoundException e) {
             logger.info("Initializing repository..");
@@ -1150,29 +1037,29 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         String now = Long.toString(System.currentTimeMillis());
 
         Node root = this.systemSession.getRootNode();
-        root.addNode(LOCKS_ROOT.substring(1));
+        root.addNode(JcrDaoConstants.LOCKS_ROOT.substring(1));
 
-        root = root.addNode(VRTX_ROOT.substring(1), VRTX_FOLDER_NAME);
-        root.setProperty(RESOURCE_TYPE, "collection");
+        root = root.addNode(JcrDaoConstants.VRTX_ROOT.substring(1), JcrDaoConstants.VRTX_FOLDER_NAME);
+        root.setProperty(JcrDaoConstants.RESOURCE_TYPE, "collection");
 
-        root.setProperty(VRTX_PREFIX + PropertyType.COLLECTION_PROP_NAME, "true");
-        root.setProperty(VRTX_PREFIX + PropertyType.OWNER_PROP_NAME, rootUser);
-        root.setProperty(VRTX_PREFIX + PropertyType.CREATIONTIME_PROP_NAME, now);
-        root.setProperty(VRTX_PREFIX + PropertyType.CREATEDBY_PROP_NAME, rootUser);
-        root.setProperty(VRTX_PREFIX + PropertyType.LASTMODIFIED_PROP_NAME, now);
-        root.setProperty(VRTX_PREFIX + PropertyType.MODIFIEDBY_PROP_NAME, rootUser);
-        root.setProperty(VRTX_PREFIX + PropertyType.CONTENTLASTMODIFIED_PROP_NAME, now);
-        root.setProperty(VRTX_PREFIX + PropertyType.CONTENTMODIFIEDBY_PROP_NAME, rootUser);
-        root.setProperty(VRTX_PREFIX + PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, now);
-        root.setProperty(VRTX_PREFIX + PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, rootUser);
-        root.setProperty(VRTX_PREFIX + PropertyType.CONTENTLENGTH_PROP_NAME, "0");
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.COLLECTION_PROP_NAME, "true");
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.OWNER_PROP_NAME, JcrDaoConstants.ROOT_USER);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.CREATIONTIME_PROP_NAME, now);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.CREATEDBY_PROP_NAME, JcrDaoConstants.ROOT_USER);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.LASTMODIFIED_PROP_NAME, now);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.MODIFIEDBY_PROP_NAME, JcrDaoConstants.ROOT_USER);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.CONTENTLASTMODIFIED_PROP_NAME, now);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.CONTENTMODIFIEDBY_PROP_NAME, JcrDaoConstants.ROOT_USER);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, now);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, JcrDaoConstants.ROOT_USER);
+        root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.CONTENTLENGTH_PROP_NAME, "0");
 
-        Node aclNode = root.addNode(VRTX_ACL_NAME, VRTX_ACL_NAME);
+        Node aclNode = root.addNode(JcrDaoConstants.VRTX_ACL_NAME, JcrDaoConstants.VRTX_ACL_NAME);
         String pseudoType = Principal.Type.PSEUDO.name();
-        Node action = aclNode.addNode(VRTX_PREFIX + "read", VRTX_ACTION_NAME).addNode(VRTX_PREFIX + escapeIllegalJcrChars(Principal.NAME_ALL), VRTX_PRINCIPAL_NAME);
-        action.setProperty(VRTX_PRINCIPAL_TYPE_NAME, pseudoType);
-        action = aclNode.addNode(VRTX_PREFIX + "all", VRTX_ACTION_NAME).addNode(VRTX_PREFIX + escapeIllegalJcrChars(Principal.NAME_OWNER), VRTX_PRINCIPAL_NAME);
-        action.setProperty(VRTX_PRINCIPAL_TYPE_NAME, pseudoType);
+        Node action = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + "read", JcrDaoConstants.VRTX_ACTION_NAME).addNode(JcrDaoConstants.VRTX_PREFIX + JcrPathUtil.escapeIllegalJcrChars(Principal.NAME_ALL), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
+        action.setProperty(JcrDaoConstants.VRTX_PRINCIPAL_TYPE_NAME, pseudoType);
+        action = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + "all", JcrDaoConstants.VRTX_ACTION_NAME).addNode(JcrDaoConstants.VRTX_PREFIX + JcrPathUtil.escapeIllegalJcrChars(Principal.NAME_OWNER), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
+        action.setProperty(JcrDaoConstants.VRTX_PRINCIPAL_TYPE_NAME, pseudoType);
 
         systemSession.save();
     }

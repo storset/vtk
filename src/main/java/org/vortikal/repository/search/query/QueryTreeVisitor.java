@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,39 +30,40 @@
  */
 package org.vortikal.repository.search.query;
 
-public class UriPrefixQuery implements UriQuery {
+/**
+ * Simple generic visitor interface for concrete query node implementations. 
+ *
+ */
+public interface QueryTreeVisitor {
 
-    private String uri;
-    private boolean inverted = false;
-
-    public UriPrefixQuery(String uri) {
-        this.uri = uri;
-    }
+    public Object visit(AndQuery andQuery, Object data);
     
-    public UriPrefixQuery(String uri, boolean inverted) {
-        this.uri = uri;
-        this.inverted = inverted;
-    }
+    public Object visit(OrQuery orQuery, Object data);
 
-    public String getUri() {
-        return this.uri;
-    }
+    public Object visit(NamePrefixQuery npQuery, Object data);
+    
+    public Object visit(NameRangeQuery nrQuery, Object data);
+    
+    public Object visit(NameWildcardQuery nwQuery, Object data);
 
-//    public String dump(String prefix) {
-//        StringBuilder buf = new StringBuilder().append(prefix);
-//        buf.append(this.getClass().getName()).append("\n");
-//        
-//        buf.append(prefix).append("Uri = ").append(this.uri).append("\n");
-//
-//        return buf.toString();
-//    }
-
-    public boolean isInverted() {
-        return inverted;
-    }
-
-    public Object accept(QueryTreeVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
-
+    public Object visit(NameTermQuery ntQuery, Object data);
+    
+    public Object visit(PropertyExistsQuery peQuery, Object data);
+    
+    public Object visit(PropertyPrefixQuery ppQuery, Object data);
+    
+    public Object visit(PropertyRangeQuery prQuery, Object data);
+    
+    public Object visit(PropertyTermQuery ptQuery, Object data);
+    
+    public Object visit(PropertyWildcardQuery pwQuery, Object data);
+    
+    public Object visit(TypeTermQuery ttQuery, Object data);
+    
+    public Object visit(UriDepthQuery udQuery, Object data);
+    
+    public Object visit(UriPrefixQuery upQuery, Object data);
+    
+    public Object visit(UriTermQuery utQuery, Object data);
+    
 }

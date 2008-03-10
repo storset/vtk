@@ -48,6 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.index.LuceneIndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.QueryBuilderFactory;
 import org.vortikal.repository.search.query.SortBuilder;
@@ -139,7 +140,8 @@ public class OldSearcherImpl implements Searcher, InitializingBean {
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Built lucene query '" + q 
-                                            + "' from query " + query.dump(""));
+                                            + "' from query " 
+                                            + query.accept(new DumpQueryTreeVisitor(), null));
         }
 
         IndexSearcher searcher = null;

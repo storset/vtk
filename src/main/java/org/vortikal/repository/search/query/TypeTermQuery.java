@@ -58,13 +58,16 @@ public class TypeTermQuery implements Query {
         this.term = term;
     }
 
-    public String dump(String prefix) {
-        StringBuilder buf = new StringBuilder(prefix);
-        buf.append(this.getClass().getName()).append("\n");
-        
-        buf.append(prefix).append("Operator = ").append(this.operator);
-        buf.append(", term = ").append(this.term).append("\n");
-        return buf.toString();
-    }
+//    public String dump(String prefix) {
+//        StringBuilder buf = new StringBuilder(prefix);
+//        buf.append(this.getClass().getName()).append("\n");
+//        
+//        buf.append(prefix).append("Operator = ").append(this.operator);
+//        buf.append(", term = ").append(this.term).append("\n");
+//        return buf.toString();
+//    }
 
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

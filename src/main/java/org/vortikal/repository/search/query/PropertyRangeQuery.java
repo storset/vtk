@@ -57,22 +57,25 @@ public class PropertyRangeQuery extends AbstractPropertyQuery {
     public String getToTerm() {
         return this.toTerm;
     }
-    
-    public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer().append(prefix);
-        buf.append(this.getClass().getName()).append("\n");
+//    
+//    public String dump(String prefix) {
+//        StringBuffer buf = new StringBuffer().append(prefix);
+//        buf.append(this.getClass().getName()).append("\n");
+//
+//        PropertyTypeDefinition def = getPropertyDefinition();
+//        
+//        buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
+//        buf.append("', name = '").append(def.getName()).append("'\n");
+//
+//        buf.append(prefix).append("fromTerm = '").append(this.fromTerm);
+//        buf.append("', toTerm = '").append(this.toTerm).append("', inclusive = '");
+//        buf.append(this.inclusive).append("'\n");
+//        
+//        return buf.toString();
+//    }
 
-        PropertyTypeDefinition def = getPropertyDefinition();
-        
-        buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
-        buf.append("', name = '").append(def.getName()).append("'\n");
-
-        buf.append(prefix).append("fromTerm = '").append(this.fromTerm);
-        buf.append("', toTerm = '").append(this.toTerm).append("', inclusive = '");
-        buf.append(this.inclusive).append("'\n");
-        
-        return buf.toString();
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
-
-
+    
 }

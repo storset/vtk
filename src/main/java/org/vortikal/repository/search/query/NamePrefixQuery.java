@@ -47,17 +47,21 @@ public class NamePrefixQuery implements NameQuery {
         return this.term;
     }
 
-    public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer().append(prefix);
-        buf.append(this.getClass().getName()).append("\n");
-        
-        buf.append(prefix).append("Term = ").append(this.term).append("\n");
-
-        return buf.toString();
-    }
+//    public String dump(String prefix) {
+//        StringBuffer buf = new StringBuffer().append(prefix);
+//        buf.append(this.getClass().getName()).append("\n");
+//        
+//        buf.append(prefix).append("Term = ").append(this.term).append("\n");
+//
+//        return buf.toString();
+//    }
 
     public boolean isInverted() {
         return inverted;
     }
     
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
 }

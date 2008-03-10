@@ -48,13 +48,17 @@ public class UriTermQuery implements UriQuery {
         return this.operator;
     }
 
-    public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer(prefix);
-        buf.append(this.getClass().getName()).append("\n");
-        
-        buf.append(prefix).append("Operator = ").append(this.operator);
-        buf.append(prefix).append("Uri = ").append(this.uri).append("\n");
-        return buf.toString();
+//    public String dump(String prefix) {
+//        StringBuffer buf = new StringBuffer(prefix);
+//        buf.append(this.getClass().getName()).append("\n");
+//        
+//        buf.append(prefix).append("Operator = ").append(this.operator);
+//        buf.append(prefix).append("Uri = ").append(this.uri).append("\n");
+//        return buf.toString();
+//    }
+
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
 
 }

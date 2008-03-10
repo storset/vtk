@@ -44,20 +44,24 @@ public class PropertyExistsQuery extends AbstractPropertyQuery {
         this.inverted = inverted;
     }
 
-    public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer().append(prefix);
-        buf.append(this.getClass().getName()).append("\n");
-
-        PropertyTypeDefinition def = getPropertyDefinition();
-        
-        buf.append(prefix).append("Property namespace = ").append(def.getNamespace());
-        buf.append(", name = ").append(def.getName()).append("\n");
-        buf.append("Inverted: " + this.inverted);
-        return buf.toString();
-    }
+//    public String dump(String prefix) {
+//        StringBuffer buf = new StringBuffer().append(prefix);
+//        buf.append(this.getClass().getName()).append("\n");
+//
+//        PropertyTypeDefinition def = getPropertyDefinition();
+//        
+//        buf.append(prefix).append("Property namespace = ").append(def.getNamespace());
+//        buf.append(", name = ").append(def.getName()).append("\n");
+//        buf.append("Inverted: " + this.inverted);
+//        return buf.toString();
+//    }
 
     public boolean isInverted() {
         return this.inverted;
     }
 
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+    
 }

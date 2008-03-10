@@ -38,7 +38,6 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.search.query.InversionFilter;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriTermQuery;
 

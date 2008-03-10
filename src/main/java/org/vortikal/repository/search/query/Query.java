@@ -30,8 +30,13 @@
  */
 package org.vortikal.repository.search.query;
 
+/**
+ * Generic query node interface which mandates that concrete implementations
+ * provide an accept-method for {@link QueryTreeVisitor} implementations.
+ *
+ */
 public interface Query {
 
-    public String dump(String prefix);
+    public Object accept(QueryTreeVisitor visitor, Object data);
     
 }

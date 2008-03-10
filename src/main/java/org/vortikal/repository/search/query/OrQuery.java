@@ -33,4 +33,8 @@ package org.vortikal.repository.search.query;
 
 public class OrQuery extends AbstractMultipleQuery {
 
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+    
 }

@@ -31,6 +31,7 @@
 package org.vortikal.repository.search;
 
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
 
 /**
@@ -127,9 +128,9 @@ public class Search {
         this.sorting = sorting;
     }
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(": [");
-        sb.append("query=").append(this.query.dump(""));
+        sb.append("query=").append(query.accept(new DumpQueryTreeVisitor(), null));
         sb.append(", propertySelect=").append(this.propertySelect);
         sb.append(", sorting=").append(this.sorting);
         sb.append(", limit=").append(this.limit);

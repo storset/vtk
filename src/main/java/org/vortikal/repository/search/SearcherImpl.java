@@ -47,6 +47,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.index.LuceneIndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.QueryBuilderFactory;
 import org.vortikal.repository.search.query.SortBuilder;
@@ -107,7 +108,7 @@ public class SearcherImpl implements Searcher {
         
         if (LOG.isDebugEnabled()) {
             LOG.debug("Built Lucene query '" 
-                    + luceneQuery + "' from query '" + query.dump("") + "'");
+                    + luceneQuery + "' from query '" + query.accept(new DumpQueryTreeVisitor(), null) + "'");
             
             LOG.debug("Built Lucene sorting '" + luceneSort + "' from sorting '"
                     + sorting + "'");

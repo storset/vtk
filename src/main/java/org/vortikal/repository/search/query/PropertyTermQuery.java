@@ -59,19 +59,23 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         this.term = term;
     }
     
-    public String dump(String prefix) {
-        StringBuffer buf = new StringBuffer().append(prefix);
-        buf.append(this.getClass().getName()).append("\n");
+//    public String dump(String prefix) {
+//        StringBuffer buf = new StringBuffer().append(prefix);
+//        buf.append(this.getClass().getName()).append("\n");
+//
+//        PropertyTypeDefinition def = getPropertyDefinition();
+//        
+//        buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
+//        buf.append("', name = '").append(def.getName()).append("'");
+//        buf.append(", term = '").append(this.term).append("'");
+//        buf.append(", operator = '").append(this.operator.toString()).append("'");
+//        buf.append("\n");
+//        
+//        return buf.toString();
+//    }
 
-        PropertyTypeDefinition def = getPropertyDefinition();
-        
-        buf.append(prefix).append("Property namespace = '").append(def.getNamespace());
-        buf.append("', name = '").append(def.getName()).append("'");
-        buf.append(", term = '").append(this.term).append("'");
-        buf.append(", operator = '").append(this.operator.toString()).append("'");
-        buf.append("\n");
-        
-        return buf.toString();
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
-
+    
 }

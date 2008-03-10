@@ -47,11 +47,15 @@ public class UriDepthQuery implements UriQuery {
         return this.depth;
     }
     
-    public String dump(String prefix) {
-        StringBuffer dump = new StringBuffer(prefix);
-        dump.append(this.getClass().getName()).append("\n");
-        dump.append(prefix).append("Depth = " + this.depth).append("\n");
-        return dump.toString();
+//    public String dump(String prefix) {
+//        StringBuffer dump = new StringBuffer(prefix);
+//        dump.append(this.getClass().getName()).append("\n");
+//        dump.append(prefix).append("Depth = " + this.depth).append("\n");
+//        return dump.toString();
+//    }
+
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
     }
 
 }

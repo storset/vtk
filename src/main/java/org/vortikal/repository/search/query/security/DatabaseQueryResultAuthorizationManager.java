@@ -170,5 +170,5 @@ public final class DatabaseQueryResultAuthorizationManager implements
     public void setRoleManager(RoleManager roleManager) {
         this.roleManager = roleManager;
     }
-    
+
 }

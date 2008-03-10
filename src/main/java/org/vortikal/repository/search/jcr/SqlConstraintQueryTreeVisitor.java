@@ -36,6 +36,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repository.search.query.NameRangeQuery;
@@ -151,7 +152,29 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(PropertyExistsQuery peQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("PropertyExistsQuery not supported, yet");
+        StringBuilder buffer = checkDataParam(data);
+        
+        PropertyTypeDefinition def = peQuery.getPropertyDefinition();
+        
+        String propName = def.getName();
+        String prefix = def.getNamespace().getPrefix();
+        if (prefix != null) {
+            propName = prefix + JcrDaoConstants.VRTX_PREFIX_SEPARATOR + propName;
+        }
+        propName = JcrDaoConstants.VRTX_PREFIX + propName;
+        
+        buffer.append(" ");
+        
+        buffer.append(propName).append(" ");
+        if (peQuery.isInverted()) {
+            buffer.append(SqlConstraintOperator.IS_NULL);
+        } else {
+            buffer.append(SqlConstraintOperator.IS_NOT_NULL);
+        }
+        
+        buffer.append(" ");
+        
+        return buffer;
     }
 
     public Object visit(PropertyPrefixQuery ppQuery, Object data) throws UnsupportedQueryException {

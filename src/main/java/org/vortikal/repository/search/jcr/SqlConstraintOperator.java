@@ -39,7 +39,7 @@ public enum SqlConstraintOperator {
     GREATER_EQUAL(">="),
     NOT_EQUAL("<>"),
     LIKE("LIKE"),
-    IS_NULL("IS_NULL"),
+    IS_NULL("IS NULL"),
     IS_NOT_NULL("IS NOT NULL"),
     NOT("NOT");
     

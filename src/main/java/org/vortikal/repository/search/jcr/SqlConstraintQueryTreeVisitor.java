@@ -65,6 +65,13 @@ import org.vortikal.repository.store.jcr.JcrPathUtil;
  * 
  * XXX: Largely unfinished. This class should build JCR SQL-equivalent constraints
  *      for our own query node types.
+ *      
+ * XXX: Make sure SQL-escaping in LIKE-expressions is sane for '_';
+ * 
+ * XXX: All properties are added as JCR-strings in JcrDao. This results in:
+ *      - No sensible sorting possible on non-string types.
+ *      - No sensible range queries possible on non-string types.
+ *      - No greater/less comparisons on non-string types.
  *
  */
 public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
@@ -192,7 +199,36 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(PropertyTermQuery ptQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("PropertyTermQuery not supported, yet");
+        StringBuilder buffer = checkDataParam(data);
+        
+        PropertyTypeDefinition def = ptQuery.getPropertyDefinition();
+        String value = ptQuery.getTerm();
+        String propName = getJcrPropertyName(def);
+        
+        
+        TermOperator op = ptQuery.getOperator();
+        
+        buffer.append(" ");
+        buffer.append(propName);
+        buffer.append(" ");
+        if (op == TermOperator.EQ) {
+            buffer.append(SqlConstraintOperator.EQUAL);            
+        } else if (op == TermOperator.NE) {
+            buffer.append(SqlConstraintOperator.NOT_EQUAL);
+        } else if (op == TermOperator.GE) {
+            buffer.append(SqlConstraintOperator.GREATER_EQUAL);
+        } else if (op == TermOperator.GT) {
+            buffer.append(SqlConstraintOperator.GREATER);
+        } else if (op == TermOperator.LE) {
+            buffer.append(SqlConstraintOperator.LESS_EQUAL);
+        } else if (op == TermOperator.LT) {
+            buffer.append(SqlConstraintOperator.LESS);
+        }
+        buffer.append(" ");
+        
+        buffer.append(getSqlPropertyValueExpression(def, value));
+        
+        return buffer;
     }
 
     public Object visit(PropertyWildcardQuery pwQuery, Object data) throws UnsupportedQueryException {
@@ -250,6 +286,8 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         // XXX: Path prefix queries are quite slow with JackRabbit (or so it seems).
         
+        // XXX: Inversion does not work at all for jcr:path.
+        
         StringBuilder buffer = checkDataParam(data);
         
         String jcrPathPrefix = JcrPathUtil.uriToPath(upQuery.getUri());
@@ -275,6 +313,8 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(UriTermQuery utQuery, Object data) throws UnsupportedQueryException {
+        
+        // XXX: inversion is not supported.
         
         StringBuilder buffer = checkDataParam(data);
         
@@ -305,6 +345,34 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         }
        
         return JcrDaoConstants.VRTX_PREFIX + propName;
+    }
+    
+    private String getSqlPropertyValueExpression(PropertyTypeDefinition def, 
+                                                            String termValue) { 
+
+        // XXX: JcrDao adds all node properties as type strings.
+        // Therefore, there is not yet support for sorting on numbers, dates and so on.
+        // Neither is range queries or greater/less comparisons on these types.
+        
+        return "'" + termValue + "'";
+        
+//        switch (def.getType()) {
+//            case HTML:
+//            case STRING:
+//            case IMAGE_REF:
+//            case TIMESTAMP: // This one probably needs additional formatting ..
+//            case DATE:      // This one probably needs additional formatting ..
+//                return "'" + termValue + "'";
+//                
+//            case INT:
+//            case LONG:
+//            case BOOLEAN:
+//                return termValue;
+//            
+//            default:
+//                return "'" + termValue + "'";
+//        }
+
     }
     
 }

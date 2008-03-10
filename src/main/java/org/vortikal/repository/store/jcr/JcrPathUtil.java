@@ -6,20 +6,6 @@ package org.vortikal.repository.store.jcr;
  */
 public class JcrPathUtil {
 
-//    public static String pathToUri(String path) {
-//        if (JcrDaoConstants.VRTX_ROOT.equals(path)) {
-//            return "/";
-//        }
-//        return unescapeIllegalJcrChars(path.substring(JcrDaoConstants.VRTX_ROOT.length()));
-//    }
-//    
-//    public static String uriToPath(String uri) {
-//        if ("/".equals(uri)) {
-//            return JcrDaoConstants.VRTX_ROOT;
-//        }
-//        return JcrDaoConstants.VRTX_ROOT + escapeIllegalJcrChars(uri);
-//    }
-
     
     /**
      * Escapes all illegal JCR name characters of a string.

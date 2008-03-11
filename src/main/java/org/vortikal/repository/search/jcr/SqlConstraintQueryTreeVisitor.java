@@ -66,12 +66,9 @@ import org.vortikal.repository.store.jcr.JcrPathUtil;
  * XXX: Largely unfinished. This class should build JCR SQL-equivalent constraints
  *      for our own query node types.
  *      
- * XXX: Make sure SQL-escaping in LIKE-expressions is sane for '_';
- * 
  * XXX: All properties are added as JCR-strings in JcrDao. This results in:
  *      - No sensible sorting possible on non-string types.
- *      - No sensible range queries possible on non-string types.
- *      - No greater/less comparisons on non-string types.
+ *      - No sensible range/greater/less comparisons on non-string types.
  *
  */
 public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
@@ -79,6 +76,9 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     private static final Log LOG = LogFactory.getLog(
                                             SqlConstraintQueryTreeVisitor.class);
     
+    // The character used as an escape in SQL LIKE expresssions.
+    private static final char SQL_LIKE_ESCAPE_CHAR = '@';
+        
     private int currentDepth = 0;
     private ResourceTypeTree resourceTypeTree;
     
@@ -152,7 +152,8 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         buffer.append(JcrDaoConstants.RESOURCE_NAME).append(" ");
         buffer.append(SqlConstraintOperator.LIKE).append(" ");
-        buffer.append("'").append(nameValuePrefix).append("%'");
+        buffer.append("'").append(escapeLIKEValue(nameValuePrefix)).append("%' ");
+        buffer.append(SqlConstraintOperator.LIKE_ESCAPE).append(" '").append(SQL_LIKE_ESCAPE_CHAR).append("'");
         
         if (npQuery.isInverted()) {
             buffer.append(")");
@@ -162,7 +163,30 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(NameRangeQuery nrQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("NameRangeQuery not supported, yet");
+        StringBuilder buffer = checkDataParam(data);
+        
+        String nameValueFrom = nrQuery.getFromTerm();
+        String nameValueTo = nrQuery.getToTerm();
+        
+        buffer.append(" ");
+        buffer.append(JcrDaoConstants.RESOURCE_NAME).append(" ");
+        if (nrQuery.isInclusive()) {
+            buffer.append(SqlConstraintOperator.GREATER_EQUAL).append(" ");
+        } else {
+            buffer.append(SqlConstraintOperator.GREATER).append(" ");
+        }
+        buffer.append("'").append(nameValueFrom).append("'").append(" ");
+        buffer.append(SqlConstraintOperator.AND).append(" ");
+        
+        buffer.append(JcrDaoConstants.RESOURCE_NAME).append(" ");
+        if (nrQuery.isInclusive()) {
+            buffer.append(SqlConstraintOperator.LESS_EQUAL).append(" ");
+        } else {
+            buffer.append(SqlConstraintOperator.LESS).append(" ");
+        }
+        buffer.append("'").append(nameValueTo).append("'");
+        
+        return buffer;
     }
 
     public Object visit(NameWildcardQuery nwQuery, Object data) throws UnsupportedQueryException {
@@ -213,7 +237,8 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         }
         buffer.append(propName).append(" ");
         buffer.append(SqlConstraintOperator.LIKE).append(" ");
-        buffer.append("'").append(propValuePrefix).append("%'");
+        buffer.append("'").append(escapeLIKEValue(propValuePrefix)).append("%' ");
+        buffer.append(SqlConstraintOperator.LIKE_ESCAPE).append(" '").append(SQL_LIKE_ESCAPE_CHAR).append("'");
         if (ppQuery.isInverted()) {
             buffer.append(")");
         }
@@ -313,11 +338,12 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         buffer.append("jcr:path ");
         buffer.append(SqlConstraintOperator.LIKE).append(" ");
-        buffer.append("'").append(jcrPathPrefix);        
+        buffer.append("'").append(escapeLIKEValue(jcrPathPrefix));        
         if (!jcrPathPrefix.endsWith("/")) {
             buffer.append("/");
         }
-        buffer.append("%'");
+        buffer.append("%' ").append(SqlConstraintOperator.LIKE_ESCAPE).append(" ");
+        buffer.append("'").append(SQL_LIKE_ESCAPE_CHAR).append("'");
         
         if (upQuery.isInverted()) {
             buffer.append(")");
@@ -383,6 +409,26 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         }
         
         return sqlOp;
+    }
+    
+    private String escapeLIKEValue(String value) {
+        
+        StringBuilder buffer = new StringBuilder(value.length());
+        
+        for (char c: value.toCharArray()) {
+            switch (c){
+            case '%':
+                buffer.append(SQL_LIKE_ESCAPE_CHAR).append(c); break;
+            case '_':
+                buffer.append(SQL_LIKE_ESCAPE_CHAR).append(c); break;
+            case SQL_LIKE_ESCAPE_CHAR:
+                buffer.append(SQL_LIKE_ESCAPE_CHAR).append(c); break;
+            default:
+                buffer.append(c);
+            }
+        }
+        
+        return buffer.toString();
     }
     
     private String getSqlPropertyValueExpression(PropertyTypeDefinition def, 

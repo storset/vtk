@@ -47,6 +47,7 @@ import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.ResultSetImpl;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.jcr.JcrDao;
 
 
@@ -82,8 +83,9 @@ public class JcrSqlSearcherImpl implements Searcher {
         
         ResultSetImpl resultSet = new ResultSetImpl();
 
+        Session session = null;
         try {
-            Session session = this.jcrDao.getSession();
+            session = this.jcrDao.getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
         
             Query query = qm.createQuery(sqlQuery, javax.jcr.query.Query.SQL);
@@ -99,10 +101,15 @@ public class JcrSqlSearcherImpl implements Searcher {
                     LOG.warn("Unexpected node type in result set: " + node.getPrimaryNodeType().getName());
                 }
             }
+
+            resultSet.setTotalHits(resultSet.getSize());
         } catch (RepositoryException re) {
             throw new QueryException("JCR RepositoryException: " + re.getMessage());
+        } catch (DataAccessException dae) {
+            throw new QueryException("DataAccessException", dae);
+        } finally {
+            if (session != null) session.logout();
         }
-        resultSet.setTotalHits(resultSet.getSize());
 
         LOG.debug("Got " + resultSet.getSize() + " query results.");
         return resultSet;

@@ -600,8 +600,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private void setResourceNameProperty(Node resourceNode, String uri) 
         throws RepositoryException {
     
-        resourceNode.setProperty(JcrDaoConstants.RESOURCE_NAME, 
-            URIUtil.getResourceName(uri));
+//        resourceNode.setProperty(JcrDaoConstants.RESOURCE_NAME, 
+//            URIUtil.getResourceName(uri));
     }
 
     private void unlock(Session session, Node node) throws RepositoryException {

@@ -129,6 +129,10 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         try {
             Workspace workspace = session.getWorkspace();
             workspace.copy(path, newPath);
+            
+            // Update resource name property.
+            setResourceNameProperty((Node)session.getItem(newPath), 
+                                            newResource.getURI());
 
             if (!copyACLs) {
                 String[] acls = discoverACLs(newResource.getURI());
@@ -141,8 +145,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                     }
                 }
             }
+
             session.save();
-            
         } catch (PathNotFoundException e) {
             throw new DataAccessException(e);
         } catch (RepositoryException e) {
@@ -415,9 +419,16 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         String path = JcrPathUtil.uriToPath(resource.getURI());
         String newPath = JcrPathUtil.uriToPath(newResource.getURI());
 
-
         try {
-            session.getWorkspace().move(path, newPath);
+            Workspace workspace = session.getWorkspace();
+            workspace.move(path, newPath);
+            
+            // Update resource name property.
+            setResourceNameProperty((Node)session.getItem(newPath), 
+                                    newResource.getURI());
+            
+            // Session must be explicitly saved because of resource name property update.
+            session.save();
         } catch (PathNotFoundException e) {
             throw new DataAccessException(e);
         } catch (RepositoryException e) {
@@ -455,6 +466,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             }
 
             node.setProperty(JcrDaoConstants.RESOURCE_TYPE, resource.getResourceType());
+            setResourceNameProperty(node, resource.getURI());
 
             if (!resource.isCollection()) {
                 node.setProperty(JcrDaoConstants.CONTENT, new ByteArrayInputStream(new byte[0]));
@@ -570,7 +582,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             
             // Add resource name explicitly for searchability (not used when mapping nodes to resources)
             // jcr:name is not suitable for this.
-            node.setProperty(JcrDaoConstants.RESOURCE_NAME, URIUtil.getResourceName(r.getURI()));
+            setResourceNameProperty(node, r.getURI());
 
             session.save();
 //            if (node.isCheckedOut() || node.isNodeType("mix:versionable")) {
@@ -583,6 +595,13 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         } finally {
             session.logout();
         }
+    }
+    
+    private void setResourceNameProperty(Node resourceNode, String uri) 
+        throws RepositoryException {
+    
+        resourceNode.setProperty(JcrDaoConstants.RESOURCE_NAME, 
+            URIUtil.getResourceName(uri));
     }
 
     private void unlock(Session session, Node node) throws RepositoryException {
@@ -972,7 +991,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         }
     }
     
-    // XXX Made public (JcrSqlSearcherImpl)
+    // XXX: Made public (JcrSqlSearcherImpl)
     public Session getSession() {
         //return getSystemSession();
         String name = "anonymous";
@@ -1070,6 +1089,5 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
         systemSession.save();
     }
-
-
+    
 }

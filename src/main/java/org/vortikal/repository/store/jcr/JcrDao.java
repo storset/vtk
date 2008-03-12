@@ -130,9 +130,13 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             Workspace workspace = session.getWorkspace();
             workspace.copy(path, newPath);
             
+            // Make sure we have any open scoped lock tokens available
+            // in our current session.
+            Node newResourceNode = (Node)session.getItem(newPath);
+            acquireLockToken(session, newResourceNode);
+            
             // Update resource name property.
-            setResourceNameProperty((Node)session.getItem(newPath), 
-                                            newResource.getURI());
+            setResourceNameProperty(newResourceNode, newResource.getURI());
 
             if (!copyACLs) {
                 String[] acls = discoverACLs(newResource.getURI());
@@ -423,8 +427,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             Workspace workspace = session.getWorkspace();
             workspace.move(path, newPath);
             
+            // Need any open-scoped lock token available in session.
+            Node movedNode = (Node)session.getItem(newPath);
+            acquireLockToken(session, movedNode);
             // Update resource name property.
-            setResourceNameProperty((Node)session.getItem(newPath), 
+            setResourceNameProperty(movedNode, 
                                     newResource.getURI());
             
             // Session must be explicitly saved because of resource name property update.
@@ -600,8 +607,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private void setResourceNameProperty(Node resourceNode, String uri) 
         throws RepositoryException {
     
-//        resourceNode.setProperty(JcrDaoConstants.RESOURCE_NAME, 
-//            URIUtil.getResourceName(uri));
+        resourceNode.setProperty(JcrDaoConstants.RESOURCE_NAME, 
+            URIUtil.getResourceName(uri));
     }
 
     private void unlock(Session session, Node node) throws RepositoryException {

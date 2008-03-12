@@ -282,11 +282,12 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         buffer.append(" ");
         if (operator == TermOperator.NI) {
-            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
+            buffer.append(SqlConstraintOperator.UNARY_NOT).append(" ");
         } else if (operator != TermOperator.IN){
             throw new UnsupportedQueryException("Unsupported type operator: "+ operator);
         }
-
+        
+        buffer.append("(");
         buffer.append(JcrDaoConstants.RESOURCE_TYPE).append(" ");
         buffer.append(SqlConstraintOperator.EQUAL).append(" ");
         buffer.append("'").append(typeName).append("'");
@@ -306,10 +307,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
                 }
             }
         }
-        
-        if (operator == TermOperator.NI) {
-            buffer.append(")");
-        }
+        buffer.append(")");        
         
         return buffer;
     }

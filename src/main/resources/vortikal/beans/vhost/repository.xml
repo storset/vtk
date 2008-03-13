@@ -59,7 +59,7 @@
     <property name="tokenManager" ref="tokenManager" />
     <property name="roleManager" ref="roleManager" />
     <property name="authorizationManager" ref="authorizationManager" />
-    <property name="dao" ref="repository.cache" />
+    <property name="dao" ref="${repositoryBackend}" />
     <property name="commentDAO" ref="${repository.commentDao}" />
     <property name="contentStore" ref="${repository.contentStore}" />
     <property name="lockManager" ref="repository.lockManager" />
@@ -166,7 +166,7 @@
   </bean>
 
   <bean id="repository.lockManager" class="org.vortikal.repository.LockManager">
-    <property name="dao" ref="${repository.dao}" />
+    <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
   <bean id="repositoryResourceHelper"
@@ -208,7 +208,7 @@
     <property name="principalManager" ref="principalManager" />
     <property name="lockManager" ref="repository.lockManager" />
     <property name="roleManager" ref="roleManager" />
-    <property name="dao" ref="${repository.dao}" />
+    <property name="dao" ref="${repositoryBackend}" />
   </bean>
 
    <bean id="messageSource"

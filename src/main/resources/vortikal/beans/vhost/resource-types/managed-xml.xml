@@ -447,7 +447,7 @@
           </bean>
         </entry>
 
-        <!-- researcher -->
+        <!-- researcher & project -->
         <entry key="http://www.uio.no/xsd/forskning/forsker/v00.*/forsker.xsd">
           <bean parent="abstractXPathEvaluator">
             <property name="expression"
@@ -456,7 +456,7 @@
         </entry>
         <entry key="http://www.uio.no/xsd/forskning/prosjekt/v00.*/prosjekt.xsd">
           <bean parent="abstractXPathEvaluator">
-            <property name="expression" value="/prosjekt/title" />
+            <property name="expression" value="/project/title" />
           </bean>
         </entry>
 

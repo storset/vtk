@@ -447,6 +447,20 @@
           </bean>
         </entry>
 
+        <!-- researcher -->
+        <entry key="http://www.uio.no/xsd/forskning/forsker/v00.*/forsker.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression"
+              value="concat(/researcher/givenName,' ',/researcher/surName)" />
+          </bean>
+        </entry>
+        <entry key="http://www.uio.no/xsd/forskning/prosjekt/v00.*/prosjekt.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression" value="/prosjekt/title" />
+          </bean>
+        </entry>
+
+
         <!-- UiO -->
         <entry key="http://www.uio.no/xsd/uio/adresse/v001/adresse.xsd">
           <bean parent="abstractXPathEvaluator">

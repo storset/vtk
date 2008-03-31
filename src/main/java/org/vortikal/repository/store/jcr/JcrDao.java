@@ -608,7 +608,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         throws RepositoryException {
     
         resourceNode.setProperty(JcrDaoConstants.RESOURCE_NAME, 
-            URIUtil.getResourceName(uri));
+                                                 URIUtil.getResourceName(uri));
+
     }
 
     private void unlock(Session session, Node node) throws RepositoryException {
@@ -1086,6 +1087,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, now);
         root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, JcrDaoConstants.ROOT_USER);
         root.setProperty(JcrDaoConstants.VRTX_PREFIX + PropertyType.CONTENTLENGTH_PROP_NAME, "0");
+        
+        setResourceNameProperty(root, "/");
 
         Node aclNode = root.addNode(JcrDaoConstants.VRTX_ACL_NAME, JcrDaoConstants.VRTX_ACL_NAME);
         String pseudoType = Principal.Type.PSEUDO.name();

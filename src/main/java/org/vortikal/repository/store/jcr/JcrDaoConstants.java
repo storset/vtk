@@ -1,5 +1,6 @@
 package org.vortikal.repository.store.jcr;
 
+
 /**
  * Various JCR DAO related constant strings.
  *
@@ -20,9 +21,11 @@ public class JcrDaoConstants {
     public static final String VRTX_FOLDER_NAME = "vrtx:folder";
     public static final String CONTENT = "vrtx:content";
     public static final String RESOURCE_TYPE = "vrtx:resourceType";
-    public static final String RESOURCE_NAME = "vrtx:resourceName";
     public static final String VRTX_LOCK_NAME = "vrtx:lock";
-
+    
+    // Auxiliary resource items used for searching-purposes.
+    public static final String RESOURCE_NAME = "vrtx:resourceName";
+    
     // Acl item names
     public static final String VRTX_ACL_NAME = "vrtx:acl";
     public static final String VRTX_ACTION_NAME = "vrtx:action";

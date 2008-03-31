@@ -69,6 +69,10 @@ import org.vortikal.repository.store.jcr.JcrPathUtil;
  * XXX: All properties are added as JCR-strings in JcrDao. This results in:
  *      - No sensible sorting possible on non-string types.
  *      - No sensible range/greater/less comparisons on non-string types.
+ *      
+ * XXX: Add option of flagging that post-processing of query result set is
+ *      necessary, because some queries cannot be represented properly
+ *      as JCR-SQL.
  *
  */
 public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
@@ -313,7 +317,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     }
 
     public Object visit(UriDepthQuery udQuery, Object data) throws UnsupportedQueryException {
-        throw new UnsupportedQueryException("UriDepthQuery not supported, yet");
+        throw new UnsupportedQueryException("UriDepthQuery is currently not supported.");
     }
 
     public Object visit(UriPrefixQuery upQuery, Object data) throws UnsupportedQueryException {

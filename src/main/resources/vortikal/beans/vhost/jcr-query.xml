@@ -3,7 +3,6 @@
 
 <beans>
   
-  
   <bean id="queryParserFactory"
     class="org.vortikal.repository.search.QueryParserFactoryImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree" />

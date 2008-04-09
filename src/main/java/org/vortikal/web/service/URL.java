@@ -180,6 +180,14 @@ public class URL {
         values.add(value);
     }
     
+    public void setParameter(String name, String value) {
+        if (this.parameters.containsKey(name)) {
+            this.parameters.remove(name);
+        }
+        List<String> values = new ArrayList<String>();
+        values.add(value);
+        this.parameters.put(name, values);
+    }
 
     public void removeParameter(String name) {
         this.parameters.remove(name);

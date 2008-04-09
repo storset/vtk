@@ -195,6 +195,9 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
                 throw new RuntimeException(
                         "Could not read feed url " + url + " ("+ m + ")");
             }
+            if (tmpFeed == null) {
+                throw new RuntimeException("Unable to load feed: " + url);
+            }
             entries.addAll(tmpFeed.getEntries());
 
             for (SyndEntry entry : (List<SyndEntry>)tmpFeed.getEntries()) {

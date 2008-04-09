@@ -33,9 +33,11 @@ package org.vortikal.web;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +54,7 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.security.token.TokenManager;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 
@@ -87,6 +90,7 @@ public class RequestContextInitializer implements ContextInitializer {
     private String trustedToken;
     private Repository repository;
     
+    private Set<String> nonRepositoryRoots = new HashSet<String>();
     
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
@@ -149,13 +153,32 @@ public class RequestContextInitializer implements ContextInitializer {
         this.trustedToken = trustedToken;
     }
 
+    public void setNonRepositoryRoots(Set<String> nonRepositoryRoots) {
+        if (nonRepositoryRoots != null) {
+            this.nonRepositoryRoots = nonRepositoryRoots;
+        }
+    }
+
+
     public void createContext(HttpServletRequest request) throws Exception {
 
         String uri = getResourceURI(request);
         Resource resource = null;
 
+        boolean retrieve = true;
+        // Avoid doing repository retrievals if we know that this URI 
+        // does not exist in the repository:
+        for (String prefix : this.nonRepositoryRoots) {
+            if (uri.startsWith(prefix)) {
+                retrieve = false;
+                break;
+            }
+        }
+        
         try {
-            resource = this.repository.retrieve(this.trustedToken, uri, false);
+            if (retrieve) {
+                resource = this.repository.retrieve(this.trustedToken, uri, false);
+            }
         } catch (ResourceNotFoundException e) {
             // Ignore, this is not an error
         } catch (ResourceLockedException e) {

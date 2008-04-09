@@ -21,6 +21,11 @@
       <property name="repository" ref="repository" />
       <property name="indexFileResolver" ref="indexFileResolver" />
       <property name="services" ref="services" />
+      <property name="nonRepositoryRoots">
+        <set>
+          <value>${vrtx.staticResourcesBase}</value>
+        </set>
+      </property>
    </bean>
 
    <bean id="services" class="org.vortikal.beans.factory.BeansListingFactoryBean">

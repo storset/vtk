@@ -783,6 +783,7 @@
     <property name="commandName" value="uploadForm" />
     <property name="commandClass"
               value="org.vortikal.web.controller.repository.FileUploadCommand" />
+    <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
   <bean id="deleteResourceHandler" 

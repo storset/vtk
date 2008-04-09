@@ -58,6 +58,8 @@ public class FileUploadController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(FileUploadController.class);
 
+    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    
     private Repository repository = null;
     private int maxUploadSize = 100000000;
 
@@ -69,6 +71,18 @@ public class FileUploadController extends SimpleFormController {
         this.maxUploadSize = maxUploadSize;
     }
     
+    public void setTempDir(String tempDirPath) {
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " does not exist");
+        }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " 
+                    + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
+    }
 
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
@@ -102,7 +116,7 @@ public class FileUploadController extends SimpleFormController {
         }
 
         FileItemFactory factory = new DiskFileItemFactory(
-            this.maxUploadSize, new File(System.getProperty("java.io.tmpdir")));
+            this.maxUploadSize, this.tempDir);
         ServletFileUpload upload = new ServletFileUpload(factory);
     
 

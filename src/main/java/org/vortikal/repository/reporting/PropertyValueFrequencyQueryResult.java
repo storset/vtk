@@ -41,6 +41,11 @@ import org.vortikal.repository.resourcetype.Value;
  */
 public interface PropertyValueFrequencyQueryResult extends ReportResult {
 
+    /**
+     * Get the query that was used to generate this result.
+     */
+    public PropertyValueFrequencyQuery getQuery();
+
     public PropertyTypeDefinition getPropertyTypeDefintion();
     
     public List<Pair<Value, Integer>> getValueFrequencyList();

@@ -49,6 +49,10 @@ public class PropertyValueFrequencyQueryResultImpl
     public PropertyTypeDefinition getPropertyTypeDefintion() {
         return this.query.getPropertyTypeDefintion();
     }
+    
+    public PropertyValueFrequencyQuery getQuery() {
+        return this.query;
+    }
 
     public List<Pair<Value, Integer>> getValueFrequencyList() {
         return Collections.unmodifiableList(this.valFreqList);

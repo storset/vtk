@@ -46,8 +46,6 @@ import org.vortikal.repository.store.DataReportDAO;
 import org.vortikal.repository.store.db.ibatis.PropertyValueFrequencyQueryParameter;
 
 /**
- * TODO: Currently does not support queries on properties stored in vortex_resource. 
- *
  * @author oyviste
  */
 public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor 

@@ -96,7 +96,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
         parameters.put("uri", startUri);
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(startUri,
-                SqlMapDataAccessor.SQL_ESCAPE_CHAR));
+                AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
 
         client.queryWithRowHandler(statementId, parameters, rowHandler);
 

@@ -9,7 +9,7 @@
   -->
 
 <#if tagElements?exists>
-    <ul class="tag-cloud">
+    <ul class="vrtx-tag-cloud">
      <#list tagElements as element>
        <li class="tag-magnitude-${element.magnitude}">
          <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>

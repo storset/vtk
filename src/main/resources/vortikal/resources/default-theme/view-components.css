@@ -397,3 +397,41 @@ span.vrtx-toc-header {
 } 
 
 /* END resource:toc */
+
+
+
+
+/* START include:tag-cloud */
+
+ul.vrtx-tag-cloud li { 
+    display: inline; 
+    margin-right: 6px; 
+}
+ul.vrtx-tag-cloud li a { 
+    text-decoration: none; 
+}
+ul.vrtx-tag-cloud { 
+    margin-left:0; 
+    padding-left:0; 
+}
+ul.vrtx-tag-cloud { 
+    //font-family: 'Lucida Grande', sans-serif; 
+    font-size: 13px; /* set global font size */
+}
+.vrtx-tag-cloud .tag-magnitude-5 { 
+    font-size: 1.76em; 
+}
+.vrtx-tag-cloud .tag-magnitude-4 { 
+    font-size: 1.5em; 
+}
+.vrtx-tag-cloud .tag-magnitude-3 { 
+    font-size: 1.3em; 
+}
+.vrtx-tag-cloud .tag-magnitude-2 { 
+    font-size: 1.1em; 
+}
+.vrtx-tag-cloud .tag-magnitude-1 { 
+    font-size: 0.9em; 
+}
+
+/* END resource:toc */

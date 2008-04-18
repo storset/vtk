@@ -28,7 +28,7 @@ create table vortex_resource
     modified_by varchar2 (64) not null,
     resource_owner varchar2 (64) not null,
     content_language varchar2 (64) null,
-    content_type varchar2 (64) null,
+    content_type varchar2 (128) null,
     content_length number null,
     resource_type varchar2 (64) not null,
     character_encoding varchar2 (64) null,

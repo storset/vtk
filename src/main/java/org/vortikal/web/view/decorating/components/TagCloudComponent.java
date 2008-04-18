@@ -277,7 +277,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
         int frequencyLeveled = frequency - minFreq;
         float magnitude = (float)frequencyLeveled/(float)maxLeveled;
 
-        return (int)Math.floor(magnitude*(magnitudeMax - magnitudeMin) + magnitudeMin);
+        return (int)Math.round(magnitude*(magnitudeMax - magnitudeMin) + magnitudeMin);
     }
     
     private String getUrl(String text, String serviceUrl) {

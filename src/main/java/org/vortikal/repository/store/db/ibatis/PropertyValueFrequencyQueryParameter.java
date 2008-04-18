@@ -28,22 +28,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.store;
+package org.vortikal.repository.store.db.ibatis;
 
-import java.util.List;
+import org.vortikal.repository.reporting.PropertyValueFrequencyQuery.Ordering;
 
-import org.vortikal.repository.reporting.Pair;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
-import org.vortikal.repository.resourcetype.Value;
+public class PropertyValueFrequencyQueryParameter extends AbstractPropertyQueryParameter {
+    private Integer limit;
+    private String uriWildcard;
+    private Ordering ordering;
+    
+    public PropertyValueFrequencyQueryParameter(String name) {
+        super(name, null);
+    }
+    
+    public PropertyValueFrequencyQueryParameter(String name, String namespaceUri) {
+        super(name, namespaceUri);
+    }
 
-/**
- * Interface to data report DAO. 
- *
- */
-public interface DataReportDAO {
+    public Integer getLimit() {
+        return limit;
+    }
 
-    public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(
-                                            String token,
-                                            PropertyValueFrequencyQuery query);
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
 
+    public String getUriWildcard() {
+        return uriWildcard;
+    }
+
+    public void setUriWildcard(String uriWildcard) {
+        this.uriWildcard = uriWildcard;
+    }
+
+    public Ordering getOrdering() {
+        return ordering;
+    }
+
+    public void setOrdering(Ordering ordering) {
+        this.ordering = ordering;
+    }
 }

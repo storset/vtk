@@ -31,23 +31,19 @@
 package org.vortikal.repository.store.db;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.store.DataReportDAO;
+import org.vortikal.repository.store.db.ibatis.PropertyValueFrequencyQueryParameter;
 
 /**
  * TODO: Currently does not support queries on properties stored in vortex_resource. 
@@ -57,60 +53,30 @@ import org.vortikal.repository.store.DataReportDAO;
 public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor 
     implements DataReportDAO, InitializingBean {
     
-    private Set<PropertyTypeDefinition> vortexResourcePropDefs;
-    private ResourceTypeTree resourceTypeTree;
-    
-    @Override
-    public void initDao() {
-        // XXX: Add all properties stored in vortex_resource table here, query on them 
-        // is not supported yet ..
-        this.vortexResourcePropDefs = new HashSet<PropertyTypeDefinition>();
-        Namespace ns = Namespace.DEFAULT_NAMESPACE;
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "createdBy"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "creationTime"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "owner"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "contentType"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "characterEncoding"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "guessedCharacterEncoding"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "userSpecifiedCharacterEncoding"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "contentLanguage"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "lastModified"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "modifiedBy"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "contentLastModified"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "contentModifiedBy"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "propertiesLastModified"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "propertiesModifiedBy"));
-        vortexResourcePropDefs.add(this.resourceTypeTree.getPropertyTypeDefinition(ns, "contentLength"));
-    }
-
     public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(
                                             String token,
                                             PropertyValueFrequencyQuery query) 
         throws DataReportException {
         
         PropertyTypeDefinition def = query.getPropertyTypeDefintion();
-        if (this.vortexResourcePropDefs.contains(def)) {
-            throw new DataReportException("Query on property type '" + def.getName() + "' not supported yet.");
-        }
-        
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("name", def.getName());
-        if (! def.getNamespace().equals(Namespace.DEFAULT_NAMESPACE)) {
-            params.put("namespace", def.getNamespace().getUri());
-        }
+
+        PropertyValueFrequencyQueryParameter params
+            = new PropertyValueFrequencyQueryParameter(def.getName(), 
+                                                    def.getNamespace().getUri());
         
         if (query.getLimit() != PropertyValueFrequencyQuery.LIMIT_UNLIMITED) {
-            params.put("limit", query.getLimit());
+            params.setLimit(query.getLimit());
         }
         
-        params.put("ordering", query.getOrdering());
+        params.setOrdering(query.getOrdering());
         
         if (query.getUriScope() != null && !"/".equals(query.getUriScope().getUri())) {
-            params.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                    query.getUriScope().getUri(), SqlMapDataAccessor.SQL_ESCAPE_CHAR));
+            params.setUriWildcard(
+                    SqlDaoUtils.getUriSqlWildcard(query.getUriScope().getUri(), 
+                               AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
         }
         
-        String sqlMap = getSqlMap("dataReportPropValueFrequencyExtraPropEntry");
+        String sqlMap = getSqlMap("dataReportPropValueFrequency");
         
         List<Map<String, Object>> result 
             = getSqlMapClientTemplate().queryForList(sqlMap, params);
@@ -118,19 +84,18 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
         List<Pair<Value, Integer>> retval = 
                                     new ArrayList<Pair<Value, Integer>>();
         
-        for (Map row: result) {
-            String stringValue = (String)row.get("value");
-            Integer frequency = (Integer)row.get("frequency");
-            Value value = ValueFactory.getInstance().createValue(stringValue, def.getType());
-            retval.add(new Pair<Value, Integer>(value, frequency));
+        try {
+            for (Map row: result) {
+                String stringValue = (String)row.get("value");
+                Integer frequency = (Integer)row.get("frequency");
+                Value value = ValueFactory.getInstance().createValue(stringValue, def.getType());
+                retval.add(new Pair<Value, Integer>(value, frequency));
+            }
+        } catch (ValueFormatException vfe) {
+            throw new DataReportException("DAO: Unable to map property value from database");
         }
         
         return retval;
-    }
-
-    @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

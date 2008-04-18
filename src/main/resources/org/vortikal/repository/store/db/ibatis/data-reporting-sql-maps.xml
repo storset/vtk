@@ -5,52 +5,82 @@
 <sqlMap>
   
   <resultMap id="dataReportValueFrequency" class="java.util.HashMap">
-    <result property="value" column="value" javaType="string" />
+    <result property="value" column="value" javaType="String" />
     <result property="frequency" column="frequency" javaType="int" />
   </resultMap>
 
-  <!-- Parameters: 
-        - namespace (String or null) property name space
+  <!-- Parameters (an instance of org.vortikal.repository.store.db.ibatis.PropertyValueFrequencyQueryParameter): 
+        - namespaceUri (String or null) property name space
         - name (String) property name
         - limit (Integer or null) result limit in rows
         - uriWildcard (String or null) uri wildcard string (for scoping on resource uri)
         - ordering
+        - vortexResourcePropertyColumn (String or null) 
+          If a vortex_resource property, this should be the column name, otherwise it should be null.
    -->
-  <select id="dataReportPropValueFrequencyExtraPropEntry"
-            parameterClass="java.util.Map" resultMap="dataReportValueFrequency">
+  <select id="dataReportPropValueFrequency"
+      parameterClass="org.vortikal.repository.store.db.ibatis.PropertyValueFrequencyQueryParameter" 
+      resultMap="dataReportValueFrequency">
 
     <isNotNull property="limit">
       <!--  Needed for Oracle, renders to empty block by default. -->
       <include refid="dataReportingLimitPrepend"/>
     </isNotNull>
-    SELECT e.value, count(e.value) AS frequency 
-    FROM extra_prop_entry e
-    <isNotNull property="uriWildcard">
-      INNER JOIN vortex_resource r ON e.resource_id = r.resource_id
+    
+    <isNotNull property="vortexResourcePropertyColumn">
+        <!-- Do query on vortex_resource -->
+        SELECT 
+        $vortexResourcePropertyColumn$ 
+        AS value, COUNT($vortexResourcePropertyColumn$) AS frequency
+        FROM vortex_resource
+        WHERE 
+            $vortexResourcePropertyColumn$ IS NOT NULL
+            <isNotNull property="uriWildcard" prepend="AND"> 
+              uri LIKE #uriWildcard# ESCAPE '@'
+            </isNotNull>
+            GROUP BY $vortexResourcePropertyColumn$
+            <isNotEqual property="ordering" compareValue="NONE" prepend="ORDER BY">
+              <isEqual property="ordering" compareValue="FREQ_ASC">frequency ASC</isEqual>
+              <isEqual property="ordering" compareValue="FREQ_DESC">frequency DESC</isEqual>
+              <isEqual property="ordering" compareValue="VALUE_ASC">value ASC</isEqual>
+              <isEqual property="ordering" compareValue="VALUE_DESC">value DESC</isEqual>
+            </isNotEqual>
     </isNotNull>
-    WHERE
-        <isNotNull property="uriWildcard" close="AND">
-          r.uri LIKE #uriWildcard# ESCAPE '@'
+
+    <isNull property="vortexResourcePropertyColumn">
+        <!-- Do query on extra_prop_entry -->
+        SELECT e.value, COUNT(e.value) AS frequency 
+        FROM extra_prop_entry e
+        <isNotNull property="uriWildcard">
+          INNER JOIN vortex_resource r ON e.resource_id = r.resource_id
         </isNotNull>
-        <!--  Is this necessary ? -->
-        <isNull property="namespace">
-          e.name_space IS NULL
-        </isNull>
-        <isNotNull property="namespace">
-          e.name_space = #namespace#
-        </isNotNull>
-        AND
-        e.name = #name#
-        GROUP BY e.value
-        <isNotEqual property="ordering" compareValue="NONE" prepend="ORDER BY">
-          <isEqual property="ordering" compareValue="FREQ_ASC">frequency ASC</isEqual>
-          <isEqual property="ordering" compareValue="FREQ_DESC">frequency DESC</isEqual>
-          <isEqual property="ordering" compareValue="VALUE_ASC">e.value ASC</isEqual>
-          <isEqual property="ordering" compareValue="VALUE_DESC">e.value DESC</isEqual>
-        </isNotEqual>
-        <isNotNull property="limit" >
-           <include refid="dataReportingLimitAppend"/>
-        </isNotNull>
+        WHERE
+            <isNotNull property="uriWildcard" close="AND">
+              r.uri LIKE #uriWildcard# ESCAPE '@'
+            </isNotNull>
+            <!--  Is this necessary ? -->
+            <isNull property="namespaceUri">
+              e.name_space IS NULL
+            </isNull>
+            <isNotNull property="namespaceUri">
+              e.name_space = #namespaceUri#
+            </isNotNull>
+            AND
+            e.name = #name#
+            GROUP BY e.value
+            <isNotEqual property="ordering" compareValue="NONE" prepend="ORDER BY">
+              <isEqual property="ordering" compareValue="FREQ_ASC">frequency ASC</isEqual>
+              <isEqual property="ordering" compareValue="FREQ_DESC">frequency DESC</isEqual>
+              <isEqual property="ordering" compareValue="VALUE_ASC">e.value ASC</isEqual>
+              <isEqual property="ordering" compareValue="VALUE_DESC">e.value DESC</isEqual>
+            </isNotEqual>
+            
+    </isNull>
+        
+    <isNotNull property="limit" >
+       <include refid="dataReportingLimitAppend"/>
+    </isNotNull>
   </select>
+  
 
 </sqlMap>

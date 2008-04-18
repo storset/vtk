@@ -4,4 +4,5 @@
 <sqlMapConfig>
   <sqlMap resource="org/vortikal/repository/store/db/ibatis/oracle-functions.xml"/>
   <sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml"/>
+  <sqlMap resource="org/vortikal/repository/store/db/ibatis/oracle-data-reporting-sql-maps.xml"/>
 </sqlMapConfig>

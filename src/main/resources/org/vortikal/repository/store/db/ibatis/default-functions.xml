@@ -40,4 +40,13 @@
     #destUri# || substring(uri, length(#srcUri#) + 1)
   </sql>
   
+  <sql id="dataReportingLimitPrepend">
+  <!-- By default, nothing is prepend to query for limiting. --> 
+  </sql>
+  
+  <sql id="dataReportingLimitAppend">
+    <!--  Default (supported by at least PostgreSQL and MySQL) -->
+    LIMIT #limit# OFFSET 0
+  </sql>
+
 </sqlMap>

@@ -51,4 +51,13 @@
            and r1.acl_inherited_from != #inheritedFrom#
   </update>
 
+  <sql id="dataReportingLimitPrepend">
+    SELECT * FROM (
+  </sql>
+
+  <sql id="dataReportingLimitAppend">
+    <!--  Oracle query limiting appendix -->
+    ) WHERE ROWNUM &lt;= #limit#
+  </sql>
+
 </sqlMap>

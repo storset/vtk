@@ -19,6 +19,10 @@
   <select id="dataReportPropValueFrequencyExtraPropEntry"
             parameterClass="java.util.Map" resultMap="dataReportValueFrequency">
 
+    <isNotNull property="limit">
+      <!--  Needed for Oracle, renders to empty block by default. -->
+      <include refid="dataReportingLimitPrepend"/>
+    </isNotNull>
     SELECT e.value, count(e.value) AS frequency 
     FROM extra_prop_entry e
     <isNotNull property="uriWildcard">
@@ -45,7 +49,7 @@
           <isEqual property="ordering" compareValue="VALUE_DESC">e.value DESC</isEqual>
         </isNotEqual>
         <isNotNull property="limit" >
-          LIMIT #limit# OFFSET 0
+           <include refid="dataReportingLimitAppend"/>
         </isNotNull>
   </select>
 

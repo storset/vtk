@@ -130,7 +130,11 @@ public class Search {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(": [");
-        sb.append("query=").append(query.accept(new DumpQueryTreeVisitor(), null));
+        if (query != null) {
+            sb.append("query=").append(query.accept(new DumpQueryTreeVisitor(), null));
+        } else {
+            sb.append("query=null");
+        }
         sb.append(", propertySelect=").append(this.propertySelect);
         sb.append(", sorting=").append(this.sorting);
         sb.append(", limit=").append(this.limit);

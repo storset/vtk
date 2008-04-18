@@ -57,23 +57,27 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
         return m.matches();
     }
     
+    protected Calendar getCalendar() {
+        return Calendar.getInstance();
+    }
+    
     public String evaluate(String token) throws QueryException {
         Matcher m = this.pattern.matcher(token);
         if (!m.matches()) {
             throw new QueryException("Query token: '" + token + "' does not match pattern");
         }
 
-        Calendar currentDate = Calendar.getInstance();
+        Calendar calendar = getCalendar();
 
         String params = m.group(2);
         if (params != null) {
             String operator = m.group(3);
             String qtyString = m.group(4);
-            processQuantityString(currentDate, "+".equals(operator), qtyString);
+            processQuantityString(calendar, "+".equals(operator), qtyString);
         }
 //         return currentDate.getTime().toString();
 // XXX: temporary format, just for getting stuff up and running:
-        return String.valueOf(currentDate.getTimeInMillis());
+        return String.valueOf(calendar.getTimeInMillis());
     }
 
 

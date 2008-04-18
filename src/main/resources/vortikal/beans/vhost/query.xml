@@ -21,10 +21,10 @@
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDepthExpressionEvaluator" />
         <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
               parent="requestLocalRepositoryAware" />
-    <!--        <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />-->
-    <!--        <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">-->
-    <!--          <property name="variableName" value="currentDate" />-->
-    <!--        </bean>-->
+           <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
+           <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">
+             <property name="variableName" value="currentDate" />
+           </bean>
       </list>
     </property>
   </bean>

@@ -99,4 +99,10 @@ public class ResultSetImpl implements ResultSet {
         this.totalHits = totalHits;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(": [size=").append(this.results.size());
+        sb.append(", totalHits=").append(this.totalHits);
+        return sb.toString();
+    }
 }

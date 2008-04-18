@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--  Beans for repository data reporting -->
+<beans>
+
+    <!--  Data report manager -->
+    <bean id="dataReportManager" class="org.vortikal.repository.reporting.DataReportManagerImpl">
+        <property name="dataReportDAO" ref="repository.dataReportDAO"/>
+        <property name="cache" ref="dataReportManagerCache"/>
+    </bean>
+    
+    <!-- A SimpleCache instance for the data report manager -->
+    <bean id="dataReportManagerCache" class="org.vortikal.util.cache.SimpleCacheImpl">
+        <property name="refreshTimestampOnGet" value="false"/>
+        <property name="timeoutSeconds" value="60"/>
+    </bean>
+
+    <!-- Data report DAO -->
+    <bean id="repository.dataReportDAO" class="org.vortikal.repository.store.db.SqlMapDataReportDAO">
+        <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+        <property name="sqlMaps" ref="repository.statementMappings" />
+        <property name="resourceTypeTree" ref="resourceTypeTree" />
+    </bean> 
+    
+</beans>

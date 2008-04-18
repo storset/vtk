@@ -165,6 +165,15 @@
     <property name="view" ref="decorating.keywordsComponent.view" />
   </bean>
 
+  <bean id="decorating.tagCloudComponent" 
+        class="org.vortikal.web.view.decorating.components.TagCloudComponent">
+    <property name="dataReportManager" ref="dataReportManager"/>
+    <property name="keywordsPropDef" ref="keywordsPropDef"/>
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="tag-cloud" />
+    <property name="defaultURLPattern" value="./?vrtx=tags&amp;tag=%v" />
+    <property name="view" ref="decorating.tagCloudComponent.view" />
+  </bean>
 
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorComponent">
@@ -215,6 +224,9 @@
     <property name="url" value="layouts/keywords.ftl" />
   </bean>
 
+  <bean id="decorating.tagCloudComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/tag-cloud.ftl" />
+  </bean>
 
   <bean id="decorating.feedComponent"
         class="org.vortikal.web.view.decorating.components.FeedComponent">

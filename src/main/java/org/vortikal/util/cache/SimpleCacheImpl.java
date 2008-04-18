@@ -64,8 +64,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     private CleanupThread cleanupThread;
 
 
-    public SimpleCacheImpl() {
-    }
+    public SimpleCacheImpl() {}
 
 
     public SimpleCacheImpl(int timeoutSeconds) {
@@ -116,7 +115,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
         Item item = this.cache.get(key);
         if (item == null)
             return null;
-        else if (item.getTimestamp().getTime() + this.timeoutSeconds * 1000 > new Date().getTime()) {
+        else if (item.getTimestamp().getTime() + this.timeoutSeconds * 1000 > System.currentTimeMillis()) {
             return item.getValue();
         } 
             

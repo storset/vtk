@@ -33,7 +33,6 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;

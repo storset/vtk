@@ -1,0 +1,19 @@
+<#--
+  - File: tag-cloud.ftl
+  - 
+  - Description: Simple rendering of a tag loud as a list. Feel free to improve.
+  - 
+  - Required model data:
+  -     tagElements - List<org.vortikal.web.view.decorating.components.TagCloudComponent.TagElement>
+  - 
+  -->
+
+<#if tagElements?exists>
+    <ul class="tag-cloud">
+     <#list tagElements as element>
+       <li class="tag-magnitude-${element.magnitude}">
+         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
+       </li>
+     </#list>
+    </ul>
+</#if>

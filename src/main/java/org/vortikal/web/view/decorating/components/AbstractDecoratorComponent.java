@@ -109,7 +109,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": ").append(this.namespace).append(":").append(this.name);
         return sb.toString();
     }

@@ -471,18 +471,38 @@ public interface Repository {
 
     
     /**
-     * Creates a new comment instance for a resource.
+     * Lists all comments on a resource. Comments on child 
+     * resources will not be listed.
      *
      * @param token the security token of the current principal
-     * @param resource the resource to comment
-     * @return a newly created comment
+     * @param resource the resource for which to list comments
+     * @return a list of comments
      * @exception RepositoryException if an error occurs
      * @exception AuthenticationException if an error occurs
      */
     public List<Comment> getComments(String token, Resource resource)
         throws RepositoryException, AuthenticationException;
 
+    /**
+     * Lists a number of comments on a resource or its descendants, 
+     * sorted by the comments' date values. The number of comments 
+     * returned may vary depending on the permissions settings of the 
+     * commented resource(s), the only guarantee is that no more than 
+     * <code>max</code> comments are returned.
+     *
+     * @param token the security token of the current principal
+     * @param resource the resource for which to list comments
+     * @param deep determines whether or not comments on descendant 
+     * resources are listed
+     * @param max the maximum number of comments that are listed
+     * @return a list of comments
+     * @exception RepositoryException if an error occurs
+     * @exception AuthenticationException if an error occurs
+     */
+    public List<Comment> getComments(String token, Resource resource, boolean deep, int max)
+        throws RepositoryException, AuthenticationException;
 
+    
     /**
      * Adds a comment on a resource
      *

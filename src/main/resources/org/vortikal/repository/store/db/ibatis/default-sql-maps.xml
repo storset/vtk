@@ -622,6 +622,7 @@
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
 
+  <!--
   <select id="listCommentsByResource"
           parameterClass="org.vortikal.repository.Resource"
           resultMap="Comment">
@@ -630,6 +631,18 @@
     where c.resource_id in
       (select resource_id from vortex_resource where uri = #URI#)
     order by c.time desc
+  </select>
+  -->
+
+  <select id="listCommentsByResource"
+          parameterClass="java.util.Map"
+          resultMap="Comment">
+    select c.id as ID, r.uri as URI, c.time, c.author, c.title, c.content, c.approved
+    from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id 
+    where c.resource_id in
+      (select resource_id from vortex_resource where uri = #resource.URI# or uri like #uriWildcard# escape '@')
+    order by c.time desc
+    limit #max#
   </select>
 
   <select id="loadCommentById" parameterClass="java.lang.Integer"

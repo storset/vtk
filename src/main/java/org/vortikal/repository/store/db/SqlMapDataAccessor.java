@@ -73,8 +73,6 @@ import com.ibatis.sqlmap.client.SqlMapExecutor;
 public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
   implements DataAccessor {
 
-    public static final char SQL_ESCAPE_CHAR = '@';
-
     private Log logger = LogFactory.getLog(this.getClass());
 
     private boolean optimizedAclCopySupported = false;

@@ -31,7 +31,9 @@
 package org.vortikal.repository.store.db;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Resource;
@@ -39,18 +41,28 @@ import org.vortikal.repository.store.CommentDAO;
 
 public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements CommentDAO {
 
-    public List<Comment> listCommentsByResource(Resource resource) {
+    public List<Comment> listCommentsByResource(Resource resource,
+            boolean deep, int max) throws RuntimeException {
         String sqlMap = getSqlMap("listCommentsByResource");
 
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("resource", resource);
+        parameters.put("max", max);
+        parameters.put("deep", deep);
+        parameters.put("uriWildcard", 
+                SqlDaoUtils.getUriSqlWildcard(resource.getURI(), 
+                        SQL_ESCAPE_CHAR));
+        
         List<Comment> comments = new ArrayList<Comment>();
         List theComments =
-            getSqlMapClientTemplate().queryForList(sqlMap, resource);
+            getSqlMapClientTemplate().queryForList(sqlMap, parameters);
         for (Object o: theComments) {
             Comment comment = (Comment) o;
             comments.add(comment);
         }
         return comments;
     }
+
 
     public void deleteComment(Comment comment) {
         String sqlMap = getSqlMap("deleteComment");

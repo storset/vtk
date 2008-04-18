@@ -220,7 +220,6 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
         try {
             Node node = (Node) session.getItem(path);
-            
             VersionHistory vh = node.getVersionHistory();
             Version v = vh.getVersion(revision);
             PropertySet r = versionToResource(v, uri);
@@ -263,6 +262,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         resource.setUri(uri);
         setProperties(resource, node);
         resource.setAcl(getAcl(node, resource));
+
         return resource;
     }
 
@@ -922,21 +922,36 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     }
 
     
-    public List<Comment> listCommentsByResource(Resource resource) throws RuntimeException {
+    public List<Comment> listCommentsByResource(Resource resource,
+            boolean deep, int max) throws RuntimeException {
+        List<Comment> resultList = new ArrayList<Comment>();
         Session session = getSession();
         try {
-            Node resourceNode = (Node) session.getItem(JcrPathUtil.uriToPath(resource.getURI()));
-            if (!resourceNode.hasNode(JcrDaoConstants.VRTX_COMMENTS_NAME)) {
-                return Collections.emptyList();
+            String uri = resource.getURI();
+            String jcrPath = JcrDaoConstants.VRTX_ROOT;
+            if (!"/".equals(uri)) {
+                jcrPath += uri;
             }
-            Node commentsNode = resourceNode.getNode(JcrDaoConstants.VRTX_COMMENTS_NAME);
-            NodeIterator comments = commentsNode.getNodes();
-            List<Comment> result = new ArrayList<Comment>();
-            while (comments.hasNext()) {
-                Comment c = nodeToComment((Node)comments.next());
-                result.add(c);
+            StringBuilder stmt = new StringBuilder();
+            stmt.append("select * from vrtx:comment ");
+            if (deep) {
+                stmt.append("where jcr:path like '").append(jcrPath).append("/%' ");
+            } else {
+                stmt.append("where jcr:path = '").append(jcrPath);
+                stmt.append("/").append(JcrDaoConstants.VRTX_COMMENTS_NAME);
+                stmt.append("/%' ");
             }
-            return result;
+            stmt.append("order by vrtx:commentTime");
+            System.out.println("__comment_query: " + stmt);
+            Query query = session.getWorkspace().getQueryManager().createQuery(stmt.toString(), Query.SQL); 
+            QueryResult result = query.execute();
+
+            NodeIterator nodes = result.getNodes();
+            while (nodes.hasNext() && resultList.size() < max) {
+                Comment c = nodeToComment((Node)nodes.next());
+                resultList.add(c);
+            }
+            return resultList;
         } catch (RepositoryException e) {
             throw new DataAccessException(e);
         } finally {
@@ -1099,5 +1114,6 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
         systemSession.save();
     }
-    
+
+
 }

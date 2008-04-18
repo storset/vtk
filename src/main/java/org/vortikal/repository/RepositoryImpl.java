@@ -38,9 +38,12 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -668,14 +671,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     
     public List<Comment> getComments(String token, Resource resource) {
+        return getComments(token, resource, false, 500);
+    }
+    
+    public List<Comment> getComments(String token, Resource resource, boolean deep, int max) {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         if (resource == null) {
             throw new IllegalOperationException("Resource argument cannot be NULL");
-        }
-
-        if (!(resource instanceof ResourceImpl)) {
-            throw new IllegalOperationException("Can't store unknown implementation of resource..");
         }
 
         try {
@@ -683,16 +686,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             if (original == null) {
                 throw new ResourceNotFoundException(resource.getURI());
             }
-
             this.authorizationManager.authorizeRead(resource.getURI(), principal);
-            List<Comment> comments = this.commentDAO.listCommentsByResource(resource);
-            return Collections.unmodifiableList(comments);
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, deep, max);
+            List<Comment> result = new ArrayList<Comment>();
+            Set<String> authCache = new HashSet<String>();
+            // Fetch N comments, authorize on the result set:
+            for (Comment c: comments) {
+                try {
+                    if (!authCache.contains(c.getURI())) { 
+                        this.authorizationManager.authorizeReadProcessed(c.getURI(), principal);
+                        authCache.add(c.getURI());
+                    }
+                    result.add(c);
+                } catch (Throwable t) { }
+            }
+            return Collections.unmodifiableList(result);
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
     
-
+    
     public Comment addComment(String token, Resource resource, String title, String text) {
         Principal principal = this.tokenManager.getPrincipal(token);
 
@@ -712,12 +726,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
 
-            List comments = this.commentDAO.listCommentsByResource(resource);
+            List comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
             if (comments.size() > this.maxComments) {
                 throw new IllegalOperationException(
                     "Too many comments on resource " + resource.getURI());
             }
-
 
             Comment comment = new Comment();
             comment.setURI(original.getURI());
@@ -804,7 +817,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             Comment old = null;
-            List<Comment> comments = this.commentDAO.listCommentsByResource(resource);
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
             for (Comment c: comments) {
                 if (c.getID() == comment.getID() && c.getURI().equals(comment.getURI())) {
                     old = c;

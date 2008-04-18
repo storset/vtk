@@ -279,6 +279,13 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.getComments(token, resource);
     }
     
+    public List<Comment> getComments(String token, Resource resource,
+            boolean deep, int max) throws RepositoryException,
+            AuthenticationException {
+        return this.repository.getComments(token, resource, deep, max);
+    }
+
+
 
     public Comment addComment(String token, Resource resource, String title, String text)
         throws RepositoryException, AuthenticationException {

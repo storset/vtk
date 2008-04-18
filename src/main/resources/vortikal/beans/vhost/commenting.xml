@@ -131,6 +131,7 @@
     <property name="handler" ref="commenting.displayFeedController" />
   </bean>
 
+
   <bean name="commenting.postCommentController"
         class="org.vortikal.web.commenting.PostCommentController"
         parent="requestLocalRepositoryAware">
@@ -224,7 +225,7 @@
 
 
   <bean name="commenting.displayFeedController"
-        class="org.vortikal.web.commenting.ListCommentsController"
+        class="org.vortikal.web.commenting.CommentsFeedController"
         parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="viewName" value="commenting.feedView" />
@@ -278,6 +279,9 @@
     <property name="views">
       <map>
         <entry key="commenting.redirectToDefault" value-ref="commenting.redirectToDefaultView" />
+        <!--
+        <entry key="commenting.feedView" value-ref="commenting.feedView" />
+        -->
         <entry key="commenting.feedView" value-ref="commenting.feedView" />
       </map>
     </property>
@@ -303,23 +307,10 @@
   <bean id="commenting.feedView" parent="freemarkerView">
     <property name="url" value="pages/comments-feed.ftl" />
     <!--
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="viewBreadCrumbProvider" />
-        <ref bean="viewCollectionListingProvider" />
-        <ref bean="resourceTitleProvider" />
-      </list>
-    </property>
+    <property name="contentType" value="application/atom+xml" />
     -->
     <property name="contentType" value="text/xml;charset=utf-8" />
-    <!--
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs" value-ref="viewCSSURLs" />
-      </map>
-    </property>
-    -->
   </bean>
+
 
 </beans>

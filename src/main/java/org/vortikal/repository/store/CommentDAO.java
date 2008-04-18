@@ -37,7 +37,7 @@ import org.vortikal.repository.Resource;
 
 public interface CommentDAO {
 
-    public List<Comment> listCommentsByResource(Resource resource) throws RuntimeException;
+    public List<Comment> listCommentsByResource(Resource resource, boolean deep, int max) throws RuntimeException;
 
     public void deleteComment(Comment comment) throws RuntimeException;
 

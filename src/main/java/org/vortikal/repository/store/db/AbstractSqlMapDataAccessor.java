@@ -36,6 +36,8 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 public abstract class AbstractSqlMapDataAccessor extends SqlMapClientDaoSupport {
 
+    public static final char SQL_ESCAPE_CHAR = '@';
+
     private Map<String, String> sqlMaps;
 
     @Required public void setSqlMaps(Map<String, String> sqlMaps) {

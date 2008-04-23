@@ -1,3 +1,5 @@
+<#import "/lib/vortikal.ftl" as vrtx />
+
 <#if !fckeditorBase?exists>
   <#stop "fckeditorBase attribute must exist in model" />
 </#if>
@@ -61,6 +63,8 @@
           if (initialized) return;
           var editor = new FCKeditor('${textarea}');
           editor.BasePath = '${fckeditorBase.url?html}/';
+          editor.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
+
           editor.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
           editor.ToolbarSet = '${toolbar}';
           <#if enableFileBrowsers && !fckBrowse?exists>

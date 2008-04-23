@@ -131,6 +131,18 @@
 </#macro>
 
 
+<#--
+ * requestLanguage
+ *
+ * Gets the ISO 639-1 language code for the current request
+ *
+-->
+<#macro requestLanguage>
+  <#compress>
+    ${springMacroRequestContext.locale.language}
+  </#compress>
+</#macro>
+
 
 <#macro property resource name prefix="" >
   <#compress>

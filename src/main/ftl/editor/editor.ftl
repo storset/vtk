@@ -27,6 +27,9 @@
         var completeEditor = completeEditor != null ? completeEditor : false; 
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
+
+        fck.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
+
         fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
 
          if (completeEditor) {
@@ -146,6 +149,7 @@
     <#local type = propDef.type />
     <#if type = 'HTML'>
       var fck_${name} = FCKeditorAPI.GetInstance('resource.${name}');
+
       if (fck_${name} && fck_${name}.IsDirty()) {
         return true;
       } else if (!fck_${name} && '${value?js_string}' != document.getElementById('resource.${name}').value) {

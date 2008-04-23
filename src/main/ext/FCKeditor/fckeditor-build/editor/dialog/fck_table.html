@@ -73,6 +73,11 @@ window.onload = function()
 			document.getElementById('selWidthType').value = "pixels" ;
 		}
 
+ 		else 	// Added by Even: Style Pixel = px is default
+		{																										  //
+			document.getElementById('selWidthType').value = "pixels" ;
+		}
+
 		if (iHeight && iHeight.indexOf('px') >= 0)		// Style Pixel = px
 			iHeight = iHeight.substr(0,iHeight.length - 2);
 

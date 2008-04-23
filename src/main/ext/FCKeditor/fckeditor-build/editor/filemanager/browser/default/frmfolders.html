@@ -29,7 +29,7 @@
 		<script type="text/javascript" src="js/common.js"></script>
 		<script language="javascript">
 
-var sActiveFolder ;
+var sActiveFolder = window.top.GetUrlParam( 'BaseFolder' );
 
 var bIsLoaded = false ;
 var iIntervalId ;
@@ -176,13 +176,14 @@ function GetFoldersCallBack( fckXml )
 function SetResourceType( type )
 {
 	oConnector.ResourceType = type ;
-	LoadFolders( '/' ) ;
+	LoadFolders( sActiveFolder ) ;
 }
 
 window.onload = function()
 {
+        var BaseFolder = window.top.GetUrlParam( 'BaseFolder' );
 	oListManager.Init() ;
-	LoadFolders( '/' ) ;
+	LoadFolders( BaseFolder ) ;
 }
 		</script>
 	</head>

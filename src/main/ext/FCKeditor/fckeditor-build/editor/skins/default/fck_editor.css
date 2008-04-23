@@ -25,10 +25,12 @@
 	### Basic Editor IFRAME Styles.
 */
 
+/* Locally changed: */
 body
 {
-	padding: 1px;
-	margin: 0;
+    padding: 1px 1px 1px 1px;
+    margin: 0px 0px 0px 0px;
+/* Locally changed: */
 	background-color: #ffffff;
 }
 
@@ -108,7 +110,8 @@ body
 
 .TB_SideBorder
 {
-    background-color: #696969;
+/* Locally changed: */
+    background-color: transparent;
 }
 
 .TB_Expand, .TB_Collapse
@@ -332,6 +335,8 @@ body
     border: 1px solid #8f8f73;
     padding-left: 2px;
     padding-right: 2px;
+/* Locally changed: */
+    background-color: #ffffff;
 }
 
 .SC_Panel, .SC_Panel TD

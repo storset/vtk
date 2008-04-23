@@ -55,6 +55,7 @@ public class URL {
     private String characterEncoding = "utf-8";
     private Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     private String ref = null;
+    private boolean pathOnly = false;
     
     private static final Integer PORT_80 = new Integer(80);
     private static final Integer PORT_443 = new Integer(443);
@@ -163,6 +164,14 @@ public class URL {
     }
     
 
+    public void setPathOnly(boolean pathOnly) {
+        this.pathOnly = pathOnly;
+    }
+
+    public boolean isPathOnly() {
+        return pathOnly;
+    }
+
     public void setPath(String path) {
         if (path == null || "".equals(path.trim()) || !path.startsWith("/")) {
             throw new IllegalArgumentException("Invalid path: '" + path + "'");
@@ -262,6 +271,8 @@ public class URL {
 
 
     public String toString() {
+        if (this.pathOnly) return this.getPathRepresentation();
+        
         StringBuilder url = new StringBuilder();
         
         url.append(this.protocol).append("://");

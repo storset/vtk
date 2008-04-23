@@ -3,20 +3,6 @@
 
 <beans>
 
-  <bean id="staticResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-97000" />
-    <property name="assertions">
-        <bean class="org.vortikal.web.service.StaticResourceLocationsAssertion" />
-    </property>
-    <property name="handler" ref="displayClassPathResourceHandler" />
-    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
-  </bean>
-
-  <bean id="displayClassPathResourceHandler"
-        class="org.vortikal.web.controller.DisplayClassPathResourceController">
-    <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
-  </bean>
-
   <bean id="webServiceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -264,6 +250,30 @@
       </map>
     </property>
   </bean>
+
+
+  <bean id="staticResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-97000" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.StaticResourceLocationsAssertion" />
+      </list>
+    </property>
+
+    <property name="urlPostProcessors">
+      <bean class="org.vortikal.web.service.LocalURLPostProcessor" />
+    </property>
+
+    <property name="handler" ref="displayClassPathResourceHandler" />
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+
+  <bean id="displayClassPathResourceHandler"
+        class="org.vortikal.web.controller.DisplayClassPathResourceController">
+    <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
+  </bean>
+
 
 
    <!-- Resource-aware locale resolver (for viewService)  -->

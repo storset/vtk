@@ -132,32 +132,32 @@
 
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
-          <property name="modelName" value="fckeditorBase" />
-          <property name="service" ref="viewService" />
+          <property name="service" ref="staticResourceService" />
           <property name="uri" value="/" />
           <property name="appendPath" value="${editor.fck.resources}" />
+          <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="url" />
         </bean>
 
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="repository" ref="repository" />
+          <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="documentURL" />
-          <property name="service" ref="viewService" />
         </bean>
 
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
-          <property name="modelName" value="fckBrowse" />
           <property name="service" ref="editor.browseService" />
           <property name="path" value="${editor.fck.browse}" />
+          <property name="modelName" value="fckBrowse" />
         </bean>
 
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
           <property name="repository" ref="repository" />
-          <property name="modelName" value="yuiBase" />
-          <property name="service" ref="viewService" />
+          <property name="service" ref="staticResourceService" />
           <property name="uri" value="/" />
           <property name="appendPath" value="${yui.basePath}" />
+          <property name="modelName" value="yuiBase" />
           <property name="urlName" value="url" />
         </bean>
 

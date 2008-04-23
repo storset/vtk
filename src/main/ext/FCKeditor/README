@@ -1,19 +1,34 @@
 Integration of FCKEditor in Vortikal
 
+----------------------------------------------
+
 http://www.fckeditor.net/
+
+For the FCKEditor license, see
+
+fckeditor-org/fckeditor-<version>/license.txt
+
+----------------------------------------------
+
 
 This directory contains three sub-directories:
 
   o fckeditor-org: the original distribution(s) of FCKEditor
   o fckeditor-modifications: the local source modifications
-  o fckeditor-build: the resulting "merge" between the previous
-    directories.
+  o fckeditor-build: the resulting "merge" between
+    fckeditor-org/<fck-version> and fckeditor-modifications.
 
 All local modifications should be made in fckeditor-modifications and
-then copied to fckeditor-build (or the other way around :) 
+then copied to fckeditor-build (or the other way around :)
 
 No modifications should be made in fckeditor-org.
 
-For the FCKEditor license, see 
+To compress/package the editor (must be performed whenever changes are
+made):
 
-fckeditor-org/fckeditor-<version>/license.txt
+cd fckeditor-build
+for f in $(svn status ../fckeditor-modifications | grep '^M ' | sed 's/M .*\.\.\/fckeditor-modifications\///'); do cp "../fckeditor-modifications/$f" "./$f"; done;
+
+wget http://svn.fckeditor.net/FCKpackager/trunk/fckpackager.php
+
+php ./fckpackager.php

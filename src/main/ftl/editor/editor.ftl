@@ -145,10 +145,10 @@
     <#local value = resource.getValue(propDef) />
     <#local type = propDef.type />
     <#if type = 'HTML'>
-      var fck = FCKeditorAPI.GetInstance('resource.${name}');
-      if (fck && fck.IsDirty()) {
+      var fck_${name} = FCKeditorAPI.GetInstance('resource.${name}');
+      if (fck_${name} && fck_${name}.IsDirty()) {
         return true;
-      } else if ('${value?js_string}' != document.getElementById('resource.${name}').value) {
+      } else if (!fck_${name} && '${value?js_string}' != document.getElementById('resource.${name}').value) {
         return true;
       }
     <#elseif type = 'DATE' || type = 'TIMESTAMP'>

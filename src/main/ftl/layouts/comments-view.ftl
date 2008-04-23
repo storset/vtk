@@ -51,7 +51,7 @@
 
     <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
     <#if feedURL?exists>
-      <a href="${feedURL?html}">RSS</a>
+      (&nbsp;<a href="${feedURL?html}"><@vrtx.msg code="commenting.subscribe" default="subscribe" /></a>&nbsp;)
     </#if>
   </#if>
  </div>

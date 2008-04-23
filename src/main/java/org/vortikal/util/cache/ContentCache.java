@@ -272,7 +272,7 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
                     logger.debug("Refreshed expired cache item: '" + identifier + "'");
                 }
             } catch (Throwable t) {
-                logger.warn("Unable to cache refresh cached object " + identifier, t);
+                logger.warn("Unable to refresh cached object " + identifier, t);
             }
         }
     }

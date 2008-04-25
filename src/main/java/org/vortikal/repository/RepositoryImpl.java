@@ -628,10 +628,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         if (r == null) {
             throw new ResourceNotFoundException(resource.getURI());
-        } else if ("/".equals(r.getURI()) && r.isInheritedAcl()) {
-            throw new IllegalOperationException("The root resource cannot have an inherited ACL");
         }
-
         this.authorizationManager.authorizeAll(resource.getURI(), principal);
             
         try {
@@ -641,7 +638,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 /* No ACL change */
                 return;
             }
-            ResourceImpl parent = this.dao.load(r.getParent());
+            ResourceImpl parent = null;
+            if (!"/".equals(r.getURI())) {
+                parent = this.dao.load(r.getParent());
+            }
+
+            if ("/".equals(resource.getURI()) && resource.isInheritedAcl()) {
+                throw new IllegalOperationException("The root resource cannot have an inherited ACL");
+            }
             
             if (original.isInheritedAcl() && !resource.isInheritedAcl()) {
                 /* Switching from inheritance. Make the new ACL a copy

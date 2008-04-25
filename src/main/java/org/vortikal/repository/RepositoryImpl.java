@@ -60,7 +60,6 @@ import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.roles.RoleManager;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.repository.URIUtil;
 
@@ -85,7 +84,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private DataAccessor dao;
     private CommentDAO commentDAO;
     private ContentStore contentStore;
-    private RoleManager roleManager;
     private TokenManager tokenManager;
     private LockManager lockManager;
     private RepositoryResourceHelper resourceHelper;
@@ -637,30 +635,41 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeAll(resource.getURI(), principal);
             
         try {
-            Resource originalResource = (Resource) r.clone();
+            Resource original = (Resource) r.clone();
 
-            AclImpl newAcl = null;
-            if (resource.isInheritedAcl()) {
-                /* When the ACL is inherited, make the new ACL a copy
+            if (original.isInheritedAcl() && resource.isInheritedAcl()) {
+                /* No ACL change */
+                return;
+            }
+            ResourceImpl parent = this.dao.load(r.getParent());
+            
+            if (original.isInheritedAcl() && !resource.isInheritedAcl()) {
+                /* Switching from inheritance. Make the new ACL a copy
                  * of the parent's ACL, since the supplied one may
                  * contain other ACEs than the one we now inherit
                  * from. */
-                ResourceImpl parent = this.dao.load(r.getParent());
-                newAcl = (AclImpl) parent.getAcl().clone();
-                r.setInheritedAcl(true);
-                r.setAclInheritedFrom(parent.getID());
-            } else {
-                newAcl = (AclImpl) resource.getAcl().clone();
+                AclImpl newAcl = (AclImpl) parent.getAcl().clone();
+                r.setAcl(newAcl);
                 r.setInheritedAcl(false);
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
+            
+            } else if (!original.isInheritedAcl() && resource.isInheritedAcl()) {
+                /* Switching to inheritance. */
+                r.setAclInheritedFrom(parent.getID());
+                r.setInheritedAcl(true);
+                
+            } else {
+                /* Updating the entries */
+                AclImpl newAcl = (AclImpl) resource.getAcl().clone();
+                r.setInheritedAcl(false);
+                r.setAcl(newAcl);
             }
                 
-            r.setAcl(newAcl);
             this.dao.storeACL(r);
 
             ACLModificationEvent event = new ACLModificationEvent(
                 this, (Resource) r.clone(),
-                originalResource, r.getAcl(), originalResource.getAcl());
+                original, r.getAcl(), original.getAcl());
 
             this.context.publishEvent(event);
 
@@ -954,11 +963,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
-    }
-
-    @Required
-    public void setRoleManager(RoleManager roleManager) {
-        this.roleManager = roleManager;
     }
 
     @Required

@@ -38,8 +38,12 @@
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setCustom" default="edit" /></a>&nbsp;)</#if>
         <#else>
+          <#assign warning =
+                   vrtx.getMsg("permissions.removeAcl.warning", 
+                   "Are you sure you want to set inherited permissions? This cannot be undone.",
+                   [resource.name]) />
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
-          <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setInherited" default="edit" /></a>&nbsp;)</#if>
+          <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a onclick="return confirm('${warning?html?js_string}');" href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setInherited" default="edit" /></a>&nbsp;)</#if>
         </#if>
       </p>
 

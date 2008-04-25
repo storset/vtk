@@ -33,12 +33,8 @@ package org.vortikal.web.controller.permissions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
@@ -52,8 +48,6 @@ import org.vortikal.web.RequestContext;
  */
 public class ToggleAclInheritanceController  implements Controller {
 
-    private static Log logger = LogFactory.getLog(ACLInheritanceController.class);
-    
     private Repository repository;
     
     private String viewName;

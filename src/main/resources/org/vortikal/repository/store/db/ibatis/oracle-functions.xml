@@ -51,16 +51,13 @@
            and r1.acl_inherited_from != #inheritedFrom#
   </update>
 
-  <select id="listCommentsByResource"
-          parameterClass="java.util.Map"
-          resultMap="Comment">
-    select c.id as ID, #resource.URI# as URI, c.time, c.author, c.title, c.content, c.approved
-    from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id 
-    where c.resource_id in
-      (select resource_id from vortex_resource where uri = #resource.URI# or uri like #uriWildcard# escape '@')
-      and rownum &lt;= #max#
-    order by c.time desc
-  </select>
+  <sql id="listCommentsLimitPrepend">
+    select * from (
+  </sql>
+
+  <sql id="listCommentsLimitAppend">
+    ) where rownum &lt;= #max#
+  </sql>
 
 
   <sql id="dataReportingLimitPrepend">

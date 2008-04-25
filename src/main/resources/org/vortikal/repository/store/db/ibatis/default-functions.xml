@@ -36,6 +36,14 @@
     nextval('vortex_comment_seq_pk')
   </sql>
 
+  <sql id="listCommentsLimitPrepend">
+    <!-- By default, nothing is prepend to query for limiting. --> 
+  </sql>
+
+  <sql id="listCommentsLimitAppend">
+    limit #max#
+  </sql>
+
   <sql id="destinationDescendantUriMove">
     #destUri# || substring(uri, length(#srcUri#) + 1)
   </sql>

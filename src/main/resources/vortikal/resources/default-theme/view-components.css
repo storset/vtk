@@ -1,5 +1,7 @@
 @import "comments-component.css";
 
+/* This file must (for no good reason) be manually deployed at www.uio.no/vrtx/css */
+
 /* START include:uri-menu style=[vrtx-vertical-menu] */
 
 ul.vrtx-vertical-menu {
@@ -434,4 +436,4 @@ ul.vrtx-tag-cloud {
     font-size: 0.9em; 
 }
 
-/* END resource:toc */
+/* END include:tag-cloud */

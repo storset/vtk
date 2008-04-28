@@ -76,28 +76,28 @@ public class FieldValueMapperImplTestCase extends TestCase {
             }
         }
     }
-//    
-////    public void testMultithreadedDateValueIndexFieldEncoding() {
-////        
-////        Thread[] threads = new Thread[100];
-////        for (int i=0; i<threads.length; i++) {
-////            threads[i] = new Thread(new Runnable() {
-////               public void run() {
-////                   testDateValueIndexFieldEncoding();
-////               }
-////            });
-////        }
-////        
-////        for (int i=0; i<threads.length; i++) {
-////            threads[i].start();
-////        }
-////        
-////        for (int i = 0; i < threads.length; i++) {
-////            try {
-////                threads[i].join(); } catch (InterruptedException ie) { 
-////                    fail("Interrupted while waiting for test threads to finish.");}
-////        }
-////        
-////    }
-//    
+    
+//    public void testMultithreadedDateValueIndexFieldEncoding() {
+//        
+//        Thread[] threads = new Thread[100];
+//        for (int i=0; i<threads.length; i++) {
+//            threads[i] = new Thread(new Runnable() {
+//               public void run() {
+//                   testDateValueIndexFieldEncoding();
+//               }
+//            });
+//        }
+//        
+//        for (int i=0; i<threads.length; i++) {
+//            threads[i].start();
+//        }
+//        
+//        for (int i = 0; i < threads.length; i++) {
+//            try {
+//                threads[i].join(); } catch (InterruptedException ie) { 
+//                    fail("Interrupted while waiting for test threads to finish.");}
+//        }
+//        
+//    }
+    
 }

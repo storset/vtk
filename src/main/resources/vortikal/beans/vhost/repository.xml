@@ -57,7 +57,6 @@
         init-method="init" destroy-method="destroy">
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
-    <property name="roleManager" ref="roleManager" />
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="dao" ref="${repositoryBackend}" />
     <property name="commentDAO" ref="${repository.commentDao}" />

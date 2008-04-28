@@ -24,7 +24,7 @@
   </bean>
 
 
-  <bean id="schemaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="schemaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="schema" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -41,6 +41,7 @@
         <ref bean="xpath.localizerFunction" />
       </set>
     </property>
+    <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
   <!--

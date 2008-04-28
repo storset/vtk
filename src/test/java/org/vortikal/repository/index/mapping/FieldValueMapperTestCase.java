@@ -30,12 +30,7 @@
  */
 package org.vortikal.repository.index.mapping;
 
-import java.util.Date;
-
 import junit.framework.TestCase;
-
-import org.vortikal.repository.index.mapping.FieldValueMapper;
-import org.vortikal.repository.resourcetype.PropertyType;
 
 /**
  * TODO: This JUnit test case class is not complete.
@@ -44,58 +39,58 @@ import org.vortikal.repository.resourcetype.PropertyType;
  */
 public class FieldValueMapperTestCase extends TestCase {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testDateValueIndexFieldEncoding() {
-
-        String[] dateFormats = new String[] { "Long-format",
-                "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
-                "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
-
-        Date now = new Date();
-        String[] dateStrings = new String[] { Long.toString(now.getTime()),
-                "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
-                "2005-10-10 14:22", "2005-10-10 14", "2005-10-10" };
-
-        for (int i = 0; i < dateFormats.length; i++) {
-            try {
-                FieldValueMapper.encodeIndexFieldValue(dateStrings[i],
-                        PropertyType.Type.TIMESTAMP);
-            } catch (Exception e) {
-                fail("Failed to encode index field value for date format '" + dateFormats[i]
-                        + "', date string '" + dateStrings[i] + "':"
-                        + e.getMessage());
-            }
-        }
-    }
-    
-//    public void testMultithreadedDateValueIndexFieldEncoding() {
-//        
-//        Thread[] threads = new Thread[100];
-//        for (int i=0; i<threads.length; i++) {
-//            threads[i] = new Thread(new Runnable() {
-//               public void run() {
-//                   testDateValueIndexFieldEncoding();
-//               }
-//            });
-//        }
-//        
-//        for (int i=0; i<threads.length; i++) {
-//            threads[i].start();
-//        }
-//        
-//        for (int i = 0; i < threads.length; i++) {
-//            try {
-//                threads[i].join(); } catch (InterruptedException ie) { 
-//                    fail("Interrupted while waiting for test threads to finish.");}
-//        }
-//        
+//    protected void setUp() throws Exception {
+//        super.setUp();
 //    }
-    
+//
+//    protected void tearDown() throws Exception {
+//        super.tearDown();
+//    }
+//
+//    public void testDateValueIndexFieldEncoding() {
+//
+//        String[] dateFormats = new String[] { "Long-format",
+//                "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
+//                "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
+//
+//        Date now = new Date();
+//        String[] dateStrings = new String[] { Long.toString(now.getTime()),
+//                "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
+//                "2005-10-10 14:22", "2005-10-10 14", "2005-10-10" };
+//
+//        for (int i = 0; i < dateFormats.length; i++) {
+//            try {
+//                FieldValueMapper.encodeIndexFieldValue(dateStrings[i],
+//                        PropertyType.Type.TIMESTAMP);
+//            } catch (Exception e) {
+//                fail("Failed to encode index field value for date format '" + dateFormats[i]
+//                        + "', date string '" + dateStrings[i] + "':"
+//                        + e.getMessage());
+//            }
+//        }
+//    }
+//    
+////    public void testMultithreadedDateValueIndexFieldEncoding() {
+////        
+////        Thread[] threads = new Thread[100];
+////        for (int i=0; i<threads.length; i++) {
+////            threads[i] = new Thread(new Runnable() {
+////               public void run() {
+////                   testDateValueIndexFieldEncoding();
+////               }
+////            });
+////        }
+////        
+////        for (int i=0; i<threads.length; i++) {
+////            threads[i].start();
+////        }
+////        
+////        for (int i = 0; i < threads.length; i++) {
+////            try {
+////                threads[i].join(); } catch (InterruptedException ie) { 
+////                    fail("Interrupted while waiting for test threads to finish.");}
+////        }
+////        
+////    }
+//    
 }

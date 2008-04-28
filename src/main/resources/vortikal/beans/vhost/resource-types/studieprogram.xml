@@ -44,7 +44,7 @@
 
 
   <bean id="studieprogramProgramkodePropDef" 
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="programkode" /> 
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -58,7 +58,7 @@
 
 
   <bean id="studieprogramProgramnavnPropDef" 
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="programnavn" /> 
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -71,7 +71,7 @@
   </bean>
 
 
-  <bean id="studieprogramProgramtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramProgramtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="programtype" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -83,7 +83,7 @@
     <property name="expression" value="/studieprogram-hjemmeside/programtype" />
   </bean>
 
-  <bean id="studieprogramAntallaarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramAntallaarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="antallaar" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -95,7 +95,7 @@
     <property name="expression" value="/studieprogram-hjemmeside/faktaboks/antall-aar" />
   </bean>
 
-  <bean id="studieprogramStudiepoengPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramStudiepoengPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="studiepoeng" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -107,7 +107,7 @@
     <property name="expression" value="/studieprogram-hjemmeside/faktaboks/studiepoeng" />
   </bean>
 
-  <bean id="studieprogramOmfangoppgavePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramOmfangoppgavePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="omfangoppgave" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -119,7 +119,7 @@
     <property name="expression" value="/studieprogram-hjemmeside/faktaboks/omfang-oppgave" />
   </bean>
 
-  <bean id="studieprogramSoknadsfristPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramSoknadsfristPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="soknadsfrist" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -131,7 +131,7 @@
     <property name="expression" value="/studieprogram-hjemmeside/faktaboks/soknadsfrist" />
   </bean>
 
-  <bean id="studieprogramStudieplasserPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramStudieplasserPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="studieplasser" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -143,7 +143,7 @@
     <property name="expression" value="/studieprogram-hjemmeside/faktaboks/studieplasser" />
   </bean>
 
-  <bean id="studieprogramSokodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="studieprogramSokodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="sokode" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

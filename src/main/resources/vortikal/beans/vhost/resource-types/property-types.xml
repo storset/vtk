@@ -16,5 +16,12 @@
     </constructor-arg>
   </bean>
 
+  <!-- Value factory -->
+  <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl"/>
 
+
+  <bean id="abstractPropDef" abstract="true">
+    <property name="valueFactory" ref="valueFactory"/>
+  </bean>
+  
 </beans>

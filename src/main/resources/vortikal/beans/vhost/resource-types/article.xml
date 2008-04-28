@@ -55,7 +55,7 @@
     <property name="value" value="article" />
   </bean>
 
-  <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="introduction"/>
     <property name="type" value="HTML"/>
@@ -63,7 +63,7 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="introductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="introductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="picture"/>
     <property name="type" value="IMAGE_REF"/>
@@ -71,7 +71,7 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="mediaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="mediaPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="EXTRA_CONTENT" />
     <property name="name" value="media"/>
     <property name="type" value="IMAGE_REF"/>
@@ -79,7 +79,7 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="authorsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="authorsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="authors"/>
     <property name="type" value="STRING"/>
@@ -97,7 +97,7 @@
     <constructor-arg value="vortikal.beans.vhost.resource-types.authors" />
   </bean>
 
-  <bean id="publishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="publishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="published-date"/>
     <property name="type" value="DATE"/>

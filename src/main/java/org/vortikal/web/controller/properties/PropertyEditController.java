@@ -60,6 +60,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -93,7 +94,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *   <li><code>principalManager</code> - a valid {@link PrincipalManager}
  *   <li><code>propertyTypeDefinitions</code> - the list of {@link
  *   PropertyTypeDefinition} objects to display and/or edit
- *   <li><code>valueFactory</code> - a {@link ValueFactory} for
+ *   <li><code>valueFactory</code> - a {@link ValueFactoryImpl} for
  *   creating property values.
  *   <li><code>dateFormat</code> - a date format (string) used to
  *   parse date values
@@ -118,7 +119,9 @@ public class PropertyEditController extends SimpleFormController
     private Repository repository;
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private PropertyEditHook[] editHooks;
-    private ValueFactory valueFactory = ValueFactory.getInstance();
+    
+    private ValueFactory valueFactory;
+    
     private String dateFormat;
     
     private String propertyListModelName;
@@ -139,7 +142,7 @@ public class PropertyEditController extends SimpleFormController
     }
 
     @Required public void setPrincipalManager(PrincipalManager principalManager) {
-        setValidator(new PropertyEditValidator(principalManager));
+        setValidator(new PropertyEditValidator(principalManager, this.valueFactory));
     }
 
     @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
@@ -534,6 +537,11 @@ public class PropertyEditController extends SimpleFormController
 
     public void setVocabularyChooserService(Service vocabularyChooserService) {
         this.vocabularyChooserService = vocabularyChooserService;
+    }
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
     }
 
 }

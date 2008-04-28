@@ -85,7 +85,7 @@
 
     
     <!-- Om-rommet -->
-    <bean id="romskjemaBygningsnummerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaBygningsnummerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="omrommet.bygningsnummer" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -98,7 +98,7 @@
     </bean>
 
 
-    <bean id="romskjemaBygningsnavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaBygningsnavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="omrommet.bygningsnavn" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -111,7 +111,7 @@
     </bean>
 
 
-    <bean id="romskjemaRomnummerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomnummerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="omrommet.romnummer" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -124,7 +124,7 @@
     </bean>
     
     
-    <bean id="romskjemaRomtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomtypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="omrommet.romtype" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -138,7 +138,7 @@
     
     
     <!-- Romansvarlig -->
-    <bean id="romskjemaRomansvarligFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomansvarligFornavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="romansvarlig.fornavn" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -151,7 +151,7 @@
     </bean>    
 
 
-    <bean id="romskjemaRomansvarligEtternavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomansvarligEtternavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="romansvarlig.etternavn" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -164,7 +164,7 @@
     </bean>
     
     
-    <bean id="romskjemaRomansvarligTelefonJobbPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomansvarligTelefonJobbPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="romansvarlig.jobbtelefon" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -177,7 +177,7 @@
     </bean>    
 
 
-    <bean id="romskjemaRomansvarligTelefonPrivatPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomansvarligTelefonPrivatPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="romansvarlig.privattelefon" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -190,7 +190,7 @@
     </bean>    
 
 
-    <bean id="romskjemaRomansvarligTelefonMobilPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRomansvarligTelefonMobilPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="romansvarlig.mobiltelefon" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -204,7 +204,7 @@
     
         
     <!-- Ansvarlig-enhet -->
-    <bean id="romskjemaAnsvarligEnhetNavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaAnsvarligEnhetNavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="ansvarligenhet.navn" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -217,7 +217,7 @@
     </bean>
     
     
-    <bean id="romskjemaAnsvarligEnhetTelefonPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaAnsvarligEnhetTelefonPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="ansvarligenhet.telefon" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -231,7 +231,7 @@
     
     
     <!-- Rominnhold -->
-    <bean id="romskjemaRominnholdBrennbargassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdBrennbargassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.brennbargass-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -244,7 +244,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdBrennbargassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdBrennbargassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.brennbargass-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -257,7 +257,7 @@
     </bean>
     
 
-    <bean id="romskjemaRominnholdNoytralgassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdNoytralgassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.noytralgass-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -270,7 +270,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdNoytralgassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdNoytralgassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.noytralgass-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -283,7 +283,7 @@
     </bean>
     
 
-    <bean id="romskjemaRominnholdEksplosivgassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdEksplosivgassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.eksplosivgass-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -296,7 +296,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdEksplosivgassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdEksplosivgassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.eksplosivgass-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -309,7 +309,7 @@
     </bean>
     
 
-    <bean id="romskjemaRominnholdBrennbareveskerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdBrennbareveskerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.brennbarevesker-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -322,7 +322,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdBrennbareveskerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdBrennbareveskerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.brennbarevesker-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -335,7 +335,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdGiftiggassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdGiftiggassMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.giftiggass-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -348,7 +348,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdGiftiggassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdGiftiggassKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.giftiggass-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -361,7 +361,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdEtsendeveskerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdEtsendeveskerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.etsendevesker-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -374,7 +374,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdEtsendeveskerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdEtsendeveskerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.etsendevesker-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -387,7 +387,7 @@
     </bean>
 
     
-    <bean id="romskjemaRominnholdGiftigekjemikalierMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdGiftigekjemikalierMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.giftigekjemikalier-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -400,7 +400,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdGiftigekjemikalierKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdGiftigekjemikalierKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.giftigekjemikalier-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -413,7 +413,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdBrannfarligstoffMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdBrannfarligstoffMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.brannfarligstoff-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -426,7 +426,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdBrannfarligstoffKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdBrannfarligstoffKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.brannfarligstoff-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -439,7 +439,7 @@
     </bean>
     
 
-    <bean id="romskjemaRominnholdStoffReaksjonVannMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdStoffReaksjonVannMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.stoffreaksjonvann-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -452,7 +452,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdStoffReaksjonVannKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdStoffReaksjonVannKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.stoffreaksjonvann-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -465,7 +465,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdOksiderendestofferMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdOksiderendestofferMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.oksiderendestoffer-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -478,7 +478,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdOksiderendestofferKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdOksiderendestofferKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.oksiderendestoffer-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -491,7 +491,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdRadioaktiveSubstanserMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdRadioaktiveSubstanserMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.radioaktivesubstanser-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -504,7 +504,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdRadioaktiveSubstanserKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdRadioaktiveSubstanserKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.radioaktivesubstanser-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -517,7 +517,7 @@
     </bean>
     
 
-    <bean id="romskjemaRominnholdHoyspenningMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdHoyspenningMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.hoyspenning-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -530,7 +530,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdHoyspenningKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdHoyspenningKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.hoyspenning-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -543,7 +543,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdSmittefarligeBakteriekulturerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdSmittefarligeBakteriekulturerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.smittefarligebakteriekulturer-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -556,7 +556,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.smittefarligebakteriekulturer-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -569,7 +569,7 @@
     </bean>
 
 
-    <bean id="romskjemaRominnholdOmfintligeGjenstanderMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdOmfintligeGjenstanderMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.omfintligegjenstander-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -582,7 +582,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdOmfintligeGjenstanderKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdOmfintligeGjenstanderKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.omfintligegjenstander-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -595,7 +595,7 @@
     </bean>
 
     
-    <bean id="romskjemaRominnholdForsoksdyrMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdForsoksdyrMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.forsoksdyr-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -608,7 +608,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdForsoksdyrKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdForsoksdyrKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.forsoksdyr-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -620,7 +620,7 @@
         <property name="expression" value="/romskjema/rominnhold/forsoksdyr/kommentar" />
     </bean>
     
-    <bean id="romskjemaRominnholdAndreFarerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdAndreFarerMengdePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.andrefarer-mengde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -633,7 +633,7 @@
     </bean>
     
     
-    <bean id="romskjemaRominnholdAndreFarerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="romskjemaRominnholdAndreFarerKommentarPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="rominnhold.andrefarer-kommentar" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

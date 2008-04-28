@@ -38,7 +38,7 @@
     
     
     <bean id="portalTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="title" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -51,7 +51,7 @@
     </bean>
 
     <bean id="portalShortTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="short-title" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -64,7 +64,7 @@
     </bean>
 
     <bean id="portalIntroductionPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="introduction" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

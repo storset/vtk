@@ -38,7 +38,7 @@
 
 
   <bean id="audioAuthorPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="author" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -50,7 +50,7 @@
   </bean>
 
   <bean id="audioAlbumPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="album" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -62,7 +62,7 @@
   </bean>
 
   <bean id="audioTitlePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="title" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -87,7 +87,7 @@
   </bean>
 
   <bean id="audioTrackPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="track" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -99,7 +99,7 @@
   </bean>
 
   <bean id="audioGenrePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="genre" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />

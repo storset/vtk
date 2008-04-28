@@ -33,11 +33,11 @@ package org.vortikal.repository.index.mapping;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.vortikal.repository.index.mapping.FieldValueEncoder;
+import org.vortikal.repository.index.mapping.FieldDataEncoder;
 
 import junit.framework.TestCase;
 
-public class FieldValueEncoderTestCase extends TestCase {
+public class FieldDataEncoderTestCase extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -49,11 +49,11 @@ public class FieldValueEncoderTestCase extends TestCase {
     
     public void testBinaryBooleanEncoding() {
                 
-        byte[] encoded = FieldValueEncoder.encodeBooleanToBinary(false);
-        assertFalse(FieldValueEncoder.decodeBooleanFromBinary(encoded));
+        byte[] encoded = FieldDataEncoder.encodeBooleanToBinary(false);
+        assertFalse(FieldDataEncoder.decodeBooleanFromBinary(encoded));
         
-        encoded = FieldValueEncoder.encodeBooleanToBinary(true);
-        assertTrue(FieldValueEncoder.decodeBooleanFromBinary(encoded));
+        encoded = FieldDataEncoder.encodeBooleanToBinary(true);
+        assertTrue(FieldDataEncoder.decodeBooleanFromBinary(encoded));
         
     }
     
@@ -61,9 +61,9 @@ public class FieldValueEncoderTestCase extends TestCase {
         
         Calendar test = Calendar.getInstance();
         
-        String encoded = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis());
+        String encoded = FieldDataEncoder.encodeDateValueToString(test.getTimeInMillis());
         
-        Date decodedDate = new Date(FieldValueEncoder.decodeDateValueFromString(encoded));
+        Date decodedDate = new Date(FieldDataEncoder.decodeDateValueFromString(encoded));
         
         Calendar decoded = Calendar.getInstance();
         decoded.setTime(decodedDate);
@@ -79,11 +79,11 @@ public class FieldValueEncoderTestCase extends TestCase {
         assertEquals(decoded.get(Calendar.MILLISECOND), 0);
         
         // Test lexicographic sorting
-        String encoded1 = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis());
-        String encoded2 = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis() + 10000);
+        String encoded1 = FieldDataEncoder.encodeDateValueToString(test.getTimeInMillis());
+        String encoded2 = FieldDataEncoder.encodeDateValueToString(test.getTimeInMillis() + 10000);
         assertTrue(encoded2.compareTo(encoded1) > 0);
 
-        encoded2 = FieldValueEncoder.encodeDateValueToString(test.getTimeInMillis() - 10000);
+        encoded2 = FieldDataEncoder.encodeDateValueToString(test.getTimeInMillis() - 10000);
         assertTrue(encoded2.compareTo(encoded1) < 0);
 }
 
@@ -91,27 +91,27 @@ public class FieldValueEncoderTestCase extends TestCase {
         
         int testNumber = 666;
         
-        String encoded = FieldValueEncoder.encodeIntegerToString(testNumber);
+        String encoded = FieldDataEncoder.encodeIntegerToString(testNumber);
         
         assertEquals("8000029a", encoded);
         
-        int decoded = FieldValueEncoder.decodeIntegerFromString(encoded);
+        int decoded = FieldDataEncoder.decodeIntegerFromString(encoded);
         
         assertEquals(testNumber, decoded);
         
-        byte[] encodedBinary = FieldValueEncoder.encodeIntegerToBinary(testNumber);
+        byte[] encodedBinary = FieldDataEncoder.encodeIntegerToBinary(testNumber);
         assertEquals(4, encodedBinary.length);
         
-        assertEquals(testNumber, FieldValueEncoder.decodeIntegerFromBinary(encodedBinary));
+        assertEquals(testNumber, FieldDataEncoder.decodeIntegerFromBinary(encodedBinary));
         
         // Test lexicographic sorting
-        String encoded1 = FieldValueEncoder.encodeIntegerToString(-4000);
-        String encoded2 = FieldValueEncoder.encodeIntegerToString(4000);
+        String encoded1 = FieldDataEncoder.encodeIntegerToString(-4000);
+        String encoded2 = FieldDataEncoder.encodeIntegerToString(4000);
         
         assertTrue(encoded2.compareTo(encoded1) > 0);
         
-        encoded1 = FieldValueEncoder.encodeIntegerToString(200);
-        encoded2 = FieldValueEncoder.encodeIntegerToString(1000);
+        encoded1 = FieldDataEncoder.encodeIntegerToString(200);
+        encoded2 = FieldDataEncoder.encodeIntegerToString(1000);
         
         assertTrue(encoded2.compareTo(encoded1) > 0);
     }
@@ -120,27 +120,27 @@ public class FieldValueEncoderTestCase extends TestCase {
         
         long testNumber = Long.MIN_VALUE + 100;
         
-        String encoded = FieldValueEncoder.encodeLongToString(testNumber);
+        String encoded = FieldDataEncoder.encodeLongToString(testNumber);
         
         assertEquals("0000000000000064", encoded);
         
-        long decoded = FieldValueEncoder.decodeLongFromString(encoded);
+        long decoded = FieldDataEncoder.decodeLongFromString(encoded);
         
         assertEquals(testNumber, decoded);
         
-        byte[] encodedBinary = FieldValueEncoder.encodeLongToBinary(testNumber);
+        byte[] encodedBinary = FieldDataEncoder.encodeLongToBinary(testNumber);
         assertEquals(8, encodedBinary.length);
         
-        assertEquals(testNumber, FieldValueEncoder.decodeLongFromBinary(encodedBinary));
+        assertEquals(testNumber, FieldDataEncoder.decodeLongFromBinary(encodedBinary));
 
         // Test lexicographic sorting
-        String encoded1 = FieldValueEncoder.encodeLongToString(-400000000L);
-        String encoded2 = FieldValueEncoder.encodeLongToString(400000000L);
+        String encoded1 = FieldDataEncoder.encodeLongToString(-400000000L);
+        String encoded2 = FieldDataEncoder.encodeLongToString(400000000L);
         
         assertTrue(encoded2.compareTo(encoded1) > 0);
         
-        encoded1 = FieldValueEncoder.encodeLongToString(20000000);
-        encoded2 = FieldValueEncoder.encodeLongToString(100000000);
+        encoded1 = FieldDataEncoder.encodeLongToString(20000000);
+        encoded2 = FieldDataEncoder.encodeLongToString(100000000);
         
         assertTrue(encoded2.compareTo(encoded1) > 0);
     }

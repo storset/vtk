@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
@@ -50,6 +51,8 @@ import org.vortikal.repository.store.db.ibatis.PropertyValueFrequencyQueryParame
  */
 public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor 
     implements DataReportDAO, InitializingBean {
+    
+    private ValueFactory valueFactory;
     
     public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(
                                             String token,
@@ -86,7 +89,7 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
             for (Map row: result) {
                 String stringValue = (String)row.get("value");
                 Integer frequency = (Integer)row.get("frequency");
-                Value value = ValueFactory.getInstance().createValue(stringValue, def.getType());
+                Value value = this.valueFactory.createValue(stringValue, def.getType());
                 retval.add(new Pair<Value, Integer>(value, frequency));
             }
         } catch (ValueFormatException vfe) {
@@ -94,6 +97,11 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
         }
         
         return retval;
+    }
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
     }
 
 }

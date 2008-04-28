@@ -35,7 +35,7 @@
     
         
     <bean id="researcherIdPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="researcherId" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -49,7 +49,7 @@
 
     
     <bean id="researcherGivenNamePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="researcherGivenName" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -62,7 +62,7 @@
     </bean>
     
     <bean id="researcherSurNamePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="researcherSurName" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -75,7 +75,7 @@
     </bean>
     
     <bean id="researcherImagePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="researcherImage" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -89,7 +89,7 @@
 
 
     <bean id="researcherSubjectsPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="researcherSubjects" />
         <property name="type" value="STRING" />
         <property name="multiple" value="true" />

@@ -40,14 +40,14 @@ import java.math.BigInteger;
  * @author oyviste
  *
  */
-public final class FieldValueEncoder {
+public final class FieldDataEncoder {
 
     private static final char[] HEX_CHARS = {
         '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
         
     private static final int BYTE_MASK = 0xFF;
     
-    private FieldValueEncoder() {} // Util
+    private FieldDataEncoder() {} // Util
 
     /**
      * TODO: javadoc
@@ -67,7 +67,7 @@ public final class FieldValueEncoder {
      * @return
      */
     public static long decodeDateValueFromString(String encodedDateValue) 
-        throws FieldValueEncodingException {
+        throws FieldDataEncodingException {
 
         return decodeLongFromString(encodedDateValue);
     }
@@ -96,12 +96,12 @@ public final class FieldValueEncoder {
      * @return
      */
     public static int decodeIntegerFromString(String encodedInteger) 
-        throws FieldValueEncodingException {
+        throws FieldDataEncodingException {
         try {
             long uint = Long.parseLong(encodedInteger, 16);
             return (int)(uint - 0x80000000L);
         } catch (NumberFormatException nfe) {
-            throw new FieldValueEncodingException(nfe.getMessage());
+            throw new FieldDataEncodingException(nfe.getMessage());
         }
     }
 
@@ -138,7 +138,7 @@ public final class FieldValueEncoder {
      * @return
      */
     public static long decodeLongFromString(String encodedLong) 
-        throws FieldValueEncodingException {
+        throws FieldDataEncodingException {
       
         try {
             BigInteger ulong = new BigInteger(encodedLong, 16);
@@ -146,7 +146,7 @@ public final class FieldValueEncoder {
                     BigInteger.valueOf(Long.MAX_VALUE)).subtract(
                                                     BigInteger.ONE).longValue();
         } catch (NumberFormatException nfe) {
-            throw new FieldValueEncodingException(nfe.getMessage());
+            throw new FieldDataEncodingException(nfe.getMessage());
         }
     }
 

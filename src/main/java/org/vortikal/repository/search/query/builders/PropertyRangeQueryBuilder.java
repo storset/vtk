@@ -46,9 +46,11 @@ import org.vortikal.repository.search.query.QueryBuilderException;
 public class PropertyRangeQueryBuilder implements QueryBuilder {
 
     private PropertyRangeQuery prq;
-    public PropertyRangeQueryBuilder(PropertyRangeQuery prq) {
+    private FieldValueMapper fieldValueMapper;
+    
+    public PropertyRangeQueryBuilder(PropertyRangeQuery prq, FieldValueMapper mapper) {
         this.prq = prq;
-         
+        this.fieldValueMapper = mapper;
     }
 
     public Query buildQuery() throws QueryBuilderException {
@@ -57,8 +59,8 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         String to = this.prq.getToTerm();
         PropertyTypeDefinition def = this.prq.getPropertyDefinition();
         
-        String fromEncoded = FieldValueMapper.encodeIndexFieldValue(from, def.getType());
-        String toEncoded = FieldValueMapper.encodeIndexFieldValue(to, def.getType());
+        String fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, def.getType());
+        String toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, def.getType());
         
         String fieldName = FieldNameMapping.getSearchFieldName(def);
         

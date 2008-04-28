@@ -89,7 +89,7 @@
     <property name="fallbackTitlePropDef" ref="htmlTitlePropDef"/>
   </bean>
 
-  <bean id="xhtml10TransTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="xhtml10TransTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="xhtml10-type" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

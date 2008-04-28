@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.controller.properties;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.Constraint;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
@@ -45,13 +45,14 @@ import org.vortikal.security.PrincipalManager;
 
 public class PropertyEditValidator implements Validator {
     
-    private ValueFactory valueFactory = ValueFactory.getInstance();
+    private ValueFactory valueFactory;
     
     private PrincipalManager principalManager;
     
 
-    public PropertyEditValidator(PrincipalManager principalManager) {
+    public PropertyEditValidator(PrincipalManager principalManager, ValueFactory valueFactory) {
         this.principalManager = principalManager;
+        this.valueFactory = valueFactory;
     }
     
 
@@ -132,6 +133,11 @@ public class PropertyEditValidator implements Validator {
             errors.rejectValue("value", "Illegal value: " + e.getMessage()); // XXX
         }
     }
-    
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
+    }
+
 }
 

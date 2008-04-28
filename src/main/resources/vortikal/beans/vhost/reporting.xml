@@ -20,6 +20,7 @@
     <bean id="repository.dataReportDAO" class="org.vortikal.repository.store.db.SqlMapDataReportDAO">
         <property name="sqlMapClient" ref="repository.sqlMapClient"/>
         <property name="sqlMaps" ref="repository.statementMappings" />
+        <property name="valueFactory" ref="valueFactory"/>
     </bean> 
 
 <!--    <bean id="drtest" class="org.vortikal.repository.reporting.Test">-->

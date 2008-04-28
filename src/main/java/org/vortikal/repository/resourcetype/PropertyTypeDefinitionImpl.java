@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
@@ -74,7 +75,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     private Vocabulary<Value> vocabulary;
 
-    private ValueFactory valueFactory = ValueFactory.getInstance();
+    private ValueFactory valueFactory;
 
     private ContentType contentType;
 
@@ -346,4 +347,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setValueSeparators(Map<String, ValueSeparator> valueSeparators) {
         this.valueSeparators = valueSeparators;
     }
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
+    }
+
 }

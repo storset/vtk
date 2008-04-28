@@ -43,6 +43,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -73,6 +74,8 @@ public class DocumentMapperImpl implements DocumentMapper {
         new HashMap<String, PropertyTypeDefinition>(); 
 
     private ResourceTypeTree resourceTypeTree;
+    
+    private FieldValueMapper fieldValueMapper;
 
     private ContextManager contextManager;
     
@@ -81,38 +84,38 @@ public class DocumentMapperImpl implements DocumentMapper {
         
         // Special fields
         // uri
-        Field uriField = FieldValueMapper.getStoredKeywordField(FieldNameMapping.URI_FIELD_NAME, propSet.getURI());
+        Field uriField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.URI_FIELD_NAME, propSet.getURI());
         doc.add(uriField);
         
         // uriDepth (not stored, but indexed for use in searches)
         int uriDepth = URIUtil.getUriDepth(propSet.getURI());
-        Field uriDepthField = FieldValueMapper.getKeywordField(FieldNameMapping.URI_DEPTH_FIELD_NAME, uriDepth);
+        Field uriDepthField = this.fieldValueMapper.getKeywordField(FieldNameMapping.URI_DEPTH_FIELD_NAME, uriDepth);
         doc.add(uriDepthField);
         
         // name
-        Field nameField = FieldValueMapper.getStoredKeywordField(FieldNameMapping.NAME_FIELD_NAME, propSet.getName());
+        Field nameField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         
         // resourceType
         Field resourceTypeField =
-            FieldValueMapper.getStoredKeywordField(FieldNameMapping.RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
+            this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
         
         // ANCESTORIDS (index system field)
         Field ancestorIdsField = 
-            FieldValueMapper.getUnencodedMultiValueFieldFromIntegers(FieldNameMapping.ANCESTORIDS_FIELD_NAME, 
+            this.fieldValueMapper.getUnencodedMultiValueFieldFromIntegers(FieldNameMapping.ANCESTORIDS_FIELD_NAME, 
                                                                     propSet.getAncestorIds());
         doc.add(ancestorIdsField);
         
         // ID (index system field)
-        Field idField = FieldValueMapper.getKeywordField(FieldNameMapping.ID_FIELD_NAME, propSet.getID());
+        Field idField = this.fieldValueMapper.getKeywordField(FieldNameMapping.ID_FIELD_NAME, propSet.getID());
         doc.add(idField);
-        Field storedIdField = BinaryFieldValueMapper.getStoredBinaryIntegerField(FieldNameMapping.STORED_ID_FIELD_NAME, 
+        Field storedIdField = this.fieldValueMapper.getStoredBinaryIntegerField(FieldNameMapping.STORED_ID_FIELD_NAME, 
                                                                     propSet.getID());
         doc.add(storedIdField);
         
         // ACL_INHERITED_FROM (index system field)
-        Field aclField = BinaryFieldValueMapper.getStoredBinaryIntegerField(
+        Field aclField = this.fieldValueMapper.getStoredBinaryIntegerField(
                 FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
         doc.add(aclField);
         
@@ -205,9 +208,9 @@ public class DocumentMapperImpl implements DocumentMapper {
         
         PropertySetImpl propSet = new PropertySetImpl();
         propSet.setUri(doc.get(FieldNameMapping.URI_FIELD_NAME));
-        propSet.setAclInheritedFrom(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+        propSet.setAclInheritedFrom(this.fieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME)));
-        propSet.setID(BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+        propSet.setID(this.fieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(FieldNameMapping.STORED_ID_FIELD_NAME)));
         propSet.setResourceType(doc.get(FieldNameMapping.RESOURCETYPE_FIELD_NAME));
         
@@ -314,7 +317,7 @@ public class DocumentMapperImpl implements DocumentMapper {
             
         if (def.isMultiple()) {
 
-            Value[] values = BinaryFieldValueMapper
+            Value[] values = this.fieldValueMapper
             .getValuesFromBinaryFields(storedValueFields, def.getType());
 
             property.setValues(values);
@@ -331,7 +334,7 @@ public class DocumentMapperImpl implements DocumentMapper {
                         + storedValueFields.size() + ") in index.");
             }
 
-            Value value = BinaryFieldValueMapper.getValueFromBinaryField(
+            Value value = this.fieldValueMapper.getValueFromBinaryField(
                     storedValueFields.get(0), def.getType());
 
             property.setValue(value);
@@ -363,9 +366,9 @@ public class DocumentMapperImpl implements DocumentMapper {
         Field field = null;
         if (def.isMultiple()) {
             Value[] values = property.getValues();
-            field = FieldValueMapper.getFieldFromValues(fieldName, values);
+            field = this.fieldValueMapper.getFieldFromValues(fieldName, values);
         } else {
-            field = FieldValueMapper.getFieldFromValue(fieldName, property.getValue());
+            field = this.fieldValueMapper.getFieldFromValue(fieldName, property.getValue());
         }
         
         return field;
@@ -394,10 +397,10 @@ public class DocumentMapperImpl implements DocumentMapper {
         
         if (def.isMultiple()) {
                 Value[] values = property.getValues();
-                return BinaryFieldValueMapper.getBinaryFieldsFromValues(fieldName, values);
+                return this.fieldValueMapper.getBinaryFieldsFromValues(fieldName, values);
         }
         Field[] singleField = new Field[1];
-        singleField[0] = BinaryFieldValueMapper.getBinaryFieldFromValue(fieldName, 
+        singleField[0] = this.fieldValueMapper.getBinaryFieldFromValue(fieldName, 
                 property.getValue());
         return singleField;
     }
@@ -413,6 +416,11 @@ public class DocumentMapperImpl implements DocumentMapper {
         for (PropertyTypeDefinition def: this.resourceTypeTree.getPropertyTypeDefinitions()) {
             this.fieldNamePropDefMap.put(FieldNameMapping.getStoredFieldName(def), def);
         }
+    }
+    
+    @Required
+    public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
+        this.fieldValueMapper = fieldValueMapper;
     }
 
 }

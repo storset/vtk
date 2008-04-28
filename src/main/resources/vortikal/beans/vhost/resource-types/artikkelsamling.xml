@@ -38,7 +38,7 @@
     </bean>
 
     
-    <bean id="artikkelsamlingTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="artikkelsamlingTittelPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="tittel" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -57,7 +57,7 @@
         <property name="expression" value="/artikkelsamling/tittel" />
     </bean>
 
-    <bean id="artikkelsamlingIngressPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="artikkelsamlingIngressPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="ingress" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -69,7 +69,7 @@
         <property name="expression" value="/artikkelsamling/ingress/*/text()" />
     </bean>
     
-    <bean id="artikkelsamlingLiteBildeWebadressePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="artikkelsamlingLiteBildeWebadressePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="litebilde.src" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -81,7 +81,7 @@
         <property name="expression" value="/artikkelsamling/lite-bilde/webadresse" />
     </bean>
     
-    <bean id="artikkelsamlingLiteBildeAlternativTekstPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="artikkelsamlingLiteBildeAlternativTekstPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="litebilde.alt" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

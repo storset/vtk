@@ -30,7 +30,7 @@
     <property name="checkExistenceOnly" value="false" />
   </bean>
 
-  <bean id="startDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="startDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="start-date"/>
     <property name="type" value="DATE"/>
@@ -38,7 +38,7 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="endDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="endDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="end-date"/>
     <property name="type" value="DATE"/>
@@ -46,7 +46,7 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="locationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="locationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentType" value="CONTENT" />
     <property name="name" value="location"/>
     <property name="type" value="STRING"/>

@@ -42,7 +42,7 @@
     
         
     <bean id="publikasjonTittelPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="tittel" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -56,7 +56,7 @@
 
     
     <bean id="publikasjonForfatterePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="forfattere" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -69,7 +69,7 @@
     </bean>
 
 
-    <bean id="publikasjonDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+    <bean id="publikasjonDatoPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="dato" />
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -82,7 +82,7 @@
     </bean>
 
     <bean id="publikasjonSerienummerPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="serienummer" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -95,7 +95,7 @@
     </bean>
 
     <bean id="publikasjonSammendragPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="sammendrag" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -108,7 +108,7 @@
     </bean>
 
     <bean id="publikasjonBildePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="bilde" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -121,7 +121,7 @@
     </bean>
 
     <bean id="publikasjonFulltekstPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
         <property name="name" value="fulltekst" />
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

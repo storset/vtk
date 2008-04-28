@@ -33,6 +33,12 @@
   <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapperImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <!--property name="contextManager" ref="contextManager" /-->
+    <property name="fieldValueMapper" ref="fieldValueMapper"/>
+  </bean>
+
+  <!-- Index field value mapper -->  
+  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.FieldValueMapperImpl">
+    <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
   <!-- Primary Lucene index accessor instance. Manages low-level access. -->
@@ -72,6 +78,7 @@
         class="org.vortikal.repository.search.query.QueryBuilderFactoryImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="indexAccessor" ref="systemIndexAccessor"/>
+    <property name="fieldValueMapper" ref="fieldValueMapper"/>
   </bean>
 
   <!-- Searcher implementation -->
@@ -81,6 +88,7 @@
     <property name="documentMapper" ref="documentMapper"/>
     <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
     <property name="queryResultAuthorizationManager" ref="queryResultAuthorizationManager"/>
+    <property name="fieldValueMapper" ref="fieldValueMapper"/>
   </bean>
 
   <!-- Query result authorization (ACL checking) -->

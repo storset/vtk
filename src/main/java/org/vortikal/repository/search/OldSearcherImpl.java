@@ -45,9 +45,11 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.index.LuceneIndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.QueryBuilderFactory;
@@ -97,6 +99,8 @@ public class OldSearcherImpl implements Searcher, InitializingBean {
     private QueryBuilderFactory queryBuilderFactory;
     
     private SortBuilder sortBuilder = new SortBuilderImpl();
+    
+    private FieldValueMapper fieldValueMapper;
     
     /**
      * The maximum number of hits allowed for any
@@ -243,7 +247,7 @@ public class OldSearcherImpl implements Searcher, InitializingBean {
             
             for (ScoreDoc scoreDoc: docs) {
                 Document doc = reader.document(scoreDoc.doc, fieldSelector);
-                rsiList.add(new LuceneResultSecurityInfo(doc));
+                rsiList.add(new LuceneResultSecurityInfo(doc, this.fieldValueMapper));
             }
             
             this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
@@ -349,6 +353,11 @@ public class OldSearcherImpl implements Searcher, InitializingBean {
     public void setQueryResultAuthorizationManager(QueryResultAuthorizationManager
                                                    queryResultAuthorizationManager) {
         this.queryResultAuthorizationManager = queryResultAuthorizationManager;
+    }
+    
+    @Required
+    public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
+        this.fieldValueMapper = fieldValueMapper;
     }
 
 }

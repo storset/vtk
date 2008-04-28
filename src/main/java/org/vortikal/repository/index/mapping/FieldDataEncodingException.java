@@ -36,23 +36,23 @@ package org.vortikal.repository.index.mapping;
  * @author oyviste
  *
  */
-public class FieldValueEncodingException extends FieldValueMappingException {
+public class FieldDataEncodingException extends FieldValueMappingException {
 
     private static final long serialVersionUID = -40952838002519568L;
 
-    public FieldValueEncodingException() {
+    public FieldDataEncodingException() {
         super();
     }
 
-    public FieldValueEncodingException(String message) {
+    public FieldDataEncodingException(String message) {
         super(message);
     }
 
-    public FieldValueEncodingException(String message, Throwable cause) {
+    public FieldDataEncodingException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FieldValueEncodingException(Throwable cause) {
+    public FieldDataEncodingException(Throwable cause) {
         super(cause);
     }
 

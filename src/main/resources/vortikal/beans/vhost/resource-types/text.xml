@@ -27,7 +27,7 @@
   </bean>
 
   <bean id="userSpecifiedCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="userSpecifiedCharacterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -36,7 +36,7 @@
 
 
   <bean id="guessedCharacterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="guessedCharacterEncoding" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -54,7 +54,7 @@
 
 
   <bean id="characterEncodingPropDef"
-        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="characterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />

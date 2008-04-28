@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
@@ -45,12 +46,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
-
 public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluator {
 
-    
-    private ValueFactory valueFactory = ValueFactory.getInstance();
+    private ValueFactory valueFactory;
 
     public boolean contentModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Content content, Date time)
@@ -118,6 +116,11 @@ public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluat
         
         return null;
 
+    }
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
     }
 
 }

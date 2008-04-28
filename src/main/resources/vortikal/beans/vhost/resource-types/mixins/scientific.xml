@@ -19,7 +19,7 @@
     <constructor-arg value="http://www.uio.no/scientific" />
   </bean>
 
-  <bean id="scientificDisciplinesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="scientificDisciplinesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="disciplines" /> 
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

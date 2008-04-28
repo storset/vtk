@@ -47,6 +47,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.index.LuceneIndexManager;
 import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.search.query.DumpQueryTreeVisitor;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.QueryBuilderFactory;
@@ -64,6 +65,8 @@ public class SearcherImpl implements Searcher {
     private DocumentMapper documentMapper;
     private QueryResultAuthorizationManager queryResultAuthorizationManager;
     private QueryBuilderFactory queryBuilderFactory;
+    
+    private FieldValueMapper fieldValueMapper;
     
     private final SortBuilder sortBuilder = new SortBuilderImpl();
     
@@ -271,7 +274,7 @@ public class SearcherImpl implements Searcher {
         
         for (int i = scoreDocPos; i < docs.length; i++) {
             Document doc = reader.document(docs[i].doc, fieldSelector);
-            rsiList.add(new LuceneResultSecurityInfo(doc));
+            rsiList.add(new LuceneResultSecurityInfo(doc, this.fieldValueMapper));
         }
 
         this.queryResultAuthorizationManager.authorizeQueryResults(token, rsiList);
@@ -322,6 +325,11 @@ public class SearcherImpl implements Searcher {
         }
         
         this.totalQueryTimeWarnThreshold = totalQueryTimeWarnThreshold;
+    }
+
+    @Required
+    public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
+        this.fieldValueMapper = fieldValueMapper;
     }
     
 }

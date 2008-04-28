@@ -30,42 +30,14 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.security.InvalidPrincipalException;
-import org.vortikal.security.Principal;
 
 /**
  * Interface for a <code>Value</code> "factory". It currently only does
  * value creation from string representation.
  */
-public class ValueFactory {
+public interface ValueFactory {
 
-    private static final ValueFactory INSTANCE = new ValueFactory();
-    
-    private static final String[] dateFormats = new String[] {        
-        "dd.MM.yyyy HH:mm:ss",
-        "dd.MM.yyyy HH:mm",
-        "dd.MM.yyyy",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd HH:mm",
-        "yyyy-MM-dd"
-    };
-
-    private Log logger = LogFactory.getLog(this.getClass());
-
-    // Singleton
-    private ValueFactory() {}
-
-    public static ValueFactory getInstance() {
-        return INSTANCE;
-    }
-    
     /**
      * 
      * @param stringValues An array of String representation
@@ -74,20 +46,7 @@ public class ValueFactory {
      * @throws ValueFormatException
      */
     public Value[] createValues(String[] stringValues, Type type) 
-    throws ValueFormatException {
-
-        if (stringValues == null) {
-            throw new IllegalArgumentException("stringValues cannot be null.");
-        }
-
-        Value[] values = new Value[stringValues.length];
-        for (int i=0; i<values.length; i++) {
-            values[i] = createValue(stringValues[i], type);
-        }
-
-        return values;
-
-    }
+        throws ValueFormatException ;
 
     /**
      * Create a <code>Value</code> object from the given string
@@ -98,84 +57,5 @@ public class ValueFactory {
      * @throws ValueFormatException
      */
     public Value createValue(String stringValue, Type type)
-    throws ValueFormatException {
-
-        if (stringValue == null) {
-            throw new IllegalArgumentException("stringValue cannot be null");
-        }
-
-        switch (type) {
-
-        case STRING:
-        case HTML:
-        case IMAGE_REF:
-            if (stringValue.length() == 0) {
-                throw new ValueFormatException("Illegal string value: empty");
-            }
-            return new Value(stringValue);
-
-        case BOOLEAN:
-            return new Value("true".equalsIgnoreCase(stringValue));
-
-        case DATE:
-            Date date = getDateFromStringValue(stringValue);
-            return new Value(date, true);
-        case TIMESTAMP:
-            // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
-            // Dates are represented as described in the configuration for this bean in the List stringFormats
-            Date date2 = getDateFromStringValue(stringValue);
-            return new Value(date2, false);
-
-        case INT:
-            try {
-                return new Value(Integer.parseInt(stringValue));
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException(nfe.getMessage());
-            }
-
-        case LONG:
-            try {
-                return new Value(Long.parseLong(stringValue));
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException(nfe.getMessage());
-            }
-
-        case PRINCIPAL:
-            try {
-                Principal principal = new Principal(stringValue, Principal.Type.USER);
-                return new Value(principal);
-            } catch (InvalidPrincipalException e) {
-                throw new ValueFormatException(e.getMessage(), e);
-            }
-        }
-
-        throw new IllegalArgumentException("Cannot convert '" + stringValue 
-                + "' to unknown type '" + type+ "'");
-
-    }
-
-    private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
-
-        try {
-            return new Date(Long.parseLong(stringValue));
-        } catch (NumberFormatException nfe) {}
-
-        SimpleDateFormat format;
-        Date date;
-        for (String dateFormat: dateFormats) {
-            format = new SimpleDateFormat(dateFormat);
-            format.setLenient(false);
-            try {
-                date = format.parse(stringValue);
-                return date;
-            } catch (ParseException e) {
-                this.logger.debug("Failed to parse date using format '" + dateFormat
-                        + "', input '" + stringValue + "'", e);
-            }
-        }
-        throw new ValueFormatException(
-                "Unable to parse date value for input string: '" + stringValue + "'");
-
-
-    }
+        throws ValueFormatException ;
 }

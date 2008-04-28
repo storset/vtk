@@ -45,6 +45,7 @@ import org.jaxen.jdom.JDOMXPath;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
@@ -74,9 +75,9 @@ import org.vortikal.xml.xpath.XPathFunction;
 public class XPathEvaluator implements ContentModificationPropertyEvaluator {
 
     private static final Log logger = LogFactory.getLog(XPathEvaluator.class);
-    
 
-    private ValueFactory valueFactory = ValueFactory.getInstance();
+    private ValueFactory valueFactory;
+    
     private String expression;
     private boolean trimValues = true;
     private Set<XPathFunction> customFunctions;
@@ -200,6 +201,10 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
         }
         return this.valueFactory.createValue(stringVal, type);
      }
-    
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
+    }
 
 }

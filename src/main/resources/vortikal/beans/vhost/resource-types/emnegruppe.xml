@@ -39,7 +39,7 @@
   </bean>
 
 
-  <bean id="emnegruppeEmnegruppekodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="emnegruppeEmnegruppekodePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="emnegruppekode" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -51,7 +51,7 @@
     <property name="expression" value="/emnegruppe/emnegruppekode" />
   </bean>
 
-  <bean id="emnegruppeEmnegruppenavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="emnegruppeEmnegruppenavnPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="emnegruppenavn" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -63,7 +63,7 @@
     <property name="expression" value="/emnegruppe/emnegruppenavn" />
   </bean>
 
-  <bean id="emnegruppeEmnegruppeomfangPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="emnegruppeEmnegruppeomfangPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="emnegruppeomfang" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -76,7 +76,7 @@
   </bean>
 
   <bean id="emnegruppeStatusPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="status" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
@@ -89,7 +89,7 @@
   </bean>
 
 
-  <!-- bean id="emnegruppeSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <!-- bean id="emnegruppeSpraakPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="spraak" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />

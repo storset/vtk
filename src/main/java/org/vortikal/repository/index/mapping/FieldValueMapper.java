@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,15 @@
  */
 package org.vortikal.repository.index.mapping;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
 import org.apache.lucene.document.Field;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.util.cache.ReusableObjectCache;
-import org.vortikal.util.text.SimpleDateFormatCache;
 
 /**
- * Utility methods for mapping between <code>Value</code> and
+ * Methods for mapping between <code>Value</code> and
  * <code>org.apache.lucene.document.Field</code> objects.
  * 
  * Also contains a method that maps from string representations of our data
@@ -50,43 +46,19 @@ import org.vortikal.util.text.SimpleDateFormatCache;
  * 
  * @author oyviste
  */
-public final class FieldValueMapper {
-
-    public static final ReusableObjectCache[] CACHED_DATE_FORMATS = new SimpleDateFormatCache[] {
-            new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss Z", 5),
-            new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss", 5),
-            new SimpleDateFormatCache("yyyy-MM-dd HH:mm", 5),
-            new SimpleDateFormatCache("yyyy-MM-dd HH", 5),
-            new SimpleDateFormatCache("yyyy-MM-dd", 5) 
-        };
-
-    public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
-
-    public static final char ESCAPE_CHAR = '\\';
-
-    private FieldValueMapper() {  } // Util
+public interface FieldValueMapper {
 
     // No encoding (un-typed)
-    public static Field getKeywordField(String name, int value) {
-        return new Field(name, Integer.toString(value), Field.Store.NO,
-                Field.Index.NO_NORMS);
-    }
+    public Field getKeywordField(String name, int value) ;
 
     // No encoding (un-typed)
-    public static Field getKeywordField(String name, String value) {
-        return new Field(name, value, Field.Store.NO, Field.Index.NO_NORMS);
-    }
+    public Field getKeywordField(String name, String value);
 
     // No encoding (un-typed)
-    public static Field getStoredKeywordField(String name, int value) {
-        return new Field(name, Integer.toString(value), Field.Store.YES,
-                Field.Index.NO_NORMS);
-    }
+    public Field getStoredKeywordField(String name, int value);
 
     // No encoding (un-typed)
-    public static Field getStoredKeywordField(String name, String value) {
-        return new Field(name, value, Field.Store.YES, Field.Index.NO_NORMS);
-    }
+    public Field getStoredKeywordField(String name, String value);
 
     /**
      * Create indexed (but not stored) <code>Field</code> from multiple
@@ -97,14 +69,7 @@ public final class FieldValueMapper {
      * @param values
      * @return
      */
-    public static Field getFieldFromValues(String name, Value[] values) {
-        String[] encodedValues = new String[values.length];
-        for (int i=0; i<values.length; i++) {
-            encodedValues[i] = encodeIndexFieldValue(values[i]);
-        }
-        
-        return new Field(name, new StringArrayTokenStream(encodedValues));
-    }
+    public Field getFieldFromValues(String name, Value[] values) ;
     
     /**
      * Create indexed (but not stored) <code>Field</code> from single
@@ -114,10 +79,7 @@ public final class FieldValueMapper {
      * @param value
      * @return
      */
-    public static Field getFieldFromValue(String name, Value value) {
-        String encoded = encodeIndexFieldValue(value);
-        return getKeywordField(name, encoded);
-    }
+    public Field getFieldFromValue(String name, Value value) ;
 
     /**
      * Create single <code>Value</code> from <code>Field</code> with the
@@ -128,91 +90,23 @@ public final class FieldValueMapper {
      * @param type
      * @return
      */
-    public static Value getValueFromField(Field field, Type type) {
-        String fieldValue = field.stringValue();
-
-        String decodedFieldValue = decodeIndexFieldValueToString(fieldValue,
-                type);
-
-        return ValueFactory.getInstance().createValue(decodedFieldValue, type);
-    }
+    public Value getValueFromField(Field field, Type type);
 
     /**
      * Used for generating ancestor ids field. We don't bother to encode it
      * because of its system-specific nature, and that it should never be used
      * as a sane sorting key or in range queries.
      */
-    public static Field getUnencodedMultiValueFieldFromIntegers(String name,
-            int[] integers) {
-        
-        String[] values = new String[integers.length];
-        for (int i=0; i<integers.length; i++) {
-            values[i] = Integer.toString(integers[i]);
-        }
-        
-        return new Field(name, new StringArrayTokenStream(values));
-    }
+    public Field getUnencodedMultiValueFieldFromIntegers(String name,
+            int[] integers) ;
 
-    public static int getIntegerFromUnencodedField(Field field) {
-        return Integer.parseInt(field.stringValue());
-    }
+    public int getIntegerFromUnencodedField(Field field);
 
-    public static String decodeIndexFieldValueToString(String fieldValue,
-            Type type) throws FieldValueEncodingException {
+    public String decodeIndexFieldValueToString(String fieldValue,
+            Type type) throws FieldDataEncodingException ;
 
-        switch (type) {
-
-        case BOOLEAN:
-        case STRING:
-        case HTML:
-        case IMAGE_REF:
-        case PRINCIPAL:
-            return fieldValue; // No need to decode any of these. 
-                               // Index string representation already in native format.
-
-        case DATE:    
-        case TIMESTAMP:
-            return Long.toString(FieldValueEncoder.decodeDateValueFromString(fieldValue));
-
-        case INT:
-            return Integer.toString(FieldValueEncoder.decodeIntegerFromString(fieldValue));
-
-        case LONG:
-            return Long.toString(FieldValueEncoder.decodeLongFromString(fieldValue));
-
-        default:
-            throw new FieldValueEncodingException("Unknown type " + type);
-
-        }
-    }
-
-    public static String encodeIndexFieldValue(Value value)
-            throws FieldValueEncodingException {
-
-        switch (value.getType()) {
-        case STRING:
-        case HTML:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            return value.getNativeStringRepresentation();
-
-        case DATE:    
-        case TIMESTAMP:
-            return FieldValueEncoder.encodeDateValueToString(value.getDateValue().getTime());
-
-        case INT:
-            return FieldValueEncoder.encodeIntegerToString(value.getIntValue());
-
-        case LONG:
-            return FieldValueEncoder.encodeLongToString(value.getLongValue());
-
-        default:
-            throw new FieldValueEncodingException("Unknown type: " + value.getType());
-
-        }
-
-    }
+    public String encodeIndexFieldValue(Value value)
+            throws FieldDataEncodingException ;
 
     /**
      * Encode a string representation into a form suitable for indexing and
@@ -221,146 +115,41 @@ public final class FieldValueMapper {
      * 
      * Only native string representations are supported by this method.
      */
-    public static String encodeIndexFieldValue(String stringValue, Type type)
-            throws ValueFormatException, FieldValueEncodingException {
+    public String encodeIndexFieldValue(String stringValue, Type type)
+            throws ValueFormatException, FieldDataEncodingException;
+    
+    
+    
+    
+    public Field getBinaryFieldFromValue(String name, Value value)
+    throws FieldDataEncodingException;
 
-        switch (type) {
-        case STRING:
-        case HTML:
-        case IMAGE_REF:
-        case BOOLEAN:
-        case PRINCIPAL:
-            return stringValue;
-
-        case DATE:    
-        case TIMESTAMP:
-            try {
-                long l = Long.parseLong(stringValue);
-                return FieldValueEncoder.encodeDateValueToString(l);
-            } catch (NumberFormatException nfe) {
-            }
-
-            Date d = null;
-            for (int i = 0; i < CACHED_DATE_FORMATS.length; i++) {
-                SimpleDateFormat formatter = (SimpleDateFormat)CACHED_DATE_FORMATS[i].getInstance();
-                try {
-                    d = formatter.parse(stringValue);
-                    break;
-                } catch (Exception e) {}
-                 finally {
-                     CACHED_DATE_FORMATS[i].putInstance(formatter);
-                 }
-            }
-            if (d == null) {
-                throw new ValueFormatException(
-                        "Unable to encode date string value '" + stringValue
-                                + "' to index field value representation");
-            }
-            
-            return FieldValueEncoder.encodeDateValueToString(d.getTime());
-
-        case INT:
-            try {
-                // Validate and encode
-                int n = Integer.parseInt(stringValue);
-                return FieldValueEncoder.encodeIntegerToString(n);
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException(
-                        "Unable to encode integer string value to "
-                                + "to index field value representation: "
-                                + nfe.getMessage());
-            }
-
-        case LONG:
-            try {
-                // Validate and pad
-                long l = Long.parseLong(stringValue);
-                return FieldValueEncoder.encodeLongToString(l);
-            } catch (NumberFormatException nfe) {
-                throw new ValueFormatException(
-                        "Unable to encode long integer string value to "
-                                + "to index field value representation: "
-                                + nfe.getMessage());
-            }
-
-        default:
-            throw new FieldValueEncodingException("Unknown type " + type);
-
-        }
-
-    }
-
+    
+    /* Methods for binary field value mapping below */
+    
     /**
-     * Un-escape given backslash-escaped character in <code>String</code>.
-     * Escaped back-slashes are also un-escaped.
+     * For multi-valued props
      * 
-     * @param c
-     * @param s
+     * @param name
+     * @param values
      * @return
-     * XXX: no longer in use
      */
-    public static String unescapeCharacter(char c, String s) {
+    public Field[] getBinaryFieldsFromValues(String name, Value[] values)
+            throws FieldDataEncodingException;
 
-        int length = s.length();
-        char[] output = new char[length];
-        int p = 0;
+    public Value getValueFromBinaryField(Field field, Type type)
+            throws FieldDataEncodingException, ValueFormatException;
 
-        for (int i = 0; i < length; i++) {
-            char current = s.charAt(i);
-            if (current == ESCAPE_CHAR) {
-                if (i == length - 1) {
-                    throw new IllegalArgumentException(
-                            "Invalid escape-character sequence in string");
-                }
+    public Value[] getValuesFromBinaryFields(List<Field> fields, Type type)
+            throws FieldDataEncodingException, ValueFormatException;
 
-                char next = s.charAt(i + 1);
+    public String getStringFromStoredBinaryField(Field f)
+            throws FieldValueMappingException;
 
-                if (next != c && next != ESCAPE_CHAR) {
-                    throw new IllegalArgumentException(
-                            "Invalid escape-character sequence in string");
-                }
+    public Field getStoredBinaryIntegerField(String name, int value)
+            throws FieldValueMappingException;
 
-                output[p++] = next;
-                ++i;
-            } else {
-                output[p++] = current;
-            }
-        }
-
-        return new String(output, 0, p);
-    }
-
-    /**
-     * Escape given character using the backslash character '\\'. Note that
-     * occurences of the backslash character in the input string are also
-     * escaped.
-     * 
-     * @param c
-     * @param s
-     * @return
-     * XXX: no longer in use.
-     */
-    public static String escapeCharacter(char c, String s) {
-        int length = s.length();
-        char[] output = new char[length];
-        int p = 0;
-
-        for (int i = 0; i < length; i++) {
-            char current = s.charAt(i);
-            if (p >= output.length - 1) {
-                char[] doubled = new char[output.length * 2];
-                System.arraycopy(output, 0, doubled, 0, p);
-                output = doubled;
-            }
-
-            if (current == ESCAPE_CHAR || current == c) {
-                output[p++] = ESCAPE_CHAR;
-            }
-
-            output[p++] = current;
-        }
-
-        return new String(output, 0, p);
-    }
-
+    public int getIntegerFromStoredBinaryField(Field f)
+            throws FieldValueMappingException;
+    
 }

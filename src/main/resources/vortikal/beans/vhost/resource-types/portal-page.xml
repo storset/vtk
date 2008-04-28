@@ -35,7 +35,7 @@
   </bean>
 
   <bean id="portletListPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="portlet-list"/>
     <property name="type" value="STRING"/>
     <property name="multiple" value="true" />

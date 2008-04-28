@@ -24,7 +24,7 @@
     </property>    
   </bean>
 
-  <bean id="expiresSecPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl">
+  <bean id="expiresSecPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="expires-sec" />
     <property name="type" value="LONG" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />

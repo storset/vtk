@@ -42,13 +42,13 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.LuceneIndexManager;
-import org.vortikal.repository.index.mapping.BinaryFieldValueMapper;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -82,6 +82,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     
     private LuceneIndexManager indexAccessor;
     private ResourceTypeTree resourceTypeTree;
+    
+    private FieldValueMapper fieldValueMapper;
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
         
@@ -160,12 +162,13 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
                 
                 String fieldName = FieldNameMapping.getSearchFieldName(propDef);
-                String fieldValue = FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
+                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
                 return new HierarchicalTermQueryBuilder<Value>(hv , ptq.getOperator(), fieldName, new Value(fieldValue));
             } 
             
             return new PropertyTermQueryBuilder(ptq.getOperator(), ptq.getTerm(),
-                    FieldNameMapping.getSearchFieldName(propDef),FieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType()));
+                    FieldNameMapping.getSearchFieldName(propDef),
+                        this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType()));
         }
         
         if (query instanceof PropertyPrefixQuery) {
@@ -173,7 +176,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         }
         
         if (query instanceof PropertyRangeQuery) {
-            return new PropertyRangeQueryBuilder((PropertyRangeQuery)query);
+            return new PropertyRangeQueryBuilder((PropertyRangeQuery)query, this.fieldValueMapper);
         }
         
         if (query instanceof PropertyWildcardQuery) {
@@ -205,7 +208,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                 
                 String value = 
                     Integer.toString(
-                            BinaryFieldValueMapper.getIntegerFromStoredBinaryField(field));
+                            this.fieldValueMapper.getIntegerFromStoredBinaryField(field));
                 
                 return new Term(FieldNameMapping.ID_FIELD_NAME, value);
                 
@@ -230,6 +233,11 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
 
     @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setFieldValueMapper(FieldValueMapper fieldValueMapper) {
+        this.fieldValueMapper = fieldValueMapper;
     }
 
 }

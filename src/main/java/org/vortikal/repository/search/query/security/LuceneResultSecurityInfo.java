@@ -33,8 +33,8 @@ package org.vortikal.repository.search.query.security;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.vortikal.repository.PropertySetImpl;
-import org.vortikal.repository.index.mapping.BinaryFieldValueMapper;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldValueMapper;
 
 /**
  * Quickly extract relevant security info from a Lucene 
@@ -53,12 +53,12 @@ public class LuceneResultSecurityInfo implements ResultSecurityInfo {
     private boolean authorized = false; 
     private String ownerAsUserOrGroupName;
     
-    public LuceneResultSecurityInfo(Document doc) {
+    public LuceneResultSecurityInfo(Document doc, FieldValueMapper mapper) {
         this.document = doc;
-        this.aclInheritedFrom = BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+        this.aclInheritedFrom = mapper.getIntegerFromStoredBinaryField(
                 doc.getField(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME));
         
-        this.resourceId = BinaryFieldValueMapper.getIntegerFromStoredBinaryField(
+        this.resourceId = mapper.getIntegerFromStoredBinaryField(
                 doc.getField(FieldNameMapping.STORED_ID_FIELD_NAME));
         
         if (this.aclInheritedFrom == PropertySetImpl.NULL_RESOURCE_ID) {
@@ -68,7 +68,7 @@ public class LuceneResultSecurityInfo implements ResultSecurityInfo {
         }
         
         Field f = doc.getField(FieldNameMapping.OWNER_PROPERTY_STORED_FIELD_NAME);
-        this.ownerAsUserOrGroupName = BinaryFieldValueMapper.getStringFromStoredBinaryField(f);
+        this.ownerAsUserOrGroupName = mapper.getStringFromStoredBinaryField(f);
     }
     
     public Integer getAclNodeId() {

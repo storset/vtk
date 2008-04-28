@@ -30,45 +30,52 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import java.util.Date;
+
 import junit.framework.TestCase;
+
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 
 /**
  * TODO: This JUnit test case class is not complete.
  * 
  *
  */
-public class FieldValueMapperTestCase extends TestCase {
+public class FieldValueMapperImplTestCase extends TestCase {
 
-//    protected void setUp() throws Exception {
-//        super.setUp();
-//    }
-//
-//    protected void tearDown() throws Exception {
-//        super.tearDown();
-//    }
-//
-//    public void testDateValueIndexFieldEncoding() {
-//
-//        String[] dateFormats = new String[] { "Long-format",
-//                "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
-//                "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
-//
-//        Date now = new Date();
-//        String[] dateStrings = new String[] { Long.toString(now.getTime()),
-//                "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
-//                "2005-10-10 14:22", "2005-10-10 14", "2005-10-10" };
-//
-//        for (int i = 0; i < dateFormats.length; i++) {
-//            try {
-//                FieldValueMapper.encodeIndexFieldValue(dateStrings[i],
-//                        PropertyType.Type.TIMESTAMP);
-//            } catch (Exception e) {
-//                fail("Failed to encode index field value for date format '" + dateFormats[i]
-//                        + "', date string '" + dateStrings[i] + "':"
-//                        + e.getMessage());
-//            }
-//        }
-//    }
+    private FieldValueMapperImpl fieldValueMapper;
+
+    public FieldValueMapperImplTestCase() {
+        this.fieldValueMapper = new FieldValueMapperImpl();
+        this.fieldValueMapper.setValueFactory(new ValueFactoryImpl());
+    }
+    
+    public void testDateValueIndexFieldEncoding() {
+        
+        
+
+        String[] dateFormats = new String[] { "Long-format",
+                "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
+
+        Date now = new Date();
+        String[] dateStrings = new String[] { Long.toString(now.getTime()),
+                "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
+                "2005-10-10 14:22", "2005-10-10 14", "2005-10-10" };
+
+        for (int i = 0; i < dateFormats.length; i++) {
+            try {
+                this.fieldValueMapper.encodeIndexFieldValue(dateStrings[i],
+                        PropertyType.Type.TIMESTAMP);
+            } catch (Exception e) {
+                fail("Failed to encode index field value for date format '" + dateFormats[i]
+                        + "', date string '" + dateStrings[i] + "':"
+                        + e.getMessage());
+            }
+        }
+    }
 //    
 ////    public void testMultithreadedDateValueIndexFieldEncoding() {
 ////        

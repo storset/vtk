@@ -35,7 +35,6 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 
 /**

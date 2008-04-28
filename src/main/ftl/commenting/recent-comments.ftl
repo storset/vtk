@@ -16,7 +16,7 @@
   </head>
   <body>
     <h1>${title?html}</h1>
-    <#list comments?reverse as comment>
+    <#list comments as comment>
       <ul>
         <li>
           ${comment.author?html}

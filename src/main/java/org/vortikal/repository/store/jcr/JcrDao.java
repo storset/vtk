@@ -671,7 +671,6 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
     public void storeACL(ResourceImpl r) throws DataAccessException {
         Session session = getSession();
-
         Acl newAcl = r.getAcl();
         boolean isInherited = r.isInheritedAcl();
         try {
@@ -942,14 +941,13 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
                 stmt.append("/%' ");
             }
             stmt.append("order by vrtx:commentTime");
-            System.out.println("__comment_query: " + stmt);
             Query query = session.getWorkspace().getQueryManager().createQuery(stmt.toString(), Query.SQL); 
             QueryResult result = query.execute();
 
             NodeIterator nodes = result.getNodes();
             while (nodes.hasNext() && resultList.size() < max) {
                 Comment c = nodeToComment((Node)nodes.next());
-                resultList.add(c);
+                resultList.add(0, c);
             }
             return resultList;
         } catch (RepositoryException e) {

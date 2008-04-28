@@ -28,7 +28,7 @@
 
   <ul class="items">
 
-  <#list comments?reverse as comment>
+  <#list comments as comment>
     <#if comment_index &gt; number - 1><#break /></#if>
     <li>
       <a class="item-title" href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">

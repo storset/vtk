@@ -41,8 +41,7 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 
 /**
- * Interface for a <code>Value</code> "factory". It currently only does
- * value creation from string representation.
+ * Implementation of {@link ValueFactory}.
  */
 public class ValueFactoryImpl implements ValueFactory {
 
@@ -157,7 +156,6 @@ public class ValueFactoryImpl implements ValueFactory {
         }
         throw new ValueFormatException(
                 "Unable to parse date value for input string: '" + stringValue + "'");
-
-
     }
+    
 }

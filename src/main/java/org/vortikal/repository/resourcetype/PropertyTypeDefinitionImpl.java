@@ -152,7 +152,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         Type type = this.getType();
         
         if (this.isMultiple()) {
-            Value[] values = this.valueFactory .createValues(stringValues, type);
+            Value[] values = this.valueFactory.createValues(stringValues, type);
             prop.setValues(values);
         } else {
             // Not multi-value, stringValues must be of length 1, otherwise there are

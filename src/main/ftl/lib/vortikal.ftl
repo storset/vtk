@@ -119,15 +119,85 @@
 -->
 <#macro date value format>
   <#compress>
-    <#if VRTX_VALUE_FORMATTER?exists>
+    <#if VRTX_DATE_VALUE_FORMATTER?exists>
       <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
       <#local val = constructor("org.vortikal.repository.resourcetype.Value", value, false) />
       <#local locale = springMacroRequestContext.getLocale() />
-      ${VRTX_VALUE_FORMATTER.valueToString(val, format, locale)}
+      ${VRTX_DATE_VALUE_FORMATTER.valueToString(val, format, locale)}
     <#else>
       Undefined
     </#if>
   </#compress>
+</#macro>
+
+
+<#--
+ * parseInt
+ *
+ * Attempts to parse an integer from a string
+ * Example: <#assign val = vrtx.parseInt("222") />
+ *
+ * @param value the string value
+ *
+-->
+<#function parseInt value>
+  <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+  <#assign parser = constructor("java.lang.Integer", 0) />
+  <#return parser.parseInt(value) />
+</#function>
+
+
+
+<#--
+ * html
+ *
+ * Get a formatted string representation from a HTML string.
+ * Example: <@vrtx.html value='<div>foo</div>' format='flattened' /> (produces 'foo')
+ *
+ * @param value the HTML string
+ * @param format a named format. See org.vortikal.repository.resourcetype.ValueFormatter
+ *
+-->
+<#macro html value format>
+  <#compress>
+    <#if VRTX_HTML_VALUE_FORMATTER?exists>
+      <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+      <#local val = constructor("org.vortikal.repository.resourcetype.Value", value) />
+      <#local locale = springMacroRequestContext.getLocale() />
+      ${VRTX_HTML_VALUE_FORMATTER.valueToString(val, format, locale)}
+    <#else>
+      Undefined
+    </#if>
+  </#compress>
+</#macro>
+
+
+<#--
+ * limit
+ *
+ * Limits a string to a maximum number of characters
+ * Example: <@vrtx.limit nchars='3'>some text</@vrtx.limit> --> produces 'som'
+ *
+ * @param nchars the maximum number of characters
+ * @param elide whether or not to append '...' to the string in case
+ *        its length is greater than the maximum allowed value
+ *
+-->
+<#macro limit nchars elide=false>
+  <#compress>
+    <#local val><#nested /></#local>
+    <#if val?length &lt; nchars>
+      ${val}
+    <#else>
+      <#local cut_index = nchars />
+      <#if cut_index &gt; val?length>
+        <#local cut_index = val?length />
+      </#if>
+      <#local val = val?substring(0, nchars) />
+      ${val}
+      <#if elide>...</#if>
+    </#if>
+  </#compress>   
 </#macro>
 
 

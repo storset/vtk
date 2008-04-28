@@ -47,8 +47,6 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
-import org.vortikal.web.view.decorating.DecoratorRequest;
-import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
 public class CommentsProvider implements ReferenceDataProvider {
@@ -91,6 +89,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         this.formSessionAttributeName = formSessionAttributeName;
     }
     
+    @SuppressWarnings(value={"unchecked"}) 
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
         if (this.formSessionAttributeName != null) {
 

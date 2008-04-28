@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true>
 <#--
-  - File: comments-view.ftl
+  - File: comments-component.ftl
   - 
   - Description: displays a list of comments on the page.
   - 

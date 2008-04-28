@@ -194,7 +194,7 @@
     </#if>
 
     <#-- Comments -->
-    <#include "/layouts/comments-view.ftl" />
+    <#include "/commenting/comments-component.ftl" />
   </body>
 </html>
 

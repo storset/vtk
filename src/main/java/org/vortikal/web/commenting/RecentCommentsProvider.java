@@ -33,71 +33,115 @@ package org.vortikal.web.commenting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 
-public class ListCommentsController implements Controller {
+public class RecentCommentsProvider implements ReferenceDataProvider {
     
     private Repository repository;
+    private boolean deepCommentsListing = false;
+    private int maxComments = 100;
     private Service viewService;
-    private String viewName;
-    
+    private Service resourceCommentsFeedService;
+    private Service recentCommentsService;
+
+
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+    public void setDeepCommentsListing(boolean deepCommentsListing) {
+        this.deepCommentsListing = deepCommentsListing;
+    }
+
+    public void setMaxComments(int maxComments) {
+        if (maxComments <= 0) {
+            throw new IllegalArgumentException("Number must be a positive integer");
+        }
+        this.maxComments = maxComments;
+    }
+    
     @Required public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
     
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
+    public void setRecentCommentsService(Service recentCommentsService) {
+        this.recentCommentsService = recentCommentsService;
     }
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                HttpServletResponse response) throws Exception {
+    public void setResourceCommentsFeedService(Service resourceCommentsFeedService) {
+        this.resourceCommentsFeedService = resourceCommentsFeedService;
+    }
 
+    @SuppressWarnings(value={"unchecked"}) 
+    public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
 
-        Map<String, Object> model = new HashMap<String, Object>();
-
-        model.put("principal", principal);
-
         Resource resource = repository.retrieve(token, uri, true);
-        model.put("resource", resource);
+        // If deepCommentListing is specified, always find the nearest collection:
+        if (!resource.isCollection() && this.deepCommentsListing) {
+            uri = URIUtil.getParentURI(uri);
+            resource = this.repository.retrieve(token, uri, true);
+        }
 
-        List<Comment> comments = repository.getComments(token, resource);
-        model.put("comments", comments);
+        List<Comment> comments = repository.getComments(token, resource, 
+                this.deepCommentsListing, this.maxComments);
+
+        Map<String, Resource> resourceMap = new HashMap<String, Resource>();
+        Map<String, URL> commentURLMap = new HashMap<String, URL>();
+        for (Comment comment: comments) {
+            try {
+                Resource r = this.repository.retrieve(token, comment.getURI(), true);
+                resourceMap.put(r.getURI(), r);
+                URL commentURL = this.viewService.constructURL(r, principal);
+                commentURLMap.put(comment.getID(), commentURL);
+            } catch (Throwable t) { }
+        }
 
         boolean commentsEnabled =
             resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
-
-        model.put("commentsEnabled", Boolean.valueOf(commentsEnabled));
 
         URL baseCommentURL = null;
         try {
             baseCommentURL = this.viewService.constructURL(resource, principal);
         } catch (Exception e) { }
+
+        URL feedURL = null;
+        if (this.resourceCommentsFeedService != null) {
+            try {
+                feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
+            } catch (Exception e) { }
+        }
+
+        URL recentCommentsURL = null;
+        try {
+            recentCommentsURL = this.recentCommentsService.constructURL(resource, principal);
+        } catch (Exception e) { }
+        
+        model.put("resource", resource);
+        model.put("principal", principal);
+        model.put("comments", comments);
+        model.put("resourceMap", resourceMap);
+        model.put("commentURLMap", commentURLMap);
+        model.put("commentsEnabled", Boolean.valueOf(commentsEnabled));
         model.put("baseCommentURL", baseCommentURL);
-
-        return new ModelAndView(this.viewName, model);
+        model.put("feedURL", feedURL);
+        model.put("recentCommentsURL", recentCommentsURL);
     }
-
 }

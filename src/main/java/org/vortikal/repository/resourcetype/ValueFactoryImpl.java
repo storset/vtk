@@ -46,8 +46,6 @@ import org.vortikal.security.Principal;
  */
 public class ValueFactoryImpl implements ValueFactory {
 
-    private static final ValueFactoryImpl INSTANCE = new ValueFactoryImpl();
-    
     private static final String[] dateFormats = new String[] {        
         "dd.MM.yyyy HH:mm:ss",
         "dd.MM.yyyy HH:mm",

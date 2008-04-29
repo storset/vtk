@@ -45,7 +45,6 @@
   </ul>
 
   <a class="all-messages" href="${recentCommentsURL?html}"><@vrtx.msg code="commenting.recentComments.more" default="More..." /></a>
-  </a>
   
 </div>
 

@@ -32,9 +32,6 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlFragment;
-import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.htmlparser.HtmlFlattener;
 
 /**

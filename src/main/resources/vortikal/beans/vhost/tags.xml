@@ -37,5 +37,10 @@
 
   <bean id="tags.tagsView" parent="freemarkerView">
     <property name="url" value="pages/tags.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs"><list><value>${cssBaseURL}/tags.css</value></list></entry>
+      </map>
+    </property>
   </bean>
 </beans>

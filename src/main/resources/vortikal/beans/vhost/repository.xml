@@ -182,6 +182,8 @@
   <bean id="resourceTypeTree"
         class="org.vortikal.repository.ResourceTypeTreeImpl" >
     <property name="typeLocalizationProvider" ref="typeLocalizationProvider"/>
+    <property name="valueFactory" ref="valueFactory" />
+    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
   </bean>    
 
   <bean id="typeLocalizationProvider" 

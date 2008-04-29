@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,6 +45,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.resourcetype.AbstractResourceTypeDefinitionImpl;
@@ -59,7 +59,9 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.TypeLocalizationProvider;
+import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatter;
+import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 
 
 public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContextAware, ResourceTypeTree {
@@ -157,6 +159,10 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     
     private TypeLocalizationProvider typeLocalizationProvider;
 
+    private ValueFormatterRegistry valueFormatterRegistry;
+
+    private ValueFactory valueFactory;
+
     public PropertyTypeDefinition getPropertyTypeDefinition(Namespace namespace, String name) {
         Map<String, PropertyTypeDefinition> map = this.propertyTypeDefinitions.get(namespace);
 
@@ -170,12 +176,13 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         if (logger.isDebugEnabled()) {
             logger.debug("No definition found for property "
                     + namespace.getPrefix() + ":" + name + ", returning default");
-        
         }
 
         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
         propDef.setNamespace(namespace);
         propDef.setName(name);
+        propDef.setValueFactory(this.valueFactory);
+        propDef.setValueFormatterRegistry(this.valueFormatterRegistry);
         propDef.afterPropertiesSet();
         return propDef;
     }
@@ -702,5 +709,12 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         this.typeLocalizationProvider = typeLocalizationProvider;
     }
 
+    @Required public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
+        this.valueFormatterRegistry = valueFormatterRegistry;
+    }
+
+    @Required public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
+    }
 
 }

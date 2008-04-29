@@ -28,63 +28,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.security;
+package org.vortikal.repository.resourcetype;
 
+import java.util.Map;
 
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
-/**
- * A representation of a principal, either user, group or pseudo.
- */
-public interface Principal extends Comparable<Principal>, java.io.Serializable {
+public class ValueFormatterRegistry {
+
+    private Map<Type, ValueFormatter> valueFormatters;
+
+    public void setValueFormatters(Map<Type, ValueFormatter> valueFormatters) {
+        this.valueFormatters = valueFormatters;
+    }
     
-    public enum Type {
-        USER, // a named user
-        GROUP, // a named group
-        PSEUDO // a pseudo user
-     }
-
-    /**
-     * Gets the name of the principal. Cannot be <code>null</code>.
-     * @return If the domain equals the principalManager's defaultDomain
-     * it returns the unqualified name, otherwise it returns the qualified name
-     */
-    public String getName();
-
-    /**
-     * Gets the fully qualified name of the principal. If domain is
-     * null, just the user name, otherwise 'user@domain'
-     * 
-     * @return the fully qualified name of the principal
-     */
-    public String getQualifiedName();
-    
-    /**
-     * Gets the unqualified name of the principal, stripped of domain
-     * 
-     * @return the unqualified name of the principal
-     */
-    public String getUnqualifiedName();
-
-    /**
-     * Gets the domain of the principal. May be <code>null</code>.
-     *
-     * @return the domain of the principal, or <code>null</code> if it
-     * has none
-     */
-    public String getDomain();
-    
-    public String getURL();
-    
-    public boolean isUser();
-
-    public Type getType();
-
-    public String getDescription();
-    
-    /**
-     * @return XXX: see the current implementation!
-     */
-    public String toString();
-    
-
+    public ValueFormatter getValueFormatter(Type type) {
+        return this.valueFormatters.get(type);
+    }
 }

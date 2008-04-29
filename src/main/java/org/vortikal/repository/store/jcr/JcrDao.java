@@ -38,7 +38,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -102,6 +101,7 @@ import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.util.repository.URIUtil;
@@ -111,6 +111,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private static final Log logger = LogFactory.getLog(JcrDao.class);
 
     protected Repository repository;
+    
+    private PrincipalFactory principalFactory;
     
     private org.springframework.core.io.Resource nodeTypesDefinition;
     
@@ -341,11 +343,11 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
                 Principal principal = null;
                 if (type == Principal.Type.GROUP) {
-                    principal = new Principal(name, Principal.Type.GROUP);
+                    principal = principalFactory.getPrincipal(name, Type.GROUP);
                 } else if (type == Principal.Type.PSEUDO) {
-                    principal = Principal.getPseudoPrincipal(name);
+                    principal = principalFactory.getPrincipal(name, Type.PSEUDO);
                 } else {
-                    principal = new Principal(name, Principal.Type.USER);
+                    principal = principalFactory.getPrincipal(name, Type.USER);
                 }
                 if (logger.isTraceEnabled()) logger.trace("** Adding to acl: " + action + " - " + name);
                 acl.addEntry(action, principal);
@@ -374,7 +376,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         
         if (logger.isTraceEnabled()) logger.trace("Building lock for '" + uuid + "': " + node.getProperty(JcrDaoConstants.VRTX_PREFIX + "owner").getString() + ", " + token);
         org.vortikal.repository.LockImpl vLock = new org.vortikal.repository.LockImpl(
-                token, new Principal(owner, Principal.Type.USER), ownerInfo, depth, timeOut);
+                token, principalFactory.getPrincipal(owner, Principal.Type.USER), ownerInfo, depth, timeOut);
 
         return vLock;
     }
@@ -1105,13 +1107,17 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
         Node aclNode = root.addNode(JcrDaoConstants.VRTX_ACL_NAME, JcrDaoConstants.VRTX_ACL_NAME);
         String pseudoType = Principal.Type.PSEUDO.name();
-        Node action = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + "read", JcrDaoConstants.VRTX_ACTION_NAME).addNode(JcrDaoConstants.VRTX_PREFIX + JcrPathUtil.escapeIllegalJcrChars(Principal.NAME_ALL), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
+        Node action = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + "read", JcrDaoConstants.VRTX_ACTION_NAME).addNode(JcrDaoConstants.VRTX_PREFIX + JcrPathUtil.escapeIllegalJcrChars(PrincipalFactory.NAME_ALL), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
         action.setProperty(JcrDaoConstants.VRTX_PRINCIPAL_TYPE_NAME, pseudoType);
-        action = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + "all", JcrDaoConstants.VRTX_ACTION_NAME).addNode(JcrDaoConstants.VRTX_PREFIX + JcrPathUtil.escapeIllegalJcrChars(Principal.NAME_OWNER), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
+        action = aclNode.addNode(JcrDaoConstants.VRTX_PREFIX + "all", JcrDaoConstants.VRTX_ACTION_NAME).addNode(JcrDaoConstants.VRTX_PREFIX + JcrPathUtil.escapeIllegalJcrChars(PrincipalFactory.NAME_OWNER), JcrDaoConstants.VRTX_PRINCIPAL_NAME);
         action.setProperty(JcrDaoConstants.VRTX_PRINCIPAL_TYPE_NAME, pseudoType);
 
         systemSession.save();
     }
 
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
 
 }

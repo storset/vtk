@@ -7,12 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.web.service.Assertion;
@@ -39,6 +40,8 @@ public abstract class AbstractAuthenticationHandler implements
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
+    private PrincipalFactory principalFactory;
+    
     /* Simple cache to allow for clients that don't send cookies */
     private SimpleCache<String, Principal> cache;
 
@@ -76,9 +79,8 @@ public abstract class AbstractAuthenticationHandler implements
         }
 
         Principal principal = null;
-
         try {
-            principal = new Principal(username, Principal.Type.USER);
+            principal = principalFactory.getPrincipal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -115,7 +117,7 @@ public abstract class AbstractAuthenticationHandler implements
         Principal principal = null;
 
         try {
-            principal = new Principal(username, Principal.Type.USER);
+            principal = principalFactory.getPrincipal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             throw new AuthenticationException("Invalid principal '" + username
                     + "'", e);
@@ -156,5 +158,9 @@ public abstract class AbstractAuthenticationHandler implements
         this.requestAssertions = requestAssertions;
     }
 
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
 
 }

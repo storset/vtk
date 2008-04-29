@@ -17,11 +17,14 @@
   </bean>
 
   <!-- Value factory -->
-  <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl"/>
+  <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
 
 
   <bean id="abstractPropDef" abstract="true">
     <property name="valueFactory" ref="valueFactory"/>
+    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
   </bean>
   
 </beans>

@@ -729,7 +729,6 @@
   <bean id="aboutResourceHandler" 
         class="org.vortikal.web.controller.properties.PropertyEditController"
         parent="requestLocalRepositoryAware">
-    <property name="principalManager" ref="principalManager" />
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="lastModifiedPropDef" />
@@ -774,6 +773,12 @@
     <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
     <property name="vocabularyChooserService" ref="vocabularyHelpService" />
     <property name="valueFactory" ref="valueFactory"/>
+    <property name="validator">
+      <bean class="org.vortikal.web.controller.properties.PropertyEditValidator">
+        <property name="valueFactory" ref="valueFactory" />
+        <property name="principalManager" ref="principalManager" />
+      </bean>
+    </property>
   </bean>
 
   <bean id="fileUploadHandler" 
@@ -876,6 +881,7 @@
     <property name="commandName" value="ownershipForm" />
     <property name="commandClass" 
               value="org.vortikal.web.controller.properties.OwnershipCommand" />
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <bean id="aclInheritanceHandler" 
@@ -894,8 +900,10 @@
     <property name="validator">
       <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
         <property name="principalManager" ref="principalManager" />
+        <property name="principalFactory" ref="principalFactory" />
       </bean>
     </property>
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
 

@@ -49,6 +49,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 
@@ -66,6 +67,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     private ResourceTypeTree resourceTypeTree;
 
+    private PrincipalFactory principalFactory;
     
     public void orderedPropertySetIteration(PropertySetHandler handler) 
         throws DataAccessException { 
@@ -75,7 +77,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
         ResourceIdCachingPropertySetRowHandler rowHandler = 
             new ResourceIdCachingPropertySetRowHandler(
-                handler, this.resourceTypeTree);
+                handler, this.resourceTypeTree, this.principalFactory);
 
         client.queryWithRowHandler(statementId, rowHandler);
 
@@ -90,7 +92,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         String statementId = getSqlMap("orderedPropertySetIterationWithStartUri");
 
         PropertySetRowHandler rowHandler = new PropertySetRowHandler(handler,
-                this.resourceTypeTree);
+                this.resourceTypeTree, this.principalFactory);
 
         Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -146,7 +148,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         String statement = getSqlMap("orderedPropertySetIterationForUris");
 
         PropertySetRowHandler rowHandler = new PropertySetRowHandler(handler,
-                this.resourceTypeTree);
+                this.resourceTypeTree, this.principalFactory);
 
         client.queryWithRowHandler(statement, sessionId, rowHandler);
 
@@ -370,6 +372,11 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

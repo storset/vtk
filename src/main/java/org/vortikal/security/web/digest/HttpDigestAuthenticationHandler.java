@@ -39,11 +39,13 @@ import org.apache.commons.logging.LogFactory;
 import org.safehaus.uuid.UUIDGenerator;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.Ordered;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.store.MD5PasswordStore;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -89,6 +91,9 @@ public class HttpDigestAuthenticationHandler
   implements AuthenticationHandler, AuthenticationChallenge, Ordered, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
+
+    private PrincipalFactory principalFactory;
+    
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
     private MD5PasswordStore principalStore = null;
     private Set recognizedDomains = null;
@@ -174,7 +179,7 @@ public class HttpDigestAuthenticationHandler
         Principal principal = null;
 
         try {
-            principal = new Principal(username, Principal.Type.USER);
+            principal = principalFactory.getPrincipal(username, Principal.Type.USER);
         } catch (InvalidPrincipalException e) {
             return false;
         }
@@ -362,7 +367,7 @@ public class HttpDigestAuthenticationHandler
         }
         
 
-        Principal principal = new Principal(username, Principal.Type.USER);
+        Principal principal = principalFactory.getPrincipal(username, Principal.Type.USER);
         if (principal == null) {
             throw new AuthenticationException(
                 "Unable to authenticate principal using HTTP/Digest for request"
@@ -522,6 +527,11 @@ public class HttpDigestAuthenticationHandler
             sb.append("opaque = ").append(this.opaque).append("]");
             return sb.toString();
         }
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

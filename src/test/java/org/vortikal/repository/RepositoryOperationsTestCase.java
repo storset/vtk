@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalImpl;
 import org.vortikal.util.io.StreamUtil;
 
 
@@ -42,7 +43,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
     public void testRetrieve() throws Exception {
         String uri = "/";
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         Resource res = getRepository().retrieve(token, uri, true);
         assertNotNull(res);
@@ -51,7 +52,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
     public void testCreateDocumentNoParent() throws Exception {
         String uri = "/non-existing-collection/create-document-test.txt";
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
         try {
@@ -64,7 +65,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
     public void testCreateDocument() throws Exception {
         String uri = "/create-document-test.txt";
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
         Resource res = getRepository().createDocument(token, uri);
@@ -81,7 +82,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
     public void testCreateCollectionNoParent() throws Exception {
         String uri = "/non-existing-collection/create-collection-test";
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
         try {
@@ -94,7 +95,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
 
     public void testCreateCollection() throws Exception {
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         String uri = "/create-collection-test";
         
@@ -107,7 +108,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
 
     public void testListChildren() throws Exception {
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         String uri = "/create-collection-test";
         int numChildren = 10;
@@ -134,7 +135,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         String childURI = "/parent/child.txt";
 
         Repository repo = getRepository();
-        Principal root = new Principal("root@localhost", Principal.Type.USER);
+        Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
 
         Resource parent = repo.createCollection(token, parentURI);

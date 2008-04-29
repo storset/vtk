@@ -36,15 +36,20 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 /**
  * Implementation of {@link ValueFactory}.
  */
 public class ValueFactoryImpl implements ValueFactory {
 
+    private PrincipalFactory principalFactory;
+    
     private static final String[] dateFormats = new String[] {        
         "dd.MM.yyyy HH:mm:ss",
         "dd.MM.yyyy HH:mm",
@@ -123,7 +128,7 @@ public class ValueFactoryImpl implements ValueFactory {
 
         case PRINCIPAL:
             try {
-                Principal principal = new Principal(stringValue, Principal.Type.USER);
+                Principal principal = principalFactory.getPrincipal(stringValue, Principal.Type.USER);
                 return new Value(principal);
             } catch (InvalidPrincipalException e) {
                 throw new ValueFormatException(e.getMessage(), e);
@@ -158,4 +163,9 @@ public class ValueFactoryImpl implements ValueFactory {
                 "Unable to parse date value for input string: '" + stringValue + "'");
     }
     
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
 }

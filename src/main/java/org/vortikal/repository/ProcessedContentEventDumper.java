@@ -40,6 +40,7 @@ import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
@@ -127,7 +128,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
             return;
         }
             
-        Principal all = Principal.ALL;
+        Principal all = PrincipalFactory.ALL;
         
         try {
             if (originalResource.isAuthorized(Privilege.READ_PROCESSED, all) &&

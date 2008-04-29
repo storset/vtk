@@ -50,12 +50,6 @@ public class PropertyEditValidator implements Validator {
     private PrincipalManager principalManager;
     
 
-    public PropertyEditValidator(PrincipalManager principalManager, ValueFactory valueFactory) {
-        this.principalManager = principalManager;
-        this.valueFactory = valueFactory;
-    }
-    
-
     public boolean supports(Class clazz) {
         return PropertyEditCommand.class.isAssignableFrom(clazz);
     }
@@ -134,9 +128,17 @@ public class PropertyEditValidator implements Validator {
         }
     }
 
+    
+    
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
+    }
+
+
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
 
 }

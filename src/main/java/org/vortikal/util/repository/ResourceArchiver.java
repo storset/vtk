@@ -63,9 +63,13 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.util.web.URLUtil;
 
 public class ResourceArchiver {
+
+    private PrincipalFactory principalFactory;
 
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
@@ -466,13 +470,13 @@ public class ResourceArchiver {
             char type = values.charAt(0);
             switch (type) {
             case 'p':
-                p = Principal.getPseudoPrincipal(principalName);
+                p = principalFactory.getPrincipal(principalName, Type.PSEUDO);
                 break;
             case 'u':
-                p = new Principal(principalName, Principal.Type.USER);
+                p = principalFactory.getPrincipal(principalName, Type.USER);
                 break;
             case 'g':
-                p = new Principal(principalName, Principal.Type.GROUP);
+                p = principalFactory.getPrincipal(principalName, Type.GROUP);
                 break;
             }
             if (p != null ) {
@@ -567,4 +571,10 @@ public class ResourceArchiver {
         }
         this.tempDir = tmp;
     }
+    
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
 }

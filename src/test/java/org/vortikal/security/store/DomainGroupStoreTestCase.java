@@ -33,6 +33,8 @@ package org.vortikal.security.store;
 import junit.framework.TestCase;
 
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalImpl;
 
 
 public class DomainGroupStoreTestCase extends TestCase {
@@ -40,12 +42,12 @@ public class DomainGroupStoreTestCase extends TestCase {
     private DomainGroupStore store = new DomainGroupStore();
 
     private Principal group; 
-    private Principal all = Principal.ALL;
+    private Principal all = PrincipalFactory.ALL;
 
     
     
     protected void setUp() throws Exception {
-        this.group = new Principal("alle@uio.no", Principal.Type.GROUP);
+        this.group = new PrincipalImpl("alle@uio.no", Principal.Type.GROUP);
 
         this.store.setKnownGroups(new Principal[] {this.group});
     }

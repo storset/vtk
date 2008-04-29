@@ -101,6 +101,7 @@
     <property name="requireSecureConnection" value="${httpBasicAuthenticationHandler.requireSecureConnection}" />
     <property name="challenge" ref="httpBasicAuthenticationChallenge" />
     <property name="principalStore" ref="localPrincipalStore"/>
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <bean id="httpDigestAuthenticationHandler" 
@@ -118,6 +119,7 @@
       </set>
     </property>
     <property name="principalStore" ref="localPrincipalStore" />
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <!--   <bean id="digestStateMap" class="org.vortikal.util.cache.SimpleCacheImpl">
@@ -190,19 +192,19 @@
 
   <!-- Special principals and tokens -->
 
-  <bean id="systemUsersGroup" class="org.vortikal.security.Principal">
+  <bean id="systemUsersGroup" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="system-users@localhost" />
     <constructor-arg value="GROUP" />
   </bean>
 
 
-  <bean id="uioDomainGroup" class="org.vortikal.security.Principal">
+  <bean id="uioDomainGroup" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="alle@uio.no" />
     <constructor-arg value="GROUP" />
   </bean>
 
 
-  <bean id="trustedPrincipal" class="org.vortikal.security.Principal">
+  <bean id="trustedPrincipal" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="trusteduser@localhost" />
     <constructor-arg value="USER" />
   </bean>
@@ -223,7 +225,7 @@
     </property>
   </bean>
 
-  <bean id="rootPrincipal" class="org.vortikal.security.Principal">
+  <bean id="rootPrincipal" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="root@localhost" />
     <constructor-arg value="USER" />
   </bean>
@@ -249,20 +251,21 @@
   <bean id="PRINCIPAL_ALL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.security.Principal.ALL" />
+              value="org.vortikal.security.PrincipalFactory.ALL" />
   </bean>
 
   <bean id="PRINCIPAL_AUTHENTICATED"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.security.Principal.AUTHENTICATED" />
+              value="org.vortikal.security.PrincipalFactory.AUTHENTICATED" />
   </bean>
 
   <bean id="PRINCIPAL_OWNER"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
-              value="org.vortikal.security.Principal.OWNER" />
+              value="org.vortikal.security.PrincipalFactory.OWNER" />
   </bean>
 
+  <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
 
 </beans>

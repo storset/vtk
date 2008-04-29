@@ -35,13 +35,14 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 
-/**
- */
 public class ACLEditCommandValidator implements Validator {
 
     private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
+
     
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -72,7 +73,7 @@ public class ACLEditCommandValidator implements Validator {
                     "You must use lower case characters");
                 } else {
                     try { 
-                        Principal principal = new Principal(userName, Principal.Type.USER);	
+                        Principal principal = principalFactory.getPrincipal(userName, Principal.Type.USER);	
 
                     if (!this.principalManager.validatePrincipal(principal))
                         errors.rejectValue("userNames", "permissions.user.wrong.value", 
@@ -97,7 +98,7 @@ public class ACLEditCommandValidator implements Validator {
                                    "You must type a value");
             Principal group = null; 
             try {
-                group = new Principal(groupName, Principal.Type.GROUP);
+                group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
             } catch (InvalidPrincipalException e) {
                 errors.rejectValue("groupNames", "permissions.group.illegal.value",
                         new Object[] {groupName}, "String '" + groupName
@@ -114,6 +115,11 @@ public class ACLEditCommandValidator implements Validator {
 
     @Required public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

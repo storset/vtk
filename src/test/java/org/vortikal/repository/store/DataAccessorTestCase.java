@@ -42,6 +42,7 @@ import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalImpl;
 
 
 public class DataAccessorTestCase extends AbstractRepositoryTestCase {
@@ -68,7 +69,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     public void testChangeAclInheritance() throws Exception {
         RepositoryResourceHelper resourceHelper = getRepositoryResourceHelper();
         DataAccessor dao = getDataAccessor();
-        Principal rootPrincipal = new Principal("root@localhost", Principal.Type.USER);
+        Principal rootPrincipal = new PrincipalImpl("root@localhost", Principal.Type.USER);
 
         ResourceImpl root = dao.load("/");
 
@@ -126,7 +127,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
     public void testSetLiveProperty() throws Exception {
         RepositoryResourceHelper resourceHelper = getRepositoryResourceHelper();
         DataAccessor dao = getDataAccessor();
-        Principal rootPrincipal = new Principal("root@localhost", Principal.Type.USER);
+        Principal rootPrincipal = new PrincipalImpl("root@localhost", Principal.Type.USER);
 
         ResourceImpl root = dao.load("/");
 

@@ -76,7 +76,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private Vocabulary<Value> vocabulary;
 
     private ValueFactory valueFactory;
-
+    private ValueFormatterRegistry valueFormatterRegistry;
+    
     private ContentType contentType;
 
     private TypeLocalizationProvider typeLocalizationProvider = null;
@@ -178,7 +179,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
             if (this.vocabulary != null && this.vocabulary.getValueFormatter() != null) {
                 this.valueFormatter = this.vocabulary.getValueFormatter();
             } else {
-                this.valueFormatter = this.type.getDefaultFormatter();
+                this.valueFormatter = this.valueFormatterRegistry.getValueFormatter(this.type);
             }
         }
     }
@@ -351,6 +352,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
+    }
+
+    @Required public void setValueFormatterRegistry(
+            ValueFormatterRegistry valueFormatterRegistry) {
+        this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
 }

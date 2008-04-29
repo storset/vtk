@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 
 public class AclImpl implements Acl {
@@ -72,7 +73,7 @@ public class AclImpl implements Acl {
 
     public void clear() {
         this.actionSets = new HashMap<RepositoryAction, Set<Principal>>();
-        addEntry(Privilege.ALL, Principal.OWNER);
+        addEntry(Privilege.ALL, PrincipalFactory.OWNER);
     }
     
 
@@ -83,7 +84,7 @@ public class AclImpl implements Acl {
         if (p == null)
             throw new IllegalArgumentException("Null principal");
             
-        Principal all = Principal.ALL;
+        Principal all = PrincipalFactory.ALL;
         
         if ((Privilege.ALL.equals(action) || Privilege.WRITE.equals(action)) 
                 && all.equals(p))
@@ -110,7 +111,7 @@ public class AclImpl implements Acl {
         if (principal == null)
             throw new IllegalArgumentException("Null principal");
             
-        if (Principal.OWNER.equals(principal) &&
+        if (PrincipalFactory.OWNER.equals(principal) &&
                 Privilege.ALL.equals(action))
                 throw new IllegalArgumentException("Not allowed to remove acl entry");
         

@@ -44,25 +44,15 @@ public final class PropertyType {
      * Property data types
      */ 
     public enum Type {
-        STRING (new StringValueFormatter()),
-        HTML (new HtmlValueFormatter()),
-        IMAGE_REF (new StringValueFormatter()),
-        INT (new IntValueFormatter()), 
-        LONG (new LongValueFormatter()),
-        TIMESTAMP (new DateValueFormatter()), 
-        DATE (new DateValueFormatter(true)), 
-        BOOLEAN (new BooleanValueFormatter()), 
-        PRINCIPAL (new PrincipalValueFormatter());
-
-        private ValueFormatter defaultFormatter;
-        
-        private Type(ValueFormatter defaultFormatter) {
-            this.defaultFormatter = defaultFormatter;
-        }
-
-        public ValueFormatter getDefaultFormatter() {
-            return this.defaultFormatter;
-        }
+        STRING,
+        HTML,
+        IMAGE_REF,
+        INT, 
+        LONG,
+        TIMESTAMP, 
+        DATE, 
+        BOOLEAN, 
+        PRINCIPAL;
     }
     
     

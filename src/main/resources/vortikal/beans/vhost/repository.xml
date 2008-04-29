@@ -103,6 +103,7 @@
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
   
   <bean id="repository.fsContentStore" 
@@ -115,6 +116,7 @@
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="principalFactory" ref="principalFactory" />
     
     <!-- How many query hits to process for authorization in one batch -->
     <property name="queryAuthorizationBatchSize" value="1000"/>

@@ -23,7 +23,8 @@
     <lookup-method name="createResourceImpl" bean="resourceImpl"/>
     <property name="nodeTypesDefinition" value="classpath:org/vortikal/repository/store/jcr/resource-types.cnd" />
     <property name="repository" ref="jcr.repository" />
- </bean>
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
 
  <bean id="jcr.repository" class="org.vortikal.repository.store.jcr.JackrabbitRepositoryFactoryBean">
    <property name="config" value="${jcr.repoConfig}" />

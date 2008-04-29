@@ -32,10 +32,14 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 public class PrincipalValueFormatter implements ValueFormatter {
+
+    private PrincipalFactory principalFactory;
 
     public String valueToString(Value value, String format, Locale locale)
             throws IllegalValueTypeException {
@@ -48,7 +52,13 @@ public class PrincipalValueFormatter implements ValueFormatter {
     }
 
     public Value stringToValue(String string, String format, Locale locale) {
-        return new Value(new Principal(string, Principal.Type.USER));
+        return new Value(principalFactory.getPrincipal(string, Principal.Type.USER));
     }
 
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
+    
 }

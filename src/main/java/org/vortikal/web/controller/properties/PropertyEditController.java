@@ -60,8 +60,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
-import org.vortikal.repository.resourcetype.ValueFactoryImpl;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -91,7 +89,6 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * <p>Configurable JavaBean properties:
  * <ul>
  *   <li><code>repository</code> - the content {@link Repository repository}
- *   <li><code>principalManager</code> - a valid {@link PrincipalManager}
  *   <li><code>propertyTypeDefinitions</code> - the list of {@link
  *   PropertyTypeDefinition} objects to display and/or edit
  *   <li><code>valueFactory</code> - a {@link ValueFactoryImpl} for
@@ -139,10 +136,6 @@ public class PropertyEditController extends SimpleFormController
     
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    @Required public void setPrincipalManager(PrincipalManager principalManager) {
-        setValidator(new PropertyEditValidator(principalManager, this.valueFactory));
     }
 
     @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {

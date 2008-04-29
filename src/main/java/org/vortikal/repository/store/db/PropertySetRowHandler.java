@@ -47,6 +47,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.event.RowHandler;
 
@@ -69,11 +70,15 @@ class PropertySetRowHandler implements RowHandler {
     protected List<Map> rowValueBuffer = new ArrayList<Map>();
 
     private final ResourceTypeTree resourceTypeTree;
+
+    private final PrincipalFactory principalFactory;
     
     public PropertySetRowHandler(PropertySetHandler clientHandler,
-                                 ResourceTypeTree resourceTypeTree) {
+                                 ResourceTypeTree resourceTypeTree,
+                                 PrincipalFactory principalFactory) {
         this.clientHandler = clientHandler;
         this.resourceTypeTree = resourceTypeTree;
+        this.principalFactory = principalFactory;
       
     }
     
@@ -144,7 +149,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
         
         // createdBy
-        Principal createdBy = new Principal((String)row.get("createdBy"), Principal.Type.USER);
+        Principal createdBy = principalFactory.getPrincipal((String)row.get("createdBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CREATEDBY_PROP_NAME);
         prop = propDef.createProperty(createdBy);
@@ -157,7 +162,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // owner
-        Principal principal = new Principal((String)row.get("owner"), Principal.Type.USER);
+        Principal principal = principalFactory.getPrincipal((String)row.get("owner"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.OWNER_PROP_NAME);
         prop = propDef.createProperty(principal);
@@ -215,7 +220,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // modifiedBy
-        principal = new Principal((String)row.get("modifiedBy"), Principal.Type.USER);
+        principal = principalFactory.getPrincipal((String)row.get("modifiedBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
         prop = propDef.createProperty(principal);
@@ -228,7 +233,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // contentModifiedBy
-        principal = new Principal((String)row.get("contentModifiedBy"), Principal.Type.USER);
+        principal = principalFactory.getPrincipal((String)row.get("contentModifiedBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
         prop = propDef.createProperty(principal);
@@ -241,7 +246,7 @@ class PropertySetRowHandler implements RowHandler {
         propertySet.addProperty(prop);
 
         // propertiesModifiedBy
-        principal = new Principal((String)row.get("propertiesModifiedBy"), Principal.Type.USER);
+        principal = principalFactory.getPrincipal((String)row.get("propertiesModifiedBy"), Principal.Type.USER);
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                 Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
         prop = propDef.createProperty(principal);

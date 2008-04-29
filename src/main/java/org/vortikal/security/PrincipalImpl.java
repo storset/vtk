@@ -30,8 +30,6 @@
  */
 package org.vortikal.security;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class PrincipalImpl implements Principal {
 
@@ -42,12 +40,6 @@ public class PrincipalImpl implements Principal {
     private static String DEFAULT_DOMAIN = "uio.no";
     private static String DEFAULT_GROUP_DOMAIN = "netgroups.uio.no";
 
-    private static Map<String, String> DOMAIN_URL_MAP = new HashMap<String, String>();
-
-    static {
-        DOMAIN_URL_MAP.put("uio.no", "http://www.uio.no/sok?person=%u");
-    }
-    
     private String name;
     private String qualifiedName;
     private String domain;
@@ -112,13 +104,6 @@ public class PrincipalImpl implements Principal {
              * have a default domain, we append it: */
             domain = defDomain;
             qualifiedName = name + DOMAIN_DELIMITER + domain;
-        }
-
-        if (domain != null && DOMAIN_URL_MAP != null) {
-            String pattern = DOMAIN_URL_MAP.get(domain);
-            if (pattern != null) {
-                this.url = pattern.replaceAll("%u", name);
-            }
         }
 
     }
@@ -202,11 +187,13 @@ public class PrincipalImpl implements Principal {
         this.type = type;
     }
 
-    // XXX: buggy, if comparing different types...
     public int compareTo(Principal other) {
         if (other == null) {
             throw new IllegalArgumentException(
                 "Cannot compare to a null value");
+        } else if (this.type != other.getType()) {
+            throw new IllegalArgumentException(
+                    "Connot compare to a different principal type");
         }
         return this.qualifiedName.compareTo(other.getQualifiedName());
     }
@@ -222,5 +209,7 @@ public class PrincipalImpl implements Principal {
         this.description = description;
     }
 
-    
+    public void setURL(String url) {
+        this.url = url;
+    }
 }

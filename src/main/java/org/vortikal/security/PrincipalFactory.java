@@ -30,10 +30,15 @@
  */
 package org.vortikal.security;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.security.Principal.Type;
 
 public class PrincipalFactory {
 
+    private static final Log LOG = LogFactory.getLog(PrincipalFactory.class);
+    
     public static final String NAME_AUTHENTICATED = "pseudo:authenticated";
     public static final String NAME_ALL = "pseudo:all";
     public static final String NAME_OWNER = "pseudo:owner";
@@ -42,6 +47,8 @@ public class PrincipalFactory {
     public static Principal ALL =  new PrincipalImpl(NAME_ALL);
     public static Principal AUTHENTICATED =  new PrincipalImpl(NAME_AUTHENTICATED);
     
+    // This dao will only be used if configured.
+    private PrincipalMetadataDAO principalMetadataDao;
 
     public Principal getPrincipal(String id, Type type) throws InvalidPrincipalException {
 
@@ -64,8 +71,26 @@ public class PrincipalFactory {
 
         PrincipalImpl principal = new PrincipalImpl(id, type);
         if (principal.getType() == Type.USER) {
-            principal.setDescription("Dette er et navn");
+            if (this.principalMetadataDao != null) {
+                // Set description (full name)
+                try {
+                    // DAO may return null as description, that's ok.
+                    String desc = this.principalMetadataDao.getDescription(
+                                                                principal.getName());
+                    principal.setDescription(desc);
+                } catch (Exception e) {
+                    LOG.warn(
+                      "Got a RepositoryException while fetching principal description", e);
+                }
+                
+                // Set URL
+                // DAO may return null as URL, that's ok.
+                String url = this.principalMetadataDao.getUrl(principal.getName(), 
+                                                              principal.getDomain());
+                principal.setURL(url);
+            }
         }
+        
         return principal;
     }
 
@@ -77,5 +102,8 @@ public class PrincipalFactory {
                 + name + "' doesn't exist");
     }
     
+    public void setPrincipalMetadataDao(PrincipalMetadataDAO principalMetadataDao) {
+        this.principalMetadataDao = principalMetadataDao;
+    }
 
 }

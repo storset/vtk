@@ -657,6 +657,14 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- LDAP SDK (Netscape) -->
+    <dependency>
+      <groupId>ldapjdk</groupId>
+      <artifactId>ldapjdk</artifactId>
+      <version>4.1</version>
+      <scope>compile</scope>
+    </dependency>
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>

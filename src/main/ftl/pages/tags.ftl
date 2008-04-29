@@ -22,42 +22,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>${title}</title>
-  
-  <style type="text/css">
-    ul.tagged-resources { 
-      margin: 0px;
-      padding: 0px 0px 10px 0px;
-      display: block;
-    }
-    
-    ul.tagged-resources li {
-      list-style: none;
-      clear: both;
-      margin: 0px;
-      padding: 10px 0px 5px 0px;
-    }
-    
-    ul.tagged-resources li p {
-      margin: 0px;
-      padding: 0px;
-    }
-    
-    ul.tagged-resources img {
-      float: left;
-      padding: 5px 10px 5px 0px;
-      border: none;
-    }
-    
-    ul.tagged-resources div.title {
-      margin: 0px;
-      padding: 5px 0px 5px 0px;
-      font-size: 125%;
-    }
-    
-    .italic {
-      font-style: italic;
-    }
-  </style>
+
+  <#if cssURLs?exists>
+    <#list cssURLs as cssUrl>
+       <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
+    </#list>
+  </#if>
+
 </head>
 
 <body>
@@ -68,34 +39,37 @@
   </#if>
   
   <#if resources?exists && resources?has_content>
-	  <ul class="tagged-resources">
+	  <div class="tagged-resources">
 	    <#list resources as resource>
 	      <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
 	      <#assign introProp = resource.getPropertyByPrefix("","introduction")?default("") />
 	      <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
 	        
-	      <li>
-            <#if introImageProp != "">
-              <a href="${urls[resource_index]?html}">
-                <img class="introduction-image" 
-                     width="100" height="100"
-                     alt="IMG for ${title}"
-                     src="${introImageProp.formattedValue}" />
-              </a>
-            </#if>
+	      <div class="result">
+              <#if introImageProp != "">
+                <a href="${urls[resource_index]?html}">
+                  <img class="introduction-image" 
+                       alt="IMG for ${title}"
+                       src="${introImageProp.formattedValue}" />
+                </a>
+              </#if>
           
-            <div class="title">
-              <a href="${urls[resource_index]?html}">
-                ${resourceTitle?html}
-              </a>
-            </div>
+	      <h2 class="title">
+                <a href="${urls[resource_index]?html}">
+                  ${resourceTitle?html}
+                </a>
+              </h2>
           
-            <#if introProp != "">
-              ${introProp.formattedValue}
-            </#if>
-          </li>
+              <#if introProp != "">
+	        <div class="description">
+                  ${introProp.formattedValue}
+                </div>
+              </#if>
+
+              </div> <!-- end class result -->
+
 	    </#list>
-	  </ul>
+	  </div>
 	<#else>
       <p>
         ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag}</span>.

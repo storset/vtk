@@ -140,6 +140,7 @@
         class="org.vortikal.repository.store.db.SqlMapCommentDAO">
     <property name="sqlMapClient" ref="repository.sqlMapClient"/>
     <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <!--

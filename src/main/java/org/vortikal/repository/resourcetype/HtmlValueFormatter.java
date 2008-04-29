@@ -30,15 +30,12 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlText;
+import org.vortikal.text.htmlparser.HtmlFlattener;
 
 /**
  * This value formatter represents HTML value types. 
@@ -50,17 +47,15 @@ public class HtmlValueFormatter implements ValueFormatter {
     private static final String ESCAPED_FORMAT = "escaped";
     private static final String FLATTENED_FORMAT = "flattened";
 
-    private HtmlPageParser htmlParser;
-    private Map<String, String> htmlEntityMap = new HashMap<String, String>();
-
+    private HtmlFlattener htmlFlattener;
     
     public String valueToString(Value value, String format, Locale locale)
             throws IllegalValueTypeException {
         String html = value.toString();
         if (ESCAPED_FORMAT.equals(format)) {
             return escape(html);
-        } else if (FLATTENED_FORMAT.equals(format) && this.htmlParser != null) {
-            return flatten(html);
+        } else if (FLATTENED_FORMAT.equals(format) && this.htmlFlattener != null) {
+            return this.htmlFlattener.flatten(html).toString();
         }
         return html;
     }
@@ -107,87 +102,9 @@ public class HtmlValueFormatter implements ValueFormatter {
         return html;
     }
 
-
-
-
-
-    private String flatten(String html) {
-        try {
-            StringBuilder sb = new StringBuilder();
-            HtmlFragment fragment = this.htmlParser.parseFragment(html);
-            for (HtmlContent c : fragment.getContent()) {
-                sb.append(flatten(c));
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String flatten(HtmlContent c) {
-        StringBuilder sb = new StringBuilder();
-        if (c instanceof HtmlElement) {
-            HtmlElement htmlElement = (HtmlElement) c;
-            for (HtmlContent child : htmlElement.getChildNodes()) {
-                sb.append(flatten(child));
-            }
-        } else if (c instanceof HtmlText) {
-            String content = c.getContent();
-            sb.append(processHtmlEntities(content));
-        }
-        return sb.toString();
-    }
     
-    private String processHtmlEntities(String content) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < content.length(); i++) {
-            char ch = content.charAt(i);
-            if (ch == '&') {
-                int j = i + 1;
-
-                String entity = null;
-                while (j < content.length()) {
-                    boolean validChar = validEntityCharAtIndex(content, j);
-                    if (!validChar && content.charAt(j) == ';' && j > i + 1) {
-                        entity = content.substring(i + 1, j);
-                        i = j;
-                        break;
-                    } else if (!validChar) {
-                        break;
-                    }
-                    j++;
-                }
-                if (entity != null) {
-                    if (this.htmlEntityMap.containsKey(entity)) {
-                        result.append(this.htmlEntityMap.get(entity));
-                    } else {
-                        result.append("&").append(entity).append(";");
-                    }
-                } 
-            } else {
-                result.append(ch);
-            }
-        }
-        return result.toString();
+    public void setHtmlFlattener(HtmlFlattener htmlFlattener) {
+        this.htmlFlattener = htmlFlattener;
     }
-
-    
-    private boolean validEntityCharAtIndex(String content, int i) {
-        if (i >= content.length()) return false;
-        char c = content.charAt(i);
-        return i < content.length() && c != ';' 
-            && (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c));
-    }
-
-    public void setHtmlParser(HtmlPageParser htmlParser) {
-        this.htmlParser = htmlParser;
-    }
-
-    public void setHtmlEntityMap(Map<String, String> htmlEntityMap) {
-        this.htmlEntityMap = htmlEntityMap;
-    }
-    
-
-
 
 }

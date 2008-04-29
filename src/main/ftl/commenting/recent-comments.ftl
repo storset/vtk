@@ -24,7 +24,7 @@
           <a href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
             ${resourceMap[comment.URI].title?html}:
           </a>
-          <@vrtx.html value=comment.content format='flattened' />
+          ${comment.content}
         </li>
       </ul>
     </#list>

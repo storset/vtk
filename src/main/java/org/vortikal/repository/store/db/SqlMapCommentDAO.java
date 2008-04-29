@@ -31,15 +31,26 @@
 package org.vortikal.repository.store.db;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.store.CommentDAO;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements CommentDAO {
+
+    private PrincipalFactory principalFactory;
+    
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
 
     public List<Comment> listCommentsByResource(Resource resource,
             boolean deep, int max) throws RuntimeException {
@@ -57,8 +68,17 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         List theComments =
             getSqlMapClientTemplate().queryForList(sqlMap, parameters);
         for (Object o: theComments) {
-            Comment comment = (Comment) o;
-            comments.add(comment);
+            Map commentMap = (Map) o;
+            Comment c = new Comment();
+            c.setID(commentMap.get("ID").toString());
+            c.setURI((String) commentMap.get("URI"));
+            c.setTime((Date) commentMap.get("time"));
+            Principal author = this.principalFactory.getPrincipal((String) commentMap.get("author"), Principal.Type.USER);
+            c.setAuthor(author);
+            c.setContent((String) commentMap.get("content"));
+            // XXX: title, approved
+
+            comments.add(c);
         }
         return comments;
     }

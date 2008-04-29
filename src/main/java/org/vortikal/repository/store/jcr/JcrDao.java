@@ -960,7 +960,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     }
 
     private void populateCommentNode(Node commentNode, Comment comment) throws RepositoryException {
-        String author = comment.getAuthor();
+        String author = comment.getAuthor().getQualifiedName();
         String content = comment.getContent();
         Date time = comment.getTime();
         String title = comment.getTitle();
@@ -981,7 +981,8 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
     private Comment nodeToComment(Node node) throws RepositoryException {
         Comment c = new Comment();
         c.setID(node.getName());
-        c.setAuthor(node.getProperty(JcrDaoConstants.VRTX_COMMENT_AUTHOR).getString());
+        Principal author = this.principalFactory.getPrincipal(node.getProperty(JcrDaoConstants.VRTX_COMMENT_AUTHOR).getString(), Principal.Type.USER);
+        c.setAuthor(author);
         if (node.hasProperty(JcrDaoConstants.VRTX_COMMENT_TITLE)) {
             c.setTitle(node.getProperty(JcrDaoConstants.VRTX_COMMENT_TITLE).getString());
         }

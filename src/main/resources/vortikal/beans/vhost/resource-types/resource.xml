@@ -57,9 +57,13 @@
     <property name="valueFormatter" ref="htmlFormatter" />
   </bean>
 
-  <bean id="htmlFormatter" class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
+  <bean id="htmlFlattener" class="org.vortikal.text.htmlparser.HtmlFlattener">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlEntityMap" ref="htmlEntityMap" />
+  </bean>
+
+  <bean id="htmlFormatter" class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
+    <property name="htmlFlattener" ref="htmlFlattener" />
   </bean>
 
   <bean id="htmlEntityMap" class="org.springframework.beans.factory.config.MapFactoryBean">

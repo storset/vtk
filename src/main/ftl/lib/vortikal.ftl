@@ -151,20 +151,16 @@
 <#--
  * html
  *
- * Get a formatted string representation from a HTML string.
- * Example: <@vrtx.html value='<div>foo</div>' format='flattened' /> (produces 'foo')
+ * Flattens an HTML string.
+ * Example: <@vrtx.flattenHtml value='<div>foo</div>' /> (produces 'foo')
  *
  * @param value the HTML string
- * @param format a named format. See org.vortikal.repository.resourcetype.ValueFormatter
  *
 -->
-<#macro html value format>
+<#macro flattenHtml value>
   <#compress>
-    <#if VRTX_HTML_VALUE_FORMATTER?exists>
-      <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-      <#local val = constructor("org.vortikal.repository.resourcetype.Value", value) />
-      <#local locale = springMacroRequestContext.getLocale() />
-      ${VRTX_HTML_VALUE_FORMATTER.valueToString(val, format, locale)}
+    <#if VRTX_HTML_FLATTENER?exists>
+      ${VRTX_HTML_FLATTENER.flatten(value)}
     <#else>
       Undefined
     </#if>

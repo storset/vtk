@@ -87,7 +87,10 @@
     <property name="configLocation"
               value="classpath:/org/vortikal/repository/store/db/ibatis/${sqlDialect}-sql-map-config.xml"/>
     <property name="dataSource" ref="repository.dataSource"/>
+    <property name="lobHandler" ref="repository.lobHandler" />
   </bean>
+
+  <bean id="repository.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
 
   <!-- Override iBATIS SQL map statement names in this map (should
        generally not be necessary): -->

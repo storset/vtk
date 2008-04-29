@@ -613,10 +613,12 @@
   <resultMap id="Comment" class="java.util.HashMap">
     <result property="ID" column="ID" />
     <result property="URI" column="URI"/>
-    <result property="time" column="time"/>
+    <result property="time" column="time" jdbcType="TIMESTAMP" javaType="java.sql.Date" />
     <result property="author" column="author"/>
     <result property="title" column="title"/>
-    <result property="content" column="content" />
+
+    <result property="content" column="content" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler" />
+    <!--result property="content" column="content" jdbcType="CLOB" javaType="java.lang.String" /-->
     <result property="approved" column="approved"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>

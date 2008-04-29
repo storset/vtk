@@ -39,6 +39,8 @@ import netscape.ldap.LDAPConnection;
 import netscape.ldap.LDAPEntry;
 import netscape.ldap.LDAPException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.util.cache.SimpleCache;
@@ -52,6 +54,8 @@ import org.vortikal.util.cache.SimpleCache;
  *
  */
 public class LDAPPrincipalMetadataDAO implements PrincipalMetadataDAO {
+    
+    private static final Log LOG = LogFactory.getLog(LDAPPrincipalMetadataDAO.class);
     
     private LDAPConnectionManager ldapConnectionManager;
     
@@ -104,8 +108,14 @@ public class LDAPPrincipalMetadataDAO implements PrincipalMetadataDAO {
             
             return commonName;
         } catch (LDAPException e) {
-            throw new RepositoryLDAPException(
+            if (e.getLDAPResultCode() == LDAPException.NO_SUCH_OBJECT) {
+                // User not found, don't through an exception but log a warning.
+                LOG.warn("Principal with id '" + uid + "' not found in LDAP.");
+                return null;
+            } else {
+                throw new RepositoryLDAPException(
                     "Got an LDAP exception while fetching principal description: " + e.getMessage(), e);
+            }
         }
     }
     

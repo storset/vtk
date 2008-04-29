@@ -109,7 +109,7 @@ public class LDAPPrincipalMetadataDAO implements PrincipalMetadataDAO {
             return commonName;
         } catch (LDAPException e) {
             if (e.getLDAPResultCode() == LDAPException.NO_SUCH_OBJECT) {
-                // User not found, don't through an exception but log a warning.
+                // User not found, don't throw an exception but log a warning.
                 LOG.warn("Principal with id '" + uid + "' not found in LDAP.");
                 return null;
             } else {

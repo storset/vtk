@@ -192,15 +192,14 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
         private long sleepSeconds;
         private boolean alive = true;
     
-
         public CleanupThread(long sleepSeconds) {
             this.sleepSeconds = sleepSeconds;
+            super.setDaemon(true);
         }
 
         public void run() {
 
             while (this.alive) {
-
                 try {
 
                     sleep(1000 * this.sleepSeconds);
@@ -213,6 +212,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
                     logger.warn("Caught exception in cleanup thread", t);
                 }
             }
+            
         }
     }
     

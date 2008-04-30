@@ -43,22 +43,31 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.WildcardPropertySelect;
+import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.UriOperator;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 public class TagsController implements Controller {
 
+    private Repository repository;
     private Searcher searcher;
     private String viewName;
     private PropertyTypeDefinition propDef;
     
+    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
@@ -73,20 +82,36 @@ public class TagsController implements Controller {
         }
         
         Query query = new PropertyTermQuery(this.propDef, tag, TermOperator.EQ);
+
+        Resource scopedResource = null;
+        String scope = request.getParameter("scope");
+        if (scope != null && !scope.trim().equals("")) {
+            if (".".equals(scope)) {
+                scope = RequestContext.getRequestContext().getCurrentCollection();
+            }
+            if (scope.startsWith("/")) {
+                scopedResource = this.repository.retrieve(token, scope, true);
+
+                AndQuery andQuery = new AndQuery(); 
+                andQuery.add(query);
+                andQuery.add(new UriPrefixQuery(scope));
+                query = andQuery;
+            }
+        }
+        
         search.setQuery(query);
         search.setPropertySelect(WildcardPropertySelect.WILDCARD_PROPERTY_SELECT);
         
         ResultSet rs = searcher.execute(token, search);
 
-        
-
         model.put("tag", tag);
-
+        model.put("scope", scopedResource);
+        
         List<String> urls = new ArrayList<String>();
         model.put("urls", urls);
         List<PropertySet> resources = new ArrayList<PropertySet>();
         model.put("resources", resources);
-
+        
         Iterator<PropertySet> iterator = rs.iterator();
         while (iterator.hasNext()) {
             PropertySet next = iterator.next();
@@ -107,6 +132,10 @@ public class TagsController implements Controller {
 
     @Required public void setPropDef(PropertyTypeDefinition propDef) {
         this.propDef = propDef;
+    }
+
+    @Required public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

@@ -186,7 +186,12 @@ public class PropertyEditController extends SimpleFormController
 
         Property property = resource.getProperty(definition);
         if (property != null) {
-            value = property.getFormattedValue(null, null);
+            PropertyType.Type t = property.getDefinition().getType(); 
+            if (t == PropertyType.Type.DATE || t == PropertyType.Type.TIMESTAMP) {
+                value = property.getFormattedValue(this.dateFormat, null);
+            } else {
+                value = property.getFormattedValue(null, null);
+            }
         }
 
         Map<String, String> urlParameters = new HashMap<String, String>();

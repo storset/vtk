@@ -268,34 +268,7 @@
 
 
   <!-- Principal factory and related beans -->
-  <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory">
-    <property name="principalMetadataDao" ref="principalMetadataDao"/>
-  </bean>
+  <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
 
-  <!-- DAO for fetching some principal-related metadata -->  
-  <bean id="principalMetadataDao" class="org.vortikal.repository.store.ldap.LDAPPrincipalMetadataDAO">
-    <!-- LDAP Connection manager -->
-    <property name="ldapConnectionManager">
-        <bean class="org.vortikal.repository.store.ldap.LDAPConnectionManager">
-            <property name="host" value="ldap.uio.no"/>
-        </bean>
-    </property>
-    
-    <!-- Add caching of description to avoid entering LDAP code paths every time
-        a principal instance is created. -->
-    <property name="descriptionCache">
-        <bean class="org.vortikal.util.cache.SimpleCacheImpl">
-            <property name="refreshTimestampOnGet" value="false"/>
-            <property name="timeoutSeconds" value="300"/>
-        </bean>
-    </property>
-    
-    <!-- Map URL patterns to principal domains -->
-    <property name="domainUrlMap">
-      <map>
-        <entry key="uio.no" value="http://www.uio.no/sok?person=%u"/>
-      </map>
-    </property>
-  </bean>
 
 </beans>

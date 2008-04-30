@@ -657,7 +657,7 @@
     insert into vortex_comment 
       (id, resource_id, author, time, title, content, approved)
     select <include refid="nextVortexCommentId" />, r.resource_id, 
-           #author#, #time#, #title#, #content#,
+           #author.qualifiedName#, #time#, #title#, #content#,
            #approved,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#
     from vortex_resource r where r.uri = #URI#
   </insert>

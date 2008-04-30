@@ -20,7 +20,8 @@
   </bean>
 
   <bean name="tags.tagsHandler"
-        class="org.vortikal.web.controller.TagsController">
+        class="org.vortikal.web.controller.TagsController"
+        parent="requestLocalRepositoryAware">
     <property name="viewName" value="tags.tags" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="propDef" ref="keywordsPropDef" />

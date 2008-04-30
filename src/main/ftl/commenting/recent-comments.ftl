@@ -7,30 +7,32 @@
   <head>
     <#assign title>
       <#compress>
-        <@vrtx.msg code='commenting.recentComments'
-                   args=[resource.title] default='Recent comments' />
+        <@vrtx.msg code='commenting.comments'
+                   args=[resource.title] default='Comments' />
       </#compress>
     </#assign>
     <link type="application/atom+xml" rel="alternate" href="${feedURL?html}" title="${title?html}" />
+    <#if cssURLs?exists>
+      <#list cssURLs as cssUrl>
+        <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
+      </#list>
+    </#if>
     <title>${title?html}</title>
   </head>
   <body>
     <h1>${title?html}</h1>
+    <ul class="recent-comments">
     <#list comments as comment>
-      <ul>
-        <li>
-          <#if comment.author.URL?exists>
-            <a href="${comment.author.URL?html}">${comment.author.description?html}</a>
-          <#else>
-            ${comment.author.description?html}
-          </#if>
-          <@vrtx.date value=comment.time format='long' />
+        <li><h2>
           <a href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
-            ${resourceMap[comment.URI].title?html}:
-          </a>
-          ${comment.content}
+            ${comment.author.description?html}
+	    <@vrtx.msg code="commenting.comments.on" default="on" />
+            ${resourceMap[comment.URI].title?html}
+          </a></h2>
+          <div class="comment">${comment.content}</div>
+          <span class="pubdate"><@vrtx.date value=comment.time format='long' /></span>
         </li>
-      </ul>
     </#list>
+    </ul>
   </body>
 </html>

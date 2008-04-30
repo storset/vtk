@@ -257,6 +257,11 @@
         <property name="resourceCommentsFeedService" ref="commenting.feedService" />
       </bean>    
     </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs"><list><value>${cssBaseURL}/recent-comments.css</value></list></entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="commenting.recentCommentsComponentView" parent="freemarkerView">

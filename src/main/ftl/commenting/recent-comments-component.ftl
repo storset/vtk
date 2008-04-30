@@ -1,9 +1,9 @@
 <#ftl strip_whitespace=true />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<div class="vrtx-feed">
+<div class="vrtx-recent-comments">
 
-  <a class="feed-title" href="${recentCommentsURL?html}"><@vrtx.msg code='commenting.recentComments' 
+  <a class="comments-title" href="${recentCommentsURL?html}"><@vrtx.msg code='commenting.comments.recent'
                    args=[resource.title] default='Recent comments' /></a>
 
   <#assign number = comments?size />
@@ -32,19 +32,20 @@
     <#if comment_index &gt; number - 1><#break /></#if>
     <li>
       <a class="item-title" href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
-      ${comment.author.description?html} : 
+      ${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" />
         ${resourceMap[comment.URI].title?html}
-      -
+      </a>
+      <div class="item-description">
       <@vrtx.limit nchars=30 elide=true>
         <@vrtx.flattenHtml value=comment.content />
       </@vrtx.limit>
-      </a>
+      </div>
       <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
     </li>
   </#list>
   </ul>
 
-  <a class="all-messages" href="${recentCommentsURL?html}"><@vrtx.msg code="commenting.recentComments.more" default="More..." /></a>
+  <a class="all-comments" href="${recentCommentsURL?html}"><@vrtx.msg code="commenting.comments.more" default="More..." /></a>
   
 </div>
 

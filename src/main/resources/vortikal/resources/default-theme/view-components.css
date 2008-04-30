@@ -324,6 +324,56 @@ div.vrtx-feed ul.items li a.channel {
 /* END include:feed, include:feeds */
 
 
+
+
+/* START include:recent-comments */
+
+div.vrtx-recent-comments {
+  padding: 1em;
+  border: 1px solid #ccc;
+  font-size: .9em;
+}
+
+div.vrtx-recent-comments .comments-title {
+  display:block;
+  font-size: 1.2em;
+  font-weight: 900;
+  margin-bottom: 0.5em;
+  text-decoration: none;
+  color: black;
+}
+
+div.vrtx-recent-comments a.comments-title:hover {
+  color: #999;
+}
+
+div.vrtx-recent-comments ul.items {
+  margin: 1em 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+div.vrtx-recent-comments li {
+  margin: 0.75em 0px;
+}
+
+div.vrtx-recent-comments ul.items li a.item-title {
+  display:block;
+  margin-bottom: .2em;
+}
+
+div.vrtx-recent-comments ul.items li div.item-description {
+   margin-bottom: .2em;
+}
+
+div.vrtx-recent-comments ul.items li span.published-date {
+  font-size: .9em;
+  white-space: nowrap;
+}
+
+/* END include:recent-comments */
+
+
 /* START resource:breadcrumb */
 
 div.breadcrumb {

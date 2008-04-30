@@ -1,0 +1,31 @@
+/* CSS for recent-comments.ftl */
+
+ul.recent-comments h2 {
+  display:inline;
+  font-size: 130%;
+}
+
+ul.recent-comments {
+  list-style-type: none; 
+  margin-left: 0pt; 
+  padding-left: 0pt; 
+}
+
+ul.recent-comments li {
+  margin-bottom: 1.5em; 
+}
+
+ul.recent-comments li div {
+  margin-top: -0.25em;
+  margin-bottom: -0.25em;
+}
+
+ul.recent-comments li div p {
+  margin-top: 0.75em; 
+  margin-bottom: 0.75em; 
+}
+
+ul.recent-comments li span.pubdate {
+  font-size: 0.9em;
+}
+

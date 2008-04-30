@@ -3,8 +3,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <#--title type="html">${resource.title?html}</title-->
   <title type="html">
-        <@vrtx.msg code='commenting.recentComments'
-                   args=[resource.title] default='Recent comments' />
+        <@vrtx.msg code='commenting.comments'
+                   args=[resource.title] default='Comments' />
   </title>
   <link href="${urlMap[resource.URI]?html}" />
   <link rel="self" href="${selfURL?html}" />
@@ -14,7 +14,7 @@
   <#list comments?reverse as comment>
   <#assign resource = resourceMap[comment.URI] />
   <entry>
-    <title>Re: ${resource.title?html}</title>
+    <title>${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" /> ${resource.title?html}</title>
     <link href="${(urlMap[resource.URI] + '#comment-' + comment.ID)?html}" />
     <id>${(urlMap[resource.URI] + '#comment-' + comment.ID)?html}</id>
     <author>
@@ -23,6 +23,7 @@
       <url>${comment.author.URL?html}</url>
       </#if>
     </author>
+    <published><@vrtx.date value=comment.time format=date_format /></published>
     <updated><@vrtx.date value=comment.time format=date_format /></updated>
     <summary type="html">${comment.content?html}</summary>
   </entry>

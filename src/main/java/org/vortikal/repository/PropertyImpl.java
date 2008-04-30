@@ -299,6 +299,16 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
 
         		}
         		break;
+        	case DATE:
+        	case TIMESTAMP:
+        	    if (getType() != Type.DATE 
+                        && getType() != Type.TIMESTAMP) {
+                    throw new ValueFormatException("Illegal value type " + 
+                            value.getType() + 
+                            " for property " + this + ". Should be " + 
+                            getType());
+        	    }
+        	    break;
         	default:
             	throw new ValueFormatException("Illegal value type " + 
                         value.getType() + 

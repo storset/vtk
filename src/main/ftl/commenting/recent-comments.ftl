@@ -19,7 +19,11 @@
     <#list comments as comment>
       <ul>
         <li>
-          ${comment.author?html}
+          <#if comment.author.URL?exists>
+            <a href="${comment.author.URL?html}">${comment.author.description?html}</a>
+          <#else>
+            ${comment.author.description?html}
+          </#if>
           <@vrtx.date value=comment.time format='long' />
           <a href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
             ${resourceMap[comment.URI].title?html}:

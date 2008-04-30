@@ -18,7 +18,10 @@
     <link href="${(urlMap[resource.URI] + '#comment-' + comment.ID)?html}" />
     <id>${(urlMap[resource.URI] + '#comment-' + comment.ID)?html}</id>
     <author>
-      <name>${comment.author?html}</name>
+      <name>${comment.author.description?html}</name>
+      <#if comment.author.URL?exists>
+      <url>${comment.author.URL?html}</url>
+      </#if>
     </author>
     <updated><@vrtx.date value=comment.time format=date_format /></updated>
     <summary type="html">${comment.content?html}</summary>

@@ -81,7 +81,11 @@
       </#if>
       </div>
       <div class="comment-info">
-        ${comment.author?html} -
+        <#if comment.author.URL?exists>
+          <a href="${comment.author.URL?html}">${comment.author.description?html}</a> -
+        <#else>
+          ${comment.author.description?html} -
+        </#if>
         <@vrtx.date value=comment.time format='long' />
         <#if deleteCommentURLs[comment.ID?html]?exists>
           <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>

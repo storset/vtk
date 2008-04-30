@@ -32,7 +32,7 @@
     <#if comment_index &gt; number - 1><#break /></#if>
     <li>
       <a class="item-title" href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
-      ${comment.author?html} : 
+      ${comment.author.description?html} : 
         ${resourceMap[comment.URI].title?html}
       -
       <@vrtx.limit nchars=30 elide=true>

@@ -13,6 +13,17 @@
     </property>
   </bean>
 
+  <bean id="webdav.davMountAcceptHeaderAssertion"
+        class="org.vortikal.web.service.RequestHeaderRegexpAssertion">
+    <property name="header" value="Accept" />
+    <property name="pattern" value="application/davmount\+xml.*" />
+  </bean>
+
+  <bean id="webdav.davMountParameterAssertion"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="davmount" />
+  </bean>
 
   <bean id="webdavService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-100" />
@@ -25,6 +36,25 @@
     <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
   </bean>
   
+  <bean id="webdav.davMountService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="webdav.davMountAcceptHeaderAssertion" />
+        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="webdav.davMountParameterAssertion" />
+      </list>
+    </property>
+    <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
+    <property name="handler" ref="webdav.davMountHandler" />
+  </bean>
+
+  <bean id="webdav.davMountHandler" 
+    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="webdav.davMount" />
+  </bean>
+
   <bean id="webdavServiceUrlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
@@ -445,6 +475,7 @@
   <bean id="webdavViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
     <property name="views">
       <map>
+        <entry key="webdav.davMount" value-ref="webdav.davMountView" />
         <entry key="webdavDisplayResource" value-ref="webdavDisplayResourceView" />
         <entry key="OPTIONS" value-ref="OPTIONS" />
         <entry key="PROPFIND" value-ref="PROPFIND" />
@@ -538,6 +569,13 @@
     <property name="url" value="pages/webdav-collectionlisting.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="service" ref="webdav.davMountService" />
+          <property name="modelName" value="davMountService" />
+          <property name="urlName" value="url" />
+          <property name="matchAssertions" value="true" />
+        </bean>
         <ref bean="resourceContextProvider" />
         <ref bean="webdavBreadCrumbProvider" />
         <ref bean="webdavCollectionListingProvider" />
@@ -569,8 +607,24 @@
     </property>
   </bean>
 
-  <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" >
+  <bean id="webdav.davMountView" parent="freemarkerView">
+    <property name="contentType" value="application/davmount+xml" />
+    <property name="url" value="pages/webdav-davmount.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="service" ref="webdavService" />
+          <property name="modelName" value="webdavService" />
+          <property name="urlName" value="url" />
+        </bean>
+      </list>
+    </property>
   </bean>
+
+
+  <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" />
 
 
 

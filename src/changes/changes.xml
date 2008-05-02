@@ -8,9 +8,48 @@
 
   <body>
 
-    <release version="0.4.3-SNAPSHOT" date="In SVN" description="Release 0.4.3">
+    <release version="0.4.4-SNAPSHOT" date="In SVN" description="Release 0.4.3">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Commenting: support recursive comment feeds for collections.
+      </action>
+      <action type="update">
+        Upgraded FCKEditor to version 2.6
+      </action>
+      <action type="remove">
+        Removed Kupu entirely.
+      </action>
+      <action type="add">
+        Added a warning when changing a resource's permissions to
+        inherited.
+      </action>
+      <action type="add">
+        Decorating: the 'subfolder-menu' component now has an option
+        to exclude a set of folders.
+      </action>
+      <action type="add">
+        Extend the tags service to be able to perform "scoped" tag
+        searches.
+      </action>
+      <action type="add">
+        Added metadata API for principals, include support for
+        retrieving full name and URL through this API.
+      </action>
+      <action type="add">
+        Added new data reporting API, with support for tagcloud
+        generation.
+      </action>
+      <action type="add">
+        Added support for the "davmount" protocol (RFC 4709,
+        http://www.ietf.org/rfc/rfc4709.txt)
+      </action>
+      <action type="add">
+        Add expansion for '{$currentDate}' syntax in property queries.
+      </action>
+    </release>
+
+    <release version="0.4.3" date="2008-03-19" description="Release 0.4.3">
       <action type="add">
         Added HTML transformation for resources of type APT (Almost
         Plain Text) and TWiki syntax. Based on Maven's Doxia content

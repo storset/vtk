@@ -44,6 +44,8 @@
          fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
+         fck.Config.LinkUpload = false;
+
          // Misc setup
          fck.Config['FullPage'] = false;
          fck.Config['ToolbarCanCollapse'] = false;

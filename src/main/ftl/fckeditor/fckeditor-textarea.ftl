@@ -79,7 +79,8 @@
           editor.Config['FullPage'] = ${fullpage?string};
           editor.Config['ToolbarCanCollapse'] = ${collapseToolbar?string};
           editor.Config.LinkBrowser = ${enableFileBrowsers?string};
-          editor.Config.LinkUpload = ${enableFileBrowsers?string};
+          editor.Config.LinkUpload = false;
+
           editor.Config.ImageBrowser = ${enableFileBrowsers?string};
           editor.Config.ImageUpload = ${enableFileBrowsers?string};
           editor.Config.FlashBrowser = ${enableFileBrowsers?string};

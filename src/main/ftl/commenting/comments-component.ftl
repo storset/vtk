@@ -173,8 +173,16 @@
         </#if>
         </div>
         <div class="submit">
-        <input type="submit" id="submit-comment-button" name="save" value="<@vrtx.msg code='commenting.form.submit' default='Submit' />" /> (<@vrtx.msg code="commenting.as"
-                    default="as" /> <span class="user">${principal.description?html}</span>)</div>
+        <#assign principalStr>
+          <#compress>
+            <span class="user">${principal.description?html}</span>
+          </#compress>
+        </#assign>
+        <input type="submit" id="submit-comment-button" name="save"
+          value="<@vrtx.msg code='commenting.form.submit'
+          default='Submit' />" />
+        (<@vrtx.rawMsg code="commenting.post.comment-as" default="as ${principal.description}" args=[principalStr] />)
+
       </form>
 
       <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />

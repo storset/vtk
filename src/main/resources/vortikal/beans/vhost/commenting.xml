@@ -36,15 +36,15 @@
     <property name="handler" ref="commenting.deleteAllCommentsController" />
   </bean>
 
-  <bean name="commenting.recentCommentsService" class="org.vortikal.web.service.ServiceImpl">
+  <bean name="commenting.resourceCommentsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
         <ref bean="resourceIsCollection" />
-        <ref bean="commenting.requestParameterIsRecentComments" />
+        <ref bean="commenting.requestParameterIsComments" />
       </list>
     </property>
-    <property name="handler" ref="commenting.recentCommentsController" />
+    <property name="handler" ref="commenting.resourceCommentsController" />
   </bean>
 
   <bean name="commenting.feedService" class="org.vortikal.web.service.ServiceImpl">
@@ -149,10 +149,10 @@
     <property name="viewName" value="commenting.redirectToDefault" />
   </bean>
 
-  <bean name="commenting.recentCommentsController"
+  <bean name="commenting.resourceCommentsController"
         class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
         parent="requestLocalRepositoryAware">
-    <property name="viewName" value="commenting.recentCommentsView" />
+    <property name="viewName" value="commenting.resourceCommentsView" />
   </bean>
 
   <bean name="commenting.displayFeedController"
@@ -186,10 +186,10 @@
     <property name="parameterValue" value="comments-feed" />
   </bean>
 
-  <bean id="commenting.requestParameterIsRecentComments" 
+  <bean id="commenting.requestParameterIsComments" 
     class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="recent-comments" />
+    <property name="parameterValue" value="comments" />
   </bean>
 
   <bean id="commenting.isPostRequest"
@@ -223,7 +223,7 @@
   <bean id="commenting.decoratingViewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="commenting.recentCommentsView" value-ref="commenting.recentCommentsView" />
+        <entry key="commenting.resourceCommentsView" value-ref="commenting.resourceCommentsView" />
       </map>
     </property>
   </bean>
@@ -245,8 +245,8 @@
   </bean>
 
 
-  <bean id="commenting.recentCommentsView" parent="freemarkerView">
-    <property name="url" value="commenting/recent-comments.ftl" />
+  <bean id="commenting.resourceCommentsView" parent="freemarkerView">
+    <property name="url" value="commenting/resource-comments.ftl" />
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
       <bean class="org.vortikal.web.commenting.RecentCommentsProvider"
@@ -259,7 +259,7 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs"><list><value>${cssBaseURL}/recent-comments.css</value></list></entry>
+        <entry key="cssURLs"><list><value>${cssBaseURL}/comments.css</value></list></entry>
       </map>
     </property>
   </bean>
@@ -273,7 +273,7 @@
         <property name="deepCommentsListing" value="true" />
         <property name="maxComments" value="10" />
         <property name="viewService" ref="viewService" />
-        <property name="recentCommentsService" ref="commenting.recentCommentsService" />
+        <property name="recentCommentsService" ref="commenting.resourceCommentsService" />
         <property name="resourceCommentsFeedService" ref="commenting.feedService" />
       </bean>    
     </property>

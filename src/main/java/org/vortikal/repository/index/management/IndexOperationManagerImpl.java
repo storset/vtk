@@ -135,6 +135,7 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
                     IndexOperationManagerImpl.this.index,
                     IndexOperationManagerImpl.this.indexDao);
         } catch (Exception e) {
+            LOG.info("Error running consistency check", e);
             this.lastConsistencyCheckException = e;
         } finally {
             this.index.unlock();

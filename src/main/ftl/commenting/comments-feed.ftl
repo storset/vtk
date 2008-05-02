@@ -11,7 +11,7 @@
   <#assign date_format>yyyy-MM-dd'T'HH:mm:ssZZ</#assign>
   <updated><@vrtx.date value=resource.lastModified format=date_format/></updated>
   <id>${selfURL?html}</id>
-  <#list comments?reverse as comment>
+  <#list comments as comment>
   <#assign resource = resourceMap[comment.URI] />
   <entry>
     <title>${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" /> ${resource.title?html}</title>

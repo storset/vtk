@@ -21,7 +21,7 @@
   </head>
   <body>
     <h1>${title?html}</h1>
-    <ul class="recent-comments">
+    <ul class="comments">
     <#list comments as comment>
         <li><h2>
           <a href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">

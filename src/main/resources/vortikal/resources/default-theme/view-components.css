@@ -462,6 +462,11 @@ ul.vrtx-tag-cloud li {
 ul.vrtx-tag-cloud li a { 
     text-decoration: none; 
 }
+ul.vrtx-tag-cloud li a:hover {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #0063dc;
+}
 ul.vrtx-tag-cloud { 
     margin-left:0; 
     padding-left:0; 

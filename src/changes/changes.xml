@@ -8,9 +8,7 @@
 
   <body>
 
-    <release version="0.4.4-SNAPSHOT" date="In SVN" description="Release 0.4.3">
-      <!-- add 'action' entries here, newest on top: -->
-      <!-- type: update|fix|add|remove -->
+    <release version="0.4.4" date="2008-05-05" description="Release 0.4.4">
       <action type="add">
         Commenting: support recursive comment feeds for collections.
       </action>

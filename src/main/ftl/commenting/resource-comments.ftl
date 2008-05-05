@@ -23,7 +23,7 @@
     <h1>${title?html}</h1>
     <ul class="comments">
     <#list comments as comment>
-        <li><h2>
+        <li class="comment"><h2>
           <a href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
             ${comment.author.description?html}
 	    <@vrtx.msg code="commenting.comments.on" default="on" />

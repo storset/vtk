@@ -8,6 +8,8 @@
    float: right;
    margin: 0 0 0.5em 0.75em;
    border:1px solid #ddd; 
+   max-width: 300px; 
+   width: expression(this.width > 300 ? 300: true);
  }
 
  /* Bilde med bildetekst */
@@ -41,6 +43,15 @@
  }
 
  /* Byline */
+
+hr.vrtx-byline
+{
+  background: #ccc;
+  border: 0;
+  color: #ccc;
+  height: 1px;
+  margin: 0.25em 0em 0.5em 0;
+}
 
  /* Start, slutt og sted */
 

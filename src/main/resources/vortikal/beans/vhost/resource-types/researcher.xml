@@ -17,6 +17,7 @@
                 <ref bean="researcherSurNamePropDef" />
                 <ref bean="researcherImagePropDef" />
                 <ref bean="researcherSubjectsPropDef" />
+                <ref bean="positionTitlePropDef" />
             </list>
         </property>
         <property name="assertions">
@@ -103,6 +104,18 @@
     </bean>
     
     
+    <bean id="positionTitlePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+        <property name="name" value="positionTitle" />
+        <property name="type" value="STRING" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+        <property name="contentModificationEvaluator" ref="positionTitleEvaluator" />
+    </bean>
 
+    <bean id="positionTitleEvaluator" parent="abstractXPathEvaluator">
+        <property name="expression" value="/researcher/title/name" />
+    </bean>
+    
     
 </beans>

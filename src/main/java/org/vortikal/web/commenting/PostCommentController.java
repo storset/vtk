@@ -54,6 +54,7 @@ import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.SimpleHtmlPageFilter;
+import org.vortikal.text.htmlparser.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -217,7 +218,7 @@ public class PostCommentController extends SimpleFormController {
                 if (c instanceof HtmlElement) {
                     childContent = ((HtmlElement) c).getEnclosedContent();
                 } else if (c instanceof HtmlText) {
-                    childContent = c.getContent();
+                    childContent = HtmlUtil.escapeHtmlString(c.getContent());
                 } 
                 if ((i == 0 || i == nodes.size() - 1) && !childContent.trim().startsWith("<")) {
                     // Wrap top-level text nodes in a <p>:

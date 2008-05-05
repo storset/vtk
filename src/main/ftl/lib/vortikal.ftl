@@ -155,12 +155,17 @@
  * Example: <@vrtx.flattenHtml value='<div>foo</div>' /> (produces 'foo')
  *
  * @param value the HTML string
+ * @param escape whether to HTML-escape the flattened string (default true)
  *
 -->
-<#macro flattenHtml value>
+<#macro flattenHtml value escape=true>
   <#compress>
-    <#if VRTX_HTML_FLATTENER?exists>
-      ${VRTX_HTML_FLATTENER.flatten(value)}
+    <#if VRTX_HTML_UTIL?exists>
+      <#if escape>
+        ${VRTX_HTML_UTIL.flatten(value)?html}
+      <#else>
+        ${VRTX_HTML_UTIL.flatten(value)}
+      </#if>
     <#else>
       Undefined
     </#if>

@@ -32,7 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
-import org.vortikal.text.htmlparser.HtmlFlattener;
+import org.vortikal.text.htmlparser.HtmlUtil;
 
 /**
  * This value formatter represents HTML value types. 
@@ -44,64 +44,31 @@ public class HtmlValueFormatter implements ValueFormatter {
     private static final String ESCAPED_FORMAT = "escaped";
     private static final String FLATTENED_FORMAT = "flattened";
 
-    private HtmlFlattener htmlFlattener;
+    private HtmlUtil htmlUtil;
     
     public String valueToString(Value value, String format, Locale locale)
             throws IllegalValueTypeException {
         String html = value.toString();
         if (ESCAPED_FORMAT.equals(format)) {
-            return escape(html);
-        } else if (FLATTENED_FORMAT.equals(format) && this.htmlFlattener != null) {
-            return this.htmlFlattener.flatten(html).toString();
+            return this.htmlUtil.escapeHtmlString(html);
+        } else if (FLATTENED_FORMAT.equals(format) && this.htmlUtil != null) {
+            return this.htmlUtil.flatten(html).toString();
         }
         return html;
     }
 
     public Value stringToValue(String string, String format, Locale locale) {
         if (ESCAPED_FORMAT.equals(format)) {
-            return new Value(unescape(string));
+            return new Value(this.htmlUtil.unescapeHtmlString(string));
         } 
         
         return new Value(string);
     }
 
-    private String escape(String html) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < html.length(); i++) {
-            char c = html.charAt(i);
-            switch (c) {
-            case '&':
-                result.append("&amp;");
-                break;
-            case '"':
-                result.append("&quot;");
-                break;
-            case '<':
-                result.append("&lt;");
-                break;
-            case '>':
-                result.append("&gt;");
-                break;
-            default:
-                result.append(c);
-                break;
-            }
-        }
-        return result.toString();
-    }
-    
-    
-    private String unescape(String html) {
-        html = html.replaceAll("&amp;", "&");
-        html = html.replaceAll("&quot;", "\"");
-        html = html.replaceAll("&lt;", "<");
-        html = html.replaceAll("&gt;", ">");
-        return html;
-    }
 
     
-    public void setHtmlFlattener(HtmlFlattener htmlFlattener) {
-        this.htmlFlattener = htmlFlattener;
+    public void setHtmlUtil(HtmlUtil htmlUtil) {
+        this.htmlUtil = htmlUtil;
     }
 
 }

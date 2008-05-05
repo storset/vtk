@@ -36,9 +36,12 @@
         ${resourceMap[comment.URI].title?html}
       </a>
       <div class="item-description">
+      <#assign description>
       <@vrtx.limit nchars=30 elide=true>
-        <@vrtx.flattenHtml value=comment.content />
+        <@vrtx.flattenHtml value=comment.content escape=false />
       </@vrtx.limit>
+      </#assign>
+      ${description?html}
       </div>
       <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
     </li>

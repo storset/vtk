@@ -40,7 +40,7 @@ import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
 
 
-public class HtmlFlattener {
+public class HtmlUtil {
 
     private HtmlPageParser htmlParser;
     private Map<String, String> htmlEntityMap = new HashMap<String, String>();
@@ -74,6 +74,46 @@ public class HtmlFlattener {
         }
         return sb.toString();
     }
+    
+    
+    public static String escapeHtmlString(String html) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < html.length(); i++) {
+            char c = html.charAt(i);
+            switch (c) {
+            case '&':
+                result.append("&amp;");
+                break;
+            case '"':
+                result.append("&quot;");
+                break;
+            case '\'':
+                result.append("&apos;");
+                break;
+            case '<':
+                result.append("&lt;");
+                break;
+            case '>':
+                result.append("&gt;");
+                break;
+            default:
+                result.append(c);
+                break;
+            }
+        }
+        return result.toString();
+    }
+    
+    
+    public static String unescapeHtmlString(String html) {
+        html = html.replaceAll("&amp;", "&");
+        html = html.replaceAll("&quot;", "\"");
+        html = html.replaceAll("&apos;", "'");
+        html = html.replaceAll("&lt;", "<");
+        html = html.replaceAll("&gt;", ">");
+        return html;
+    }
+    
     
     private StringBuilder processHtmlEntities(String content) {
         StringBuilder result = new StringBuilder();

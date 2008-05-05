@@ -359,7 +359,7 @@
          <entry key="VRTX_DATE_VALUE_FORMATTER" value-ref="dateValueFormatter" />
          <entry key="VRTX_HTML_VALUE_FORMATTER" value-ref="htmlFormatter" />
          <entry key="VRTX_RESOURCE_TYPE_TREE" value-ref="resourceTypeTree" />
-         <entry key="VRTX_HTML_FLATTENER" value-ref="htmlFlattener" />
+         <entry key="VRTX_HTML_UTIL" value-ref="htmlUtil" />
        </map>
      </property>
    </bean>

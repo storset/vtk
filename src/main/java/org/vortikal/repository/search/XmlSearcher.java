@@ -333,7 +333,6 @@ public class XmlSearcher {
                     for (HtmlContent c : fragment.getContent()) {
                         sb.append(flatten(c));
                     }
-                    System.out.println("flattened: [" + sb.toString() + "]");
                     node = doc.createTextNode(sb.toString());
                 } catch (Exception e) {
                     throw new RuntimeException(e);

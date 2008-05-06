@@ -57,7 +57,7 @@
     <#include "/commenting/comments-feed-url.ftl" />
 
     <#if cssURL?exists>
-      <link rel="stylesheet" type="text/css" media="screen" href="${cssURL?html}" />
+      <link rel="stylesheet" type="text/css" href="${cssURL?html}" />
     </#if>
 </head>
   <body>

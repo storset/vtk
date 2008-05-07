@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2008, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,36 +30,17 @@
  */
 package org.vortikal.util.codec;
 
+import junit.framework.TestCase;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+public class MD5TestCase extends TestCase {
 
-
-/**
- * A utility class for computing MD5 checksums and returning the
- * result in a hex string representation.
- */
-public class MD5 {
-    
-    private static char[] HEX = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                                 'a', 'b', 'c', 'd', 'e', 'f'};
-
-    public static String md5sum(String str) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-
-            byte[] digest = md.digest(str.getBytes());
-            char[] result = new char[32];
-            for (int i = 0; i < 16; i++) {
-                result[i << 1] = HEX[(digest[i] & 0xF0) >>> 4];
-                result[(i << 1)+1] = HEX[digest[i] & 0x0F];
-            }
-            
-            return new String(result);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                "MD5 digest not available in JVM");
-        }
+    public void testMd5sum() {
+        assertEquals("900150983cd24fb0d6963f7d28e17f72", MD5.md5sum("abc"));
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", MD5.md5sum(""));
+        assertEquals("37b51d194a7513e45b56f6524f2d51f2", MD5.md5sum("bar"));
+        assertEquals("5db1de9f01225e0c9b89df9e1e96d240", MD5.md5sum("FOO bar"));
+        assertEquals("69a8f8b65843545e07e264782a632e2b", 
+                MD5.md5sum("\\%$powjegpokjewgi39i310ut31+iujas0gh+2r1+ut139gtuwpjgo"));
     }
-    
+
 }

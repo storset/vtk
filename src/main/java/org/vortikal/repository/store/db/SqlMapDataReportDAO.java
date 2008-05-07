@@ -69,6 +69,8 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
             params.setLimit(query.getLimit());
         }
         
+        params.setMinValueFrequency(query.getMinValueFrequency());
+        
         params.setOrdering(query.getOrdering());
         
         if (query.getUriScope() != null && !"/".equals(query.getUriScope().getUri())) {

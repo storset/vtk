@@ -13,6 +13,7 @@
         - namespaceUri (String or null) property name space
         - name (String) property name
         - limit (Integer or null) result limit in rows
+        - minValueFrequency
         - uriWildcard (String or null) uri wildcard string (for scoping on resource uri)
         - ordering
         - vortexResourcePropertyColumn (String or null) 
@@ -26,6 +27,12 @@
       <!--  Needed for Oracle, renders to empty block by default. -->
       <include refid="dataReportingLimitPrepend"/>
     </isNotNull>
+    
+    <isGreaterThan property="minValueFrequency" compareValue="1">
+    <!-- Need to wrap result in sub-select to be able to test on aggregated 
+         frequency values, if minimum value is greater than 1. -->
+    SELECT * FROM (
+    </isGreaterThan>
     
     <isNotNull property="vortexResourcePropertyColumn">
         <!-- Do query on vortex_resource -->
@@ -76,6 +83,11 @@
             </isNotEqual>
             
     </isNull>
+    
+    <isGreaterThan property="minValueFrequency" compareValue="1">
+    <!-- Main sub-query alias 'main' provided because PostgreSQL requires this (and Oracle doesn't care). -->
+    ) main WHERE frequency &gt;= #minValueFrequency#
+    </isGreaterThan>
         
     <isNotNull property="limit" >
        <include refid="dataReportingLimitAppend"/>

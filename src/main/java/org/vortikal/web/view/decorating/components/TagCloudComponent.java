@@ -75,6 +75,15 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
           "Set limit on how many tags to include. Setting this to a low value will "
         + "show only the most popular tags. Default is: " + PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
     
+    private static final String PARAMETER_TAG_OCCURENCE_MIN = "tag-occurence-min";
+    private static final int    PARAMETER_TAG_OCCURENCE_MIN_DEFAULT_VALUE = 1;
+    private static final String PARAMETER_TAG_OCCURENCE_MIN_DESC =
+          "Limit tag cloud to include only tags with an occurence count higher than "
+        + "or equal to this minimal value. This can be used to weed out tags "
+        + "with for instance only one or two occurences within the scope. "
+        + "The default value is 1. Increase this as needed, if your tag cloud "
+        + "contains many undesirable small tags with only few occurences.";
+    
     private static final String PARAMETER_SCOPE = "scope";
     private static final String PARAMETER_SCOPE_DESC = 
           "Set the URI scope for the tag cloud. Relative URIs are allowed. "
@@ -121,8 +130,9 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         
-        map.put(PARAMETER_TAG_LIMIT, PARAMETER_TAG_LIMIT_DESC);
         map.put(PARAMETER_SCOPE, PARAMETER_SCOPE_DESC);
+        map.put(PARAMETER_TAG_LIMIT, PARAMETER_TAG_LIMIT_DESC);
+        map.put(PARAMETER_TAG_OCCURENCE_MIN, PARAMETER_TAG_OCCURENCE_MIN_DESC);
         map.put(PARAMETER_MAGNITUDE_MAX, PARAMETER_MAGNITUDE_MAX_DESC);
         map.put(PARAMETER_MAGNITUDE_MIN, PARAMETER_MAGNITUDE_MIN_DESC);
         map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC 
@@ -158,6 +168,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
         int magnitudeMin = PARAMETER_MAGNITUDE_MIN_DEFAULT_VALUE;
         int magnitudeMax = PARAMETER_MAGNITUDE_MAX_DEFAULT_VALUE;
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
+        int tagOccurenceMin = PARAMETER_TAG_OCCURENCE_MIN_DEFAULT_VALUE;
         String serviceUrl = request.getStringParameter(PARAMETER_SERVICE_URL);
         try {
             if (request.getStringParameter(PARAMETER_MAGNITUDE_MIN) != null) {
@@ -173,6 +184,17 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
             if (request.getStringParameter(PARAMETER_TAG_LIMIT) != null){
                 limit = Integer.parseInt(request.getStringParameter(
                                                             PARAMETER_TAG_LIMIT));
+            }
+            
+            if (request.getStringParameter(PARAMETER_TAG_OCCURENCE_MIN) != null) {
+                tagOccurenceMin = Integer.parseInt(request.getStringParameter(
+                        PARAMETER_TAG_OCCURENCE_MIN));
+            }
+            
+            if (tagOccurenceMin < 1) {
+                throw new DecoratorComponentException("Parameter '" 
+                        + PARAMETER_TAG_OCCURENCE_MIN 
+                        + "' must be a number larger than or equal to 1.");
             }
             
             if (limit <= 0) {
@@ -195,21 +217,23 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
         } 
         
         // Do data report query
-        PropertyValueFrequencyQueryResult result = executeDataReportQuery(limit, 
+        PropertyValueFrequencyQueryResult result = executeDataReportQuery(limit,
+                                                                   tagOccurenceMin,
                                                                    scopeUri, 
                                                                    token);      
         
         // Generate list of tag elements
         List<TagElement> tagElements = generateTagElementList(result, 
                                                               magnitudeMax, 
-                                                              magnitudeMin, 
+                                                              magnitudeMin,
                                                               serviceUrl);
         
         // Populate model
         model.put("tagElements", tagElements);
     }
     
-    private PropertyValueFrequencyQueryResult executeDataReportQuery(int limit, 
+    private PropertyValueFrequencyQueryResult executeDataReportQuery(int limit,
+                                                                int tagOccurenceMin,
                                                                 String scopeUri, 
                                                                 String token) 
         throws DecoratorComponentException {
@@ -218,6 +242,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
         query.setPropertyTypeDefinition(this.keywordsPropDef);
         query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_FREQUENCY);
         query.setLimit(limit);
+        query.setMinValueFrequency(tagOccurenceMin);
         
         try {
             query.setUriScope(new UriScope(scopeUri));
@@ -240,7 +265,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
                                                     String serviceUrl) {
         
         List<Pair<Value, Integer>> freqList = result.getValueFrequencyList();
-        
+
         List<TagElement> tagElements = new ArrayList<TagElement>(freqList.size());
 
         if (! freqList.isEmpty()) {

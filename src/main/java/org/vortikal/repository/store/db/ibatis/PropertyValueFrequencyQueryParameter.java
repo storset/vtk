@@ -34,6 +34,7 @@ import org.vortikal.repository.reporting.PropertyValueFrequencyQuery.Ordering;
 
 public class PropertyValueFrequencyQueryParameter extends AbstractPropertyQueryParameter {
     private Integer limit;
+    private Integer minValueFrequency;
     private String uriWildcard;
     private Ordering ordering;
     
@@ -51,6 +52,14 @@ public class PropertyValueFrequencyQueryParameter extends AbstractPropertyQueryP
 
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+    
+    public Integer getMinValueFrequency() {
+        return minValueFrequency;
+    }
+
+    public void setMinValueFrequency(int minValueFrequency) {
+        this.minValueFrequency = new Integer(minValueFrequency);
     }
 
     public String getUriWildcard() {

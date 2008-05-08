@@ -7,7 +7,7 @@
     <property name="parent" ref="displayResourceService" />
     <property name="assertions">
       <list>
-        <ref bean="apt2html.fileNameAssertion" />
+        <ref bean="apt2html.resourceTypeAssertion" />
       </list>
     </property>
     <property name="handler" ref="apt2html.handler" />
@@ -17,7 +17,7 @@
     <property name="parent" ref="previewService" />
     <property name="assertions">
       <list>
-        <ref bean="apt2html.fileNameAssertion" />
+        <ref bean="apt2html.resourceTypeAssertion" />
       </list>
     </property>
     <property name="handler">
@@ -25,9 +25,8 @@
     </property>
   </bean>
 
-  <bean id="apt2html.fileNameAssertion"
-        class="org.vortikal.web.service.ResourceURIRegexpAssertion">
-    <property name="pattern" value=".*\.apt$" />
+  <bean id="apt2html.resourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="aptResource" />
   </bean>
 
   <bean id="apt2html.handler" class="org.vortikal.web.controller.DisplayResourceController"

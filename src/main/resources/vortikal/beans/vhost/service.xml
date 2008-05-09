@@ -253,7 +253,6 @@
 
 
   <bean id="staticResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
     <property name="order" value="-97000" />
     <property name="assertions">
       <list>

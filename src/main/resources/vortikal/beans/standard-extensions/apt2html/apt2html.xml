@@ -14,7 +14,7 @@
   </bean>
 
   <bean id="apt2html.previewService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="previewService" />
+    <property name="parent" ref="previewTextService" />
     <property name="assertions">
       <list>
         <ref bean="apt2html.resourceTypeAssertion" />

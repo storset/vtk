@@ -90,7 +90,7 @@
         </td>
         <td class="value">
           <#if ownerItem.property.principalValue.URL?exists>
-            <a title="${ownerItem.property.principalValue?html}" href="${ownerItem.property.principalValue.URL?html}">${ownerItem.property.principalValue.name?html}</a>
+            <a title="${ownerItem.property.principalValue.description?html}" href="${ownerItem.property.principalValue.URL?html}">${ownerItem.property.principalValue.name?html}</a>
           <#else>
             ${ownerItem.property.principalValue.name?html}
           </#if>

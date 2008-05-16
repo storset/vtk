@@ -401,9 +401,11 @@
 
 
 <#macro displayUserPrincipal principal>
+<#compress>
 <#if principal.URL?exists>
   <a title="${principal.description?html}" href="${principal.URL?html}">${principal.name?html}</a>
 <#else>
   ${principal.name?html}
 </#if>
+</#compress>
 </#macro>

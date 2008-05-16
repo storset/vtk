@@ -117,7 +117,7 @@
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(${resourceContext.currentResource.owner.name})</#if><#t/>
+        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner)</#if><#t/>
       </#compress>
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
@@ -169,7 +169,7 @@
           <#list pseudoPrincipals as pseudoPrincipal>
             <#compress>
               <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-              <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(${resourceContext.currentResource.owner.name})</#if><#t/>
+              <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
             </#compress>
             <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0>, <#t/></#if>
           </#list>
@@ -227,7 +227,7 @@
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" />
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(${resourceContext.currentResource.owner.name})</#if><#t/>
+        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
       </#compress>
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
@@ -306,7 +306,7 @@
           <#switch user.name>
             <#case "pseudo:owner">
               <li><@vrtx.msg code="permissions.owner"
-                             default="owner"/>&nbsp;(${resourceContext.currentResource.owner.name})</li>
+                             default="owner"/>&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</li>
               <#break>
             <#case "pseudo:authenticated">
             <#case "pseudo:all">
@@ -401,8 +401,8 @@
 
 
 <#macro displayUserPrincipal principal>
-<#if principal.url?exists>
-  <a title="${principal.description?html}" href="${principal.url?html}">${principal.name?html}</a>
+<#if principal.URL?exists>
+  <a title="${principal.description?html}" href="${principal.URL?html}">${principal.name?html}</a>
 <#else>
   ${principal.name?html}
 </#if>

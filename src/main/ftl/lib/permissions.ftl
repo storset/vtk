@@ -122,7 +122,7 @@
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
     <#list users as user>
-      <#compress>${user.name}</#compress><#t/>
+      <#compress><@displayUserPrincipal principal=user /></#compress><#t/>
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
@@ -174,7 +174,7 @@
             <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0>, <#t/></#if>
           </#list>
           <#list users as user>
-            <#compress>${user.name}</#compress><#t/>
+            <#compress><@displayUserPrincipal principal=user /></#compress><#t/>
             <#if user_index &lt; users?size - 1>,<#t/></#if>
           </#list>
         </td>
@@ -232,7 +232,7 @@
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>
     <#list users as user>
-      <#compress>${user.name}</#compress><#t/>
+      <#compress><@displayUserPrincipal principal=user /></#compress><#t/>
       <#if user_index &lt; users?size - 1 || groups?size &gt; 0>,<#t/></#if>
     </#list>
     <#list groups as group>
@@ -311,7 +311,7 @@
             <#case "pseudo:authenticated">
             <#case "pseudo:all">
               <#if user.name != groupingPrincipal.name>
-                <li><@vrtx.msg code="pseudoPrincipal.${user.name}" default="${user.name}" /><#t/>
+                <li><@vrtx.msg code="pseudoPrincipal.<@displayUserPrincipal principal=user />" default="<@displayUserPrincipal principal=user />" /><#t/>
                   <#if removeUserURLs?exists && removeUserURLs[user.name]?exists >
                     &nbsp;(&nbsp;<a href="${removeUserURLs[user.name]?html}"><#t/>
                       <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
@@ -319,7 +319,7 @@
               </#if>
               <#break>
             <#default>
-              <li>${user.name}
+              <li><@displayUserPrincipal principal=user />
                 <#if removeUserURLs?exists && removeUserURLs[user.name]?exists >
                   &nbsp;(&nbsp;<a href="${removeUserURLs[user.name]?html}"><#t/>
                   <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
@@ -397,4 +397,13 @@
     <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
     </div>
   </form>
+</#macro>
+
+
+<#macro displayUserPrincipal principal>
+<#if principal.url?exists>
+  <a title="${principal.description?html}" href="${principal.url?html}">${principal.name?html}</a>
+<#else>
+  ${principal.name?html}
+</#if>
 </#macro>

@@ -51,7 +51,7 @@
       <#assign modifiedByStr = resource.modifiedBy.name />
       <#if resource.modifiedBy.URL?exists>
         <#assign modifiedByStr>
-          <a href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.name}</a>
+          <a title="${resource.modifiedBy.description?html}" href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.name}</a>
         </#assign>
       </#if>
       <#assign modifiedStr>
@@ -68,7 +68,7 @@
       <#assign createdByStr = resource.createdBy.name />
       <#if resource.createdBy.URL?exists>
         <#assign createdByStr>
-          <a href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
+          <a title="${resource.createdBy.description?html}" href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
         </#assign>
       </#if>
       <#assign createdByStr>
@@ -90,7 +90,7 @@
         </td>
         <td class="value">
           <#if ownerItem.property.principalValue.URL?exists>
-            <a href="${ownerItem.property.principalValue.URL?html}">${ownerItem.property.principalValue.name?html}</a>
+            <a title="${ownerItem.property.principalValue?html}" href="${ownerItem.property.principalValue.URL?html}">${ownerItem.property.principalValue.name?html}</a>
           <#else>
             ${ownerItem.property.principalValue.name?html}
           </#if>

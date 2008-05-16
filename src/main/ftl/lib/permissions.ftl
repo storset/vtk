@@ -117,7 +117,7 @@
     <#list pseudoPrincipals as pseudoPrincipal>
       <#compress>
         <@vrtx.msg code="pseudoPrincipal.${pseudoPrincipal.name}" default="${pseudoPrincipal.name}" /><#t/>
-        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner)</#if><#t/>
+        <#if pseudoPrincipal.name = "pseudo:owner">&nbsp;(<@displayUserPrincipal principal=resourceContext.currentResource.owner />)</#if><#t/>
       </#compress>
       <#if pseudoPrincipal_index &lt; pseudoPrincipals?size - 1  || users?size &gt; 0  || groups?size &gt; 0>, <#t/></#if>
     </#list>

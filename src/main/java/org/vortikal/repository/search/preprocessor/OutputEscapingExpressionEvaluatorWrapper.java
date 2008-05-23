@@ -43,19 +43,19 @@ import org.vortikal.repository.search.QueryException;
 public class OutputEscapingExpressionEvaluatorWrapper implements
         ExpressionEvaluator {
 
-    private ExpressionEvaluator wrapperEvaluator;
+    private ExpressionEvaluator wrappedEvaluator;
     
     public String evaluate(String token) throws QueryException {
-        return escapeStringValue(this.wrapperEvaluator.evaluate(token));
+        return escapeStringValue(this.wrappedEvaluator.evaluate(token));
     }
 
     public boolean matches(String token) {
-        return this.wrapperEvaluator.matches(token);
+        return this.wrappedEvaluator.matches(token);
     }
     
     @Required
     public void setWrappedEvaluator(ExpressionEvaluator evaluator) {
-        this.wrapperEvaluator = evaluator;
+        this.wrappedEvaluator = evaluator;
     }
     
     /**

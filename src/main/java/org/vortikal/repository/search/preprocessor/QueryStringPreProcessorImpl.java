@@ -46,7 +46,7 @@ public class QueryStringPreProcessorImpl implements QueryStringPreProcessor {
     
 
     public String process(String queryString) throws QueryException {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int start = 0;
         int pos = 0;
         while (true) {

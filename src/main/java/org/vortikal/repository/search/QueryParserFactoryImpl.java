@@ -1,10 +1,9 @@
 package org.vortikal.repository.search;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ResourceTypeTree;
 
-public class QueryParserFactoryImpl implements QueryParserFactory, InitializingBean {
+public class QueryParserFactoryImpl implements QueryParserFactory {
 
     private ResourceTypeTree resourceTypeTree;
 
@@ -13,15 +12,9 @@ public class QueryParserFactoryImpl implements QueryParserFactory, InitializingB
         return new QueryParserImpl(resourceTypeTree);
     }
 
+    @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.resourceTypeTree == null) {
-            throw new BeanInitializationException("Java bean property 'resourceTypeTree' must be set");
-        }
-    }
-
 
 }

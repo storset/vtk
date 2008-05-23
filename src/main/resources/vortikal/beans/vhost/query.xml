@@ -19,12 +19,19 @@
     <property name="expressionEvaluators">
       <list>
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDepthExpressionEvaluator" />
-        <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
+
+        <!-- Wrap CurrentFolderExpressionEvaluator to get escaped output -->
+        <bean class="org.vortikal.repository.search.preprocessor.OutputEscapingExpressionEvaluatorWrapper">
+          <property name="wrappedEvaluator">
+            <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator"
               parent="requestLocalRepositoryAware" />
-           <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
-           <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">
-             <property name="variableName" value="currentDate" />
-           </bean>
+          </property>
+        </bean>
+
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
+        <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">
+           <property name="variableName" value="currentDate" />
+        </bean>
       </list>
     </property>
   </bean>

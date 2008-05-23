@@ -264,7 +264,8 @@ Query UriPrefixQuery() :
     <URI> (eq=<EQ> | <NE>) t=<VALUE> <ASTERISK>
         { 
             boolean inverted = (eq == null); 
-            return new UriPrefixQuery(t.image, inverted); 
+            String value = unescape(t.image);
+            return new UriPrefixQuery(value, inverted); 
         }
 }
 
@@ -280,8 +281,9 @@ Query UriTermQuery() :
                 o = UriOperator.EQ;
             else
                 o = UriOperator.NE;
-
-            return new UriTermQuery(t.image, o);
+                
+            String value = unescape(t.image);
+            return new UriTermQuery(value, o);
         }
 }
 

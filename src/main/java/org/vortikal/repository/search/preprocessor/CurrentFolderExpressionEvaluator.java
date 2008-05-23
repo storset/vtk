@@ -80,11 +80,13 @@ public class CurrentFolderExpressionEvaluator implements ExpressionEvaluator {
             try {
                 Resource resource = this.repository.retrieve(securityToken, uri, true);
                 
-                if (!resource.isCollection()) 
-                    return resource.getParent();
+                String currentFolderUri = resource.getURI();
                 
-                return resource.getURI();
+                if (!resource.isCollection()) { 
+                    currentFolderUri = resource.getParent();
+                }
                 
+                return currentFolderUri;
             } catch (Throwable t) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Unable to resolve current URI", t);

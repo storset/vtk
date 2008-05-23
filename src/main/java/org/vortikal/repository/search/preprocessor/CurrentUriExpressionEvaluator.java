@@ -61,4 +61,3 @@ public class CurrentUriExpressionEvaluator implements ExpressionEvaluator {
         return token;
     }
 }
-

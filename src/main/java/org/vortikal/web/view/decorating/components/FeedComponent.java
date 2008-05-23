@@ -33,6 +33,7 @@ package org.vortikal.web.view.decorating.components;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
@@ -67,11 +68,12 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
     private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = 
         "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
     
-
-    
     private static final String PARAMETER_SORT = "sort";
     private static final String PARAMETER_SORT_DESC = 
-        "Default sorted by published date. Set to 'item-title' to sort by this instead.";
+        "Default sorted by published date. Set to 'item-title' to sort by this instead. " 
+        + "You can control the direction of the sorting by using the keywords 'asc' or 'desc'. " 
+        + "Usage examples: sort=[asc], sort=[item-title desc], sort=[published-date asc], etc. "
+        + "The default is descending direction (newest first) for published date and ascending when sorting by 'item-title'.";
     
     private static final String PARAMETER_PUBLISHED_DATE = "published-date";
     private static final String PARAMETER_PUBLISHED_DATE_DESC = 
@@ -85,7 +87,6 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
 
     private static final String PARAMETER_INCLUDE_IF_EMPTY = "include-if-empty";
     private static final String PARAMETER_INCLUDE_IF_EMPTY_DESC = "Set to 'false' if you don't want to display empty feeds. Default is 'true'.";
-
 
     private ContentCache<String, SyndFeed> cache;
 
@@ -147,11 +148,35 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
             conf.put("bottomLinkToAllMessages", true);
         }
 
+        // Typical sort strings we handle:
+        // asc
+        // item-title
+        // item-title desc
+        // desc item-title
+        // etc..
         String sortString = request.getStringParameter(PARAMETER_SORT);
-        if ("item-title".equals(sortString)) {
-            conf.put("sortByTitle", true);
+        boolean directionSpecified = false; // Indicates explicitly set sort direction
+        if (sortString != null) {
+            StringTokenizer tokenizer = new StringTokenizer(sortString);
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken();
+                if ("item-title".equals(token)) {
+                    conf.put("sortByTitle", true);
+                    if (!directionSpecified) {
+                        // Set to default for title, if not already specified.
+                        conf.put("sortAscending", true);
+                    }
+                } else if ("asc".equalsIgnoreCase(token)) {
+                    conf.put("sortAscending", true);
+                    directionSpecified = true;
+                } else if ("desc".equalsIgnoreCase(token)) {
+                    conf.remove("sortAscending");
+                    directionSpecified = true;
+                }
+            }
         }
-        
+
+
         boolean includeIfEmpty = true;
         String includeIfEmptyParam = request.getStringParameter(PARAMETER_INCLUDE_IF_EMPTY);
         if ("false".equalsIgnoreCase(includeIfEmptyParam)) {

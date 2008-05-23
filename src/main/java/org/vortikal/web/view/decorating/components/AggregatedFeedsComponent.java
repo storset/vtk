@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
@@ -110,12 +111,33 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         } else {
             conf.put("publishedDate", "long");
         }
-        
 
-
+        // Typical sort strings we handle:
+        // asc
+        // item-title
+        // item-title desc
+        // desc item-title
+        // etc..
         String sortString = request.getStringParameter(Parameter.SORT.getId());
-        if ("item-title".equals(sortString)) {
-            conf.put("sortByTitle", true);
+        boolean directionSpecified = false; // Indicates explicitly set sort direction
+        if (sortString != null) {
+            StringTokenizer tokenizer = new StringTokenizer(sortString);
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken();
+                if ("item-title".equals(token)) {
+                    conf.put("sortByTitle", true);
+                    if (!directionSpecified) {
+                        // Set to default for title, if not already specified.
+                        conf.put("sortAscending", true);
+                    }
+                } else if ("asc".equalsIgnoreCase(token)) {
+                    conf.put("sortAscending", true);
+                    directionSpecified = true;
+                } else if ("desc".equalsIgnoreCase(token)) {
+                    conf.remove("sortAscending");
+                    directionSpecified = true;
+                }
+            }
         }
         
         boolean includeIfEmpty = true;
@@ -231,7 +253,10 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         URLS ("urls", "Comma separated list of feed urls."),
         FEED_TITLE ("feed-title", "An optional string to show as feed title"),
         DISPLAY_CHANNEL ("display-channel", "Defaults to 'true', displaying the items source feed"), 
-        SORT ("sort", "Default sorted by published date. Set to 'item-title' to sort by this instead."),
+        SORT ("sort", "Default sorted by published date. Set to 'item-title' to sort by this instead. " 
+                + "You can control the direction of the sorting by using the keywords 'asc' or 'desc'. "
+                + "Usage examples: sort=[asc], sort=[item-title desc], sort=[published-date asc], etc. "
+                + "The default is descending (newest first) for published date and ascending when sorting by 'item-title'."),
         PUBLISHED_DATE ("published-date", "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date"),
         MAX_MESSAGES ("max-messages", "The max number of messages to display, defaults to 10"),
         ITEM_DESCRIPTION ("item-description", "Must be set to 'true' to show item descriptions"),

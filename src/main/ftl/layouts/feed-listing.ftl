@@ -15,7 +15,18 @@
     <#assign entries = feed.entries />
       <#if conf.sortByTitle?exists>
         <#assign entries = entries?sort_by("title") />
+        <#if !conf.sortAscending?exists>
+          <#-- Reverse order, descending sort requested, and ascending is default -->
+          <#assign entries = entries?reverse />
+        </#if> 
+      <#else>
+        <#if conf.sortAscending?exists>
+          <#-- Feeds are by default sorted descending by publish-date, 
+               reverse if ascending sort is requested -->
+          <#assign entries = entries?reverse />
+        </#if>
       </#if>
+
       <#assign maxMsgs = conf.maxMsgs />
       <#if entries?size lt maxMsgs>
         <#assign maxMsgs = entries?size />

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="navigationMixinResourceTypeDef" 
+        class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+    <property name="name" value="navigation"/>
+    <property name="namespace" ref="NAVIGATION_NAMESPACE" /> 
+    <property name="propertyTypeDefinitions" ref="navigationPropertyDefinitions" />
+  </bean>
+
+  <bean id="NAVIGATION_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="navigation" />
+    <constructor-arg value="http://www.uio.no/navigation" />
+  </bean>
+
+  <bean id="navigationPropertyDefinitions"
+        class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <list>
+        <ref bean="hiddenPropDef" />
+        <ref bean="importancePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="hiddenPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="hidden"/>
+    <property name="type" value="BOOLEAN"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="importancePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="importance"/>
+    <property name="type" value="INT"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>      
+  </bean>
+
+</beans>

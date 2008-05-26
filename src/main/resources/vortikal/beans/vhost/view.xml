@@ -338,7 +338,7 @@
       Breadcrumb provider that generates links to the view service
     </description>
     <property name="service" ref="viewService"/>
-    <property name="ignoreProperty" ref="skipInPathPropDef"/>
+    <property name="ignoreProperty" ref="hiddenPropDef"/>
     <property name="titleOverrideProperties">
       <list>
         <ref bean="titlePropDef" />

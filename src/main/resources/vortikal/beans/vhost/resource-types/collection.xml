@@ -16,12 +16,12 @@
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="visualProfileMixinResourceTypeDef" />
+        <ref bean="navigationMixinResourceTypeDef" />
       </list>
     </property>
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="skipInPathPropDef" />
         <ref bean="typePropDef" />
       </list>
     </property>
@@ -47,26 +47,26 @@
     </property>
   </bean>
 
-  <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="skipInPath" />
-    <property name="type" value="BOOLEAN" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="type" value="BOOLEAN" />
-        <property name="values">
-          <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="boolean">
-                <value>true</value>
-              </constructor-arg>
-            </bean>
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
+<!--  <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">-->
+<!--    <property name="name" value="skipInPath" />-->
+<!--    <property name="type" value="BOOLEAN" />-->
+<!--    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />-->
+<!--    <property name="mandatory" value="false" />-->
+<!--    <property name="vocabulary">-->
+<!--      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">-->
+<!--        <property name="type" value="BOOLEAN" />-->
+<!--        <property name="values">-->
+<!--          <list>-->
+<!--            <bean class="org.vortikal.repository.resourcetype.Value">-->
+<!--              <constructor-arg type="boolean">-->
+<!--                <value>true</value>-->
+<!--              </constructor-arg>-->
+<!--            </bean>-->
+<!--          </list>-->
+<!--        </property>-->
+<!--      </bean>-->
+<!--    </property>-->
+<!--  </bean>-->
 
   <!-- Assertion that matches all collection resources -->
   <bean id="collectionAssertion" class="org.vortikal.web.service.ResourceIsCollectionAssertion" />

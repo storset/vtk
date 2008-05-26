@@ -162,7 +162,7 @@
 
   <#-- @propList.propertyList
        modelName = "aboutItems"
-       itemNames =  [ 'title', 'skipInPath', 'content:keywords',
+       itemNames =  [ 'title', 'navigation:hidden', 'content:keywords',
                       'content:description', 'content:verifiedDate',
                       'content:authorName', 'content:authorEmail', 
                       'content:authorURL' ] / -->
@@ -202,8 +202,8 @@
   <table class="resourceInfo">
 
   <#if resource.collection>
-    <!-- skipInPath -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'skipInPath' />
+    <!-- navigation:hidden -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:hidden' />
   <#else>
     <!-- Content type -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />

@@ -70,6 +70,7 @@
 
   <!-- MIXINs -->
   <import resource="mixins/header-control.xml" />
+  <import resource="mixins/navigation.xml" />
   <import resource="mixins/ssi.xml" />
   <import resource="mixins/visual-profile.xml" />
   <import resource="mixins/content-description.xml" />

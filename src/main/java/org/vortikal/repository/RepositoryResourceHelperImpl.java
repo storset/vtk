@@ -647,7 +647,6 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         public Date getTime() {
             return time;
         }
-        
     }
 
 }

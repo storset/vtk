@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2005, 2006, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -59,12 +59,12 @@ import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.util.Version;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.ErrorHandler;
 import org.vortikal.web.RepositoryContextInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.RequestContextInitializer;
 import org.vortikal.web.filter.RequestFilter;
+import org.vortikal.web.filter.StandardRequestFilter;
 import org.vortikal.web.service.Service;
 
 
@@ -230,6 +230,7 @@ public class VortikalServlet extends DispatcherServlet {
     }
     
 
+    @SuppressWarnings("unchecked")
     private void initErrorHandlers() {
         Map handlers = getWebApplicationContext().getBeansOfType(
             ErrorHandler.class, false, false);
@@ -331,7 +332,8 @@ public class VortikalServlet extends DispatcherServlet {
             request.setAttribute(SERVLET_NAME_REQUEST_ATTRIBUTE, getServletName());
             BaseContext.pushContext();
             Thread.currentThread().setName(this.getServletName() + "." + String.valueOf(number));
-
+            logger.warn("__received_req: " + request);
+            
             request = filterRequest(request);
 
             if (this.repositoryContextInitializer != null) {
@@ -547,6 +549,7 @@ public class VortikalServlet extends DispatcherServlet {
      * @param req the servlet request
      * @param t the error to log
      */
+    @SuppressWarnings("unchecked")
     private void logError(String message, HttpServletRequest req, Throwable t) {
             
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -588,7 +591,7 @@ public class VortikalServlet extends DispatcherServlet {
         sb.append("method: [").append(httpMethod).append("], ");
         sb.append("request parameters: [").append(params).append("], ");
         sb.append("user agent: [").append(req.getHeader("User-Agent")).append("], ");
-        sb.append("host: [").append(URLUtil.getHostName(req)).append("], ");
+        sb.append("host: [").append(req.getServerName()).append("], ");
         sb.append("remote host: [").append(req.getRemoteHost()).append("]");
 
         this.errorLogger.error(sb.toString(), t);
@@ -609,6 +612,7 @@ public class VortikalServlet extends DispatcherServlet {
      * @exception ServletException if an error occurs during error
      * handling
      */
+    @SuppressWarnings("unchecked")
     private void handleError(HttpServletRequest req, HttpServletResponse resp,
                              Throwable t) throws ServletException {
 
@@ -694,7 +698,9 @@ public class VortikalServlet extends DispatcherServlet {
             view.render(model, req, resp);
             
         } catch (Exception e) {
-            e.initCause(t);
+            try {
+                e.initCause(t);
+            } catch (Throwable unhandled) { }
             throw new ServletException("Error while rendering error view", e);
         }
     }

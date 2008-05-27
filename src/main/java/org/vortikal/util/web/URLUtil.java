@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2007, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -244,25 +244,6 @@ public class URLUtil {
         return result.toString().replaceAll("\\+", "%20");
     }
 
-
-    /**
-     * Gets the host name from the HTTP request.
-     *
-     * @param request a <code>HttpServletRequest</code> value
-     * @return a <code>String</code>
-     * @deprecated Use {@link HttpServletRequest#getServerName} instead.
-     */
-    public static String getHostName(HttpServletRequest request) {
-        StringBuffer url = request.getRequestURL();
-
-        // FIXME: handle user names and passwords in URLs
-        String hostName = url.substring(url.indexOf("://") + 3);
-        hostName = hostName.substring(0, hostName.indexOf("/"));
-        if (hostName.indexOf(":") > 0) {
-            hostName = hostName.substring(0, hostName.indexOf(":"));
-        }
-        return hostName;
-    }
     
 
     /**

@@ -332,7 +332,6 @@ public class VortikalServlet extends DispatcherServlet {
             request.setAttribute(SERVLET_NAME_REQUEST_ATTRIBUTE, getServletName());
             BaseContext.pushContext();
             Thread.currentThread().setName(this.getServletName() + "." + String.valueOf(number));
-            logger.warn("__received_req: " + request);
             
             request = filterRequest(request);
 

@@ -7,6 +7,6 @@ if test -z $RESIN_HOME; then
     echo "\$RESIN_HOME must be set to use this script";
     echo "(set it in .bashrc)";
 else
-    $RESIN_HOME/bin/httpd.sh -conf $CONF $DEBUG_PARAMS
+    $RESIN_HOME/bin/httpd.sh -log-directory "$PWD/target" -conf $CONF $DEBUG_PARAMS
 fi
 

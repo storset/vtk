@@ -19,7 +19,7 @@
     </#if>
     <title>${title?html}</title>
   </head>
-  <body>
+  <body class="vrtx-recent-comments-view">
     <h1>${title?html}</h1>
     <ul class="comments">
     <#list comments as comment>

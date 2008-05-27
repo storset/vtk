@@ -30,10 +30,10 @@
        <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if>
-
+ 
 </head>
 
-<body>
+<body id="vrtx-tagview">
   <h1>${title}</h1>
 
   <#if error?exists>

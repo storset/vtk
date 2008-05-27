@@ -2,7 +2,7 @@ FCKConfig.AutoDetectLanguage = false;
 FCKConfig.ForcePasteAsPlainText = true;
 FCKConfig.AutoDetectPasteFromWord = false;
 FCKConfig.ToolbarCanCollapse = false;
-
+FCKConfig.FirefoxSpellChecker = true;
 
 FCKConfig.ToolbarSets['Complete'] = [
             ['Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],

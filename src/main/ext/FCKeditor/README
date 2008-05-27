@@ -29,6 +29,9 @@ made):
 cd fckeditor-build
 for f in $(svn status ../fckeditor-modifications | grep '^M ' | sed 's/M .*\.\.\/fckeditor-modifications\///'); do cp "../fckeditor-modifications/$f" "./$f"; done;
 
-wget http://svn.fckeditor.net/FCKpackager/trunk/fckpackager.php
-
 php ./fckpackager.php
+
+The fckpackager.php file can be downloaded from:
+
+http://svn.fckeditor.net/FCKpackager/trunk/fckpackager.php
+

@@ -52,7 +52,24 @@
     <property name="name" value="importance"/>
     <property name="type" value="INT"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>      
+    <property name="mandatory" value="false"/>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="INT"/>
+        <property name="values">
+          <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+            <property name="targetClass"><value>org.vortikal.repository.resourcetype.ValueVocabularyUtil</value></property>
+            <property name="targetMethod"><value>integerRangeValueList</value></property>
+            <property name="arguments">
+              <list>
+                <value>-15</value>
+                <value>15</value>
+              </list>
+            </property>
+          </bean>
+        </property>
+      </bean>
+    </property>
   </bean>
 
 </beans>

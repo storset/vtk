@@ -162,7 +162,8 @@
 
   <#-- @propList.propertyList
        modelName = "aboutItems"
-       itemNames =  [ 'title', 'navigation:hidden', 'content:keywords',
+       itemNames =  [ 'title', 'navigation:hidden', 'navigation:importance', 
+                      'content:keywords',
                       'content:description', 'content:verifiedDate',
                       'content:authorName', 'content:authorEmail', 
                       'content:authorURL' ] / -->
@@ -204,6 +205,9 @@
   <#if resource.collection>
     <!-- navigation:hidden -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:hidden' />
+
+    <!-- navigation:importance -->
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:importance' />
   <#else>
     <!-- Content type -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />

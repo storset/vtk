@@ -745,6 +745,7 @@
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
         <ref bean="hiddenPropDef" />
+        <ref bean="importancePropDef" />
 
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />

@@ -90,7 +90,7 @@ public class PropertyEditCommand extends AbstractSaveCancelCommand {
     }
 
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("PropertyEditCommand[");
         buffer.append("definition = ").append(this.definition);
         if (this.possibleValues == null) {

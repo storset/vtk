@@ -476,7 +476,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         this.authorizationManager.authorizeWrite(uri, principal);
             
-        String newLockToken = this.lockManager.lockResource(
+        this.lockManager.lockResource(
             r, principal, ownerInfo, depth, requestedTimeoutSeconds,
             (lockToken != null));
 
@@ -739,7 +739,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
 
-            List comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
             if (comments.size() > this.maxComments) {
                 throw new IllegalOperationException(
                     "Too many comments on resource " + resource.getURI());

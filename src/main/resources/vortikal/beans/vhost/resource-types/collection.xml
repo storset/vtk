@@ -22,6 +22,9 @@
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
     <property name="propertyTypeDefinitions">
       <list>
+        <ref bean="collectionTitlePropDef" />
+        <ref bean="collectionOverriddenTitlePropDef" />
+        <ref bean="skipInPathPropDef" />
         <ref bean="typePropDef" />
       </list>
     </property>
@@ -47,6 +50,54 @@
     </property>
   </bean>
 
+  <bean id="collectionTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="collectionTitle" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="createEvaluator" ref="collectionTitlePropertyEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="collectionTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="capitalizeResourceNames" value="true" />
+  </bean>
+
+  <bean id="collectionOverriddenTitlePropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="titlePropDef" />
+    <property name="createEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
+    <property name="contentModificationEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
+    <property name="propertiesModificationEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
+    <property name="nameModificationEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
+  </bean>
+
+  <bean id="collectionOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+    <property name="fallbackTitlePropDef" ref="collectionTitlePropDef"/>
+  </bean>
+
+
+  <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="skipInPath" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="type" value="BOOLEAN" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="boolean">
+                <value>true</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
 <!--  <bean id="skipInPathPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">-->
 <!--    <property name="name" value="skipInPath" />-->
 <!--    <property name="type" value="BOOLEAN" />-->

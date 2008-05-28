@@ -54,6 +54,8 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
     private PropertyTypeDefinition propertyDefinition;
     private PropertyTypeDefinition fallbackTitlePropDef;
 
+    private boolean capitalizeResourceNames = false;
+    
     public boolean nameModification(Principal principal, Property property,
             PropertySet ancestorPropertySet, Date time) {
         return evaluateProp(property, ancestorPropertySet);
@@ -85,7 +87,7 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
             PropertySet ancestorPropertySet) throws ValueFormatException,
             IllegalOperationException {
 
-        Property prop = ancestorPropertySet.getProperty(propertyDefinition);
+        Property prop = ancestorPropertySet.getProperty(this.propertyDefinition);
         if (prop != null)
             property.setStringValue(prop.getStringValue());
         else
@@ -102,11 +104,24 @@ public class DefaultTitleEvaluator implements NameChangePropertyEvaluator,
                 return prop.getStringValue();
             }
         }
+        if (this.capitalizeResourceNames) {
+            StringBuilder result = new StringBuilder();
+            String name = ancestorPropertySet.getName(); 
+            if (name.length() > 0) {
+                result.append(name.substring(0, 1).toUpperCase());
+                result.append(name.substring(1));
+            }
+            return result.toString();
+        }
         return ancestorPropertySet.getName();
     }
 
     public void setFallbackTitlePropDef(PropertyTypeDefinition fallbackTitlePropDef) {
         this.fallbackTitlePropDef = fallbackTitlePropDef;
+    }
+
+    public void setCapitalizeResourceNames(boolean capitalizeResourceNames) {
+        this.capitalizeResourceNames = capitalizeResourceNames;
     }
 
 }

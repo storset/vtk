@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -89,10 +89,10 @@ public class DefaultErrorHandler
     private String beanName = null;
     private View errorView = null;
     private String errorViewName = null;
-    private Class errorType = Throwable.class;
+    private Class<Throwable> errorType = Throwable.class;
     private Service service = null;
     private ReferenceDataProvider[] providers = new ReferenceDataProvider[0];
-    private Map statusCodeMappings = new HashMap();
+    private Map<String, Integer> statusCodeMappings = new HashMap<String, Integer>();
     
 
     public void setBeanName(String beanName) {
@@ -107,11 +107,11 @@ public class DefaultErrorHandler
         this.errorViewName = errorViewName;
     }
 
-    public void setErrorType(Class errorType) {
+    public void setErrorType(Class<Throwable> errorType) {
         this.errorType = errorType;
     }
 
-    public Class getErrorType() {
+    public Class<Throwable> getErrorType() {
         return this.errorType;
     }
     
@@ -127,7 +127,7 @@ public class DefaultErrorHandler
         this.providers = providers;
     }
     
-    public void setStatusCodeMappings(Map statusCodeMappings) {
+    public void setStatusCodeMappings(Map<String, Integer> statusCodeMappings) {
         this.statusCodeMappings = statusCodeMappings;
     }
     
@@ -147,10 +147,10 @@ public class DefaultErrorHandler
     }
     
     
-    public Map getErrorModel(HttpServletRequest request,
+    public Map<Object, Object> getErrorModel(HttpServletRequest request,
                              HttpServletResponse response,
                              Throwable error) throws Exception {
-        Map model = new HashMap();
+        Map<Object, Object> model = new HashMap<Object, Object>();
         if (this.providers != null) {
             try {
                 for (int i = 0; i < this.providers.length; i++) {
@@ -178,7 +178,7 @@ public class DefaultErrorHandler
                 : ctx.getMessage(DEFAULT_ERROR_CODE, DEFAULT_ERROR_DESCRIPTION);
         }
 
-        Map errorModel = new HashMap();
+        Map<Object, Object> errorModel = new HashMap<Object, Object>();
         errorModel.put(ERROR_MODEL_EXCEPTION_KEY, error);
         errorModel.put(ERROR_MODEL_ERROR_DESCRIPTION_KEY, errorMessage);
         model.put(ERROR_MODEL_KEY, errorModel);
@@ -207,13 +207,13 @@ public class DefaultErrorHandler
             return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
 
-        Object value = this.statusCodeMappings.get(key);
+        Integer value = this.statusCodeMappings.get(key);
         if (value == null) {
             return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
 
         try {
-            return Integer.parseInt(value.toString());
+            return value;
         } catch (NumberFormatException e) {
             return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }

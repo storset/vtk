@@ -68,7 +68,7 @@ public interface ErrorHandler {
      *
      * @return the exception class
      */
-    public Class getErrorType();
+    public Class<Throwable> getErrorType();
 
 
     /**
@@ -89,8 +89,9 @@ public interface ErrorHandler {
      * @exception Exception if an error occurs during error handling
      * (this will most likely cause a servlet exception)
      */
-    public Map getErrorModel(HttpServletRequest request, HttpServletResponse response,
-                             Throwable error) throws Exception;
+    public Map<Object, Object> 
+    getErrorModel(HttpServletRequest request, HttpServletResponse response,
+            Throwable error) throws Exception;
     
 
     /**

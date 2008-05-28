@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 /**
  * A servlet response wrapper that is aware of the HTTP status code. 
  */
-public class StatusAwareResponseWrapper extends HttpServletResponseWrapper {
+public class StatusAwareResponseWrapper extends HttpServletResponseWrapper implements StatusAwareHttpServletResponse {
 
     private int status = HttpServletResponse.SC_OK;
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -65,8 +65,7 @@ public class StandardDecoratorTemplate implements Template {
         compile();
     }
 
-    public String render(HtmlPage html, HttpServletRequest request,
-                       Locale locale) throws Exception {
+    public String render(HtmlPage html, HttpServletRequest request) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
@@ -80,6 +79,9 @@ public class StandardDecoratorTemplate implements Template {
                 if (doctype == null) {
                     doctype = DEFAULT_DOCTYPE;
                 }
+                
+                Locale locale = 
+                    new org.springframework.web.servlet.support.RequestContext(request).getLocale();
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                     html, request, fragment.getParameters(), doctype, locale);
 

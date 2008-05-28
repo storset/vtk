@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,11 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.text.html.HtmlPage;
 
 public interface Template {
 
-    public String render(HtmlPage html, HttpServletRequest request,
-                       Locale locale) throws Exception;
+    public String render(HtmlPage html, HttpServletRequest request) throws Exception;
 }

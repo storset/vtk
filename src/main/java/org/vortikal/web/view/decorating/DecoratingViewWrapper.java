@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2007, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -140,6 +140,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
     
 
+    @SuppressWarnings("unchecked")
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
@@ -147,7 +148,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         
         if (this.decorators != null) {
             for (int i = 0; i < this.decorators.length; i++) {
-                if (this.decorators[i].match(request)) {
+                if (this.decorators[i].match(request, response)) {
                     decoratorList.add(this.decorators[i]);
                 }
             }        
@@ -174,6 +175,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     }
 
 
+    @SuppressWarnings("unchecked")
     private void decorate(Map model, HttpServletRequest request,
                            List<Decorator> decoratorList, BufferedResponseWrapper bufferedResponse)
         throws Exception {
@@ -225,7 +227,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         if (this.decorators != null) {
             for (Decorator decorator: decoratorList) {
 
-                decorator.decorate(model, request, content);
+                decorator.decorate(model, request, bufferedResponse, content);
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Ran content filter " + decorator);
                 }

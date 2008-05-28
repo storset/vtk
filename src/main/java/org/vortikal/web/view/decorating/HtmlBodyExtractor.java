@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,11 @@ package org.vortikal.web.view.decorating;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
-
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -49,11 +50,13 @@ public class HtmlBodyExtractor implements Decorator {
         this.parser = parser;
     }
 
-    public boolean match(HttpServletRequest request) throws Exception {
+    public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return true;
     }
     
-    public void decorate(Map model, HttpServletRequest request, Content content) throws Exception {
+    @SuppressWarnings("unchecked")
+    public void decorate(Map model, HttpServletRequest request, 
+                        HttpServletResponse response, Content content) throws Exception {
         InputStream is = new ByteArrayInputStream(
             content.getContent().getBytes(content.getOriginalCharacterEncoding()));
 

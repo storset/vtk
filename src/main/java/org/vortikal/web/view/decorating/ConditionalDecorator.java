@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,9 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -73,10 +75,12 @@ public class ConditionalDecorator implements Decorator {
         this.checkContentLengthOnly = checkContentLengthOnly;
     }
     
+    @SuppressWarnings("unchecked")
     public void decorate(Map model, HttpServletRequest request,
-                          Content content) throws Exception {
+                        HttpServletResponse response,
+                        Content content) throws Exception {
         String unprocessedContent = content.getContent();
-        this.conditionalDecorator.decorate(model, request, content);
+        this.conditionalDecorator.decorate(model, request, response, content);
         boolean runDecorator = false;
         int length = content.getContent().length();
         if (this.checkContentLengthOnly) {
@@ -86,11 +90,12 @@ public class ConditionalDecorator implements Decorator {
         } 
 
         if (runDecorator) {
-            this.targetDecorator.decorate(model, request, content);
+            this.targetDecorator.decorate(model, request, response, content);
         }
     }
 
-    public boolean match(HttpServletRequest request) throws Exception {
+    public boolean match(HttpServletRequest request, HttpServletResponse response) 
+        throws Exception {
         return true;
     }
 

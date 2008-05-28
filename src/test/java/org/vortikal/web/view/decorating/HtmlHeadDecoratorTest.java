@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,8 @@ import java.util.HashMap;
 import junit.framework.TestCase;
 
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.vortikal.web.view.MockStringView;
-import org.vortikal.web.view.decorating.ContentImpl;
-import org.vortikal.web.view.decorating.HtmlHeadDecorator;
 
 
 public class HtmlHeadDecoratorTest extends TestCase {
@@ -179,10 +178,12 @@ public class HtmlHeadDecoratorTest extends TestCase {
     }
 
 
+    @SuppressWarnings("unchecked")
     private String runFilter(String document, String headContent,
                              boolean removeTitles, boolean removeCharsets) throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        
         MockStringView view = new MockStringView(headContent);
         HtmlHeadDecorator decorator = new HtmlHeadDecorator();
         decorator.setView(view);
@@ -191,7 +192,7 @@ public class HtmlHeadDecoratorTest extends TestCase {
 
         decorator.afterPropertiesSet();
         ContentImpl content = new ContentImpl(document, request.getCharacterEncoding());
-        decorator.decorate(new HashMap(), request, content);
+        decorator.decorate(new HashMap(), request, response, content);
         return content.getContent();
 
     }

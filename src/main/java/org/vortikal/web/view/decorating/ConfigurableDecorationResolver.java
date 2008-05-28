@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,10 +49,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
 
 
 public class ConfigurableDecorationResolver implements DecorationResolver, InitializingBean {
@@ -99,18 +102,35 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
 
     public DecorationDescriptor resolve(HttpServletRequest request,
-                                        Locale locale) throws Exception {
+                                        HttpServletResponse response) throws Exception {
 
-        InternalDescriptor descriptor = new InternalDescriptor();
         
+        InternalDescriptor descriptor = new InternalDescriptor();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
-        String paramString = checkRegexpMatch(uri);
-        if (paramString == null) {
+        String paramString = null;
+        
+        boolean errorPage = false;
+        if (response instanceof StatusAwareHttpServletResponse) {
+            int status = ((StatusAwareHttpServletResponse) response).getStatus();
+            if (status >= 400) {
+                errorPage = true;
+                paramString = checkErrorCodeMatch(status);
+            }
+        }
+
+        if (paramString == null && !errorPage) {
+            paramString = checkRegexpMatch(uri);
+        }
+        
+        if (paramString == null && !errorPage) {
             paramString = checkPathMatch(uri);
         }
+        
         if (paramString != null) {
+            Locale locale = 
+                new org.springframework.web.servlet.support.RequestContext(request).getLocale();
             populateDescriptor(descriptor, locale, paramString);
         }
         
@@ -120,17 +140,27 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             String token = SecurityContext.getSecurityContext().getToken();
             try {
                 resource = this.repository.retrieve(token, uri, true);
+            } catch (ResourceNotFoundException e) {
+                descriptor.parse = false;
             } catch (Exception e) {
                 throw new RuntimeException("Unrecoverable error when decorating '" + uri + "'", e);
             }
             
-            if (resource.getProperty(this.parseableContentPropDef) == null) {
+            if (resource != null && resource.getProperty(this.parseableContentPropDef) == null) {
                 descriptor.parse = false;
             }
         }
         return descriptor;
     }
 
+    private String checkErrorCodeMatch(int status) {
+        String value = this.decorationConfiguration.getProperty("error[" + status + "]");
+        if (value == null) {
+            value = this.decorationConfiguration.getProperty("error");
+        }
+        return value;
+    }
+    
     private String checkRegexpMatch(String uri) {
         Enumeration<?> keys = this.decorationConfiguration.propertyNames();
         while (keys.hasMoreElements()) {

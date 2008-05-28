@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,15 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpServletResponse;
 
+public interface StatusAwareHttpServletResponse extends HttpServletResponse {
 
-public interface DecorationResolver {
-
-    public DecorationDescriptor resolve(HttpServletRequest request,
-                                        HttpServletResponse response) throws Exception;
-    
+    public int getStatus();
+     
 }

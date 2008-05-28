@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,7 +77,9 @@ public class TextReplaceDecorator implements Decorator, InitializingBean {
     }
 
 
-    public void decorate(Map model, HttpServletRequest request, Content content) {
+    @SuppressWarnings("unchecked")
+    public void decorate(Map model, HttpServletRequest request, 
+            HttpServletResponse response, Content content) {
         
         String s = content.getContent();
         Matcher matcher = this.pattern.matcher(s);
@@ -90,7 +93,7 @@ public class TextReplaceDecorator implements Decorator, InitializingBean {
     }
 
 
-    public boolean match(HttpServletRequest request) throws Exception {
+    public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return true;
     }
 }

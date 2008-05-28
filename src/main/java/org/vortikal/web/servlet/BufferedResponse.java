@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2007, University of Oslo, Norway
+/* Copyright (c) 2004, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import org.vortikal.util.io.BoundedOutputStream;
  * <p>FIXME: What to do with statusMessage?
  * <br>FIXME: Allow several headers having the same name?
  */
-public class BufferedResponse implements HttpServletResponse {
+public class BufferedResponse implements StatusAwareHttpServletResponse {
 
     private static final String DEFAULT_CHAR_ENCODING = "utf-8";
     private static final String CONTENT_LENGTH = "Content-Length";

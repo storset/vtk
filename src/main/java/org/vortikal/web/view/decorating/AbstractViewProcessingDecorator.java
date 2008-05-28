@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,13 @@ package org.vortikal.web.view.decorating;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
-
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 
@@ -78,7 +78,7 @@ public abstract class AbstractViewProcessingDecorator
     
     
 
-    public boolean match(HttpServletRequest request) throws Exception {
+    public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return true;
     }
 
@@ -94,8 +94,9 @@ public abstract class AbstractViewProcessingDecorator
      * #processInternal} method.
      * @exception Exception if an error occurs
      */
+    @SuppressWarnings("unchecked")
     public final void decorate(Map model, HttpServletRequest request,
-            Content content) throws Exception {
+            HttpServletResponse response, Content content) throws Exception {
 
         String viewContent = renderView(model, request);
         processInternal(content, viewContent);
@@ -120,6 +121,7 @@ public abstract class AbstractViewProcessingDecorator
     
 
 
+    @SuppressWarnings("unchecked")
     private String renderView(Map model, HttpServletRequest request) throws Exception {
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);

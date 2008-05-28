@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
@@ -66,21 +66,21 @@ public class TemplateDecorator implements Decorator {
     
     private List<HtmlNodeFilter> htmlNodeFilters;    
 
-    public boolean match(HttpServletRequest request) throws Exception {
-        Locale locale = 
-            new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        
-        return resolveDecorationDescriptor(request, locale).decorate();
+    private static final String DECORATION_DESCRIPTOR_REQ_ATTR = 
+        TemplateDecorator.class.getName() + ".DecorationDescriptor";
+    
+    public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        DecorationDescriptor descriptor = resolveDecorationDescriptor(request, response);
+        request.setAttribute(DECORATION_DESCRIPTOR_REQ_ATTR, descriptor);
+        return descriptor.decorate();
     }
     
-    public void decorate(Map model, HttpServletRequest request, Content content)
+    @SuppressWarnings("unchecked")
+    public void decorate(Map model, HttpServletRequest request, HttpServletResponse response, Content content)
         throws Exception, UnsupportedEncodingException, IOException {
 
-        Locale locale = 
-            new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        
-        DecorationDescriptor descriptor = resolveDecorationDescriptor(request, locale);
-        if (!descriptor.decorate()) {
+        DecorationDescriptor descriptor = (DecorationDescriptor) request.getAttribute(DECORATION_DESCRIPTOR_REQ_ATTR);
+        if (descriptor == null || !descriptor.decorate()) {
             return;
         }
 
@@ -111,7 +111,7 @@ public class TemplateDecorator implements Decorator {
                          + " using template '" + template + "'");
         }
 
-        content.setContent(template.render(html, request, locale));
+        content.setContent(template.render(html, request));
         if (descriptor.tidy()) {
             tidyContent(content);
         }
@@ -162,8 +162,8 @@ public class TemplateDecorator implements Decorator {
     }
     
     protected DecorationDescriptor resolveDecorationDescriptor(
-        HttpServletRequest request, Locale locale) throws Exception {
-        return this.decorationResolver.resolve(request, locale);
+        HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return this.decorationResolver.resolve(request, response);
     }
     
 

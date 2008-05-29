@@ -81,7 +81,7 @@ public class TagsController implements Controller {
             return new ModelAndView(this.viewName, model);
         }
         
-        Query query = new PropertyTermQuery(this.propDef, tag, TermOperator.EQ);
+        Query query = new PropertyTermQuery(this.propDef, tag, TermOperator.EQ_IGNORECASE);
 
         Resource scopedResource = null;
         String scope = request.getParameter("scope");

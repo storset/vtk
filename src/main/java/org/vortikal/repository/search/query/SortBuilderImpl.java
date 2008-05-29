@@ -86,7 +86,7 @@ public class SortBuilderImpl implements SortBuilder {
                 
             } else if (f instanceof PropertySortField) {
                 PropertyTypeDefinition def = ((PropertySortField) f).getDefinition();
-                fieldName = FieldNameMapping.getSearchFieldName(def);
+                fieldName = FieldNameMapping.getSearchFieldName(def, false);
                 
                 switch (def.getType()) {
                 
@@ -99,7 +99,7 @@ public class SortBuilderImpl implements SortBuilder {
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, org.apache.lucene.search.SortField.STRING, direction);
                     break;
-                    
+
                 default:
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, f.getLocale(), direction);

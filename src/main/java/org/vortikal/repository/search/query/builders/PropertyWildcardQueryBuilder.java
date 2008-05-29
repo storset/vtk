@@ -75,7 +75,7 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
                 + "Use range queries for dates and numbers.");
         }
         
-        String fieldName = FieldNameMapping.getSearchFieldName(def);
+        String fieldName = FieldNameMapping.getSearchFieldName(def, false);
         Term wTerm = new Term(fieldName, wildcard);
 
         Filter filter = new WildcardTermFilter(wTerm);

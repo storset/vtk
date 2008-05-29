@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.search.query;
 
-
-
 public interface NameQuery extends Query {
 
 }

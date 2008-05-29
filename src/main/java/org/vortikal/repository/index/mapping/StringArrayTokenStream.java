@@ -17,14 +17,13 @@ public class StringArrayTokenStream extends TokenStream {
     private String[] values;
     private int currentValueIndex;
     private int currentTermOffset;
-
     
     public StringArrayTokenStream(String[] values) {
         this.values = values;
         this.currentValueIndex = 0;
         this.currentTermOffset = 0;
     }
-
+    
     @Override
     public Token next() throws IOException {
         if (currentValueIndex == values.length) {
@@ -32,6 +31,7 @@ public class StringArrayTokenStream extends TokenStream {
         }
         
         String termText = values[currentValueIndex++];
+
         int endOffset = currentTermOffset + termText.length();
         Token token = new Token(termText, currentTermOffset, endOffset);
         currentTermOffset = endOffset;

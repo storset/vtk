@@ -60,21 +60,18 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
         this.fieldValue = fieldValue;
     }
 
-
-
     public Query buildQuery() throws QueryBuilderException {
         
+        // XXX: QueryBuilderFactoryImpl does the necessary downcasing and field name selection
+        //      if ignore case has been enabled. Kinda inconsistent.
         
-        
-        if (op == TermOperator.EQ) {
+        if (op == TermOperator.EQ || op == TermOperator.EQ_IGNORECASE) {
             return new TermQuery(new Term(fieldName, fieldValue));
         }
         
-        if (op == TermOperator.NE) {
-            TermQuery tq = 
-                new TermQuery(new Term(fieldName, fieldValue));
+        if (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE) {
+            TermQuery tq = new TermQuery(new Term(fieldName, fieldValue));
             return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
-            //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
         } 
 
         boolean includeLower = false;

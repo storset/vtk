@@ -59,17 +59,8 @@ public class NameTermQuery implements NameQuery {
         this.term = term;
     }
 
-//    public String dump(String prefix) {
-//        StringBuffer buf = new StringBuffer().append(prefix);
-//        buf.append(this.getClass().getName()).append("\n");
-//        
-//        buf.append(prefix).append("Term = '").append(this.term).append("', operator = '").append(this.operator).append("'\n");
-//        return buf.toString();
-//    }
-//
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
-    
 
 }

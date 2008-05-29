@@ -58,17 +58,27 @@ public class NameTermQueryBuilder implements QueryBuilder {
     public org.apache.lucene.search.Query buildQuery() {
         String term = this.ntq.getTerm();
         TermOperator op = this.ntq.getOperator();
-        
-        if (op == TermOperator.EQ) {
-            return new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
+
+        if (op == TermOperator.EQ || op == TermOperator.NE) {
+            TermQuery tq = new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
+                
+            if (op == TermOperator.EQ){
+                return tq;
+            } else {
+                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+            }
         }
-        
-        if (op == TermOperator.NE) {
-            TermQuery tq = 
-                new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
-        } 
-        
+
+        if (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE) {
+            TermQuery tq = new TermQuery(new Term(FieldNameMapping.NAME_LC_FIELD_NAME, term.toLowerCase()));
+            
+            if (op == TermOperator.EQ_IGNORECASE) {
+                return tq;
+            } else {
+                return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
+            }
+        }
+
         boolean includeLower = false;
         boolean includeUpper = false;
         String upperTerm = null;

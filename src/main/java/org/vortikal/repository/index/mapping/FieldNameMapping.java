@@ -46,10 +46,12 @@ public class FieldNameMapping {
 
     /* Special field characters and prefixes */
     public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
+    public static final String LOWERCASE_FIELD_PREFIX = "l_";
     public static final String STORED_BINARY_FIELD_PREFIX = "_";
     
     /* Special, reserved fields */
     public static final String NAME_FIELD_NAME =         PropertySet.NAME_IDENTIFIER;
+    public static final String NAME_LC_FIELD_NAME =      LOWERCASE_FIELD_PREFIX + NAME_FIELD_NAME;
     public static final String URI_FIELD_NAME =          PropertySet.URI_IDENTIFIER;
     public static final String URI_DEPTH_FIELD_NAME =    "uriDepth";
     public static final String RESOURCETYPE_FIELD_NAME = "resourceType";
@@ -81,22 +83,29 @@ public class FieldNameMapping {
         return RESERVED_FIELD_NAMES.contains(fieldName);
     }
     
-    public static String getSearchFieldName(Property prop) {
+    public static String getSearchFieldName(Property prop, boolean lowercase) {
         
         return getSearchFieldName(prop.getDefinition().getName(), 
-                prop.getDefinition().getNamespace().getPrefix());
+                prop.getDefinition().getNamespace().getPrefix(), lowercase);
     }
 
-    public static String getSearchFieldName(PropertyTypeDefinition def) {
+    public static String getSearchFieldName(PropertyTypeDefinition def, boolean lowercase) {
         
-        return getSearchFieldName(def.getName(), def.getNamespace().getPrefix());
+        return getSearchFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase);
     }
 
-    public static String getSearchFieldName(String propName, String propPrefix) {
-        if (propPrefix == null) {
-            return propName;
+    public static String getSearchFieldName(String propName, String propPrefix, boolean lowercase) {
+        StringBuilder fieldName = new StringBuilder();
+        if (lowercase) {
+            fieldName.append(LOWERCASE_FIELD_PREFIX);
         }
-        return propPrefix + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + propName;
+        
+        if (propPrefix != null) {
+            fieldName.append(propPrefix).append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+        }
+        
+        fieldName.append(propName);
+        return fieldName.toString();
     }
 
     public static String getStoredFieldName(Property property) {

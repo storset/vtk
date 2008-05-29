@@ -70,8 +70,6 @@ public class FieldValueMapperImpl implements FieldValueMapper {
 
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
 
-    public static final char ESCAPE_CHAR = '\\';
-
     private ValueFactory valueFactory;
     
     // No encoding (un-typed)
@@ -98,17 +96,16 @@ public class FieldValueMapperImpl implements FieldValueMapper {
 
     /**
      * Create indexed (but not stored) <code>Field</code> from multiple
-     * <code>Value</code> objects. Should be analyzed with
-     * {@link EscapedMultiValueFieldAnalyzer}.
+     * <code>Value</code> objects.
      * 
      * @param name
      * @param values
      * @return
      */
-    public Field getFieldFromValues(String name, Value[] values) {
+    public Field getFieldFromValues(String name, Value[] values, boolean lowercase) {
         String[] encodedValues = new String[values.length];
         for (int i = 0; i < values.length; i++) {
-            encodedValues[i] = encodeIndexFieldValue(values[i]);
+            encodedValues[i] = encodeIndexFieldValue(values[i], lowercase);
         }
 
         return new Field(name, new StringArrayTokenStream(encodedValues));
@@ -122,27 +119,9 @@ public class FieldValueMapperImpl implements FieldValueMapper {
      * @param value
      * @return
      */
-    public Field getFieldFromValue(String name, Value value) {
-        String encoded = encodeIndexFieldValue(value);
+    public Field getFieldFromValue(String name, Value value, boolean lowercase) {
+        String encoded = encodeIndexFieldValue(value, lowercase);
         return getKeywordField(name, encoded);
-    }
-
-    /**
-     * Create single <code>Value</code> from <code>Field</code> with the
-     * given datatype.
-     * 
-     * @param field
-     * @param valueFactory
-     * @param type
-     * @return
-     */
-    public Value getValueFromField(Field field, Type type) {
-        String fieldValue = field.stringValue();
-
-        String decodedFieldValue = decodeIndexFieldValueToString(fieldValue,
-                type);
-
-        return this.valueFactory.createValue(decodedFieldValue, type);
     }
 
     /**
@@ -161,54 +140,23 @@ public class FieldValueMapperImpl implements FieldValueMapper {
         return new Field(name, new StringArrayTokenStream(values));
     }
 
-    public int getIntegerFromUnencodedField(Field field) {
-        return Integer.parseInt(field.stringValue());
-    }
-
-    public String decodeIndexFieldValueToString(String fieldValue, Type type)
-            throws FieldDataEncodingException {
-
-        switch (type) {
-
-        case BOOLEAN:
-        case STRING:
-        case HTML:
-        case IMAGE_REF:
-        case PRINCIPAL:
-            return fieldValue; // No need to decode any of these.
-            // Index string representation already in native
-            // format.
-
-        case DATE:
-        case TIMESTAMP:
-            return Long.toString(FieldDataEncoder
-                    .decodeDateValueFromString(fieldValue));
-
-        case INT:
-            return Integer.toString(FieldDataEncoder
-                    .decodeIntegerFromString(fieldValue));
-
-        case LONG:
-            return Long.toString(FieldDataEncoder
-                    .decodeLongFromString(fieldValue));
-
-        default:
-            throw new FieldDataEncodingException("Unknown type " + type);
-
-        }
-    }
-
-    public String encodeIndexFieldValue(Value value)
+    public String encodeIndexFieldValue(Value value, boolean lowercase)
             throws FieldDataEncodingException {
 
         switch (value.getType()) {
         case STRING:
         case HTML:
+            if (lowercase) {
+                return value.getNativeStringRepresentation().toLowerCase();
+            } else {
+                return value.getNativeStringRepresentation();
+            }
+            
         case IMAGE_REF:
         case BOOLEAN:
         case PRINCIPAL:
             return value.getNativeStringRepresentation();
-
+            
         case DATE:
         case TIMESTAMP:
             return FieldDataEncoder.encodeDateValueToString(value
@@ -223,7 +171,6 @@ public class FieldValueMapperImpl implements FieldValueMapper {
         default:
             throw new FieldDataEncodingException("Unknown type: "
                     + value.getType());
-
         }
 
     }
@@ -235,17 +182,22 @@ public class FieldValueMapperImpl implements FieldValueMapper {
      * 
      * Only native string representations are supported by this method.
      */
-    public String encodeIndexFieldValue(String stringValue, Type type)
+    public String encodeIndexFieldValue(String stringValue, Type type, boolean lowercase)
             throws ValueFormatException, FieldDataEncodingException {
 
         switch (type) {
         case STRING:
         case HTML:
+            if (lowercase) {
+                return stringValue.toLowerCase();
+            } else {
+                return stringValue;
+            }
         case IMAGE_REF:
         case BOOLEAN:
         case PRINCIPAL:
             return stringValue;
-
+            
         case DATE:
         case TIMESTAMP:
             try {
@@ -305,76 +257,6 @@ public class FieldValueMapperImpl implements FieldValueMapper {
 
     }
 
-    /**
-     * Un-escape given backslash-escaped character in <code>String</code>.
-     * Escaped back-slashes are also un-escaped.
-     * 
-     * @param c
-     * @param s
-     * @return XXX: no longer in use
-     */
-    public static String unescapeCharacter(char c, String s) {
-
-        int length = s.length();
-        char[] output = new char[length];
-        int p = 0;
-
-        for (int i = 0; i < length; i++) {
-            char current = s.charAt(i);
-            if (current == ESCAPE_CHAR) {
-                if (i == length - 1) {
-                    throw new IllegalArgumentException(
-                            "Invalid escape-character sequence in string");
-                }
-
-                char next = s.charAt(i + 1);
-
-                if (next != c && next != ESCAPE_CHAR) {
-                    throw new IllegalArgumentException(
-                            "Invalid escape-character sequence in string");
-                }
-
-                output[p++] = next;
-                ++i;
-            } else {
-                output[p++] = current;
-            }
-        }
-
-        return new String(output, 0, p);
-    }
-
-    /**
-     * Escape given character using the backslash character '\\'. Note that
-     * occurences of the backslash character in the input string are also escaped.
-     * 
-     * @param c
-     * @param s
-     * @return XXX: no longer in use.
-     */
-    public static String escapeCharacter(char c, String s) {
-        int length = s.length();
-        char[] output = new char[length];
-        int p = 0;
-
-        for (int i = 0; i < length; i++) {
-            char current = s.charAt(i);
-            if (p >= output.length - 1) {
-                char[] doubled = new char[output.length * 2];
-                System.arraycopy(output, 0, doubled, 0, p);
-                output = doubled;
-            }
-
-            if (current == ESCAPE_CHAR || current == c) {
-                output[p++] = ESCAPE_CHAR;
-            }
-
-            output[p++] = current;
-        }
-
-        return new String(output, 0, p);
-    }
-    
     /* Binary field value mapping methods below */
 
     public Field getBinaryFieldFromValue(String name, Value value)

@@ -30,16 +30,15 @@
  */
 package org.vortikal.repository.search.query;
 
-
 public enum TermOperator {
-
     EQ,
+    EQ_IGNORECASE,
     NE,
+    NE_IGNORECASE,
     GT,
     LT,
     GE,
     LE,
     IN,
     NI;
-    
 }

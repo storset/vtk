@@ -64,12 +64,13 @@ public interface FieldValueMapper {
      * Create indexed (but not stored) <code>Field</code> from multiple
      * <code>Value</code> objects. Should be analyzed with
      * {@link EscapedMultiValueFieldAnalyzer}.
-     * 
+
      * @param name
      * @param values
+     * @param lowercase
      * @return
      */
-    public Field getFieldFromValues(String name, Value[] values) ;
+    public Field getFieldFromValues(String name, Value[] values, boolean lowercase) ;
     
     /**
      * Create indexed (but not stored) <code>Field</code> from single
@@ -77,35 +78,18 @@ public interface FieldValueMapper {
      * 
      * @param name
      * @param value
+     * @param lowercase
      * @return
      */
-    public Field getFieldFromValue(String name, Value value) ;
+    public Field getFieldFromValue(String name, Value value, boolean lowercase) ;
 
     /**
-     * Create single <code>Value</code> from <code>Field</code> with the
-     * given datatype.
-     * 
-     * @param field
-     * @param valueFactory
-     * @param type
+     * @param value
+     * @param lowercase
      * @return
+     * @throws FieldDataEncodingException
      */
-    public Value getValueFromField(Field field, Type type);
-
-    /**
-     * Used for generating ancestor ids field. We don't bother to encode it
-     * because of its system-specific nature, and that it should never be used
-     * as a sane sorting key or in range queries.
-     */
-    public Field getUnencodedMultiValueFieldFromIntegers(String name,
-            int[] integers) ;
-
-    public int getIntegerFromUnencodedField(Field field);
-
-    public String decodeIndexFieldValueToString(String fieldValue,
-            Type type) throws FieldDataEncodingException ;
-
-    public String encodeIndexFieldValue(Value value)
+    public String encodeIndexFieldValue(Value value, boolean lowercase)
             throws FieldDataEncodingException ;
 
     /**
@@ -114,13 +98,33 @@ public interface FieldValueMapper {
      * sortable, basically).
      * 
      * Only native string representations are supported by this method.
+     * 
+     * @param stringValue
+     * @param type
+     * @param lowercase
+     * @return
+     * @throws ValueFormatException
+     * @throws FieldDataEncodingException
      */
-    public String encodeIndexFieldValue(String stringValue, Type type)
+    public String encodeIndexFieldValue(String stringValue, Type type, boolean lowercase)
             throws ValueFormatException, FieldDataEncodingException;
     
     
+    /**
+     * Used for generating ancestor ids field. We don't bother to encode it
+     * because of its system-specific nature, and that it should never be used
+     * as a sane sorting key or in range queries.
+     */
+    public Field getUnencodedMultiValueFieldFromIntegers(String name, int[] integers) ;
+
     
-    
+    /**
+     * 
+     * @param name
+     * @param value
+     * @return
+     * @throws FieldDataEncodingException
+     */
     public Field getBinaryFieldFromValue(String name, Value value)
     throws FieldDataEncodingException;
 

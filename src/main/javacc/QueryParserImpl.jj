@@ -109,7 +109,9 @@ TOKEN : {
         | <DEPTH: "depth">
 
         | <EQ: "="> : Value
+        | <EQ_IGNORECASE: "=~"> : Value
         | <NE: "!="> : Value
+        | <NE_IGNORECASE: "!=~"> : Value
         | <GT: ">"> : Value
         | <GE: ">="> : Value
         | <LT: "<"> : Value
@@ -334,16 +336,20 @@ Query NamePrefixQuery() :
 
 Query NameTermQuery() : 
 {
-    Token t, eq = null, ne = null, gt = null, lt = null, ge = null, le = null;
+    Token t, eq = null, eqi = null, ne = null, nei = null, gt = null, lt = null, ge = null, le = null;
     TermOperator operator;
 }
 {
-    <NAME> (eq=<EQ> | ne=<NE> | gt=<GT> | lt=<LT> | ge=<GE> | le=<LE>) t=<VALUE>
+    <NAME> (eq=<EQ> | eqi=<EQ_IGNORECASE> | ne=<NE> | nei=<NE_IGNORECASE> | gt=<GT> | lt=<LT> | ge=<GE> | le=<LE>) t=<VALUE>
         {  
             if (eq != null) 
                 operator = TermOperator.EQ;
+            else if (eqi != null)
+                operator = TermOperator.EQ_IGNORECASE;
             else if (ne != null)
                 operator = TermOperator.NE;
+            else if (nei != null)
+                operator = TermOperator.NE_IGNORECASE;
             else if (gt != null)
                 operator = TermOperator.GT;
             else if (lt != null)
@@ -415,11 +421,11 @@ Query PropertyPrefixQuery() :
 // Property value query:
 Query PropertyTermQuery() : {
     Token p=null, n, v;
-    Token ne=null, ge=null, le=null, eq=null, gt=null, lt=null, in=null, ni=null;
+    Token ne=null, nei=null, ge=null, le=null, eq=null, eqi=null, gt=null, lt=null, in=null, ni=null;
 }
 {
     [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> 
-        (ne=<NE> | ge =<GE> | le=<LE> | eq=<EQ> | gt=<GT> | lt=<LT> | in=<IN> | ni=<NI>)
+        (ne=<NE> | nei=<NE_IGNORECASE> | ge =<GE> | le=<LE> | eq=<EQ> | eqi=<EQ_IGNORECASE> | gt=<GT> | lt=<LT> | in=<IN> | ni=<NI>)
         //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
         v=<VALUE>
         {
@@ -432,12 +438,16 @@ Query PropertyTermQuery() : {
             TermOperator operator = null;
             if (ne != null)
                 operator = TermOperator.NE;
+            else if (nei != null)
+                operator = TermOperator.NE_IGNORECASE;
             else if (ge != null)
                 operator = TermOperator.GE;
             else if (le != null)
                 operator = TermOperator.LE;
             else if (eq != null)
                 operator = TermOperator.EQ;
+            else if (eqi != null)
+                operator = TermOperator.EQ_IGNORECASE;
             else if (gt != null)
                 operator = TermOperator.GT;
             else if (lt != null)

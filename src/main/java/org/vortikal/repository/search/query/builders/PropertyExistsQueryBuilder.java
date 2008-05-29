@@ -57,7 +57,7 @@ public class PropertyExistsQueryBuilder implements QueryBuilder {
         
         PropertyTypeDefinition def = this.query.getPropertyDefinition();
         
-        String fieldName = FieldNameMapping.getSearchFieldName(def);
+        String fieldName = FieldNameMapping.getSearchFieldName(def, false);
 
         Filter filter = new TermExistsFilter(fieldName);
         

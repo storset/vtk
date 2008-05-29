@@ -52,8 +52,6 @@ public class FieldValueMapperImplTestCase extends TestCase {
     }
     
     public void testDateValueIndexFieldEncoding() {
-        
-        
 
         String[] dateFormats = new String[] { "Long-format",
                 "yyyy-MM-dd HH:mm:ss Z", "yyyy-MM-dd HH:mm:ss",
@@ -67,7 +65,7 @@ public class FieldValueMapperImplTestCase extends TestCase {
         for (int i = 0; i < dateFormats.length; i++) {
             try {
                 this.fieldValueMapper.encodeIndexFieldValue(dateStrings[i],
-                        PropertyType.Type.TIMESTAMP);
+                        PropertyType.Type.TIMESTAMP, false);
             } catch (Exception e) {
                 fail("Failed to encode index field value for date format '" + dateFormats[i]
                         + "', date string '" + dateStrings[i] + "':"

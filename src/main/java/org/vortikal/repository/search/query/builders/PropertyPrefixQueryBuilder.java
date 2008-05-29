@@ -69,7 +69,7 @@ public class PropertyPrefixQueryBuilder implements QueryBuilder {
         }
         
         Filter filter = new PrefixTermFilter(
-                                new Term(FieldNameMapping.getSearchFieldName(def), term));
+                                new Term(FieldNameMapping.getSearchFieldName(def, false), term));
         
         if (ppq.isInverted()) {
             filter = new InversionFilter(filter);

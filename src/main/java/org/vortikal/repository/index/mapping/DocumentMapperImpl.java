@@ -83,17 +83,24 @@ public class DocumentMapperImpl implements DocumentMapper {
         
         // Special fields
         // uri
-        Field uriField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.URI_FIELD_NAME, propSet.getURI());
+        Field uriField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.URI_FIELD_NAME, 
+                                                                     propSet.getURI());
         doc.add(uriField);
         
         // uriDepth (not stored, but indexed for use in searches)
         int uriDepth = URIUtil.getUriDepth(propSet.getURI());
-        Field uriDepthField = this.fieldValueMapper.getKeywordField(FieldNameMapping.URI_DEPTH_FIELD_NAME, uriDepth);
+        Field uriDepthField = this.fieldValueMapper.getKeywordField(FieldNameMapping.URI_DEPTH_FIELD_NAME, 
+                                                                    uriDepth);
         doc.add(uriDepthField);
         
         // name
         Field nameField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
+        
+        // name (lowercased)
+        Field nameFieldLc = this.fieldValueMapper.getKeywordField(FieldNameMapping.NAME_LC_FIELD_NAME, 
+                                                                  propSet.getName().toLowerCase());
+        doc.add(nameFieldLc);
         
         // resourceType
         Field resourceTypeField =
@@ -133,8 +140,18 @@ public class DocumentMapperImpl implements DocumentMapper {
             if (property == null) continue;
            
             // The field used for searching on the property (w/multi-values encoded for proper analysis)
-            Field indexedField = getIndexedFieldFromProperty(property);
+            Field indexedField = getIndexedFieldFromProperty(property, false);
             doc.add(indexedField);
+            
+            // Lower-case version of searchable field (only for property types STRING and HTML)
+            switch (property.getDefinition().getType()){
+            case HTML:
+            case STRING:
+                Field lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
+                doc.add(lowercaseIndexedField);
+            default:
+                // Don't add lowercase-versions for other types
+            }
             
             // The field(s) used for storing the property value(s) (in binary form) 
             Field[] storedFields = getStoredFieldsFromProperty(property);
@@ -159,7 +176,6 @@ public class DocumentMapperImpl implements DocumentMapper {
             };
         } else {
             selector = new FieldSelector() {
-
                 public FieldSelectorResult accept(String fieldName) {
                     PropertyTypeDefinition def = 
                         DocumentMapperImpl.this.fieldNamePropDefMap.get(fieldName);
@@ -287,7 +303,8 @@ public class DocumentMapperImpl implements DocumentMapper {
      * @return
      * @throws FieldValueMappingException
      */
-    private Property getPropertyFromStoredFieldValues(String fieldName, 
+    private Property getPropertyFromStoredFieldValues(
+                                                  String fieldName, 
                                                   List<Field> storedValueFields) 
         throws FieldValueMappingException {
         
@@ -346,10 +363,10 @@ public class DocumentMapperImpl implements DocumentMapper {
      * Creates an indexable <code>Field</code> from a <code>Property</code>.
      *
      */
-    private Field getIndexedFieldFromProperty(Property property) 
+    private Field getIndexedFieldFromProperty(Property property, boolean lowercase) 
         throws FieldValueMappingException {
         
-        String fieldName = FieldNameMapping.getSearchFieldName(property);
+        String fieldName = FieldNameMapping.getSearchFieldName(property, lowercase);
 
         if (FieldNameMapping.isReservedField(fieldName)) {
             throw new FieldValueMappingException("Property field name '" + fieldName 
@@ -365,9 +382,9 @@ public class DocumentMapperImpl implements DocumentMapper {
         Field field = null;
         if (def.isMultiple()) {
             Value[] values = property.getValues();
-            field = this.fieldValueMapper.getFieldFromValues(fieldName, values);
+            field = this.fieldValueMapper.getFieldFromValues(fieldName, values, lowercase);
         } else {
-            field = this.fieldValueMapper.getFieldFromValue(fieldName, property.getValue());
+            field = this.fieldValueMapper.getFieldFromValue(fieldName, property.getValue(), lowercase);
         }
         
         return field;

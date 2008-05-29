@@ -42,7 +42,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.PropertySetImpl;
@@ -86,6 +85,9 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     private FieldValueMapper fieldValueMapper;
     
     public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
+        
+//        String queryDump = (String) query.accept(new DumpQueryTreeVisitor(), null);
+//        System.out.println("Building the following query: " + queryDump);
         
         QueryBuilder builder = null;
 
@@ -161,14 +163,16 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                 }
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
                 
-                String fieldName = FieldNameMapping.getSearchFieldName(propDef);
-                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType());
+                String fieldName = FieldNameMapping.getSearchFieldName(propDef, false);
+                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), false);
                 return new HierarchicalTermQueryBuilder<Value>(hv , ptq.getOperator(), fieldName, new Value(fieldValue));
-            } 
+            }
             
-            return new PropertyTermQueryBuilder(ptq.getOperator(), ptq.getTerm(),
-                    FieldNameMapping.getSearchFieldName(propDef),
-                        this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType()));
+            TermOperator op = ptq.getOperator();
+            boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
+            String fieldName = FieldNameMapping.getSearchFieldName(propDef, lowercase);
+            String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), lowercase);
+            return new PropertyTermQueryBuilder(op, ptq.getTerm(), fieldName, fieldValue);
         }
         
         if (query instanceof PropertyPrefixQuery) {

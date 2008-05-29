@@ -37,6 +37,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
  * 
@@ -91,10 +92,17 @@ public class FieldNameMapping {
 
     public static String getSearchFieldName(PropertyTypeDefinition def, boolean lowercase) {
         
+        Type type = def.getType();
+        if (type != PropertyType.Type.STRING && type != PropertyType.Type.HTML) {
+            // No lowercase-support for the type, make sure we return
+            // the normal index search field name, instead.
+            lowercase = false;
+        }
+        
         return getSearchFieldName(def.getName(), def.getNamespace().getPrefix(), lowercase);
     }
 
-    public static String getSearchFieldName(String propName, String propPrefix, boolean lowercase) {
+    protected static String getSearchFieldName(String propName, String propPrefix, boolean lowercase) {
         StringBuilder fieldName = new StringBuilder();
         if (lowercase) {
             fieldName.append(LOWERCASE_FIELD_PREFIX);

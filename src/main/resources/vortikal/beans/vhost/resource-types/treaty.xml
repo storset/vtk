@@ -16,6 +16,7 @@
                 <ref bean="treatyDoneAtPropDef" />
                 <ref bean="treatyDateEnactedPropDef" />
                 <ref bean="treatyInForcePropDef" />
+                <ref bean="treatyClassificationsPropDef" />
             </list>
         </property>
         <property name="assertions">
@@ -88,5 +89,20 @@
     
     <bean id="treatyInForceEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/treaty/in-force" />
+    </bean>
+  
+    
+    <bean id="treatyClassificationsPropDef"
+          class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+      <property name="name" value="classification" />
+      <property name="type" value="STRING" />
+      <property name="multiple" value="true" />
+      <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+      <property name="mandatory" value="false" />
+      <property name="contentModificationEvaluator" ref="treatyClassificationsEvaluator" />
+    </bean>
+  
+    <bean id="treatyClassificationsEvaluator" parent="abstractXPathEvaluator">
+      <property name="expression" value="/treaty/meta-data/classification" />
     </bean>
 </beans>

@@ -85,7 +85,7 @@
     <entry key="INT"><bean class="org.vortikal.repository.resourcetype.IntValueFormatter" /></entry>
     <entry key="LONG"><bean class="org.vortikal.repository.resourcetype.LongValueFormatter" /></entry>
     <entry key="TIMESTAMP"><bean class="org.vortikal.repository.resourcetype.DateValueFormatter" /></entry>
-    <entry key="DATE"><bean class="org.vortikal.repository.resourcetype.DateValueFormatter" /></entry>
+    <entry key="DATE"><bean class="org.vortikal.repository.resourcetype.DateValueFormatter"><constructor-arg value="true" /></bean></entry>
     <entry key="BOOLEAN"><bean class="org.vortikal.repository.resourcetype.BooleanValueFormatter" /></entry>
     <entry key="PRINCIPAL">
      <bean class="org.vortikal.repository.resourcetype.PrincipalValueFormatter">
@@ -95,5 +95,4 @@
    </map>
   </property>
  </bean>
-
 </beans>

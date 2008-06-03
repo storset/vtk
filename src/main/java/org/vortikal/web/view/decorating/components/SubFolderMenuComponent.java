@@ -205,7 +205,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         /**
          * TODO: Maybe add inversion filter for whole set rather than and'ing a ton of inverted queries?
          */
-        if (!menuRequest.getExcludeURIs().isEmpty()) {
+        if (menuRequest.getExcludeURIs() != null && !menuRequest.getExcludeURIs().isEmpty()) {
             for (Iterator<String> i = menuRequest.getExcludeURIs().iterator(); i.hasNext();) {
                 String exUri = (String) i.next();
                 mainQuery.add(new UriPrefixQuery(exUri, true));

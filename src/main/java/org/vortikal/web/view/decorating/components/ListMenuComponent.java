@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -42,10 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -143,10 +140,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         "Defines the starting URI level for the menu (cannot be used with the '"
         + PARAMETER_URI + "' parameter)";
     
-    private static Log logger = LogFactory.getLog(ListMenuComponent.class);
-    
     private Service viewService;
-    private PropertyTypeDefinition titlePropdef;
+    private PropertyTypeDefinition titlePropDef;
+    private PropertyTypeDefinition hiddenPropDef;
+    private PropertyTypeDefinition importancePropdef;
     private ResourceTypeDefinition collectionResourceType;
     private String modelName = "menu";
     private int searchLimit = DEFAULT_SEARCH_LIMIT;
@@ -166,43 +163,47 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         // Build main menu
-        ListMenu<String> menu = buildMainMenu(menuRequest);
-        model.put(this.modelName, menu);
-        
+        ListMenu<PropertySet> menu = buildMainMenu(menuRequest);
         
         // Add sub menu?
-        MenuItem<String> activeItem = menu.getActiveItem();
-
+        MenuItem<PropertySet> activeItem = menu.getActiveItem();
         if (activeItem != null && menuRequest.getDepth() > 1) {
-            ListMenu<String> submenu = buildSubMenu(menuRequest);
-            if (submenu != null) { 
+            ListMenu<PropertySet> submenu = buildSubMenu(menuRequest);
+            if (submenu != null) {
                 activeItem.setSubMenu(submenu);
-            }    
-        }         
+            }
+        }
+
+        model.put(this.modelName, menu);
     }
     
     
-    private ListMenu<String> buildMainMenu(MenuRequest menuRequest) {
+    private ListMenu<PropertySet> buildMainMenu(MenuRequest menuRequest) {
 
-        ListMenu<String> menu = new ListMenu<String>();
+        ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
         menu.setLabel(menuRequest.getStyle());
 
         Query query = buildMainSearch(menuRequest);
         ResultSet rs = search(menuRequest.getToken(), query);
 
-        String currentURI = menuRequest.getCurrentURI();        
+        String currentURI = menuRequest.getCurrentURI();
         String[] childNames = menuRequest.getChildNames();
-        MenuItem<String> parent = null;
+        MenuItem<PropertySet> parent = null;
         
-        List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
-        Map<String, MenuItem<String>> nameItemMap = new HashMap<String, MenuItem<String>>();
+        List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
+        Map<String, MenuItem<PropertySet>> nameItemMap = new HashMap<String, MenuItem<PropertySet>>();
         
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
 
-            MenuItem<String> item = buildItem(resource);
-
+            MenuItem<PropertySet> item = buildItem(resource);
             String uri = resource.getURI();
+
+            // Hidden?
+            if (childNames == null && this.hiddenPropDef != null
+                    && resource.getProperty(this.hiddenPropDef) != null) {
+                continue;
+            }
             
             // Parent?
             if (uri.equals(menuRequest.getURI())) {
@@ -220,18 +221,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             items.add(item);
         }
         
-        // Sort children:
         if (childNames != null) {
             items = sortSpecifiedOrder(childNames, nameItemMap);
         } else {
-            items = sortRegularOrder(items, menuRequest.getLocale());
+            items = sortDefaultOrder(items, menuRequest.getLocale());
         }
 
         // Insert parent first in list
         if (parent != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Found parent item: " + parent);
-            }
             parent.setLabel(parent.getLabel() + " parent-folder");
             items.add(0, parent);
 
@@ -247,7 +244,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return menu;
     }
 
-    
     private Query buildMainSearch(MenuRequest menuRequest) {
         String uri = menuRequest.getURI();
         int startDepth = URLUtil.splitUri(uri).length;
@@ -367,7 +363,13 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         q.add(query);
         
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
-        select.addPropertyDefinition(this.titlePropdef);
+        select.addPropertyDefinition(this.titlePropDef);
+        if (this.hiddenPropDef != null) {
+            select.addPropertyDefinition(this.hiddenPropDef);
+        }
+        if (this.importancePropdef != null) {
+            select.addPropertyDefinition(this.importancePropdef);
+        }
         
         Search search = new Search();
         search.setSorting(null); 
@@ -375,10 +377,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         search.setLimit(this.searchLimit);
         search.setPropertySelect(select);
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("About to search using query: " + query);
-        }
-
         return this.searcher.execute(token, search);
     }
     
@@ -388,17 +386,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private List<MenuItem<String>> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem<String>> nameItemMap) {
+    private List<MenuItem<PropertySet>> sortSpecifiedOrder(String[] childNames, Map<String, MenuItem<PropertySet>> nameItemMap) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Sorting items based on specified order: "
-                         + java.util.Arrays.asList(childNames));
-        }
-
-        List<MenuItem<String>> result = new ArrayList<MenuItem<String>>();
+        List<MenuItem<PropertySet>> result = new ArrayList<MenuItem<PropertySet>>();
         for (String name: childNames) {
              name = name.trim();
-            MenuItem<String> item = nameItemMap.get(name);
+            MenuItem<PropertySet> item = nameItemMap.get(name);
             if (item != null) {
                 result.add(item);
             }
@@ -406,8 +399,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return result;
     }
     
-    private List<MenuItem<String>> sortRegularOrder(List<MenuItem<String>> items, Locale locale) {
-        Collections.sort(items, new ItemTitleComparator(locale));
+    private List<MenuItem<PropertySet>> sortDefaultOrder(List<MenuItem<PropertySet>> items, Locale locale) {
+        Collections.sort(items, new ListMenuComparator(locale, this.importancePropdef));
         return items;
     }
     
@@ -415,7 +408,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     /**
      * Add sub menu if current uri is below uri
      */
-    private ListMenu<String> buildSubMenu(MenuRequest menuRequest) {
+    private ListMenu<PropertySet> buildSubMenu(MenuRequest menuRequest) {
 
         ResultSet rs = doSubSearch(menuRequest);
 
@@ -435,6 +428,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                 childList = new ArrayList<PropertySet>();
                 childMap.put(parentURI, childList);
             }
+            
+            // Hidden?
+            if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
+                continue;
+            }
+            
             childList.add(resource);
         }
                 
@@ -447,9 +446,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     
-    private ListMenu<String> buildSubItems(String childrenKey, Map<String, List<PropertySet>> childMap, MenuRequest menuRequest) {
+    private ListMenu<PropertySet> buildSubItems(String childrenKey, Map<String, List<PropertySet>> childMap, MenuRequest menuRequest) {
         
-        List<MenuItem<String>> items = new ArrayList<MenuItem<String>>();
+        List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         List<PropertySet> children = childMap.get(childrenKey);
 
         if (children == null) {
@@ -457,7 +456,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         
         for (PropertySet resource: children) {
-            MenuItem<String> item = buildItem(resource);
+            MenuItem<PropertySet> item = buildItem(resource);
 
             items.add(item);
 
@@ -467,17 +466,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
         }
         
-        items = sortRegularOrder(items, menuRequest.getLocale());
+        items = sortDefaultOrder(items, menuRequest.getLocale());
         
-        ListMenu<String> submenu = new ListMenu<String>();
+        ListMenu<PropertySet> submenu = new ListMenu<PropertySet>();
         submenu.addAllItems(items);
-        //submenu.setLabel(rootResource.getName().replace(' ', '-')); // no need to CSS-class sub-UL 
         return submenu;
     }
     
         
-    private MenuItem<String> buildItem(PropertySet resource) {
-        MenuItem<String> item = new MenuItem<String>();
+    private MenuItem<PropertySet> buildItem(PropertySet resource) {
+        MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         
         // Url
         String uri = resource.getURI();
@@ -485,7 +483,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             // Know it's a folder, append "/"
             uri += "/";
         }
-        item.setUrl(this.viewService.constructLink(uri));
+        item.setUrl(this.viewService.constructURL(uri));
 
         // Label
         String label = resource.getName().replace(' ', '-');
@@ -495,7 +493,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         item.setLabel(label);
 
         // Title
-        Property titleProperty = resource.getProperty(this.titlePropdef);
+        Property titleProperty = resource.getProperty(this.titlePropDef);
         String title = (titleProperty != null) ? titleProperty.getStringValue() : label;
         item.setTitle(title);
 
@@ -661,16 +659,29 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private class ItemTitleComparator implements Comparator<MenuItem<String>> {
+    private class ListMenuComparator implements Comparator<MenuItem<PropertySet>> {
 
         private Collator collator;
+        private PropertyTypeDefinition importancePropertyDef;
 
-        public ItemTitleComparator(Locale locale) {
+        public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef) {
             this.collator = Collator.getInstance(locale);
+            this.importancePropertyDef = importancePropertyDef;
         }
         
-
-        public int compare(MenuItem<String> i1, MenuItem<String>i2) {
+        public int compare(MenuItem<PropertySet> i1, MenuItem<PropertySet> i2) {
+            if (this.importancePropertyDef != null) {
+                int importance1 = 0, importance2 = 0;
+                if (i1.getValue().getProperty(this.importancePropertyDef) != null) {
+                    importance1 = i1.getValue().getProperty(this.importancePropertyDef).getIntValue();
+                }
+                if (i2.getValue().getProperty(this.importancePropertyDef) != null) {
+                    importance2 = i2.getValue().getProperty(this.importancePropertyDef).getIntValue();
+                }
+                if (importance1 != importance2) {
+                    return importance2 - importance1;
+                }
+            }
             return this.collator.compare(i1.getTitle(), i2.getTitle());
         }
     }
@@ -682,10 +693,18 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     @Required
-    public void setTitlePropdef(PropertyTypeDefinition titlePropdef) {
-        this.titlePropdef = titlePropdef;
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
     }
     
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
+        this.hiddenPropDef = hiddenPropDef;
+    }
+
+    public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
+        this.importancePropdef = importancePropDef;
+    }
+
     @Required
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;

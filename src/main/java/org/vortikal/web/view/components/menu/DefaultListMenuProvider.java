@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2007, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -147,6 +148,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     }
     
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
         
@@ -163,19 +165,19 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             this.retrieveForProcessing);
         Service currentService = requestContext.getService();
         
-        MenuItem activeItem = null;
+        MenuItem<String> activeItem = null;
         
         for (Service service : this.services) {
             String label = service.getName();
             String title = getTitle(resource, service, request);
-            String url = null;
+            URL url = null;
             try {
-                url = service.constructLink(resource, principal, this.matchAssertions);
+                url = service.constructURL(resource, principal, this.matchAssertions);
             } catch (ServiceUnlinkableException ex) {
                 // ok
             }
 
-            MenuItem<String> item = new MenuItem<String>();
+            MenuItem<String> item = new MenuItem<String>(title);
             item.setLabel(label);
             item.setTitle(title);
             item.setUrl(url);
@@ -186,10 +188,8 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             }
 
             menu.addItem(item);
-//             items.add(item);
         }
         
-        //menu.setItems(items.toArray(new MenuItem[items.size()]));
         menu.setActiveItem(activeItem);
         model.put(this.modelName, menu);
     }

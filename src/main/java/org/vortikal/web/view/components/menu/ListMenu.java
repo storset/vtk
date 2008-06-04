@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2007, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import java.util.List;
  * <li><code>activeItem</code> - reference to the currently active item, if it's in this menu
  * </ul>
  */
-public class ListMenu<T extends Comparable<T>> {
+public class ListMenu<T> {
 
     private String title;
     private String label;
@@ -97,11 +97,10 @@ public class ListMenu<T extends Comparable<T>> {
 
     public List<MenuItem<T>> getItemsSorted() {
         List<MenuItem<T>> sortedList = new ArrayList<MenuItem<T>>(this.items);
-        if (this.comparator != null) {
-            Collections.sort(sortedList, this.comparator);
-        } else {
-            Collections.sort(sortedList);
+        if (this.comparator == null) {
+            throw new IllegalStateException("No comparator has been specified on this list menu");
         }
+        Collections.sort(sortedList, this.comparator);
         return Collections.unmodifiableList(sortedList);
     }
     

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2007, University of Oslo, Norway
+/* Copyright (c) 2005, 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.view.components.menu;
 
+import org.vortikal.web.service.URL;
+
 /**
  * Bean representing a view menu item.
  * 
@@ -41,15 +43,33 @@ package org.vortikal.web.view.components.menu;
  * <li><code>active</code> - boolean flag set if this is the current shown item
  * </ul>
  */
-public class MenuItem<T extends Comparable<T>>
-  implements Comparable<MenuItem<T>> {
+public class MenuItem<T> {
 
-    private String url;
-    private T title;
-    private T sortField;
+    private T value;
+    private URL url;
+    private String title;
     private String label;
     private boolean active = false;
     private ListMenu<T> subMenu;
+    
+    public MenuItem(T value) {
+        if (value == null) throw new IllegalArgumentException(
+                "Constructor argument cannot be null");
+        this.value = value;
+    }
+    
+    public T getValue() {
+        return this.value;
+    }
+    
+    public String getTitle() {
+        if (this.title == null) return this.value.toString();
+        return this.title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
     
     public boolean isActive() {
         return this.active;
@@ -67,33 +87,14 @@ public class MenuItem<T extends Comparable<T>>
         this.label = label;
     }
     
-    public T getTitle() {
-        return this.title;
-    }
-    
-    public void setTitle(T title) {
-        this.title = title;
-    }
-    
-    public String getUrl() {
+    public URL getUrl() {
         return this.url;
     }
     
-    public void setUrl(String url) {
+    public void setUrl(URL url) {
         this.url = url;
     }
     
-    public void setSortField(T sortField) {
-        this.sortField = sortField;
-    }
-    
-    public T getSortField() {
-        if (this.sortField != null) {
-            return this.sortField;
-        }
-        return this.title;
-    }
-
     public void setSubMenu(ListMenu<T> subMenu) {
         this.subMenu = subMenu;
     }
@@ -102,15 +103,12 @@ public class MenuItem<T extends Comparable<T>>
         return this.subMenu;
     }
     
-    public int compareTo(MenuItem<T> other) {
-        return this.getSortField().compareTo(other.getSortField());
-    }
-    
-    
-    
+    @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
         if (!(o instanceof MenuItem)) return false;
         MenuItem other = (MenuItem) o;
+        if (!this.value.equals(other.value))
+            return false;
         if ((this.url == null || other.url == null) && this.url != other.url)
             return false;
         if (this.url != null && !this.url.equals(other.url))
@@ -122,10 +120,6 @@ public class MenuItem<T extends Comparable<T>>
         if ((this.label == null || other.label == null) && this.label != other.label)
             return false;
         if (this.label != null && !this.label.equals(other.label))
-            return false;
-        if ((this.sortField == null || other.sortField == null) && this.sortField != other.sortField)
-            return false;
-        if (this.sortField != null && !this.sortField.equals(other.sortField))
             return false;
         if (this.active != other.active)
             return false;

@@ -274,7 +274,9 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <!-- <property name="searchLimit" value="100" /> -->
     <property name="view" ref="decorating.listMenuComponent.view" />
-    <property name="titlePropdef" ref="titlePropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="importancePropDef" ref="importancePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="viewService" ref="webService" />
   </bean>
@@ -292,6 +294,8 @@
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="titlePropDef" ref="titlePropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="importancePropDef" ref="importancePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="viewService" ref="webService" />
     <property name="modelName" value="subFolderMenu" />

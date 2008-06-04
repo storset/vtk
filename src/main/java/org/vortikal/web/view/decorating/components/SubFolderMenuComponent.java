@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,7 @@ import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.ListMenu;
 import org.vortikal.web.view.components.menu.MenuItem;
 import org.vortikal.web.view.decorating.DecoratorRequest;
@@ -118,6 +119,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private Service viewService;
     private PropertyTypeDefinition titlePropDef;
+    private PropertyTypeDefinition hiddenPropDef;
+    private PropertyTypeDefinition importancePropDef;
     private ResourceTypeDefinition collectionResourceType;
     private String modelName = "menu";
     private int searchLimit = DEFAULT_SEARCH_LIMIT;
@@ -134,7 +137,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         if (logger.isDebugEnabled()) {
             logger.debug("Executed search: " + search + ", hits: " + rs.getSize());
         }
-        ListMenu<Value> menu = buildListMenu(rs, menuRequest);
+        ListMenu<PropertySet> menu = buildListMenu(rs, menuRequest);
         Map<String, Object> menuModel = buildMenuModel(menu, menuRequest);
         model.put(this.modelName, menuModel);
         if (logger.isDebugEnabled()) {
@@ -143,11 +146,12 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private Map<String, Object> buildMenuModel(ListMenu<Value> menu, MenuRequest menuRequest) {
-        List<ListMenu<Value>> resultList = new ArrayList<ListMenu<Value>>();
+    private Map<String, Object> buildMenuModel(ListMenu<PropertySet> menu, MenuRequest menuRequest) {
+        List<ListMenu<PropertySet>> resultList = new ArrayList<ListMenu<PropertySet>>();
 
         int resultSets = menuRequest.getResultSets();
-        List<MenuItem<Value>> allItems = menu.getItemsSorted();
+        List<MenuItem<PropertySet>> allItems = menu.getItemsSorted();
+        
         if (resultSets > allItems.size()) {
             resultSets = allItems.size();
         }
@@ -166,9 +170,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 endIdx = allItems.size();
             }
 
-            List<MenuItem<Value>> subList = allItems.subList(startIdx, endIdx);
-            ListMenu<Value> m = new ListMenu<Value>();
-            m.setComparator(new ItemValueComparator(menuRequest.isAscendingSort(), menuRequest.getLocale()));
+            List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
+            ListMenu<PropertySet> m = new ListMenu<PropertySet>();
+            m.setComparator(new SubFolderMenuComparator(menuRequest));
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
             m.addAllItems(subList);
@@ -224,12 +228,18 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private ListMenu<Value> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
+    private ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
 
         Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
         List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
+            
+            // Hidden?
+            if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
+                continue;
+            }
+            
             String parentURI = URIUtil.getParentURI(resource.getURI());
             if (parentURI.equals(menuRequest.getCurrentCollectionUri())) {
                 toplevel.add(resource);
@@ -242,13 +252,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             childList.add(resource);
         }
 
-        List<MenuItem<Value>> toplevelItems = new ArrayList<MenuItem<Value>>();
+        List<MenuItem<PropertySet>> toplevelItems = new ArrayList<MenuItem<PropertySet>>();
         for (PropertySet resource : toplevel) {
             toplevelItems.add(buildItem(resource, childMap, menuRequest));
         }
 
-        ListMenu<Value> menu = new ListMenu<Value>();
-        menu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort(), menuRequest.getLocale()));
+        ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
+        menu.setComparator(new SubFolderMenuComparator(menuRequest));
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
@@ -256,7 +266,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private MenuItem<Value> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap,
+    private MenuItem<PropertySet> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
         String uri = resource.getURI();
         if (!uri.equals("/")) {
@@ -264,33 +274,20 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             uri += "/";
         }
 
-        String url = this.viewService.constructLink(uri);
+        URL url = this.viewService.constructURL(uri);
         Property titleProperty = resource.getProperty(this.titlePropDef);
         Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
 
-        MenuItem<Value> item = new MenuItem<Value>();
+        MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);
-        item.setTitle(title);
+        item.setTitle(titleProperty.getFormattedValue());
         item.setLabel(title.getStringValue());
         item.setActive(false);
 
-        if (menuRequest.isSortByName()) {
-            item.setSortField(new Value(resource.getName()));
-
-        } else {
-            PropertyTypeDefinition sortPropDef = menuRequest.getSortProperty();
-            Property sortProp = resource.getProperty(sortPropDef);
-            if (sortProp == null) {
-                throw new DecoratorComponentException("Cannot sort on property '" + menuRequest.getSortProperty()
-                        + "': no such property on resource '" + resource.getURI() + "'");
-            }
-            item.setSortField(sortProp.getValue());
-        }
-
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
-            ListMenu<Value> subMenu = new ListMenu<Value>();
-            subMenu.setComparator(new ItemValueComparator(menuRequest.isAscendingSort(), menuRequest.getLocale()));
+            ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
+            subMenu.setComparator(new SubFolderMenuComparator(menuRequest));
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
@@ -302,7 +299,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private class MenuRequest {
         private String currentCollectionUri;
         private String title;
-        private boolean sortByName = false;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
         private int resultSets = 1;
@@ -392,15 +388,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
 
-        public boolean isSortByName() {
-            return this.sortByName;
-        }
-
-
         public PropertyTypeDefinition getSortProperty() {
             return this.sortProperty;
         }
 
+        public PropertyTypeDefinition getImportancePropDef() {
+            return importancePropDef;
+        }
 
         public boolean isAscendingSort() {
             return this.ascendingSort;
@@ -433,16 +427,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
 
         private void initSortField(DecoratorRequest request) {
-            String sortFieldParam = request.getStringParameter(PARAMETER_SORT);
-            if (sortFieldParam == null) {
+            String sortFieldParam = "title";
+            if (request.getStringParameter(PARAMETER_SORT) != null) {
+                sortFieldParam = request.getStringParameter(PARAMETER_SORT);
+            }
+            if ("title".equals(sortFieldParam)) {
                 this.sortProperty = titlePropDef;
-
-            } else if ("name".equals(sortFieldParam)) {
-                this.sortByName = true;
-
-            } else if ("title".equals(sortFieldParam)) {
-                this.sortProperty = titlePropDef;
-            } else {
+            } else if (!"name".equals(sortFieldParam)) {
                 throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SORT
                         + "': must be one of ('name', 'title')");
             }
@@ -463,23 +454,44 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
     }
 
-    private class ItemValueComparator implements Comparator<MenuItem<Value>> {
+    private class SubFolderMenuComparator implements Comparator<MenuItem<PropertySet>> {
 
         private Collator collator;
         private boolean ascending = true;
+        private PropertyTypeDefinition sortPropDef;
+        private PropertyTypeDefinition importancePropDef;
 
-
-        public ItemValueComparator(boolean ascending, Locale locale) {
-            this.ascending = ascending;
-            this.collator = Collator.getInstance(locale);
+        public SubFolderMenuComparator(MenuRequest menuRequest) {
+            this.ascending = menuRequest.isAscendingSort();
+            this.collator = Collator.getInstance(menuRequest.getLocale());
+            this.sortPropDef = menuRequest.getSortProperty();
+            this.importancePropDef = menuRequest.getImportancePropDef();
         }
 
 
-        public int compare(MenuItem<Value> item1, MenuItem<Value> item2) {
-            if (!this.ascending) {
-                return collator.compare(item2.getSortField().getStringValue(), item1.getSortField().getStringValue());
+        public int compare(MenuItem<PropertySet> item1, MenuItem<PropertySet> item2) {
+            if (this.importancePropDef != null) {
+                int importance1 = 0, importance2 = 0;
+                if (item1.getValue().getProperty(this.importancePropDef) != null) {
+                    importance1 = item1.getValue().getProperty(this.importancePropDef).getIntValue();
+                }
+                if (item2.getValue().getProperty(this.importancePropDef) != null) {
+                    importance2 = item2.getValue().getProperty(this.importancePropDef).getIntValue();
+                }
+                if (importance1 != importance2) {
+                    return importance2 - importance1;
+                }
             }
-            return collator.compare(item1.getSortField().getStringValue(), item2.getSortField().getStringValue());
+
+            String value1 = item1.getValue().getName(), value2 = item2.getValue().getName();
+            if (this.sortPropDef != null) {
+                value1 = item1.getValue().getProperty(this.sortPropDef).getStringValue();
+                value2 = item2.getValue().getProperty(this.sortPropDef).getStringValue();
+            }
+            if (!this.ascending) {
+                return collator.compare(value2, value1);
+            }
+            return collator.compare(value1, value2);
         }
     }
 
@@ -498,6 +510,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         this.titlePropDef = titlePropDef;
     }
 
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
+        this.hiddenPropDef = hiddenPropDef;
+    }
+    
+    public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
+        this.importancePropDef = importancePropDef;
+    }
 
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;

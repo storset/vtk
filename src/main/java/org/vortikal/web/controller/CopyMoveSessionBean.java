@@ -46,13 +46,13 @@ import java.util.List;
 public class CopyMoveSessionBean {
 	
 	String action = "";
-	List filesToBeCopied = new ArrayList();
+	List<String> filesToBeCopied = new ArrayList<String>();
 	
-	public List getFilesToBeCopied() {
+	public List<String> getFilesToBeCopied() {
 		return this.filesToBeCopied;
 	}
    
-	public void setFilesToBeCopied(List filesToBeCopied) {
+	public void setFilesToBeCopied(List<String> filesToBeCopied) {
 		this.filesToBeCopied = filesToBeCopied;
 	}
 

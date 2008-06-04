@@ -73,6 +73,7 @@ public class CopyMoveController implements Controller {
 		this.viewName = viewName;
 	}
 	
+    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
 	    	
@@ -90,7 +91,7 @@ public class CopyMoveController implements Controller {
 	    	
 	    	if (sessionBean == null) {
 	    		sessionBean = new CopyMoveSessionBean();
-	    		List filesToBeCopied = new ArrayList();
+	    		List<String> filesToBeCopied = new ArrayList<String>();
 	    			    		
 	    		/* Walk through the request-parameters to find the resources
 	    		 * selected for copy/move and store them in session */

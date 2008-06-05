@@ -43,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.View;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -60,14 +59,14 @@ import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
 
 /**
- * This view renders a rssfeed based on a object in the model of type {@link java.util.Map} with key
+ * This view renders a feed based on a object in the model of type {@link java.util.Map} with key
  * "feedModel".
  * 
  * <p>
- * feedModel can contain the following data:
+ * <code>feedModel</code> can contain the following data:
  * </p>
  * <ul>
- * <li><code>title</code> - title for the rssfeed to be used in
+ * <li><code>title</code> - title for the feed to be used in
  * {@link com.sun.syndication.feed.synd.SyndFeed#setTitle}
  * <li><code>description</code> - description for the rssfeed to be used in
  * {@link com.sun.syndication.feed.synd.SyndFeed#setDescription}
@@ -97,13 +96,13 @@ import com.sun.syndication.io.SyndFeedOutput;
  * <li>atom_1.0</li>
  * </ul>
  * </li>
- * <li><code>charset</code> - The characterset used for the feed. Default is utf-8</li>
+ * <li><code>charset</code> - The character set used for the feed. Default is utf-8</li>
  * <li><code>useTimestampInIdentifier</code> - Use resource lastModified as anchor in the url for
- * each entry to make Thunderbird beleve the entry is modified</li>
+ * each entry to make Thunderbird believe the entry is modified</li>
  * </ul>
  * 
  */
-public class RomeFeedView implements View, ReferenceDataProviding, InitializingBean {
+public class RomeFeedView implements View, ReferenceDataProviding {
 
     private static final int RSS_ENTRY_TITLE_MAX_LENGTH = 99;
     
@@ -150,7 +149,7 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
         // Created and add list of entries
         // (Each entry is set with a title, link, published date and a description)
         // ( -> Description can be plain text or HTML)
-        List feedEntries = new ArrayList();
+        List<SyndEntry> feedEntries = new ArrayList<SyndEntry>();
 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
@@ -208,14 +207,12 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
     private SyndEntry getSyndEntryForResource(Resource resource, Principal principal) {
         // RSS entry objects
         SyndEntry entry = new SyndEntryImpl();
-        String title = resource.getName();
+        String title = resource.getTitle();
         if (!title.equals("")) {
             // Throws FeedException if title exceeds 100 characters        
             if (title.length() > RSS_ENTRY_TITLE_MAX_LENGTH) {
                 String truncationString = "...";
-                if (logger.isWarnEnabled()) {
-                    logger.warn("Title of a feed entry cannot exceed " + RSS_ENTRY_TITLE_MAX_LENGTH + " characters. Title is \'" + title + "\'");
-                }
+                logger.debug("Title of a feed entry cannot exceed " + RSS_ENTRY_TITLE_MAX_LENGTH + " characters. Title is \'" + title + "\'");
                 title = title.substring(0, RSS_ENTRY_TITLE_MAX_LENGTH
                         - truncationString.length())
                         + truncationString;
@@ -223,7 +220,7 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
   
             entry.setTitle(formatTitle(title));
         } else {
-            entry.setTitle("title is missing");
+            entry.setTitle("Title is missing");
         }
         
         entry.setAuthor(resource.getOwner().getName());
@@ -280,10 +277,6 @@ public class RomeFeedView implements View, ReferenceDataProviding, InitializingB
         this.useTimestampInIdentifier = useTimestampInIdentifier;
     }
     
-    public void afterPropertiesSet() throws Exception {
-        //doNothing
-    }
-
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return this.referenceDataProviders;
     }

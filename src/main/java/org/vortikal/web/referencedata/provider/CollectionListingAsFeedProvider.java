@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,9 +31,7 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -70,41 +69,29 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
 
     private static final int RSS_TITLE_MAX_LENGTH = 40;
 
-    //public static final String DEFAULT_SORT_BY_PARAMETER = "name";
     public static final String DEFAULT_SORT_BY_PARAMETER = "last-modified";
 
     private static final Log logger = LogFactory.getLog(CollectionListingAsFeedProvider.class);
-    
-    private static final Set<String> supportedResourceColumns = 
-        new HashSet<String>(Arrays.asList(new String[] {
-                                      "name", 
-                                      "content-length", 
-                                      "last-modified",
-                                      "locked", 
-                                      "content-type", 
-                                      "owner" }));
-    
+        
     private Repository repository;
+
     private Service browsingService;
 
     private Set<String> contentTypeFilter;
     private Pattern contentTypeRegexpFilter;
     
 
+    @Required
     public void setBrowsingService(Service browsingService) {
         this.browsingService = browsingService;
     }
     
-    private String[] childInfoItems = 
-        new String[] {DEFAULT_SORT_BY_PARAMETER, "content-length", "last-modified"};
+    private String truncationString = "...";
     
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    public void setChildInfoItems(String[] childInfoItems)  {
-        this.childInfoItems = childInfoItems;
     }
 
     public void setContentTypeFilter(Set<String> contentTypeFilter) {
@@ -118,16 +105,6 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
     }
     
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean Property 'repository' must be set");
-        }
-
-        if (this.browsingService == null) {
-            throw new BeanInitializationException(
-                    "JavaBean Property 'browsingService' must be set");    
-        }
-
         if (this.contentTypeRegexpFilter != null && this.contentTypeFilter != null) {
             throw new BeanInitializationException(
                 "JavaBean properties 'contentTypeRegexpFilter' and "
@@ -156,23 +133,21 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
         children = filterChildren(children);
         feedModel.put("resources", children);
    
-        String feedTitleText = resource.getName();
+        String feedTitleText = resource.getTitle();
         // Set format and feed header info (title, link, description)
         if (feedTitleText.length() > RSS_TITLE_MAX_LENGTH) {
-            String truncationString = "...";
-            if (logger.isWarnEnabled()) {
-                logger.warn("Title of the feed cannot exceed " + RSS_TITLE_MAX_LENGTH + " characters.Title is \'" + feedTitleText + "\'");
-            }
+            logger.debug("Title of the feed cannot exceed " + RSS_TITLE_MAX_LENGTH + " characters." +
+            		"Title is \'" + feedTitleText + "\'");
+
             feedTitleText = feedTitleText.substring(0, RSS_TITLE_MAX_LENGTH
                     - truncationString.length())
                     + truncationString;
         }
         feedModel.put("title", feedTitleText);
         
-        String description;
-        if (!"".equals(feedTitleText)) {
-            description = feedTitleText;
-        } else {
+        String description = feedTitleText;
+
+        if ("".equals(description)) {
             description = "Feed for resource without title";
         }
         
@@ -183,7 +158,6 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
         feedModel.put("url", resourceUrl);
         
         model.put("feedModel", feedModel);
-        
 
     }
 

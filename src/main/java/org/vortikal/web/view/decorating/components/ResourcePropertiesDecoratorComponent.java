@@ -64,6 +64,9 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
     private static final String DESCRIPTION_RELATIVE = "Report a property on a resource, as specified by either uri or uri-level. " +
     		"The property is formatted and localized.";
     
+    private static final String PARAMETER_FORMAT = "format";
+    private static final String PARAMETER_FORMAT_DESC = "Optional format specification";
+
     private static final String URL_IDENTIFIER = "url";
     private static final String NAME_IDENTIFIER = "name";
     private static final String TYPE_IDENTIFIER = "type";
@@ -76,6 +79,8 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
     private ResourceTypeTree resourceTypeTree;
     private boolean relative = false;
 
+    
+    
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -85,6 +90,9 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
 
+        String format = request.getStringParameter(PARAMETER_FORMAT);
+        
+        
         if (this.relative) {
             String uriString = request.getStringParameter(PARAMETER_URI);
             String uriLevelString = request.getStringParameter(PARAMETER_URI_LEVEL);
@@ -154,7 +162,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
                 return;
             }
 
-            result = prop.getFormattedValue(null, request.getLocale());
+            result = prop.getFormattedValue(format , request.getLocale());
         }
 
         Writer writer = response.getWriter();
@@ -198,6 +206,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
             map.put(PARAMETER_URI, PARAMETER_URI_DESC);
             map.put(PARAMETER_URI_LEVEL, PARAMETER_URI_LEVEL_DESC);
         }
+        map.put(PARAMETER_FORMAT, PARAMETER_FORMAT_DESC);
         return map;
     }
 

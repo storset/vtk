@@ -31,7 +31,6 @@
 package org.vortikal.security.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +74,12 @@ import org.vortikal.security.token.TokenManager;
 public class SecurityInitializer implements InitializingBean, ApplicationContextAware {
 
 
-    private static Log logger = LogFactory.getLog(SecurityContext.class);
+    private static Log logger = LogFactory.getLog(SecurityInitializer.class);
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private TokenManager tokenManager;
 
-    private AuthenticationHandler[] authenticationHandlers = null;
+    private List<AuthenticationHandler> authenticationHandlers;
     private ApplicationContext applicationContext;
 
 
@@ -91,7 +90,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
 
     public void setAuthenticationHandlers(
-        AuthenticationHandler[] authenticationHandlers) {
+        List<AuthenticationHandler> authenticationHandlers) {
         this.authenticationHandlers = authenticationHandlers;
     }
     
@@ -101,28 +100,27 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     }
     
 
+    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
         if (this.authenticationHandlers == null) {
             logger.info("No authentication handlers specified, looking in context");
 
-            Map matchingBeans = this.applicationContext.getBeansOfType(
+            Map<?, AuthenticationHandler> matchingBeans = this.applicationContext.getBeansOfType(
                 AuthenticationHandler.class, false, false);
 
-            List handlers = new ArrayList(matchingBeans.values());
-            if (handlers.size() == 0) {
+            List<AuthenticationHandler> handlers = new ArrayList<AuthenticationHandler>(matchingBeans.values());
+            if (handlers.isEmpty()) {
                 throw new IllegalStateException(
                     "At least one authentication handler must be specified, "
                     + "either explicitly or in application context");
             }
 
             Collections.sort(handlers, new OrderComparator());
-            this.authenticationHandlers = (AuthenticationHandler[])
-                handlers.toArray(new AuthenticationHandler[handlers.size()]);
+            this.authenticationHandlers = handlers;
 
         }
 
-        logger.info("Using authentication handlers: "
-                    + Arrays.asList(this.authenticationHandlers));
+        logger.info("Using authentication handlers: " + this.authenticationHandlers);
     }
     
 
@@ -165,10 +163,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             }
         }
         
-        AuthenticationHandler handler = null;
-                
-        for (int i = 0; i < this.authenticationHandlers.length; i++) {
-            handler = this.authenticationHandlers[i];
+        for (AuthenticationHandler handler: this.authenticationHandlers) {
 
             if (handler.isRecognizedAuthenticationRequest(req)) {
                 if (logger.isDebugEnabled()) {
@@ -313,7 +308,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         sb.append(getClass().getName());
         sb.append(": ").append(System.identityHashCode(this));
         sb.append(", authenticationHandlers: [");
-        sb.append(java.util.Arrays.asList(this.authenticationHandlers));
+        sb.append(this.authenticationHandlers);
         sb.append("]");
         return sb.toString();
     }

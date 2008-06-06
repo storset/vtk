@@ -46,7 +46,7 @@ public class PrincipalValueFormatter implements ValueFormatter {
     private PrincipalFactory principalFactory;
 
     /* 
-     * Defaults to return the principal description. Also supports the "link" format, 
+     * Defaults to return the principal description. Also supports the "id" format and the "link" format, 
      * returning an html <a> tag if the principal has a url.
      * 
      * @see org.vortikal.repository.resourcetype.ValueFormatter#valueToString(org.vortikal.repository.resourcetype.Value, java.lang.String, java.util.Locale)
@@ -61,6 +61,8 @@ public class PrincipalValueFormatter implements ValueFormatter {
         Principal principal = value.getPrincipalValue();
         if ("link".equals(format) && principal.getURL() != null) {
             return "<a href=\"" + principal.getURL() + "\">" + principal.getDescription() + "</a>"; 
+        } else if ("id".equals(format)) {
+            return principal.getName();
         }
         
         return principal.getDescription();

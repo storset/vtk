@@ -34,25 +34,42 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
+/**
+ * Value formatter for {@link Principal} objects. 
+ */
 public class PrincipalValueFormatter implements ValueFormatter {
 
     private PrincipalFactory principalFactory;
 
+    /* 
+     * Defaults to return the principal description. Also supports the "link" format, 
+     * returning an html <a> tag if the principal has a url.
+     * 
+     * @see org.vortikal.repository.resourcetype.ValueFormatter#valueToString(org.vortikal.repository.resourcetype.Value, java.lang.String, java.util.Locale)
+     */
     public String valueToString(Value value, String format, Locale locale)
-            throws IllegalValueTypeException {
+    throws IllegalValueTypeException {
 
-            if (value.getType() != Type.PRINCIPAL) {
-                throw new IllegalValueTypeException(Type.PRINCIPAL, value.getType());
-            }
+        if (value.getType() != Type.PRINCIPAL) {
+            throw new IllegalValueTypeException(Type.PRINCIPAL, value.getType());
+        }
 
-            return value.getPrincipalValue().getName();
+        Principal principal = value.getPrincipalValue();
+        if ("link".equals(format) && principal.getURL() != null) {
+            return "<a href=\"" + principal.getURL() + "\">" + principal.getDescription() + "</a>"; 
+        }
+        
+        return principal.getDescription();
     }
 
-    public Value stringToValue(String string, String format, Locale locale) {
-        return new Value(principalFactory.getPrincipal(string, Principal.Type.USER));
+    public Value stringToValue(String string, String format, Locale locale) 
+    throws InvalidPrincipalException {
+        Principal principal = principalFactory.getPrincipal(string, Principal.Type.USER);
+        return new Value(principal);
     }
 
     @Required

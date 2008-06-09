@@ -853,9 +853,15 @@
     <property name="commandName" value="createCollectionForm" />
     <property name="commandClass"
       value="org.vortikal.web.controller.repository.CreateCollectionCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.CreateCollectionCommandValidator"
-            parent="requestLocalRepositoryAware" />
+    <property name="userTitlePropDef" ref="userTitlePropDef" />
+    <property name="downcaseCollectionNames" value="true" />
+    <property name="replaceNameChars">
+      <map>
+        <entry key=" +" value="-" />
+        <entry key="æ" value="ae" />
+        <entry key="ø" value="oe" />
+        <entry key="å" value="aa" />
+      </map>
     </property>
   </bean>
 

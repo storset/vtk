@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,41 +34,26 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
+public class CreateDocumentCommandValidator implements Validator {
 
-
-public class CreateDocumentCommandValidator
-  implements Validator, InitializingBean {
-
-    private static Log logger = LogFactory.getLog(CreateCollectionCommandValidator.class);
-
+    private static Log logger = LogFactory.getLog(CreateDocumentCommandValidator.class);
     private Repository repository;
     
 
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
-
-    public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Property 'repository' not set");
-        }
-
-    }
-    
-
+    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == CreateDocumentCommand.class);
-
     }
 
     public void validate(Object command, Errors errors) {

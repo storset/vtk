@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,24 +31,43 @@
 package org.vortikal.web.controller.repository;
 
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
-
 public class CreateCollectionController extends SimpleFormController {
 
     private Repository repository = null;
+    private boolean downcaseCollectionNames = false;
+    private Map<String, String> replaceNameChars;
+    private PropertyTypeDefinition userTitlePropDef;
     
-    
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+
+    public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
+        this.downcaseCollectionNames = downcaseCollectionNames;
+    }
+
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+
+    @Required public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
+        this.userTitlePropDef = userTitlePropDef;
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -66,6 +85,51 @@ public class CreateCollectionController extends SimpleFormController {
     }
 
 
+    @Override
+    protected void onBindAndValidate(HttpServletRequest request,
+            Object command, BindException errors) throws Exception {
+        super.onBindAndValidate(request, command, errors);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        
+        CreateCollectionCommand createCollectionCommand =
+            (CreateCollectionCommand) command;
+        if (createCollectionCommand.getCancelAction() != null) {
+            return;
+        }
+        String uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+
+        String name = createCollectionCommand.getName();       
+        if (null == name || "".equals(name.trim())) {
+            errors.rejectValue("name",
+                               "manage.create.collection.missing.name",
+                               "A name must be provided for the collection");
+            return;
+        }
+
+        if (name.indexOf("/") >= 0) {
+            errors.rejectValue("name",
+                               "manage.create.collection.invalid.name",
+                               "This is an invalid collection name");
+        }
+        name = fixCollectionName(name);
+        String newURI = uri;
+        if (!"/".equals(uri)) newURI += "/";
+        newURI += name;
+
+        try {
+            boolean exists = this.repository.exists(token, newURI);
+            if (exists) {
+                errors.rejectValue("name",
+                                   "manage.create.collection.exists",
+                                   "A collection with this name already exists");
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to validate collection creation input", e);
+        }
+    }
+
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -81,11 +145,29 @@ public class CreateCollectionController extends SimpleFormController {
 
         String newURI = uri;
         if (!"/".equals(uri)) newURI += "/";
-        newURI += createCollectionCommand.getName();
-        this.repository.createCollection(token, newURI);
+        String title = createCollectionCommand.getName();
+        String name = fixCollectionName(title);
+        newURI += name;
+        Resource collection = this.repository.createCollection(token, newURI);
+        if (!title.equals(name)) {
+            Property titleProp = collection.createProperty(this.userTitlePropDef);
+            titleProp.setStringValue(title);
+            this.repository.store(token, collection);
+        }
         createCollectionCommand.setDone(true);
     }
     
-
+    private String fixCollectionName(String name) {
+        if (this.downcaseCollectionNames) {
+            name = name.toLowerCase();
+        }
+        if (this.replaceNameChars != null) {
+            for (String regex: this.replaceNameChars.keySet()) {
+                String replacement = this.replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
+    }
 }
 

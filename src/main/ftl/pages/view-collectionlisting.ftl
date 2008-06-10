@@ -27,11 +27,6 @@
   'resourceContext' missing">
 </#if>
 
-<#if !resourceContext.currentResource.collection>
-  <#stop "This template only works with collection resources:
-  ${resourceContext.currentResource.URI} is not a collection." />
-</#if>
-
 <#if !collectionListing?exists>
   <#stop "Unable to render model: required submodel
   'collectionListing' missing">
@@ -47,13 +42,18 @@
      <#return r.title?html>
   </#if>
 </#function>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
       <link rel="stylesheet" href="${cssURL}">
     </#list>
+  </#if>
+  <#if collectionFeedURL?exists>
+    <link rel="alternate" type="application/atom+xml"
+          href="${collectionFeedURL.url?html}"
+          title="<@vrtx.msg code='viewCollectionListing.feed' args=[resourceContext.currentResource.title] />" />
   </#if>
   <title>${title()}</title>
 </head>

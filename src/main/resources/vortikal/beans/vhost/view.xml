@@ -76,6 +76,7 @@
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="viewCollectionListingProvider" />
+        <ref bean="collectionListingFeedURLProvider" />
       </list>
     </property>
     <property name="attributesMap">
@@ -90,6 +91,14 @@
     </property>
   </bean>
 
+
+  <bean id="collectionListingFeedURLProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="collectionListingAsFeedService" />
+    <property name="modelName" value="collectionFeedURL" />
+
+  </bean>
 
 
   <bean id="viewCollectionListingProvider"
@@ -389,13 +398,12 @@
   <bean id="collectionListingAsFeedView" parent="romeFeedView">
     <property name="browsingService" ref="viewService" />
     <property name="defaultFeedType" value="atom_1.0" />
-    <property name="useTimestampInIdentifier" value="true" />
+    <property name="useTimestampInIdentifier" value="false" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="viewCollectionListingAsFeedProvider"/>
       </list>
     </property>
-    
   </bean>
   
   <bean id="viewCollectionListingAsFeedProvider"

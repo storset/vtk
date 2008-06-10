@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -124,6 +124,7 @@ public class RomeFeedView implements View, ReferenceDataProviding {
      * @see org.springframework.web.servlet.View#render(java.util.Map,
      *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 

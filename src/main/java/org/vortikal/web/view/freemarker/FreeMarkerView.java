@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -73,6 +73,7 @@ public class FreeMarkerView
     }
 
     
+    @SuppressWarnings("unchecked")
     protected void doRender(Map model, HttpServletRequest request,
                             HttpServletResponse response) throws Exception {
         BufferedResponseWrapper wrapper = new BufferedResponseWrapper(response);
@@ -99,6 +100,7 @@ public class FreeMarkerView
     }
 
 
+    @SuppressWarnings("unchecked")
     protected void processTemplate(Template template, Map model,
                                    HttpServletResponse response)
         throws IOException, TemplateException {

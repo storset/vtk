@@ -342,8 +342,8 @@ public class DefaultTemplateParser implements TemplateParser {
             return "";
         }
 
-        public Map getParameterDescriptions() {
-            return new HashMap();
+        public Map<String, String> getParameterDescriptions() {
+            return new HashMap<String, String>();
         }
 
         public String toString() {

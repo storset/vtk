@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ public interface DecoratorComponent {
 
     public String getDescription();
 
-    public Map getParameterDescriptions();
+    public Map<String, String> getParameterDescriptions();
 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception;

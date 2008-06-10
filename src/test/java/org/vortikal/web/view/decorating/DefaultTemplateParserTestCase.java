@@ -34,9 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,10 +63,8 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
         assertEquals(3, parsedTemplate.length);
         
-        String begin = renderComponent(parsedTemplate[0].getComponent(),
-                                        new HashMap());
-        String end = renderComponent(parsedTemplate[2].getComponent(),
-                                        new HashMap());
+        String begin = renderComponent(parsedTemplate[0].getComponent());
+        String end = renderComponent(parsedTemplate[2].getComponent());
         assertEquals("<html>", begin);
         assertEquals("</html>", end);
 
@@ -87,8 +83,7 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         Reader reader = new StringReader(MALFORMED_TEMPLATE);
         ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
         assertEquals(1, parsedTemplate.length);
-        String result = renderComponent(parsedTemplate[0].getComponent(),
-                                        new HashMap());
+        String result = renderComponent(parsedTemplate[0].getComponent());
         assertEquals(MALFORMED_TEMPLATE, result);
     }
 
@@ -101,10 +96,8 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
         assertEquals(3, parsedTemplate.length);
         assertEquals(DummyComponent.class, parsedTemplate[1].getComponent().getClass());
-        String begin = renderComponent(parsedTemplate[0].getComponent(),
-                                       new HashMap());
-        String end = renderComponent(parsedTemplate[2].getComponent(),
-                                       new HashMap());
+        String begin = renderComponent(parsedTemplate[0].getComponent());
+        String end = renderComponent(parsedTemplate[2].getComponent());
         assertEquals("${", begin);
         assertEquals("}", end);
     }
@@ -130,7 +123,7 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         return parser;
     }
     
-    private String renderComponent(DecoratorComponent c, Map parameters) throws Exception {
+    private String renderComponent(DecoratorComponent c) throws Exception {
         Writer writer = new StringWriter();
         Mock mockRequest = mock(DecoratorRequest.class);
         Mock mockResponse = mock(DecoratorResponse.class);
@@ -147,9 +140,8 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
         public DecoratorComponent resolveComponent(String namespace, String name) {
             return new DummyComponent(namespace, name);
         }
-        public List listComponents() {
-            List list = new ArrayList();
-            return list;
+        public List<DecoratorComponent> listComponents() {
+            return new ArrayList<DecoratorComponent>();
         }
     }
 
@@ -172,7 +164,7 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
             return "Dummy component " + this.namespace + ":" + this.name;
         }
         
-        public Map getParameterDescriptions() {
+        public Map<String, String> getParameterDescriptions() {
             return null;
         }
         

@@ -48,7 +48,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.ResourceSorter;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -113,6 +112,7 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
     }
 
     
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
@@ -183,29 +183,6 @@ public class CollectionListingAsFeedProvider implements ReferenceDataProvider {
             }
         }
         return filteredChildren.toArray(new Resource[filteredChildren.size()]);
-    }
-    
-
-    private void sortChildren(Resource[] children, String sortBy, boolean invert) {
-        int order = ResourceSorter.ORDER_BY_NAME;
-
-        if ("content-length".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_FILESIZE;
-        }
-        if ("last-modified".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_DATE;
-        }
-        if ("locked".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_LOCKS;
-        }
-        if ("content-type".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_CONTENT_TYPE;
-        }
-        if ("owner".equals(sortBy)) {
-            order = ResourceSorter.ORDER_BY_OWNER;
-        }
-        
-        ResourceSorter.sort(children, order, invert);
     }
     
 }

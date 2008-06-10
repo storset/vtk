@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -74,8 +74,16 @@ import org.vortikal.web.service.Service;
  *   the breadcrumb when present. If such a property is present on a
  *   resource, the value of that property is used as the {@link
  *   BreadcrumbElement#getTitle title} of the breadcrumb
- *   element. 
+ *   element.
+ *   <li><code>skipCurrentResource</code> - whether to skip the last 
+ *   element in the breadcrumb. Defaults to <code>false</code>. 
  * </ul>
+ * 
+ * <p>In addition to the <code>skipCurrentResource</code> config property,
+ * this component looks in the model for an entry by the name 
+ * <code>include-last-element</code>. If this entry exists and has the value 
+ * <code>true</code>, the last breadcrumb element will be included regardless 
+ * of the configuration. 
  *
  * <p>Model data published:
  * <ul>
@@ -96,38 +104,35 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private boolean skipCurrentResource = false;
     private boolean skipIndexFile = false;
     
-    
     public final void setRepository(final Repository newRepository) {
         this.repository = newRepository;
     }
 
-    
     public void setService(Service service) {
         this.service = service;
     }
     
-
     public void setBreadcrumbName(String breadcrumbName) {
         this.breadcrumbName = breadcrumbName;
     }
     
-
     public void setIgnoreProperty(PropertyTypeDefinition ignoreProperty) {
         this.ignoreProperty = ignoreProperty;
     }
-
 
     public void setTitleOverrideProperties(
         PropertyTypeDefinition[] titleOverrideProperties) {
         this.titleOverrideProperties = titleOverrideProperties;
     }
     
-    
+    public void setSkipIndexFile(boolean skipIndexFile) {
+        this.skipIndexFile = skipIndexFile;
+    }
+
     public void setSkipCurrentResource(boolean skipCurrentResource) {
         this.skipCurrentResource = skipCurrentResource;
     }
     
-
     public final void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -144,6 +149,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) {
         
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -152,15 +158,20 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
 
+        boolean skipLastElement = this.skipCurrentResource;
+        Object includeLast = model.get("include-last-element");
+        if (includeLast != null 
+                && ("true".equals(includeLast) || Boolean.TRUE.equals(includeLast))) {
+            skipLastElement = false;
+        }
+        
         List<BreadcrumbElement> breadCrumb = 
-            generateBreadcrumb(token, principal, uri, requestContext.isIndexFile());
-
+            generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile());
         model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
-
     }
 
 
-    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, String uri, boolean isIndexFile) {
+    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, String uri, boolean skipLastElement, boolean isIndexFile) {
         
         List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
 
@@ -175,7 +186,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (this.skipIndexFile && isIndexFile) {
             length--;
         }
-        if (this.skipCurrentResource) {
+        if (skipLastElement) {
             length--;
         }
 
@@ -188,11 +199,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
                 String title = getTitle(r);
                 String url = null;
-                if (i < length - 1 || this.skipCurrentResource) {
+                if (i < length - 1 || skipLastElement) {
                     url = this.service.constructLink(r, principal, false);
                 }
 
-                if (i == length - 1 && !this.skipCurrentResource) {
+                if (i == length - 1 && !skipLastElement) {
                     breadCrumb.add(new BreadcrumbElement(url, title, null));
                 } else {
                     breadCrumb.add(new BreadcrumbElement(url, title));
@@ -204,8 +215,10 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                     msg = e.getClass().getName();
                 }
 
-                logger.debug("Unable to generate breadcrumb path element '"
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Unable to generate breadcrumb path element '"
                             + incrementalPath[i] + "': " + msg);
+                }
             }
         }
 
@@ -215,7 +228,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
         return breadCrumb;
     }
-
 
     private boolean checkIgnore(Resource resource) {
         if (this.ignoreProperty != null) {
@@ -227,37 +239,28 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         return false;
     }
     
-
     private String getTitle(Resource resource) {
         if (this.titleOverrideProperties != null
             && this.titleOverrideProperties.length > 0) {
 
             // Check titleOverrideProperties in correct order
-            for (int i = 0; i < this.titleOverrideProperties.length; i++) {
-
-                Property property = resource.getProperty(this.titleOverrideProperties[i]);
+            for (PropertyTypeDefinition overridePropDef: this.titleOverrideProperties) {
+                Property property = resource.getProperty(overridePropDef);
                 if (property != null && property.getStringValue() != null) {
                     return property.getStringValue();
                 }
             }
         }
         if (resource.getName().equals("/")) return this.repository.getId();
-        
         return resource.getName();
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");
         sb.append("breadcrumbName = ").append(this.breadcrumbName);
         sb.append(" ]");
         return sb.toString();
     }
-
-
-    public void setSkipIndexFile(boolean skipIndexFile) {
-        this.skipIndexFile = skipIndexFile;
-    }
-
 }
 

@@ -311,7 +311,6 @@
         <entry key="max-comments" value="Maximum number of comments to display. The default value is 10." />
       </map>
     </property>
-    <property name="exposeComponentParameters" value="true" />
     <property name="exposedParameters">
       <set>
         <value>max-comments</value>

@@ -19,7 +19,7 @@
 </#if>
 
 <#assign downcaseElements = false />
-<#if (config.downcase)?exists && (config.downcase) = 'true'>
+<#if .vars['downcase']?exists && .vars['downcase'] = 'true'>
   <#assign downcaseElements = true />
 </#if>
 

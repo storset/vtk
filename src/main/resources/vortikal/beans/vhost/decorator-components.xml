@@ -89,14 +89,17 @@
     <property name="name" value="manage-url" />
     <property name="description" value="Inserts the admin URL of the current document" />
     <property name="view" ref="decorating.manageURLComponent.view" />
+    <property name="exposedParameters">
+      <set>
+        <value>display-only-if-auth</value>
+      </set>
+    </property>
     <property name="parameterDescriptions">
       <map>
         <entry key="display-only-if-auth"
                value="If set to 'true', do not display anything unless the user is logged in." />
       </map>
     </property>
-    <property name="exposeComponentParameters" value="true" />
-    <property name="exposedParametersModelName" value="config" />
   </bean>
 
   <bean id="decorating.manageURLComponent.view" parent="freemarkerView">
@@ -195,17 +198,18 @@
     <property name="name" value="breadcrumb" />
     <property name="view" ref="decorating.breadcrumbComponent.view" />
     <property name="description" value="Inserts a breadcrumb trail to the current document" />
-    <property name="exposeComponentParameters" value="true" />
-    <property name="exposedParametersModelName" value="config" />
     <property name="exposedParameters">
       <set>
         <value>downcase</value>
+        <value>include-last-element</value>
       </set>
     </property>
     <property name="parameterDescriptions">
       <map>
         <entry key="downcase"
                value="If set to 'true', display breadcrumb elements in lower-case. The default is 'false'." />
+        <entry key="include-last-element"
+               value="Please describe me" />
       </map>
     </property>
   </bean>

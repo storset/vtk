@@ -9,11 +9,11 @@
   <#assign number = comments?size />
 
   <#-- XXX: -->
-  <#if componentRequest['max-comments']?exists>
+  <#if .vars['max-comments']?exists>
     <#attempt>
-      <#assign number = vrtx.parseInt(componentRequest['max-comments']) />
+      <#assign number = vrtx.parseInt(.vars['max-comments']) />
     <#recover>
-      <#stop "'max-comments' is not a number: " + componentRequest['max-comments'] />
+      <#stop "'max-comments' is not a number: " + .vars['max-comments'] />
     </#attempt>
   </#if>
 

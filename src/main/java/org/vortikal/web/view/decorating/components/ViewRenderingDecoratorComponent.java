@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -51,24 +51,14 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent {
     
     private View view;
-    private boolean exposeComponentParameters = false;
-    private String exposedParametersModelName = "componentRequest";
     private Set<String> exposedParameters = new HashSet<String>();
 
     @Required public void setView(View view) {
         this.view = view;
     }
 
-    public void setExposeComponentParameters(boolean exposeComponentParameters) {
-        this.exposeComponentParameters = exposeComponentParameters;
-    }
-    
     public void setExposedParameters(Set<String> exposedParameters) {
         this.exposedParameters = exposedParameters;
-    }
-
-    public void setExposedParametersModelName(String exposedParametersModelName) {
-        this.exposedParametersModelName = exposedParametersModelName;
     }
 
     public final void render(DecoratorRequest request, DecoratorResponse response)
@@ -104,34 +94,31 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request,
                                 DecoratorResponse response) throws Exception {
 
-        if (this.view instanceof ReferenceDataProviding) {
-            ReferenceDataProvider[] providers =
-                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
-
-            if (providers != null) {
-                for (int i = 0; i < providers.length; i++) {
-                    providers[i].referenceData(model, request.getServletRequest());
-                }
-            }
-        }
-
-        if (this.exposeComponentParameters) {
-            Map<String, Object> parameters = new HashMap<String, Object>();
+        if (this.exposedParameters != null) {
             for (Iterator<String> i = request.getRequestParameterNames(); i.hasNext();) {
                 String name = i.next();
                 if (!this.exposedParameters.isEmpty() 
                         && !this.exposedParameters.contains(name)) {
                     continue;
                 }
-
                 Object value = request.getParameter(name);
-                parameters.put(name, value);
+                model.put(name, value);
             }
-            model.put(this.exposedParametersModelName, parameters);
+        }
+
+        if (this.view instanceof ReferenceDataProviding) {
+            ReferenceDataProvider[] providers =
+                ((ReferenceDataProviding) this.view).getReferenceDataProviders();
+            if (providers != null) {
+                for (ReferenceDataProvider provider: providers) {
+                    provider.referenceData(model, request.getServletRequest());
+                }
+            }
         }
     }
     
 
+    @SuppressWarnings("unchecked")
     private void renderView(Map model, DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         HttpServletRequest servletRequest = request.getServletRequest();

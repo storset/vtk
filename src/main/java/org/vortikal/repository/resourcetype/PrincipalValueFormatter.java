@@ -61,11 +61,11 @@ public class PrincipalValueFormatter implements ValueFormatter {
         Principal principal = value.getPrincipalValue();
         if ("link".equals(format) && principal.getURL() != null) {
             return "<a href=\"" + principal.getURL() + "\">" + principal.getDescription() + "</a>"; 
-        } else if ("id".equals(format)) {
-            return principal.getName();
+        } else if ("name".equals(format)) {
+            return principal.getDescription();
         }
         
-        return principal.getDescription();
+        return principal.getName();
     }
 
     public Value stringToValue(String string, String format, Locale locale) 

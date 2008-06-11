@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,13 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.properties.EnumerationPropertyDescriptor;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -135,9 +137,10 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
-        Map resourcePropertiesModel = new HashMap();
+        Map<String, Object> resourcePropertiesModel = new HashMap<String, Object>();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -145,11 +148,12 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
         Resource resource = this.repository.retrieve(
             securityContext.getToken(), requestContext.getResourceURI(), false);
 
-        List propertyValues = new ArrayList();
-        List editPropertiesServiceURLs =
-            (this.editPropertyService != null) ? new ArrayList() : null;
+        List<Value> propertyValues = new ArrayList<Value>();
+        List<URL> editPropertiesServiceURLs =
+            (this.editPropertyService != null) ? new ArrayList<URL>() : null;
 
-        List applicablePropertyDescriptors = new ArrayList();
+        List<EnumerationPropertyDescriptor> applicablePropertyDescriptors = 
+            new ArrayList<EnumerationPropertyDescriptor>();
         
         for (int i = 0; i < this.propertyDescriptors.length; i++) {
             if (!this.propertyDescriptors[i].isApplicableProperty(resource, securityContext.getPrincipal())) {
@@ -163,11 +167,11 @@ public class ResourcePropertiesProvider implements ReferenceDataProvider, Initia
             propertyValues.add((prop != null) ? prop.getValue() : null);
 
             if (this.editPropertyService != null) {
-                Map parameters = new HashMap();
+                Map<String, String> parameters = new HashMap<String, String>();
                 parameters.put("namespace", this.propertyDescriptors[i].getNamespace());
                 parameters.put("name", this.propertyDescriptors[i].getName());
                 try {
-                    String url = this.editPropertyService.constructLink(
+                    URL url = this.editPropertyService.constructURL(
                         resource, securityContext.getPrincipal(), parameters);
                     editPropertiesServiceURLs.add(url);
                 } catch (Exception e) { 

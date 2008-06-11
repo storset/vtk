@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
 
+@SuppressWarnings("unchecked")
 public class IfHeaderImpl implements IfHeader {
 
     protected static Log logger = LogFactory.getLog(IfHeaderImpl.class);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -96,8 +96,8 @@ public class ParserImpl implements Parser, InitializingBean {
         }
     
         String[] fields = sortString.split(",");
-        List result = new ArrayList();
-        Set referencedFields = new HashSet();
+        List<SortField> result = new ArrayList<SortField>();
+        Set<String> referencedFields = new HashSet<String>();
         SortFieldDirection uriDirection = SortFieldDirection.ASC;
 
         for (int i = 0; i < fields.length; i++) {

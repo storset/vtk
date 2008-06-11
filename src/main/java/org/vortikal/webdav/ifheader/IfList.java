@@ -30,6 +30,7 @@ import java.util.ArrayList;
  * </pre>
  * <p>
  */
+@SuppressWarnings("unchecked")
 class IfList extends ArrayList {
 
     private static final long serialVersionUID = -2368752136718198410L;

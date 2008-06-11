@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.Repository;
 
-
-
 /**
  * A HashMap that reads its elements from a repository resource in
  * {@link Properties} format. Supports (re)loading its elements via
@@ -75,12 +73,13 @@ import org.vortikal.repository.Repository;
  *   to be in a comma separated format. Default is <code>false</code>.
  * </ul>
  */
+@SuppressWarnings("unchecked")
 public class HashMapResource extends HashMap implements InitializingBean,
                                                         ApplicationListener {
 
     private static final long serialVersionUID = 3588458569422752713L;
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(HashMapResource.class);
 
     private Repository repository;
     private String uri;
@@ -144,7 +143,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
             try {
                 this.load();
             } catch (Exception e) {
-                this.logger.warn(e);
+                logger.warn(e);
             }
         }
     }
@@ -164,13 +163,10 @@ public class HashMapResource extends HashMap implements InitializingBean,
         }
     }
 
-
-
     public void load(Repository repository, String uri, String token) throws IOException {
         this.load(repository, uri, token, false);
     }
     
-
     public void load(Repository repository, String uri, String token,
                      boolean demandResourceAvailability) throws IOException {
         if (demandResourceAvailability) {
@@ -179,7 +175,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
             try {
                 this.loadInternal(repository, uri, token);
             } catch (Exception e) {
-                this.logger.warn("Unable to load properties from uri '"
+                logger.warn("Unable to load properties from uri '"
                             + uri + "', repository '" + repository
                             + "', token '" + token + "'", e);
             }
@@ -196,14 +192,13 @@ public class HashMapResource extends HashMap implements InitializingBean,
         this.load(this.repository, this.uri, this.token, this.demandResourceAvailability);
     }
     
-
     private void loadInternal(Repository repository, String uri, String token)
         throws IOException {
         InputStream inputStream = repository.getInputStream(token, uri, false);
         Properties p = new Properties();
         p.load(inputStream);
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Loaded raw mappings from resource " + uri + ": " + p);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Loaded raw mappings from resource " + uri + ": " + p);
         }
         
         Enumeration e = p.propertyNames();
@@ -213,17 +208,17 @@ public class HashMapResource extends HashMap implements InitializingBean,
 
             if (value != null) {
                 if (!this.storeValuesAsLists) {
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Adding regular mapping " + name + ": " + value);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Adding regular mapping " + name + ": " + value);
                     }
 
                     this.put(name, value);
                 } else {
-                    List list = new ArrayList();
+                    List<String> list = new ArrayList<String>();
                     String[] components = value.split(",");
                     list.addAll(Arrays.asList(components));
-                    if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Adding list mapping " + name + ": " + list);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Adding list mapping " + name + ": " + list);
                     }
                     this.put(name, list);
                 }

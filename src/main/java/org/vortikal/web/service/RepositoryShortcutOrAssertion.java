@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@
 package org.vortikal.web.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanInitializationException;
@@ -52,7 +51,7 @@ import org.vortikal.security.Principal;
 public class RepositoryShortcutOrAssertion
   extends AbstractRepositoryAssertion implements InitializingBean {
 
-    private List assertions = new ArrayList();
+    private List<RepositoryAssertion> assertions = new ArrayList<RepositoryAssertion>();
     private boolean andHack = false;
 
     public void afterPropertiesSet()
@@ -67,8 +66,7 @@ public class RepositoryShortcutOrAssertion
     }
     
     public boolean matches(Resource resource, Principal principal) {
-        for (Iterator assertionIter = this.assertions.iterator(); assertionIter.hasNext();) {
-            RepositoryAssertion assertion = (RepositoryAssertion) assertionIter.next();
+        for (RepositoryAssertion assertion: this.assertions) {
             if (assertion.matches(resource, principal)) {
                 if (!this.andHack)
                     return true;
@@ -81,7 +79,7 @@ public class RepositoryShortcutOrAssertion
         return this.andHack;
     }
     
-    public void setAssertions(List assertions) {
+    public void setAssertions(List<RepositoryAssertion> assertions) {
         this.assertions = assertions;
     }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@ package org.vortikal.web.service;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -63,7 +62,7 @@ import org.vortikal.web.RequestContext;
  */
 public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean {
 
-    private List patternsList = new ArrayList();
+    private List<Pattern> patternsList = new ArrayList<Pattern>();
     private String header;
     private boolean invert = false;
 
@@ -137,10 +136,8 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
         if (headerValue == null) {
             return false;
         }
-        
-        
-        for (Iterator iter = this.patternsList.iterator(); iter.hasNext();) {
-            Pattern pattern = (Pattern) iter.next();
+              
+        for (Pattern pattern: this.patternsList) {
             if (pattern.matcher(headerValue).matches()) {
                 return true;
             }

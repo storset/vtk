@@ -53,7 +53,7 @@ public class DependencyInjectionSpringStringContextTestsSpike
         String configAsString = null;
 
         try {
-            List fileList = findAllXmlFiles(new File("target/classes/vortikal/beans/vhost/"));
+            List<File> fileList = findAllXmlFiles(new File("target/classes/vortikal/beans/vhost/"));
             fileList.add(new File("target/vortikal/WEB-INF/applicationContext.xml"));
             
             
@@ -61,7 +61,7 @@ public class DependencyInjectionSpringStringContextTestsSpike
             m.setBeanOverloadingAllowed(true);
             m.buildBeans();
 
-            List beanIdList = new ArrayList();
+            List<String> beanIdList = new ArrayList<String>();
             beanIdList.add("propertyConfigurer");
             beanIdList.add("collectionListingAsFeedView");
             beanIdList.add("repository.contentStore");
@@ -87,8 +87,8 @@ public class DependencyInjectionSpringStringContextTestsSpike
      * @param pDir given dir
      * @return List of files
      */
-    private List findAllXmlFiles(File pDir) {
-        List fileList = new ArrayList();
+    private List<File> findAllXmlFiles(File pDir) {
+        List<File> fileList = new ArrayList<File>();
 
         visitAllFiles(pDir, fileList);
 
@@ -101,7 +101,7 @@ public class DependencyInjectionSpringStringContextTestsSpike
      *
      * @param dir
      */
-    private void visitAllFiles(File dir, List pFileList) {
+    private void visitAllFiles(File dir, List<File> pFileList) {
         if (dir.isDirectory()) {
             String[] children = dir.list();
 

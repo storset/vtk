@@ -123,8 +123,8 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         lastModified = this.controller.getLastModified(this.request);
         assertEquals(lastModifiedExpected.getTime(), lastModified);
 
-        List schemaList = new ArrayList();
-        schemaList.add(faqSchema);
+        List<String> schemaList = new ArrayList<String>();
+        schemaList.add(this.faqSchema);
     }
 }
 

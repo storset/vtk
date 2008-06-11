@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@ package org.vortikal.security.store;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +44,7 @@ public class DomainGroupStore implements GroupStore {
 
     private int order = Integer.MAX_VALUE;
     
-    private List knownGroups = new ArrayList();
+    private List<Principal> knownGroups = new ArrayList<Principal>();
     
     public boolean validateGroup(Principal group)
             throws AuthenticationProcessingException {
@@ -80,10 +79,9 @@ public class DomainGroupStore implements GroupStore {
     /**
      * @see org.vortikal.security.GroupStore#getMemberGroups(org.vortikal.security.Principal)
      */
-    public Set getMemberGroups(Principal principal) {
-        Set groups = new HashSet();
-        for (Iterator iter = this.knownGroups.iterator(); iter.hasNext();) {
-            Principal group = (Principal) iter.next();
+    public Set<Principal> getMemberGroups(Principal principal) {
+        Set<Principal> groups = new HashSet<Principal>();
+        for (Principal group: this.knownGroups) {
             if (isMember(principal, group))
                 groups.add(group);
         }

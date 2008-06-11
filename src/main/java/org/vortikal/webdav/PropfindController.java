@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -59,10 +59,6 @@ import org.vortikal.util.io.SizeLimitException;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 
-
-
-
-
 /**
  * Handler for PROPFIND requests.
  * 
@@ -118,7 +114,6 @@ public class PropfindController extends AbstractWebdavController {
         this.maxRequestSize = newSize;
     }
 
-
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
          
@@ -126,7 +121,7 @@ public class PropfindController extends AbstractWebdavController {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         try {
             Resource resource = this.repository.retrieve(token, uri, false);
 
@@ -185,9 +180,6 @@ public class PropfindController extends AbstractWebdavController {
         return new ModelAndView("HTTP_STATUS_VIEW", model);
     }
    
-
-
-
     /**
      * Retrieves the requested resources and puts them in the model.
      * 
@@ -205,14 +197,14 @@ public class PropfindController extends AbstractWebdavController {
      * sufficient rights to access the resource
      * @exception IOException if an I/O error occurs
      */
-    private Map buildPropfindModel(
+    private Map<String, Object> buildPropfindModel(
         Resource resource, Document requestBody, String depth, String token)
         throws InvalidRequestException, ResourceNotFoundException,
         AuthenticationException, AuthorizationException, IOException {
         
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
-        List resourceList = new ArrayList();
+        List<Resource> resourceList = new ArrayList<Resource>();
         if (resource.isCollection()) {
             resourceList = getResourceDescendants(
                 resource.getURI(), depth, this.repository, token);
@@ -234,7 +226,7 @@ public class PropfindController extends AbstractWebdavController {
                 "Expected one of `allprop', `propname' or `prop' elements");
         }
         
-        List requestedProps = getRequestedProperties(requestBody, resource);
+        List<Element> requestedProps = getRequestedProperties(requestBody, resource);
         model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_PROPERTIES, requestedProps);
 
         /* if property name is 'allprop' or 'prop', we expect values
@@ -249,10 +241,6 @@ public class PropfindController extends AbstractWebdavController {
     }
     
 
-
-
-
-
     /**
      * Returns the WebDAV source element for a resource.
      *
@@ -264,10 +252,6 @@ public class PropfindController extends AbstractWebdavController {
     }
 
 
-
-
-
-
     /**
      * Finds the properties requested by the client as specified in
      * the PROPFIND body.
@@ -276,8 +260,9 @@ public class PropfindController extends AbstractWebdavController {
      * @return a <code>List</code> of DAV property elements
      * represented as <code>org.jdom.Element</code> objects.
      */
-    protected List getRequestedProperties(Document requestBody, Resource res) {
-        List propList = new ArrayList();
+    @SuppressWarnings("unchecked")
+    protected List<Element> getRequestedProperties(Document requestBody, Resource res) {
+        List<Element> propList = new ArrayList<Element>();
 
         /* Check for 'allprop' or 'propname': */
         if (requestBody.getRootElement().getChild(
@@ -286,15 +271,13 @@ public class PropfindController extends AbstractWebdavController {
                 "propname", WebdavConstants.DAV_NAMESPACE) != null) {
 
             /* DAV properties: */
-            for (Iterator iter = DAV_PROPERTIES.iterator(); iter.hasNext();) {
-                String name = (String) iter.next();
-
+            for (String name: DAV_PROPERTIES) {
                 Element e = new Element(name, WebdavConstants.DAV_NAMESPACE);
                 propList.add(e);
             }
 
-            List defaultNsPropList = new ArrayList();
-            List otherProps = new ArrayList();
+            List<Element> defaultNsPropList = new ArrayList<Element>();
+            List<Element> otherProps = new ArrayList<Element>();
 
             /* Resource type (treat it as a normal property): */
             defaultNsPropList.add(new Element("resourceType", WebdavConstants.DEFAULT_NAMESPACE.getURI()));
@@ -348,8 +331,6 @@ public class PropfindController extends AbstractWebdavController {
     }
    
 
-   
-
     /**
      * Gets a list of a resource's children/descendants, depending on
      * the value of the <code>depth</code> parameter.
@@ -362,12 +343,12 @@ public class PropfindController extends AbstractWebdavController {
      * @param token the client session
      * @return a <code>List</code> of <code>Resource</code> objects
      */
-    protected List getResourceDescendants(String uri, String depth,
+    protected List<Resource> getResourceDescendants(String uri, String depth,
                                           Repository repository, String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IOException {
 
-        ArrayList descendants = new ArrayList();
+        ArrayList<Resource> descendants = new ArrayList<Resource>();
         
         if (!(depth.equals("1") || depth.equals("infinity"))) {
             return descendants;
@@ -397,8 +378,6 @@ public class PropfindController extends AbstractWebdavController {
 
         return descendants;
     }
-
-
 
     /**
      * Builds a JDOM tree from the XML request body.
@@ -437,9 +416,6 @@ public class PropfindController extends AbstractWebdavController {
     }
    
 
-
-
-
     /**
      * Verifies that a JDOM tree constitutes a valid PROPFIND request
      * body.
@@ -459,8 +435,4 @@ public class PropfindController extends AbstractWebdavController {
                 + "' (expected 'propfind')");
         }      
     }
-   
-
-
-
 }

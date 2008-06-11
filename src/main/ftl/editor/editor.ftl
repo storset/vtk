@@ -45,6 +45,8 @@
          fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
 
          fck.Config.LinkUpload = false;
+         fck.Config.ImageUpload = false;
+         fck.Config.FlashUpload = false;
 
          // Misc setup
          fck.Config['FullPage'] = false;

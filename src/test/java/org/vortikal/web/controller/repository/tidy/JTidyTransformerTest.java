@@ -31,6 +31,7 @@
 
 package org.vortikal.web.controller.repository.tidy;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -145,6 +146,18 @@ public class JTidyTransformerTest extends TestCase {
         }
     }
     
+
+    public void testEmpty() {
+        try {
+            InputStream is = new ByteArrayInputStream("".getBytes());
+            assertTrue(parserTest(is));
+        } catch (FileNotFoundException fnfe) {
+            fail(fnfe.getMessage());
+        } catch (IOException ioe) {
+            fail(ioe.getMessage());
+        }
+        
+    }
     
     /*
      * Helper methods

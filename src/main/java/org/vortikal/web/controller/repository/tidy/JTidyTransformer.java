@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.controller.repository.copy.Filter;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -66,6 +65,11 @@ import org.w3c.tidy.Tidy;
 public class JTidyTransformer implements Filter { 
     
     private static Log logger = LogFactory.getLog(JTidyTransformer.class);
+
+    private final static String MINIMAL_DOCUMENT = 
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
+        + "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title></title>"
+        + "</head><body></body></html>";
 
     private static boolean tidyMark = false;
     private static boolean makeClean = true;
@@ -101,31 +105,33 @@ public class JTidyTransformer implements Filter {
             tidy.setQuiet(quiet);
             tidy.setCharEncoding(Configuration.UTF8);
             
-            Document document;
-                        
             if (null == characterEncoding ) {
                 characterEncoding = "utf-8";
-            }
-            else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
+            } else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
                 characterEncoding = "utf-8";
             }
             
-            if ("utf-8".equals(characterEncoding)) {
-                tidy.setInputStreamName(inStream.getClass().getName());
-                document = tidy.parseDOM(inStream, null);
-            } else {
-                byte[] buffer = StreamUtil.readInputStream(inStream);
+            // Buffer the input stream:
+            byte[] buffer = StreamUtil.readInputStream(inStream);
+
+            // Convert stream to utf-8 encoding if necessary:
+            if (!"utf-8".equals(characterEncoding)) {
                 String s = new String(buffer, characterEncoding);
-                InputStream encodedStream = StreamUtil.stringToStream(s, "utf-8");
-                tidy.setInputStreamName(encodedStream.getClass().getName());
-                document = tidy.parseDOM(encodedStream, null);                
+                buffer = s.getBytes("utf-8");
             }
+            
+            if ("".equals(new String(buffer, "utf-8").trim())) {
+                buffer = MINIMAL_DOCUMENT.getBytes("utf-8");
+            }
+            
+            InputStream bufferedStream = new ByteArrayInputStream(buffer);
+            tidy.setInputStreamName(bufferedStream.getClass().getName());
+            Document document = tidy.parseDOM(bufferedStream, null);
             
             // Handle (re)setting of doctype and encoding meta-tag
             alterContentTypeMetaElement(document);
             
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            
             tidy.pprint(document, outputStream);
             
             byte[] byteArrayBuffer = outputStream.toByteArray();
@@ -164,6 +170,9 @@ public class JTidyTransformer implements Filter {
 
             byte[] buffer = StreamUtil.readInputStream(inStream);
             String s = new String(buffer, resource.getCharacterEncoding());
+            if ("".equals(s.trim())) {
+                s = MINIMAL_DOCUMENT;
+            }
             InputStream newStream = StreamUtil.stringToStream(s, "utf-8");
 
             Document document = tidy.parseDOM(newStream, null);

@@ -8,9 +8,12 @@
 
   <body>
 
-    <release version="0.4.5" date="2008-06-17" description="Release 0.4.5">
+    <release version="0.4.6-SNAPSHOT" date="In SVN" description="Release 0.4.6">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release version="0.4.5" date="2008-06-17" description="Release 0.4.5">
       <action type="add">
         Added the possibility to set navigational importance on folders, which
         will allow explicit control of the order of menu elements in view.

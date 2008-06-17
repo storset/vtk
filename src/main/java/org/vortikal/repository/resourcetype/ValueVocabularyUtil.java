@@ -39,17 +39,22 @@ import java.util.List;
  *
  */
 public class ValueVocabularyUtil {
+
     private ValueVocabularyUtil() {}
     
-    public static List<Value> integerRangeValueList(int minValue, int maxValue){
-        if (minValue > maxValue) {
-            throw new IllegalArgumentException(
-                    "Minimal value cannot be greater than maximal value");
-        }
-        
+    public static List<Value> integerRangeValueList(int value1, int value2){
         List<Value> valueList = new ArrayList<Value>();
-        for (int i = minValue; i <= maxValue; i++) {
-            valueList.add(new Value(i));
+
+        if (value1 > value2) {
+            for (int i=value1; i >= value2; i--) {
+                valueList.add(new Value(i));
+            }
+        } else if (value1 < value2) {
+            for (int i=value1; i <= value2; i++) {
+                valueList.add(new Value(i));
+            }
+        } else {
+            valueList.add(new Value(value1));
         }
         
         return valueList;

@@ -63,8 +63,8 @@
             <property name="targetMethod"><value>integerRangeValueList</value></property>
             <property name="arguments">
               <list>
-                <value>-15</value>
                 <value>15</value>
+                <value>-15</value>
               </list>
             </property>
           </bean>

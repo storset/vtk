@@ -8,9 +8,43 @@
 
   <body>
 
-    <release version="0.4.5-SNAPSHOT" date="In SVN" description="Release 0.4.5">
+    <release version="0.4.5" date="2008-06-17" description="Release 0.4.5">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="add">
+        Added the possibility to set navigational importance on folders, which
+        will allow explicit control of the order of menu elements in view.
+      </action>
+      <action type="add">
+        Added the possibility of hiding folders from navigation by setting
+        a property in the administration web interface.
+      </action>
+      <action type="add">
+        RSS feed aggreator decorator component has been extended with more
+        sorting options.
+      </action>
+      <action type="add">
+        Error messages/pages can now be decorated.
+      </action>
+      <action type="fix">
+        Restored the spell-checking functionality in the FCK-editor.
+      </action>
+      <action type="add">
+        Added support for case-insensitive metadata-queries 
+        on repository resource names and properties.
+      </action>
+      <action type="fix">
+        The tags-view now performs a case-insensitive repository search by default.
+      </action>
+      <action type="add">
+        The bread cumb can now optionally display the last element in the path.
+      </action>
+      <action type="add">
+        New folders created in the administration web interface are automatically normalized
+        to lower-case names, with some additional replacements for spaces and international
+        characters.
+      </action>
+
     </release>
 
     <release version="0.4.4" date="2008-05-05" description="Release 0.4.4">

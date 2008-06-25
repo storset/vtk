@@ -107,6 +107,9 @@ public class DisplayClassPathResourceController
             this.locationsMap.put(uri, resourceLocation);
             this.locationsMap.put(uri + "/", resourceLocation);
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Locations map: " + this.locationsMap);
+        }
     }
 
 

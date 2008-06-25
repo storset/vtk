@@ -259,7 +259,7 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs"><list><value>${cssBaseURL}/comments.css</value></list></entry>
+        <entry key="cssURLs"><list><value>${themeBaseURL}/comments.css</value></list></entry>
       </map>
     </property>
   </bean>
@@ -359,7 +359,7 @@
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider" parent="requestLocalRepositoryAware">
           <property name="service" ref="viewService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${editor.fck.resources}" />
+          <property name="appendPath" value="${editor.fck.resourcesURL}" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="url" />
         </bean>

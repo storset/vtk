@@ -95,13 +95,13 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${cssBaseURL}/basic.css</value>
-            <value>${cssBaseURL}/browse.css</value>
+            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/browse.css</value>
           </list>
         </entry>
         <entry key="jsURLs">
           <list>
-            <value>${cssBaseURL}/browse.js</value>
+            <value>${jsBaseURL}/browse.js</value>
           </list>
         </entry>
       </map>

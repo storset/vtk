@@ -81,7 +81,7 @@
           <property name="modelDataMap">
             <map>
               <entry key="cssURLs" value-ref="plainEditCSSURLs" />
-              <entry key="md5jsURL" value="${cssBaseURL}/md5/md5.js" />
+              <entry key="md5jsURL" value="${jsBaseURL}/md5/md5.js" />
             </map>
           </property>
         </bean>
@@ -93,9 +93,9 @@
   <bean id="plainEditCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${cssBaseURL}/basic.css</value>
-        <value>${cssBaseURL}/tabs.css</value>
-        <value>${cssBaseURL}/plain-edit.css</value>
+        <value>${themeBaseURL}/basic.css</value>
+        <value>${themeBaseURL}/tabs.css</value>
+        <value>${themeBaseURL}/plain-edit.css</value>
       </list>
     </constructor-arg>
   </bean>

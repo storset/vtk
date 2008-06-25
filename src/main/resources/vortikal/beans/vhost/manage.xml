@@ -1202,14 +1202,14 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${cssBaseURL}/basic.css</value>
-            <value>${cssBaseURL}/tabs.css</value>
+            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/tabs.css</value>
           </list>
         </entry>
         <entry key="jsURLs">
           <list>
-            <value>${cssBaseURL}/browser-sniffer.js</value>
-            <value>${cssBaseURL}/admin-enhancements.js</value>
+            <value>${jsBaseURL}/browser-sniffer.js</value>
+            <value>${jsBaseURL}/admin-enhancements.js</value>
           </list>
         </entry>
       </map>
@@ -1334,8 +1334,8 @@
 
   <!-- Static files for manage service: -->
   <bean id="managetStaticResourceLocation" class="org.vortikal.web.StaticResourceLocation">
-    <property name="uriPrefix" value="${cssBaseURL}" />
-    <property name="resourceLocation" value="${cssResourceLocation}" />
+    <property name="uriPrefix" value="${webResources.baseURL}" />
+    <property name="resourceLocation" value="${webResources.physicalLocation}" />
   </bean>
 
 
@@ -1347,9 +1347,9 @@
       <map>
         <entry key="cssURLs"> 
           <list>
-            <value>${cssBaseURL}/admin.css</value>
-            <value>${cssBaseURL}/basic.css</value>
-            <value>${cssBaseURL}/tabs.css</value>
+            <value>${themeBaseURL}/admin.css</value>
+            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/tabs.css</value>
           </list>
         </entry>
       </map>
@@ -1362,9 +1362,9 @@
       <map>
         <entry key="jsURLs"> 
           <list>
-            <value>${cssBaseURL}/browser-sniffer.js</value>
-            <value>${cssBaseURL}/admin-enhancements.js</value>
-            <value>${cssBaseURL}/dynamic-resize-iframe.js</value>
+            <value>${jsBaseURL}/browser-sniffer.js</value>
+            <value>${jsBaseURL}/admin-enhancements.js</value>
+            <value>${jsBaseURL}/dynamic-resize-iframe.js</value>
           </list>
         </entry>
       </map>

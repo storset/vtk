@@ -118,9 +118,9 @@
 
     <#if mediaRes != "">
       <#if mediaRes.resourceType == 'audio'>
-      <script type="text/javascript" language="JavaScript" src="${mediaPlayerBase.url?html}/audio-player.js"></script>
-      <object type="application/x-shockwave-flash" data="${mediaPlayerBase.url?html}/player.swf" id="audioplayer1" height="24" width="290">
-	<param name="movie" value="${mediaPlayerBase.url?html}/player.swf"/>
+      <script type="text/javascript" language="JavaScript" src="${flashPlayer.jsURL?html}/"></script>
+      <object type="application/x-shockwave-flash" data="${flashPlayer.flashURL?html}" id="audioplayer1" height="24" width="290">
+	<param name="movie" value="${flashPlayer.flashURL?html}"/>
 	<param name="FlashVars" value="playerID=1&amp;soundFile=${media}"/>
 	<param name="quality" value="high"/>
 	<param name="menu" value="false"/>

@@ -40,7 +40,7 @@
     <property name="url" value="pages/tags.ftl" />
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs"><list><value>${cssBaseURL}/tags.css</value></list></entry>
+        <entry key="cssURLs"><list><value>${themeBaseURL}/tags.css</value></list></entry>
       </map>
     </property>
   </bean>

@@ -532,8 +532,8 @@
           <map>
             <entry key="cssURLs">
               <list>
-                <value>${cssBaseURL}/basic.css</value>
-                <value>${cssBaseURL}/webdav-collectionlisting.css</value>
+                <value>${themeBaseURL}/basic.css</value>
+                <value>${themeBaseURL}/webdav-collectionlisting.css</value>
               </list>
             </entry>
           </map>
@@ -584,11 +584,19 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs" value-ref="viewCSSURLs" /> <!-- mmm -->
+        <entry key="cssURLs" value-ref="viewCSSURLs" /> <!-- XXX -->
       </map>
     </property>
   </bean>
 
+   <bean id="viewCSSURLs" class="java.util.ArrayList"> <!-- XXX -->
+     <constructor-arg>
+       <list>
+         <value>${themeBaseURL}/basic.css</value>
+         <value>http://www.uio.no/visuell-profil/css/uio.css</value>
+       </list>
+     </constructor-arg>
+   </bean>
 
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 

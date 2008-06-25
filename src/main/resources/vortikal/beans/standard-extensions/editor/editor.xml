@@ -81,7 +81,7 @@
 
   <bean id="editor.browseUriAssertion"
         class="org.vortikal.web.service.RequestURIRegexpAssertion">
-    <property name="pattern" value="${editor.fck.browse}" />
+    <property name="pattern" value="${editor.fck.browseURL}" />
   </bean>
 
   <bean id="editor.modeParameterAssertion"
@@ -134,7 +134,7 @@
           <property name="repository" ref="repository" />
           <property name="service" ref="staticResourceService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${editor.fck.resources}" />
+          <property name="appendPath" value="${editor.fck.resourcesURL}" />
           <property name="modelName" value="fckeditorBase" />
           <property name="urlName" value="url" />
         </bean>
@@ -148,7 +148,7 @@
 
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="editor.browseService" />
-          <property name="path" value="${editor.fck.browse}" />
+          <property name="path" value="${editor.fck.browseURL}" />
           <property name="modelName" value="fckBrowse" />
         </bean>
 
@@ -156,7 +156,7 @@
           <property name="repository" ref="repository" />
           <property name="service" ref="staticResourceService" />
           <property name="uri" value="/" />
-          <property name="appendPath" value="${yui.basePath}" />
+          <property name="appendPath" value="${yui.baseURL}" />
           <property name="modelName" value="yuiBase" />
           <property name="urlName" value="url" />
         </bean>
@@ -203,16 +203,16 @@
   <bean id="editor.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${cssBaseURL}/basic.css</value>
-        <value>${cssBaseURL}/tabs.css</value>
-        <value>${cssBaseURL}/editor.css</value>
+        <value>${themeBaseURL}/basic.css</value>
+        <value>${themeBaseURL}/tabs.css</value>
+        <value>${themeBaseURL}/editor.css</value>
       </list>
     </constructor-arg>
   </bean>
 
   <bean id="editor.fckEditorAreaCSSURL" class="java.lang.String">
     <constructor-arg>
-      <value>${cssBaseURL}/fck_editorarea.css</value>
+      <value>${themeBaseURL}/fck_editorarea.css</value>
     </constructor-arg>
   </bean>
 

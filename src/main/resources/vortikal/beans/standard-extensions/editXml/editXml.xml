@@ -158,9 +158,9 @@
   <bean id="editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${cssBaseURL}/basic.css</value>
-        <value>${cssBaseURL}/tabs.css</value>
-        <value>${cssBaseURL}/edit.css</value>
+        <value>${themeBaseURL}/basic.css</value>
+        <value>${themeBaseURL}/tabs.css</value>
+        <value>${themeBaseURL}/edit.css</value>
       </list>
     </constructor-arg>
   </bean>
@@ -168,8 +168,8 @@
   <bean id="editJSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${cssBaseURL}/browser-sniffer.js</value>
-        <value>${cssBaseURL}/fixed.js</value>
+        <value>${jsBaseURL}/browser-sniffer.js</value>
+        <value>${jsBaseURL}/fixed.js</value>
       </list>
     </constructor-arg>
   </bean>

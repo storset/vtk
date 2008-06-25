@@ -23,7 +23,7 @@
       <property name="services" ref="services" />
       <property name="nonRepositoryRoots">
         <set>
-          <value>${vrtx.staticResourcesBase}</value>
+          <value>${vrtx.staticResourcesBaseURL}</value>
         </set>
       </property>
    </bean>

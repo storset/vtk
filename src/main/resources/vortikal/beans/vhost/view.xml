@@ -42,17 +42,25 @@
       <ref bean="commenting.commentsView.referenceDataProviders" />
       <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
         <property name="repository" ref="repository" />
-        <property name="modelName" value="mediaPlayerBase" />
-        <property name="service" ref="viewService" />
         <property name="uri" value="/" />
-        <property name="appendPath" value="${mediaplayer.basePath}" />
-        <property name="urlName" value="url" />
-      </bean>      
+        <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
+        <property name="service" ref="viewService" />
+        <property name="modelName" value="flashPlayer" />
+        <property name="urlName" value="flashURL" />
+      </bean>
+      <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+        <property name="repository" ref="repository" />
+        <property name="uri" value="/" />
+        <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
+        <property name="service" ref="viewService" />
+        <property name="modelName" value="flashPlayer" />
+        <property name="urlName" value="jsURL" />
+      </bean>
       </list>
     </property>    
     <property name="attributesMap">
       <map>
-        <entry key="cssURL" value="${cssBaseURL}/view-article.css" />
+        <entry key="cssURL" value="${themeBaseURL}/view-article.css" />
       </map>
     </property>
   </bean>
@@ -83,10 +91,9 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${cssBaseURL}/view-collectionlisting.css</value>
+            <value>${themeBaseURL}/view-collectionlisting.css</value>
           </list>
         </entry>
-        <!-- entry key="cssURLs" value-ref="viewCSSURLs" / -->
       </map>
     </property>
   </bean>
@@ -383,15 +390,6 @@
    <bean id="linkConstructor" class="org.vortikal.web.view.LinkConstructorImpl"
          parent="requestLocalRepositoryAware" />
    
-
-   <bean id="viewCSSURLs" class="java.util.ArrayList">
-     <constructor-arg>
-       <list>
-         <value>${cssBaseURL}/basic.css</value>
-         <value>http://www.uio.no/visuell-profil/css/uio.css</value>
-       </list>
-     </constructor-arg>
-   </bean>
 
   <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />
 

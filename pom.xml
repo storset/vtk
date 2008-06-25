@@ -162,18 +162,8 @@
       </resource>
 
       <resource>
-        <directory>src/main/ext/kupu/v1.3.9</directory>
-        <targetPath>vortikal/resources/kupu-resources</targetPath>
-        <includes>
-          <include>common/**</include>
-          <include>i18n/**</include>
-        </includes>
-      </resource>
-
-      <resource>
         <directory>src/main/ext/FCKeditor/fckeditor-build</directory>
-        <!--directory>src/main/ext/FCKeditor/2.5-svn</directory-->
-        <targetPath>vortikal/resources/fckeditor-build</targetPath>
+        <targetPath>web/fckeditor-build</targetPath>
       </resource>
 
       <resource>
@@ -391,12 +381,6 @@
     </dependency-->
 
     <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-      <version>0.9</version>
-    </dependency>
-
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
@@ -430,7 +414,7 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
+      <version>1.1.1</version>
       <exclusions>
         <exclusion>
           <groupId>logkit</groupId>
@@ -445,7 +429,21 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.13</version>
+      <version>1.2.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>        
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>        
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>        
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -501,7 +499,7 @@
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>2.3.10</version>
+      <version>2.3.13</version>
     </dependency>
     <dependency>
       <groupId>org.python</groupId>
@@ -565,13 +563,8 @@
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-module-apt</artifactId>
-      <version>1.0-alpha-10</version>
+      <version>1.0-alpha-11</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.maven.doxia</groupId>
-      <artifactId>doxia-module-twiki</artifactId>
-      <version>1.0-alpha-10</version>
-    </dependency> 
 
     <dependency>
       <groupId>org.apache.ibatis</groupId>
@@ -594,7 +587,7 @@
     <dependency>
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
-      <version>2.4</version>
+      <version>2.5</version>
     </dependency>
      <dependency>
       <groupId>xalan</groupId>
@@ -604,29 +597,29 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.1.1</version>
+      <version>1.2.1</version>
     </dependency>
 
     <!-- runtime dependencies -->
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
       <scope>runtime</scope>
     </dependency>
 
     <!-- Requirements for Spring's tx:advice and Geronimo (XA-capable)
          transaction manager: -->
     <dependency>
-      <groupId>aspectj</groupId>
+      <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
-      <version>1.5.3</version>
+      <version>1.5.4</version>
     </dependency>
     
     <dependency>
@@ -654,14 +647,14 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>8.2-504.jdbc3</version>
+      <version>8.2-507.jdbc3</version>
       <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.2</version>
+      <version>3.2.1</version>
       <scope>runtime</scope>
     </dependency>
     
@@ -675,6 +668,7 @@
       <artifactId>jackrabbit-core</artifactId>
       <version>1.4.1</version>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>

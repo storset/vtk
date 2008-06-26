@@ -62,6 +62,7 @@ public class CopyCommandValidator implements Validator, InitializingBean {
     }
 
 
+    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == CopyCommand.class);
     }

@@ -32,20 +32,18 @@ package org.vortikal.web.controller;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -53,7 +51,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
-
 
 /**
  * Interceptor for controlling various HTTP response headers.
@@ -113,7 +110,7 @@ public class HeaderControlHandlerInterceptor
     private boolean includeContentLanguageHeader = false;
     private boolean includeEtagHeader = false;
     private boolean includeNoCacheHeader = false;
-    private Map staticHeaders = new HashMap();
+    private Map<String, String> staticHeaders = new HashMap<String, String>();
     
     public void setExpiresHeaderProperty(PropertyTypeDefinition expiresHeaderProperty) {
         if (expiresHeaderProperty != null) {
@@ -143,7 +140,7 @@ public class HeaderControlHandlerInterceptor
     }
 
 
-    public void setStaticHeaders(Map staticHeaders) {
+    public void setStaticHeaders(Map<String, String> staticHeaders) {
         this.staticHeaders = staticHeaders;
     }
     
@@ -173,7 +170,8 @@ public class HeaderControlHandlerInterceptor
         }
 
         Resource resource = null;
-        Map model = modelAndView.getModel();
+
+        @SuppressWarnings("unchecked") Map model = modelAndView.getModel();
 
         resource = (Resource) model.get("resource");
         if (resource != null) {
@@ -193,9 +191,9 @@ public class HeaderControlHandlerInterceptor
     }
     
 
-
-    protected void setExpiresHeader(Resource resource, Map model, HttpServletRequest request,
-                                    HttpServletResponse response) throws Exception {
+    protected void setExpiresHeader(Resource resource, 
+            @SuppressWarnings("unchecked") Map model, 
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (this.expiresHeaderProperty != null) {
             
             Property expiresProperty = resource.getProperty(
@@ -218,7 +216,8 @@ public class HeaderControlHandlerInterceptor
         }
     }
 
-    protected void setContentLanguageHeader(Resource resource, Map model,
+    protected void setContentLanguageHeader(Resource resource, 
+                                            @SuppressWarnings("unchecked") Map model,
                                             HttpServletRequest request,
                                             HttpServletResponse response) throws Exception {
         // Fix for DispatcherServlet's behavior (always sets the
@@ -237,7 +236,8 @@ public class HeaderControlHandlerInterceptor
     }
     
 
-    protected void setLastModifiedHeader(Resource resource, Map model,
+    protected void setLastModifiedHeader(Resource resource, 
+                                         @SuppressWarnings("unchecked") Map model,
                                          HttpServletRequest request,
                                          HttpServletResponse response) throws Exception {
         
@@ -256,8 +256,8 @@ public class HeaderControlHandlerInterceptor
     }
 
 
-    protected void setEtagHeader(Resource resource, Map model, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    protected void setEtagHeader(Resource resource, @SuppressWarnings("unchecked") Map model, 
+                                HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (this.includeEtagHeader) {
             String etag = resource.getEtag();
             if (logger.isDebugEnabled()) {
@@ -268,8 +268,8 @@ public class HeaderControlHandlerInterceptor
     }
     
 
-    protected void setCacheControlHeader(Resource resource, Map model, HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    protected void setCacheControlHeader(Resource resource, @SuppressWarnings("unchecked") Map model, 
+                                         HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
         } else if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
@@ -281,13 +281,12 @@ public class HeaderControlHandlerInterceptor
         if (this.staticHeaders == null || this.staticHeaders.size() == 0) {
             return;
         }
-        for (Iterator i = this.staticHeaders.keySet().iterator(); i.hasNext();) {
-            String name = (String) i.next();
-            String value = (String) this.staticHeaders.get(name);
+        for (String header: this.staticHeaders.keySet()) {
+            String value = (String) this.staticHeaders.get(header);
             if (logger.isDebugEnabled()) {
-                logger.debug("Setting header: " + name + ": " + value);
+                logger.debug("Setting header: " + header + ": " + value);
             }
-            response.setHeader(name, value);
+            response.setHeader(header, value);
         }
     }
 

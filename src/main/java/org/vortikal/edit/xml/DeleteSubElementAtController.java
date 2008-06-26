@@ -39,7 +39,7 @@ import org.jdom.Element;
 
 public class DeleteSubElementAtController implements ActionHandler {
     
-    public Map handle(HttpServletRequest request, 
+    public Map<String, Object> handle(HttpServletRequest request, 
             EditDocument document, SchemaDocumentDefinition documentDefinition) {
         
         String mode = document.getDocumentMode();
@@ -56,7 +56,7 @@ public class DeleteSubElementAtController implements ActionHandler {
             Element element = document.findElementByPath(path);
             element.detach();
 
-            return new HashMap();
+            return new HashMap<String, Object>();
         }
         return null;
     }

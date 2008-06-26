@@ -324,7 +324,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
      * Represents a tag element for view rendering.
      *
      */
-    public static final class TagElement implements Comparable {
+    public static final class TagElement implements Comparable<TagElement> {
         private int magnitude;
         private String linkUrl;
         private String text;
@@ -347,8 +347,8 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
             return text;
         }
         
-        public int compareTo(Object other) {
-            return this.text.compareTo(((TagElement)other).text);
+        public int compareTo(TagElement other) {
+            return this.text.compareTo(other.text);
         }
 
     }

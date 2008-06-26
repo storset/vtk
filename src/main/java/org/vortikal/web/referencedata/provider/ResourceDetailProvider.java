@@ -31,7 +31,6 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,11 +76,11 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  */
 public class ResourceDetailProvider implements InitializingBean, ReferenceDataProvider {
 
-    private Map serviceMap = null;
+    private Map<String, Service> serviceMap = null;
     private Repository repository = null;
     
         
-    public void setServiceMap(Map serviceMap) {
+    public void setServiceMap(Map<String, Service> serviceMap) {
         this.serviceMap = serviceMap;
     }
     
@@ -100,9 +99,10 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
-        Map resourceDetailModel = new HashMap();
+        Map<String, Object> resourceDetailModel = new HashMap<String, Object>();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -115,9 +115,8 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
             // Ignore
         }
 
-        for (Iterator i = this.serviceMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            Object key = entry.getKey();
+        for (Map.Entry<String, Service> entry: this.serviceMap.entrySet()) {
+            String key = entry.getKey();
             Service service = (Service) entry.getValue();
 
             String url = null;
@@ -131,8 +130,6 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
             }
             resourceDetailModel.put(key, url);
         }
-
-
         model.put("resourceDetail", resourceDetailModel);
     }
 

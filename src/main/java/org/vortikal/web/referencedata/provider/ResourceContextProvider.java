@@ -134,6 +134,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     }
 
     
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

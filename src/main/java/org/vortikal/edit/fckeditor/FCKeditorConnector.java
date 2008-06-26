@@ -167,7 +167,7 @@ public class FCKeditorConnector implements Controller {
         Resource[] children = this.repository.listChildren(
             token, command.getCurrentFolder(), true);
 
-        Comparator comparator = Collator.getInstance(locale);
+        Comparator<? super String> comparator = Collator.getInstance(locale);
         Map<String, Map<String, Object>> result = new TreeMap<String, Map<String, Object>>(comparator);
 
         for (Resource r: children) {
@@ -206,6 +206,7 @@ public class FCKeditorConnector implements Controller {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private ModelAndView uploadFile(FCKeditorFileBrowserCommand command, String token, HttpServletRequest request) {
         Map<String, Object> model = new HashMap<String, Object>();
         

@@ -35,7 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -51,8 +50,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,6 +59,7 @@ import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
+import org.vortikal.web.view.LinkConstructor;
 import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
@@ -159,6 +157,7 @@ public class ResourceXsltView extends AbstractView
     }
 
 
+    @SuppressWarnings("unchecked")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
                                            HttpServletResponse response)
         throws TransformerException, IOException {
@@ -325,6 +324,7 @@ public class ResourceXsltView extends AbstractView
         return this.transformerManager.getTransformer(resource, document);
     }
 
+    @SuppressWarnings("unchecked")
     protected void setParameters(Map model, Transformer transformer) {
 
         if (!model.containsKey("xsltParameters")) {
@@ -368,43 +368,8 @@ public class ResourceXsltView extends AbstractView
     }
     
 
-    private void writeDocumentToResponse(HttpServletResponse response,
-                                         Document document)
-        throws IOException {
-        Format format = Format.getPrettyFormat();
-        format.setEncoding("utf-8");
-
-        XMLOutputter xmlOutputter = new XMLOutputter(format);
-        String xml = xmlOutputter.outputString(document);
-        byte[] buffer = null;
-        try {
-            buffer = xml.getBytes("utf-8");
-        } catch (UnsupportedEncodingException ex) {
-            logger.warn("Warning: UTF-8 encoding not supported", ex);
-            throw new RuntimeException("UTF-8 encoding not supported");
-        }
-
-        OutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            response.setHeader("Content-Type", "text/xml");
-            response.setIntHeader("Content-Length", buffer.length);
-            out.write(buffer, 0, buffer.length);
-
-        } finally {
-            if (out != null) {
-                out.flush();
-                out.close();
-            }
-        }
-    }
-    
-
-
     private class ErrorListener implements javax.xml.transform.ErrorListener {
-
         TransformerException error = null;
-        
         
         public void error(TransformerException e) {
             this.error = e;

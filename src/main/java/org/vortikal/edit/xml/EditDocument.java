@@ -222,6 +222,7 @@ public class EditDocument extends Document {
 
 
 
+    @SuppressWarnings("unchecked")
     public void resetEditingElement() {
         ProcessingInstruction pi = null;
         for (Iterator i = this.element.getContent().iterator(); i.hasNext();) {
@@ -251,7 +252,6 @@ public class EditDocument extends Document {
 
 
     public void resetElements(List<Element> elements) {
-        // FIXME: lag denne! brukes under og fra edithandler!
         HashMap<Element, ProcessingInstruction> removalSet = new HashMap<Element, ProcessingInstruction>();
 
         for (Element elem: elements) {
@@ -298,6 +298,7 @@ public class EditDocument extends Document {
      * @param parameters
      * @param documentDefinition
      */
+    @SuppressWarnings("unchecked")
     public void addContentsToElement(Element element, Map<String, String> parameters,
             SchemaDocumentDefinition documentDefinition) {
 
@@ -370,6 +371,7 @@ public class EditDocument extends Document {
 
 
 
+    @SuppressWarnings("unchecked")
     public void putElementByPath(String path, Element e) {
         Element currentElement = getRootElement();
         String currentPath = new String(path);
@@ -388,6 +390,7 @@ public class EditDocument extends Document {
             if (currentPath.indexOf(".") == -1) {
                 /* Found the parent element. Put child elements and
                  * processing instructions into a list */
+
                 List l = new ArrayList(
                     currentElement.getContent(
                         new Filter() {

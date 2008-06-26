@@ -372,6 +372,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return list.toArray(new String[list.size()]);
     }
 
+    @SuppressWarnings("unchecked")
     private  void init() {
 
         this.primaryTypes = 

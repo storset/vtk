@@ -42,7 +42,7 @@ import java.util.Set;
 public abstract class AbstractRequestFilter implements RequestFilter {
 
     private int order = Integer.MAX_VALUE;
-    private Set categories = new HashSet();
+    private Set<?> categories = new HashSet<String>();
 
     public void setOrder(int order) {
         this.order = order;
@@ -52,11 +52,11 @@ public abstract class AbstractRequestFilter implements RequestFilter {
         return this.order;
     }
     
-    public void setCategories(Set categories) {
+    public void setCategories(Set<?> categories) {
         this.categories = categories;
     }
     
-    public Set getCategories() {
+    public Set<?> getCategories() {
         return this.categories;
     }
 }

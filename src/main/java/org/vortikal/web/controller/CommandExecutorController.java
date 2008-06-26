@@ -32,15 +32,12 @@ package org.vortikal.web.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -51,7 +48,6 @@ import org.vortikal.web.service.Service;
 
 public class CommandExecutorController extends SimpleFormController {
 
-    private Log logger = LogFactory.getLog(this.getClass());
     private AbstractConsole console;
     private Repository repository;
     
@@ -80,16 +76,8 @@ public class CommandExecutorController extends SimpleFormController {
     
     protected ModelAndView onSubmit(Object commandObject, BindException errors)
             throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
-        String uri = requestContext.getResourceURI();
-        String token = securityContext.getToken();
-
         ExecutorCommand command = (ExecutorCommand) commandObject;
 
-        Resource resource = this.repository.retrieve(token, uri, false);
-        String name = resource.getName();
         ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
         PrintStream resultStream = new PrintStream(bufferStream);
         this.console.eval(command.getCommand(), resultStream);

@@ -35,7 +35,6 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +62,6 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
@@ -81,7 +79,7 @@ public class ProppatchController extends AbstractWebdavController  {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         try {
             Resource resource = this.repository.retrieve(token, uri, false);
@@ -216,7 +214,8 @@ public class ProppatchController extends AbstractWebdavController  {
      * representing the WebDAV request body
      * @exception InvalidRequestException if the request body is not
      * valid
-     */
+     */ 
+    @SuppressWarnings("unchecked") 
     protected void validateRequestBody(Document requestBody)
         throws InvalidRequestException {
 
@@ -229,7 +228,7 @@ public class ProppatchController extends AbstractWebdavController  {
                 + "' (expected 'propertyupdate')");
         }      
 
-        for (Iterator actionIterator = root.getChildren().iterator();
+        for (Iterator<Element> actionIterator = root.getChildren().iterator();
              actionIterator.hasNext();) {
 
             Element actionElement = (Element) actionIterator.next();
@@ -256,6 +255,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * @param requestBody a <code>Document</code> value
      * @exception InvalidRequestException if an error occurs
      */
+    @SuppressWarnings("unchecked") 
     protected void doPropertyUpdate(Resource resource,
                                     Document requestBody, String token) 
         throws ResourceNotFoundException, AuthorizationException,
@@ -302,6 +302,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * objects representing DAV 'prop' elements (see RFC 2518,
      * sec. 12.11)
      */
+    @SuppressWarnings("unchecked") 
     protected void setProperties(Resource resource,  
                                  List propElements, 
                                  String token)
@@ -349,8 +350,6 @@ public class ProppatchController extends AbstractWebdavController  {
                     this.logger.debug("setting property 'getcontentlanguage' to '"
                                  + propertyElement.getText() + "'");
                 }
-                // XXX: Locale needs to be better handled
-                Locale locale = LocaleHelper.getLocale(propertyElement.getText());
                 resource.setContentLocale(propertyElement.getText());
                 
             } else if (propertyName.equals("getcontenttype")) {
@@ -413,6 +412,7 @@ public class ProppatchController extends AbstractWebdavController  {
     
     
 
+    @SuppressWarnings("unchecked") 
     protected void removeProperties(Resource resource, List propElements) {
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
@@ -486,6 +486,7 @@ public class ProppatchController extends AbstractWebdavController  {
         return def.getValueFormatter().stringToValue(stringValue, null, null);
     }
     
+    @SuppressWarnings("unchecked") 
     protected Value[] elementToValues(Element element, PropertyTypeDefinition def) throws ValueFormatException {
         
         String[] stringValues;

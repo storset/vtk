@@ -81,6 +81,7 @@ public class MessageLocalizerXPathFunction extends AbstractXPathFunction
 
     }
 
+    @SuppressWarnings("unchecked")
     public Object call(Context context, List args) throws FunctionCallException {
 
         if (args.isEmpty()) {

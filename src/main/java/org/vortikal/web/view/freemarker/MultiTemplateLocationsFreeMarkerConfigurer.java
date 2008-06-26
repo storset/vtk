@@ -83,6 +83,7 @@ import freemarker.template.TemplateException;
  *  @see freemarker.cache.MultiTemplateLoader
  *  @see FreeMarkerTemplateLocation
  */
+@SuppressWarnings("unchecked")
 public class MultiTemplateLocationsFreeMarkerConfigurer
   implements FreeMarkerConfig, InitializingBean, ApplicationContextAware, ServletContextAware {
 
@@ -97,7 +98,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
     private boolean preferFileSystemAccess = true;
     private Configuration configuration;
     private TaglibFactory taglibFactory;
-    private Map sharedVariables;
+    private Map<String, Object> sharedVariables;
 
     
     public Configuration getConfiguration() {
@@ -111,7 +112,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
     }
     
     public Configuration createConfiguration() throws IOException, TemplateException {
-        List loaders = new ArrayList();
+        List<TemplateLoader> loaders = new ArrayList<TemplateLoader>();
         
         FreeMarkerConfigurationFactory factory = new FreeMarkerConfigurationFactory();
         
@@ -161,8 +162,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
             configuration.setTemplateLoader(loader);
 
             if (this.sharedVariables != null) {
-                for (Iterator i = this.sharedVariables.keySet().iterator(); i.hasNext();) {
-                    String name = (String) i.next();
+                for (String name: this.sharedVariables.keySet()) {
                     Object val = this.sharedVariables.get(name);
                     configuration.setSharedVariable(name, val);
                 }
@@ -204,7 +204,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
         this.preferFileSystemAccess = preferFileSystemAccess;
     }
 
-    public void setSharedVariables(Map sharedVariables) {
+    public void setSharedVariables(Map<String, Object> sharedVariables) {
         this.sharedVariables = sharedVariables;
     }
     

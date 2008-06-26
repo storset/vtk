@@ -32,14 +32,12 @@ package org.vortikal.web.view;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
-
 
 /**
  * HTTP status view with parameterizable status code and headers.
@@ -80,18 +78,19 @@ public class StandardHttpView implements View {
 
     private int statusCode = HttpServletResponse.SC_OK;
     private String statusMessage = null;
-    private Map headers = new HashMap();
+    private Map<String, Object> headers = new HashMap<String, Object>();
 
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
         
-        Integer modelStatusCode = (Integer)model.get("statusCode");
-        String modelStatusMessage = (String)model.get("statusMessage");
-        Map modelHeaders = (Map)model.get("headers");
+        Integer modelStatusCode = (Integer) model.get("statusCode");
+        String modelStatusMessage = (String) model.get("statusMessage");
+        Map<String, Object> modelHeaders = (Map<String, Object>) model.get("headers");
         
         int statusCode = modelStatusCode != null ? modelStatusCode.intValue() : this.statusCode;
         String statusMessage = modelStatusMessage != null ? modelStatusMessage : this.statusMessage;
-        Map headers = modelHeaders != null ? modelHeaders : this.headers;
+        Map<String, Object> headers = modelHeaders != null ? modelHeaders : this.headers;
         
         if (statusMessage != null) {
             response.setStatus(statusCode, statusMessage);
@@ -99,8 +98,7 @@ public class StandardHttpView implements View {
             response.setStatus(statusCode);
         }
 
-        for (Iterator i = headers.keySet().iterator(); i.hasNext();) {
-            String name = (String) i.next();
+        for (String name: headers.keySet()) {
             Object value = headers.get(name);
 
             if (value instanceof Date) {
@@ -128,7 +126,7 @@ public class StandardHttpView implements View {
         this.statusMessage = statusMessage;
     }
     
-    public void setHeaders(Map headers) {
+    public void setHeaders(Map<String, Object> headers) {
         this.headers = headers;
     }
 

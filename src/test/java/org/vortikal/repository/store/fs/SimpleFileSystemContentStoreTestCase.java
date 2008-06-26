@@ -37,8 +37,6 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.vortikal.repository.store.AbstractContentStoreTestCase;
 import org.vortikal.repository.store.ContentStore;
@@ -49,8 +47,6 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
     private ContentStore store;
 
     private String tmpDir;
-
-    private static Log logger = LogFactory.getLog(SimpleFileSystemContentStoreTestCase.class);
 
     protected void setUp() throws Exception {
         BasicConfigurator.configure();
@@ -120,8 +116,8 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
         //assertEquals(0, getStore().getContentLength(uri));
 
         try {
-            InputStream inputStreamAfterDelete = getStore().getInputStream(uri);
-            fail("file does not exists");
+            getStore().getInputStream(uri);
+            fail("file does not exist");
         } catch (Exception e) {
             // ok
         }

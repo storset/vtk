@@ -45,14 +45,14 @@ import org.vortikal.text.htmlparser.HtmlPageParserImpl;
 public class MockStringDecoratorRequest implements DecoratorRequest {
 
     private HtmlPage page;
-    private Map parameters = new HashMap();
+    private Map<String, Object> parameters = new HashMap<String, Object>();
 
     public MockStringDecoratorRequest(String content) throws Exception {
         this(content, null);
     }
     
 
-    public MockStringDecoratorRequest(String content, Map parameters) throws Exception {
+    public MockStringDecoratorRequest(String content, Map<String, Object> parameters) throws Exception {
         if (parameters != null) {
             this.parameters = parameters;
         }
@@ -86,7 +86,7 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
         return (String) this.parameters.get(name);
     }
         
-    public Iterator getRequestParameterNames() {
+    public Iterator<String> getRequestParameterNames() {
         return this.parameters.keySet().iterator();
     }
 }

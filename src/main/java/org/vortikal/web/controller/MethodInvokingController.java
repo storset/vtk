@@ -91,7 +91,7 @@ public class MethodInvokingController implements Controller, InitializingBean {
                 "JavaBean property 'viewName' not set");
         }
 
-        Class clazz = this.targetObject.getClass();
+        Class<?> clazz = this.targetObject.getClass();
         Method[] methods = clazz.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if (this.methodName.equals(methods[i].getName())) {
@@ -105,7 +105,7 @@ public class MethodInvokingController implements Controller, InitializingBean {
 
     public ModelAndView handleRequest(
         HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         Object result = this.method.invoke(this.targetObject, new Object[0]);
         model.put(this.modelName, result);
         ModelAndView mv = new ModelAndView(this.viewName, model);

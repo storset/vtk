@@ -58,10 +58,10 @@ public class PrincipalMatchAssertion extends AbstractRepositoryAssertion
 
     private PrincipalManager principalManager;
 
-    private Set principals = new HashSet();
+    private Set<String> principals = new HashSet<String>();
     private Principal[] groups = new Principal[0];
     
-    public void setPrincipals(Set principals) {
+    public void setPrincipals(Set<String> principals) {
         this.principals = principals;
     }
     

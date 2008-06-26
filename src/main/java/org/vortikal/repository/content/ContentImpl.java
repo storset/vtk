@@ -58,17 +58,17 @@ public class ContentImpl implements Content {
     private ContentStore contentStore;
     private String uri;
     private ContentRepresentationRegistry contentRegistry;
-    private Map<Class, Object> representations;
+    private Map<Class<?>, Object> representations;
     
     public ContentImpl(String uri, ContentStore contentStore,
                        ContentRepresentationRegistry contentRegistry) {
-        this.representations = new HashMap<Class, Object>();
+        this.representations = new HashMap<Class<?>, Object>();
         this.contentStore = contentStore;
         this.contentRegistry = contentRegistry;
         this.uri = uri;
     }
     
-    public Object getContentRepresentation(Class clazz) throws Exception {
+    public Object getContentRepresentation(Class<?> clazz) throws Exception {
         // Make sure we have original content from inputstream 
         // before we do anything else. 
         
@@ -117,8 +117,4 @@ public class ContentImpl implements Content {
         return this.contentStore.getContentLength(this.uri);
     }
     
-//     public Class[] getSupportedRepresentations() {
-//         return ContentRepresentationFactory.SUPPORTED_REPRESENTATIONS;
-//     }
-
 }

@@ -159,6 +159,7 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
         this.breadCrumbProvider = breadCrumbProvider;
     }
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) {
         
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -207,6 +208,7 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
 
     }
 
+    @SuppressWarnings("unchecked")
     private NodeList getRequestParams(HttpServletRequest request) throws JDOMException {
         /* creating a nodeList with all request parameters */
         Document doc = new Document(new Element("root"));
@@ -234,7 +236,7 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
         Document doc = new Document(new Element(PATH_ELEMENTS));
         Element pathElements = doc.getRootElement();
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         this.breadCrumbProvider.referenceData(model, request);
         
         BreadcrumbElement[] crumbs = 

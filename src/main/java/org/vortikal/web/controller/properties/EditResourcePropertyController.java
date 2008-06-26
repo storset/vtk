@@ -119,7 +119,7 @@ public class EditResourcePropertyController extends SimpleFormController
             value = property.getStringValue();
         }
 
-        Map parameters = new HashMap();
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("namespace", namespace);
         parameters.put("name", name);
         String url = service.constructLink(resource,

@@ -50,9 +50,11 @@ public class StylesheetInDocumentResolver implements StylesheetReferenceResolver
     }
 
 
+    @SuppressWarnings("unchecked")
     private String getStylesheetURLFromDocument(Document doc) {
 
         List content = doc.getContent();
+        
         for (Iterator i = content.iterator(); i.hasNext();) {
             Object o = i.next();
 

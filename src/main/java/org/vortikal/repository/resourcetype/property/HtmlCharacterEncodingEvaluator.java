@@ -59,6 +59,7 @@ public class HtmlCharacterEncodingEvaluator extends AbstractJerichoHtmlContentEv
     }
 
     private String findCharacterEncoding(Source source) {
+        @SuppressWarnings("unchecked")
         List<Element> metaElements = source.findAllElements(Tag.META);
         for (Element metaElement: metaElements) {
             

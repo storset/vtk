@@ -117,8 +117,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     public static final String DEFAULT_SORT_BY_PARAMETER = "name";
 
     
-    private static final Set supportedResourceColumns = 
-        new HashSet(Arrays.asList(new String[] {
+    private static final Set<String> supportedResourceColumns = 
+        new HashSet<String>(Arrays.asList(new String[] {
                                       DEFAULT_SORT_BY_PARAMETER, 
                                       "content-length", 
                                       "last-modified",
@@ -179,6 +179,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     }
 
     
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

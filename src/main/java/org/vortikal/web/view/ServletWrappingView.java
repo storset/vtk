@@ -119,7 +119,7 @@ public class ServletWrappingView
         return this.initParameters.getProperty(parameter);
     }
 
-    public Enumeration getInitParameterNames() {
+    public Enumeration<?> getInitParameterNames() {
         return this.initParameters.keys();
     }
 
@@ -142,7 +142,7 @@ public class ServletWrappingView
                 "Required property 'servletClass' not set");
         }
 
-        Class clazz = Class.forName(this.servletClass);
+        Class<?> clazz = Class.forName(this.servletClass);
         if (!Servlet.class.isAssignableFrom(clazz)) {
             throw new BeanInitializationException("Class " + clazz.getName()
                                                   + " is not a servlet");
@@ -169,6 +169,7 @@ public class ServletWrappingView
      * @param response the servlet response
      * @exception Exception if an error occurs
      */
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response)
         throws Exception {

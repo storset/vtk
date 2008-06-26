@@ -97,6 +97,7 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
     }
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws IOException {
         

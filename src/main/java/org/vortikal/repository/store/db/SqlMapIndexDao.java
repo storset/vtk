@@ -130,7 +130,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
                         sqlMapExec.startBatch();
                         for (String uri : uris) {
-                            Map params = new HashMap();
+                            Map<String, Object> params = new HashMap<String, Object>();
                             params.put("sessionId", sessionId);
                             params.put("uri", uri);
                             sqlMapExec.insert(insertUriTempTableStatement,
@@ -178,7 +178,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
         public Object doInSqlMapClient(SqlMapExecutor sqlMapExec) throws SQLException {
 
-            Map params = new HashMap();
+            Map<String, Object> params = new HashMap<String, Object>();
             String statement = getSqlMap("insertResourceIdIntoTempTable");
             
             sqlMapExec.startBatch();
@@ -206,6 +206,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
     }
     
+    @SuppressWarnings("unchecked")
     public void processQueryResultsAuthorization(
                             Set<String> principalNames,
                             List<ResultSecurityInfo> rsiList)
@@ -243,7 +244,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                         + batchCount);
             }
 
-            Map params = new HashMap();
+            Map<String, Object> params = new HashMap<String, Object>();
             statement = getSqlMap("queryResultAuthorization");
             if (n > 0) {
                 if (LOG.isDebugEnabled()) {
@@ -253,10 +254,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                 params.put("sessionId", sessionId);
                 // XXX: No no no, iBATIS does not allow Set value iteration,
                 // must wrap in List implementation... :(
-                params.put("principalNames", new ArrayList(principalNames));
+                params.put("principalNames", new ArrayList<String>(principalNames));
 
-                List<Integer> authorizedList = (List<Integer>) client
-                        .queryForList(statement, params);
+                List<Integer> authorizedList = client.queryForList(statement, params);
 
                 for (Integer authorizedId : authorizedList) {
                     boolean added = authorizedIds.add(authorizedId);
@@ -315,6 +315,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
     }
     
+    @SuppressWarnings("unchecked")
     public List<ChangeLogEntry> getLastChangeLogEntries()
         throws DataAccessException {
         

@@ -50,7 +50,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 
 public class ResourceWrapperManager {

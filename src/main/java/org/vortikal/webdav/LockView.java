@@ -63,6 +63,7 @@ public class LockView implements View {
     private static Log logger = LogFactory.getLog(PropfindView.class);
 
 
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
                                   HttpServletResponse response) throws Exception {
 

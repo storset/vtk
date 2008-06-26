@@ -109,7 +109,7 @@ public class DeleteCommentController extends AbstractController implements Initi
             this.repository.deleteComment(token, resource, comment);
         }
         
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);
 
         return new ModelAndView(this.viewName, model);

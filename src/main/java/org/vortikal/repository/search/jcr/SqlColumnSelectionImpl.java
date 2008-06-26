@@ -34,10 +34,7 @@ import org.vortikal.repository.search.Search;
 
 public class SqlColumnSelectionImpl implements SqlColumnSelection {
 
-    private Search search;
-    
     public SqlColumnSelectionImpl(Search search) {
-        this.search = search;
     }
     
     public String getColumnSelection()  {

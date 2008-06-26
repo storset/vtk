@@ -1069,6 +1069,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         NamespaceRegistry nsRegistry = this.systemSession.getWorkspace().getNamespaceRegistry();
         nsRegistry.registerNamespace("vrtx", nsMapping.getURI("vrtx"));
         
+        @SuppressWarnings("unchecked")
         List<NodeTypeDef> ntdList = cndReader.getNodeTypeDefs();
         NodeTypeManagerImpl ntmgr =(NodeTypeManagerImpl) this.systemSession.getWorkspace().getNodeTypeManager();
         NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();

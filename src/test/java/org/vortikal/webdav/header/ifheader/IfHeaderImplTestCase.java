@@ -13,6 +13,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.webdav.ifheader.IfHeader;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
+@SuppressWarnings("unchecked")
 public class IfHeaderImplTestCase extends MockObjectTestCase {
 
     protected static Log logger = LogFactory.getLog(IfHeaderImplTestCase.class);

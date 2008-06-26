@@ -54,6 +54,7 @@ public class IPv4SimpleMatcherTestCase extends TestCase {
         
     }
     
+    @SuppressWarnings("unused")
     public void testConstructionWithInvalidAddress() {
         
         try {

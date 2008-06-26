@@ -30,10 +30,12 @@
  */
 package org.vortikal.security.roles;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.vortikal.security.Principal;
+
 
 
 /**
@@ -49,8 +51,8 @@ public class RoleManager {
     public static final int READ_EVERYTHING = 1;
 //     public static final int ADMIN = 2;
 
-    private Set rootRole = new HashSet();
-    private Set readEverythingRole = new HashSet();
+    private Set<String> rootRole = new HashSet<String>();
+    private Set<String> readEverythingRole = new HashSet<String>();
 
 
 
@@ -74,14 +76,14 @@ public class RoleManager {
     }
 
 
-    public Set getPrincipals(int role) {
+    public Set<String> getPrincipals(int role) {
 
         switch (role) {
         case ROOT:
-            return this.rootRole;
+            return Collections.unmodifiableSet(this.rootRole);
 
         case READ_EVERYTHING:
-            return this.readEverythingRole;
+            return Collections.unmodifiableSet(this.readEverythingRole);
 
         default:
             throw new IllegalArgumentException("Unknown role: " + role);
@@ -89,12 +91,12 @@ public class RoleManager {
     }
 
 
-    public void setReadEverythingRole(Set readEverythingRole) {
+    public void setReadEverythingRole(Set<String> readEverythingRole) {
         this.readEverythingRole = readEverythingRole;
     }
 
 
-    public void setRootRole(Set rootRole) {
+    public void setRootRole(Set<String> rootRole) {
         this.rootRole = rootRole;
     }
 }

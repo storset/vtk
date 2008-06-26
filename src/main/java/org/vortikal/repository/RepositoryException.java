@@ -38,6 +38,8 @@ package org.vortikal.repository;
  */
 public abstract class RepositoryException extends RuntimeException {
 
+    private static final long serialVersionUID = -8621480047304195026L;
+
     public RepositoryException() {
         super();
     }

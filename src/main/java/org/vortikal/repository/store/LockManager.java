@@ -48,6 +48,7 @@ public class LockManager {
     private int maxIterations = 10;
     private long iterationWaitTimeout = 6000; // 6 seconds
 
+    @SuppressWarnings("unchecked")
     private Map locks = new ConcurrentReaderHashMap();
     private Log logger = LogFactory.getLog(LockManager.class);
 
@@ -153,6 +154,7 @@ public class LockManager {
      * @param uri the URI for which to get the lock
      * @return the lock object corresponding to the URI
      */
+    @SuppressWarnings("unchecked")
     private synchronized Lock getLock(String uri) {
 
         if (!this.locks.containsKey(uri)) {

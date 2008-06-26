@@ -35,6 +35,8 @@ import org.vortikal.repository.Repository;
 
 
 public abstract class RepositoryEvent extends ApplicationEvent {
+    private static final long serialVersionUID = 6309396942806333296L;
+
     public RepositoryEvent(Repository source) {
         super(source);
     }

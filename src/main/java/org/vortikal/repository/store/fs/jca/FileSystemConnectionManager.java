@@ -43,6 +43,8 @@ import javax.resource.spi.ManagedConnectionFactory;
  */
 public class FileSystemConnectionManager implements ConnectionManager {
 
+    private static final long serialVersionUID = -8142768567761509528L;
+
     public Object allocateConnection(ManagedConnectionFactory managedConnectionFactory,
                                      ConnectionRequestInfo requestInfo) throws ResourceException {
         ManagedConnection managedConnection = managedConnectionFactory.createManagedConnection(null, requestInfo);

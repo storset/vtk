@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller.repository;
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,8 +44,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-
-
 
 public class CreateDocumentController extends SimpleFormController
   implements InitializingBean {
@@ -66,14 +63,13 @@ public class CreateDocumentController extends SimpleFormController
 
     }
     
-
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        Map topTemplates = this.documentTemplates.getTopTemplates();
-        Map categories = this.documentTemplates.getCategoryTemplates();
+        Map<String, String> topTemplates = this.documentTemplates.getTopTemplates();
+        Map<String, Map<String, String>> categories = this.documentTemplates.getCategoryTemplates();
         
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
@@ -82,23 +78,23 @@ public class CreateDocumentController extends SimpleFormController
         CreateDocumentCommand command =
             new CreateDocumentCommand(url);
 
-        Map m = null;
+        Map<String, String> m = null;
 
         // Setting default value for CreateDocument dialog
 
         if (topTemplates != null) {
             m = topTemplates;
         } else if (categories != null) {
-            Iterator i = categories.keySet().iterator();
+            Iterator<String> i = categories.keySet().iterator();
             
-            if (i.hasNext()) m = (Map) categories.get(i.next());
+            if (i.hasNext()) m = categories.get(i.next());
         }
 
         if (m != null) {
-            Iterator i = m.keySet().iterator(); 
+            Iterator<String> i = m.keySet().iterator(); 
 
             if (i.hasNext()) {
-                command.setSourceURI((String) i.next());
+                command.setSourceURI(i.next());
             }
         }
         
@@ -106,11 +102,12 @@ public class CreateDocumentController extends SimpleFormController
     }
 
 
+    @SuppressWarnings("unchecked")
     protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map topTemplates = this.documentTemplates.getTopTemplates();
-        Map categories = this.documentTemplates.getCategoryTemplates();
+        Map<String, String> topTemplates = this.documentTemplates.getTopTemplates();
+        Map<String, Map<String, String>> categories = this.documentTemplates.getCategoryTemplates();
         
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         
         if (topTemplates != null) model.put("topTemplates", topTemplates);
         if (categories != null) model.put("categoryTemplates", categories);

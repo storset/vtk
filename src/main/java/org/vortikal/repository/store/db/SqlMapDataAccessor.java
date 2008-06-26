@@ -179,6 +179,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("timestamp", new Date());
 
         String sqlMap = getSqlMap("discoverLocks");
+        @SuppressWarnings("unchecked") 
         List<Map<String,String>> list = 
             getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
@@ -276,7 +277,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         if (!existed) {
             sqlMap = getSqlMap("loadResourceIdByUri");
-            Map map = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, r.getURI());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) getSqlMapClientTemplate().queryForObject(sqlMap, r.getURI());
             Integer id = (Integer) map.get("resourceId");
             r.setID(id.intValue());
         } 
@@ -316,10 +318,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         List<ResourceImpl> children = new ArrayList<ResourceImpl>();
         String sqlMap = getSqlMap("loadChildren");
-        List<Map> resources = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
-        Map locks = loadLocksForChildren(parent);
 
-        for (Map resourceMap: resources) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> resources = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        Map<String, Lock> locks = loadLocksForChildren(parent);
+        for (Map<String, Object> resourceMap: resources) {
             String uri = (String) resourceMap.get("uri");
 
             ResourceImpl resource = createResourceImpl();
@@ -349,12 +352,13 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(uri, SQL_ESCAPE_CHAR));
 
         String sqlMap = getSqlMap("discoverAcls");
-        List<Map> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
             
         String[] result = new String[uris.size()];
         int n = 0;
-        for (Map map: uris) {
-            result[n++] = (String) map.get("uri");
+        for (Map<String, String> map: uris) {
+            result[n++] = map.get("uri");
         }
         return result;
 
@@ -429,13 +433,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             } else {
                 sqlMap = getSqlMap("loadPreviousInheritedFromMap");
 
-                final List<Map> list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+                @SuppressWarnings("unchecked")
+                final List<Map<String, Object>> list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
                 final String batchSqlMap = getSqlMap("updateAclInheritedFromByResourceId");
 
                 getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
                     public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                         executor.startBatch();
-                        for (Map map: list) {
+                        for (Map<String, Object> map: list) {
                             executor.update(batchSqlMap, map);
                         }
                         executor.executeBatch();
@@ -531,12 +536,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("depth", SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
-        List<Map> resourceList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> resourceList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
         
         String[] childUris = new String[resourceList.size()];
         int n = 0;
-        for (Map map: resourceList) {
-            childUris[n++] = (String) map.get("uri");
+        for (Map<String, String> map: resourceList) {
+            childUris[n++] = map.get("uri");
         }
 
         parent.setChildURIs(childUris);
@@ -557,9 +564,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("depth", SqlDaoUtils.getUriDepth(parent.getURI()) + 2);
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
-        List<Map> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
-        for (Map map: resourceUris) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+
+        for (Map<String, String> map: resourceUris) {
             String uri = (String) map.get("uri");
             String parentUri = URIUtil.getParentURI(uri);
             childMap.get(parentUri).add(uri);
@@ -590,7 +599,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("depth", SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
 
         String sqlMap = getSqlMap("loadPropertiesForChildren");
-        List propertyList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> propertyList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
         populateCustomProperties(resources, propertyList);
     }
@@ -604,11 +615,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("timestamp", new Date());
         String sqlMap = getSqlMap("loadLocksByUris");
 
-        List<Map<String, ?>> locks = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> locks = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
         Map<String, Lock> result = new HashMap<String, Lock>();
 
-        for (Map<String, ?> map: locks) {
+        for (Map<String, Object> map: locks) {
             LockImpl lock = new LockImpl(
                 (String) map.get("token"),
                 principalFactory.getPrincipal((String) map.get("owner"), Principal.Type.USER),
@@ -631,11 +643,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("depth", SqlDaoUtils.getUriDepth(parent.getURI()) + 1);
         
         String sqlMap = getSqlMap("loadLocksForChildren");
-        List locks = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
-        Map<String, Lock> result = new HashMap<String, Lock>();
 
-        for (Iterator i = locks.iterator(); i.hasNext();) {
-            Map map = (Map) i.next();
+        @SuppressWarnings("unchecked") 
+        List<Map<String, Object>> locks = 
+            getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+
+        Map<String, Lock> result = new HashMap<String, Lock>();
+        
+        for (Iterator<Map<String, Object>> i = locks.iterator(); i.hasNext();) {
+            Map<String, Object> map = i.next();
             LockImpl lock = new LockImpl(
                 (String) map.get("token"),
                 principalFactory.getPrincipal((String) map.get("owner"), Principal.Type.USER),
@@ -697,8 +713,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Integer> actionTypes = new HashMap<String, Integer>();
 
         String sqlMap = getSqlMap("loadActionTypes");
-        List<Map> list = getSqlMapClientTemplate().queryForList(sqlMap, null);
-        for (Map map: list) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> list = getSqlMapClientTemplate().queryForList(sqlMap, null);
+        for (Map<String, Object> map: list) {
             actionTypes.put((String) map.get("name"), (Integer) map.get("id"));
         }
         return actionTypes;
@@ -707,9 +724,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     private boolean isInheritedAcl(ResourceImpl r) {
 
         String sqlMap = getSqlMap("isInheritedAcl");
-        Map map = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, r.getID());
+        @SuppressWarnings("unchecked")
+        Map<String, Integer> map = (Map<String, Integer>) getSqlMapClientTemplate().queryForObject(sqlMap, r.getID());
         
-        Integer inheritedFrom = (Integer) map.get("inheritedFrom");
+        Integer inheritedFrom = map.get("inheritedFrom");
         return inheritedFrom != null;
     }       
     
@@ -725,9 +743,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("path", path);
         String sqlMap = getSqlMap("findNearestAclResourceId");
-        List<Map> list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> list = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+
         Map<String, Integer> uris = new HashMap<String, Integer>();
-        for (Map map: list) {
+        for (Map<String, Object> map: list) {
              uris.put((String) map.get("uri"), (Integer) map.get("resourceId"));
         }
 
@@ -800,10 +821,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameterMap.put("resourceIds", resourceIds);
 
         String sqlMap = getSqlMap("loadAclEntriesByResourceIds");
-        List<Map> aclEntries = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> aclEntries = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
             
 
-        for (Map map: aclEntries) {
+        for (Map<String, Object> map: aclEntries) {
 
             Integer resourceId = (Integer) map.get("resourceId");
             String privilege = (String) map.get("action");
@@ -1091,6 +1114,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
     public Set<Principal> discoverGroups() {
         String sqlMap = getSqlMap("discoverGroups");
+        @SuppressWarnings("unchecked")
         List<String> groupNames = getSqlMapClientTemplate().queryForList(sqlMap, null);
         
         Set<Principal> groups = new HashSet<Principal>();

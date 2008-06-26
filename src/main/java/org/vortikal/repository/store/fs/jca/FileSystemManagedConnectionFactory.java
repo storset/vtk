@@ -45,6 +45,8 @@ import javax.security.auth.Subject;
 
 public class FileSystemManagedConnectionFactory implements ManagedConnectionFactory {
 
+    private static final long serialVersionUID = 3984397629815331080L;
+
     private transient PrintWriter logWriter;
 
     private String dataDirectory;
@@ -97,6 +99,7 @@ public class FileSystemManagedConnectionFactory implements ManagedConnectionFact
     /*
      * @see javax.resource.spi.ManagedConnectionFactory#matchManagedConnections(java.util.Set, javax.security.auth.Subject, javax.resource.spi.ConnectionRequestInfo)
      */
+    @SuppressWarnings("unchecked")
     public ManagedConnection matchManagedConnections(
             Set set, Subject subj, ConnectionRequestInfo conReqInfo)
             throws ResourceException {

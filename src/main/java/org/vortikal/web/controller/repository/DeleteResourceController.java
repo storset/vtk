@@ -121,7 +121,7 @@ public class DeleteResourceController extends AbstractController implements Init
             }
         }
         
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", modelResource);
         return new ModelAndView(this.viewName, model);
     }

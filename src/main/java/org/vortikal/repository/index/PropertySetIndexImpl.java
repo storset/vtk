@@ -58,6 +58,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     private LuceneIndexManager indexAccessor; // Underlying Lucene index accessor.
     private DocumentMapper documentMapper;
 
+    @SuppressWarnings("unchecked")
     public void addPropertySet(PropertySet propertySet) throws IndexException {
 
         Document doc = null;
@@ -279,6 +280,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         return accessor;
     }
     
+    @SuppressWarnings("unchecked")
     public Iterator propertySetIterator() throws IndexException {
         try {
             return new PropertySetIndexUnorderedIterator(this.indexAccessor.getIndexReader(), 
@@ -288,6 +290,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public Iterator orderedPropertySetIterator() throws IndexException {
         try {
             return new PropertySetIndexIterator(this.indexAccessor.getIndexReader(), 
@@ -297,6 +300,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public Iterator orderedSubtreePropertySetIterator(String rootUri) throws IndexException {
         try {
             return new PropertySetIndexSubtreeIterator(this.indexAccessor.getIndexReader(), 
@@ -306,6 +310,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public Iterator orderedUriIterator() throws IndexException {
         try {
             return new PropertySetIndexUriIterator(this.indexAccessor.getIndexReader());
@@ -314,6 +319,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public void close(Iterator iterator) throws IndexException {
         try {
             if ((iterator instanceof CloseableIterator)) {

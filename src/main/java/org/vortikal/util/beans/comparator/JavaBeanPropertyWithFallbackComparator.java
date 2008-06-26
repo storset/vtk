@@ -43,6 +43,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * FIXME: Currently beans are required not to have <code>null</code> property values,
  * instead a toString value of "" is used.
  */
+@SuppressWarnings("unchecked")
 public class JavaBeanPropertyWithFallbackComparator implements Comparator {
     private String propertyName  = null;
     private String fallbackPropertyName = null;

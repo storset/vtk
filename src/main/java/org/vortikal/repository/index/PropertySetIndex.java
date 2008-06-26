@@ -141,7 +141,7 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator orderedUriIterator() throws IndexException;
+    public Iterator<Object> orderedUriIterator() throws IndexException;
     
     /**
      * Get an un-ordered <code>Iterator</code> over all <code>PropertySet</code> instances
@@ -150,7 +150,7 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator propertySetIterator() throws IndexException;
+    public Iterator<Object> propertySetIterator() throws IndexException;
     
     /**
      * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
@@ -162,7 +162,7 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator orderedPropertySetIterator() throws IndexException;
+    public Iterator<Object> orderedPropertySetIterator() throws IndexException;
     
     /**
      * Get an {@link java.util.Iterator} over all <code>PropertySet</code> instances
@@ -175,7 +175,7 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator orderedSubtreePropertySetIterator(String rootUri) throws IndexException;
+    public Iterator<Object> orderedSubtreePropertySetIterator(String rootUri) throws IndexException;
 
     /**
      * Count all property set instances currently in index. This number includes any multiples
@@ -192,7 +192,7 @@ public interface PropertySetIndex {
      * @param iterator
      * @throws IndexException
      */
-    public void close(Iterator iterator) throws IndexException;
+    public void close(Iterator<Object> iterator) throws IndexException;
     
     /**
      * Clear all contents of index.

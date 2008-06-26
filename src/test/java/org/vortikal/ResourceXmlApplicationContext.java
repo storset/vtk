@@ -38,10 +38,6 @@ public class ResourceXmlApplicationContext extends AbstractXmlApplicationContext
 
     private Resource resource;
     
-    private ResourceXmlApplicationContext() {
-        throw new IllegalArgumentException("This class can't be construced without a Resource as an argument");
-    }
-    
     public ResourceXmlApplicationContext(Resource resource) {
         System.out.println("InputStreamXmlApplicationContext constructor");
         this.resource = resource;

@@ -31,7 +31,6 @@
 package org.vortikal.security.store;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -41,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
@@ -75,7 +75,7 @@ public class PropertyConfigurableMD5Store
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Properties principals;
-    private Map groups;
+    private Map<Principal, List<String>> groups;
     private String realm;
 
     private int order = Integer.MAX_VALUE;
@@ -86,7 +86,7 @@ public class PropertyConfigurableMD5Store
     }
 
 
-    public void setGroups(Map groups) {
+    public void setGroups(Map<Principal, List<String>> groups) {
         this.groups = groups;
     }
     
@@ -172,7 +172,7 @@ public class PropertyConfigurableMD5Store
             return false;
         }
 
-        List members = (List) this.groups.get(group);
+        List<String> members = this.groups.get(group);
         boolean hit = members.contains(principal.getQualifiedName());
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Check membership for principal " + principal
@@ -203,18 +203,15 @@ public class PropertyConfigurableMD5Store
     }
 
 
-    public Set getMemberGroups(Principal principal) {
-        Set pGroups = new HashSet();
-        for (Iterator iter = this.groups.entrySet().iterator(); iter.hasNext();) {
-            Map.Entry entry = (Map.Entry)iter.next();
-            Principal group = (Principal) entry.getKey();
-            List members = (List) entry.getValue();
-            
+    public Set<Principal> getMemberGroups(Principal principal) {
+        Set<Principal> pGroups = new HashSet<Principal>();
+        for (Map.Entry<Principal, List<String>> entry: this.groups.entrySet()) {
+            Principal group = entry.getKey();
+            List<String> members = entry.getValue();
             if (members.contains(principal.getQualifiedName())) {
-                pGroups.add(group);              
+                pGroups.add(group);      
             }
         }
-        
         return pGroups;
     }
 

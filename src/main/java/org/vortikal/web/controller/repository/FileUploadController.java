@@ -122,6 +122,7 @@ public class FileUploadController extends SimpleFormController {
 
         FileItem uploadItem = null;
 
+        @SuppressWarnings("unchecked")
         List<FileItem> fileItems = upload.parseRequest(request);
         for (FileItem item: fileItems) {
             if (!item.isFormField()) {

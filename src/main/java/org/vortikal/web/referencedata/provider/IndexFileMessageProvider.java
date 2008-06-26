@@ -34,8 +34,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -62,8 +60,6 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  */
 public class IndexFileMessageProvider implements ReferenceDataProvider {
 
-    private Log logger = LogFactory.getLog(this.getClass());
-
     private String localizationKey;
     private String modelName;
 
@@ -78,6 +74,7 @@ public class IndexFileMessageProvider implements ReferenceDataProvider {
         this.modelName = modelName;
     }
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 

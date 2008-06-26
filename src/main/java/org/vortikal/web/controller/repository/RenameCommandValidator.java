@@ -61,6 +61,7 @@ public class RenameCommandValidator implements Validator, InitializingBean {
     }
 
 
+    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == RenameCommand.class);
     }

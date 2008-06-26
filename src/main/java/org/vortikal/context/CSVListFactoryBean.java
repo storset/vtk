@@ -54,6 +54,7 @@ public class CSVListFactoryBean extends AbstractCSVFactoryBean {
         return list;
     }
     
+    @SuppressWarnings("unchecked")
     public Class getObjectType() {
         return List.class;
     }

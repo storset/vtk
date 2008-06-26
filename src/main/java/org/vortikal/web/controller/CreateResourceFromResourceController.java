@@ -34,22 +34,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -91,15 +87,13 @@ import org.vortikal.xml.TransformerManager;
 public class CreateResourceFromResourceController implements Controller,
         InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
-
     private Repository repository;
     private String resourceName;
     private TransformerManager transformerManager;
     private String stylesheetIdentifier;
     private String errorView;
     private String successView;
-    private Map initialResourceProperties = new HashMap();
+    private Map<PropertyTypeDefinition, Value> initialResourceProperties = new HashMap<PropertyTypeDefinition, Value>();
     private String resourceAlreadyExistsMessageKey = "manage.create.document.exists";
     
 
@@ -132,19 +126,8 @@ public class CreateResourceFromResourceController implements Controller,
     }
     
 
-    public void setInitialResourceProperties(Map initialResourceProperties) {
+    public void setInitialResourceProperties(Map<PropertyTypeDefinition, Value> initialResourceProperties) {
         if (initialResourceProperties == null) return;
-
-        for (Iterator i = initialResourceProperties.keySet().iterator(); i.hasNext();) {
-            Object key = i.next();
-            if (!(key instanceof PropertyTypeDefinition)) 
-                throw new IllegalArgumentException("All keys must be of class "
-                                                   + PropertyTypeDefinition.class.getName());
-            Object value = initialResourceProperties.get(key);
-            if (!(value instanceof Value)) 
-                throw new IllegalArgumentException("All values must be of class "
-                                                   + Value.class.getName());
-        }
         this.initialResourceProperties = initialResourceProperties;
     }
     
@@ -174,7 +157,7 @@ public class CreateResourceFromResourceController implements Controller,
     public ModelAndView handleRequest(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         String uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
@@ -205,11 +188,11 @@ public class CreateResourceFromResourceController implements Controller,
 
         if (this.initialResourceProperties != null) {
             newResource = this.repository.retrieve(token, newResourceUri, true);
-            for (Iterator i = this.initialResourceProperties.keySet().iterator(); i.hasNext();) {
-                PropertyTypeDefinition def = (PropertyTypeDefinition) i.next();
-                Value value = (Value) this.initialResourceProperties.get(def);
+            for (PropertyTypeDefinition def: this.initialResourceProperties.keySet()) {
+                Value value = this.initialResourceProperties.get(def);
                 Property prop = newResource.createProperty(def.getNamespace(), def.getName());
                 prop.setValue(value);
+                
             }
             this.repository.store(token, newResource);
         }
@@ -220,6 +203,5 @@ public class CreateResourceFromResourceController implements Controller,
 
         return new ModelAndView(this.successView, model);
     }
-
 
 }

@@ -94,6 +94,7 @@ public class CompositeView extends AbstractView
     }
     
     
+    @SuppressWarnings("unchecked")
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                            HttpServletResponse response) throws Exception {
 

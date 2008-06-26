@@ -68,6 +68,7 @@ public class RedirectView extends AbstractView implements ReferenceDataProviding
      * @throws InvalidModelException ({@link InvalidModelException})
      * if expected model data 'redirectURL' is missing
      */
+    @SuppressWarnings("unchecked")
     protected void renderMergedOutputModel(
         Map model, HttpServletRequest request,
         HttpServletResponse response) throws Exception {

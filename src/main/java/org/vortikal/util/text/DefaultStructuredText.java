@@ -154,6 +154,7 @@ public final class DefaultStructuredText implements StructuredText {
      */
     private Element groupListItems(Element element) {
         Element root = new Element(element.getName());
+        @SuppressWarnings("unchecked")
         List<Element> children = element.getChildren();
         ArrayList<Element> newChildren = new ArrayList<Element>();
         for (Iterator<Element> i = children.iterator(); i.hasNext();) {
@@ -202,6 +203,7 @@ public final class DefaultStructuredText implements StructuredText {
 
         StringBuffer buffer = new StringBuffer();
 
+        @SuppressWarnings("unchecked")
         List<Element> children = element.getChildren();
         for (Element child: children) {
 
@@ -237,6 +239,7 @@ public final class DefaultStructuredText implements StructuredText {
 
             } else if (tagName.equals("list")) {
 
+                @SuppressWarnings("unchecked")
                 List<Element> childChildren = child.getChildren();
                 for (Element listItem: childChildren) {
 

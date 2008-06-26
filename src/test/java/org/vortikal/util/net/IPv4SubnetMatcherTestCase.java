@@ -171,7 +171,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.";
             String mask = "255.255.254.0";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
 
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
@@ -180,7 +180,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "1.2.3.4";
             String mask = "1024.255.254.0";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
             
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
@@ -189,7 +189,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.0.0.-1";
             String mask = "255.255.254.0";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
         } catch (IllegalArgumentException e) {}
@@ -199,7 +199,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
 
             String network = "10.0.0.2";
             String mask = "254.255.255.0";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
         } catch (IllegalArgumentException e) {}
@@ -207,7 +207,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.0.0.2";
             String mask = "0.255.255.0";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
         } catch (IllegalArgumentException e) {}
@@ -215,7 +215,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.0.0.2";
             String mask = "0.0.255.0";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
         } catch (IllegalArgumentException e) {}
@@ -223,7 +223,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.0.0.2";
             String mask = "0.0.0.255";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
         } catch (IllegalArgumentException e) {}
@@ -231,7 +231,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.0.0.2";
             String mask = "0.0.0.-1";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
 
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");
@@ -240,7 +240,7 @@ public class IPv4SubnetMatcherTestCase extends TestCase {
         try {
             String network = "10.0.0.2";
             String mask = "255.128.0.1";
-            IPv4Matcher matcher = new IPv4SubnetMatcher(network, mask);
+            new IPv4SubnetMatcher(network, mask);
 
             fail("Did not throw IllegalArgumentException when trying to construct a matcher using ('" 
                     + network + "', '" + mask + "')");

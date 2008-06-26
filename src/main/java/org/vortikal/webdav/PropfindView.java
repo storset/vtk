@@ -36,7 +36,6 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -109,10 +108,11 @@ public class PropfindView implements View, InitializingBean {
      * @param response a <code>HttpServletResponse</code> value
      * @exception Exception if an error occurs
      */
+    @SuppressWarnings({ "unchecked", "deprecation" })
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
 
-        List resources = (List) model.get(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCES);
+        List<Resource> resources = (List<Resource>) model.get(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCES);
         if (resources == null) {
             throw new InvalidModelException(
                 "Missing resource list in model " +
@@ -170,7 +170,7 @@ public class PropfindView implements View, InitializingBean {
     
 
 
-    private Element buildMultistatusElement(List resourceList, List requestedProps,
+    private Element buildMultistatusElement(List<Resource> resourceList, List<Element> requestedProps,
                                             boolean appendPropertyValues) throws Exception {
 
         Element multiStatus = new Element("multistatus", WebdavConstants.DAV_NAMESPACE);
@@ -178,8 +178,7 @@ public class PropfindView implements View, InitializingBean {
         /* Iterate trough all resources, build a 'response' element
          * for each one, and add it to the multistatus element. */
 
-        for (Iterator iter = resourceList.iterator(); iter.hasNext();) {
-            Resource currentResource = (Resource) iter.next();
+        for (Resource currentResource: resourceList) {
         
             if (!currentResource.isCollection()
                 && currentResource.getLock() != null
@@ -231,7 +230,7 @@ public class PropfindView implements View, InitializingBean {
      * @deprecated Will be moved to a View class
      */
     private Element buildResponseElement(Resource resource,
-                                         List requestedProps,
+                                         List<Element> requestedProps,
                                          boolean appendPropertyValues) throws Exception {
 
         Principal p = SecurityContext.getSecurityContext().getPrincipal();
@@ -244,10 +243,7 @@ public class PropfindView implements View, InitializingBean {
         Element foundProperties = new Element("prop", WebdavConstants.DAV_NAMESPACE);
         Element unknownProperties = new Element("prop", WebdavConstants.DAV_NAMESPACE);
 
-        for (Iterator propIter = requestedProps.iterator(); 
-             propIter.hasNext();) {
-
-            Element prop = (Element) propIter.next();
+        for (Element prop: requestedProps) {
             Element foundProp = buildPropertyElement(resource, prop, appendPropertyValues);
 
             if (foundProp != null) {

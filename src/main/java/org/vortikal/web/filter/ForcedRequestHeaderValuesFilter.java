@@ -42,9 +42,9 @@ import org.springframework.beans.factory.InitializingBean;
 public class ForcedRequestHeaderValuesFilter extends AbstractRequestFilter
   implements InitializingBean {
 
-    private Map headers;
+    private Map<String, String> headers;
     
-    public void setHeaders(Map headers) {
+    public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
 
@@ -70,20 +70,20 @@ public class ForcedRequestHeaderValuesFilter extends AbstractRequestFilter
         
         public String getHeader(String name) {
             if (ForcedRequestHeaderValuesFilter.this.headers.containsKey(name)) {
-                return (String) ForcedRequestHeaderValuesFilter.this.headers.get(name);
+                return headers.get(name);
             }
             return this.request.getHeader(name);
         }
 
         public String getContentType() {
             if (ForcedRequestHeaderValuesFilter.this.headers.containsKey("Content-Type")) {
-                return (String) ForcedRequestHeaderValuesFilter.this.headers.get("Content-Type");
+                return headers.get("Content-Type");
             }
             return this.request.getContentType();
         }
 
         public String getCharacterEncoding() {
-            String contentType = (String) ForcedRequestHeaderValuesFilter.this.headers.get("Content-Type");
+            String contentType = headers.get("Content-Type");
             if (contentType != null && contentType.indexOf("charset=") != -1) {
                 String characterEncoding = contentType.substring(
                     contentType.indexOf("=") + 1).trim();
@@ -91,7 +91,6 @@ public class ForcedRequestHeaderValuesFilter extends AbstractRequestFilter
             }
             return this.request.getCharacterEncoding();
         }
-        
     }
 }
 

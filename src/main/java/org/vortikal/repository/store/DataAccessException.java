@@ -32,6 +32,8 @@ package org.vortikal.repository.store;
 
 public class DataAccessException extends RuntimeException {
 
+    private static final long serialVersionUID = -1112198903112558786L;
+
     public DataAccessException(String msg) {
         super(msg);
     }

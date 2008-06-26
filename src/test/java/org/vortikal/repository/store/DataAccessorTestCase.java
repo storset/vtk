@@ -129,7 +129,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         DataAccessor dao = getDataAccessor();
         Principal rootPrincipal = new PrincipalImpl("root@localhost", Principal.Type.USER);
 
-        ResourceImpl root = dao.load("/");
+        dao.load("/");
 
         // Create /property-collection:
         String collectionURI = "/property-collection";

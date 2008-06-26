@@ -33,6 +33,8 @@ package org.vortikal.text.html;
 
 public class HtmlPageParserException extends RuntimeException {
 
+    private static final long serialVersionUID = 5451740507943381878L;
+
     public HtmlPageParserException(String message) {
         super(message);
     }

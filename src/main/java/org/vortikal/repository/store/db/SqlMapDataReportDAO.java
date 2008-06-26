@@ -81,6 +81,7 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
         
         String sqlMap = getSqlMap("dataReportPropValueFrequency");
         
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> result 
             = getSqlMapClientTemplate().queryForList(sqlMap, params);
         
@@ -88,7 +89,7 @@ public class SqlMapDataReportDAO  extends AbstractSqlMapDataAccessor
                                     new ArrayList<Pair<Value, Integer>>();
         
         try {
-            for (Map row: result) {
+            for (Map<String, Object> row: result) {
                 String stringValue = (String)row.get("value");
                 Integer frequency = (Integer)row.get("frequency");
                 Value value = this.valueFactory.createValue(stringValue, def.getType());

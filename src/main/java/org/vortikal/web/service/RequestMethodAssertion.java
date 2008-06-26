@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.service;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,14 +56,14 @@ public class RequestMethodAssertion
   implements Assertion, InitializingBean {
 
     private String method = null;
-    private Set methods = null;
+    private Set<String> methods = null;
     
 	
     public void setMethod(String method) {
         this.method = method;
     }
 	
-    public void setMethods(Set methods) {
+    public void setMethods(Set<String> methods) {
         this.methods = methods;
     }
     
@@ -72,7 +71,7 @@ public class RequestMethodAssertion
         return this.method;
     }
 
-    public Set getMethods() {
+    public Set<String> getMethods() {
         return this.methods;
     }
 
@@ -108,8 +107,7 @@ public class RequestMethodAssertion
         }
 
         boolean intersect = false;
-        for (Iterator i = other.getMethods().iterator(); i.hasNext();) {
-            String method = (String) i.next();
+        for (String method: other.methods) {
             if (this.methods.contains(method)) {
                 intersect = true;
                 break;
@@ -120,8 +118,7 @@ public class RequestMethodAssertion
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
+        StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         if (this.methods != null) {
             sb.append("; methods = ").append(this.methods);

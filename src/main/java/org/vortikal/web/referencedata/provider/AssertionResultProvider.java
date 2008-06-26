@@ -69,6 +69,7 @@ public class AssertionResultProvider implements ReferenceDataProvider {
         this.assertion = assertion;
     }
     
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();

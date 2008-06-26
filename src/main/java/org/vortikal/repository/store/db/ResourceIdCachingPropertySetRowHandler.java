@@ -60,7 +60,7 @@ class ResourceIdCachingPropertySetRowHandler extends
         super(clientHandler, resourceTypeTree, principalFactory);
     }
     
-    protected void populateAncestorIds(Map row, PropertySetImpl propSet) {
+    protected void populateAncestorIds(Map<String, Object> row, PropertySetImpl propSet) {
         Integer id = (Integer)row.get("id");
         String uri = (String)row.get("uri");
         putId(uri, id);

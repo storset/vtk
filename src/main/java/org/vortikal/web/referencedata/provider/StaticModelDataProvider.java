@@ -31,7 +31,6 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -64,7 +63,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  */
 public class StaticModelDataProvider implements ReferenceDataProvider {
 
-    private final Map staticModelData = new HashMap();
+    private final Map<String, Object> staticModelData = new HashMap<String, Object>();
     
     private boolean mergeModelData = false;
     
@@ -108,15 +107,15 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
      * Set static model data for this provider from a
      * <code>java.util.Properties</code> object.
      * <p>This is the most convenient way to set static model data. Note that
-     * static model data can be overridden by allready existing model data, if a value
+     * static model data can be overridden by already existing model data, if a value
      * with the same name is in the model.
      * <p>Can be populated with a String "value" (parsed via PropertiesEditor)
      * or a "props" element in XML bean definitions.
      * @see org.springframework.beans.propertyeditors.PropertiesEditor
      */
-    public void setModelData(Properties props) {
-        setModelDataMap(props);
-    }
+//    public void setModelData(Properties props) {
+//        setModelDataMap(props);
+//    }
 
     /**
      * Set static model data for this provider from a Map. This allows to set
@@ -124,16 +123,10 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
      * <p>Can be populated with a "map" or "props" element in XML bean definitions.
      * @param modelData Map with name Strings as keys and model objects as values
      */
-    public void setModelDataMap(Map modelData) {
+    public void setModelDataMap(Map<String, Object> modelData) {
         if (modelData != null) {
-            Iterator it = modelData.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                if (!(entry.getKey() instanceof String)) {
-                    throw new IllegalArgumentException(
-                            "Illegal model key [" + entry.getKey() + "]: only Strings allowed");
-                }
-                addStaticModelData((String) entry.getKey(), entry.getValue());
+            for (Map.Entry<String, Object> entry: modelData.entrySet()) {
+                addStaticModelData(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -155,12 +148,11 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
     }
     
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
-        for (Iterator iter = this.staticModelData.keySet().iterator(); iter.hasNext();) {
-            String key = (String)iter.next();
-
+        for (String key: this.staticModelData.keySet()) {
             if (!model.containsKey(key)) {
                 model.put(key, this.staticModelData.get(key));
 

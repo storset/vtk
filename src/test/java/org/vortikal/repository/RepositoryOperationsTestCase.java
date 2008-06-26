@@ -56,7 +56,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         String token = getTokenManager().getRegisteredToken(root);
         
         try {
-            Resource res = getRepository().createDocument(token, uri);
+            getRepository().createDocument(token, uri);
             fail("Should not be allowed to create a resource in a non-existing collection");
         } catch (Exception e) {
             
@@ -68,7 +68,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
-        Resource res = getRepository().createDocument(token, uri);
+        getRepository().createDocument(token, uri);
         String content = "This is my content";
         InputStream inStream = StreamUtil.stringToStream(content, "utf-8");
         getRepository().storeContent(token, uri, inStream);
@@ -86,7 +86,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         String token = getTokenManager().getRegisteredToken(root);
         
         try {
-            Resource res = getRepository().createCollection(token, uri);
+            getRepository().createCollection(token, uri);
             fail("Should not be allowed to create a resource in a non-existing collection");
         } catch (Exception e) {
             
@@ -112,7 +112,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         String token = getTokenManager().getRegisteredToken(root);
         String uri = "/create-collection-test";
         int numChildren = 10;
-        Set childUriSet = new HashSet();
+        Set<String> childUriSet = new HashSet<String>();
         getRepository().createCollection(token, uri);
         for (int i = 0; i < numChildren; i++) {
             String childUri = uri + "/child-" + i;
@@ -148,7 +148,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
         repo.storeACL(token, parent);
         
         parent = repo.retrieve(token, parentURI, true);
-        Acl newAcl = parent.getAcl();
+        parent.getAcl();
         assertFalse(parent.isInheritedAcl());
 
         child = repo.retrieve(token, childURI, true);

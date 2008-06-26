@@ -134,6 +134,7 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
@@ -171,6 +172,7 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     }
     
 
+    @SuppressWarnings("unchecked")
     private Resource getResource(Map model, HttpServletRequest request) {
         Resource resource = null;
 

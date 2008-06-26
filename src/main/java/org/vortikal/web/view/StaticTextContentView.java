@@ -112,6 +112,7 @@ public class StaticTextContentView implements InitializingBean, View {
 
 
 
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
         response.setHeader("Content-Type", this.contentType

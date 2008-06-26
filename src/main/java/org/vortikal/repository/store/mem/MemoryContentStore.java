@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.vortikal.repository.IllegalOperationException;
@@ -253,8 +252,7 @@ public class MemoryContentStore implements ContentStore {
         output.println(prefix + node.name);
         prefix = node.name.equals(URI_COMPONENT_SEPARATOR) ? 
                  URI_COMPONENT_SEPARATOR : prefix + node.name + URI_COMPONENT_SEPARATOR;
-        for (Iterator i = node.entries.keySet().iterator(); i.hasNext();) {
-            String key = (String)i.next();
+        for (String key: node.entries.keySet()) {
             Node entry = (Node)node.entries.get(key);
             if (entry instanceof DirectoryNode) {
                 printContentsInternal(output, (DirectoryNode)entry, prefix);
@@ -312,12 +310,10 @@ public class MemoryContentStore implements ContentStore {
         public Object clone() {
             DirectoryNode n = new DirectoryNode(this.name);
             n.entries = new HashMap<String, Node>(this.entries.size());
-            for (Iterator i = this.entries.keySet().iterator(); i.hasNext();) {
-                String key = (String)i.next();
+            for (String key: this.entries.keySet()) {
                 Node child = this.entries.get(key);
                 n.entries.put(key, (Node) child.clone());
             }
-            
             return n;
         }
     }

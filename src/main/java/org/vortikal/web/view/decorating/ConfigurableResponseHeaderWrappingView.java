@@ -63,6 +63,7 @@ public class ConfigurableResponseHeaderWrappingView implements View {
     }
     
 
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
         

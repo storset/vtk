@@ -150,6 +150,7 @@ public class IPv4WildcardMatcherTestCase extends TestCase {
         
     }
     
+    @SuppressWarnings("unused")
     public void testIllegalValues() {
         try {
             IPv4Matcher matcher = new IPv4WildcardMatcher("10.**");

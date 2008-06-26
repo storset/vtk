@@ -101,6 +101,7 @@ public class RepositoryReadOnlyMessageProvider
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
         String message = null;

@@ -168,6 +168,7 @@ public class DocumentMapperImpl implements DocumentMapper {
         FieldSelector selector = null;
         if (select == WildcardPropertySelect.WILDCARD_PROPERTY_SELECT) {
             selector = new FieldSelector() {
+                private static final long serialVersionUID = -8502087584408029619L;
 
                 public FieldSelectorResult accept(String fieldName) {
                     return FieldSelectorResult.LOAD;
@@ -176,6 +177,8 @@ public class DocumentMapperImpl implements DocumentMapper {
             };
         } else {
             selector = new FieldSelector() {
+                private static final long serialVersionUID = 3919989917870796613L;
+
                 public FieldSelectorResult accept(String fieldName) {
                     PropertyTypeDefinition def = 
                         DocumentMapperImpl.this.fieldNamePropDefMap.get(fieldName);
@@ -218,6 +221,7 @@ public class DocumentMapperImpl implements DocumentMapper {
      * @return
      * @throws DocumentMappingException
      */
+    @SuppressWarnings("unchecked")
     public PropertySetImpl getPropertySet(Document doc) 
         throws DocumentMappingException {
         

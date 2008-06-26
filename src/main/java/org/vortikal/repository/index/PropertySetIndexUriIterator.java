@@ -44,7 +44,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
  * @author oyviste
  *
  */
-public class PropertySetIndexUriIterator implements CloseableIterator {
+public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
 
     private String next = null;
     private TermEnum te;

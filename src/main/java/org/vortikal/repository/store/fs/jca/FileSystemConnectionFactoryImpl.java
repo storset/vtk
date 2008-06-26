@@ -43,7 +43,7 @@ import javax.resource.spi.ManagedConnectionFactory;
  */
 public class FileSystemConnectionFactoryImpl
   implements FileSystemConnectionFactory, Serializable, Referenceable {
-
+    private static final long serialVersionUID = 1507429420206540104L;
     private ManagedConnectionFactory managedConnectionFactory;
     private ConnectionManager connectionManager;
     private Reference reference;

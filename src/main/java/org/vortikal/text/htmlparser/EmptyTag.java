@@ -31,7 +31,7 @@
 package org.vortikal.text.htmlparser;
 
 public class EmptyTag extends org.htmlparser.nodes.TagNode {
-
+    private static final long serialVersionUID = 6281870117698844538L;
     private String[] ids;
 
     public EmptyTag (String[] ids) {

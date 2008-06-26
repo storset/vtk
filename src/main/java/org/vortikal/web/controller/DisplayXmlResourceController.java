@@ -203,7 +203,7 @@ public class DisplayXmlResourceController
         
         String token = securityContext.getToken();
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         Resource resource = this.repository.retrieve(token, uri, true);
 

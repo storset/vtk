@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
 
-    private Map headerMap = new HashMap();
+    private Map<String, Set<Object>> headerMap = new HashMap<String, Set<Object>>();
     
     public HeaderAwareResponseWrapper(HttpServletResponse response) {
         super(response);
@@ -77,23 +77,23 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
     }
 
     private void addHeaderInternal(String name, Object value, boolean overwrite) {
-        Set values = (Set) this.headerMap.get(name);
+        Set<Object> values = this.headerMap.get(name);
         if (values == null || overwrite) {
-            values = new HashSet();
+            values = new HashSet<Object>();
         }
         values.add(value);
         this.headerMap.put(name, values);
     }
 
-    public Iterator getHeaderNames() {
+    public Iterator<String> getHeaderNames() {
         return this.headerMap.keySet().iterator();
     }
     
-    public Set getHeaderValues(String name) {
-        return (Set) this.headerMap.get(name);
+    public Set<Object> getHeaderValues(String name) {
+        return this.headerMap.get(name);
     }
 
-    public Map getHeaderMap() {
+    public Map<String, Set<Object>> getHeaderMap() {
         return Collections.unmodifiableMap(this.headerMap);
     }
     
@@ -111,7 +111,7 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
 
 
     public Object getHeaderValue(String name) {
-        Set set = (Set) this.headerMap.get(name);
+        Set<Object> set = this.headerMap.get(name);
         if (set == null) {
             throw new IllegalArgumentException("No header exists for name '" + name + "'");
         }
@@ -125,7 +125,7 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
         if (!this.headerMap.containsKey(name)) {
             throw new IllegalArgumentException("No header exists for name '" + name + "'");
         }
-        Set set = (Set) this.headerMap.get(name);
+        Set<Object> set = this.headerMap.get(name);
         return set.size() == 1;
     }
 

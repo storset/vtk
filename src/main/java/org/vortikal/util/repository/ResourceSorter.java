@@ -52,7 +52,7 @@ public class ResourceSorter {
 
 
     public static void sort(Resource[] resources, int order, boolean inverted) {
-        Comparator comparator = null;
+        Comparator<Resource> comparator = null;
 
         switch (order) {
             case ORDER_BY_NAME:
@@ -89,7 +89,7 @@ public class ResourceSorter {
 
 
 
-    private static class ResourceNameComparator implements Comparator {
+    private static class ResourceNameComparator implements Comparator<Resource> {
         private boolean invert = false;
 
         public ResourceNameComparator() {
@@ -99,22 +99,16 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
-
-        public int compare(Object o1, Object o2) {
-            Resource r1 = (Resource) o1;
-            Resource r2 = (Resource) o2;
-
+        public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
                 return r1.getName().compareTo(r2.getName());
             }
-
             return r2.getName().compareTo(r1.getName());
-
         }
     }
 
 
-    private static class ResourceDateComparator implements Comparator {
+    private static class ResourceDateComparator implements Comparator<Resource> {
         private boolean invert = false;
 
         public ResourceDateComparator() {
@@ -125,20 +119,15 @@ public class ResourceSorter {
         }
 
 
-        public int compare(Object o1, Object o2) {
-            Resource r1 = (Resource) o1;
-            Resource r2 = (Resource) o2;
-
+        public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
                 return r1.getLastModified().compareTo(r2.getLastModified());
-
             }
-
             return r2.getLastModified().compareTo(r1.getLastModified());
         }
     }
 
-    private static class ResourceOwnerComparator implements Comparator {
+    private static class ResourceOwnerComparator implements Comparator<Resource> {
         private boolean invert = false;
 
         public ResourceOwnerComparator() {
@@ -149,21 +138,17 @@ public class ResourceSorter {
         }
 
 
-        public int compare(Object o1, Object o2) {
-            Resource r1 = (Resource) o1;
-            Resource r2 = (Resource) o2;
-
+        public int compare(Resource r1, Resource r2) {
             if (!this.invert) {
                 return r1.getOwner().getQualifiedName().compareTo(
                     r2.getOwner().getQualifiedName());
-
             }
             return r2.getOwner().getQualifiedName().compareTo(
                 r1.getOwner().getQualifiedName());
         }
     }
 
-    private static class ResourceLockComparator implements Comparator {
+    private static class ResourceLockComparator implements Comparator<Resource> {
         private boolean invert = false;
 
         public ResourceLockComparator() {
@@ -174,9 +159,7 @@ public class ResourceSorter {
         }
 
 
-        public int compare(Object o1, Object o2) {
-            Resource r1 = (Resource) o1;
-            Resource r2 = (Resource) o2;
+        public int compare(Resource r1, Resource r2) {
 
             String owner1 = "";
             String owner2 = "";
@@ -191,14 +174,13 @@ public class ResourceSorter {
 
             if (!this.invert) {
                 return owner1.compareTo(owner2);
-
             }
             return owner2.compareTo(owner1);
         }
     }
 
 
-    private static class FileSizeComparator implements Comparator {
+    private static class FileSizeComparator implements Comparator<Resource> {
         private boolean invert = false;
 
         public FileSizeComparator() {
@@ -208,24 +190,18 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
-
-        public int compare(Object o1, Object o2) {
-
-            Resource r1 = (Resource) o1;
-            Resource r2 = (Resource) o2;
-
+        public int compare(Resource r1, Resource r2) {
             Long size1 = new Long(r1.getContentLength());
             Long size2 = new Long(r2.getContentLength());
 
             if (!this.invert) {
                 return size1.compareTo(size2);
-
             }
             return size2.compareTo(size1);
         }
     }
 
-    private static class ContentTypeComparator implements Comparator {
+    private static class ContentTypeComparator implements Comparator<Resource> {
         private boolean invert = false;
 
         public ContentTypeComparator() {
@@ -235,11 +211,7 @@ public class ResourceSorter {
             this.invert = invert;
         }
 
-
-        public int compare(Object o1, Object o2) {
-            Resource r1 = (Resource) o1;
-            Resource r2 = (Resource) o2;
-
+        public int compare(Resource r1, Resource r2) {
             if (r1.isCollection() && r2.isCollection()) {
                 return this.invert ?
                     r2.getName().compareTo(r1.getName()) :

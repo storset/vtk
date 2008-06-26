@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import org.vortikal.repository.Resource;
 
+@SuppressWarnings("unchecked")
 public interface IfHeader {
 
     public boolean matches(Resource resource, boolean shouldMatchOnNoIfHeader);

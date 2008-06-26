@@ -65,10 +65,12 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
                         SQL_ESCAPE_CHAR));
         
         List<Comment> comments = new ArrayList<Comment>();
-        List theComments =
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> theComments =
             getSqlMapClientTemplate().queryForList(sqlMap, parameters);
-        for (Object o: theComments) {
-            Map commentMap = (Map) o;
+
+        for (Map<String, Object> commentMap: theComments) {
             Comment c = new Comment();
             c.setID(commentMap.get("ID").toString());
             c.setURI((String) commentMap.get("URI"));

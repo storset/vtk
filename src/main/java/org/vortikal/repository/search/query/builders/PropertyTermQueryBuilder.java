@@ -49,13 +49,11 @@ import org.vortikal.repository.search.query.TermOperator;
 public class PropertyTermQueryBuilder implements QueryBuilder {
 
     private TermOperator op;
-    private String term;
     private String fieldName;
     private String fieldValue;
     
     public PropertyTermQueryBuilder(TermOperator op, String term, String fieldName, String fieldValue) {
         this.op = op;
-        this.term = term;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
     }

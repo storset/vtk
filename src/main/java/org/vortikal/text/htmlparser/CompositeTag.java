@@ -32,6 +32,7 @@ package org.vortikal.text.htmlparser;
 
 public class CompositeTag extends org.htmlparser.tags.CompositeTag {
 
+    private static final long serialVersionUID = -5030340189588601473L;
     private String[] ids;
 
     public CompositeTag (String[] ids) {

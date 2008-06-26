@@ -34,6 +34,8 @@ import org.vortikal.repository.search.QueryException;
 
 public class UnsupportedQueryException extends QueryException {
 
+    private static final long serialVersionUID = 2606162721133467648L;
+
     public UnsupportedQueryException() {
     }
 

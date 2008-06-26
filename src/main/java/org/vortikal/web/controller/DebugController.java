@@ -113,7 +113,7 @@ public class DebugController implements Controller, InitializingBean, ServletCon
         String internalRequestURI = url.substring(url.indexOf("//") + 2);
         internalRequestURI = internalRequestURI.substring(internalRequestURI.indexOf("/"));
         
-        Map parameters = URLUtil.splitQueryString(request);
+        Map<String, String[]> parameters = URLUtil.splitQueryString(request);
         if (parameters.containsKey(this.identifyingParameter)) {
             parameters.remove(this.identifyingParameter);
         }
@@ -134,7 +134,7 @@ public class DebugController implements Controller, InitializingBean, ServletCon
         responseInfo.put("status", new Integer(responseWrapper.getStatus()));
         responseInfo.put("headers", responseWrapper.getHeaderMap());
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put(this.modelName, responseInfo);
         return new ModelAndView(this.viewName, model);
     }
@@ -169,12 +169,10 @@ public class DebugController implements Controller, InitializingBean, ServletCon
     
     private class RequestWrapper extends HttpServletRequestWrapper {
 
-        private String uri;
-        private Map parameters;
+        private Map<String, String[]> parameters;
 
-        public RequestWrapper(HttpServletRequest request, String uri, Map parameters) {
+        public RequestWrapper(HttpServletRequest request, String uri, Map<String, String[]> parameters) {
             super(request);
-            this.uri = uri;
             this.parameters = parameters;
         }
 
@@ -183,13 +181,14 @@ public class DebugController implements Controller, InitializingBean, ServletCon
         }
 
         public String getParameter(String name) {
-            String[] values = (String[]) this.parameters.get(name);
+            String[] values = this.parameters.get(name);
             if (values == null || values.length == 0) {
                 return null;
             }
             return values[0];
         }
 
+        @SuppressWarnings("unchecked")
         public Enumeration getParameterNames() {
             return Collections.enumeration(this.parameters.keySet());
         }
@@ -199,6 +198,7 @@ public class DebugController implements Controller, InitializingBean, ServletCon
             return (String[]) this.parameters.get(name);
         }
 
+        @SuppressWarnings("unchecked")
         public Map getParameterMap() {
             return Collections.unmodifiableMap(this.parameters);
         }

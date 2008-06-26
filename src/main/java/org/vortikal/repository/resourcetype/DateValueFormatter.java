@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,11 +82,11 @@ public class DateValueFormatter implements ValueFormatter {
         }
         Date date = value.getDateValue();
 
-        
-        if (this.date && 
-                value.getType() == PropertyType.Type.DATE && 
-                format.contains("long") &&
-                date.getHours() == 0 && date.getMinutes() == 0) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        if (this.date && value.getType() == PropertyType.Type.DATE && 
+            format.contains("long") &&  cal.get(Calendar.HOUR_OF_DAY) == 0 && 
+            cal.get(Calendar.MINUTE) == 0) {
             format = format.replace("long", "short");
         }
         

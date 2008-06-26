@@ -363,6 +363,7 @@ public class PropertyEditController extends SimpleFormController
     }
     
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();

@@ -27,6 +27,7 @@ import org.vortikal.repository.Resource;
      Untagged = { "(" IfList ")" } .
  * </pre>
  */
+@SuppressWarnings("unchecked")
 class StateEntryListImpl extends ArrayList implements StateEntryList {
 
     private static final long serialVersionUID = -6952957997243117225L;

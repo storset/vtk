@@ -31,8 +31,6 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -127,8 +125,8 @@ public class ResourcePropertiesValueProvider
     private String[] namespaces = null;
     private String[] names = null;
 
-    private Map localizationKeys = null;
-    private Map modelNames = null;
+    private Map<String, String> localizationKeys = null;
+    private Map<String, String> modelNames = null;
 
 
 
@@ -137,7 +135,7 @@ public class ResourcePropertiesValueProvider
     }
     
 
-    public void setModelNames(Map modelNames) {
+    public void setModelNames(Map<String, String> modelNames) {
         this.modelNames = modelNames;
     }
     
@@ -147,7 +145,7 @@ public class ResourcePropertiesValueProvider
     }
     
 
-    public void setLocalizationKeys(Map localizationKeys) {
+    public void setLocalizationKeys(Map<String, String> localizationKeys) {
         this.localizationKeys = localizationKeys;
     }
     
@@ -189,6 +187,7 @@ public class ResourcePropertiesValueProvider
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
@@ -201,9 +200,9 @@ public class ResourcePropertiesValueProvider
 
         for (int i = 0; i < this.properties.length; i++) {
 
-            String subModelKey = (String) this.modelNames.get(this.namespaces[i]);
+            String subModelKey = this.modelNames.get(this.namespaces[i]);
             if (subModelKey == null && this.namespaces[i] == null) {
-                subModelKey = (String) this.modelNames.get("");
+                subModelKey = this.modelNames.get("");
             }
 
             Map subModel = (Map) model.get(subModelKey);
@@ -264,7 +263,7 @@ public class ResourcePropertiesValueProvider
         }
 
         // Look up real key from localizationKeys:
-        key = (String) this.localizationKeys.get(key);
+        key = this.localizationKeys.get(key);
         if (key == null) {
             return value;
         }

@@ -63,7 +63,7 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion
 
     private String childName;
     private String[] childNames;
-    private Set childNameSet = new HashSet();
+    private Set<String> childNameSet = new HashSet<String>();
     private Assertion[] childResourceAssertions;
     private Repository repository;
     private String trustedToken;
@@ -122,10 +122,7 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion
         if (resource == null || !resource.isCollection()) {
             return false;
         }
-
-
         String[] childURIs = resource.getChildURIs();
-        
         for (int i = 0; i < childURIs.length; i++) {
             String childURI = childURIs[i];
             if (this.childNameSet.contains(childURI.substring(childURI.lastIndexOf("/") + 1))) {
@@ -159,9 +156,4 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion
         }
         return sb.toString();
     }
-
-    
-    
-    
-
 }

@@ -50,7 +50,7 @@ public class HtmlValueFormatter implements ValueFormatter {
             throws IllegalValueTypeException {
         String html = value.toString();
         if (ESCAPED_FORMAT.equals(format)) {
-            return this.htmlUtil.escapeHtmlString(html);
+            return HtmlUtil.escapeHtmlString(html);
         } else if (FLATTENED_FORMAT.equals(format) && this.htmlUtil != null) {
             return this.htmlUtil.flatten(html).toString();
         }
@@ -59,7 +59,7 @@ public class HtmlValueFormatter implements ValueFormatter {
 
     public Value stringToValue(String string, String format, Locale locale) {
         if (ESCAPED_FORMAT.equals(format)) {
-            return new Value(this.htmlUtil.unescapeHtmlString(string));
+            return new Value(HtmlUtil.unescapeHtmlString(string));
         } 
         
         return new Value(string);

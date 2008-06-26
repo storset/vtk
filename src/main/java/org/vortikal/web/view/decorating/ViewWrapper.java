@@ -53,6 +53,7 @@ import org.springframework.web.servlet.View;
  */
 public interface ViewWrapper {
     
+    @SuppressWarnings("unchecked")
     public void renderView(View view, Map model, 
                            HttpServletRequest request, 
                            HttpServletResponse response) throws Exception;

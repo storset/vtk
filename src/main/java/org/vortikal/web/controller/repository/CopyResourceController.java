@@ -88,7 +88,7 @@ public class CopyResourceController implements Controller,
     public ModelAndView handleRequest(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         String uri = RequestContext.getRequestContext().getResourceURI();
 
@@ -131,9 +131,6 @@ public class CopyResourceController implements Controller,
         if (this.templateUri == null)
             throw new BeanInitializationException("Property 'templateUri' required");
     
-//        if (trustedToken == null)
-//            throw new BeanInitializationException("Property 'trustedToken' required");
-        
         if (! (this.trustedToken == null || this.repository.exists(this.trustedToken,this.templateUri)))
             //throw new BeanInitializationException("Property 'templateUri' must specify an existing resource");
             this.logger.warn("Property 'templateUri' must specify an existing resource");

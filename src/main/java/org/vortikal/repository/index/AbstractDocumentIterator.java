@@ -45,7 +45,7 @@ import org.vortikal.repository.IllegalOperationException;
  * @author oyviste
  *
  */
-abstract class AbstractDocumentIterator implements CloseableIterator {
+abstract class AbstractDocumentIterator implements CloseableIterator<Object> {
 
     private IndexReader reader;
     private int next = 0;

@@ -85,6 +85,7 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
     }
     
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();

@@ -37,9 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 
-
-
-
 /**
  * View for OPTIONS requests.
  */
@@ -47,6 +44,7 @@ public class OptionsView implements View {
 
 
 
+    @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
 

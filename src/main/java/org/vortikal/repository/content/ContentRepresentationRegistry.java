@@ -61,24 +61,25 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
     private Log logger = LogFactory.getLog(this.getClass());
 
     private ApplicationContext applicationContext;
-    private Map<Class, ContentFactory> contentFactories;
+    private Map<Class<?>, ContentFactory> contentFactories;
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
 
+    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
         
-        this.contentFactories = new HashMap<Class, ContentFactory>();
+        this.contentFactories = new HashMap<Class<?>, ContentFactory>();
         
         Collection<ContentFactory> contentFactoryBeans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
                     ContentFactory.class, false, false).values();
 
         for (ContentFactory factory: contentFactoryBeans) {
-            Class[] supportedClasses = factory.getRepresentationClasses();
-            for (Class supportedClass: supportedClasses) {
+            Class<?>[] supportedClasses = factory.getRepresentationClasses();
+            for (Class<?> supportedClass: supportedClasses) {
                 this.logger.info("Registering content factory for class '"
                             + supportedClass + "': " + factory);
 
@@ -88,7 +89,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
     }
     
     
-    public Object createRepresentation(Class clazz, InputStream content) 
+    public Object createRepresentation(Class<?> clazz, InputStream content) 
         throws Exception {
 
         ContentFactory factory = this.contentFactories.get(clazz);

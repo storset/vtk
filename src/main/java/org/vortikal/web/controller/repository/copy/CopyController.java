@@ -98,7 +98,7 @@ public class CopyController extends SimpleFormController
 
     protected ModelAndView onSubmit(Object command) throws Exception {
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = SecurityContext.getSecurityContext().getToken();

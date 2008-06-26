@@ -33,6 +33,7 @@ package org.vortikal.repository.index.consistency;
 import org.vortikal.repository.index.IndexException;
 
 public class ConsistencyCheckException extends IndexException {
+    private static final long serialVersionUID = 6241738519399696503L;
 
     public ConsistencyCheckException() {
         super();

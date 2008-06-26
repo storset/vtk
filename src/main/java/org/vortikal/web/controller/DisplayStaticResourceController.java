@@ -96,7 +96,7 @@ public class DisplayStaticResourceController implements Controller {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         String token = securityContext.getToken();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         Resource resource = this.repository.retrieve(token, this.resourceURI, true);
 
         if (resource.isCollection()) {

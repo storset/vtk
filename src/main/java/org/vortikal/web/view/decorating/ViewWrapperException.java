@@ -46,22 +46,26 @@ public class ViewWrapperException extends RuntimeException {
 
     private static final long serialVersionUID = 2796471474145665926L;
 
+    @SuppressWarnings("unchecked")
     private Map model = null;
     private View view = null;
     
 
+    @SuppressWarnings("unchecked")
     public ViewWrapperException(Throwable cause, Map model, View view) {
         super(cause);
         this.model = model;
         this.view = view;
     }
     
+    @SuppressWarnings("unchecked")
     public ViewWrapperException(String message, Throwable cause, Map model, View view) {
         super(message, cause);
         this.model = model;
         this.view = view;
     }
     
+    @SuppressWarnings("unchecked")
     public Map getModel() {
         return this.model;
     }

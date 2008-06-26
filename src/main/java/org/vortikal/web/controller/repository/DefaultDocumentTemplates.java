@@ -46,8 +46,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.util.repository.ContentTypeHelper;
 
-
-
 /**
  * Default implementation of the {@link DocumentTemplates document
  * template listing} interface. Loads a set of (text-based) documents
@@ -77,8 +75,8 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     private Repository repository = null;
     private String trustedToken = null;
 
-    private Map topTemplates;
-    private Map categoryTemplates;
+    private Map<String, String> topTemplates;
+    private Map<String, Map<String, String>> categoryTemplates;
     
     private boolean parseTopTemplates = true;
     private boolean parseCategoryTemplates = true;
@@ -103,12 +101,12 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         this.templatesCollection = templatesCollection;
     }
     
-    public Map getTopTemplates() {
+    public Map<String, String> getTopTemplates() {
         return this.topTemplates;
     }
 
 
-    public Map getCategoryTemplates() {
+    public Map<String, Map<String, String>> getCategoryTemplates() {
         return this.categoryTemplates;
     }
 
@@ -158,8 +156,8 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
                 return;
             }
 
-            Map topTemplates = null;
-            Map categoryTemplates = null;
+            Map<String, String> topTemplates = null;
+            Map<String, Map<String, String>> categoryTemplates = null;
 
             if (this.parseTopTemplates) {
                 topTemplates = findTopTemplates();
@@ -183,8 +181,8 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     
 
 
-    private Map findTopTemplates() throws IOException {
-        Map topTemplates = new HashMap();
+    private Map<String, String> findTopTemplates() throws IOException {
+        Map<String, String> topTemplates = new HashMap<String, String>();
 
         Resource[] templates = this.repository.listChildren(
             this.trustedToken, this.templatesCollection, true);
@@ -201,13 +199,12 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         
         if (topTemplates.size() < 1) return null;
         
-        Set set = topTemplates.keySet();
+        Set<String> set = topTemplates.keySet();
         
-        String[] keys = (String[]) set.toArray(
-            new String[set.size()]);
+        String[] keys = set.toArray(new String[set.size()]);
         
         Arrays.sort(keys);
-        Map sortedMap = new LinkedHashMap();
+        Map<String, String> sortedMap = new LinkedHashMap<String, String>();
         
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
@@ -223,26 +220,26 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    private Map findCategoryTemplates() throws IOException {
+    private Map<String, Map<String, String>> findCategoryTemplates() throws IOException {
         Resource[] templates = this.repository.listChildren(this.trustedToken, this.templatesCollection, true);
 
-        Map categories = new HashMap();
+        Map<String, Map<String, String>> categories = new HashMap<String, Map<String, String>>();
         
         
         for (int i = 0; i < templates.length; i++) {
             Resource child = templates[i];
             if (child.isCollection()) {
-                Map categoryTemplates = new HashMap(); 
+                Map<String, String> categoryTemplates = new HashMap<String, String>(); 
                 findTemplatesRecursively(child, categoryTemplates);
                 if (categoryTemplates.size() > 0) {
 
-                    Set set = categoryTemplates.keySet();
+                    Set<String> set = categoryTemplates.keySet();
                     
                     String[] keys = (String[]) set.toArray(
                         new String[set.size()]);
                     
                     Arrays.sort(keys);
-                    Map sortedMap = new LinkedHashMap();
+                    Map<String, String> sortedMap = new LinkedHashMap<String, String>();
                     
                     for (int j = 0; j < keys.length; j++) {
                         String key = keys[j];
@@ -263,7 +260,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    private void findTemplatesRecursively(Resource parent, Map templates) 
+    private void findTemplatesRecursively(Resource parent, Map<String, String> templates) 
         throws IOException {
 
         Resource[] children = this.repository.listChildren(this.trustedToken, parent.getURI(), true);
@@ -279,7 +276,5 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
             }
         }
     }
-
-
     
 }

@@ -27,6 +27,7 @@ import org.vortikal.repository.Resource;
      Tagged = { "<" Word ">" "(" IfList ")" } .
  * </pre>
  */
+@SuppressWarnings("unchecked")
 class IfHeaderMap extends HashMap implements StateEntryList {
 
     private static final long serialVersionUID = 8227690761189581870L;

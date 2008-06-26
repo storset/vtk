@@ -96,10 +96,10 @@ public class HttpDigestAuthenticationHandler
     
     private String nonceKey = NetUtils.guessHostName() + "." + System.currentTimeMillis();
     private MD5PasswordStore principalStore = null;
-    private Set recognizedDomains = null;
-    private Set excludedPrincipals = new HashSet();
+    private Set<String> recognizedDomains = null;
+    private Set<String> excludedPrincipals = new HashSet<String>();
     private boolean maintainState = false;
-    private SimpleCache stateMap;
+    private SimpleCache<String, StateEntry> stateMap;
     private int order = Integer.MAX_VALUE;
     
 
@@ -107,15 +107,15 @@ public class HttpDigestAuthenticationHandler
         this.principalStore = principalStore;
     }
 
-    public void setRecognizedDomains(Set recognizedDomains) {
+    public void setRecognizedDomains(Set<String> recognizedDomains) {
         this.recognizedDomains = recognizedDomains;
     }
 
-    public void setExcludedPrincipals(Set excludedPrincipals) {
+    public void setExcludedPrincipals(Set<String> excludedPrincipals) {
         this.excludedPrincipals = excludedPrincipals;
     }
     
-    public void setStateMap(SimpleCache stateMap) {
+    public void setStateMap(SimpleCache<String, StateEntry> stateMap) {
         this.stateMap = stateMap;
     }
     
@@ -341,7 +341,7 @@ public class HttpDigestAuthenticationHandler
         StateEntry stateEntry = null;
 
         if (this.maintainState) {
-            stateEntry = (StateEntry) this.stateMap.get(nonce + ":" + opaque);
+            stateEntry = this.stateMap.get(nonce + ":" + opaque);
 
             if (stateEntry != null) {
 

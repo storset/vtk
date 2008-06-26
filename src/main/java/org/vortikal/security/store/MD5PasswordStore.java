@@ -52,14 +52,12 @@ public interface MD5PasswordStore extends PrincipalStore, GroupStore {
      * @param principal the name of the principal
      * @return the requested hash, or <code>null</code> if the
      * principal does not exist in this principal store.
-     * @deprecated
      */
     public String getMD5HashString(Principal principal)
         throws AuthenticationProcessingException;
     
     /**
      * @throws AuthenticationProcessingException
-     * @deprecated
      */
     public String getRealm() throws AuthenticationProcessingException;
 

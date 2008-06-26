@@ -43,7 +43,7 @@ public class BufferedImageContentFactory implements ContentFactory {
     }
     
 
-    public Class[] getRepresentationClasses() {
+    public Class<?>[] getRepresentationClasses() {
         String prop = System.getProperty("java.awt.headless");
         try {
             System.setProperty("java.awt.headless", "true");
@@ -56,7 +56,7 @@ public class BufferedImageContentFactory implements ContentFactory {
     }
     
 
-    public Object getContentRepresentation(Class clazz,  InputStream content)
+    public Object getContentRepresentation(Class<?> clazz,  InputStream content)
         throws Exception {
         return ImageIO.read(content);
     }

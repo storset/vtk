@@ -40,13 +40,9 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.util.io.StreamUtil;
-
-
 
 /**
  * Filter that replaces a part of the request body determined by a
@@ -65,8 +61,6 @@ import org.vortikal.util.io.StreamUtil;
  */
 public class TextReplaceInputStreamFilter extends AbstractRequestFilter
   implements InitializingBean {
-
-    private Log logger = LogFactory.getLog(this.getClass());
 
     private String characterEncoding = Charset.forName("iso-8859-1").name();
     private Pattern pattern;

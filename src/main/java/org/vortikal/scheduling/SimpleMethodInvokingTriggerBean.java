@@ -110,7 +110,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
     private Method targetMethod;
     private Object targetObject;
     private Object[] arguments;
-    private Class[] argumentTypes;
+    private Class<?>[] argumentTypes;
     
     private int startDelay = 0;
     private int repeatInterval = 5000;
@@ -372,7 +372,7 @@ public class SimpleMethodInvokingTriggerBean implements BeanNameAware,
         this.triggerThreadName = triggerThreadName;
     }
 
-    public void setArgumentTypes(Class[] argumentTypes) {
+    public void setArgumentTypes(Class<?>[] argumentTypes) {
         this.argumentTypes = argumentTypes;
     }
 

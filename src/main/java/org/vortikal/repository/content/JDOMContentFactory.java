@@ -41,12 +41,12 @@ import org.jdom.input.SAXBuilder;
  */
 public class JDOMContentFactory implements ContentFactory {
 
-    public Class[] getRepresentationClasses() {
+    public Class<?>[] getRepresentationClasses() {
         return new Class[] {Document.class};
     }
     
 
-    public Object getContentRepresentation(Class clazz,  InputStream content) throws Exception {
+    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
         return new SAXBuilder().build(content);
     }
     

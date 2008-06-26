@@ -36,8 +36,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.web.controller.repository.tidy.JTidyTransformer;
 
@@ -53,8 +51,6 @@ import org.vortikal.web.controller.repository.tidy.JTidyTransformer;
  */
 public class TidyContentInputStreamFilter extends AbstractRequestFilter
   implements InitializingBean {
-
-    private Log logger = LogFactory.getLog(this.getClass());
 
     public void afterPropertiesSet() throws Exception {
         /*

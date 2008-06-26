@@ -32,14 +32,12 @@ package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -50,7 +48,7 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
- * Model builder that has a list of locales, providing URLs to switch
+ * Reference data that has a list of locales, providing URLs to switch
  * locale to each one (if they are not already the current
  * locale). The URLs are made available in the submodel of a
  * configurable name (<code>locales</code> by default).
@@ -77,48 +75,31 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * </ul>
  * 
  */
-public class SwitchLocaleProvider implements InitializingBean, ReferenceDataProvider {
+public class SwitchLocaleProvider implements ReferenceDataProvider {
 
     private Repository repository = null;
     private String modelName = "locales";
-    private Map locales;
+    private Map<String, Service> locales;
 
 
-    public void setRepository(Repository repository) {
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
 
-    public void setModelName(String modelName) {
+    @Required public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
 
-    public void setLocales(Map locales) {
+    @Required public void setLocales(Map<String, Service> locales) {
         this.locales = locales;
     }
 
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelName' must be set");
-        }
-        
-        if (this.locales == null) {
-            throw new BeanInitializationException(
-                "Bean property 'locales' must be set");
-        }
-    }
-
-
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
-        Map localeMap = new HashMap();
+        Map<String, Object> localeMap = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -131,11 +112,10 @@ public class SwitchLocaleProvider implements InitializingBean, ReferenceDataProv
             new org.springframework.web.servlet.support.RequestContext(request);
         String currentLocale = springContext.getLocale().toString();
 
-        Map localeServiceURLs = new HashMap();
-        List localeServiceNames = new ArrayList();
-        for (Iterator i = this.locales.keySet().iterator(); i.hasNext();) {
-            String key = (String) i.next();
-            Service service = (Service) this.locales.get(key);
+        Map<String, String> localeServiceURLs = new HashMap<String, String>();
+        List<String> localeServiceNames = new ArrayList<String>();
+        for (String key: this.locales.keySet()) {
+            Service service = this.locales.get(key);
             if (!currentLocale.equals(key)) {
                 try {
                     localeServiceNames.add(key);

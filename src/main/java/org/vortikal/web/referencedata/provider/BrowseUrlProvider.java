@@ -65,14 +65,14 @@ import org.vortikal.web.service.Service;
 public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBean {
 
     private static final String BROWSE_SESSION_ATTRIBUTE = "browsesession";
-    
+
     private Repository repository = null;
     private Service viewService;
 
     public final void setRepository(final Repository newRepository) {
         this.repository = newRepository;
     }
-    
+
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
@@ -86,46 +86,47 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-        
+
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
 
         String uri = requestContext.getResourceURI();
-	Resource resource = this.repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
 
-	// This is the url to the parent of the document that's being edited
+        // This is the url to the parent of the document that's being edited
 
-	String viewUrl = this.viewService.constructLink(resource, principal);
+        String viewUrl = this.viewService.constructLink(resource, principal);
 
         BrowseSessionBean sessionBean = (BrowseSessionBean)
-            request.getSession(true).getAttribute(BROWSE_SESSION_ATTRIBUTE);
+        request.getSession(true).getAttribute(BROWSE_SESSION_ATTRIBUTE);
 
-	/* Deleting session if you get a parameterlist which contains
+        /* Deleting session if you get a parameterlist which contains
 	   'id' because then its a new request on the browse-app */
 
-	if (sessionBean != null && request.getParameter("id") != null){
-           request.getSession(true).removeAttribute(BROWSE_SESSION_ATTRIBUTE);
-	   sessionBean = null;
-	}
+        if (sessionBean != null && request.getParameter("id") != null){
+            request.getSession(true).removeAttribute(BROWSE_SESSION_ATTRIBUTE);
+            sessionBean = null;
+        }
 
         if (sessionBean == null) {
-	   sessionBean = new BrowseSessionBean();
-	   sessionBean.setEditField(request.getParameter("id"));
-	   sessionBean.setStartUrl(viewUrl);
-	   request.getSession(true).setAttribute(BROWSE_SESSION_ATTRIBUTE, sessionBean);
-	}
+            sessionBean = new BrowseSessionBean();
+            sessionBean.setEditField(request.getParameter("id"));
+            sessionBean.setStartUrl(viewUrl);
+            request.getSession(true).setAttribute(BROWSE_SESSION_ATTRIBUTE, sessionBean);
+        }
 
-	/* Checking whether to make a relative link or not */
+        /* Checking whether to make a relative link or not */
 
-	if (viewUrl.startsWith(sessionBean.getStartUrl()) && !viewUrl.equals(sessionBean.getStartUrl())) {
-	   viewUrl = viewUrl.substring(sessionBean.getStartUrl().length());
-	}
+        if (viewUrl.startsWith(sessionBean.getStartUrl()) && !viewUrl.equals(sessionBean.getStartUrl())) {
+            viewUrl = viewUrl.substring(sessionBean.getStartUrl().length());
+        }
 
-	model.put("browseURL", viewUrl);
-	model.put("editField", sessionBean.getEditField());
+        model.put("browseURL", viewUrl);
+        model.put("editField", sessionBean.getEditField());
 
     }
 

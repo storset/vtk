@@ -42,8 +42,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.vortikal.repository.Repository;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -52,7 +50,6 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
 
     private static Log logger = LogFactory.getLog(LinkConstructorImpl.class);
     
-	private Repository repository;
 	private ApplicationContext context;
 	
     public String construct(String resourceUri, String parametersCSV, String serviceName) {
@@ -128,14 +125,9 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
     }
 
 	@Required
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-	
-	@Required
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 	    this.context = context;
-        }
+	}
 
 
 }

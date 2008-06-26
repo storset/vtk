@@ -54,9 +54,7 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 

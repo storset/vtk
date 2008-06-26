@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class NewElementController implements ActionHandler {
 
-    public Map handle(HttpServletRequest request,
+    public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document, SchemaDocumentDefinition documentDefinition)
     throws XMLEditException {
 
@@ -51,10 +51,6 @@ public class NewElementController implements ActionHandler {
         document.setDocumentMode("newElement");
             
             
-        return new HashMap();
+        return new HashMap<String, Object>();
     }
-    
-
-
-
 }

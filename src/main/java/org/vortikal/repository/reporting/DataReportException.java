@@ -38,6 +38,8 @@ import org.vortikal.repository.RepositoryException;
  */
 public class DataReportException extends RepositoryException {
 
+    private static final long serialVersionUID = 5951663365447489903L;
+
     public DataReportException() {
     }
 

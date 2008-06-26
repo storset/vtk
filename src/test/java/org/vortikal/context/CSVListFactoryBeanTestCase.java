@@ -52,6 +52,7 @@ public class CSVListFactoryBeanTestCase extends TestCase {
         assertFalse(bean.getObject() == bean.getObject());
     }
     
+    @SuppressWarnings("unchecked")
     public void testCSVListFactoryBean() throws Exception {
         
         // Test standard set with trimmed values

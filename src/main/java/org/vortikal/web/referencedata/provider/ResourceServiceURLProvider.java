@@ -121,6 +121,7 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
     }
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

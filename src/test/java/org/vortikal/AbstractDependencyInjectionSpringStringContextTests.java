@@ -45,9 +45,6 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 public abstract class AbstractDependencyInjectionSpringStringContextTests extends
         AbstractDependencyInjectionSpringContextTests {
 
-    private static Logger logger = Logger
-            .getLogger(AbstractDependencyInjectionSpringStringContextTests.class);
-
     static {
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.DEBUG);

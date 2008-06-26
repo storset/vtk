@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,7 @@
  */
 package org.vortikal.web.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 
 /**
@@ -48,7 +45,7 @@ import java.util.List;
  *
  * @see Service#getAttribute
  */
-public class ServiceAttributeComparator implements Comparator {
+public class ServiceAttributeComparator implements Comparator<Service> {
 
     private String attributeName;
 
@@ -57,40 +54,24 @@ public class ServiceAttributeComparator implements Comparator {
         this.attributeName = attributeName;
     }
     
+    @SuppressWarnings("unchecked")
+    public int compare(Service service1, Service service2) {
+        
+        Object attr1 = service1.getAttribute(this.attributeName);
+        Object attr2 = service2.getAttribute(this.attributeName);
 
-    public int compare(Object o1, Object o2) {
-      
-        Object a1 = (o1 instanceof Service ?
-                     ((Service) o1).getAttribute(this.attributeName) : null);
-        Object a2 = (o2 instanceof Service ?
-                     ((Service) o2).getAttribute(this.attributeName) : null);
-
-        if (a1 == null) {
-            throw new IllegalArgumentException(
-                "Required service attribute '" +
-                this.attributeName + "' not specified on service " + o1);
-        }
-
-        if (a2 == null) {
-            throw new IllegalArgumentException(
-                "Required service attribute '" +
-                this.attributeName + "' not specified on service " + o2);
-        }
-
-        if (a1.equals(a2)) {
+        if (attr1.equals(attr2)) {
             return 0;
         }
 
-        List l = new ArrayList();
-        l.add(a1);
-        l.add(a2);
-        Collections.sort(l);
-        
-        if (l.get(0) == a1) {
-            return -1;
+        if (attr1 instanceof Comparable && attr2 instanceof Comparable) {
+            Comparable c1 = (Comparable) attr1;
+            Comparable c2 = (Comparable) attr2;
+            return c1.compareTo(c2);
         }
-        return 1;
+        return 0;
     }
+
     
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());

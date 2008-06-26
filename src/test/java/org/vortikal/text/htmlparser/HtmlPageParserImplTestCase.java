@@ -460,13 +460,4 @@ public class HtmlPageParserImplTestCase extends TestCase {
         HtmlPage page = this.parser.parse(getClass().getResourceAsStream(fileName), encoding);
         return page;
     }
-    
-
-    private void print(HtmlElement element, String indent) {
-        System.out.println(indent + "el: " + element.getName());
-        HtmlElement[] children = element.getChildElements();
-        for (int i = 0; i < children.length; i++) {
-            print(children[i], indent + "  ");
-        }
-    }
 }

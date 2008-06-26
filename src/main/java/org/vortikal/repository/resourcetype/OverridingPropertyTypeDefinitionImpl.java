@@ -163,7 +163,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         this.defaultValue = defaultValue;
     }
 
-    public Vocabulary getVocabulary() {
+    public Vocabulary<Value> getVocabulary() {
         return this.overriddenPropDef.getVocabulary();
     }
 

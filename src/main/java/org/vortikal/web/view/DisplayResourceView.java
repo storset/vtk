@@ -100,7 +100,7 @@ public class DisplayResourceView extends AbstractView
         this.streamBufferSize = streamBufferSize;
     }
     
-
+    @SuppressWarnings("unchecked")
     public void renderMergedOutputModel(Map model, HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
@@ -127,12 +127,11 @@ public class DisplayResourceView extends AbstractView
         writeResponse(resource, resourceStream, model, request, response);
     }
     
-
-
     /**
      * Gets the {@link Resource} object being served. Defaults to
      * examining the model for the key <code>resource</code>.
      */
+    @SuppressWarnings("unchecked")
     protected Resource getResource(Map model,
                                    HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
@@ -145,8 +144,6 @@ public class DisplayResourceView extends AbstractView
         return (Resource) o;
     }
     
-
-
     /**
      * Gets the {@link InputStream} representing the content of the
      * served resource. Defaults to examining the model for the key
@@ -154,6 +151,7 @@ public class DisplayResourceView extends AbstractView
      * always close the input stream already present in the model when
      * returning a different input stream.
      */
+    @SuppressWarnings("unchecked")
     protected InputStream getResourceStream(Resource resource, Map model,
                                    HttpServletRequest request,
                                    HttpServletResponse response) throws Exception {
@@ -162,6 +160,7 @@ public class DisplayResourceView extends AbstractView
     }
     
 
+    @SuppressWarnings("unchecked")
     protected void setHeaders(Resource resource, Map model, HttpServletRequest request,
                               HttpServletResponse response) throws Exception {
 
@@ -170,8 +169,7 @@ public class DisplayResourceView extends AbstractView
         response.setStatus(HttpServletResponse.SC_OK);
     }
     
-
-
+    @SuppressWarnings("unchecked")
     protected void writeResponse(Resource resource, InputStream resourceStream,
                                  Map model, HttpServletRequest request,
                                  HttpServletResponse response) throws Exception {
@@ -201,6 +199,7 @@ public class DisplayResourceView extends AbstractView
     }
 
 
+    @SuppressWarnings("unchecked")
     protected void setContentTypeHeader(Resource resource, Map model,
                                         HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
@@ -229,6 +228,7 @@ public class DisplayResourceView extends AbstractView
     }
     
 
+    @SuppressWarnings("unchecked")
     protected void setContentLengthHeader(Resource resource, Map model,
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
@@ -237,10 +237,4 @@ public class DisplayResourceView extends AbstractView
         }
         response.setHeader("Content-Length", String.valueOf(resource.getContentLength()));
     }
-    
-    
-    
-    
-    
-
 }

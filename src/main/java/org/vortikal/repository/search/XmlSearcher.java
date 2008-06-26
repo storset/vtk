@@ -49,7 +49,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.MessageSource;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -102,8 +101,6 @@ public class XmlSearcher {
     private Service linkToService;
     private ResourceTypeDefinition collectionResourceTypeDef;
 
-    private MessageSource messageSource;
-    
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
@@ -633,10 +630,6 @@ public class XmlSearcher {
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
     }
 
     public void setHtmlParser(HtmlPageParser htmlParser) {

@@ -50,22 +50,19 @@ public class HostNameDelegatingServlet extends HttpServletBean {
     private static final long serialVersionUID = 3689067326964052024L;
 
     private Log logger = LogFactory.getLog(this.getClass());
-    private Map hostMap = null;
+    private Map<String, String> hostMap = null;
     private ServletContext servletContext = null;
-
 
     public HostNameDelegatingServlet() {
         this.addRequiredProperty("hostMappings");
     }
     
-
     protected void initServletBean() throws ServletException {
         this.servletContext = getServletContext();
     }
     
-
     public void setHostMappings(String hostMappings) {
-        this.hostMap = new HashMap();
+        this.hostMap = new HashMap<String, String>();
         String[] mappings = hostMappings.split(",");
         for (int i = 0; i < mappings.length; i++) {
             if (mappings[i].indexOf("=") == -1) {
@@ -87,16 +84,15 @@ public class HostNameDelegatingServlet extends HttpServletBean {
         }
     }
 
-
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         String hostName = request.getServerName();
         String key = hostName;
-        String servletName = (String) this.hostMap.get(key);
+        String servletName = this.hostMap.get(key);
 
         if (servletName == null) {
             key = hostName + ":" + request.getServerPort();
-            servletName = (String) this.hostMap.get(key);
+            servletName = this.hostMap.get(key);
         }
         
         if (servletName == null) {
@@ -118,7 +114,5 @@ public class HostNameDelegatingServlet extends HttpServletBean {
 
         rd.forward(request, response);
     }
-    
-    
 }
 

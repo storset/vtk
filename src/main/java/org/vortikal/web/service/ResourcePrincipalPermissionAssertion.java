@@ -100,8 +100,8 @@ public class ResourcePrincipalPermissionAssertion
     private Repository repository = null;
     private String trustedToken = null;
     
-    Set rootPrincipals;
-    Set readPrincipals;
+    Set<String> rootPrincipals;
+    Set<String> readPrincipals;
     
     public void setRequiresAuthentication(boolean requiresAuthentication) {
         this.requiresAuthentication = requiresAuthentication;

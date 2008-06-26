@@ -46,7 +46,7 @@ import org.jdom.Element;
  */
 public class EditDoneController implements ActionHandler {
 
-    public Map handle(HttpServletRequest request,
+    public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
@@ -80,7 +80,7 @@ public class EditDoneController implements ActionHandler {
             document.setEditingElement(null);
             document.setDocumentMode("default");
         }
-        return new HashMap();
+        return new HashMap<String, Object>();
     }
 
 }

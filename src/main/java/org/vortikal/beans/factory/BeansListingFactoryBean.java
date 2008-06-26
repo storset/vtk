@@ -90,6 +90,7 @@ public class BeansListingFactoryBean<T> implements FactoryBean,
         return beans;
     }
 
+    @SuppressWarnings("unchecked")
     public Class getObjectType() {
         return List.class;
     }

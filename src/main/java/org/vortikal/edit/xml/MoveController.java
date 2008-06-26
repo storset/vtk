@@ -51,11 +51,12 @@ import org.jdom.ProcessingInstruction;
  */
 public class MoveController implements ActionHandler {
 
-    public Map handle(HttpServletRequest request,
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         String mode = document.getDocumentMode();
 
         if (mode.equals("default")) {

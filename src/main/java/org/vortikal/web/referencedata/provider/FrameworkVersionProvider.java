@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.referencedata.provider;
 
-
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +39,8 @@ import org.vortikal.util.Version;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
- * Model builder that provides information on the current version of
- * the framework.  The information is made * available in the model as
+ * Reference data provider for information about the current version of
+ * the framework.  The information is made available in the model as
  * a submodel of the name <code>version</code>.
  * 
  * Model data provided:
@@ -56,11 +54,10 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  */
 public class FrameworkVersionProvider implements ReferenceDataProvider {
 
-    
-
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
-        Map versionModel = new HashMap();
+        Map<String, Object> versionModel = new HashMap<String, Object>();
         versionModel.put("version", Version.getVersion());
         versionModel.put("buildDate", Version.getBuildDate());
         versionModel.put("buildHost", Version.getBuildHost());
@@ -68,5 +65,4 @@ public class FrameworkVersionProvider implements ReferenceDataProvider {
         versionModel.put("frameworkTitle", Version.getFrameworkTitle());
         model.put("version", versionModel);
     }
-
 }

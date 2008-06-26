@@ -30,8 +30,6 @@
  */
 package org.vortikal.edit.editor;
 
-import java.io.ByteArrayInputStream;
-
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;

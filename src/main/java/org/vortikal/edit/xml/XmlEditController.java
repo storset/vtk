@@ -145,7 +145,7 @@ public class XmlEditController implements Controller {
             }
 
             ActionHandler handler = this.actionMapping.get(action);
-            Map model = new HashMap();
+            Map<String, Object> model = new HashMap<String, Object>();
 
             if (handler != null)
                 model = handler.handle(request, document, documentDefinition);
@@ -175,6 +175,7 @@ public class XmlEditController implements Controller {
         String uri = requestContext.getResourceURI();
 
         String sessionID = XmlEditController.class.getName() + ":" + uri; 
+        @SuppressWarnings("unchecked")
         Map<String, Object> sessionMap = (Map<String, Object>) request.getSession(true).getAttribute(sessionID);
 
         if (sessionMap == null) {
@@ -204,6 +205,7 @@ public class XmlEditController implements Controller {
         return sessionMap;
     }
     
+    @SuppressWarnings("unchecked")
     private void referenceData(Map model, EditDocument document) 
         throws IOException {
         Resource resource = document.getResource();
@@ -281,7 +283,7 @@ public class XmlEditController implements Controller {
         return formatter.format(today);
     }
 
-    private Map handleModeError(EditDocument document, HttpServletRequest request) {
+    private Map<String, Object> handleModeError(EditDocument document, HttpServletRequest request) {
         
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -299,7 +301,7 @@ public class XmlEditController implements Controller {
 
         logger.warn(sb.toString());
         
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         Util.setXsltParameter(model, "ERRORMESSAGE", "UNNSUPPORTED_ACTION_IN_MODE");
         return model;
     }

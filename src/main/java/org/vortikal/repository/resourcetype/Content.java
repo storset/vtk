@@ -49,7 +49,7 @@ public interface Content {
      * such representation is available.
      * @exception Exception if an error occurs
      */
-    public Object getContentRepresentation(Class clazz) throws Exception;
+    public Object getContentRepresentation(Class<?> clazz) throws Exception;
     
 
     /**
@@ -72,7 +72,4 @@ public interface Content {
      */
     public long getContentLength() throws IOException;
     
-
-    // Get all supported representations
-//     public Class[] getSupportedRepresentations();
 }

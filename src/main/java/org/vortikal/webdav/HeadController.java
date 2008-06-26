@@ -48,18 +48,14 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfMatchHeader;
 import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
-
-
 /**
  * Handler for HEAD requests
  *
  */
 public class HeadController extends AbstractWebdavController {
 
-
     /**
      * Performs the HTTP/WebDAV 'HEAD' method.
-     *
      */
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
@@ -68,7 +64,7 @@ public class HeadController extends AbstractWebdavController {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         try {
             

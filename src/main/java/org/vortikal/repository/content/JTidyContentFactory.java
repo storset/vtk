@@ -43,13 +43,13 @@ import org.w3c.tidy.Tidy;
  */
 public class JTidyContentFactory implements ContentFactory {
 
-    public Class[] getRepresentationClasses() {
+    public Class<?>[] getRepresentationClasses() {
         return new Class[] {Document.class, Tidy.class};
     }
     
     private static PrintWriter NULL_WRITER = new PrintWriter(new NullOutputStream());
 
-    public Object getContentRepresentation(Class clazz,  InputStream content) throws Exception {
+    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
         Tidy tidy = new Tidy();
         tidy.setQuiet(true);
         tidy.setOnlyErrors(true);

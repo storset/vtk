@@ -39,8 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-
-
 /**
  * Controller that puts a redirect URL in the model and returns a
  * configurable view name.
@@ -84,8 +82,7 @@ public class RedirectController implements Controller {
         
         if (request.getQueryString() != null) 
             redirectURL.append("?").append(request.getQueryString());
-        Map model = new HashMap();
-        // TODO: make redirecting work with non-iso-8859-1 URIs
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("redirectURL", redirectURL.toString());
         return new ModelAndView(this.viewName, model);
     }

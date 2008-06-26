@@ -61,13 +61,14 @@ import org.vortikal.web.service.Assertion;
  */
 public class ConfigurableDelegatingServlet extends FrameworkServlet {
 
+    private static final long serialVersionUID = 5437012432013930502L;
+
     private Log logger = LogFactory.getLog(this.getClass());
     private ServletContext servletContext = null;
 
     private List<ServletMapping> servletMappings;
 
-
-
+    @SuppressWarnings("unchecked")
     protected void initFrameworkServlet()
         throws ServletException, BeansException {
         super.initFrameworkServlet();
@@ -81,7 +82,6 @@ public class ConfigurableDelegatingServlet extends FrameworkServlet {
         Collections.sort(this.servletMappings, new OrderComparator());
         
     }
-
     
 
     protected void doService(HttpServletRequest request, HttpServletResponse response)
@@ -96,7 +96,6 @@ public class ConfigurableDelegatingServlet extends FrameworkServlet {
             }
         }
     }
-    
 
     private void doDispatch(String servletName, HttpServletRequest request,
                             HttpServletResponse response) throws ServletException, IOException {
@@ -113,8 +112,6 @@ public class ConfigurableDelegatingServlet extends FrameworkServlet {
 
         rd.forward(request, response);
     }
-    
-
     
 }
 

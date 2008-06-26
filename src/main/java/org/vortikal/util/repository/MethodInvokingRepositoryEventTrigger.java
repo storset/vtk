@@ -139,7 +139,7 @@ public class MethodInvokingRepositoryEventTrigger
             }
             this.targetMethod.invoke(this.targetObject, new Object[0]);
         } catch (Throwable t) {
-            this.logger.warn("Error occurred while invoking method '" + this.method +
+            logger.warn("Error occurred while invoking method '" + this.method +
                              "' on object '" + this.targetObject + "'", t);
         }
     }

@@ -1,20 +1,16 @@
 package org.vortikal.repository.search;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.vortikal.repository.search.QueryParser;
 
 public class QueryParserTest extends AbstractDependencyInjectionSpringContextTests {
 
-    private static Log logger = LogFactory.getLog(QueryParserTest.class);
-    
-    private QueryParser queryParser;
-    
     static {
         BasicConfigurator.configure();
     }
+
+//  private QueryParser queryParser;
+    
     
 //    public void testSimplePropertyQuery() {
 //        Query node = queryParser.parse("a=b");

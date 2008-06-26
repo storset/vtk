@@ -139,6 +139,7 @@ public class FixedResourceServiceURLProvider
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
@@ -152,9 +153,9 @@ public class FixedResourceServiceURLProvider
             resource = this.repository.retrieve(securityContext.getToken(), this.uri, true);
         } catch (Throwable t) { }
 
-        Map urlMap = (Map) model.get(this.modelName);
+        Map<String, String> urlMap = (Map<String, String>) model.get(this.modelName);
         if (urlMap == null) {
-            urlMap = new HashMap();
+            urlMap = new HashMap<String, String>();
         }
 
         String url = null;

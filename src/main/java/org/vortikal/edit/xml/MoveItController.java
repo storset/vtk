@@ -47,11 +47,12 @@ import org.vortikal.util.Xml;
  */
 public class MoveItController implements ActionHandler {
 
-    public Map handle(HttpServletRequest request,
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document, SchemaDocumentDefinition documentDefinition)
             throws IOException, XMLEditException {
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         String mode = document.getDocumentMode();
 
         if (!mode.equals("move"))

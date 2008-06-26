@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
 
 public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value>, InitializingBean {

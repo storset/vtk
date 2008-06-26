@@ -1,9 +1,9 @@
 options {
   // MULTI = true;
   STATIC = false;
-  //  DEBUG_PARSER = true;
-  //  DEBUG_LOOKAHEAD = true;
-  //  DEBUG_TOKEN_MANAGER = true;
+  //  DEBUG_PARSER = false;
+  //  DEBUG_LOOKAHEAD = false;
+  //  DEBUG_TOKEN_MANAGER = false;
   // JAVA_UNICODE_ESCAPE = true;
   UNICODE_INPUT = true;
 }
@@ -37,6 +37,7 @@ import org.vortikal.repository.search.query.UriTermQuery;
 * <p>Try the parser out with:
 * <p>java -cp target/classes org.vortikal.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
 */
+@SuppressWarnings({"unused", "unchecked", "serial"})
 public class QueryParserImpl implements QueryParser {
 
     private ResourceTypeTree resourceTypeTree;

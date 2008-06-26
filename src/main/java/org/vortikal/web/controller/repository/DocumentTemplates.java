@@ -36,7 +36,7 @@ import java.util.Map;
 public interface DocumentTemplates {
 
     
-    public Map getTopTemplates() throws IOException;
+    public Map<String, String> getTopTemplates() throws IOException;
     
-    public Map getCategoryTemplates() throws IOException;
+    public Map<String, Map<String, String>> getCategoryTemplates() throws IOException;
 }

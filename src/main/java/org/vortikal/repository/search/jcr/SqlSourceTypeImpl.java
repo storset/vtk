@@ -35,10 +35,7 @@ import org.vortikal.repository.store.jcr.JcrDaoConstants;
 
 public class SqlSourceTypeImpl implements SqlSourceType {
 
-    private Search search;
-    
     public SqlSourceTypeImpl(Search search) {
-        this.search = search;
     }
     
     public String getSourceType() {

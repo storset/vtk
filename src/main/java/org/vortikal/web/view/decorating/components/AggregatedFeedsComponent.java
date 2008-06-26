@@ -61,7 +61,6 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
     }
     
     
-    @SuppressWarnings("unchecked")
     @Override
     protected void processModel(Map<Object, Object> model,
             DecoratorRequest request, DecoratorResponse response)
@@ -220,9 +219,11 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
             if (tmpFeed == null) {
                 throw new RuntimeException("Unable to load feed: " + url);
             }
-            entries.addAll(tmpFeed.getEntries());
+            @SuppressWarnings("unchecked")
+            List<SyndEntry> tmpEntries = tmpFeed.getEntries();
+            entries.addAll(tmpEntries);
 
-            for (SyndEntry entry : (List<SyndEntry>)tmpFeed.getEntries()) {
+            for (SyndEntry entry: tmpEntries) {
                 feedMapping.put(entry, tmpFeed);
             }
         }

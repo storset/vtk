@@ -107,9 +107,9 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
          * XXX: WHY!?
          */
 
-        Set principalListBefore = originalACL.getPrincipalSet(
+        Set<Principal> principalListBefore = originalACL.getPrincipalSet(
             Privilege.READ_PROCESSED);
-        Set principalListAfter = newACL.getPrincipalSet(
+        Set<Principal> principalListAfter = newACL.getPrincipalSet(
             Privilege.READ_PROCESSED);
            
 
@@ -119,10 +119,10 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         }
             
         principalListBefore = (principalListBefore == null) ?
-            new HashSet() : principalListBefore;
+            new HashSet<Principal>() : principalListBefore;
             
         principalListAfter = (principalListAfter == null) ?
-            new HashSet() : principalListAfter;
+            new HashSet<Principal>() : principalListAfter;
 
         if (principalListBefore.equals(principalListAfter)) {
             return;

@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 public class RequestInitializationException extends RuntimeException {
-
+    private static final long serialVersionUID = 2104171866686575997L;
     private HttpServletRequest request;
     
     public RequestInitializationException(String message, HttpServletRequest request) {

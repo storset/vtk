@@ -96,6 +96,7 @@ public class ChildDelegatingMessageSource
 
     public void afterPropertiesSet() throws Exception {
         // find all services, and sort out those of category 'category';
+        @SuppressWarnings("unchecked")
         Map<Object, MessageSource> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, MessageSource.class, true, false);
 

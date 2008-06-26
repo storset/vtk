@@ -47,7 +47,7 @@ import org.jdom.ProcessingInstruction;
  */
 public class EditController implements ActionHandler {
 
-    public Map handle(HttpServletRequest request,
+    public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws XMLEditException {
         
@@ -66,7 +66,7 @@ public class EditController implements ActionHandler {
         element.addContent(new ProcessingInstruction("expanded", "true"));
         documentDefinition.translateToEditingElement(element);
         
-        return new HashMap();
+        return new HashMap<String, Object>();
 
     }
 }

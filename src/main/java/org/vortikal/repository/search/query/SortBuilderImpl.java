@@ -30,10 +30,7 @@
  */
 package org.vortikal.repository.search.query;
 
-import java.util.Iterator;
-
 import org.vortikal.repository.index.mapping.FieldNameMapping;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
@@ -72,8 +69,7 @@ public class SortBuilderImpl implements SortBuilder {
             new org.apache.lucene.search.SortField[sort.getSortFields().size()];
 
         int j = 0;
-        for (Iterator i = sort.getSortFields().iterator(); i.hasNext(); j++) {
-            SortField f = (SortField) i.next();
+        for (SortField f: sort.getSortFields()) {
             String fieldName = null;
             boolean direction = (f.getDirection() == SortFieldDirection.ASC ? false
                     : true);

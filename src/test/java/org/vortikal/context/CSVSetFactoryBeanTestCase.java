@@ -52,6 +52,7 @@ public class CSVSetFactoryBeanTestCase extends TestCase {
         assertFalse(bean.getObject() == bean.getObject());
     }
     
+    @SuppressWarnings("unchecked")
     public void testCSVSetFactoryBean() throws Exception {
         
         // Test standard set with trimmed values

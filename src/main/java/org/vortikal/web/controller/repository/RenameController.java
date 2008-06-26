@@ -52,9 +52,7 @@ import org.vortikal.web.service.Service;
 public class RenameController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(RenameController.class);
-    
     private Repository repository = null;
-    
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -74,9 +72,6 @@ public class RenameController extends SimpleFormController {
         return command;
     }
 
-    
-    
-    
     
     protected ModelAndView onSubmit(Object command, BindException errors)
             throws Exception {
@@ -99,7 +94,7 @@ public class RenameController extends SimpleFormController {
         Resource resource = this.repository.retrieve(token, uri, false);
         String name = resource.getName();
 
-        Map model = null;
+        Map<String, Object> model = null;
         
         try {
             if (!name.equals(rename.getName())) {
@@ -110,7 +105,7 @@ public class RenameController extends SimpleFormController {
                 String newUri = uri.substring(0, uri.lastIndexOf("/") + 1 ) + rename.getName();
                 this.repository.move(token, uri, newUri, false);
                 Resource newResource = this.repository.retrieve(token, newUri, false);
-                model = new HashMap();
+                model = new HashMap<String, Object>();
                 model.put("resource", newResource);
             }
             rename.setDone(true);
@@ -122,7 +117,5 @@ public class RenameController extends SimpleFormController {
             return new ModelAndView(getFormView(), errors.getModel());
         }
     }
-
-    
 }
 

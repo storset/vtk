@@ -98,6 +98,7 @@ public class ConsistencyCheck {
         return check;
     }
 
+    @SuppressWarnings("unchecked")
     private void runInternal() throws IndexException,
             ConsistencyCheckException, StorageCorruptionException {
 
@@ -139,10 +140,11 @@ public class ConsistencyCheck {
         this.completed = true;
     }
     
+    @SuppressWarnings("unchecked")
     private void runConsistencyCheck(final PropertySetIndexRandomAccessor randomIndexAccessor,
                                      final Iterator indexUriIterator) 
         throws IndexException {
-        final Set valid = new HashSet(10000);
+        final Set<String> valid = new HashSet<String>(10000);
         
         // XXX: Don't know if I like this callback style, the only way to 
         //      abort the iteration is to throw an un-checked exception.
@@ -173,12 +175,9 @@ public class ConsistencyCheck {
                     ConsistencyCheck.this.errors.add(
                             new MultiplesInconsistency(currentUri, indexInstances, daoPropSet));
                 }
-                
                 // Add to set of valid index property set URIs
                 valid.add(currentUri);
-                
             }
-            
         };
         
         this.indexDao.orderedPropertySetIteration(handler);
@@ -212,8 +211,6 @@ public class ConsistencyCheck {
                 this.errors.add(new DanglingInconsistency(currentUri));
             }
         }
-        
-        
     }
     
     /**
@@ -278,6 +275,7 @@ public class ConsistencyCheck {
      * @throws IOException
      * @throws IndexException
      */    
+    @SuppressWarnings({ "unchecked", "unused" })
     private void runConsistencyCheckExperimental(Iterator daoIterator, Iterator indexUriIterator, 
                                                 PropertySetIndexRandomAccessor randomIndexAccessor) 
         throws IOException, IndexException {

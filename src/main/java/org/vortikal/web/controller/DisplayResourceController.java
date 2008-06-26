@@ -125,7 +125,7 @@ public class DisplayResourceController
     private String viewName = DEFAULT_VIEW_NAME;
     private View view = null;
     private String unsupportedResourceView = "HTTP_STATUS_NOT_FOUND";
-    private Set unsupportedResourceTypes = null;
+    private Set<String> unsupportedResourceTypes = null;
     private boolean streamToString = false;
     private boolean ignoreLastModified = false;
     private boolean ignoreLastModifiedOnCollections = false;
@@ -164,7 +164,7 @@ public class DisplayResourceController
     }
     
 
-    public void setUnsupportedResourceTypes(Set unsupportedResourceTypes) {
+    public void setUnsupportedResourceTypes(Set<String> unsupportedResourceTypes) {
         this.unsupportedResourceTypes = unsupportedResourceTypes;
     }
     
@@ -181,7 +181,7 @@ public class DisplayResourceController
 
     public void afterPropertiesSet() throws Exception {
         if (this.unsupportedResourceTypes == null) {
-            this.unsupportedResourceTypes = new HashSet();
+            this.unsupportedResourceTypes = new HashSet<String>();
         }
 
         if (this.viewName == null && this.view == null) {
@@ -205,7 +205,7 @@ public class DisplayResourceController
 
         String token = securityContext.getToken();
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         Resource resource = this.repository.retrieve(token, uri, this.displayProcessed);
         if (this.unsupportedResourceTypes.contains(resource.getContentType())) {
             return new ModelAndView(this.unsupportedResourceView);

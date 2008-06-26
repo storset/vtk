@@ -76,7 +76,7 @@ public class ResourceEditController extends SimpleFormController {
 
         if (!wrapper.isSave()) {
             resourceManager.unlock();
-            return new ModelAndView(getSuccessView(), new HashMap());
+            return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }
                 
         resourceManager.store(wrapper);
@@ -113,6 +113,7 @@ public class ResourceEditController extends SimpleFormController {
 
 
     
+    @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request, Object command,
             Errors errors) throws Exception {

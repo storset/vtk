@@ -59,6 +59,7 @@ public class StaticResourceLocationsAssertion
     }
     
 
+    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
         Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, StaticResourceLocation.class, true, false);

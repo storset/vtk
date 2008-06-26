@@ -34,32 +34,33 @@ import java.util.Comparator;
 
 import org.springframework.beans.BeanWrapperImpl;
 
-    public class JavaBeanPropertyComparator implements Comparator {
-        private String propertyName = null;
+@SuppressWarnings("unchecked")
+public class JavaBeanPropertyComparator implements Comparator {
+    private String propertyName = null;
 
-        public JavaBeanPropertyComparator(String propertyName) {
-            this.propertyName = propertyName;
-        }
-
-        public int compare(Object o1, Object o2) {
-            // FIXME:
-            BeanWrapperImpl wrapper1 = new BeanWrapperImpl(o1);
-            BeanWrapperImpl wrapper2 = new BeanWrapperImpl(o2);
-
-            Object propertyValue1 = wrapper1
-                    .getPropertyValue(this.propertyName);
-
-            if (!(propertyValue1 instanceof Comparable)) {
-                throw new IllegalArgumentException("Cannot compare object "
-                        + o1 + " and " + o2 + "." + "Field '"
-                        + this.propertyName + "' (class "
-                        + propertyValue1.getClass().getName() + ")"
-                        + " does not implement " + Comparable.class.getName());
-            }
-
-            Object propertyValue2 = wrapper2
-                    .getPropertyValue(this.propertyName);
-
-            return ((Comparable) propertyValue1).compareTo(propertyValue2);
-        }
+    public JavaBeanPropertyComparator(String propertyName) {
+        this.propertyName = propertyName;
     }
+
+    public int compare(Object o1, Object o2) {
+        // FIXME:
+        BeanWrapperImpl wrapper1 = new BeanWrapperImpl(o1);
+        BeanWrapperImpl wrapper2 = new BeanWrapperImpl(o2);
+
+        Object propertyValue1 = wrapper1
+        .getPropertyValue(this.propertyName);
+
+        if (!(propertyValue1 instanceof Comparable)) {
+            throw new IllegalArgumentException("Cannot compare object "
+                    + o1 + " and " + o2 + "." + "Field '"
+                    + this.propertyName + "' (class "
+                    + propertyValue1.getClass().getName() + ")"
+                    + " does not implement " + Comparable.class.getName());
+        }
+
+        Object propertyValue2 = wrapper2
+        .getPropertyValue(this.propertyName);
+
+        return ((Comparable) propertyValue1).compareTo(propertyValue2);
+    }
+}

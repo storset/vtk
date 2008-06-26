@@ -37,14 +37,13 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +54,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
-
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.util.web.URLUtil;
@@ -92,16 +90,15 @@ public class DisplayClassPathResourceController
     }
     
 
+    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
 
-        Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+        Map<String, StaticResourceLocation> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             this.applicationContext, StaticResourceLocation.class, true, false);
-        Collection allLocations = matchingBeans.values();
+        Collection<StaticResourceLocation> allLocations = matchingBeans.values();
         this.locationsMap = new HashMap<String, String>();
 
-        for (Iterator i = allLocations.iterator(); i.hasNext();) {
-            StaticResourceLocation location = (StaticResourceLocation) i.next();
-
+        for (StaticResourceLocation location: allLocations) {
             String uri = location.getUriPrefix();
             String resourceLocation = location.getResourceLocation();
             this.locationsMap.put(uri, resourceLocation);
@@ -233,8 +230,5 @@ public class DisplayClassPathResourceController
         } 
         return resource;
     }
-
-    
-
 
 }

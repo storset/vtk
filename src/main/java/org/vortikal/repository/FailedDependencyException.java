@@ -53,7 +53,7 @@ public class FailedDependencyException extends RepositoryException {
         return (Exception) this.map.get(uri);
     }
 
-    public Iterator uriIterator() {
+    public Iterator<String> uriIterator() {
         return this.map.keySet().iterator();
     }
 }

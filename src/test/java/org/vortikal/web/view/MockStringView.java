@@ -63,6 +63,7 @@ public class MockStringView implements View {
      * @param response the servlet response
      * @exception Exception if an error occurs
      */
+    @SuppressWarnings("unchecked")
     public void render(Map map, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
 

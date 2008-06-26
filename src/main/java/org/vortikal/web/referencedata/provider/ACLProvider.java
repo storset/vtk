@@ -141,11 +141,11 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
     }
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
         Map<String, Object> aclModel = new HashMap<String, Object>();
-        model.put("aclInfo", aclModel);
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -211,6 +211,8 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
         aclModel.put("privilegedUsers", privilegedUsers);
         aclModel.put("privilegedGroups", privilegedGroups);
+
+        model.put("aclInfo", aclModel);
     }
 
 }

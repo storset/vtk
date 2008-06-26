@@ -49,8 +49,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class ServletBean
   implements ApplicationContextAware, InitializingBean, DisposableBean, ServletConfig {
 
-        protected Log logger = LogFactory.getLog(this.getClass());
-
+    protected static Log logger = LogFactory.getLog(ServletBean.class);
 
     private String servletName = null;
     private String servletClass = null;
@@ -88,7 +87,7 @@ public class ServletBean
         return this.initParameters.getProperty(parameter);
     }
 
-    public Enumeration getInitParameterNames() {
+    public Enumeration<?> getInitParameterNames() {
         return this.initParameters.keys();
     }
 
@@ -116,7 +115,7 @@ public class ServletBean
                 "Required property 'servletClass' not set");
         }
 
-        Class clazz = Class.forName(this.servletClass);
+        Class<?> clazz = Class.forName(this.servletClass);
         if (!Servlet.class.isAssignableFrom(clazz)) {
             throw new BeanInitializationException("Class " + clazz.getName()
                                                   + " is not a servlet");
@@ -130,7 +129,4 @@ public class ServletBean
     public void destroy() {
         this.servlet.destroy();
     }
-    
-
-
 }

@@ -50,6 +50,7 @@ public class PropertyEditValidator implements Validator {
     private PrincipalManager principalManager;
     
 
+    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return PropertyEditCommand.class.isAssignableFrom(clazz);
     }

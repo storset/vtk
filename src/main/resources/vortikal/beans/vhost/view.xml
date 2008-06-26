@@ -387,8 +387,7 @@
    </bean>
 
 
-   <bean id="linkConstructor" class="org.vortikal.web.view.LinkConstructorImpl"
-         parent="requestLocalRepositoryAware" />
+   <bean id="linkConstructor" class="org.vortikal.web.view.LinkConstructorImpl" />
    
 
   <bean id="romeFeedView" class="org.vortikal.web.view.RomeFeedView"  abstract="true" />

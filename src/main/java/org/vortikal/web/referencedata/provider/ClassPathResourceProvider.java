@@ -34,8 +34,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
@@ -61,12 +59,8 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  */
 public class ClassPathResourceProvider implements ReferenceDataProvider, InitializingBean {
 
-    private Log logger = LogFactory.getLog(this.getClass());
-
     private String path;
-
     private String modelName;
-
 
     public void setPath(String path) {
         this.path = path;
@@ -89,8 +83,7 @@ public class ClassPathResourceProvider implements ReferenceDataProvider, Initial
         }
     }
     
-
-
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
@@ -99,11 +92,9 @@ public class ClassPathResourceProvider implements ReferenceDataProvider, Initial
         model.put(this.modelName, result);
     }
     
-
     protected Object processResource(ClassPathResource resource) throws Exception {
         return resource;
     }
-    
     
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());

@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -56,9 +54,6 @@ import com.ibatis.sqlmap.client.event.RowHandler;
  */
 class PropertySetRowHandler implements RowHandler {
 
-    private static final Log LOG = 
-                LogFactory.getLog(PropertySetRowHandler.class);
-
     // Client callback for handling retrieved property set instances 
     protected PropertySetHandler clientHandler;
     
@@ -67,7 +62,7 @@ class PropertySetRowHandler implements RowHandler {
     // can map to a single property set. The iteration from the database is 
     // ordered, so ID change signals a new PropertySet
     protected Integer currentId = null;
-    protected List<Map> rowValueBuffer = new ArrayList<Map>();
+    protected List<Map<String, Object>> rowValueBuffer = new ArrayList<Map<String, Object>>();
 
     private final ResourceTypeTree resourceTypeTree;
 
@@ -88,7 +83,8 @@ class PropertySetRowHandler implements RowHandler {
      */
     public void handleRow(Object valueObject) {
         
-        Map rowMap = (Map)valueObject;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> rowMap = (Map<String, Object>) valueObject;
         Integer id = (Integer)rowMap.get("id");
         
         if (this.currentId != null && !this.currentId.equals(id)) {
@@ -119,9 +115,9 @@ class PropertySetRowHandler implements RowHandler {
         this.clientHandler.handlePropertySet(propertySet);    
     }
     
-    private PropertySet createPropertySet(List<Map> rowBuffer) {
+    private PropertySet createPropertySet(List<Map<String, Object>> rowBuffer) {
         
-        Map firstRow = rowBuffer.get(0);
+        Map<String, Object> firstRow = rowBuffer.get(0);
         
         PropertySetImpl propertySet = new PropertySetImpl();
         String uri = (String)firstRow.get("uri");
@@ -135,7 +131,7 @@ class PropertySetRowHandler implements RowHandler {
         return propertySet;
     }
     
-    protected void populateStandardProperties(Map row, PropertySetImpl propertySet) {
+    protected void populateStandardProperties(Map<String, Object> row, PropertySetImpl propertySet) {
 
         // ID
         propertySet.setID(((Integer)row.get("id")).intValue());
@@ -270,13 +266,13 @@ class PropertySetRowHandler implements RowHandler {
         }
     }
     
-    protected void populateExtraProperties(List<Map> rowBuffer, 
+    protected void populateExtraProperties(List<Map<String, Object>> rowBuffer, 
                                            PropertySetImpl propertySet) {
         
         Map<SqlDaoUtils.PropHolder, List<String>> propMap = 
                             new HashMap<SqlDaoUtils.PropHolder, List<String>>();
         
-        for (Map row: rowBuffer) {
+        for (Map<String, Object> row: rowBuffer) {
 
             SqlDaoUtils.PropHolder holder = new SqlDaoUtils.PropHolder();
             holder.namespaceUri = (String)row.get("namespace");
@@ -306,7 +302,7 @@ class PropertySetRowHandler implements RowHandler {
 
     }
     
-    protected void populateAncestorIds(Map row, PropertySetImpl propSet) {
+    protected void populateAncestorIds(Map<String, Object> row, PropertySetImpl propSet) {
         String idString = (String)row.get("ancestorIds");
         propSet.setAncestorIds(getAncestorIdsFromString(idString));
     }

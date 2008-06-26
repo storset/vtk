@@ -101,6 +101,7 @@ public class BeanContextComponentResolver
     
 
     private synchronized void init() {
+        @SuppressWarnings("unchecked")
         Collection<DecoratorComponent> beans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.applicationContext, 

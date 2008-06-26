@@ -37,8 +37,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.util.io.BoundedInputStream;
 
 
@@ -48,16 +46,12 @@ import org.vortikal.util.io.BoundedInputStream;
  */
 public class UploadLimitInputStreamFilter extends AbstractRequestFilter {
 
-    private Log logger = LogFactory.getLog(this.getClass());
     private long uploadLimit = 0;
     
-    
-
     public UploadLimitInputStreamFilter(long uploadLimit) {
         this.uploadLimit = uploadLimit;
     }
     
-
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new UploadLimitRequestWrapper(request, this.uploadLimit);
     }

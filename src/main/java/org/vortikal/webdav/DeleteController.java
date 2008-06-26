@@ -71,7 +71,7 @@ public class DeleteController extends AbstractWebdavController {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         try {
             this.ifHeader = new IfHeaderImpl(request);
             Resource resource = this.repository.retrieve(token, uri, false);

@@ -116,6 +116,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
             }
             
             if (property.getDefinition().isMultiple()) {
+                @SuppressWarnings("unchecked")
                 List<Object> list = xpath.selectNodes(doc);
                 if (list.size() == 0) {
                     return false;

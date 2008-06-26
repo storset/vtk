@@ -106,6 +106,7 @@ public class StaticURLProvider implements ReferenceDataProvider, InitializingBea
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

@@ -26,10 +26,8 @@
 package org.vortikal.security.web.openid;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,8 +60,6 @@ public class OpenIDAuthenticationHandler
 
     private PrincipalFactory principalFactory;
     
-    private Set recognizedDomains = null;
-    private Set excludedPrincipals = new HashSet();
     private int order = Integer.MAX_VALUE;
     
     private ConsumerManager consumerManager;
@@ -87,14 +83,6 @@ public class OpenIDAuthenticationHandler
         this.finalRedirectService = finalRedirectService;
     }
 
-    public void setRecognizedDomains(Set recognizedDomains) {
-        this.recognizedDomains = recognizedDomains;
-    }
-
-    public void setExcludedPrincipals(Set excludedPrincipals) {
-        this.excludedPrincipals = excludedPrincipals;
-    }
-    
     public void setOrder(int order) {
         this.order = order;
     }
@@ -176,7 +164,7 @@ public class OpenIDAuthenticationHandler
             request.getRequestURI(), parameters);
 
         // perform discovery on the user-supplied identifier
-        List discoveries;
+        List<?> discoveries;
 
         try {
             discoveries = this.consumerManager.discover(identifier);

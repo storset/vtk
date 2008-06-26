@@ -40,7 +40,7 @@ import org.jdom.Document;
  */
 public class ValidatorTest extends TestCase {
 
-    private static final String VALIDATING_XML = "org/vortikal/edit/xml/validating.xml";
+//    private static final String VALIDATING_XML = "org/vortikal/edit/xml/validating.xml";
 
     Document validating;
 

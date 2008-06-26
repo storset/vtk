@@ -47,9 +47,9 @@ public class ACLEditCommandValidator implements Validator {
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return (clazz == ACLEditCommand.class);
-
     }
 
     public void validate(Object command, Errors errors) {

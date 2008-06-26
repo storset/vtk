@@ -33,8 +33,6 @@ package org.vortikal.repository.search.jcr;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.AndQuery;
@@ -77,9 +75,6 @@ import org.vortikal.repository.store.jcr.JcrPathUtil;
  */
 public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
 
-    private static final Log LOG = LogFactory.getLog(
-                                            SqlConstraintQueryTreeVisitor.class);
-    
     // The character used as an escape in SQL LIKE expresssions.
     private static final char SQL_LIKE_ESCAPE_CHAR = '@';
         
@@ -301,7 +296,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         List<String> descendantNames = this.resourceTypeTree.getDescendantsAndSelf(typeName);
         if (descendantNames != null && !descendantNames.isEmpty()) {
             buffer.append(" ").append(SqlConstraintOperator.OR).append(" ");
-            Iterator iterator = descendantNames.iterator();
+            Iterator<String> iterator = descendantNames.iterator();
             while (iterator.hasNext()) {
                 buffer.append(JcrDaoConstants.RESOURCE_TYPE).append(" ");
                 buffer.append(SqlConstraintOperator.EQUAL).append(" ");

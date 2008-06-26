@@ -150,7 +150,7 @@ final class ReadOnlyIndexReader extends IndexReader {
         return this.wrappedReader.document(n, fieldSelector);
     }
 
-    public Collection getFieldNames(IndexReader.FieldOption fldOption) {
+    public Collection<?> getFieldNames(IndexReader.FieldOption fldOption) {
         return this.wrappedReader.getFieldNames(fldOption);
     }
 

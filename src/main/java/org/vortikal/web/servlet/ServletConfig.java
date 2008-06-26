@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 
+@SuppressWarnings("unchecked")
 public class ServletConfig implements javax.servlet.ServletConfig {
 
     private ServletContext servletContext;

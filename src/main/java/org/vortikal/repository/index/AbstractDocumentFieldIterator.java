@@ -47,7 +47,7 @@ import org.apache.lucene.index.TermEnum;
  * @author oyviste
  *
  */
-abstract class AbstractDocumentFieldIterator implements CloseableIterator {
+abstract class AbstractDocumentFieldIterator implements CloseableIterator<Object> {
 
     private Log logger = LogFactory.getLog(AbstractDocumentFieldIterator.class);
     

@@ -59,6 +59,7 @@ import org.vortikal.webdav.WebdavConstants;
  */
 public class SimpleHttpStatusView extends AbstractView {
 
+    @SuppressWarnings("unchecked")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -75,19 +76,6 @@ public class SimpleHttpStatusView extends AbstractView {
         String etag = (String) model.get(WebdavConstants.WEBDAVMODEL_ETAG);
         if (etag != null) {
             response.setHeader(WebdavConstants.WEBDAVMODEL_ETAG, etag);
-        }
-        
-//        int sc = status.intValue();
-//        // Send as error if sc >= 400. Note that with Resin 3, this gives the HTTP response 
-//        // a body, which might not be desired for SimpleHttpStatusView ?
-//        if (sc >= 400) {
-//            try {
-//                response.sendError(sc, HttpUtil.getStatusMessage(sc));
-//            } catch (IllegalArgumentException ia) {
-//                response.setStatus(sc);
-//            }
-//        } else {
-//            response.setStatus(sc);
-//        }
+        }        
     }
 }

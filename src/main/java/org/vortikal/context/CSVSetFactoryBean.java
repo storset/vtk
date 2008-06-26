@@ -45,7 +45,7 @@ public class CSVSetFactoryBean extends AbstractCSVFactoryBean {
      * <code>FactoryBean</code> is not a singleton, but a prototype.
      */
     protected Object createInstance() throws Exception {
-        Set csvSet = new HashSet();
+        Set<String> csvSet = new HashSet<String>();
         
         for (String element: super.elements) {
             csvSet.add(element);
@@ -54,6 +54,7 @@ public class CSVSetFactoryBean extends AbstractCSVFactoryBean {
         return csvSet;
     }
 
+    @SuppressWarnings("unchecked")
     public Class getObjectType() {
         return Set.class;
     }

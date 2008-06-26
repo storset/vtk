@@ -63,7 +63,7 @@ public class OptionsController extends AbstractWebdavController {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         if (!uri.equals("*")) {
             Resource resource;

@@ -40,6 +40,8 @@ package org.vortikal.repository.index;
  */
 public class StorageCorruptionException extends IndexException {
 
+    private static final long serialVersionUID = 5569711410752524276L;
+
     public StorageCorruptionException(String message, Throwable cause) {
         super(message, cause);
     }

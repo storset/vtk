@@ -76,7 +76,7 @@ public class MoveController extends AbstractWebdavController {
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         String destURI = request.getHeader("Destination");
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         try {
             Resource resource = this.repository.retrieve(token, uri, false);

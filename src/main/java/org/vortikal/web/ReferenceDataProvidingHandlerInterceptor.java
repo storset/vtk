@@ -81,6 +81,7 @@ public class ReferenceDataProvidingHandlerInterceptor implements HandlerIntercep
             return;
         }
 
+        @SuppressWarnings("unchecked")
         Map model = modelAndView.getModel();
 
         if (model == null) {

@@ -554,6 +554,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     private class Items {
+        @SuppressWarnings("unchecked")
         private Map<String, Item> map = new ConcurrentReaderHashMap();
         private Item in = null;
         private Item out = null;

@@ -49,7 +49,7 @@ public class ShellExecutionResultProvider implements ReferenceDataProvider, Init
 
     private String modelName;
     private AbstractConsole shell;
-    private Map groups;
+    private Map<String, Map<String, String>> groups;
     
 
     public void setModelName(String modelName) {
@@ -61,7 +61,7 @@ public class ShellExecutionResultProvider implements ReferenceDataProvider, Init
         this.shell = shell;
     }
 
-    public void setGroups(Map groups) {
+    public void setGroups(Map<String, Map<String, String>> groups) {
         this.groups = groups;
     }
     
@@ -83,24 +83,24 @@ public class ShellExecutionResultProvider implements ReferenceDataProvider, Init
     
 
 
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 
-        Map subModel = new HashMap();
+        Map<String, Object> subModel = new HashMap<String, Object>();
 
-        for (Iterator groupIter = this.groups.keySet().iterator(); groupIter.hasNext();) {
-            String groupName = (String) groupIter.next();
-            Map group = (Map) this.groups.get(groupName);
+        for (Iterator<String> groupIter = this.groups.keySet().iterator(); groupIter.hasNext();) {
+            String groupName = groupIter.next();
+            Map<String, String> group = this.groups.get(groupName);
             
-            Map resultGroupMap = new HashMap();
+            Map<String, String> resultGroupMap = new HashMap<String, String>();
 
-            for (Iterator itemIter = group.keySet().iterator(); itemIter.hasNext();) {
+            for (Iterator<String> itemIter = group.keySet().iterator(); itemIter.hasNext();) {
                 String itemName = (String) itemIter.next();
                 String expression = (String) group.get(itemName);
                 String result = null;
 
                 try {
-
                     ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
                     PrintStream resultStream = new PrintStream(bufferStream);
                     this.shell.eval(expression, resultStream);

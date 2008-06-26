@@ -47,11 +47,11 @@ import org.jdom.ProcessingInstruction;
  */
 public class NewElementAtController implements ActionHandler {
 
-    public Map handle(HttpServletRequest request,
+    public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document,
             SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
         
         String mode = document.getDocumentMode();
         String con = request.getParameter("cont");

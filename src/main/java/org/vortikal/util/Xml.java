@@ -56,6 +56,7 @@ public class Xml {
     public static List<String> getNodesByXPath(Document doc, XPath expression)
             throws JDOMException {
         // get nodes
+        @SuppressWarnings("unchecked")
         List<Text> nodes = expression.selectNodes(doc);
         
         // Convert text nodes to strings and add to ArrayList
@@ -99,6 +100,7 @@ public class Xml {
         }
         Element parent = (Element) element.getParent();
         int index = 1;
+        @SuppressWarnings("unchecked")
         List<Element> children = parent.getChildren();
         for (Element child: children) {
             if (child == element) {

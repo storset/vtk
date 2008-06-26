@@ -63,6 +63,7 @@ import org.springframework.core.Ordered;
  *   of the default {@link OrderComparator}.
  * </ul>
  */
+@SuppressWarnings("unchecked")
 public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements InitializingBean {
     
     private String category;

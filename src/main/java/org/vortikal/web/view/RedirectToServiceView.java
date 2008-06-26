@@ -94,6 +94,7 @@ public class RedirectToServiceView extends AbstractView implements InitializingB
     
     
     
+    @SuppressWarnings("unchecked")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
                                            HttpServletResponse response)
         throws Exception {

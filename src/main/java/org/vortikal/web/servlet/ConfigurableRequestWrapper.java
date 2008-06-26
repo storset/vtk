@@ -226,6 +226,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return super.getParameterValues(name);
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> params = new HashMap<String, String[]>(super.getParameterMap());
         List<String> queryNames = this.url.getParameterNames();
@@ -286,7 +287,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
     
 
-    public Enumeration getHeaders(String name) {
+    public Enumeration<?> getHeaders(String name) {
         Set<String> values = this.headers.get(name);
         if (values == null) {
             return null;
@@ -294,7 +295,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return Collections.<String>enumeration(values);
     }
     
-    public Enumeration getHeaderNames() {
+    public Enumeration<?> getHeaderNames() {
         Set<String> values = this.headers.keySet();
         return Collections.enumeration(values);
     }
@@ -396,7 +397,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
 
     private void initHeaders() {
         this.headers = new HashMap<String, Set<String>>();
-        Enumeration headerNames = super.getHeaderNames();
+        Enumeration<?> headerNames = super.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String name = (String) headerNames.nextElement();
             Set<String> values = this.headers.get(name);
@@ -404,7 +405,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
                 values = new HashSet<String>();
                 this.headers.put(name, values);
             }
-            Enumeration headerValues = super.getHeaders(name);
+            Enumeration<?> headerValues = super.getHeaders(name);
             while (headerValues.hasMoreElements()) {
                 String value = (String) headerValues.nextElement();
                 values.add(value);

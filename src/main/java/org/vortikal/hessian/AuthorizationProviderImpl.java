@@ -33,7 +33,6 @@ package org.vortikal.hessian;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 
@@ -41,14 +40,12 @@ import org.vortikal.web.RequestContext;
  */
 public class AuthorizationProviderImpl implements AuthorizationProvider {
 
-    /**
-     * @param repository The repository to set.
-     */
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
     private Repository repository;
+
     /**
 	 * @see org.vortikal.hessian.AuthorizationProvider#authorize()
 	 */

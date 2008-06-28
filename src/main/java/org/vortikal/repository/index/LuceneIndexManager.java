@@ -46,7 +46,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import EDU.oswego.cs.dl.util.concurrent.Mutex;
 
-
 /**
  * Manages access to a single file-system based Lucene index instance.
  * 
@@ -83,10 +82,13 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     private boolean closeAfterInitialization = false;
     
     /* Internal mutex write lock backing the public locking functions of this class. */
+    /* The lock disregards any thread-ownership, and it need not be released by
+     * the same thread that acquired it.
+     */
     private Mutex lock = new Mutex();
     
     public void afterPropertiesSet() throws BeanInitializationException {
-        
+
         try {
             // Initialization of physical storage directory
             File storageDirectory = initializeStorageDirectory(this.storageRootPath, 
@@ -254,7 +256,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         }
         
         return true;
-
     }
 
     /**
@@ -293,7 +294,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
                          "' released write lock on index '" 
                     + this.storageId + "'.");
         }
-        
     }
     
     public boolean isEraseExistingIndex() {

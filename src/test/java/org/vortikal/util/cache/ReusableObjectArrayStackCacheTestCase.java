@@ -28,35 +28,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.util.text;
+package org.vortikal.util.cache;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.vortikal.util.cache.ReusableObjectCache;
-
 import junit.framework.TestCase;
 
 /**
- * <code>TestCase</code> for <code>SimpleDateFormatCache</code> 
- * (and indirectly for 
- * {@link org.vortikal.util.cache.AbstractReusableObjectArrayStackCache})
+ * <code>TestCase</code> for <code>ReusableObjectArrayStackCache</code> 
  *  
  * @author oyviste
  *
  */
-public class SimpleDateFormatCacheTestCase extends TestCase {
+public class ReusableObjectArrayStackCacheTestCase extends TestCase {
 
-    private String pattern = "yyyy-MM-dd HH:mm:ss:S z";
+    private final String pattern = "yyyy-MM-dd HH:mm:ss:S z";
     
     public void testFormatting() {
         
-        Date testDate = new Date();
-        ReusableObjectCache cache = new SimpleDateFormatCache(this.pattern);
+        final Date testDate = new Date();
+        final ReusableObjectCache<SimpleDateFormat> cache = 
+            new ReusableObjectArrayStackCache<SimpleDateFormat>(1);
         
-        DateFormat f = (DateFormat)cache.getInstance();
+        assertNull(cache.getInstance()); // Nothing is in cache, yet.
+        assertEquals(0, cache.size());
+        
+        assertTrue(cache.putInstance(new SimpleDateFormat(this.pattern)));
+        assertEquals(1, cache.size());
+        
+        SimpleDateFormat f = cache.getInstance();
+        assertEquals(0, cache.size());
+        
+        assertNull(cache.getInstance()); // Cache is empty, again.
+        
+        assertTrue(cache.putInstance(f));
+        assertFalse(cache.putInstance(new SimpleDateFormat())); // Should cause overflow and not be kept
+        
+        assertTrue(f == cache.getInstance());
+        
         String formatted = f.format(testDate);
 
         try {
@@ -70,30 +81,41 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
     }
     
     public void testStackCaching() {
-        ReusableObjectCache cache = new SimpleDateFormatCache(this.pattern, 3);
+        final ReusableObjectCache<SimpleDateFormat> cache 
+            = new ReusableObjectArrayStackCache<SimpleDateFormat>(3);
+        
+        // Pre-populate cache
+        assertTrue(cache.putInstance(new SimpleDateFormat(this.pattern)));
+        assertTrue(cache.putInstance(new SimpleDateFormat(this.pattern)));
+        assertTrue(cache.putInstance(new SimpleDateFormat(this.pattern)));
+        assertEquals(3, cache.size());
         
         // Get some instances
-        DateFormat f1 = (DateFormat)cache.getInstance();
-        DateFormat f2 = (DateFormat)cache.getInstance();
-        DateFormat f3 = (DateFormat)cache.getInstance();
+        SimpleDateFormat f1 = cache.getInstance();
+        SimpleDateFormat f2 = cache.getInstance();
+        SimpleDateFormat f3 = cache.getInstance();
+        assertEquals(0, cache.size());
         
         // Put them back
-        cache.putInstance(f1); 
-        cache.putInstance(f2);
-        cache.putInstance(f3);
+        assertTrue(cache.putInstance(f1)); 
+        assertTrue(cache.putInstance(f2));
+        assertTrue(cache.putInstance(f3));
         
         // Test that the instances are cached properly
         // (we know that it works like a stack internally)
         assertTrue(f3 == cache.getInstance());
         assertTrue(f2 == cache.getInstance());
         assertTrue(f1 == cache.getInstance());
-        
+        assertNull(cache.getInstance());
+        assertEquals(0, cache.size());
     }
     
+    // Test multithreaded access and performance difference.
     public void testMultithreadedAccess() {
-        
-        final ReusableObjectCache cache = new SimpleDateFormatCache(this.pattern, 50);
 
+        final ReusableObjectCache<SimpleDateFormat> cache 
+            = new ReusableObjectArrayStackCache<SimpleDateFormat>(50);
+        
         int numWorkers = 100;
         int iterationsPerWorker = 50;
         Thread[] threads = new Thread[numWorkers];
@@ -164,9 +186,9 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
         boolean failed = false;
         boolean useCache;
         int iterations;
-        ReusableObjectCache dateFormatCache;
+        ReusableObjectCache<SimpleDateFormat> dateFormatCache;
         
-        public TestWorker(ReusableObjectCache dateFormatCache, 
+        public TestWorker(ReusableObjectCache<SimpleDateFormat> dateFormatCache, 
                             int iterations, boolean useCache) {
             this.dateFormatCache = dateFormatCache;
             this.iterations = iterations;
@@ -177,11 +199,15 @@ public class SimpleDateFormatCacheTestCase extends TestCase {
             for (int i=0; i<this.iterations; i++) {
                 Date d = new Date();
 
-                DateFormat f;
+                SimpleDateFormat f;
                 if (this.useCache) {
-                    f = (DateFormat)this.dateFormatCache.getInstance();
+                    f = this.dateFormatCache.getInstance();
+                    if (f == null) {
+                        // Nothing available in cache, create new
+                        f = new SimpleDateFormat(ReusableObjectArrayStackCacheTestCase.this.pattern);
+                    }
                 } else {
-                    f = new SimpleDateFormat(SimpleDateFormatCacheTestCase.this.pattern); 
+                    f = new SimpleDateFormat(ReusableObjectArrayStackCacheTestCase.this.pattern); 
                 }
                 
                 String formatted = f.format(d);

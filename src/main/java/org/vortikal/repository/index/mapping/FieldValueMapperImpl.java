@@ -41,8 +41,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.util.cache.ReusableObjectArrayStackCache;
 import org.vortikal.util.cache.ReusableObjectCache;
-import org.vortikal.util.text.SimpleDateFormatCache;
 
 /**
  * Utility methods for mapping between <code>Value</code> and
@@ -60,13 +60,24 @@ public class FieldValueMapperImpl implements FieldValueMapper {
 
     private static final String STRING_VALUE_ENCODING = "UTF-8";
 
-    private static final ReusableObjectCache[] CACHED_DATE_FORMATS = new SimpleDateFormatCache[] {
-        new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss Z", 5),
-        new SimpleDateFormatCache("yyyy-MM-dd HH:mm:ss", 5),
-        new SimpleDateFormatCache("yyyy-MM-dd HH:mm", 5),
-        new SimpleDateFormatCache("yyyy-MM-dd HH", 5),
-        new SimpleDateFormatCache("yyyy-MM-dd", 5) 
+    // Note that order (complex towards simpler format) is important here. 
+    private static final String[] SUPPORTED_DATE_FORMATS = {
+        "yyyy-MM-dd HH:mm:ss Z",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd HH:mm",
+        "yyyy-MM-dd HH",
+        "yyyy-MM-dd"
     };
+    
+    private static final ReusableObjectCache<SimpleDateFormat>[] CACHED_DATE_FORMAT_PARSERS
+       = new ReusableObjectCache[SUPPORTED_DATE_FORMATS.length];
+    
+    static {
+        // Create parser caches for each date format (maximum capacity of 5 instances per format)
+        for (int i=0; i<CACHED_DATE_FORMAT_PARSERS.length; i++) {
+            CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(5);
+        }
+    }
 
     public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
 
@@ -203,27 +214,34 @@ public class FieldValueMapperImpl implements FieldValueMapper {
             try {
                 long l = Long.parseLong(stringValue);
                 return FieldDataEncoder.encodeDateValueToString(l);
-            } catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) { // Failed to parse "long" format, ignore.
             }
 
             Date d = null;
-            for (int i = 0; i < CACHED_DATE_FORMATS.length; i++) {
-                SimpleDateFormat formatter = (SimpleDateFormat) CACHED_DATE_FORMATS[i]
-                        .getInstance();
+            for (int i=0; i<SUPPORTED_DATE_FORMATS.length; i++) {
+                SimpleDateFormat formatter = CACHED_DATE_FORMAT_PARSERS[i].getInstance();
+                if (formatter == null){
+                    formatter = new SimpleDateFormat(SUPPORTED_DATE_FORMATS[i]);
+                }
+                
                 try {
                     d = formatter.parse(stringValue);
                     break;
                 } catch (Exception e) {
+                    // Ignore failed parsing attempt
                 } finally {
-                    CACHED_DATE_FORMATS[i].putInstance(formatter);
+                    // Cache the constructed date parser for re-use
+                    CACHED_DATE_FORMAT_PARSERS[i].putInstance(formatter);
                 }
             }
+            
             if (d == null) {
                 throw new ValueFormatException(
                         "Unable to encode date string value '" + stringValue
                                 + "' to index field value representation");
             }
 
+            // Finally, create encoded index field representation of the parsed date.
             return FieldDataEncoder.encodeDateValueToString(d.getTime());
 
         case INT:
@@ -410,10 +428,9 @@ public class FieldValueMapperImpl implements FieldValueMapper {
         return FieldDataEncoder.decodeIntegerFromBinary(f.binaryValue());
     }
     
-
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
-
+    
 }

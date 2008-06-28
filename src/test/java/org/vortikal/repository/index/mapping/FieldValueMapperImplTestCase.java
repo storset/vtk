@@ -62,7 +62,7 @@ public class FieldValueMapperImplTestCase extends TestCase {
                 "2005-10-10 14:22:00 +0100", "2005-10-10 14:22:00",
                 "2005-10-10 14:22", "2005-10-10 14", "2005-10-10" };
 
-        for (int i = 0; i < dateFormats.length; i++) {
+        for (int i = 0; i < dateStrings.length; i++) {
             try {
                 this.fieldValueMapper.encodeIndexFieldValue(dateStrings[i],
                         PropertyType.Type.TIMESTAMP, false);

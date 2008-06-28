@@ -32,8 +32,8 @@ package org.vortikal.util.cache;
 
 
 /**
- * Defines an interface to a cache that creates instances of reusable objects
- * as necessary and allows them to be put back for later re-use.
+ * Defines an interface to a cache of of reusable objects.
+ * Allows them to be put back for later re-use.
  * 
  * The motivation behind this type of cache is to efficiently re-use instances
  * of types that are not thread safe, but frequently needed in multithreaded code
@@ -42,29 +42,33 @@ package org.vortikal.util.cache;
  * @author oyviste
  *
  */
-public interface ReusableObjectCache {
+public interface ReusableObjectCache<T> {
 
     /**
      * Get an object instance from the cache. If the cache
-     * is empty, a new instance will be created.
+     * is empty, <code>null</code> will be returned, and the caller must construct
+     * a new instance.
      * 
-     * It should never return the same instance twice, if instances haven't 
-     * been put back with {@link #putInstance(Object)}. Therefore, it should be
+     * It should never return the same instance twice, iff the instance has never been 
+     * been put back twice {@link #putInstance(Object)}. Therefore, it should be
      * safe to use from multithreaded code for object types that aren't themselves
      * thread safe.
      * 
-     * @return An object instance
+     * @return An instance of T, or <code>null</code> if the cache is empty.
      */
-    public Object getInstance();
+    public T getInstance();
     
     /**
-     * Put an instance back into the cache after usage. This allows it to be returned later
+     * Put an instance into the cache. This allows it to be returned later
      * by {@link #getInstance()}, possibly avoiding the need to create a new object.
+     * Caller is responsible for not putting in the same instance twice. If the
+     * cache is full, the instance will be discarded, and the method will return false.
      * 
-     * @param o The instance to put back. Only instances obtained by 
-     *          {@link #getInstance()} should be used here.
+     * @param obj The instance to put back into the cache.
+     * @return <code>true</code> if the object was put into the cache, <code>false</code>
+     *         if cache was already full.
      */
-    public void putInstance(Object o);
+    public boolean putInstance(T obj);
     
     /**
      * Get current number of instances in cache.

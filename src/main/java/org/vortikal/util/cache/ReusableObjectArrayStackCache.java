@@ -37,48 +37,45 @@ package org.vortikal.util.cache;
  * {@link #putInstance(Object)}. It has a maximum capacity which can
  * optionally be set using constructor {@link #AbstractReusableObjectStackCache(int)}.  
  *  
- * Subclasses should override method {@link #createNewInstance()}.
- * 
  * @see org.vortikal.util.cache.ReusableObjectCache
  * 
  * @author oyviste
  */
-public abstract class AbstractReusableObjectArrayStackCache implements ReusableObjectCache {
+public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> {
 
     public static final int DEFAULT_CAPACITY = 10;
     
     private int top = -1;
-    private Object[] stack;
+    private T[] stack;
     
     /**
      * Construct an instance with a default maximum capacity
      *
      */
-    public AbstractReusableObjectArrayStackCache() {
-        this.stack = new Object[DEFAULT_CAPACITY];
+    public ReusableObjectArrayStackCache() {
+        this.stack = (T[]) new Object[DEFAULT_CAPACITY];
     }
 
     /**
      * Construct an instance with a configurable maximum capacity
      * @param capacity
      */
-    public AbstractReusableObjectArrayStackCache(int capacity) {
-        this.stack = new Object[capacity > 0 ? capacity : DEFAULT_CAPACITY];
+    public ReusableObjectArrayStackCache(int capacity) {
+        this.stack = (T[]) new Object[capacity > 0 ? capacity : DEFAULT_CAPACITY];
     }
     
     /**
      * @see org.vortikal.util.cache.ReusableObjectCache#getInstance()
      */
-    public final Object getInstance() {
-        Object object = pop();
-        return object != null ? object : createNewInstance();
+    public final T getInstance() {
+        return pop();
     }
     
     /**
      * @see org.vortikal.util.cache.ReusableObjectCache#putInstance(Object)
      */
-    public final void putInstance(Object object) {
-        push(object);
+    public final boolean putInstance(T object) {
+        return push(object);
     }
     
     /**
@@ -88,30 +85,24 @@ public abstract class AbstractReusableObjectArrayStackCache implements ReusableO
         return this.top + 1;
     }
     
-    private final synchronized Object pop() {
+    private final synchronized T pop() {
         if (this.top == -1) {
-            return null;
+            return null; // Cache empty
         }
         // Return instance at the top
-        Object object = this.stack[this.top];
+        T object = this.stack[this.top];
         this.stack[this.top--] = null;
         return object;
     }
 
-    private final synchronized void push(Object object) {
+    private final synchronized boolean push(T object) {
         if (this.top == this.stack.length-1) {
             // Cache full
-            return;
+            return false;
         }
         // Add at the top
         this.stack[++this.top] = object;
+        return true;
     }
-    
-    /**
-     * Create a new instance of the desired type. Must be overridden by
-     * subclasses.
-     * 
-     * @return
-     */
-    protected abstract Object createNewInstance();
+ 
 }

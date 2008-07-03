@@ -19,6 +19,12 @@
       </list>
     </property>
     <property name="handler" ref="defaultBrowseHandler" />
+    <property name="attributes">
+      <map>
+        <entry key="foo" value="bar" />
+        <entry key-ref="manage.templateServiceAttribute" value="browse.html" />
+      </map>
+    </property>
   </bean>
 
   <bean id="createLinkToResourceService" class="org.vortikal.web.service.ServiceImpl">
@@ -43,23 +49,27 @@
 
   <!-- BROWSE view resolver -->
 
-  <bean id="browseViewResolver" 
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="browseViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="browse" value-ref="browseView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="browseViewWrapper" />
+
+    <!--property name="viewWrapper" ref="browseViewWrapper" /-->
   </bean>
 
 
+
   <!-- BROWSE views -->
+        <!--
 
   <bean id="browseViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="decorators">
       <list>
+
+        <ref bean="manage.templateDecorator" />
         <bean class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
           <property name="view" ref="browseHeadView"/>
         </bean>
@@ -83,12 +93,86 @@
       </list>
     </property>
   </bean>
+        -->
 
   <bean id="browseView" parent="freemarkerView">
     <property name="url" value="pages/browse.ftl" />
+
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="browseBreadCrumbProvider" />
+        <ref bean="browseUrlProvider" />
+        <ref bean="browseMenuProvider" /> 
+        <ref bean="browseCollectionListingProvider" />
+        <ref bean="browseHtmlTitleProvider" />
+        <ref bean="resourceTitleProvider" />
+      </list>
+    </property>
   </bean>
 
 
+  <bean id="browse.globalMenuComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.browseNamespace" />
+    <property name="name" value="global-menu" />
+    <property name="description" value="Displays the browse global menu" />
+    <property name="view" ref="browse.globalMenuView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="browse.globalMenuView" parent="freemarkerView">
+    <property name="url" value="system/global-menu.ftl" />
+  </bean>
+
+  <bean id="browse.cssComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.browseNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts the default browse CSS stylesheets" />
+    <property name="view" ref="browse.cssView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="browse.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/browse.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="browse.javascriptComponent" 
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.browseNamespace" />
+    <property name="name" value="javascript" />
+    <property name="description" value="Inserts the default browse javascript references" />
+    <property name="view" ref="browse.javascriptView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="browse.javascriptView" parent="freemarkerView">
+    <property name="url" value="system/javascript.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${jsBaseURL}/browse.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <!--
   <bean id="browseHeadView" parent="freemarkerView">
     <property name="url" value="layouts/head.ftl" />
     <property name="attributesMap">
@@ -121,6 +205,7 @@
   <bean id="browseFooterView" parent="freemarkerView">
     <property name="url" value="layouts/footer-without-tabs.ftl" />
   </bean>
+  -->
 
 
 

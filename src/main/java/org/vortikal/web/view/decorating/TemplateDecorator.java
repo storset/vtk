@@ -80,6 +80,10 @@ public class TemplateDecorator implements Decorator {
         throws Exception, UnsupportedEncodingException, IOException {
 
         DecorationDescriptor descriptor = (DecorationDescriptor) request.getAttribute(DECORATION_DESCRIPTOR_REQ_ATTR);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Resolved decorator descriptor for request " 
+                    + request + ": " + descriptor);
+        }
         if (descriptor == null || !descriptor.decorate()) {
             return;
         }
@@ -93,9 +97,6 @@ public class TemplateDecorator implements Decorator {
 
         Template template = descriptor.getTemplate();
         if (template == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No template resolved for request " + request);
-            }
             replaceContentFromPage(content, html, descriptor.tidy());
             return;
         }
@@ -111,7 +112,7 @@ public class TemplateDecorator implements Decorator {
                          + " using template '" + template + "'");
         }
 
-        content.setContent(template.render(html, request));
+        content.setContent(template.render(html, request, model));
         if (descriptor.tidy()) {
             tidyContent(content);
         }

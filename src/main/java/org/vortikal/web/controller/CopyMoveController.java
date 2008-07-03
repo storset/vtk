@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.web.Message;
+import org.vortikal.web.RequestContext;
 
 /**
  * A controller stores the Uri of the resources the user has selected for
@@ -112,7 +114,9 @@ public class CopyMoveController implements Controller {
 	    		request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
 	    	}		
 	    	
-	    	model.put("infoMessage", "copyMove." + sessionBean.getAction() + ".header");
+	    	RequestContext requestContext = RequestContext.getRequestContext();
+	    	String msgCode = "copyMove." + sessionBean.getAction() + ".header";
+	    	requestContext.addInfoMessage(new Message(msgCode));
 	    	return new ModelAndView(this.viewName, model);
     }
     

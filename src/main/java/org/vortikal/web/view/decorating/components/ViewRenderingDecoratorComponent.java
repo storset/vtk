@@ -52,6 +52,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     
     private View view;
     private Set<String> exposedParameters = new HashSet<String>();
+    private boolean exposeMvcModel = false;
 
     @Required public void setView(View view) {
         this.view = view;
@@ -61,9 +62,16 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         this.exposedParameters = exposedParameters;
     }
 
+    public void setExposeMvcModel(boolean exposeMvcModel) {
+        this.exposeMvcModel = exposeMvcModel;
+    }
+
     public final void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         Map<Object, Object> model = new HashMap<Object, Object>();
+        if (this.exposeMvcModel) {
+            model.putAll(request.getMvcModel());
+        }
         processModel(model, request, response);
         renderView(model, request, response);
     }
@@ -147,5 +155,4 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
     protected Map<String, String> getParameterDescriptionsInternal() {
         return null;
     }
-    
 }

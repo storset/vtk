@@ -66,6 +66,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     private static Log logger = LogFactory.getLog(ComponentHandlingNodeFilter.class);
 
     private Map<String, DecoratorComponent> ssiDirectiveComponentMap;
+    private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
     private TemplateParser contentComponentParser;
     private boolean parseAttributes = false;
@@ -75,11 +76,14 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         this.ssiDirectiveComponentMap = ssiDirectiveComponentMap;
     }
     
+    public void setAvailableComponentNamespaces(Set<String> availableComponentNamespaces) {
+        this.availableComponentNamespaces = availableComponentNamespaces;
+    }
+    
     public void setProhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
         this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
     
-
     public void setContentComponentParser(TemplateParser contentComponentParser) {
         this.contentComponentParser = contentComponentParser;
     }
@@ -221,13 +225,18 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
 
             Map<String, Object> parameters = invocation.getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                null, servletRequest, parameters, doctype, locale);
+                null, servletRequest, new HashMap<Object, Object>(), 
+                parameters, doctype, locale);
             DecoratorResponseImpl response = new DecoratorResponseImpl(
                 doctype, locale, "utf-8");
             String result = null;
             try {
                 DecoratorComponent component = invocation.getComponent();
-                if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
+                if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
+                		&& !this.availableComponentNamespaces.contains("*")) {
+                    result = "Invalid component reference: " + component.getNamespace()
+                    + ":" + component.getName();
+                } else if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
                      result = "Invalid component reference: " + component.getNamespace()
                          + ":" + component.getName();
                 } else {

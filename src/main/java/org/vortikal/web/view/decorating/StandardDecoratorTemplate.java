@@ -31,6 +31,7 @@
 package org.vortikal.web.view.decorating;
 
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -65,14 +66,14 @@ public class StandardDecoratorTemplate implements Template {
         compile();
     }
 
-    public String render(HtmlPage html, HttpServletRequest request) throws Exception {
+    public String render(HtmlPage html, HttpServletRequest request,
+                       Map<Object, Object> model) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
         
         StringBuilder sb = new StringBuilder();
-
         for (ComponentInvocation fragment: this.fragments) {
             try {
                 String doctype = html.getDoctype();
@@ -83,7 +84,7 @@ public class StandardDecoratorTemplate implements Template {
                 Locale locale = 
                     new org.springframework.web.servlet.support.RequestContext(request).getLocale();
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    html, request, fragment.getParameters(), doctype, locale);
+                    html, request, model, fragment.getParameters(), doctype, locale);
 
                 String chunk = renderComponent(fragment.getComponent(), decoratorRequest);
                 if (logger.isDebugEnabled()) {
@@ -124,9 +125,11 @@ public class StandardDecoratorTemplate implements Template {
     
 
     private synchronized void compile() throws Exception {
-        if (this.lastModified == templateSource.getLastModified())
+        if (this.fragments != null 
+                && (this.lastModified == templateSource.getLastModified())) {
             return;
-
+        }
+        
         this.fragments = this.parser.parseTemplate(
             this.templateSource.getTemplateReader());
 

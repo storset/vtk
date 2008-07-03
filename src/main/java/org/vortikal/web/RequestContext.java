@@ -30,11 +30,16 @@
  */
 package org.vortikal.web;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.service.Service;
 import org.vortikal.util.repository.URIUtil;
+import org.vortikal.web.service.Service;
 
 
 /**
@@ -54,6 +59,8 @@ public class RequestContext {
     private final String currentCollection;
     private final String indexFileURI;
     private final boolean isIndexFile;
+    private List<Message> infoMessages = new ArrayList<Message>();
+    private List<Message> errorMessages = new ArrayList<Message>();
     
     /**
      * Creates a new request context.
@@ -164,7 +171,27 @@ public class RequestContext {
         return this.indexFileURI;
     }
     
+    public void addInfoMessage(Message msg) {
+        if (msg == null) {
+            throw new IllegalArgumentException("Message cannot be null");
+        }
+        this.infoMessages.add(msg);
+    }
 
+    public List<Message> getInfoMessages() {
+        return Collections.unmodifiableList(this.infoMessages);
+    }
+    
+    public void addErrorMessage(Message msg) {
+        if (msg == null) {
+            throw new IllegalArgumentException("Message cannot be null");
+        }
+        this.errorMessages.add(msg);
+    }
+
+    public List<Message> getErrorMessages() {
+        return Collections.unmodifiableList(this.errorMessages);
+    }
 
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getName());

@@ -67,6 +67,7 @@
     <property name="attributes">
       <map>
         <entry key="localeResolver" value-ref="manageLocaleResolver" />
+        <entry key-ref="manage.templateServiceAttribute" value="admin.html" />
       </map>
     </property>
   </bean>
@@ -712,17 +713,6 @@
     <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
   </bean>
 
-  <!--bean id="indexFileMessageProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
-    <description>
-      This provider depends on a 'resource' entry being present in the
-      model (use for example with the ResourceServiceURLController).
-    </description>
-    <property name="resourceInModelKey" value="childResource" />
-    <property name="modelName" value="tabMessage" />
-    <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
-  </bean-->
-
   <!-- MANAGE controllers -->
 
   
@@ -1070,7 +1060,7 @@
   <!-- MANAGE views -->
 
   <bean id="adminViewResolver" 
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+        parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="manageCollectionListing" 
@@ -1091,34 +1081,7 @@
                value-ref="previewFallbackView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="manageViewWrapper" />
-  </bean>
-
-  <bean id="manage.plainViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
-    <property name="views">
-      <map>
-        <entry key="manage.refreshLockView"
-               value-ref="manage.refreshLockView" />
-      </map>
-    </property>
-  </bean>
-
-  <!-- Manage wrapping -->
-
-  <bean id="manageViewWrapper" 
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <description>
-      This wrapper wraps manage views with the manage view layout
-      items. It uses three filters for head, header and footer
-    </description>
-    <property name="staticHeaders">
-      <map>
-        <entry key="Cache-Control" value="no-cache, must-revalidate" />
-        <entry key="Expires" value="0" />
-      </map>
-    </property>
-    <property name="decorators" ref="defaultManageDecorators" />
+    <!--
     <property name="referenceDataProviders">
       <list>
         <ref bean="leaveAdminLinkProvider" />
@@ -1136,10 +1099,21 @@
         <ref bean="adminHtmlTitleProvider" />
 
         <ref bean="expiresSecProvider" />
-
       </list>
     </property>
+    -->
   </bean>
+
+  <bean id="manage.plainViewResolver"
+        class="org.vortikal.web.view.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manage.refreshLockView"
+               value-ref="manage.refreshLockView" />
+      </map>
+    </property>
+  </bean>
+
 
   <bean id="expiresSecProvider"
         class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
@@ -1157,13 +1131,332 @@
     </property>
   </bean>
 
-  <bean id="defaultManageDecorators" class="org.springframework.beans.factory.config.ListFactoryBean">
-    <property name="sourceList">
+  <bean id="manage.titleComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="title" />
+    <property name="description" value="Inserts the admin title" />
+    <property name="view" ref="manage.titleView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.titleView" parent="freemarkerView">
+    <property name="url" value="system/title.ftl" />
+  </bean>
+
+  <bean id="manage.cssComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts the default admin CSS stylesheets" />
+    <property name="view" ref="manage.cssView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/admin.css</value>
+            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/tabs.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="manage.javascriptComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="javascript" />
+    <property name="description" value="Inserts the default admin javascript references" />
+    <property name="view" ref="manage.javascriptView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.javascriptView" parent="freemarkerView">
+    <property name="url" value="system/javascript.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${jsBaseURL}/browser-sniffer.js</value>
+            <value>${jsBaseURL}/admin-enhancements.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="manage.breadcrumbComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="breadcrumb" />
+    <property name="description" value="Displays the admin breadcrumb trail" />
+    <property name="view" ref="manageBreadcrumbView" />
+  </bean>
+
+  <bean id="manageBreadcrumbView" parent="freemarkerView">
+    <property name="url" value="layouts/breadcrumb.ftl" />
+    <property name="referenceDataProviders">
       <list>
-        <ref bean="manageHeadDecorator" />
-        <ref bean="manageHeaderDecorator" />
-        <ref bean="manageFooterDecorator" />
+        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+              parent="requestLocalRepositoryAware">
+          <description>
+            Breadcrumb provider that generates links to the manage service
+          </description>
+          <property name="breadcrumbName" value="breadcrumb" />
+          <property name="service" ref="manageService"/>
+        </bean>
       </list>
+    </property>
+  </bean>
+
+  <bean id="manage.leaveAdminComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="leave-admin" />
+    <property name="description" value="Displays a link to get out of the admin service" />
+    <property name="view" ref="manage.leaveAdminView" />
+  </bean>
+
+  <bean id="manage.leaveAdminView" parent="freemarkerView">
+    <property name="url" value="system/leave-admin.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="leaveAdminLinkProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.principalInfoComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="principal-info" />
+    <property name="description" value="Displays prinncipal information and logout URL" />
+    <property name="view" ref="manage.principalInfoView" />
+  </bean>
+
+  <bean id="manage.principalInfoView" parent="freemarkerView">
+    <property name="url" value="system/principal-info.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.repositoryIdComponent" class="org.vortikal.web.view.decorating.components.StaticTextComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="repository-id" />
+    <property name="text" value="${repositoryID}" />
+  </bean>
+
+  <bean id="manage.helpComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="help" />
+    <property name="description" value="Displays a help link for the admin service" />
+    <property name="view" ref="manage.helpView" />
+  </bean>
+
+  <bean id="manage.helpView" parent="freemarkerView">
+    <property name="url" value="system/help.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="helpURL" value="${helpURL}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="manage.localizedTextComponent"
+        class="org.vortikal.web.view.decorating.components.LocalizedTextComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="localized-text" />
+  </bean>
+
+
+  <bean id="manage.lockInfoComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="lock-info" />
+    <property name="description" value="Displays lock information" />
+    <property name="view" ref="manageLockInfoView" />
+  </bean>
+
+  <bean id="manageLockInfoView" parent="freemarkerView">
+    <property name="url" value="layouts/lock.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="lockUnlockActionsProvider" />            
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.messagesComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="messages" />
+    <property name="description" value="Displays the admin messages" />
+    <property name="view" ref="manage.messagesView" />
+  </bean>
+
+  <bean id="manage.messagesView" parent="freemarkerView">
+    <property name="url" value="system/messages.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.resourceHeaderComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="resource-header" />
+    <property name="description" value="Displays the resource name or repository ID for root" />
+    <property name="view" ref="manage.resourceHeaderView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.resourceHeaderView" parent="freemarkerView">
+    <property name="url" value="system/resource-header.ftl" />
+    <property name="referenceDataProviders">
+      <ref bean="resourceContextProvider" />
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="repositoryID" value="${repositoryID}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="manage.globalMenuComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="global-menu" />
+    <property name="description" value="Displays the admin global menu" />
+    <property name="view" ref="manage.globalMenuView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.globalMenuView" parent="freemarkerView">
+    <property name="url" value="system/global-menu.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="resourceMenuProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="manage.tabsComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="tabs" />
+    <property name="description" value="Displays the default admin tabs" />
+    <property name="view" ref="manageTabView" />
+  </bean>
+
+  <bean id="manageTabView" parent="freemarkerView">
+    <property name="url" value="layouts/tabs.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="tabsProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="manage.tabMenuComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="tab-menu" />
+    <property name="description" value="Displays the admin tab menu" />
+    <property name="view" ref="manage.tabMenuView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.tabMenuView" parent="freemarkerView">
+    <property name="url" value="system/tab-menu.ftl" />
+  </bean>
+
+
+  <bean id="manage.tabMessageComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="tab-message" />
+    <property name="description" value="Displays the admin tab message" />
+    <property name="view" ref="manage.tabMessageView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.tabMessageView" parent="freemarkerView">
+    <property name="url" value="system/tab-message.ftl" />
+  </bean>
+
+  <bean id="manage.parentNavigationComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="parent-navigation" />
+    <property name="description" value="Displays the parent collection URL" />
+    <property name="view" ref="manage.parentNavigationView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.parentNavigationView" parent="freemarkerView">
+    <property name="url" value="system/parent-navigation.ftl" />
+  </bean>
+
+  <bean id="manage.tabHelpComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="tab-help" />
+    <property name="description" value="Displays a tab help message" />
+    <property name="view" ref="manage.tabHelpView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.tabHelpView" parent="freemarkerView">
+    <property name="url" value="system/tab-help.ftl" />
+  </bean>
+
+
+  <bean id="manage.versionInfoComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="version-info" />
+    <property name="description" value="Displays version information" />
+    <property name="view" ref="manage.versionInfoView" />
+  </bean>
+
+  <bean id="manage.versionInfoView" parent="freemarkerView">
+    <property name="url" value="system/version-info.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="versionProvider" /> 
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="manage.languageSelectComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="language-select" />
+    <property name="description" value="Displays the admin language" />
+    <property name="view" ref="manage.languageSelectView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.languageSelectView" parent="freemarkerView">
+    <property name="url" value="system/language-select.ftl" />
+    <property name="referenceDataProviders">
+      <ref bean="switchLocaleActionsProvider" />
     </property>
   </bean>
 
@@ -1174,6 +1467,7 @@
     <property name="service" ref="manageService" />
   </bean>
 
+
   <bean id="manageHeadDecorator"
         class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
     <description>
@@ -1182,6 +1476,7 @@
     </description>
     <property name="view" ref="manageHeadView"/>
   </bean>
+
 
   <bean id="manage.refreshLockURLProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="repository" ref="repository" />
@@ -1217,6 +1512,7 @@
     <property name="url" value="layouts/head.ftl" />
   </bean>
 
+
   <bean id="manageHeaderDecorator"
         class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
     <description>
@@ -1226,6 +1522,7 @@
     </description>
     <property name="view" ref="manageHeaderView"/>
   </bean>
+
 
   <bean id="manage.refreshLockView" parent="freemarkerView">
     <property name="url" value="layouts/lock-refresh-response.ftl" />
@@ -1240,6 +1537,7 @@
     <property name="url" value="layouts/header.ftl" />
   </bean>
 
+
   <bean id="manageFooterDecorator"
         class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
     <description>
@@ -1249,6 +1547,7 @@
     </description>
     <property name="view" ref="manageFooterView"/>
   </bean>
+
 
   <bean id="manageFooterView" parent="freemarkerView">
     <property name="url" value="layouts/footer.ftl" />
@@ -1265,6 +1564,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="iframeJSProvider" />
+        <ref bean="resourceContextProvider" />
       </list>
     </property>
   </bean>
@@ -1286,8 +1586,8 @@
     <property name="url" value="pages/permissions.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="adminCSSProvider" />
         <ref bean="adminACLProvider" />
+        <ref bean="resourceContextProvider" />
       </list>
     </property>
   </bean>
@@ -1313,8 +1613,8 @@
     <property name="url" value="pages/about.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <ref bean="resourceContextProvider" />
         <ref bean="aboutResourceHandler" /> 
-        <ref bean="adminCSSProvider" />
         <ref bean="resourceDetailProvider" />
       </list>
     </property>
@@ -1324,10 +1624,13 @@
     <property name="url" value="pages/manage-collectionlisting.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="adminCSSProvider" />
         <ref bean="parentLinkProvider" /> 
         <ref bean="collectionMenuProvider" /> 
         <ref bean="manageCollectionlistingProvider" />
+
+        <ref bean="resourceContextProvider" />
+        <ref bean="collectionMenuProvider" />
+
       </list>
     </property>
   </bean>
@@ -1341,20 +1644,6 @@
 
   <!-- Manage specific providers -->
 
-  <bean id="adminCSSProvider"
-        class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-    <property name="modelDataMap">
-      <map>
-        <entry key="cssURLs"> 
-          <list>
-            <value>${themeBaseURL}/admin.css</value>
-            <value>${themeBaseURL}/basic.css</value>
-            <value>${themeBaseURL}/tabs.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
 
   <bean id="iframeJSProvider"
         class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
@@ -1582,7 +1871,6 @@
   <bean id="standardManageReferenceDataProviders" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <ref bean="adminCSSProvider" />
         <ref bean="leaveAdminLinkProvider" />
         <ref bean="tabsProvider" />
         <ref bean="resourceContextProvider" />
@@ -1617,7 +1905,7 @@
         <entry key="defaultManageError" value-ref="defaultManageErrorView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="manageViewWrapper" />
+    <property name="viewWrapper" ref="system.viewWrapper" />
   </bean>
 
   <bean id="defaultManageErrorView" parent="freemarkerView">

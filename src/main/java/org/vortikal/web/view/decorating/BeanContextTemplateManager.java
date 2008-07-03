@@ -46,7 +46,13 @@ public class BeanContextTemplateManager
     
 
     public Template getTemplate(String name) throws Exception {
-        return (Template) this.applicationContext.getBean(name, Template.class);
+        try {
+            Object bean = this.applicationContext.getBean(name, Template.class);
+            if (bean instanceof Template) {
+                return (Template) bean;
+            }
+        } catch (Throwable t) { }
+        return null;
     }
 }
 

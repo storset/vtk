@@ -66,6 +66,7 @@
         <value>samp</value>
         <value>kbd</value>
         <value>var</value>
+        <value>iframe</value>
       </set>
     </property>
   </bean>
@@ -112,9 +113,11 @@
         <entry key="include" value-ref="decorating.includeComponent" />
       </map>
     </property>
-    <property name="prohibitedComponentNamespaces">
+    <property name="availableComponentNamespaces">
       <set>
-        <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.cssNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.resourceNamespace" />
       </set>
     </property>
     <property name="contentComponentParser" ref="decorating.defaultTemplateParser" />
@@ -165,14 +168,26 @@
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
+
   <bean name="decorating.defaultComponentResolver"
-        class="org.vortikal.web.view.decorating.BeanContextComponentResolver" />
+        class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+    <property name="availableComponentNamespaces">
+      <set>
+        <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.resourceNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.cssNamespace" />
+      </set>
+    </property>
+  </bean>
 
   <bean name="decorating.documentComponentResolver"
         class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
-    <property name="prohibitedComponentNamespaces">
+    <property name="availableComponentNamespaces">
       <set>
-        <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.resourceNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.cssNamespace" />
       </set>
     </property>
   </bean>

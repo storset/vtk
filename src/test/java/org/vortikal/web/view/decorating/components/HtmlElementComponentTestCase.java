@@ -76,7 +76,7 @@ public class HtmlElementComponentTestCase extends TestCase {
     public void testSimpleBodyParameters() throws Exception {
         HtmlElementComponent component = new HtmlElementComponent();
         
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<Object, Object> parameters = new HashMap<Object, Object>();
         parameters.put("select", "html.head");
         parameters.put("enclosed", "false");
 

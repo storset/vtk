@@ -172,7 +172,8 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("parentURI", parent);
         resourceContextModel.put("currentServiceName", currentService.getName());
         resourceContextModel.put("repositoryId", this.repository.getId());
-
+        resourceContextModel.put("requestContext", requestContext);
+        
         model.put(this.modelName, resourceContextModel);
     }
 

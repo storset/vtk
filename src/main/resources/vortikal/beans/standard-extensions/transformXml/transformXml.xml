@@ -441,15 +441,14 @@
   </bean>
 
 
-  <bean id="transformXmlManageErrorViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="transformXmlManageErrorViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="manageXsltError" value-ref="manageXsltErrorView" />
         <entry key="manageXmlBuildError" value-ref="manageXmlBuildErrorView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="manageViewWrapper" />
+    <!--property name="viewWrapper" ref="manageViewWrapper" /-->
   </bean>
   
 

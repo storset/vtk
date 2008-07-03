@@ -17,6 +17,7 @@
       <map>
         <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
         <entry key="localeResolver" value-ref="manageLocaleResolver" />
+        <entry key-ref="manage.templateServiceAttribute" value="admin.html" />
       </map>
     </property>
     <property name="assertions">
@@ -33,9 +34,15 @@
     <property name="handlerInterceptors">
       <list>
         <ref bean="noCacheHandlerInterceptor" />
+        <ref bean="editTabHelpURLServiceInterceptor" />
       </list>
     </property>
     <property name="handler" ref="xmlEditHandler" />
+  </bean>
+
+  <bean id="editTabHelpURLServiceInterceptor"
+        class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers" ref="editTabHelpURLProvider" />
   </bean>
 
 
@@ -76,24 +83,24 @@
   </bean>
 
 
-  <bean id="xmledit.ViewResolver" parent="adminViewResolver">
+  <bean id="xmledit.ViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="edit" value-ref="editView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="editViewWrapper" />
+    <!--property name="viewWrapper" ref="editViewWrapper" /-->
   </bean>
 
+  <!-- Override only the decorator list: -->
+  <!--
   <bean id="editViewWrapper" parent="manageViewWrapper">
-    <!-- Override only the decorator list: -->
     <property name="decorators" ref="editDecorators" />
   </bean>
 
   <bean id="editDecorators" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
-        <!-- Same as defauleManageDecorators, plus one more: -->
         <ref bean="xmledit.headDecorator" />
         <ref bean="manageHeadDecorator" />
         <ref bean="manageHeaderDecorator" />
@@ -107,6 +114,8 @@
         class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
     <property name="view" ref="xmledit.pingView"/>
   </bean>
+  -->
+
 
   <bean id="xmledit.pingView" parent="freemarkerView">
     <property name="url" value="layouts/ping.ftl" />
@@ -145,8 +154,8 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="cssURLs" value-ref="editCSSURLs" />
-              <entry key="jsURLs" value-ref="editJSURLs" />
+              <entry key="serviceCssURLs" value-ref="editCSSURLs" />
+              <entry key="serviceJsURLs" value-ref="editJSURLs" />
             </map>
           </property>
         </bean>
@@ -158,8 +167,10 @@
   <bean id="editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
+        <!--
         <value>${themeBaseURL}/basic.css</value>
         <value>${themeBaseURL}/tabs.css</value>
+        -->
         <value>${themeBaseURL}/edit.css</value>
       </list>
     </constructor-arg>
@@ -168,7 +179,9 @@
   <bean id="editJSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
+        <!--
         <value>${jsBaseURL}/browser-sniffer.js</value>
+        -->
         <value>${jsBaseURL}/fixed.js</value>
       </list>
     </constructor-arg>

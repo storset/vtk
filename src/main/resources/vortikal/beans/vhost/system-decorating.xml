@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+  <bean id="decorating.manageNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="manage" />
+  </bean>
+
+  <bean id="decorating.browseNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="browse" />
+  </bean>
+
+
+  <bean id="system.decoratingViewResolver" 
+        class="org.vortikal.web.view.decorating.MappingViewResolver"
+        abstract="true">
+    <property name="viewWrapper" ref="system.viewWrapper" />
+  </bean>
+
+  <bean id="system.viewWrapper" 
+        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+    <property name="staticHeaders">
+      <map>
+        <entry key="Cache-Control" value="no-cache, must-revalidate" />
+        <entry key="Expires" value="0" />
+      </map>
+    </property>
+    <property name="decorators">
+      <list>
+        <ref bean="system.templateDecorator" />
+      </list>
+    </property>
+  </bean>
+
+
+    <bean id="system.templateDecorator"
+          class="org.vortikal.web.view.decorating.TemplateDecorator">
+      <property name="htmlParser" ref="decorating.htmlParser" />
+      <property name="decorationResolver" ref="system.decorationResolver" />
+      <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
+      <property name="tidyXhtml" value="false" />
+    </bean>
+
+    <bean id="system.decorationResolver"
+          class="org.vortikal.web.view.decorating.ServiceAttributeDecorationResolver">
+      <property name="attributeName" ref="manage.templateServiceAttribute" />
+      <property name="templateManager" ref="system.decoratorTemplateManager" />
+    </bean>
+
+    <bean id="manage.templateServiceAttribute" class="java.lang.String">
+      <constructor-arg type="java.lang.String" value="manage.decoratorTemplateAttribute" />
+    </bean>
+
+
+    <bean id="system.decoratorTemplateManager"
+          class="org.vortikal.web.view.decorating.StaticTemplateManager">
+      <property name="templateParser" ref="system.decoratorTemplateParser" />
+      <property name="uriPrefix" value="${manage.decoratorTemplatesLocation}" />
+      <property name="characterEncoding" value="utf-8" />
+    </bean>
+
+    <bean id="system.decoratorTemplateParser"
+          class="org.vortikal.web.view.decorating.DefaultTemplateParser">
+      <property name="componentResolver">
+        <bean name="system.decoratorComponentResolver"
+              class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+          <property name="availableComponentNamespaces">
+            <set>
+              <value>*</value>
+            </set>
+          </property>
+        </bean>
+      </property>
+    </bean>
+
+
+</beans>

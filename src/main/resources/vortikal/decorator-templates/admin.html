@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    ${manage:css}
+    ${manage:javascript}
+    ${document:element select=[html.head] exclude=[title]}
+    <title>${manage:title}</title>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="text">
+        <span class="hostname">${manage:repository-id}</span>
+        <span>${manage:localized-text code=[manage.bannerText]
+              default=[Administration of webdocuments]}</span>
+      </div>
+      <div class="menu">
+        ${manage:leave-admin} | ${manage:help} ${manage:principal-info}
+      </div>
+    </div>
+
+    <div class="body">
+      ${manage:breadcrumb}
+      ${manage:messages}
+      <div id="titleContainer" class="clear">
+        <div class="resource-title ${resource:property id=[type]}">  
+          <h1>${manage:resource-header}</h1>
+          ${manage:global-menu}
+          ${manage:lock-info}
+        </div>
+      </div>
+      ${manage:tabs}
+      <div id="main">
+        <div class="activeTab clear">
+          ${manage:parent-navigation}
+          ${manage:tab-message}
+          ${manage:tab-menu}
+          ${manage:tab-help}
+          <!-- Because IE will not enclose floated elements -->
+          <div style="clear:both"></div>
+        </div>
+        <div id="contents">
+          ${document:body}
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      ${manage:version-info}
+      ${manage:language-select}
+    </div>
+  </body>
+</html>

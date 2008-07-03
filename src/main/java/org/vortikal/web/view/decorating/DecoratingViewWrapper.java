@@ -229,7 +229,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
 
                 decorator.decorate(model, request, bufferedResponse, content);
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Ran content filter " + decorator);
+                    this.logger.debug("Invoked decorator: " + decorator);
                 }
             }
         }

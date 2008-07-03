@@ -32,6 +32,7 @@ package org.vortikal.web.view.decorating;
 
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,23 +41,62 @@ import org.vortikal.text.html.HtmlPage;
 
 /**
  * Represents a decorator request for a component.
- *
- * XXX: decide what objects should be exposed to the component: model,
- * servlet request, parameters?
  */
 public interface DecoratorRequest {
 
+    
+    /**
+     * Gets the HTML page currently being decorated.
+     * @return the HtmlPage object
+     */
     public HtmlPage getHtmlPage();
 
+    /**
+     * Gets the current servlet request
+     * @return the servlet request
+     */
     public HttpServletRequest getServletRequest();
+    
+    /**
+     * Gets the main MVC model of the current servlet request. 
+     * (Should generally not be needed.)
+     * @return the MVC model
+     */
+    public Map<Object, Object> getMvcModel();
 
+    /**
+     * Gets the request locale
+     * @return the request locale
+     */
     public Locale getLocale();
 
+    /**
+     * Gets the document type of the output page
+     * @return the doctype
+     */
     public String getDoctype();
 
+    /**
+     * Gets a named parameter for this 
+     * decorator component invocation.
+     * @param name the name of the parameter
+     * @return the parameter value (or <code>null</code> 
+     * if no such parameter exists)
+     */
     public Object getParameter(String name);
 
+    /**
+     * Gets a named string parameter for this 
+     * decorator component invocation.
+     * @param name the name of the parameter
+     * @return the parameter value, as a string
+     */
     public String getStringParameter(String name);
 
+    /**
+     * Gets the names of all invocation parameters 
+     * for this decorator component.
+     * @return an iterator over the parameter names
+     */
     public Iterator<String> getRequestParameterNames();
 }

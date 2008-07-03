@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,67 +30,42 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Required;
 
-public class URLTemplateSource implements TemplateSource {
+public class StaticTemplateManager implements TemplateManager {
 
-    private String url;
-    private String characterEncoding;
-
-    public URLTemplateSource() {}
+    private TemplateParser templateParser;
+    private String uriPrefix;
+    private String characterEncoding = "utf-8";
     
-    public URLTemplateSource(String url, String characterEncoding) {
-        this.url = url;
-        this.characterEncoding = characterEncoding;
+    private Map<String, Template> templatesMap = new ConcurrentHashMap<String, Template>();
+    
+    @Required public void setTemplateParser(TemplateParser templateParser) {
+        this.templateParser = templateParser;
     }
 
-    
-    public void setUrl(String url) {
-        this.url = url;
+    @Required public void setUriPrefix(String uriPrefix) {
+        this.uriPrefix = uriPrefix;
     }
-    
+
     public void setCharacterEncoding(String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
 
-    public long getLastModified() throws Exception {
-        if (this.url.startsWith("file://")) {
-            URL fileURL = new URL(this.url);
-            File file = new File(fileURL.getFile());
-            return file.lastModified();
-        }
-        return -1;
-    }
-    
-    public Reader getTemplateReader() throws Exception {
-        String encoding = (this.characterEncoding != null) ?
-            this.characterEncoding : System.getProperty("file.encoding");
+    public Template getTemplate(String name) throws Exception {
+        if (name == null) throw new IllegalArgumentException("Name cannot be null");
 
-        InputStream is = null;
-        
-        if (this.url.startsWith("classpath://")) {
-            String actualPath = url.substring("classpath://".length());
-            Resource resource = new ClassPathResource(actualPath);
-            is = resource.getInputStream();
-        } else {
-            is = new URL(this.url).openStream();
+        if (this.templatesMap.containsKey(name)) {
+            return this.templatesMap.get(name);
         }
-        return new InputStreamReader(is, encoding);
-    }
-    
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.getClass().getName());
-        sb.append(": [").append(this.url).append("]");
-        return sb.toString();
+        String uri = this.uriPrefix + "/" + name;
+        TemplateSource templateSource = new URLTemplateSource(uri, this.characterEncoding);
+        Template template = new StandardDecoratorTemplate(this.templateParser, templateSource);
+        this.templatesMap.put(name, template);
+        return template;
     }
 
 }
-

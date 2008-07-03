@@ -52,37 +52,43 @@ public class BeanContextComponentResolver
 
     private static Log logger = LogFactory.getLog(BeanContextComponentResolver.class);
     
-    private boolean initialized;
+    private volatile boolean initialized = false;
     private ApplicationContext applicationContext;
     private Map<String, DecoratorComponent> components = new HashMap<String, DecoratorComponent>();
+    private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
-
+    
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
-    public void setProhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
-        this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
+    public void setAvailableComponentNamespaces(Set<String> availableComponentNamespaces) {
+        this.availableComponentNamespaces = availableComponentNamespaces;
+    }
+
+    public void setInhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
+    	this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
     
-
     public void afterPropertiesSet() {
         if (this.applicationContext == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'applicationContext' not specified");
         }
+        if (this.availableComponentNamespaces == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'availableComponentNamespaces' not specified");
+        }
         if (this.prohibitedComponentNamespaces == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'prohibitedComponentNamespaces' not specified");
         }
-
     }
     
     public DecoratorComponent resolveComponent(String namespace, String name) {
         if (!this.initialized) {
             init();
         }
-
         DecoratorComponent component = this.components.get(namespace + ":" + name);
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved namespace: '" + namespace + "', name: '" + name
@@ -101,7 +107,9 @@ public class BeanContextComponentResolver
     
 
     private synchronized void init() {
-        @SuppressWarnings("unchecked")
+    	if (this.initialized) return;
+    	
+    	@SuppressWarnings("unchecked")
         Collection<DecoratorComponent> beans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 this.applicationContext, 
@@ -114,11 +122,19 @@ public class BeanContextComponentResolver
                 throw new IllegalStateException("Component " + component
                                                 + " has invalid namespace (NULL)");
             }
+            if (!this.availableComponentNamespaces.contains(component.getNamespace())) {
+            	if (!this.availableComponentNamespaces.contains("*")) {
+            		if (logger.isDebugEnabled()) {
+            			logger.debug("Component " + component + " not added.");
+                        continue;
+            		}
+            	}
+            }
             if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Component " + component + " not added. It has a prohibited namespace.");
-                }
-                continue;
+        		if (logger.isDebugEnabled()) {
+        			logger.debug("Component " + component + " not added (prohibited namespace).");
+        		}
+        		continue;
             }
             if (name == null) {
                 throw new IllegalStateException("Component " + component
@@ -128,7 +144,6 @@ public class BeanContextComponentResolver
             logger.info("Registering decorator component " + component);
             this.components.put(key, component);
         }
-        
         
         this.initialized = true;
     }

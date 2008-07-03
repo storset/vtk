@@ -120,26 +120,42 @@ public class DefaultTemplateParser implements TemplateParser {
         // namespace:name param1=[value] param2=[value]
         String componentRef = parseComponentRef(s);
         if (componentRef == null) {
-            return null;
+        	if (logger.isInfoEnabled()) {
+        		logger.info("Unable to parse component ref: '" + s + "'");
+        	}
+        	return null;
         }
         
         String namespace = parseComponentNamespace(componentRef);
+        if (namespace == null) {
+        	if (logger.isInfoEnabled()) {
+        		logger.info("Unable to parse component namespace from: '" + componentRef + "'");
+        	}
+        	return null;
+        }
         String name = parseComponentName(componentRef);
-        if (namespace == null || name == null) {
-            return null;
+        if (name == null) {
+        	if (logger.isInfoEnabled()) {
+        		logger.info("Unable to parse component name from: '" + componentRef + "'");
+        	}
+        	return null;
         }
 
         DecoratorComponent component = this.componentResolver.resolveComponent(
             namespace, name);
         if (component == null) {
-            logger.info("Unable to resolve component '" + namespace + "' : '" + name + "'");
-            return null;
+        	if (logger.isInfoEnabled()) {
+        		logger.info("Unable to resolve component '" + namespace + "' : '" + name + "'");
+        	}
+        	return null;
         } 
 
         LinkedHashMap<String, Object> parameters = splitParameterList(s);
         if (parameters == null) {
-            logger.info("Malformed parameter list in directive: '" + s + "'");
-            return null;
+        	if (logger.isInfoEnabled()) {
+        		logger.info("Malformed parameter list in directive: '" + s + "'");
+        	}
+        	return null;
         }
         return new ComponentInvocationImpl(component, new HashMap<String, Object>(parameters));
     }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,16 +28,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.view.decorating;
+package org.vortikal.web.view.decorating.components;
 
+import java.io.Writer;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.web.view.decorating.DecoratorRequest;
+import org.vortikal.web.view.decorating.DecoratorResponse;
 
-import org.vortikal.text.html.HtmlPage;
+public class StaticTextComponent extends AbstractDecoratorComponent 
+    implements InitializingBean {
 
-public interface Template {
+    private String text;
+    
+    public void render(DecoratorRequest request, DecoratorResponse response)
+        throws Exception {
+        Writer writer = response.getWriter();
+        writer.write(this.text);
+        writer.flush();
+        writer.close();
+    }
 
-    public String render(HtmlPage html, HttpServletRequest request,
-                       Map<Object, Object> model) throws Exception;
+    @Required 
+    public void setText(String text) {
+        this.text = text;
+    }
+    
+    @Override
+    protected String getDescriptionInternal() {
+        return "Displays the string: '" + this.text + "'";
+    }
+    
+    @Override
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        return map;
+    }
 }

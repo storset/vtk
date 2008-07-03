@@ -68,7 +68,6 @@
           <property name="modelName" value="managementStats" />
           <property name="groups" ref="managementStatsGroups" />
         </bean>
-        <ref bean="adminCSSProvider" />
       </list>
     </property>
   </bean>
@@ -262,7 +261,6 @@
     <property name="url" value="pages/repository-read-only.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="adminCSSProvider" />
         <bean id="repositoryReadOnlyMessageProvider"
               class="org.vortikal.web.referencedata.provider.RepositoryReadOnlyMessageProvider">
           <property name="modelName" value="message" />

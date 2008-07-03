@@ -27,6 +27,7 @@
   <import resource="view.xml" />
   <import resource="decorating.xml" />
   <import resource="decorator-components.xml" />
+  <import resource="system-decorating.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />
   <import resource="manage.xml" />

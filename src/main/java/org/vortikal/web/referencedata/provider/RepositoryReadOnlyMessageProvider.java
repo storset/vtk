@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Repository;
+import org.vortikal.web.Message;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
@@ -99,18 +101,13 @@ public class RepositoryReadOnlyMessageProvider
         }
     }
     
-
-
     @SuppressWarnings("unchecked")
-    public void referenceData(Map model, HttpServletRequest request)
-            throws Exception {
-        String message = null;
+    public void referenceData(Map model, HttpServletRequest request) {
+        RequestContext ctx = RequestContext.getRequestContext();
 
         if (this.repository.isReadOnly()) {
-            org.springframework.web.servlet.support.RequestContext springContext =
-                new org.springframework.web.servlet.support.RequestContext(request);
-            message = springContext.getMessage(this.messageKey, this.messageKey);
+            ctx.addInfoMessage(new Message(this.messageKey));
         }
-        model.put(this.modelName, message);
     }
+
 }

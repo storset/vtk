@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    ${browse:css}
+    ${browse:javascript}
+    ${document:element select=[html.head] exclude=[title]}
+    <title>Browse Yr Ass</title>
+  </head>
+  <body>
+
+    <div class="banner">
+      <div class="text">
+        <span class="hostname">${manage:repository-id}</span>
+        <span>${manage:localized-text code=[manage.bannerText]
+        default=[Administration of webdocuments]}</span>
+      </div>
+      <div class="menu">
+        <span class="close" style="padding-right: 15px;">
+          <a href="" onclick="window.close()">${manage:localized-text code=[default.window.close]
+        default=[close window]}</a></span>
+      </div>
+    </div>
+
+    <div class="body">
+      ${manage:breadcrumb}
+      <div id="titleContainer" class="clear">
+        <div class="resource-title ${resource:property id=[type]}">  
+          <h1>${resource:property id=[name]}</h1> 
+          
+          ${browse:global-menu}
+
+          <!--
+          <ul class="listMenu globalMenu">
+            <li class="createLinkToResourceService">
+              ${browse:create-link}
+            </li>
+          </ul>
+          -->
+        </div>
+      </div>
+      ${document:body}
+    </div>
+  </body>
+</html>

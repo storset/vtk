@@ -30,8 +30,10 @@
  */
 package org.vortikal.web.view.decorating.components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -45,14 +47,14 @@ import org.vortikal.text.htmlparser.HtmlPageParserImpl;
 public class MockStringDecoratorRequest implements DecoratorRequest {
 
     private HtmlPage page;
-    private Map<String, Object> parameters = new HashMap<String, Object>();
+    private Map<Object, Object> parameters = new HashMap<Object, Object>();
 
     public MockStringDecoratorRequest(String content) throws Exception {
         this(content, null);
     }
     
 
-    public MockStringDecoratorRequest(String content, Map<String, Object> parameters) throws Exception {
+    public MockStringDecoratorRequest(String content, Map<Object, Object> parameters) throws Exception {
         if (parameters != null) {
             this.parameters = parameters;
         }
@@ -77,6 +79,10 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
     public HttpServletRequest getServletRequest() {
         throw new IllegalStateException("Not implemented");
     }
+    
+    public Map<Object, Object> getMvcModel() {
+        return new HashMap<Object, Object>();
+    }
         
     public Object getParameter(String name) {
         return this.parameters.get(name);
@@ -87,6 +93,10 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
     }
         
     public Iterator<String> getRequestParameterNames() {
-        return this.parameters.keySet().iterator();
+        List<String> l = new ArrayList<String>();
+        for (Object o: this.parameters.keySet()) {
+            l.add((String) o);
+        }
+        return l.iterator();
     }
 }

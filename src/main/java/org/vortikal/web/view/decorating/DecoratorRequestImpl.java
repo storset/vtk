@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -46,6 +47,8 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private HttpServletRequest servletRequest;
 
+    private Map<Object, Object> mvcModel;
+    
     private Map<String, Object> decoratorParameters;
     
     private String doctype;
@@ -54,10 +57,12 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     
     public DecoratorRequestImpl(HtmlPage html,
                                 HttpServletRequest servletRequest,
+                                Map<Object, Object> mvcModel,
                                 Map<String, Object> decoratorParameters,
                                 String doctype, Locale locale) {
         this.html = html;
         this.servletRequest = servletRequest;
+        this.mvcModel = mvcModel;
         this.decoratorParameters = decoratorParameters;
         this.doctype = doctype;
         this.locale = locale;
@@ -69,6 +74,10 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
+    }
+
+    public Map<Object, Object> getMvcModel() {
+        return Collections.unmodifiableMap(this.mvcModel);
     }
     
     public Object getParameter(String name) {

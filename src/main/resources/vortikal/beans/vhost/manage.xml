@@ -1571,6 +1571,11 @@
   
   <bean id="previewTextView" parent="freemarkerView">
     <property name="url" value="pages/preview-text.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
   </bean>
   
   <bean id="previewFallbackView" parent="freemarkerView">

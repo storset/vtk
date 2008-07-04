@@ -277,8 +277,8 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             Value defaultValue = propDef.getDefaultValue();
             if (defaultValue == null) {
                 throw new InternalRepositoryException(
-                    "Property " + propDef + " is " +
-                    "mandatory and evaluator returned false, but no default value is set. " +
+                    "Property " + propDef + " is mandatory with no default value, " +
+                    "and evaluator either did not exist or returned false. " +
                     "Resource " + newResource + " not evaluated (resource type: "
                     + newResource.getResourceType() + ")");
             }

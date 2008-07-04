@@ -21,8 +21,8 @@
   <head>
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />
-    <script type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-    <script type="text/javascript"><!--
+    <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
+    <script language="Javascript" type="text/javascript"><!--
       function newEditor(name, completeEditor) {
         var completeEditor = completeEditor != null ? completeEditor : false; 
         var fck = new FCKeditor( name ) ;
@@ -79,8 +79,9 @@
       }
 
       function disableSubmit() {
-           document.getElementById("saveButton").disabled = true;
-           document.getElementById("saveAndQuitButton").disabled = true;
+         // XXX: 
+           // document.getElementById("saveButton").disabled = true;
+           // document.getElementById("saveAndQuitButton").disabled = true;
            return true;
       }
 
@@ -95,8 +96,8 @@
 
     <!-- Yahoo YUI library: -->
     <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css">
-    <script type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
+    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
     
     <!--[if IE]>
       <style type="text/css">
@@ -121,13 +122,15 @@
         <@propsForm resource.contentProperties />
       </div>
 
+      <#if (resource.content)?exists>
       <div class="html-content">
       <label for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
 
        <@fck 'resource.content' true />
 
-       </div>
+      </div>
+      </#if>
 
       <div class="properties">
         <@propsForm resource.extraContentProperties />
@@ -138,7 +141,7 @@
        <input type="submit" id="saveAndQuitButton" onClick="performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
        <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
-      <script type="text/javascript" language="Javascript"><!--
+      <script language="Javascript" type="text/javascript"><!--
          disableSubmit();
         // -->
       </script>
@@ -193,7 +196,7 @@
 </#macro>
 
 <#macro handleProps>
-  <script type="text/javascript">
+  <script language="Javascript" type="text/javascript"><!--
     function propChange() {
       <@propChangeTests resource.contentProperties />
       <@propChangeTests resource.extraContentProperties />
@@ -235,6 +238,7 @@
     }
 
     window.onbeforeunload = doConfirm;
+    // -->
   </script>
 </#macro>
 
@@ -260,7 +264,7 @@
         <button type="button" onclick="browseServer('resource.${name}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
-        <script type="text/javascript"><!--
+        <script language="Javascript" type="text/javascript"><!--
              var urlobj;
              var baseFolder = "${resourceContext.parentURI?html}";
              function browseServer(obj, type) {
@@ -309,7 +313,7 @@
              } //-->
         </script>
         <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}"> 
-        <script type="text/javascript" language="Javascript"><!--
+        <script language="Javascript" type="text/javascript"><!--
         document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
         document.write('<div id="resource.${name}.preview">');
           <#if value != ''>
@@ -341,14 +345,14 @@
         <#local uniqueName = 'cal_' + propDef_index />
 
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        <script type="text/javascript" language="Javascript"><!--
+        <script language="Javascript" type="text/javascript"><!--
         document.write('<a class="calendar" id="${uniqueName}.calendar.href"><span>cal</span></a>');
         document.write('<div id="resource.${name}.calendar" class="yui-skin-sam"></div>');
         // -->
         </script>
         <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
-        <script type="text/javascript" language="Javascript"><!--
+        <script language="Javascript" type="text/javascript"><!--
 
           YAHOO.namespace("resource.${uniqueName}.calendar");
           var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
@@ -440,39 +444,65 @@
           //-->
         </script>
       <#else>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
-        <#if description != "">
-          <span class="input-description">(${description})</span>
+
+        <#if (propDef.vocabulary)?exists>
+
+          <#if propDef.vocabulary.allowedValues?size = 1>
+            ${propDef.vocabulary.allowedValues[0]?html} 
+            <#if value == propDef.vocabulary.allowedValues[0]>
+              <input name="resource.${name}" type="checkbox" value="${propDef.vocabulary.allowedValues[0]?html}" checked="true" />
+            <#else>
+              <input name="resource.${name}" type="checkbox" value="${propDef.vocabulary.allowedValues[0]?html}"/>
+            </#if>
+          <#else>
+            <select name="resource.${name}">
+              <#if !propDef.mandatory>
+                <option value="">Unspecified</option>
+              </#if>
+              <#list propDef.vocabulary.allowedValues as v>
+                <#if v == value>
+                  <option selected="true" value="${v?html}">${v?html}</option>
+                <#else>
+                  <option value="${v?html}">${v?html}</option>
+                </#if>
+              </#list>
+            </select>
+          </#if>
+        <#else>
+          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
+          <#if description != "">
+            <span class="input-description">(${description})</span>
+          </#if>
         </#if>
+
       </#if>
       <#if error != ""><span class="error">${error}</span></#if> 
-
     </div>
     </#list>
 </#macro>
 
 <#macro fck content completeEditor=false>
-    <script type="text/javascript">
+    <script language="Javascript" type="text/javascript"><!--
       var needToConfirm = true;
       newEditor('${content}', ${completeEditor?string});
       
 
-    function cSave() {
-      document.getElementById("form").setAttribute("action", "#submit");
-      performSave();
-    }
+      function cSave() {
+        document.getElementById("form").setAttribute("action", "#submit");
+        performSave();
+      }
 
-    function performSave() {
-      needToConfirm = false;
-      var oEditor = FCKeditorAPI.GetInstance('${content}');
-      var srcxhtml = oEditor.GetXHTML();
-      // var title = document.getElementById("title");
+      function performSave() {
+        needToConfirm = false;
+        var oEditor = FCKeditorAPI.GetInstance('${content}');
+        var srcxhtml = oEditor.GetXHTML();
+        // var title = document.getElementById("title");
 
-      // Title
-      <#-- // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>"); -->
-      document.getElementById('${content}').value = srcxhtml;
-    }  
-
+        // Title
+        <#-- // srcxhtml = srcxhtml.replace(/<title.*<\/title>/i, "<title>" + title.value + "</title>"); -->
+        document.getElementById('${content}').value = srcxhtml;
+      }  
+      // -->
     </script>
 
 </#macro>

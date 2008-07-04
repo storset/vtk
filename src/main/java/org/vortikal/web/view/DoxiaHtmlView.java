@@ -35,21 +35,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.HTML.Tag;
 
 import org.apache.maven.doxia.module.xhtml.XhtmlSink;
 import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.sink.Sink;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
+import org.vortikal.repository.Resource;
 
 public class DoxiaHtmlView implements View {
 
-    private String sourceKey;
+    private String streamKey;
+    private String resourceKey;
     private Class<AbstractParser> parserClass;
     private String contentType = "text/html";
     private String characterEncoding = "utf-8";
@@ -61,15 +65,24 @@ public class DoxiaHtmlView implements View {
     @SuppressWarnings("unchecked")
     public void render(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        InputStream in = (InputStream) model.get(this.sourceKey);
-        if (in == null) {
-            throw new IllegalStateException("No input stream in model with key '" 
-                                            + this.sourceKey + "'");
+
+    	String title = null;
+        if (this.resourceKey != null) {
+            Resource resource = (Resource) model.get(this.resourceKey);
+            if (resource != null) {
+            	title = resource.getTitle();
+            }
         }
 
+    	InputStream in = (InputStream) model.get(this.streamKey);
+        if (in == null) {
+            throw new IllegalStateException("No input stream in model with key '" 
+                                            + this.streamKey + "'");
+        }
+        
         Reader source = new InputStreamReader(in, this.characterEncoding);
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        Sink htmlSink = new XhtmlSink(new OutputStreamWriter(result, this.characterEncoding));
+        Sink htmlSink = new InsertHeaderSink(new OutputStreamWriter(result, this.characterEncoding), title);
 
         AbstractParser parser = this.parserClass.newInstance();
         parser.parse(source, htmlSink);
@@ -84,10 +97,14 @@ public class DoxiaHtmlView implements View {
         out.close();
     }
 
-    @Required public void setSourceKey(String sourceKey) {
-        this.sourceKey = sourceKey;
+    @Required public void setStreamKey(String streamKey) {
+        this.streamKey = streamKey;
     }
 
+    public void setResourceKey(String resourceKey) {
+    	this.resourceKey = resourceKey;
+    }
+    
     @Required public void setParserClass(Class<AbstractParser> parserClass) {
         this.parserClass = parserClass;
     }
@@ -100,4 +117,22 @@ public class DoxiaHtmlView implements View {
         this.characterEncoding = characterEncoding;
     }
 
+    private class InsertHeaderSink extends XhtmlSink {
+    	private String title;
+    	
+    	public InsertHeaderSink(Writer writer, String title) {
+    		super(writer);
+    		this.title = title;
+    	}
+    	
+        public void body() {
+        	super.body();
+        	if (this.title != null) {
+        		writeStartTag(Tag.H1);
+        		write(this.title);
+        		writeEndTag(Tag.H1);
+        	}
+        }
+    }
+    
 }

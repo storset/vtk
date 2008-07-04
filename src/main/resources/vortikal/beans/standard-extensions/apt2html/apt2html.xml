@@ -45,7 +45,8 @@
 
   <bean id="apt2html.view" class="org.vortikal.web.view.DoxiaHtmlView">
     <property name="parserClass" value="org.apache.maven.doxia.module.apt.AptParser" />
-    <property name="sourceKey" value="resourceStream" />
+    <property name="streamKey" value="resourceStream" />
+    <property name="resourceKey" value="resource" />
   </bean>
 
 

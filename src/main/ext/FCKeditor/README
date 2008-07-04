@@ -35,3 +35,18 @@ The fckpackager.php file can be downloaded from:
 
 http://svn.fckeditor.net/FCKpackager/trunk/fckpackager.php
 
+
+
+Upgrading to a new version:
+
+cd src/main/ext/FCKeditor
+wget http://.../FCKeditor_<version>.tar.gz
+tar zcvf FCKeditor_<version>.tar.gz
+mv -r fckeditor fckeditor-org/fckeditor-<version>
+rsync -r --exclude .svn\*  --exclude fckpackager.php --exclude custom-fckconfig.js --delete -ptv fckeditor-org/fckeditor-<version>/ fckeditor-build
+
+for f in $(svn status fckeditor-build | grep \! | awk '{print $2}'); do svn rm "$f"; done
+
+for f in $(svn status fckeditor-build | grep \? | awk '{print $2}'); do svn add "$f"; done
+
+<merge files from fckeditor-modifications into fckeditor-build>

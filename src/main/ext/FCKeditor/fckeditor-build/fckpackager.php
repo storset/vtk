@@ -2,7 +2,7 @@
 <?php
 /*
  * FCKpackager - JavaScript Packager and Compressor - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -27,7 +27,7 @@
 
 echo( "\n" ) ;
 echo( 'FCKpackager - JavaScript Packager and Compressor - Version 1.0' . "\n" ) ;
-echo( 'Copyright 2004-2007 Frederico Caldeira Knabben - All rights reserved' . "\n" ) ;
+echo( 'Copyright 2004-2008 Frederico Caldeira Knabben - All rights reserved' . "\n" ) ;
 echo( "\n" ) ;
 
 
@@ -47,7 +47,7 @@ $packager->Run() ;
 
 ?>
 
-<?php
+﻿<?php
 
 
 function ExitError( $message, $errorNumber = 1 )
@@ -58,7 +58,7 @@ function ExitError( $message, $errorNumber = 1 )
 
 function StrEndsWith( $str, $sub )
 {
-   return ( substr( $str, strlen( $str ) - strlen( $sub ) ) == $sub ) ;
+	return ( substr( $str, strlen( $str ) - strlen( $sub ) ) == $sub ) ;
 }
 
 function GetXmlAttribute( $element, $attName, $defValue = '' )
@@ -71,21 +71,16 @@ function GetXmlAttribute( $element, $attName, $defValue = '' )
 
 function CreateDir($path, $rights = 0777)
 {
-	$folder_path = array(
-		strstr( $path, '.' ) ? dirname( $path ) : $path ) ;
+	$dirParts = explode( '/', $path ) ;
 
-	while ( !@is_dir( dirname( end( $folder_path ) ) )
-			&& dirname( end( $folder_path ) ) != '/'
-			&& dirname( end( $folder_path ) ) != '.'
-			&& dirname( end( $folder_path ) ) != '' )
-	{
-		$folder_path[] = dirname( end( $folder_path ) ) ;
-	}
+	$currentDir = '' ;
 
-	while ( $parent_folder_path = array_pop( $folder_path ) )
+	foreach ( $dirParts as $dirPart )
 	{
-		if ( !@mkdir( $parent_folder_path, $rights ) )
-			ExitError( "Can't create folder \"$parent_folder_path\"." ) ;
+		$currentDir .= $dirPart . '/' ;
+
+		if ( strlen( $dirPart ) > 0 && !is_dir( $currentDir ) )
+			mkdir( $currentDir, $rights ) ;
 	}
 }
 
@@ -99,24 +94,7 @@ function SaveStringToFile( $strData, $filePath, $includeUtf8Bom = FALSE )
 	if ( $includeUtf8Bom )
 		fwrite( $f, "\xEF\xBB\xBF" ) ;	// BOM
 
-	fwrite( $f, $strData ) ;
-	fclose( $f ) ;
-
-	return TRUE ;
-}
-
-function SaveStringToUtf8File( $strData, $filePath, $includeBom = TRUE )
-{
-	$f = @fopen( $filePath, 'wb' ) ;
-
-	if ( !$f )
-		return FALSE ;
-
-	if ( $includeBom )
-		fwrite( $f, "\xEF\xBB\xBF" ) ;	// BOM
-
-	fwrite( $f, ( $strData ) ) ;
-
+	fwrite( $f, StripUtf8Bom( $strData ) ) ;
 	fclose( $f ) ;
 
 	return TRUE ;
@@ -358,9 +336,11 @@ class FCKJavaScriptCompressor
 			'/(?<![;{}\n\r\s])\s*[\n\r]+\s*(?![\s\n\r{}])/s',
 			' ', $script ) ;
 
-		// Concatenate lines that end with "}" using a ";" (except for "else" and "catch" cases).
+		// Concatenate lines that end with "}" using a ";", except for "else",
+		// "while", "catch" and "finally" cases, or when followed by, "'", ";",
+		// "}" or ")".
 		$script = preg_replace(
-			'/\s*}\s*[\n\r]+\s*(?!\s*(else|catch|}))/s',
+			'/\s*}\s*[\n\r]+\s*(?!\s*(else|catch|finally|while|[}\),;]))/s',
 			'};', $script ) ;
 
 		// Remove blank lines, spaces at the begining or the at the end and \n\r
@@ -668,10 +648,10 @@ class FCKPreProcessor
 	// Call it statically. E.g.: FCKPreProcessor::ProcessFile( ... )
 	function ProcessFile( $sourceFilePath, $destinationFilePath, $onlyHeader = FALSE )
 	{
-		SaveStringToUtf8File(
+		SaveStringToFile(
 			FCKPreProcessor::Process( file_get_contents( $sourceFilePath ), $onlyHeader ),
 			$destinationFilePath,
-			( !StrEndsWith( $sourceFilePath, '.asp' ) && !StrEndsWith( $sourceFilePath, '.js' ) ) ) ;	// Only ASP and JavaScript files require the BOM.
+			( StrEndsWith( $sourceFilePath, '.asp' ) || StrEndsWith( $sourceFilePath, '.js' ) ) ) ;	// Only ASP and JavaScript files require the BOM.
 
 		// Set the destination file Last Access and Last Write times.
 		// It seams we can't change the creation time with PHP.

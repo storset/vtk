@@ -52,7 +52,6 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="adminCSSProvider" />
       </list>
     </property>
   </bean>

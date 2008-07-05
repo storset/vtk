@@ -113,12 +113,11 @@
     </#assign>
     <h2>${header}</h2>
 
-    <a style="float: right; font-size: 80%; margin-top: -1.5em;" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
-
     <form id="form" class="editor" action="" method="POST">
       <@handleProps />
 
       <div class="properties">
+        <a id="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
         <@propsForm resource.contentProperties />
       </div>
 

@@ -22,10 +22,15 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
   margin-bottom: 1.5em;
 }
 
+#help-link{
+  float: right; 
+  font-size: 80%; 
+}
+
 form.editor {
   padding:0; 
   margin: 0;
-  margin-top: -8px;
+  margin-top: -14px;
 }
 
 
@@ -77,7 +82,6 @@ div.introduction {
   float: left; 
   width: 500px;  
   margin-right: 1.2em;
-
 }
 
 div.introduction textarea {

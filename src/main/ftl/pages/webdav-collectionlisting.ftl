@@ -18,7 +18,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title><@vrtx.msg code="title.collectionListing" args=[resourceContext.currentResource.title] default="Collection listing" /></title>
+  <title><@vrtx.msg code="title.webdavCollectionListing" args=[resourceContext.currentResource.title] default="Collection listing" /></title>
 </head>
 <body>
   <@col.listCollection withForm=false />

@@ -4,15 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 
-  <bean id="decorating.manageNamespace" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="manage" />
-  </bean>
-
-  <bean id="decorating.browseNamespace" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="browse" />
-  </bean>
-
-
   <bean id="system.decoratingViewResolver" 
         class="org.vortikal.web.view.decorating.MappingViewResolver"
         abstract="true">
@@ -45,11 +36,11 @@
 
     <bean id="system.decorationResolver"
           class="org.vortikal.web.view.decorating.ServiceAttributeDecorationResolver">
-      <property name="attributeName" ref="manage.templateServiceAttribute" />
+      <property name="attributeName" ref="system.decoratorTemplateAttribute" />
       <property name="templateManager" ref="system.decoratorTemplateManager" />
     </bean>
 
-    <bean id="manage.templateServiceAttribute" class="java.lang.String">
+    <bean id="system.decoratorTemplateAttribute" class="java.lang.String">
       <constructor-arg type="java.lang.String" value="manage.decoratorTemplateAttribute" />
     </bean>
 

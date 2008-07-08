@@ -29,6 +29,11 @@
         </bean>
       </list>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key-ref="system.decoratorTemplateAttribute" value="root-admin.html" />
+      </map>
+    </property>
   </bean>
 
   <bean id="repositoryManageDefaultService"
@@ -69,6 +74,44 @@
           <property name="groups" ref="managementStatsGroups" />
         </bean>
       </list>
+    </property>
+  </bean>
+
+
+  <bean id="rootManage.tabsComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="root-tabs" />
+    <property name="description" value="Displays the default admin tabs" />
+    <property name="view" ref="rootManage.tabView" />
+  </bean>
+
+  <bean id="rootManage.tabView" parent="freemarkerView">
+    <property name="url" value="layouts/tabs.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="rootManage.tabsProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="rootManage.tabsProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="rootManage.tabServicesFactory" />
+    <constructor-arg value="tabs"/>
+    <constructor-arg ref="repository.requestLocal"/>
+    <property name="matchAncestorServices" value="true" />
+  </bean>
+
+  <bean id="rootManage.tabServicesFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="rootMenu" />
+    <property name="comparator">
+      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
+        <property name="attributeName" value="tabOrder" />
+      </bean>
     </property>
   </bean>
 
@@ -149,73 +192,16 @@
     <property name="wrapOutputInBrackets" value="false" />
   </bean>
 
-  <bean id="rootViewResolver" parent="adminViewResolver">
+  <bean id="rootViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="rootView" value-ref="rootView" />
         <entry key="repositoryReadOnly" value-ref="repositoryReadOnlyView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="rootManageViewWrapper" />
   </bean>
 
 
-  <bean id="rootManageViewWrapper" 
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <description>
-      This wrapper wraps manage views with the manage view layout
-      items. It uses three filters for head, header and footer
-    </description>
-    <property name="staticHeaders">
-      <map>
-        <entry key="Cache-Control" value="no-cache, must-revalidate" />
-        <entry key="Expires" value="0" />
-      </map>
-    </property>
-    <property name="decorators">
-      <list>
-        <ref bean="manageHeadDecorator" />
-        <ref bean="manageHeaderDecorator" />
-        <ref bean="manageFooterDecorator" />
-      </list>
-    </property>
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="leaveAdminLinkProvider" />
-        <ref bean="logoutLinkProvider" />
-        <ref bean="rootTabsProvider" />
-        <ref bean="resourceContextProvider" />
-
-        <ref bean="versionProvider" />
-
-        <ref bean="resourceMenuProvider" /> 
-        <ref bean="switchLocaleActionsProvider" />
-        <ref bean="lockUnlockActionsProvider" />
-        <ref bean="manageBreadCrumbProvider" />
-        <ref bean="resourceTitleProvider" />
-        <ref bean="adminHtmlTitleProvider" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="rootTabsProvider" 
-    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
-    <constructor-arg ref="rootTabServicesFactory" />
-    <constructor-arg value="tabs"/>
-    <constructor-arg ref="repository.requestLocal"/>
-    <property name="matchAncestorServices" value="true" />
-  </bean>
-
-  <bean id="rootTabServicesFactory"
-    class="org.vortikal.context.CategoryResolvingFactoryBean">
-    <property name="clazz" value="org.vortikal.web.service.Service" />
-    <property name="category" value="rootMenu" />
-    <property name="comparator">
-      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
-        <property name="attributeName" value="tabOrder" />
-      </bean>
-    </property>
-  </bean>
 
 
   <!-- repository read only -->

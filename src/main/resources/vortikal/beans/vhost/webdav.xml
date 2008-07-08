@@ -107,6 +107,11 @@
       </list>
     </property>
     <property name="handler" ref="webdavCollectionListingHandler" />
+    <property name="attributes">
+      <map>
+        <entry key-ref="system.decoratorTemplateAttribute" value="webdav-collectionlisting.html" />
+      </map>
+    </property>
   </bean>
 
   <bean id="webdavCollectionListingHeadService" class="org.vortikal.web.service.ServiceImpl">
@@ -495,22 +500,85 @@
     </property>
   </bean>
 
-  <bean id="webdavCollectionListingViewResolver" parent="viewResolver">
+  <bean id="webdavCollectionListingViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="webdavCollectionListingHeadView" value-ref="webdavCollectionListingHeadView" />
         <entry key="webdavCollectionListingView" value-ref="webdavCollectionListingView" />
       </map>
     </property>
-    <property name="viewWrapper" ref="webdavCollectionListingViewWrapper" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="webdavCollectionListingHtmlTitleProvider" />
         <ref bean="manageLinkProvider" />
-        <ref bean="webdavCollectionListingMessageProvider" />
       </list>
     </property>
   </bean>
+
+
+  <bean id="decorating.webdavNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="webdav" />
+  </bean>
+
+  <bean id="webdav.cssComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.webdavNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts the default WebDAV collection listing CSS stylesheets" />
+    <property name="view" ref="webdav.cssView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="webdav.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/basic.css</value>
+            <value>http://www.uio.no/visuell-profil/css/uio.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="webdav.breadcrumbComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.webdavNamespace" />
+    <property name="name" value="breadcrumb" />
+    <property name="description" value="Displays the WebDAV breadcrumb trail" />
+    <property name="view" ref="webdav.breadcrumbView" />
+  </bean>
+
+  <bean id="webdav.breadcrumbView" parent="freemarkerView">
+    <property name="url" value="layouts/breadcrumb.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+              parent="requestLocalRepositoryAware">
+          <property name="breadcrumbName" value="breadcrumb" />
+          <property name="service" ref="webdavService"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="webdav.infoMessageComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.webdavNamespace" />
+    <property name="name" value="info-message" />
+    <property name="description" value="Displays the WebDAV info message" />
+    <property name="view" ref="webdav.infoMessageView" />
+  </bean>
+
+  <bean id="webdav.infoMessageView" parent="freemarkerView">
+    <property name="url" value="pages/webdav-info.ftl" />
+  </bean>
+
+  <!--
 
   <bean id="webdavCollectionListingViewWrapper" 
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
@@ -560,7 +628,7 @@
       </bean>
     </property>
   </bean>
- 
+ -->
 
 
   <!-- View definitions -->
@@ -584,12 +652,15 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs" value-ref="viewCSSURLs" /> <!-- XXX -->
+        <!-- XXX --><!--
+        <entry key="cssURLs" value-ref="viewCSSURLs" /> -->
       </map>
     </property>
   </bean>
 
-   <bean id="viewCSSURLs" class="java.util.ArrayList"> <!-- XXX -->
+
+ <!-- XXX -->  <!--
+   <bean id="viewCSSURLs" class="java.util.ArrayList">
      <constructor-arg>
        <list>
          <value>${themeBaseURL}/basic.css</value>
@@ -597,6 +668,7 @@
        </list>
      </constructor-arg>
    </bean>
+   -->
 
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 
@@ -666,9 +738,6 @@
   <bean id="webdavBreadCrumbProvider"
         class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
         parent="requestLocalRepositoryAware">
-    <description>
-      Breadcrumb provider that generates links to the WebDAV service
-    </description>
     <property name="service" ref="webdavService"/>
     <property name="skipCurrentResource" value="true" />
     <property name="skipIndexFile" value="true" />
@@ -682,21 +751,11 @@
     <property name="retrieveForProcessing" value="false" />
   </bean>
 
-  <bean id="webdavCollectionListingMessageProvider"
-        class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-    <property name="modelDataMap">
-      <map>
-        <entry key="includeTemplate" value="/pages/webdav-info.ftl" />
-      </map>
-    </property>
-  </bean>
 
   <bean id="webdavCollectionListingHtmlTitleProvider" parent="abstractHtmlTitleProvider">
     <property name="localizationKeys">
       <map>
         <entry key="name" value="title.webdavCollectionListing" />
-        <entry key="http://www.uio.no/vortex/custom-properties:title"
-               value="title.webdavCollectionListing" />
       </map>
     </property>
   </bean>

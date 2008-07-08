@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    ${manage:css}
+    ${manage:javascript}
+    ${document:element select=[html.head] exclude=[title]}
+    <title>${manage:title}</title>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="text">
+        <span class="hostname">${manage:repository-id}</span>
+        <span>Root management</span>
+      </div>
+      <div class="menu">
+        ${resource:manage-url} | ${manage:principal-info}
+      </div>
+    </div>
+
+    <div class="body">
+      <br />
+      ${manage:root-tabs}
+      <div id="main">
+        <div id="contents">
+          ${document:body}
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+    </div>
+  </body>
+</html>

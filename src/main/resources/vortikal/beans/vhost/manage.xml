@@ -67,7 +67,7 @@
     <property name="attributes">
       <map>
         <entry key="localeResolver" value-ref="manageLocaleResolver" />
-        <entry key-ref="manage.templateServiceAttribute" value="admin.html" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="admin.html" />
       </map>
     </property>
   </bean>
@@ -186,9 +186,6 @@
   </bean>        
   
 
-  
-
-
   <bean id="lockResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="categories">
@@ -227,8 +224,6 @@
     </property>  
     <property name="handler" ref="unlockResourceHandler" />
   </bean>
-
-
 
 
   <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
@@ -1081,27 +1076,6 @@
                value-ref="previewFallbackView" />
       </map>
     </property>
-    <!--
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="leaveAdminLinkProvider" />
-        <ref bean="logoutLinkProvider" />
-        <ref bean="tabsProvider" />
-        <ref bean="resourceContextProvider" />
-
-        <ref bean="versionProvider" />
-
-        <ref bean="resourceMenuProvider" /> 
-        <ref bean="switchLocaleActionsProvider" />
-        <ref bean="lockUnlockActionsProvider" />
-        <ref bean="manageBreadCrumbProvider" />
-        <ref bean="resourceTitleProvider" />
-        <ref bean="adminHtmlTitleProvider" />
-
-        <ref bean="expiresSecProvider" />
-      </list>
-    </property>
-    -->
   </bean>
 
   <bean id="manage.plainViewResolver"
@@ -1129,6 +1103,11 @@
         <value>http://www.uio.no/header-control:expires-sec</value>
       </list>
     </property>
+  </bean>
+
+
+  <bean id="decorating.manageNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="manage" />
   </bean>
 
   <bean id="manage.titleComponent"
@@ -1472,15 +1451,6 @@
   </bean>
 
 
-  <bean id="manageHeadDecorator"
-        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
-    <description>
-      This filter merges the output from the 'manageHeadView' view
-      into the HTML head element.
-    </description>
-    <property name="view" ref="manageHeadView"/>
-  </bean>
-
 
   <bean id="manage.refreshLockURLProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="repository" ref="repository" />
@@ -1496,65 +1466,10 @@
     <property name="urlName" value="url" />
   </bean>
 
-  <bean id="manageHeadView" parent="freemarkerView">
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/basic.css</value>
-            <value>${themeBaseURL}/tabs.css</value>
-          </list>
-        </entry>
-        <entry key="jsURLs">
-          <list>
-            <value>${jsBaseURL}/browser-sniffer.js</value>
-            <value>${jsBaseURL}/admin-enhancements.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-    <property name="url" value="layouts/head.ftl" />
-  </bean>
-
-
-  <bean id="manageHeaderDecorator"
-        class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
-    <description>
-      This filter merges the output from the
-      'manageHeaderView' view into the beginning of the HTML
-      body element (before any other body content).
-    </description>
-    <property name="view" ref="manageHeaderView"/>
-  </bean>
 
 
   <bean id="manage.refreshLockView" parent="freemarkerView">
     <property name="url" value="layouts/lock-refresh-response.ftl" />
-  </bean>
-
-  <bean id="manageHeaderView" parent="freemarkerView">
-    <property name="attributesMap">
-      <map>
-        <entry key="helpURL" value="${helpURL}" />
-      </map>
-    </property>
-    <property name="url" value="layouts/header.ftl" />
-  </bean>
-
-
-  <bean id="manageFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
-    <description>
-      This filter merges the output from the
-      'manageFooterView' view into end of the HTML
-      body element (after any other body content).
-    </description>
-    <property name="view" ref="manageFooterView"/>
-  </bean>
-
-
-  <bean id="manageFooterView" parent="freemarkerView">
-    <property name="url" value="layouts/footer.ftl" />
   </bean>
 
   <!-- Views -->

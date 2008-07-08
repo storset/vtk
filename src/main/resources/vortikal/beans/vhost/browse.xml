@@ -22,7 +22,7 @@
     <property name="attributes">
       <map>
         <entry key="foo" value="bar" />
-        <entry key-ref="manage.templateServiceAttribute" value="browse.html" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="browse.html" />
       </map>
     </property>
   </bean>
@@ -109,6 +109,11 @@
         <ref bean="resourceTitleProvider" />
       </list>
     </property>
+  </bean>
+
+
+  <bean id="decorating.browseNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="browse" />
   </bean>
 
 

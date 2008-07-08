@@ -578,57 +578,6 @@
     <property name="url" value="pages/webdav-info.ftl" />
   </bean>
 
-  <!--
-
-  <bean id="webdavCollectionListingViewWrapper" 
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <property name="decorators">
-      <list>
-        <ref bean="webdavCollectionListingHeadDecorator" />
-        <ref bean="webdavCollectionListingHeaderDecorator" />
-        <ref bean="webdavCollectionListingFooterDecorator" />
-        <ref bean="adminURLFooterDecorator" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="webdavCollectionListingHeadDecorator" 
-        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
-    <property name="view">
-      <bean parent="freemarkerView">
-        <property name="attributesMap">
-          <map>
-            <entry key="cssURLs">
-              <list>
-                <value>${themeBaseURL}/basic.css</value>
-                <value>${themeBaseURL}/webdav-collectionlisting.css</value>
-              </list>
-            </entry>
-          </map>
-        </property>
-        <property name="url" value="layouts/head.ftl" />
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="webdavCollectionListingHeaderDecorator"
-        class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
-    <property name="view">
-      <bean parent="freemarkerView">
-        <property name="url" value="layouts/plain-header.ftl" />
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="webdavCollectionListingFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
-    <property name="view">
-      <bean parent="freemarkerView">
-        <property name="url" value="layouts/plain-footer.ftl" />
-      </bean>
-    </property>
-  </bean>
- -->
 
 
   <!-- View definitions -->
@@ -650,25 +599,8 @@
         <ref bean="resourceTitleProvider" />
       </list>
     </property>
-    <property name="attributesMap">
-      <map>
-        <!-- XXX --><!--
-        <entry key="cssURLs" value-ref="viewCSSURLs" /> -->
-      </map>
-    </property>
   </bean>
 
-
- <!-- XXX -->  <!--
-   <bean id="viewCSSURLs" class="java.util.ArrayList">
-     <constructor-arg>
-       <list>
-         <value>${themeBaseURL}/basic.css</value>
-         <value>http://www.uio.no/visuell-profil/css/uio.css</value>
-       </list>
-     </constructor-arg>
-   </bean>
-   -->
 
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 
@@ -749,15 +681,6 @@
         parent="requestLocalRepositoryAware" >
     <property name="browsingService" ref="webdavService" />
     <property name="retrieveForProcessing" value="false" />
-  </bean>
-
-
-  <bean id="webdavCollectionListingHtmlTitleProvider" parent="abstractHtmlTitleProvider">
-    <property name="localizationKeys">
-      <map>
-        <entry key="name" value="title.webdavCollectionListing" />
-      </map>
-    </property>
   </bean>
 
 

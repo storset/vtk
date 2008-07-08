@@ -4,8 +4,6 @@
 
 <beans>
 
-  <!-- Browse services -->
-  
   <bean id="browseService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="order" value="600" />
@@ -38,8 +36,6 @@
   </bean>
 
 
-  <!-- BROWSE controllers -->
-
   <bean id="defaultBrowseHandler" 
     class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
@@ -47,53 +43,13 @@
   </bean>
 
 
-  <!-- BROWSE view resolver -->
-
   <bean id="browseViewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="browse" value-ref="browseView" />
       </map>
     </property>
-
-    <!--property name="viewWrapper" ref="browseViewWrapper" /-->
   </bean>
-
-
-
-  <!-- BROWSE views -->
-        <!--
-
-  <bean id="browseViewWrapper" 
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
-    <property name="decorators">
-      <list>
-
-        <ref bean="manage.templateDecorator" />
-        <bean class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
-          <property name="view" ref="browseHeadView"/>
-        </bean>
-        <bean class="org.vortikal.web.view.decorating.HtmlHeaderDecorator">
-          <property name="view" ref="browseHeaderView"/>
-        </bean>
-        <bean class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
-          <property name="view" ref="browseFooterView"/>
-        </bean>
-      </list>
-    </property>
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="browseBreadCrumbProvider" />
-        <ref bean="browseUrlProvider" />
-        <ref bean="browseMenuProvider" /> 
-        <ref bean="browseCollectionListingProvider" />
-        <ref bean="browseHtmlTitleProvider" />
-        <ref bean="resourceTitleProvider" />
-      </list>
-    </property>
-  </bean>
-        -->
 
   <bean id="browseView" parent="freemarkerView">
     <property name="url" value="pages/browse.ftl" />
@@ -175,46 +131,6 @@
       </map>
     </property>
   </bean>
-
-
-  <!--
-  <bean id="browseHeadView" parent="freemarkerView">
-    <property name="url" value="layouts/head.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/basic.css</value>
-            <value>${themeBaseURL}/browse.css</value>
-          </list>
-        </entry>
-        <entry key="jsURLs">
-          <list>
-            <value>${jsBaseURL}/browse.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-
-  <bean id="browseHeaderView" parent="freemarkerView">
-    <property name="attributesMap">
-      <map>
-        <entry key="helpURL" value="${helpURL}" />
-      </map>
-    </property>
-    <property name="url" value="layouts/header-without-tabs.ftl" />
-  </bean>
-
-  <bean id="browseFooterView" parent="freemarkerView">
-    <property name="url" value="layouts/footer-without-tabs.ftl" />
-  </bean>
-  -->
-
-
-
-  <!-- BROWSE reference data providers -->
 
   <bean id="browseCollectionListingProvider"
         class="org.vortikal.web.referencedata.provider.CollectionListingProvider" 

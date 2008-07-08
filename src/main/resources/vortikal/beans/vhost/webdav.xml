@@ -509,7 +509,6 @@
     </property>
     <property name="referenceDataProviders">
       <list>
-        <ref bean="webdavCollectionListingHtmlTitleProvider" />
         <ref bean="manageLinkProvider" />
       </list>
     </property>

@@ -17,7 +17,7 @@
       <map>
         <entry key="tabOrder"><value type="java.lang.Integer">150</value></entry>
         <entry key="localeResolver" value-ref="manageLocaleResolver" />
-        <entry key-ref="manage.templateServiceAttribute" value="admin.html" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="admin.html" />
       </map>
     </property>
     <property name="assertions">

@@ -347,7 +347,7 @@ public class DefaultTemplateParser implements TemplateParser {
     
     
         public String getNamespace() {
-            return this.getClass().getName();
+            return null;
         }
     
         public String getName() {

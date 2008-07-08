@@ -232,17 +232,26 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             String result = null;
             try {
                 DecoratorComponent component = invocation.getComponent();
-                if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
-                		&& !this.availableComponentNamespaces.contains("*")) {
-                    result = "Invalid component reference: " + component.getNamespace()
-                    + ":" + component.getName();
-                } else if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
-                     result = "Invalid component reference: " + component.getNamespace()
-                         + ":" + component.getName();
-                } else {
-                    component.render(decoratorRequest, response);
-                    result = response.getContentAsString();
+                boolean render = true;
+                if (component.getNamespace() != null) {
+                	if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
+                			&& !this.availableComponentNamespaces.contains("*")) {
+                		result = "Invalid component reference: " + component.getNamespace()
+                		+ ":" + component.getName();
+                		render = false;
+
+                	} else if (this.prohibitedComponentNamespaces.contains(component.getNamespace())) {
+                		result = "Invalid component reference: " + component.getNamespace()
+                		+ ":" + component.getName();
+                		render = false;
+                	}
+                } 
+                
+                if (render) {
+                	component.render(decoratorRequest, response);
+                	result = response.getContentAsString();
                 }
+                
             } catch (Throwable t) {
                 logger.warn("Error invoking component: " + invocation, t);
                 String msg = t.getMessage();

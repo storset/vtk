@@ -1137,11 +1137,15 @@
     <property name="name" value="title" />
     <property name="description" value="Inserts the admin title" />
     <property name="view" ref="manage.titleView" />
-    <property name="exposeMvcModel" value="true" />
   </bean>
 
   <bean id="manage.titleView" parent="freemarkerView">
     <property name="url" value="system/title.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
   </bean>
 
   <bean id="manage.cssComponent"

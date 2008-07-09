@@ -312,7 +312,6 @@ public class VortikalServlet extends DispatcherServlet {
     protected void service(HttpServletRequest request,
                                  HttpServletResponse response) 
         throws ServletException {
-logger.info("__O: " + request.getHeader("Overwrite"));
         StatusAwareResponseWrapper responseWrapper = new StatusAwareResponseWrapper(response);
         long startTime = System.currentTimeMillis();
         Throwable failureCause = null;

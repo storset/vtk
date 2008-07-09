@@ -51,17 +51,13 @@ import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
-
-
 /**
  * Handler for MOVE requests
  *
  */
 public class MoveController extends AbstractWebdavController {
 
-
-
-    /**
+	/**
      * Performs the WebDAV 'MOVE' method.      
      *
      * @param request the HTTP servlet request
@@ -106,11 +102,11 @@ public class MoveController extends AbstractWebdavController {
                 depth = "infinity";
             }
          
-            boolean overwrite = false;
+            boolean overwrite = true;
             String overwriteHeader = request.getHeader("Overwrite");
-            if (overwriteHeader != null && overwriteHeader.equals("T")) {
-                overwrite = true;
-            }
+            if (overwriteHeader != null && overwriteHeader.equals("F")) {
+                overwrite = false;
+            } 
 
             boolean existed = this.repository.exists(token, destURI);
             
@@ -142,7 +138,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (InvalidRequestException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught InvalidRequestException for URI "
-                             + uri);
+                             + uri, e);
             }            
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -151,7 +147,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (IllegalOperationException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught IllegalOperationException for URI "
-                             + uri);
+                             + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -160,7 +156,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (ReadOnlyException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ReadOnlyException for URI "
-                             + uri);
+                             + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -169,7 +165,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (FailedDependencyException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught FailedDependencyException for URI "
-                             + uri);
+                             + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -178,7 +174,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (ResourceOverwriteException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ResourceOverwriteException for URI "
-                             + uri);
+                             + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -187,7 +183,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (ResourceLockedException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ResourceLockedException for URI "
-                             + uri);
+                             + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
@@ -196,7 +192,7 @@ public class MoveController extends AbstractWebdavController {
         } catch (ResourceNotFoundException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ResourceNotFoundException for URI "
-                             + uri);
+                             + uri, e);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,

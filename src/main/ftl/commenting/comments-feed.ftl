@@ -17,7 +17,7 @@
     <author>
       <name>${comment.author.description?html}</name>
       <#if comment.author.URL?exists>
-      <url>${comment.author.URL?html}</url>
+      <uri>${comment.author.URL?html}</uri>
       </#if>
     </author>
     <published><@vrtx.date value=comment.time format=date_format /></published>

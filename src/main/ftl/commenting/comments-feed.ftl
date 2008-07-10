@@ -2,10 +2,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <feed xmlns="http://www.w3.org/2005/Atom">
   <#--title type="html">${resource.title?html}</title-->
-  <title type="html">
-        <@vrtx.msg code='commenting.comments'
-                   args=[resource.title] default='Comments' />
-  </title>
+  <title type="html"><@vrtx.msg code='commenting.comments' args=[resource.title] default='Comments' /></title>
   <link href="${urlMap[resource.URI]?html}" />
   <link rel="self" href="${selfURL?html}" />
   <#assign date_format>yyyy-MM-dd'T'HH:mm:ssZZ</#assign>

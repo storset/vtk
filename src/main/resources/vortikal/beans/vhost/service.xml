@@ -88,8 +88,8 @@
     <property name="order" value="0" />
     <property name="assertions">
       <list>
-        <ref local="resourceIsCollection" />
-        <ref local="uriDoesNotEndWithSlash" />
+        <ref bean="resourceInCollection" />
+        <ref bean="uriDoesNotEndWithSlash" />
       </list>
     </property>
     <property name="handler" ref="redirectHandler" />
@@ -312,12 +312,13 @@
      </property>
    </bean>
 
+   <!--
   <bean id="collectionListingService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="0" />
     <property name="assertions">
       <list>
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handlerInterceptors">
@@ -327,6 +328,7 @@
     </property>
     <property name="handler" ref="collectionListingHandler" />
   </bean>
+  -->
 
   <!-- Not comfortable with this. This interceptor will also be added
   for child services. -->
@@ -342,7 +344,7 @@
   </bean>
 
   <bean id="collectionListingAsFeedService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingService" />
+    <property name="parent" ref="collectionListing.viewService" />
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
@@ -355,7 +357,7 @@
 
 
   <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingService" />
+    <property name="parent" ref="collectionListing.viewService" />
     <property name="assertions">
       <list>
         <ref bean="hasIndexFileAssertion" />
@@ -449,9 +451,6 @@
 
   <!-- Collection redirect -->
 
-  <bean id="resourceIsCollection"
-        class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
-
   <bean id="uriDoesNotEndWithSlash"
         class="org.vortikal.web.service.RequestURIRegexpAssertion">
     <property name="pattern" value=".*[^/]$" />
@@ -505,10 +504,6 @@
     <property name="configuration" ref="ssl.configurationPropertiesFile" />
     <property name="invert" value="true" />
   </bean>
-
-
-  <bean id="resourceIsCollectionAssertion" 
-        class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
 
 
   <bean id="ssl.configurationPropertiesFile"

@@ -111,7 +111,7 @@
       <!-- ResourceType -->
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("property.resourceType", "Resource type")
-             value = resourceTypeName() />
+             value = vrtx.resourceTypeName(resource) />
 
       <!-- Web address -->
       <#assign url><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
@@ -208,6 +208,12 @@
 
     <!-- navigation:importance -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:importance' />
+
+    <!-- Type of Collection -->
+
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'collection-type' />
+
+
   <#else>
     <!-- Content type -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />
@@ -220,7 +226,7 @@
     <!-- Plaintext Edit on managed xml -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'plaintext-edit' />
 
-    <!-- Plaintext Edit on managed xml -->
+    <!-- Type of XHTML document -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'xhtml10-type' />
 
   </#if>
@@ -230,8 +236,3 @@
 </body>
 </html>
 
-<#function resourceTypeName>
-    <#local locale = springMacroRequestContext.getLocale() />
-    <#local name = resource.resourceTypeDefinition.getLocalizedName(locale) />
-    <#return name />
-</#function>

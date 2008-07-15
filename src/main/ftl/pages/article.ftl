@@ -13,36 +13,9 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#function propValue propName resource=resource format="long">
-<#local prop = resource.getPropertyByPrefix("", propName)?default("") />
-<#if prop != "">
-  <#local type = prop.definition.type />
-<#--  <#if type = 'DATE' || type = 'TIMESTAMP'>-->
-    <#local locale = springMacroRequestContext.getLocale() />
-    <#return prop.getFormattedValue(format, locale) />
-<#--  <#else>
-    <#return prop.formattedValue />
-  </#if>
--->
-</#if>
-<#return "" />
-</#function>
 
-<#function propResource propName>
-  <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
-  <#if prop != "">
-    <#local def = prop.definition />
-    <#local type = def.type />
-    <#if type = 'IMAGE_REF'>
-      <#return resource.getPropResource(def)?default("") />
-    </#if>
-  </#if>
-  <#return "" />
-</#function>
-
-
-<#assign title = propValue("userTitle", resource, "flattened") />
-<#assign h1 = propValue("userTitle") />
+<#assign title = vrtx.propValue(resource, "userTitle" , "flattened") />
+<#assign h1 = vrtx.propValue(resource, "userTitle") />
 
 <#if title == "">
   <#assign title = vrtx.getMsg("article.missingTitle") />
@@ -65,14 +38,14 @@
 
     <#-- Image --> 
 
-    <#assign imageRes = propResource("picture") />
-    <#assign introductionImage = propValue("picture") />
+    <#assign imageRes = vrtx.propResource(resource, "picture") />
+    <#assign introductionImage = vrtx.propValue(resource, "picture") />
     <#if introductionImage != "">
       <#if imageRes == "">
         <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
       <#else>
 
-        <#assign userTitle = propValue("userTitle", imageRes) />
+        <#assign userTitle = vrtx.propValue(imageRes, "userTitle") />
         <#assign desc = imageRes.getValueByName("description")?default("") />
 
 	<#if userTitle == "" && desc == "">  
@@ -102,9 +75,9 @@
       </#if>
     </#if>
 
-    <#-- Ingress --> 
+    <#-- Introduction --> 
 
-    <#assign introduction = propValue("introduction") />
+    <#assign introduction = vrtx.propValue(resource, "introduction") />
     <#if introduction != "">
       <div class="vrtx-introduction">
         ${introduction}
@@ -113,8 +86,8 @@
 
     <#-- Media ref --> 
 
-    <#assign mediaRes = propResource("media") />
-    <#assign media = propValue("media") />
+    <#assign mediaRes = vrtx.propResource(resource, "media") />
+    <#assign media = vrtx.propValue(resource, "media") />
 
     <#if mediaRes != "">
       <#if mediaRes.resourceType == 'audio'>
@@ -141,8 +114,8 @@
     </#if>
     <#-- Authors and published date --> 
 
-    <#assign authors = propValue("authors", resource, "enumerated") />
-    <#assign published = propValue("published-date") />
+    <#assign authors = vrtx.propValue(resource, "authors", "enumerated") />
+    <#assign published = vrtx.propValue(resource, "published-date") />
     <#if authors != "" || published != "">
       <div class="vrtx-byline">
         <#if authors != "" && published != "">
@@ -157,14 +130,14 @@
 
     <#-- Start-date, end-date and location --> 
 
-    <#assign start = propValue("start-date") />
-    <#assign startiso8601 = propValue("start-date", resource, "iso-8601") />
-    <#assign startshort = propValue("start-date", resource, "short") />
-    <#assign end = propValue("end-date") />
-    <#assign endiso8601 = propValue("end-date", resource, "iso-8601") />
-    <#assign endshort = propValue("end-date", resource, "short") />
-    <#assign endhoursminutes = propValue("end-date", resource, "hours-minutes") />
-    <#assign location = propValue("location") />
+    <#assign start = vrtx.propValue(resource, "start-date") />
+    <#assign startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
+    <#assign startshort = vrtx.propValue(resource, "start-date", "short") />
+    <#assign end = vrtx.propValue(resource, "end-date") />
+    <#assign endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
+    <#assign endshort = vrtx.propValue(resource, "end-date", "short") />
+    <#assign endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
+    <#assign location = vrtx.propValue(resource, "location") />
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">

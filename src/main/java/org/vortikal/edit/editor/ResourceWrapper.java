@@ -55,8 +55,8 @@ public class ResourceWrapper implements Resource {
     
     private HtmlPage content;
     private Resource resource;
-    private List<PropertyTypeDefinition> contentProperties;
-    private List<PropertyTypeDefinition> extraContentProperties;
+    private List<PropertyTypeDefinition> preContentProperties;
+    private List<PropertyTypeDefinition> postContentProperties;
 
 
     public ResourceWrapper(ResourceWrapperManager resourceManager) {
@@ -65,27 +65,27 @@ public class ResourceWrapper implements Resource {
     }
 
     public Resource getResource() {
-        return resource;
+        return this.resource;
     }
 
     public void setResource(Resource resource) {
         this.resource = resource;
     }
 
-    public List<PropertyTypeDefinition> getContentProperties() {
-        return contentProperties;
+    public List<PropertyTypeDefinition> getPreContentProperties() {
+        return this.preContentProperties;
     }
 
-    public void setContentProperties(List<PropertyTypeDefinition> contentProperties) {
-        this.contentProperties = contentProperties;
+    public void setPreContentProperties(List<PropertyTypeDefinition> contentProperties) {
+        this.preContentProperties = contentProperties;
     }
 
-    public List<PropertyTypeDefinition> getExtraContentProperties() {
-        return this.extraContentProperties;
+    public List<PropertyTypeDefinition> getPostContentProperties() {
+        return this.postContentProperties;
     }
 
-    public void setExtraContentProperties(List<PropertyTypeDefinition> extraContentProperties) {
-        this.extraContentProperties = extraContentProperties;
+    public void setPostContentProperties(List<PropertyTypeDefinition> extraContentProperties) {
+        this.postContentProperties = extraContentProperties;
     }
 
 

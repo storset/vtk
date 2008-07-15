@@ -5,7 +5,7 @@
 
   <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-1"/>
-    <property name="parent" ref="collectionListingService"/>
+    <property name="parent" ref="collectionListing.viewService"/>
     <property name="assertions">
       <list>
         <ref bean="tags.tagsParameterAssertion" />

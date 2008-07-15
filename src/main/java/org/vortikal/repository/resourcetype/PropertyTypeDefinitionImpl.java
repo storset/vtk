@@ -31,6 +31,7 @@
 package org.vortikal.repository.resourcetype;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -53,7 +54,9 @@ import org.vortikal.security.Principal;
  */
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
 
-    private Namespace namespace;
+	private Map<String, String> metadata = new HashMap<String, String>();
+	
+	private Namespace namespace;
     
     private String name;
     private Type type = PropertyType.Type.STRING;
@@ -78,20 +81,28 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private ValueFactory valueFactory;
     private ValueFormatterRegistry valueFormatterRegistry;
     
-    private ContentType contentType;
+    private ContentRelation contentRelation;
 
     private TypeLocalizationProvider typeLocalizationProvider = null;
     
-    public boolean isContent() {
-        return this.contentType == ContentType.CONTENT;
-    }
+//    public boolean isContent() {
+//        return this.contentRelation == ContentRelation.PRE_CONTENT;
+//    }
 
-    public void setContentType(ContentType contentType) {
-            this.contentType = contentType;
+    public void setContentRelation(ContentRelation contentRelation) {
+            this.contentRelation = contentRelation;
     }
     
-    public ContentType getContentType() {
-        return this.contentType;
+    public ContentRelation getContentRelation() {
+        return this.contentRelation;
+    }
+    
+    public void setMetadata(Map<String, String> metadata) {
+    	this.metadata = metadata;
+    }
+    
+    public Map<String, String> getMetadata() {
+    	return Collections.unmodifiableMap(this.metadata);
     }
     
     public Property createProperty() {

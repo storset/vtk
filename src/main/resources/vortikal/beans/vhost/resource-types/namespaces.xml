@@ -15,4 +15,14 @@
               value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
   </bean>
  
+  <bean id="CONTENT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="content" />
+    <constructor-arg value="http://www.uio.no/content" />
+  </bean>
+
+  <bean id="ARTICLE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="al" />
+    <constructor-arg value="http://www.uio.no/al" />
+  </bean>
+
 </beans>

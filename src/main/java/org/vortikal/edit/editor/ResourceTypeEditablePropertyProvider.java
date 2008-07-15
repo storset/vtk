@@ -38,28 +38,28 @@ import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition.ContentType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition.ContentRelation;
 
 public class ResourceTypeEditablePropertyProvider implements EditablePropertyProvider {
 	
 	public List<PropertyTypeDefinition> getContentProperties(Resource resource) {
-        ContentType type = PropertyTypeDefinition.ContentType.CONTENT;
+        ContentRelation type = PropertyTypeDefinition.ContentRelation.PRE_CONTENT;
 	    return getPropertyDefinitionsOfType(resource, type);
 	}
 
     public List<PropertyTypeDefinition> getExtraContentProperties(Resource resource) {
-        ContentType type = PropertyTypeDefinition.ContentType.EXTRA_CONTENT;
+        ContentRelation type = PropertyTypeDefinition.ContentRelation.POST_CONTENT;
         return getPropertyDefinitionsOfType(resource, type);
     }
 
 	
-	private List<PropertyTypeDefinition> getPropertyDefinitionsOfType(Resource resource, ContentType type) {
+	private List<PropertyTypeDefinition> getPropertyDefinitionsOfType(Resource resource, ContentRelation type) {
         List<ResourceTypeDefinition> resourceDefinitions = new ArrayList<ResourceTypeDefinition>();
 	    populateDefinitions(resourceDefinitions, resource.getResourceTypeDefinition());
 	    List<PropertyTypeDefinition> defs = new ArrayList<PropertyTypeDefinition>();
 	    for (ResourceTypeDefinition resourceDef : resourceDefinitions) {
 	        for (PropertyTypeDefinition propDef: resourceDef.getPropertyTypeDefinitions()) {
-                if (propDef.getContentType() == type) {
+                if (propDef.getContentRelation() == type) {
 	                defs.add(propDef);
 	            }
 	        }

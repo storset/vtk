@@ -12,6 +12,7 @@
   <import resource="resource.xml" />
   <import resource="file.xml" />
   <import resource="collection.xml"/>
+  <import resource="article-listing.xml"/>
   <import resource="image.xml" />
   <import resource="audio.xml" />
   <import resource="video.xml" />
@@ -56,7 +57,9 @@
   <import resource="portal.xml" />
 
   <!-- Portalen -->
+  <!--
   <import resource="portal-page.xml" />
+  -->
   
   <!-- Romskjema -->
   <import resource="romskjema.xml" />
@@ -69,6 +72,7 @@
   <import resource="project.xml" />
 
   <!-- MIXINs -->
+  <import resource="mixins/introduction-mixin.xml" />
   <import resource="mixins/header-control.xml" />
   <import resource="mixins/navigation.xml" />
   <import resource="mixins/ssi.xml" />

@@ -102,8 +102,8 @@ public class ResourceWrapperManager {
             HtmlPage content = this.htmlParser.parse(is, resource.getCharacterEncoding());
             wrapper.setContent(content);
         }
-        wrapper.setContentProperties(this.editPropertyProvider.getContentProperties(resource));
-        wrapper.setExtraContentProperties(this.editPropertyProvider.getExtraContentProperties(resource));
+        wrapper.setPreContentProperties(this.editPropertyProvider.getContentProperties(resource));
+        wrapper.setPostContentProperties(this.editPropertyProvider.getExtraContentProperties(resource));
         wrapper.setResource(resource);
     }
 

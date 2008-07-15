@@ -31,6 +31,7 @@
 package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
+import java.util.Map;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -40,23 +41,23 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 
 /**
- * if (isMandatory() && hasDefaultValue() && evaluator.returnsFalse()) {
- *   propValue = default
- * }
+ * The definition of a property
  */
 public interface PropertyTypeDefinition {
-    
-    public enum ContentType {
-        CONTENT,
-        EXTRA_CONTENT
+
+    public enum ContentRelation {
+        PRE_CONTENT,
+        POST_CONTENT
     }
     
     /**
      * Temporary marker for properties that are visualized as content for the resource.
      * Will only have meaning for properties/resources using the new editor regime.
      */
-    public ContentType getContentType();
+    public ContentRelation getContentRelation();
 
+    public Map<String, String> getMetadata();
+    
     public Namespace getNamespace();
     
     public String getName();
@@ -129,7 +130,3 @@ public interface PropertyTypeDefinition {
 
     
 }
-
-
-
-

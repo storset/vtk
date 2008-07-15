@@ -4,6 +4,7 @@
 <beans>
 
   <!-- Resource type 'portal-page' -->
+  <!--
   <bean id="portalPageResourceTypeDefinition"
     class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="portal-page"/>
@@ -42,5 +43,6 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
   </bean>
+  -->
   
 </beans>

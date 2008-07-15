@@ -39,7 +39,11 @@
          }
 
          // File browser
+         <#if resourceContext.parentURI?exists>
          var baseFolder = "${resourceContext.parentURI?html}";
+         <#else>
+         var baseFolder = "/";
+         </#if>
          fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
@@ -118,7 +122,7 @@
 
       <div class="properties">
         <a id="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
-        <@propsForm resource.contentProperties />
+        <@propsForm resource.preContentProperties />
       </div>
 
       <#if (resource.content)?exists>
@@ -132,7 +136,7 @@
       </#if>
 
       <div class="properties">
-        <@propsForm resource.extraContentProperties />
+        <@propsForm resource.postContentProperties />
       </div>
 
       <div id="submit" class="save-cancel">
@@ -197,8 +201,8 @@
 <#macro handleProps>
   <script language="Javascript" type="text/javascript"><!--
     function propChange() {
-      <@propChangeTests resource.contentProperties />
-      <@propChangeTests resource.extraContentProperties />
+      <@propChangeTests resource.preContentProperties />
+      <@propChangeTests resource.postContentProperties />
       return false;
     }
 
@@ -265,7 +269,11 @@
       <#elseif type = 'IMAGE_REF'>
         <script language="Javascript" type="text/javascript"><!--
              var urlobj;
+             <#if resourceContext.parentURI?exists>
              var baseFolder = "${resourceContext.parentURI?html}";
+             <#else>
+             var baseFolder = "/";
+             </#if>
              function browseServer(obj, type) {
                      urlobj = obj;
                      if (type) {
@@ -446,17 +454,41 @@
 
         <#if (propDef.vocabulary)?exists>
 
-          <#if propDef.vocabulary.allowedValues?size = 1>
+          <#assign radioBtn = false />
+          <#if (propDef.vocabulary.allowedValues?size == 1) &&
+               ((propDef.metadata)?exists && 
+               (propDef.metadata.editingHints)?exists &&
+               propDef.metadata.editingHints = 'radio')>
+            <#assign radioBtn = true />
+          </#if>
+
+          <#if propDef.vocabulary.allowedValues?size = 1 && !radioBtn>
             ${propDef.vocabulary.allowedValues[0]?html} 
             <#if value == propDef.vocabulary.allowedValues[0]>
               <input name="resource.${name}" type="checkbox" value="${propDef.vocabulary.allowedValues[0]?html}" checked="true" />
             <#else>
               <input name="resource.${name}" type="checkbox" value="${propDef.vocabulary.allowedValues[0]?html}"/>
             </#if>
+
+          <#elseif radioBtn>
+            <#if !propDef.mandatory>
+              <#if value?length = 0>
+                <input name="resource.${name}" type="radio" value="" checked="checked">unspecified</input>
+              <#else>
+                <input name="resource.${name}" type="radio" value="">unspecified</input>
+              </#if>
+            </#if>
+            <#list propDef.vocabulary.allowedValues as v>
+              <#if v == value>
+                <input name="resource.${name}" type="radio" value="${propDef.vocabulary.allowedValues[0]?html}" checked="true">${propDef.vocabulary.allowedValues[0]?html}</input>
+              <#else>
+                <input name="resource.${name}" type="radio" value="${propDef.vocabulary.allowedValues[0]?html}">${propDef.vocabulary.allowedValues[0]?html}</inpu>
+              </#if>
+            </#list>
           <#else>
             <select name="resource.${name}">
               <#if !propDef.mandatory>
-                <option value="">Unspecified</option>
+                <option value="">unspecified</option>
               </#if>
               <#list propDef.vocabulary.allowedValues as v>
                 <#if v == value>

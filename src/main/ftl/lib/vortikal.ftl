@@ -215,7 +215,39 @@
 </#macro>
 
 
-<#macro property resource name prefix="" >
+<#function resourceTypeName resource>
+    <#local locale = springMacroRequestContext.getLocale() />
+    <#local name = resource.resourceTypeDefinition.getLocalizedName(locale) />
+    <#return name />
+</#function>
+
+
+
+<#function propValue resource name format='long' prefix=''>
+  <#local def = '' />
+  <#if VRTX_RESOURCE_TYPE_TREE?exists>
+    <#if prefix == "">
+      <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name)?exists>
+        <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name) />
+      </#if>
+    <#else>
+      <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name)??>
+        <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name) />
+      </#if>
+    </#if>
+  </#if>
+  <#if def = ''><#return '' /></#if>
+  <#if !resource.getProperty(def)?exists><#return '' /></#if>
+  <#local prop= resource.getProperty(def) />
+  <#local type = prop.definition.type />
+  <#local locale = springMacroRequestContext.getLocale() />
+  <#return prop.getFormattedValue(format, locale) />
+</#function>
+
+
+
+
+<#--macro property resource name prefix="" format="long">
   <#compress>
     <#if VRTX_RESOURCE_TYPE_TREE?exists>
       <#if prefix == "">
@@ -235,4 +267,19 @@
       </#if>
     </#if>
   </#compress>
-</#macro>
+</#macro-->
+
+
+<#function propResource resource propName>
+  <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
+  <#if prop != "">
+    <#local def = prop.definition />
+    <#local type = def.type />
+    <#if type = 'IMAGE_REF'>
+      <#return resource.getPropResource(def)?default("") />
+    </#if>
+  </#if>
+  <#return "" />
+</#function>
+
+

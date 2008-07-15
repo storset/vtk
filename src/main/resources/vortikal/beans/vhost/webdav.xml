@@ -41,7 +41,7 @@
     <property name="assertions">
       <list>
         <ref bean="webdav.davMountAcceptHeaderAssertion" />
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
         <ref bean="webdav.davMountParameterAssertion" />
       </list>
     </property>
@@ -103,7 +103,7 @@
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="GET" />
         </bean>
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="webdavCollectionListingHandler" />
@@ -122,7 +122,7 @@
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="HEAD" />
         </bean>
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="webdavCollectionListingHandler" />

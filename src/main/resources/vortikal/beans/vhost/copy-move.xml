@@ -18,7 +18,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="copy-resources" />
         </bean>
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="copyHandler" />
@@ -39,7 +39,7 @@
           <property name="parameterValue" value="move-resources" />
         </bean>
         <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="moveHandler" />

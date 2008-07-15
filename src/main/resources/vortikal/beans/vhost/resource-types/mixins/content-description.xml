@@ -69,7 +69,7 @@
   </bean>
 
   <bean id="keywordsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="contentType" value="EXTRA_CONTENT" />
+    <property name="contentRelation" value="POST_CONTENT" />
     <property name="name" value="keywords" /> 
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />
@@ -82,11 +82,6 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="CONTENT_NAMESPACE" class="org.vortikal.repository.Namespace">
-    <constructor-arg value="content" />
-    <constructor-arg value="http://www.uio.no/content" />
   </bean>
 
 </beans>

@@ -70,6 +70,7 @@ div.properties:after {
 }
 
 div.property-item {
+  /* XXX: temporary */ clear: both;
   margin-bottom: 1em;
 }
 

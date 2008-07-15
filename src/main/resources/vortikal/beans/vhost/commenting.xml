@@ -40,7 +40,7 @@
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
-        <ref bean="resourceIsCollection" />
+        <ref bean="resourceInCollection" />
         <ref bean="commenting.requestParameterIsComments" />
       </list>
     </property>

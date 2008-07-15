@@ -11,7 +11,7 @@
       <list>
         <ref bean="editor.modeParameterAssertion" />
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="resourceTypeInXhtmlTrans" />
+        <!--ref bean="resourceTypeInXhtmlTrans" /-->
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>
@@ -40,6 +40,25 @@
     <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
   </bean>
 
+  <bean id="editor.collectionEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.collectionEditHandler" />
+  </bean>
+
+  <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="typeIsArticleListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.articleListingEditHandler" />
+  </bean>
+
+
   <bean id="editor.documentEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -48,7 +67,6 @@
     </property>
     <property name="handler" ref="editor.editHandler" />
   </bean>
-
 
   <bean id="editor.browseService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-999" />
@@ -225,6 +243,20 @@
     <property name="successView" value="redirectToManage" />
   </bean>
 
+  <bean id="editor.collectionEditHandler"
+        class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.collectionResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
+  <bean id="editor.articleListingEditHandler"
+        class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.articleListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
   <bean id="editor.editHandler"
         class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="resourceManager" />
@@ -248,6 +280,64 @@
       </bean>
     </property>
   </bean>
+
+  <bean id="editor.collectionResourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="contentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            
+
+        <!--ref bean="collection.typePropDef" /-->
+        <!--ref bean="collection.recursiveListingPropDef" /-->
+        <ref bean="collection.pageLimitPropDef" />
+        <ref bean="collection.sortingPropDef" />
+        <ref bean="collection.displayLastModifiedPropDef" />
+        <ref bean="collection.displayIntroductionPropDef" />
+
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="editor.articleListingResourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="contentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+
+        <!--ref bean="collection.typePropDef" /-->
+        <ref bean="articleListing.recursiveListingPropDef" />
+        <ref bean="articleListing.limitPropDef" />
+        <ref bean="articleListing.sortingPropDef" />
+
+        <!--ref bean="articleListing.displayPublishedDatePropDef" /-->
+        <ref bean="articleListing.displayLastModifiedPropDef" />
+        <ref bean="articleListing.displayIntroductionPropDef" />
+
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
 
   <!-- Experimental "structured XHTML editor" (with managed title and h1:
 

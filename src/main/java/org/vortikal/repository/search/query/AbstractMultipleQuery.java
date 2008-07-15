@@ -38,8 +38,14 @@ public abstract class AbstractMultipleQuery implements Query {
 
     private List<Query> queries = new ArrayList<Query>();
 
-    public void add(Query query) {
+    /**
+     * Adds a sub-query to this query
+     * @param query the sub-query to add
+     * @return a reference to this query
+     */
+    public AbstractMultipleQuery add(Query query) {
         this.queries.add(query);
+        return this;
     }
     
     public List<Query> getQueries() {

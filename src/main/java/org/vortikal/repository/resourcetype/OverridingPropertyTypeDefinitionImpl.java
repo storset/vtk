@@ -30,7 +30,10 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,6 +45,8 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
+	private Map<String, String> metadata = new HashMap<String, String>();
+	
     private OverridablePropertyTypeDefinition overriddenPropDef;
     
     private CreatePropertyEvaluator createEvaluator;
@@ -189,10 +194,18 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.createProperty();
     }
 
-    public ContentType getContentType() {
-        return this.overriddenPropDef.getContentType();
+    public ContentRelation getContentRelation() {
+        return this.overriddenPropDef.getContentRelation();
     }
 
+    public void setMetadata(Map<String, String> metadata) {
+    	this.metadata = metadata;
+    }
+    
+    public Map<String, String> getMetadata() {
+    	return Collections.unmodifiableMap(this.metadata);
+    }
+    
     public String getDescription(Locale locale) {
         return this.overriddenPropDef.getDescription(locale);
     }

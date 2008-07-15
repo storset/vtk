@@ -180,7 +180,7 @@
       </map>
     </property>
     <property name="assertions">
-      <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+      <ref bean="resourceInCollection" />
     </property>
     <property name="handler" ref="manageCollectionListingHandler" />
   </bean>        
@@ -241,7 +241,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="upload-file" />
         </bean>
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="fileUploadHandler" />
@@ -259,7 +259,7 @@
     <property name="assertions">
       <list>
         <ref bean="bindPermissionAssertion" />
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="create-document" />
@@ -280,7 +280,7 @@
     <property name="assertions">
       <list>
         <ref bean="bindPermissionAssertion" />
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="create-directory" />
@@ -624,7 +624,8 @@
     </property>
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion">
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion">
+          <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
           <property name="invert" value="true" />
         </bean>
         <bean class="org.vortikal.web.service.RequestMethodAssertion">
@@ -685,7 +686,7 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
         <bean id="previewVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="preview" />
@@ -747,6 +748,10 @@
 
         <ref bean="plaintextEditPropDef" />
         <ref bean="xhtml10TransTypePropDef" />
+
+        <!-- Collection type: -->
+        <ref bean="collection.typePropDef" />
+
       </list>
     </property>
     <property name="propertyListModelName" value="basicPropList" />
@@ -1476,6 +1481,11 @@
 
   <bean id="previewImageView" parent="freemarkerView">
     <property name="url" value="pages/preview-image.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
   </bean>
 
   <bean id="previewIframeView" parent="freemarkerView">
@@ -1501,6 +1511,7 @@
     <property name="url" value="pages/preview-unavailable.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <ref bean="resourceContextProvider" />
         <ref bean="resourceDetailProvider" />
       </list>
     </property>

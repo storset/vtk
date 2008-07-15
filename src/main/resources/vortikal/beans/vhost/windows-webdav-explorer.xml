@@ -24,7 +24,7 @@
             <value>PROPFIND</value>
           </property>
         </bean>
-        <ref bean="resourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
       </list>
     </property>
     <property name="handler" ref="webdavPropfindHandler" />

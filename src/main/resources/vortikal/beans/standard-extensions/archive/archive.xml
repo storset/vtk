@@ -23,7 +23,7 @@
         <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
           <property name="username" value="root@localhost"/>
         </bean>
-        <bean class="org.vortikal.web.service.ResourceIsCollectionAssertion" />
+        <ref bean="resourceInCollection" />
         <ref bean="bindPermissionAssertion" />
       </list>
     </property>

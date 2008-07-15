@@ -76,13 +76,15 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             
             Resource resource = command.getResource();
             
-            setProperties(request, command, resource, command.getContentProperties());
-            setProperties(request, command, resource, command.getExtraContentProperties());
+            setProperties(request, command, resource, command.getPreContentProperties());
+            setProperties(request, command, resource, command.getPostContentProperties());
             
-            String content = command.getContent().getStringRepresentation();
-            String suppliedContent = request.getParameter("resource.content");
-            if (!content.equals(suppliedContent)) {
-                parseContent(command, suppliedContent);
+            if (command.getContent() != null) {
+                String content = command.getContent().getStringRepresentation();
+                String postedHtml = request.getParameter("resource.content");
+                if (!content.equals(postedHtml)) {
+                    parseContent(command, postedHtml);
+                }
             }
         } else {
             super.bind(request);
@@ -92,9 +94,10 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
     protected void setProperties(ServletRequest request,
             ResourceEditWrapper command, Resource resource,
             List<PropertyTypeDefinition> propDefs) {
+
         for (PropertyTypeDefinition propDef: propDefs) {
-            
             String value = null;
+
             if (propDef.getType().equals(PropertyType.Type.TIMESTAMP) ||
                     propDef.getType().equals(PropertyType.Type.DATE)) {
                 value = request.getParameter("resource." + propDef.getName() + ".date");
@@ -106,8 +109,9 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                     }
                     value += " " + time;
                 }
-            } else
+            } else { 
                 value = request.getParameter("resource." + propDef.getName());
+            }
 
             Property prop = resource.getProperty(propDef);
             if (prop == null) {
@@ -179,12 +183,12 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
-    protected void parseContent(ResourceEditWrapper command, String suppliedContent) {
+    protected void parseContent(ResourceEditWrapper command, String postedHtml) {
 
-        if (suppliedContent == null) suppliedContent = "";
+        if (postedHtml == null) postedHtml = "";
         try {
-            suppliedContent = "<html><head></head><body>" + suppliedContent + "</body></html>";
-            ByteArrayInputStream in = new ByteArrayInputStream(suppliedContent.getBytes(command.getResource().getCharacterEncoding()));
+            postedHtml = "<html><head></head><body>" + postedHtml + "</body></html>";
+            ByteArrayInputStream in = new ByteArrayInputStream(postedHtml.getBytes(command.getResource().getCharacterEncoding()));
             HtmlPage parsed = this.htmlParser.parse(in, command.getResource().getCharacterEncoding());
 
             HtmlElement body = command.getContent().selectSingleElement("html.body");

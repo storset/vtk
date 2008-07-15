@@ -25,6 +25,8 @@
 
 <#list doc.body.release as release>
 
+  <p>
+
   <h2>Release ${release.@version} - ${release.@date}</h2>
 
 
@@ -63,6 +65,8 @@
       </#list>
     </ul>
   </#if>
+
+  </p>
 
 </#list>
 

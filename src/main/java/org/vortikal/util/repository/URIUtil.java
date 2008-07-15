@@ -149,19 +149,6 @@ public class URIUtil {
     }
 
     
-    /**
-     * Finds the grandparent of a URI.
-     * 
-     * @param uri the URI for which to find the grandparent. Must start
-     * with a <code>/</code>.
-     * @return the expanded URI. If the provided URI or its parent is the 
-     * root URI <code>/</code>, <code>null</code> is returned.
-     * @throws IllegalArgumentException is thrown by envoked method getParentURI()
-     * @deprecated This method will be removed
-     */
-    public static String getGrandparentURI(String uri) {
-        return getParentURI(getParentURI(uri));
-    }
     
     /**
      * Get list of all absolute ancestor URIs for given absolute URI. 
@@ -246,7 +233,8 @@ public class URIUtil {
     }
     
 
-    /** Resolve path relative to base, reworked from AbstractPathBasedURIResolver
+    /** 
+     * Resolve path relative to base, reworked from AbstractPathBasedURIResolver
      * @param path
      * @param base
      * @return null if path is a qualified url or base isn't an absolute path, otherwise

@@ -89,8 +89,8 @@
     <#assign mediaRes = vrtx.propResource(resource, "media") />
     <#assign media = vrtx.propValue(resource, "media") />
 
-    <#if mediaRes != "">
-      <#if mediaRes.resourceType == 'audio'>
+    <#if media != ""> 
+      <#if mediaRes != "" && mediaRes.resourceType == 'audio'>
       <script type="text/javascript" language="JavaScript" src="${flashPlayer.jsURL?html}/"></script>
       <object type="application/x-shockwave-flash" data="${flashPlayer.flashURL?html}" id="audioplayer1" height="24" width="290">
 	<param name="movie" value="${flashPlayer.flashURL?html}"/>
@@ -112,11 +112,14 @@
       <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
       </#if>
     </#if>
+
     <#-- Authors and published date --> 
 
     <#assign authors = vrtx.propValue(resource, "authors", "enumerated") />
     <#assign published = vrtx.propValue(resource, "published-date") />
     <#if authors != "" || published != "">
+      <!-- hr class="vrtx-byline"/ -->
+
       <div class="vrtx-byline">
         <#if authors != "" && published != "">
           <@vrtx.msg code="article.by" /> ${authors?html} <br />${published}

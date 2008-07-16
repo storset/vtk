@@ -32,6 +32,8 @@
     <property name="sortPropDef" ref="collection.sortingPropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
+    <property name="hideLastModifiedPropDef" ref="collection.hideLastModifiedPropDef" />
+    <property name="hideIntroductionPropDef" ref="collection.hideIntroductionPropDef" />
   </bean>
 
 

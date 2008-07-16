@@ -32,8 +32,9 @@
         <ref bean="collection.recursiveListingPropDef" />
         <ref bean="collection.pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
-        <ref bean="collection.displayLastModifiedPropDef" />
-        <ref bean="collection.displayIntroductionPropDef" />
+
+        <ref bean="collection.hideLastModifiedPropDef" />
+        <ref bean="collection.hideIntroductionPropDef" />
       </list>
     </property>
   </bean>
@@ -109,7 +110,12 @@
     </property>
     <property name="metadata">
       <map>
-        <entry key="editingHints" value="radio" />
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+        <!--entry key="editingHints" value="radio" /-->
       </map>
     </property>
   </bean>
@@ -189,14 +195,18 @@
     </property>
     <property name="metadata">
       <map>
-        <entry key="editingHints" value="radio" />
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
       </map>
     </property>
   </bean>
 
 
-  <bean id="collection.displayLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="display-last-modified" />
+  <bean id="collection.hideLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="hide-last-modified" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -209,11 +219,20 @@
         </property>
       </bean>
     </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 
-  <bean id="collection.displayIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="display-introduction" />
+  <bean id="collection.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="hide-introduction" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -225,6 +244,15 @@
           </list>
         </property>
       </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
     </property>
   </bean>
 

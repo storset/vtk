@@ -42,12 +42,12 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition.ContentRelati
 
 public class ResourceTypeEditablePropertyProvider implements EditablePropertyProvider {
 	
-	public List<PropertyTypeDefinition> getContentProperties(Resource resource) {
+	public List<PropertyTypeDefinition> getPreContentProperties(Resource resource) {
         ContentRelation type = PropertyTypeDefinition.ContentRelation.PRE_CONTENT;
 	    return getPropertyDefinitionsOfType(resource, type);
 	}
 
-    public List<PropertyTypeDefinition> getExtraContentProperties(Resource resource) {
+    public List<PropertyTypeDefinition> getPostContentProperties(Resource resource) {
         ContentRelation type = PropertyTypeDefinition.ContentRelation.POST_CONTENT;
         return getPropertyDefinitionsOfType(resource, type);
     }

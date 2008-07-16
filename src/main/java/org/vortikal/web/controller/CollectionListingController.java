@@ -83,8 +83,8 @@ public class CollectionListingController implements Controller {
     private PropertyTypeDefinition recursivePropDef;
     private PropertyTypeDefinition sortPropDef;
 
-//    private PropertyTypeDefinition displayLastModifiedPropDef;
-//    private PropertyTypeDefinition displayIntroductionPropDef;
+    private PropertyTypeDefinition hideLastModifiedPropDef;
+    private PropertyTypeDefinition hideIntroductionPropDef;
     
 
 	public ModelAndView handleRequest(HttpServletRequest request,
@@ -180,13 +180,29 @@ public class CollectionListingController implements Controller {
 				prevURL.setParameter("page", String.valueOf(page - 1));
 			}
 		}
-		//model.put("resource", new ResourceWrapper(collection));
+
+		boolean displayIntroduction = true;
+		if (collection.getProperty(this.hideIntroductionPropDef) != null) {
+			displayIntroduction = false;
+		}
+
+		boolean displayLastModified = true;
+		if (collection.getProperty(this.hideLastModifiedPropDef) != null) {
+			displayLastModified = false;
+		}
+
+		
 		model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
 		model.put("files", files);
 		model.put("collections", collections);
+		
+		
 		model.put("urls", urls);
 		model.put("nextURL", nextURL);
 		model.put("prevURL", prevURL);
+		
+		model.put("displayIntroduction", displayIntroduction);
+		model.put("displayLastModified", displayLastModified);
 		
 		Map<String, Object> mainModel = new HashMap<String, Object>();
 		mainModel.put("collectionListing", model);
@@ -233,12 +249,12 @@ public class CollectionListingController implements Controller {
 		this.lastModifiedPropDef = lastModifiedPropDef;
 	}
 
-//	@Required public void setDisplayLastModifiedPropDef(PropertyTypeDefinition displayLastModifiedPropDef) {
-//		this.displayLastModifiedPropDef = displayLastModifiedPropDef;
-//	}
-//
-//	@Required public void setDisplayIntroductionPropDef(PropertyTypeDefinition displayIntroductionPropDef) {
-//		this.displayIntroductionPropDef = displayIntroductionPropDef;
-//	}
+	@Required public void setHideLastModifiedPropDef(PropertyTypeDefinition hideLastModifiedPropDef) {
+		this.hideLastModifiedPropDef = hideLastModifiedPropDef;
+	}
+
+	@Required public void setHideIntroductionPropDef(PropertyTypeDefinition hideIntroductionPropDef) {
+		this.hideIntroductionPropDef = hideIntroductionPropDef;
+	}
 
 }

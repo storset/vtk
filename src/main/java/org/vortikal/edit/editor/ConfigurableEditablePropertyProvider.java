@@ -40,27 +40,27 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class ConfigurableEditablePropertyProvider implements
         EditablePropertyProvider {
 
-    private List<PropertyTypeDefinition> contentProperties = new ArrayList<PropertyTypeDefinition>();
-    private List<PropertyTypeDefinition> extraContentProperties = new ArrayList<PropertyTypeDefinition>();
+    private List<PropertyTypeDefinition> preContentProperties = new ArrayList<PropertyTypeDefinition>();
+    private List<PropertyTypeDefinition> postContentProperties = new ArrayList<PropertyTypeDefinition>();
     
-    public List<PropertyTypeDefinition> getContentProperties(Resource resource) {
-        return Collections.unmodifiableList(this.contentProperties);
+    public List<PropertyTypeDefinition> getPreContentProperties(Resource resource) {
+        return Collections.unmodifiableList(this.preContentProperties);
 
     }
 
-    public void setContentProperties(
-            List<PropertyTypeDefinition> contentProperties) {
-        this.contentProperties = contentProperties;
-    }
-
-    public void setExtraContentProperties(
-            List<PropertyTypeDefinition> extraContentProperties) {
-        this.extraContentProperties = extraContentProperties;
-    }
-
-    public List<PropertyTypeDefinition> getExtraContentProperties(
+    public List<PropertyTypeDefinition> getPostContentProperties(
             Resource resource) {
-        return Collections.unmodifiableList(this.extraContentProperties);
+        return Collections.unmodifiableList(this.postContentProperties);
+    }
+
+    public void setPreContentProperties(
+            List<PropertyTypeDefinition> preContentProperties) {
+        this.preContentProperties = preContentProperties;
+    }
+
+    public void setPostContentProperties(
+            List<PropertyTypeDefinition> postContentProperties) {
+        this.postContentProperties = postContentProperties;
     }
 
 }

@@ -272,7 +272,7 @@
     <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="contentProperties">
+        <property name="preContentProperties">
           <list>
             <ref bean="htmlTitlePropDef" />
           </list>
@@ -289,7 +289,7 @@
     <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="contentProperties">
+        <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
@@ -300,8 +300,8 @@
         <!--ref bean="collection.recursiveListingPropDef" /-->
         <ref bean="collection.pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
-        <ref bean="collection.displayLastModifiedPropDef" />
-        <ref bean="collection.displayIntroductionPropDef" />
+        <ref bean="collection.hideLastModifiedPropDef" />
+        <ref bean="collection.hideIntroductionPropDef" />
 
           </list>
         </property>
@@ -317,7 +317,7 @@
     <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="contentProperties">
+        <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />

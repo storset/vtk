@@ -46,6 +46,14 @@
   <#assign h1 = title />
 </#if>
 
+<#-- Introduction --> 
+<#function getIntroduction resource>
+  <#local introduction = vrtx.propValue(resource, "introduction") />
+  <#if !introduction?has_content>
+    <#local introduction = vrtx.propValue(resource, "description", "", "content") />
+  </#if>
+  <#return introduction />
+</#function>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -107,20 +115,12 @@
       </#if>
     </#if>
 
-    <#-- Introduction --> 
-
-    <#assign introduction = vrtx.propValue(resource, "introduction") />
-    <#if introduction != "">
-      <div class="vrtx-introduction">
-        ${introduction}
-      </div>
-    </#if>
-
-
-    <#assign description = vrtx.propValue(resource, "introduction", "", "") />
-    <#if !description?has_content>
-      <#assign description = vrtx.propValue(resource, "description", "", "content") />
-    </#if>
+  <#assign introduction = getIntroduction(resource) />
+  <#if introduction?has_content>
+  <div class="vrtx-introduction">
+    ${introduction}
+  </div>
+  </#if>
 
   <#if collections?size &gt; 0>
     <#if collections?size &gt; 15>
@@ -183,18 +183,23 @@
         <#if collectionListing.urls[r.URI]?exists>
           <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "" "")?html}</a></h3>
         <#else>
-          <h3>${resourceTitle(r)}</h3>
+          <h3>${vrtx.propValue(r, "title", "" "")?html}</h3>
         </#if>
 
-        <#assign description = vrtx.propValue(r, "description", "content", "") />
-        <#if description?has_content>
+        <#if collectionListing.displayIntroduction>
+        <#assign introduction = getIntroduction(r) />
+        <#if introduction?has_content>
           <p class="vrtx-description">
-            ${description?html}
+            ${introduction}
           </p>
         </#if>
+        </#if>
+
+        <#if collectionListing.displayLastModified>
         <div class="vrtx-footer">
           <span class="vrtx-last-modified"><@vrtx.msg code="viewCollectionListing.lastModified" default="Last modified"/>: ${vrtx.propValue(r, "lastModified", "dd.MM.yyyy")?html}</span>
         </div>
+        </#if>
       </div>
     </#list>
    </div>

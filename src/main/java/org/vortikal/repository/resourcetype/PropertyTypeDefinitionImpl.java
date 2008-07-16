@@ -54,7 +54,7 @@ import org.vortikal.security.Principal;
  */
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
 
-	private Map<String, String> metadata = new HashMap<String, String>();
+	private Map<String, Object> metadata = new HashMap<String, Object>();
 	
 	private Namespace namespace;
     
@@ -97,11 +97,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.contentRelation;
     }
     
-    public void setMetadata(Map<String, String> metadata) {
+    public void setMetadata(Map<String, Object> metadata) {
     	this.metadata = metadata;
     }
     
-    public Map<String, String> getMetadata() {
+    public Map<String, Object> getMetadata() {
     	return Collections.unmodifiableMap(this.metadata);
     }
     

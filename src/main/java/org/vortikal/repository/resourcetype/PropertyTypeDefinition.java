@@ -56,7 +56,7 @@ public interface PropertyTypeDefinition {
      */
     public ContentRelation getContentRelation();
 
-    public Map<String, String> getMetadata();
+    public Map<String, Object> getMetadata();
     
     public Namespace getNamespace();
     

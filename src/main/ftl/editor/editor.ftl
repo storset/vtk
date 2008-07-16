@@ -84,9 +84,9 @@
 
       function disableSubmit() {
          // XXX: 
-           // document.getElementById("saveButton").disabled = true;
-           // document.getElementById("saveAndQuitButton").disabled = true;
-           return true;
+          document.getElementById("saveButton").disabled = true;
+          document.getElementById("saveAndQuitButton").disabled = true;
+          return true;
       }
 
       function enableSubmit() {
@@ -127,7 +127,7 @@
 
       <#if (resource.content)?exists>
       <div class="html-content">
-      <label for="resource.content"><@vrtx.msg code="editor.content" /></label> 
+      <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
 
        <@fck 'resource.content' true />
@@ -144,10 +144,18 @@
        <input type="submit" id="saveAndQuitButton" onClick="performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
        <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
+
+      <#if (resource.content)?exists>
       <script language="Javascript" type="text/javascript"><!--
          disableSubmit();
         // -->
       </script>
+      <#else>
+      <script language="Javascript" type="text/javascript"><!--
+         enableSubmit();
+        // -->
+      </script>
+      </#if>
      </form>
     </body>
 </html>
@@ -247,6 +255,7 @@
 
 <#macro propsForm propDefs>
     <#local locale = springMacroRequestContext.getLocale() />
+
     <#list propDefs as propDef>
       <#local localizedName = propDef.getLocalizedName(locale) />
       <#local description = propDef.getDescription(locale)?default("") />
@@ -254,10 +263,21 @@
       <#local value = resource.getValue(propDef) />
       <#local type = propDef.type />
       <#local error = resource.getError(propDef)?default('') />
+      <#local useRadioButtons = false />
+      <#if ((propDef.metadata.editingHints.radio)?exists)>
+        <#local useRadioButtons = true />
+      </#if>          
+      <#local displayLabel = true />
+      <#if ((propDef.metadata.editingHints.hideLabel)?exists)>
+        <#local displayLabel = false />
+      </#if>          
+
       
       
       <div class="${name} property-item">
-      <label for="resource.${name}">${localizedName}</label> 
+      <#if displayLabel>
+      <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
+      </#if>
       <#if type = 'HTML' && name != 'userTitle' && name != 'title'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
@@ -374,7 +394,7 @@
          </#if>
          cal1.render();
 
-          cal1.selectEvent.subscribe( function(type, dates) {
+          cal1.selectEvent.subscribe(function(type, dates) {
              var date = this._toDate(dates[0][0]);
              var year = date.getFullYear();
              var monthNumber = date.getMonth() + 1;
@@ -453,36 +473,44 @@
       <#else>
 
         <#if (propDef.vocabulary)?exists>
+          <#assign allowedValues = propDef.vocabulary.allowedValues />
+          <#if allowedValues?size = 1 && !useRadioButtons>
 
-          <#assign radioBtn = false />
-          <#if (propDef.vocabulary.allowedValues?size == 1) &&
-               ((propDef.metadata)?exists && 
-               (propDef.metadata.editingHints)?exists &&
-               propDef.metadata.editingHints = 'radio')>
-            <#assign radioBtn = true />
-          </#if>
-
-          <#if propDef.vocabulary.allowedValues?size = 1 && !radioBtn>
-            ${propDef.vocabulary.allowedValues[0]?html} 
-            <#if value == propDef.vocabulary.allowedValues[0]>
-              <input name="resource.${name}" type="checkbox" value="${propDef.vocabulary.allowedValues[0]?html}" checked="true" />
-            <#else>
-              <input name="resource.${name}" type="checkbox" value="${propDef.vocabulary.allowedValues[0]?html}"/>
-            </#if>
-
-          <#elseif radioBtn>
-            <#if !propDef.mandatory>
-              <#if value?length = 0>
-                <input name="resource.${name}" type="radio" value="" checked="checked">unspecified</input>
+            <#if type = 'BOOLEAN'>
+              <#if value == allowedValues[0]>
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="true" />
               <#else>
-                <input name="resource.${name}" type="radio" value="">unspecified</input>
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
+              </#if>
+              <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
+            <#else>
+              <label class="resource.${name}">${allowedValues[0]?html}</label>
+              <#if value == allowedValues[0]>
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="true" />
+              <#else>
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}"/>
               </#if>
             </#if>
-            <#list propDef.vocabulary.allowedValues as v>
-              <#if v == value>
-                <input name="resource.${name}" type="radio" value="${propDef.vocabulary.allowedValues[0]?html}" checked="true">${propDef.vocabulary.allowedValues[0]?html}</input>
+
+          <#elseif useRadioButtons>
+
+            <#if !propDef.mandatory>
+              <#if value?length = 0>
+                <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
+                <label class="resource.${name}" for="resource.${name}.unspecified">unspecified</label>
               <#else>
-                <input name="resource.${name}" type="radio" value="${propDef.vocabulary.allowedValues[0]?html}">${propDef.vocabulary.allowedValues[0]?html}</inpu>
+                <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
+                <label class="resource.${name}" for="resource.${name}.unspecified">unspecified</label>
+              </#if>
+            </#if>
+
+            <#list allowedValues as v>
+              <#if v == value>
+                <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="true" />
+                <label class="resource.${name}" for="resource.${name}.${v?html}">${v?html}</label>
+              <#else>
+                <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
+                <label class="resource.${name}" for="resource.${name}.${v?html}">${v?html}</label>
               </#if>
             </#list>
           <#else>
@@ -490,7 +518,7 @@
               <#if !propDef.mandatory>
                 <option value="">unspecified</option>
               </#if>
-              <#list propDef.vocabulary.allowedValues as v>
+              <#list allowedValues as v>
                 <#if v == value>
                   <option selected="true" value="${v?html}">${v?html}</option>
                 <#else>

@@ -45,7 +45,7 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
-	private Map<String, String> metadata = new HashMap<String, String>();
+	private Map<String, Object> metadata = new HashMap<String, Object>();
 	
     private OverridablePropertyTypeDefinition overriddenPropDef;
     
@@ -198,11 +198,11 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getContentRelation();
     }
 
-    public void setMetadata(Map<String, String> metadata) {
+    public void setMetadata(Map<String, Object> metadata) {
     	this.metadata = metadata;
     }
     
-    public Map<String, String> getMetadata() {
+    public Map<String, Object> getMetadata() {
     	return Collections.unmodifiableMap(this.metadata);
     }
     

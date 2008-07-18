@@ -47,7 +47,9 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
+import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
@@ -55,10 +57,8 @@ import org.vortikal.repository.search.SortField;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
@@ -67,6 +67,7 @@ import org.vortikal.web.service.URL;
 
 public class CollectionListingController implements Controller {
 
+	
 	private int defaultPageLimit = 20;
 	
 	private Repository repository;
@@ -76,16 +77,24 @@ public class CollectionListingController implements Controller {
     
 	private String viewName;
 
-    private PropertyTypeDefinition titlePropDef;
-    private PropertyTypeDefinition lastModifiedPropDef;
+	private String query;
+	private QueryParser queryParser;
+	
+	private ResourceTypeDefinition resourceType;
+	private List<Query> appendedQueries;
+	
+	private PropertyTypeDefinition defaultSortPropDef;
+	private Map<String, PropertyTypeDefinition> sortPropertyMapping;
+
+	private SortFieldDirection defaultSortOrder;
+	private Map<String, SortFieldDirection> sortOrderMapping;
 	
     private PropertyTypeDefinition pageLimitPropDef;
     private PropertyTypeDefinition recursivePropDef;
     private PropertyTypeDefinition sortPropDef;
 
-    private PropertyTypeDefinition hideLastModifiedPropDef;
-    private PropertyTypeDefinition hideIntroductionPropDef;
-    
+	private List<PropertyDisplayConfig> listableProperties;
+        
 
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -123,26 +132,30 @@ public class CollectionListingController implements Controller {
 		}
 		int offset = page * pageLimit;
 
-		PropertyTypeDefinition sortProp = this.lastModifiedPropDef;
-		SortFieldDirection sortFieldDirection = SortFieldDirection.DESC;
+		PropertyTypeDefinition sortProp = this.defaultSortPropDef;
+		SortFieldDirection sortFieldDirection = this.defaultSortOrder;
+
 		if (collection.getProperty(this.sortPropDef) != null) {
 			String sortString = collection.getProperty(this.sortPropDef).getStringValue();
-			if ("title".equals(sortString)) {
-				sortProp = this.titlePropDef;
-				sortFieldDirection = SortFieldDirection.ASC;
+			if (this.sortPropertyMapping.containsKey(sortString)) {
+				sortProp = this.sortPropertyMapping.get(sortString);
+			}
+			if (this.sortOrderMapping.containsKey(sortString)) {
+				sortFieldDirection = this.sortOrderMapping.get(sortString);
 			}
 		}
 		
 		Search search = new Search();
-		AndQuery query = new AndQuery();
-		query.add(new UriPrefixQuery(collection.getURI()))
-             .add(new TypeTermQuery("file", TermOperator.IN));
-			 
+		Query query = this.queryParser.parse(this.query);
+
+		AndQuery andQuery = new AndQuery();
+		andQuery.add(query);
 		if (!recursive) {
-	        int depth = URLUtil.splitUri(uri).length;
-	        query.add(new UriDepthQuery(depth));
+			int depth = URLUtil.splitUri(uri).length;
+			andQuery.add(new UriDepthQuery(depth));
 		}
-		search.setQuery(query);
+
+		search.setQuery(andQuery);
 		search.setLimit(pageLimit + 1);
 		search.setCursor(offset);
 		
@@ -181,29 +194,27 @@ public class CollectionListingController implements Controller {
 			}
 		}
 
-		boolean displayIntroduction = true;
-		if (collection.getProperty(this.hideIntroductionPropDef) != null) {
-			displayIntroduction = false;
+		List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
+		for (PropertyDisplayConfig config: this.listableProperties) {
+			Property hide = null;
+			if (config.getPreventDisplayProperty() != null) {
+				hide = collection.getProperty(config.getPreventDisplayProperty());
+			}
+			if (hide == null) {
+				displayPropDefs.add(config.getDisplayProperty());
+			}
 		}
-
-		boolean displayLastModified = true;
-		if (collection.getProperty(this.hideLastModifiedPropDef) != null) {
-			displayLastModified = false;
-		}
-
 		
 		model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
 		model.put("files", files);
 		model.put("collections", collections);
 		
-		
 		model.put("urls", urls);
 		model.put("nextURL", nextURL);
 		model.put("prevURL", prevURL);
 		
-		model.put("displayIntroduction", displayIntroduction);
-		model.put("displayLastModified", displayLastModified);
-		
+		model.put("displayPropDefs", displayPropDefs);
+
 		Map<String, Object> mainModel = new HashMap<String, Object>();
 		mainModel.put("collectionListing", model);
 		return new ModelAndView(this.viewName, mainModel);
@@ -229,6 +240,10 @@ public class CollectionListingController implements Controller {
 		this.resourceManager = resourceManager;
 	}
 
+	@Required public void setResourceType(ResourceTypeDefinition resourceType) {
+		this.resourceType = resourceType;
+	}
+
 	@Required public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
 		this.pageLimitPropDef = pageLimitPropDef;
 	}
@@ -241,20 +256,56 @@ public class CollectionListingController implements Controller {
 		this.sortPropDef = sortPropDef;
 	}
 
-	@Required public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
-		this.titlePropDef = titlePropDef;
+	@Required public void setDefaultSortPropDef(PropertyTypeDefinition defaultSortPropDef) {
+		this.defaultSortPropDef = defaultSortPropDef;
 	}
 
-	@Required public void setLastModifiedPropDef(PropertyTypeDefinition lastModifiedPropDef) {
-		this.lastModifiedPropDef = lastModifiedPropDef;
+	@Required public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
+		this.listableProperties = listableProperties;
 	}
 
-	@Required public void setHideLastModifiedPropDef(PropertyTypeDefinition hideLastModifiedPropDef) {
-		this.hideLastModifiedPropDef = hideLastModifiedPropDef;
+	@Required public void setSortPropertyMapping(Map<String, PropertyTypeDefinition> sortPropertyMapping) {
+		this.sortPropertyMapping = sortPropertyMapping;
 	}
 
-	@Required public void setHideIntroductionPropDef(PropertyTypeDefinition hideIntroductionPropDef) {
-		this.hideIntroductionPropDef = hideIntroductionPropDef;
+	@Required public void setSortOrderMapping(Map<String, SortFieldDirection> sortOrderMapping) {
+		this.sortOrderMapping = sortOrderMapping;
 	}
+
+	@Required public void setDefaultSortOrder(SortFieldDirection defaultSortOrder) {
+		this.defaultSortOrder = defaultSortOrder;
+	}
+
+	public void setAppendedQueries(List<Query> appendedQueries) {
+		this.appendedQueries = appendedQueries;
+	}
+
+	@Required public void setQuery(String query) {
+		this.query = query;
+	}
+
+	@Required public void setQueryParser(QueryParser queryParser) {
+		this.queryParser = queryParser;
+	}
+
+
+	public static class PropertyDisplayConfig {
+		private PropertyTypeDefinition displayProperty;
+		private PropertyTypeDefinition preventDisplayProperty;
+
+		public void setDisplayProperty(PropertyTypeDefinition displayProperty) {
+			this.displayProperty = displayProperty;
+		}
+		public PropertyTypeDefinition getDisplayProperty() {
+			return displayProperty;
+		}
+		public void setPreventDisplayProperty(PropertyTypeDefinition preventDisplayProperty) {
+			this.preventDisplayProperty = preventDisplayProperty;
+		}
+		public PropertyTypeDefinition getPreventDisplayProperty() {
+			return preventDisplayProperty;
+		}
+	}
+
 
 }

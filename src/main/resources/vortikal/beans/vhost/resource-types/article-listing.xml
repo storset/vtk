@@ -10,44 +10,25 @@
     <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="assertions">
       <list>
-        <ref bean="typeIsArticleListing" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />    
+          <property name="value" value="article-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
       </list>
     </property>
     <property name="propertyTypeDefinitions">
       <list>
 
-        <ref bean="articleListing.recursiveListingPropDef" />
-        <ref bean="articleListing.limitPropDef" />
         <ref bean="articleListing.sortingPropDef" />
-        <ref bean="articleListing.displayLastModifiedPropDef" />
-        <ref bean="articleListing.displayIntroductionPropDef" />
+
+        <ref bean="articleListing.hidePublishedDatePropDef" />
+        <ref bean="articleListing.hideIntroductionPropDef" />
+        <ref bean="articleListing.hideIntroductionImagePropDef" />
 
       </list>
     </property>
-  </bean>
-  
-  <bean id="articleListing.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="recursive-listing" />
-    <property name="type" value="BOOLEAN" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="defaultValue" ref="VALUE_TRUE" />
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="values">
-          <list>
-            <ref bean="VALUE_TRUE" />
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="articleListing.limitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="listing-limit" />
-    <property name="type" value="LONG" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
   </bean>
 
   <bean id="articleListing.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
@@ -64,20 +45,24 @@
                 <value>title</value>
               </constructor-arg>
             </bean>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>publishedDate</value>
-              </constructor-arg>
-            </bean>
           </list>
         </property>
       </bean>
     </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 
-  <bean id="articleListing.displayLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="display-last-modified" />
+  <bean id="articleListing.hidePublishedDatePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="hide-published-date" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -90,11 +75,20 @@
         </property>
       </bean>
     </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 
-  <bean id="articleListing.displayIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="display-introduction" />
+  <bean id="articleListing.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="hide-introduction" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -107,15 +101,49 @@
         </property>
       </bean>
     </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
 
-  <bean id="typeIsArticleListing" 
-        class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="type" />    
-    <property name="value" value="article-listing" />
-    <property name="checkExistenceOnly" value="false" />
+
+  <bean id="articleListing.hideIntroductionImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="hide-introduction-image" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="resourceIsArticleListing"
+        class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="articleListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
   </bean>
 
 

@@ -43,7 +43,11 @@
     <property name="parentTypeDefinition" ref="documentResourceTypeDefinition" />
     <property name="assertions">
       <list>
-        <ref bean="isArticleAssertion" />
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="xhtml10-type" />    
+          <property name="value" value="article" />
+        </bean>
       </list>
     </property>
     <property name="propertyTypeDefinitions">
@@ -55,12 +59,6 @@
     </property>
   </bean>
 
-  <bean id="isArticleAssertion" 
-        class="org.vortikal.web.service.ResourcePropertyAssertion">
-    <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="name" value="xhtml10-type" />    
-    <property name="value" value="article" />
-  </bean>
 
   <!--
   <bean id="introductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

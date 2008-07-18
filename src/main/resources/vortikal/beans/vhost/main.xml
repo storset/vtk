@@ -30,7 +30,8 @@
   <import resource="system-decorating.xml" />
   <import resource="controllers.xml" />
   <import resource="service.xml" />
-  <import resource="view-collectionlisting.xml" />
+  <import resource="view-collection-listing.xml" />
+  <import resource="view-article-listing.xml" />
   <import resource="manage.xml" />
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />

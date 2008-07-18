@@ -476,7 +476,7 @@
           <#assign allowedValues = propDef.vocabulary.allowedValues />
           <#if allowedValues?size = 1 && !useRadioButtons>
 
-            <#if type = 'BOOLEAN'>
+            <#if type = 'BOOLEAN' && !displayLabel>
               <#if value == allowedValues[0]>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="true" />
               <#else>

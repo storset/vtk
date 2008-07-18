@@ -186,7 +186,7 @@
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
-                <value>title</value>
+                <value>lastModified</value>
               </constructor-arg>
             </bean>
           </list>

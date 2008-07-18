@@ -8,6 +8,16 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
+  <bean id="SORT_ORDER.ASC" class="org.vortikal.repository.search.SortFieldDirection"
+        factory-method="valueOf">
+    <constructor-arg value="ASC" />
+  </bean>
+
+  <bean id="SORT_ORDER.DESC" class="org.vortikal.repository.search.SortFieldDirection"
+        factory-method="valueOf">
+    <constructor-arg value="DESC" />
+  </bean>
+
   <bean id="searchParser" class="org.vortikal.repository.search.ParserImpl">
     <property name="parserFactory" ref="queryParserFactory" />
     <property name="queryStringPreProcessor" ref="queryStringPreProcessor" />

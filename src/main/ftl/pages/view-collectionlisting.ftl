@@ -160,46 +160,31 @@
 
   <#if resources?size &gt; 0>
     <div class="vrtx-resources">
-    <!-- h2><@vrtx.msg code="viewCollectionListing.resources" default="Resources"/></h2 -->
     
-    <#--
-    <p class="sort">
-      <span class="label"><@vrtx.msg code="viewCollectionListing.sortBy" default="Sort by"/>:</span>
-      <#if true && collectionListing.sortProperty = 'last-modified'>
-        <a href="${collectionListing.sortURLs['title']?html}">
-          <@vrtx.msg code="viewCollectionListing.title" default="Title"/></a> |
-        <span class="vrtx-active-sort">
-          <@vrtx.msg code="viewCollectionListing.lastModified" default="Last Modified"/></span>
-      <#else>
-        <span class="vrtx-active-sort">
-        <@vrtx.msg code="viewCollectionListing.title" default="Title"/></span> |
-      <a href="${collectionListing.sortURLs['last-modified']?html}">
-        <@vrtx.msg code="viewCollectionListing.lastModified" default="Last Modified"/></a>
-      </#if>
-    </p>
-    -->
     <#list resources as r>
       <div class="vrtx-resource">
         <#if collectionListing.urls[r.URI]?exists>
-          <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "" "")?html}</a></h3>
+          <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "" "")}</a></h3>
         <#else>
-          <h3>${vrtx.propValue(r, "title", "" "")?html}</h3>
+          <h3>${vrtx.propValue(r, "title", "" "")}</h3>
         </#if>
 
-        <#if collectionListing.displayIntroduction>
-        <#assign introduction = getIntroduction(r) />
-        <#if introduction?has_content>
-          <p class="vrtx-description">
-            ${introduction}
-          </p>
-        </#if>
-        </#if>
+        <#list collectionListing.displayPropDefs as displayPropDef>
 
-        <#if collectionListing.displayLastModified>
-        <div class="vrtx-footer">
-          <span class="vrtx-last-modified"><@vrtx.msg code="viewCollectionListing.lastModified" default="Last modified"/>: ${vrtx.propValue(r, "lastModified", "dd.MM.yyyy")?html}</span>
-        </div>
-        </#if>
+          <#if displayPropDef.name = 'introduction'>
+            <#assign val = getIntroduction(r) />
+          <#elseif displayPropDef.type = 'IMAGE_REF'>
+            <#assign val><img class="vrtx-prop" src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
+          <#else>
+            <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- XXX -->
+          </#if>
+
+          <#if val?has_content>
+            <div class="vrtx-prop ${displayPropDef.name}">
+              ${val}
+            </div>
+          </#if>
+        </#list>
       </div>
     </#list>
    </div>
@@ -208,7 +193,6 @@
   <#if collectionListing.prevURL?exists>
     <a href="${collectionListing.prevURL?html}">previous</a>&nbsp;
   </#if>
-
   <#if collectionListing.nextURL?exists>
     <a href="${collectionListing.nextURL?html}">next</a>
   </#if>

@@ -27,16 +27,40 @@
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
+    <property name="resourceType" ref="fileResourceTypeDefinition" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
-    <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
-    <property name="titlePropDef" ref="titlePropDef" />
-    <property name="hideLastModifiedPropDef" ref="collection.hideLastModifiedPropDef" />
-    <property name="hideIntroductionPropDef" ref="collection.hideIntroductionPropDef" />
+    <property name="query">
+      <value>uri = {$currentFolder}/* AND type IN file</value>
+    </property>
+    <property name="queryParser" ref="searchParser" />
+    <property name="defaultSortPropDef" ref="titlePropDef" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
+    <property name="sortPropertyMapping">
+      <map>
+        <entry key="lastModified" value-ref="lastModifiedPropDef" />
+      </map>
+    </property>
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="lastModifiedPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
+        </bean>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
   </bean>
-
-
 
   <bean id="collectionListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">

@@ -52,7 +52,7 @@
   <bean id="editor.articleListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
-        <ref bean="typeIsArticleListing" />
+        <ref bean="resourceIsArticleListing" />
       </list>
     </property>
     <property name="handler" ref="editor.articleListingEditHandler" />
@@ -295,13 +295,11 @@
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             
-
-        <!--ref bean="collection.typePropDef" /-->
-        <!--ref bean="collection.recursiveListingPropDef" /-->
-        <ref bean="collection.pageLimitPropDef" />
-        <ref bean="collection.sortingPropDef" />
-        <ref bean="collection.hideLastModifiedPropDef" />
-        <ref bean="collection.hideIntroductionPropDef" />
+            <!--ref bean="collection.recursiveListingPropDef" /-->
+            <ref bean="collection.pageLimitPropDef" />
+            <ref bean="collection.sortingPropDef" />
+            <ref bean="collection.hideLastModifiedPropDef" />
+            <ref bean="collection.hideIntroductionPropDef" />
 
           </list>
         </property>
@@ -323,14 +321,14 @@
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
 
-        <!--ref bean="collection.typePropDef" /-->
-        <ref bean="articleListing.recursiveListingPropDef" />
-        <ref bean="articleListing.limitPropDef" />
-        <ref bean="articleListing.sortingPropDef" />
+            <!--ref bean="articleListing.recursiveListingPropDef" /-->
+            <ref bean="collection.pageLimitPropDef" />
 
-        <!--ref bean="articleListing.displayPublishedDatePropDef" /-->
-        <ref bean="articleListing.displayLastModifiedPropDef" />
-        <ref bean="articleListing.displayIntroductionPropDef" />
+            <ref bean="articleListing.sortingPropDef" />
+
+            <ref bean="articleListing.hidePublishedDatePropDef" />
+            <ref bean="articleListing.hideIntroductionPropDef" />
+            <ref bean="articleListing.hideIntroductionImagePropDef" />
 
           </list>
         </property>

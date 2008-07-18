@@ -30,28 +30,16 @@
  */
 package org.vortikal.repository.search;
 
-public class SortFieldDirection {
-
-    private String name;
+public enum SortFieldDirection {
+	ASC("asc"), DESC("desc");
+	
+	private String name;
 
     private SortFieldDirection(String name) {
         this.name = name;
     }
-    
-
-    /**
-     * Defines ascending sort order (smallest first).
-     */
-    public static final SortFieldDirection ASC = new SortFieldDirection("asc");
-    
-    /**
-     * Defines descending sort order (biggest first).
-     */
-    public static final SortFieldDirection DESC = new SortFieldDirection("desc");
-
 
     public String toString() {
         return this.name;
     }
-    
 }

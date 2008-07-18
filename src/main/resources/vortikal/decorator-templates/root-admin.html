@@ -7,7 +7,7 @@
     ${document:element select=[html.head] exclude=[title]}
     <title>${manage:title}</title>
   </head>
-  <body>
+  <body${document:element-attributes select=[html.body]}>
     <div class="banner">
       <div class="text">
         <span class="hostname">${manage:repository-id}</span>

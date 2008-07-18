@@ -6,7 +6,7 @@
     ${document:element select=[html.head] exclude=[title]}
     <title>${document:title}</title>
   </head>
-  <body>
+  <body${document:element-attributes select=[html.body]}>
     <div class="body">
       ${webdav:breadcrumb}
       ${webdav:info-message}

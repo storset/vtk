@@ -47,7 +47,6 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
@@ -65,9 +64,11 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
+/**
+ * 
+ */
 public class CollectionListingController implements Controller {
 
-	
 	private int defaultPageLimit = 20;
 	
 	private Repository repository;
@@ -79,9 +80,6 @@ public class CollectionListingController implements Controller {
 
 	private String query;
 	private QueryParser queryParser;
-	
-	private ResourceTypeDefinition resourceType;
-	private List<Query> appendedQueries;
 	
 	private PropertyTypeDefinition defaultSortPropDef;
 	private Map<String, PropertyTypeDefinition> sortPropertyMapping;
@@ -240,10 +238,6 @@ public class CollectionListingController implements Controller {
 		this.resourceManager = resourceManager;
 	}
 
-	@Required public void setResourceType(ResourceTypeDefinition resourceType) {
-		this.resourceType = resourceType;
-	}
-
 	@Required public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
 		this.pageLimitPropDef = pageLimitPropDef;
 	}
@@ -274,10 +268,6 @@ public class CollectionListingController implements Controller {
 
 	@Required public void setDefaultSortOrder(SortFieldDirection defaultSortOrder) {
 		this.defaultSortOrder = defaultSortOrder;
-	}
-
-	public void setAppendedQueries(List<Query> appendedQueries) {
-		this.appendedQueries = appendedQueries;
 	}
 
 	@Required public void setQuery(String query) {

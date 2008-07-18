@@ -25,12 +25,14 @@
     <property name="viewName" value="httpOptions" />
   </bean>
 
+  <!--
   <bean id="collectionListingHandler" 
     class="org.vortikal.web.controller.DisplayResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="collectionListing" />
     <property name="displayProcessed" value="true" />
   </bean>
+  -->
   
   <bean id="displayIndexFileHandler" class="org.vortikal.web.controller.IndexFileController"
         parent="requestLocalRepositoryAware">

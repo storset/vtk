@@ -27,7 +27,6 @@
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="resourceType" ref="fileResourceTypeDefinition" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />

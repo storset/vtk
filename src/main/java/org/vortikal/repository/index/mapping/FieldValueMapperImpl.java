@@ -159,9 +159,8 @@ public class FieldValueMapperImpl implements FieldValueMapper {
         case HTML:
             if (lowercase) {
                 return value.getNativeStringRepresentation().toLowerCase();
-            } else {
-                return value.getNativeStringRepresentation();
             }
+            return value.getNativeStringRepresentation();
             
         case IMAGE_REF:
         case BOOLEAN:
@@ -201,9 +200,9 @@ public class FieldValueMapperImpl implements FieldValueMapper {
         case HTML:
             if (lowercase) {
                 return stringValue.toLowerCase();
-            } else {
-                return stringValue;
             }
+            return stringValue;
+            
         case IMAGE_REF:
         case BOOLEAN:
         case PRINCIPAL:

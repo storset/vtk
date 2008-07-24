@@ -40,10 +40,13 @@ public class ResourceTemplate {
     private String uri;
     private String title;
     private String name;
+    
+    public ResourceTemplate() {}
 
-    public ResourceTemplate(String uri, String title) {
+    public ResourceTemplate(String uri, String title, String name) {
         this.uri = uri;
         this.title = title;
+        this.name = name;
     }
     
     public String getUri() {
@@ -70,4 +73,14 @@ public class ResourceTemplate {
         this.name = name;
     }
     
+    public String toString() {
+        StringBuilder builder = new StringBuilder(
+                                        ResourceTemplate.class.getSimpleName());
+        
+        builder.append("[").append("uri = ").append(this.uri);
+        builder.append(", ").append("name = ").append(this.name);
+        builder.append(", ").append("title = ").append(this.title).append("]");
+        
+        return builder.toString();
+    }
 }

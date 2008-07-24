@@ -60,8 +60,8 @@ public interface ResourceTemplateLocator {
     
     
     /**
-     * Locates templates under the given base URIs with the given depth relative
-     * to the base URIs. Should be able to use this for folder templates...
+     * Locates folder templates under the given base URIs. Non-recursive. Only
+     * resource directly below the base URIs of the requsted type are returned. 
      * 
      * @param token
      * @param baseUri
@@ -72,9 +72,8 @@ public interface ResourceTemplateLocator {
      * @throws RepositoryException If an error occured while locating templates
      *         in repository.
      */
-    public List<ResourceTemplate> findTemplates(String token,
-                                                Set<String> baseUris,
-                                                int relativeDepth,
-                                                ResourceTypeDefinition type)
+    public List<ResourceTemplate> findTemplatesNonRecursively(String token,
+                                                              Set<String> baseUris,
+                                                              ResourceTypeDefinition type)
         throws RepositoryException;
 }

@@ -30,12 +30,29 @@
  */
 package org.vortikal.web.templates;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
+import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.util.repository.URIUtil;
 
 /**
  * Template locator which uses repository search mechanism to locate templates. 
@@ -46,39 +63,117 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     // Repository searcher used to locate templates.
     private Searcher searcher;
     
+    // Needed for hierarchical type queries ..
+    private ResourceTypeTree resourceTypeTree; 
+    
     /**
      * @see ResourceTemplateLocator#findTemplates(String, String, Set, ResourceTypeDefinition)
      */
     public List<ResourceTemplate> findTemplates(String token, 
                                                 Set<String> baseUris,
                                                 ResourceTypeDefinition resourceType) {
+        
+        List<ResourceTemplate> templates = new ArrayList<ResourceTemplate>();
+        
+        Search search = new Search();
+        
+        Query query = getQuery(baseUris, resourceType, true);
+        
+        search.setQuery(query);
+        
+        // Restrict what properties are loaded from search index (optimization)
+        ConfigurablePropertySelect select = new ConfigurablePropertySelect();
+        
+        PropertyTypeDefinition titlePropDef = 
+            this.resourceTypeTree.getPropertyTypeDefinition(
+                                Namespace.DEFAULT_NAMESPACE, "title");
+        
+        // Only title is necessary ..
+        select.addPropertyDefinition(titlePropDef);
+        
+        search.setPropertySelect(select);
 
-        // Make a Search instance based on the givne criteria
-        // ..
+        // Do repository search
+        ResultSet results = searcher.execute(token, search);
         
-        // Execute query
-        //ResultSet results = searcher.execute(token, search..);
-        
-        // Iterate query results in populate list of Template instances.
-        
-        return null;
+        // Iterate results and create list of resource template beans
+        for (PropertySet propSet: results.getAllResults()) {
+            ResourceTemplate template = new ResourceTemplate();
+            template.setUri(propSet.getURI());
+            template.setName(propSet.getName());
+            
+            Property titleProp = propSet.getProperty(titlePropDef);
+            if (titleProp != null) {
+                template.setTitle(titleProp.getStringValue());
+            }
+            
+            templates.add(template);
+        }
+
+        return templates;
     }
     
-    
-
     /**
      * @see org.vortikal.web.templates.ResourceTemplateLocator#findTemplates(java.lang.String, java.util.Set, int, org.vortikal.repository.resourcetype.ResourceTypeDefinition)
      */
-    public List<ResourceTemplate> findTemplates(String token,
-                                                Set<String> baseUris, 
-                                                int relativeDepth, 
-                                                ResourceTypeDefinition type) {
+    public List<ResourceTemplate> findTemplatesNonRecursively(String token,
+                                                      Set<String> baseUris, 
+                                                      ResourceTypeDefinition resourceType) {
         throw new UnsupportedOperationException("Not implemented");
     }
+    
+    private Query getQuery(Set<String> baseUris, 
+                           ResourceTypeDefinition resourceType, 
+                           boolean recursive) {
+        
+        if (baseUris == null || baseUris.isEmpty()) {
+            throw new IllegalArgumentException("No base URIs provided");
+        }
+        
+        AndQuery query = new AndQuery(); // Top node of query tree
+        
+        // Add base URIs constraint
+        query.add(getBaseUrisQueryNode(baseUris, recursive));
+        
+        // Add type constraint
+        if (resourceType != null) {
+            query.add(new TypeTermQuery(resourceType.getName(), TermOperator.IN));
+        }
 
+        return query;
+    }
+    
+    private Query getBaseUrisQueryNode(Set<String> baseUris, 
+                                       boolean recursive) {
+        OrQuery orQuery = new OrQuery();
+
+        if (recursive) {
+            for (String uri: baseUris) {
+                orQuery.add(new UriPrefixQuery(uri));
+            }
+        } else {
+            // Non-recursive, add depth-constraint.
+            for (String uri: baseUris) {
+                AndQuery uriPrefixAndDepth = new AndQuery();
+                int depth = URIUtil.getUriDepth(uri) + 1; // Only children
+                
+                uriPrefixAndDepth.add(new UriPrefixQuery(uri));
+                uriPrefixAndDepth.add(new UriDepthQuery(depth));
+                
+                orQuery.add(uriPrefixAndDepth);
+            }
+        }
+        
+        return orQuery;
+    }
+    
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
-
+    
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
 }

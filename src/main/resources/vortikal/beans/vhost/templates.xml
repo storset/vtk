@@ -55,6 +55,8 @@
         
     <!--  Reference to repository searcher defined in resource/vortikal/beans/vhost/query.xml -->
     <property name="searcher" ref="systemIndexSearcher"/>
+    
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <!-- External refresh triggers for configuration files -->

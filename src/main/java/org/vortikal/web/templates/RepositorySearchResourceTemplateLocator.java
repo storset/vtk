@@ -63,7 +63,6 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     // Repository searcher used to locate templates.
     private Searcher searcher;
     
-    // Needed for hierarchical type queries ..
     private ResourceTypeTree resourceTypeTree; 
     
     /**

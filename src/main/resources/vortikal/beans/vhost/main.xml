@@ -41,6 +41,7 @@
   <import resource="plaintextedit.xml" />
   <import resource="copy-move.xml" />
   <import resource="errorhandlers.xml" />
+  <import resource="templates.xml" />
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml"/>

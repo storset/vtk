@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+
+<!-- Management of document and folder templates. -->
+<beans>
+
+  <!-- Configuration file for document templates -->
+  <bean id="templates.documentTemplatesConfiguration"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${templates.documentTemplatesConfigFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+  
+  <!--  Configuration file for folder templates -->
+  <bean id="templates.folderTemplatesConfiguration"
+        class="org.vortikal.util.repository.PropertiesResource">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${templates.folderTemplatesConfigFile}" />
+    <property name="lazyInit" value="false" />
+  </bean>
+
+  <!-- Template manager -->
+  <bean id="templates.resourceTemplateManager"
+        class="org.vortikal.web.templates.ResourceTemplateManagerImpl">
+    
+    <!-- Template locator (configured above): -->
+    <property name="templateLocator" ref="templates.templateLocator"/>
+    
+    <!-- Configuration for document templates -->
+    <!--  References configuration bean defined above -->
+    <property name="documentTemplatesConfiguration" ref="templates.documentTemplatesConfiguration" />
+    
+    <!-- Base URI for document templates -->
+    <property name="documentTemplatesBaseUri" value="${templates.documentTemplatesBaseUri}"/>
+    
+    <!--  The required resource type for document templates: -->
+    <!--  (references resource type bean defined in resources/vortikal/beans/vhost/resource-types/text.xml -->
+    <property name="documentTemplatesResourceType" ref="textResourceTypeDefinition" />
+    
+    <!-- Below only concerns folder templates and is currently not configured -->
+    <!-- 
+    <property name="folderTemplatesBaseUri" value="${templates.folderTemplatesBaseUri}"/>
+    <property name="folderTemplatesResourceType" ref="collectionResourceTypeDefinition" />
+    <property name=
+     -->
+    
+  </bean>
+        
+
+  <!-- Searcher-based template locator -->
+  <bean id="templates.templateLocator"
+        class="org.vortikal.web.templates.RepositorySearchResourceTemplateLocator">
+        
+    <!--  Reference to repository searcher defined in resource/vortikal/beans/vhost/query.xml -->
+    <property name="searcher" ref="systemIndexSearcher"/>
+  </bean>
+
+  <!-- External refresh triggers for configuration files -->
+  <bean id="templates.documentTemplatesConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${templates.documentTemplatesConfigFile}" />
+    <property name="targetObject" ref="templates.documentTemplatesConfiguration" />
+    <property name="method" value="load" />
+  </bean>
+
+  <bean id="templates.folderTemplatesConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${templates.folderTemplatesConfigFile}" />
+    <property name="targetObject" ref="templates.folderTemplatesConfiguration" />
+    <property name="method" value="load" />
+  </bean>
+
+</beans>

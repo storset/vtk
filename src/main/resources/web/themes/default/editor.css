@@ -174,16 +174,6 @@ div.start-date {
  clear:left;
 }
 
-/* Sets clear:none on end-date and location to get them higher up */
-div.end-date, div.location {
- clear: none;
-}
-
-/* IE6 Fix: Place end-date and location under eachother */
-* html div.end-date, div.location {
- clear: left;
-}
-
 input.date {
   width: 6.5em;
 }

@@ -103,13 +103,6 @@
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
     
-    <!--[if IE]>
-      <style type="text/css">
-            div.properties div.start-date, div.properties div.end-date, div.properties div.location {
-                clear: both;
-            }
-        </style>
-    <![endif]-->
   </head>
   <body>
     <#assign header>

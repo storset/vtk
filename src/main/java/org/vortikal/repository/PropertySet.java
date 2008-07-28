@@ -55,4 +55,5 @@ public interface PropertySet {
     public List<Property> getProperties(Namespace namespace);
 
     public Property getPropertyByPrefix(String prefix, String name);
+
 }

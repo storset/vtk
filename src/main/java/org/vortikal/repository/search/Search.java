@@ -127,6 +127,7 @@ public class Search {
     public void setSorting(Sorting sorting) {
         this.sorting = sorting;
     }
+    
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(": [");

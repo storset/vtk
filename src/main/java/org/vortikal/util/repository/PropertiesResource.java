@@ -36,17 +36,12 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceNotFoundException;
-import org.vortikal.repository.event.ContentModificationEvent;
 
 
 /**
@@ -71,8 +66,8 @@ import org.vortikal.repository.event.ContentModificationEvent;
  *   <code>false</code> (attempt to load the resource immediately).
  * </ul>
  */
-public class PropertiesResource extends Properties implements InitializingBean,
-                                                              ApplicationListener {
+public class PropertiesResource extends Properties implements InitializingBean {
+    
     private static final long serialVersionUID = 8393113714334599560L;
 
     private Log logger = LogFactory.getLog(this.getClass());
@@ -83,7 +78,6 @@ public class PropertiesResource extends Properties implements InitializingBean,
     private boolean demandResourceAvailability = false;
     private boolean lazyInit = false;
     
-
     public PropertiesResource() {
         super();
     }
@@ -128,30 +122,7 @@ public class PropertiesResource extends Properties implements InitializingBean,
     public void setLazyInit(boolean lazyInit) {
         this.lazyInit = lazyInit;
     }
-    
 
-    public void onApplicationEvent(ApplicationEvent event) {
-
-        if (event instanceof ContextRefreshedEvent) {
-            try {
-                this.load();
-            } catch (Exception e) {
-                this.logger.warn("Context refreshed, exception while re-loading resource at URI '"
-                        + this.uri + "'", e);
-            }
-        } else if (event instanceof ContentModificationEvent) {
-            ContentModificationEvent modEvent = (ContentModificationEvent) event;
-            if (this.uri.equals(modEvent.getURI())) {
-                try {
-                    this.load();
-                } catch (Exception e) {
-                    this.logger.warn("Resource modified, exception while re-loading resource at URI '"
-                            + this.uri + "'", e);
-                }
-            }
-        }
-    }
-    
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -166,14 +137,13 @@ public class PropertiesResource extends Properties implements InitializingBean,
         }
     }
 
-
     public void load() throws IOException {
-
         if (this.repository == null || this.uri == null) {
             throw new IllegalStateException(
                 "JavaBean properties 'repository' and 'uri' must be specified");
         }
-        this.clear();
+        super.clear();
+        this.logger.info("Loading properties resource at URI " + this.uri);
         if (demandResourceAvailability) {
             doLoad(token, uri);
         } else {
@@ -200,11 +170,12 @@ public class PropertiesResource extends Properties implements InitializingBean,
     
     private void doLoad(String token, String uri) throws IOException {
         InputStream inputStream = this.repository.getInputStream(token, uri, false);
-        super.load(inputStream);
+        super.load(inputStream); 
+        inputStream.close();
+        
         if (logger.isInfoEnabled()) {
             logger.info("Loaded properties from resource " + uri);
         }
     }
-    
 
 }

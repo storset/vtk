@@ -73,6 +73,8 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     // Default resource type for folder templates
     private ResourceTypeDefinition folderTemplateResourceType;
     
+    private String documentTemplatesDefaultUri;
+    
     /**
      * @see ResourceTemplateManager#getDocumentTemplates(String, String) 
      */
@@ -123,9 +125,11 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 				for(int i = 0; i < templateLocations.length;i++){
 					foundTemplateBaseUris.add( documentTemplatesBaseUri + "/" + templateLocations[i].trim() );
 				}
+			}else{
+				foundTemplateBaseUris.add(documentTemplatesDefaultUri); // No config.txt is found
 			}
 			
-		}catch (Exception e){
+    	}catch (Exception e){
 			e.printStackTrace();
 		}
 		
@@ -175,6 +179,10 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	public void setDocumentTemplatesDefaultUri(String documentTemplatesDefaultUri) {
+		this.documentTemplatesDefaultUri = documentTemplatesDefaultUri;
 	}
     
     

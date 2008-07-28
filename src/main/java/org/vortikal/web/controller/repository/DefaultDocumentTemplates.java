@@ -98,10 +98,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
     /* Sets the directory that contains templates */
-    public void setTemplatesCollection(String templatesCollection) {
-    	
-    	System.out.printf("\n\n\n this is templetCollection: %s \n\n\n ", templatesCollection );
-    	
+    public void setTemplatesCollection(String templatesCollection) {   	
         this.templatesCollection = templatesCollection;
     }
     
@@ -113,7 +110,6 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     	}catch (IOException e) {
     		
     	}
-    	System.out.printf("\n\n\n %s \n\n\n", "can i getTopTemplets");
         return this.topTemplates;
     }
 
@@ -126,9 +122,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     	}catch (IOException e){
     		
     	}
-    	
-    	
-    	System.out.printf("\n\n\n %s \n\n\n", "can i getCategoryTemplets");
+
     	return this.categoryTemplates;
     }
 
@@ -164,9 +158,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     
 
     private void loadTemplates() throws IOException {
-
-    	System.out.printf("\n\n\n %s \n\n\n", "can i loadTemplets()");
-    	
+   	
         if (!this.parseCategoryTemplates && !this.parseTopTemplates) return;
          
         try {
@@ -204,9 +196,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
     
     private Map<String, String> findTopTemplates() throws IOException {
-    	
-    	System.out.printf("\n\n\n %s \n\n\n", " blash!!! ");
-    	
+    		
         Map<String, String> topTemplates = new HashMap<String, String>();
 
         Resource[] templates = this.repository.listChildren(

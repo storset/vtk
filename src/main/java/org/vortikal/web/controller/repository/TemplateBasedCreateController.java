@@ -149,7 +149,6 @@ public class TemplateBasedCreateController extends SimpleFormController
      * @param documentTemplates The documentTemplates to set.
      */
     public void setDocumentTemplates(DocumentTemplates documentTemplates) {
-    	System.out.printf("\n\n\n%s\n\n\n", "can i set document templets?");
         this.documentTemplates = documentTemplates;
     }
 

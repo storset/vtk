@@ -109,8 +109,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         
-        System.out.printf("\n\n\n uri: %s \n\n\n", uri);
-
         String paramString = null;
         
         boolean errorPage = false;

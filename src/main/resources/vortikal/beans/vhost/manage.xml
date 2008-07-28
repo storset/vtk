@@ -800,7 +800,7 @@
 
 
   <bean id="createDocumentHandler" 
-    class="org.vortikal.web.controller.repository.CreateDocumentController"
+    class="org.vortikal.web.controller.repository.TemplateBasedCreateController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
@@ -812,6 +812,7 @@
             parent="requestLocalRepositoryAware" />
     </property>
     <property name="documentTemplates" ref="defaultDocumentTemplates" />
+    <property name="templateManager" ref="templates.resourceTemplateManager" />
   </bean>
 
   <bean id="defaultDocumentTemplates" 

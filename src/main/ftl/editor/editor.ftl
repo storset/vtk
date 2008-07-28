@@ -165,6 +165,7 @@ div.properties div.location {
   <#list propDefs as propDef>
     <#local name = propDef.name />
     <#local value = resource.getValue(propDef) />
+
     <#local type = propDef.type />
     <#if type = 'HTML'>
       var fck_${name} = FCKeditorAPI.GetInstance('resource.${name}');
@@ -258,27 +259,31 @@ div.properties div.location {
     <#local locale = springMacroRequestContext.getLocale() />
 
     <#list propDefs as propDef>
-      <#local localizedName = propDef.getLocalizedName(locale) />
-      <#local description = propDef.getDescription(locale)?default("") />
       <#local name = propDef.name />
+      <#local localizedName = propDef.getLocalizedName(locale) />
+
       <#local value = resource.getValue(propDef) />
+
+      <#local description = propDef.getDescription(locale)?default("") />
+
       <#local type = propDef.type />
       <#local error = resource.getError(propDef)?default('') />
+
       <#local useRadioButtons = false />
       <#if ((propDef.metadata.editingHints.radio)?exists)>
         <#local useRadioButtons = true />
       </#if>          
+
       <#local displayLabel = true />
       <#if ((propDef.metadata.editingHints.hideLabel)?exists)>
         <#local displayLabel = false />
-      </#if>          
-
-      
+      </#if>
       
       <div class="${name} property-item">
       <#if displayLabel>
       <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
       </#if>
+
       <#if type = 'HTML' && name != 'userTitle' && name != 'title'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
@@ -474,7 +479,8 @@ div.properties div.location {
       <#else>
 
         <#if (propDef.vocabulary)?exists>
-          <#assign allowedValues = propDef.vocabulary.allowedValues />
+          <#local allowedValues = propDef.vocabulary.allowedValues />
+
           <#if allowedValues?size = 1 && !useRadioButtons>
 
             <#if type = 'BOOLEAN' && !displayLabel>
@@ -496,34 +502,52 @@ div.properties div.location {
           <#elseif useRadioButtons>
 
             <#if !propDef.mandatory>
-              <#if value?length = 0>
+              <#attempt>
+                <#local nullValue = propDef.valueFormatter.valueToString(nullArg, "localized", springMacroRequestContext.getLocale()) />
+              <#recover>
+                <#local nullValue = 'unspecified' />
+              </#recover>
+              
+              <#if !(resource.getProperty(propDef))?exists>
                 <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
-                <label class="resource.${name}" for="resource.${name}.unspecified">unspecified</label>
+                <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
               <#else>
                 <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
-                <label class="resource.${name}" for="resource.${name}.unspecified">unspecified</label>
+                <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
               </#if>
             </#if>
 
             <#list allowedValues as v>
+              <#local localized = v />
+              <#if (propDef.valueFormatter)?exists>
+                <#local localized = propDef.valueFormatter.valueToString(v, "localized", springMacroRequestContext.getLocale()) />
+              </#if>
+
               <#if v == value>
                 <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="true" />
-                <label class="resource.${name}" for="resource.${name}.${v?html}">${v?html}</label>
+                <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
               <#else>
                 <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
-                <label class="resource.${name}" for="resource.${name}.${v?html}">${v?html}</label>
+                <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
               </#if>
             </#list>
           <#else>
             <select name="resource.${name}">
               <#if !propDef.mandatory>
-                <option value="">unspecified</option>
+              <#attempt>
+                <#local nullValue = propDef.valueFormatter.valueToString(nullArg, "localized", springMacroRequestContext.getLocale()) />
+              <#recover>
+                <#local nullValue = 'unspecified' />
+              </#recover>
+                
+                <option value="">${nullValue?html}</option>
               </#if>
               <#list allowedValues as v>
+                <#local localized = propDef.getValueFormatter().valueToString(v, 'localized', springMacroRequestContext.getLocale()) />
                 <#if v == value>
-                  <option selected="true" value="${v?html}">${v?html}</option>
+                  <option selected="true" value="${v?html}">${localized?html}</option>
                 <#else>
-                  <option value="${v?html}">${v?html}</option>
+                  <option value="${v?html}">${localized?html}</option>
                 </#if>
               </#list>
             </select>

@@ -103,26 +103,11 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
     
     public Map<String, String> getTopTemplates() {
-    	// Evil hack
-    	try{
-    		this.loadTemplates();
-    		this.findTopTemplates();
-    	}catch (IOException e) {
-    		
-    	}
         return this.topTemplates;
     }
 
 
     public Map<String, Map<String, String>> getCategoryTemplates() {
-    	// Evil hack
-    	try{
-    		this.loadTemplates();
-    		this.findCategoryTemplates();
-    	}catch (IOException e){
-    		
-    	}
-
     	return this.categoryTemplates;
     }
 

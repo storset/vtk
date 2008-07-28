@@ -35,16 +35,11 @@
 <#assign resources = collectionListing.files />
 <#assign collections = collectionListing.collections />
 
-<#assign title = vrtx.propValue(resource, "userTitle", "flattened") />
+<#assign title = vrtx.propValue(resource, "title", "flattened") />
 <#if resource.URI = '/'>
   <#assign title = resourceContext.repositoryId />
 </#if>
 <#assign h1 = title />
-
-<#if title == "">
-  <#assign title = vrtx.getMsg("article.missingTitle") />
-  <#assign h1 = title />
-</#if>
 
 <#-- Introduction --> 
 <#function getIntroduction resource>

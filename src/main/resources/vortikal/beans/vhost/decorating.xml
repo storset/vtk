@@ -132,6 +132,7 @@
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
   </bean>
 
+  
   <bean id="decorating.configurationPropertiesFile"
         class="org.vortikal.util.repository.PropertiesResource">
     <property name="repository" ref="repository" />

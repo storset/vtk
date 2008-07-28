@@ -50,7 +50,7 @@ public class FailedDependencyException extends RepositoryException {
     }
 
     public Exception getException(String uri) {
-        return (Exception) this.map.get(uri);
+        return this.map.get(uri);
     }
 
     public Iterator<String> uriIterator() {

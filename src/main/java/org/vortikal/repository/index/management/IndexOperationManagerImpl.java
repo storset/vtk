@@ -234,9 +234,8 @@ public class IndexOperationManagerImpl implements IndexOperationManager {
                 throw new IllegalStateException("No re-indexing has been run");
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public void reinitialize() {

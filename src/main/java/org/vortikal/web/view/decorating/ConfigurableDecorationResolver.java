@@ -108,6 +108,8 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         InternalDescriptor descriptor = new InternalDescriptor();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
+        
+        System.out.printf("\n\n\n uri: %s \n\n\n", uri);
 
         String paramString = null;
         
@@ -129,10 +131,11 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
         
         if (paramString != null) {
-            Locale locale = 
+        	Locale locale = 
                 new org.springframework.web.servlet.support.RequestContext(request).getLocale();
             populateDescriptor(descriptor, locale, paramString);
         }
+        
         
         // Checking if there is a reason to parse content
         if (this.parseableContentPropDef != null && descriptor.parse) {

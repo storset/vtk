@@ -39,4 +39,6 @@ public interface DocumentTemplates {
     public Map<String, String> getTopTemplates() throws IOException;
     
     public Map<String, Map<String, String>> getCategoryTemplates() throws IOException;
+    
+    public void setTemplatesCollection(String templatesCollection);
 }

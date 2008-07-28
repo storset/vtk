@@ -30,12 +30,20 @@
  */
 package org.vortikal.web.templates;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.PropertiesResource;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.templates.ResourceTemplateManager;
 
 /**
  * Main template manager implementation.
@@ -48,6 +56,8 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
     // Resource template locator
     private ResourceTemplateLocator templateLocator;
+    
+    private Repository repository;
     
     // Configuration for document templates
     private String documentTemplatesBaseUri;
@@ -67,13 +77,10 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
      * @see ResourceTemplateManager#getDocumentTemplates(String, String) 
      */
     public List<ResourceTemplate> getDocumentTemplates(String token, String uri) {
-        // Get base uris for the given uri by reading configuration
-        // Set<String> baseUris = getDocumentTemplateBaseUris(uri);
-        
-        // Find document templates for the given token and base URIs using
-        // template locator.
-        
-        return null;
+
+    	Set <String> h = this.getDocumentTemplateBaseUris(token, uri) ;   	 	    	
+    	return templateLocator.findTemplates(token, h, documentTemplateResourceType);
+    	
     }
 
     /**
@@ -83,13 +90,46 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-
-    private Set<String> getDocumentTemplateBaseUris(String uri) {
+    @SuppressWarnings("unchecked")
+	private Set<String> getDocumentTemplateBaseUris(String token, String uri) {
      
         // Read/parse configuration, find matching prefix and return list of base uris
         // to use with locator.
-        
-        return null;
+    	
+		HashSet <String> foundTemplateBaseUris = new HashSet <String> ();		
+		String[] templateLocations = null;
+		
+		try {
+			
+			// Runs through the property file trying to match property key and uri
+			// stops after the first hit
+			String keyInPropertyFile = "/";
+			for (Enumeration <String> e = (Enumeration<String>) documentTemplatesConfiguration.propertyNames(); e.hasMoreElements() ;) {
+				String propertyKey = e.nextElement();
+				if( propertyKey.startsWith(uri + "/") ){ //uri does not contain the last slash
+					keyInPropertyFile = propertyKey;
+					break;
+				}
+		     }
+			
+			// A key can point to multiple template folders that is separated by ","
+			String tmp = documentTemplatesConfiguration.getProperty(keyInPropertyFile);
+			if(tmp != null){
+				templateLocations = tmp.split(","); 
+			}
+			
+			// Mapping the found template values to folders in the vortex file system
+			if(templateLocations != null){
+				for(int i = 0; i < templateLocations.length;i++){
+					foundTemplateBaseUris.add( documentTemplatesBaseUri + "/" + templateLocations[i].trim() );
+				}
+			}
+			
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
+        return foundTemplateBaseUris;
     }
     
     private Set<String> getFolderTemplateBaseUris(String uri) {
@@ -132,6 +172,10 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
             ResourceTypeDefinition folderTemplateResourceType) {
         this.folderTemplateResourceType = folderTemplateResourceType;
     }
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
     
     
 

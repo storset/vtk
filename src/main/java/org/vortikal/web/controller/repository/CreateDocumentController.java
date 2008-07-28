@@ -53,12 +53,11 @@ public class CreateDocumentController extends SimpleFormController
     
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
+    } 
 
     public void afterPropertiesSet() throws Exception {
         if (this.documentTemplates == null) {
-            throw new BeanInitializationException(
-                "Required bean property 'documentTemplates' not set.");
+            throw new BeanInitializationException("Required bean property 'documentTemplates' not set.");
         }
 
     }

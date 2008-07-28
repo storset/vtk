@@ -97,17 +97,39 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         this.trustedToken = trustedToken;
     }
 
+    /* Sets the directory that contains templates */
     public void setTemplatesCollection(String templatesCollection) {
+    	
+    	System.out.printf("\n\n\n this is templetCollection: %s \n\n\n ", templatesCollection );
+    	
         this.templatesCollection = templatesCollection;
     }
     
     public Map<String, String> getTopTemplates() {
+    	// Evil hack
+    	try{
+    		this.loadTemplates();
+    		this.findTopTemplates();
+    	}catch (IOException e) {
+    		
+    	}
+    	System.out.printf("\n\n\n %s \n\n\n", "can i getTopTemplets");
         return this.topTemplates;
     }
 
 
     public Map<String, Map<String, String>> getCategoryTemplates() {
-        return this.categoryTemplates;
+    	// Evil hack
+    	try{
+    		this.loadTemplates();
+    		this.findCategoryTemplates();
+    	}catch (IOException e){
+    		
+    	}
+    	
+    	
+    	System.out.printf("\n\n\n %s \n\n\n", "can i getCategoryTemplets");
+    	return this.categoryTemplates;
     }
 
 
@@ -143,8 +165,10 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
     private void loadTemplates() throws IOException {
 
+    	System.out.printf("\n\n\n %s \n\n\n", "can i loadTemplets()");
+    	
         if (!this.parseCategoryTemplates && !this.parseTopTemplates) return;
-        
+         
         try {
             Resource templatesCollectionResource = this.repository.retrieve(
                 this.trustedToken, this.templatesCollection, true);
@@ -179,9 +203,10 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         }
     }
     
-
-
     private Map<String, String> findTopTemplates() throws IOException {
+    	
+    	System.out.printf("\n\n\n %s \n\n\n", " blash!!! ");
+    	
         Map<String, String> topTemplates = new HashMap<String, String>();
 
         Resource[] templates = this.repository.listChildren(

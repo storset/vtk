@@ -22,7 +22,7 @@
 
   <bean id="ARTICLE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="al" />
-    <constructor-arg value="http://www.uio.no/al" />
+    <constructor-arg value="http://www.uio.no/resource-types/article-listing" />
   </bean>
 
 </beans>

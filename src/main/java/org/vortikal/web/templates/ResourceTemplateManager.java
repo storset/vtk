@@ -32,8 +32,6 @@ package org.vortikal.web.templates;
 
 import java.util.List;
 
-import org.vortikal.repository.Repository;
-
 /**
  * Interface for repository resource template manager. 
  *
@@ -43,7 +41,5 @@ public interface ResourceTemplateManager {
     public List<ResourceTemplate> getDocumentTemplates(String token, String uri);
     
     public List<ResourceTemplate> getFolderTemplates(String token, String uri);
-    
-    public void setRepository(Repository repository);
     
 }

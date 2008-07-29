@@ -57,8 +57,6 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     // Resource template locator
     private ResourceTemplateLocator templateLocator;
     
-    private Repository repository;
-    
     // Configuration for document templates
     private String documentTemplatesBaseUri;
     private PropertiesResource documentTemplatesConfiguration;
@@ -74,13 +72,14 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     private ResourceTypeDefinition folderTemplateResourceType;
     
     private String documentTemplatesDefaultUri;
+    private String folderTemplatesDefaultUri;
     
     /**
      * @see ResourceTemplateManager#getDocumentTemplates(String, String) 
      */
     public List<ResourceTemplate> getDocumentTemplates(String token, String uri) {
 
-    	Set <String> h = this.getDocumentTemplateBaseUris(token, uri) ;   	 	    	
+    	Set <String> h = this.getDocumentTemplateBaseUris(uri) ;   	 	    	
     	return templateLocator.findTemplates(token, h, documentTemplateResourceType);
     	
     }
@@ -89,11 +88,15 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
      * @see ResourceTemplateManager#getFolderTemplates(String, String)
      */
     public List<ResourceTemplate> getFolderTemplates(String token, String uri) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        
+        Set<String> baseUris = this.getFolderTemplateBaseUris(uri);
+        
+        return templateLocator.findTemplatesNonRecursively(token, 
+                                    baseUris, this.folderTemplateResourceType);
     }
 
     @SuppressWarnings("unchecked")
-	private Set<String> getDocumentTemplateBaseUris(String token, String uri) {
+	private Set<String> getDocumentTemplateBaseUris(String uri) {
      
         // Read/parse configuration, find matching prefix and return list of base uris
         // to use with locator.
@@ -164,26 +167,31 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
     // Folder templates below (not required, for now)
 
+    @Required
     public void setFolderTemplatesConfiguration(PropertiesResource folderTemplatesConfiguration) {
         this.folderTemplatesConfiguration = folderTemplatesConfiguration;
     }
     
+    @Required
     public void setFolderTemplatesBaseUri(String folderTemplatesBaseUri) {
         this.folderTemplatesBaseUri = folderTemplatesBaseUri;
     }
 
+    @Required
     public void setFolderTemplateResourceType(
             ResourceTypeDefinition folderTemplateResourceType) {
         this.folderTemplateResourceType = folderTemplateResourceType;
     }
 
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-
+    @Required
 	public void setDocumentTemplatesDefaultUri(String documentTemplatesDefaultUri) {
 		this.documentTemplatesDefaultUri = documentTemplatesDefaultUri;
 	}
+
+    @Required
+    public void setFolderTemplatesDefaultUri(String folderTemplatesDefaultUri) {
+        this.folderTemplatesDefaultUri = folderTemplatesDefaultUri;
+    }
     
     
 

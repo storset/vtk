@@ -65,12 +65,31 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
     
     private ResourceTypeTree resourceTypeTree; 
     
-    /**
-     * @see ResourceTemplateLocator#findTemplates(String, String, Set, ResourceTypeDefinition)
-     */
     public List<ResourceTemplate> findTemplates(String token, 
                                                 Set<String> baseUris,
                                                 ResourceTypeDefinition resourceType) {
+        
+        return findTemplatesInternal(token, baseUris, resourceType, true);
+    }
+    
+    /**
+     * @see org.vortikal.web.templates.ResourceTemplateLocator#findTemplates(java.lang.String, java.util.Set, int, org.vortikal.repository.resourcetype.ResourceTypeDefinition)
+     */
+    public List<ResourceTemplate> findTemplatesNonRecursively(String token,
+                                                      Set<String> baseUris, 
+                                                      ResourceTypeDefinition resourceType) {
+        
+        return findTemplatesInternal(token, baseUris, resourceType, false);
+        
+    }
+    
+    /**
+     * @see ResourceTemplateLocator#findTemplates(String, String, Set, ResourceTypeDefinition)
+     */
+    private List<ResourceTemplate> findTemplatesInternal(String token, 
+                                                Set<String> baseUris,
+                                                ResourceTypeDefinition resourceType,
+                                                boolean recursive) {
         
         List<ResourceTemplate> templates = new ArrayList<ResourceTemplate>();
         
@@ -110,15 +129,6 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         }
 
         return templates;
-    }
-    
-    /**
-     * @see org.vortikal.web.templates.ResourceTemplateLocator#findTemplates(java.lang.String, java.util.Set, int, org.vortikal.repository.resourcetype.ResourceTypeDefinition)
-     */
-    public List<ResourceTemplate> findTemplatesNonRecursively(String token,
-                                                      Set<String> baseUris, 
-                                                      ResourceTypeDefinition resourceType) {
-        throw new UnsupportedOperationException("Not implemented");
     }
     
     private Query getQuery(Set<String> baseUris, 

@@ -95,7 +95,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         
         Search search = new Search();
         
-        Query query = getQuery(baseUris, resourceType, true);
+        Query query = getQuery(baseUris, resourceType, recursive);
         
         search.setQuery(query);
         

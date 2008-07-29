@@ -30,74 +30,50 @@
  */
 package org.vortikal.repository;
 
+import org.apache.commons.lang.StringUtils;
 
 public class URIValidator {
 
     public static final int MAX_URI_LENGTH = 1500;
 
     public boolean validateURI(String uri) {
-        if (uri == null) {
+
+        if (StringUtils.isBlank(uri)
+                || uri.length() >= MAX_URI_LENGTH
+                || !uri.startsWith("/")
+                || uri.contains("//") || uri.contains("/../")
+                || uri.endsWith("/..") || uri.endsWith("/.")
+                || (!uri.equals("/") && uri.endsWith("/"))) {
+
             return false;
+
         }
 
-        if (uri.trim().equals("")) {
-            return false;
-        }
-
-        if (uri.length() >= MAX_URI_LENGTH) {
-            return false;
-        }
-
-        if (!uri.startsWith("/")) {
-            return false;
-        }
-
-        if (uri.indexOf("//") != -1) {
-            return false;
-        }
-
-        if (uri.indexOf("/../") != -1) {
-            return false;
-        }
-
-        if (uri.endsWith("/..")) {
-            return false;
-        }
-
-        if (uri.endsWith("/.")) {
-            return false;
-        }
-        
-        // XXX: new?
-        
-        if (!uri.equals("/") && uri.endsWith("/")) return false;
-        
         return true;
     }
 
-    public void validateCopyURIs(String srcUri, String destUri) 
-    throws IllegalOperationException {
+    public void validateCopyURIs(String srcUri, String destUri)
+            throws IllegalOperationException {
 
-    if ("/".equals(srcUri)) {
-        throw new IllegalOperationException(
-            "Cannot copy or move the root resource ('/')");
+        if ("/".equals(srcUri)) {
+            throw new IllegalOperationException(
+                    "Cannot copy or move the root resource ('/')");
+        }
+
+        if ("/".equals(destUri)) {
+            throw new IllegalOperationException(
+                    "Cannot copy or move to the root resource ('/')");
+        }
+
+        if (destUri.equals(srcUri)) {
+            throw new IllegalOperationException(
+                    "Cannot copy or move a resource to itself");
+        }
+
+        if (destUri.startsWith(srcUri + "/")) {
+            throw new IllegalOperationException(
+                    "Cannot copy or move a resource into itself");
+        }
     }
-
-    if ("/".equals(destUri)) {
-        throw new IllegalOperationException(
-            "Cannot copy or move to the root resource ('/')");
-    }
-
-    if (destUri.equals(srcUri)) {
-        throw new IllegalOperationException(
-            "Cannot copy or move a resource to itself");
-    }
-
-    if (destUri.startsWith(srcUri + "/")) {
-        throw new IllegalOperationException(
-        "Cannot copy or move a resource into itself");
-    }
-}
-
 
 }

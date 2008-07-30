@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="eventListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.handler" />
+  </bean>
+  
+  
+  <bean id="eventListing.handler" 
+        class="org.vortikal.web.controller.CollectionListingController"
+        parent="requestLocalRepositoryAware">
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="viewName" value="eventListing.view" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="eventListing.upcomingEventsSearchComponent" />
+        <ref bean="eventListing.previousEventsSearchComponent" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="eventListing.upcomingEventsSearchComponent" 
+        class="org.vortikal.web.controller.CollectionListingController$SearchComponent">
+    <property name="name" value="eventListing.upcomingEventsSearchComponent" />
+    <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
+    <property name="viewService" ref="webService" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="supportPaging" value="false" />
+    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultRecursive" value="true" />
+    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+
+    <property name="query">
+      <value>uri = {$currentFolder}/* AND type IN event AND start-date &gt;= {$currentDate}</value>
+    </property>
+    <property name="queryParser" ref="searchParser" />
+
+    <property name="defaultSortPropDef" ref="startDatePropDef" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
+
+    <property name="listableProperties" ref="eventListing.listableProperties" />
+  </bean>
+
+
+  <bean id="eventListing.previousEventsSearchComponent" 
+        class="org.vortikal.web.controller.CollectionListingController$SearchComponent">
+    <property name="name" value="eventListing.previousEventsSearchComponent" />
+    <property name="titleLocalizationKey" value="eventListing.previousEvents" />
+    <property name="viewService" ref="webService" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultRecursive" value="true" />
+    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+
+    <property name="query">
+      <value>uri = {$currentFolder}/* AND type IN event AND start-date &lt; {$currentDate}</value>
+    </property>
+    <property name="queryParser" ref="searchParser" />
+
+    <property name="defaultSortPropDef" ref="startDatePropDef" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+
+    <property name="listableProperties" ref="eventListing.listableProperties" />
+  </bean>
+
+
+  <bean id="eventListing.listableProperties" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="startDatePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="endDatePropDef" />
+          <property name="preventDisplayProperty" ref="eventListing.hideEndDatePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="locationPropDef" />
+          <property name="preventDisplayProperty" ref="eventListing.hideLocationPropDef" />
+        </bean>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionImagePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </constructor-arg>
+  </bean>
+
+
+
+  <bean id="eventListing.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="eventListing.view"  value-ref="eventListing.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="eventListing.view" parent="freemarkerView">
+    <property name="url" value="pages/view-collectionlisting.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <!--ref bean="viewCollectionListingProvider" /-->
+        <ref bean="collectionListingFeedURLProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-collectionlisting.css</value>
+          </list>
+        </entry>
+        <entry key="searchComponents">
+          <list>
+            <ref bean="eventListing.upcomingEventsSearchComponent" />
+            <ref bean="eventListing.previousEventsSearchComponent" />
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+</beans>
+

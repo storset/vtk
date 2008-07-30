@@ -223,6 +223,24 @@
 
 
 
+<#function prop resource name prefix=''>
+  <#local def = '' />
+  <#if VRTX_RESOURCE_TYPE_TREE?exists>
+    <#if prefix == "">
+      <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name)?exists>
+        <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name) />
+      </#if>
+    <#else>
+      <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name)??>
+        <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name) />
+      </#if>
+    </#if>
+  </#if>
+  <#if def = ''><#return '' /></#if>
+  <#if !resource.getProperty(def)?exists><#return '' /></#if>
+  <#return resource.getProperty(def) />
+</#function>
+
 <#function propValue resource name format='long' prefix=''>
   <#local def = '' />
   <#if VRTX_RESOURCE_TYPE_TREE?exists>
@@ -251,8 +269,6 @@
   <#local type = prop.definition.type />
   <#return prop.getFormattedValue(format, locale) />
 </#function>
-
-
 
 
 <#--macro property resource name prefix="" format="long">

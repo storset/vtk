@@ -69,214 +69,278 @@ import org.vortikal.web.service.URL;
  */
 public class CollectionListingController implements Controller {
 
-	private int defaultPageLimit = 20;
-	
-	private Repository repository;
-	private Searcher searcher;
-	private ResourceWrapperManager resourceManager;
-    private Service viewService;
+    private Repository repository;
+    private ResourceWrapperManager resourceManager;
+    private String viewName;
+    private List<SearchComponent> searchComponents;
+
     
-	private String viewName;
-
-	private String query;
-	private QueryParser queryParser;
-	
-	private PropertyTypeDefinition defaultSortPropDef;
-	private Map<String, PropertyTypeDefinition> sortPropertyMapping;
-
-	private SortFieldDirection defaultSortOrder;
-	private Map<String, SortFieldDirection> sortOrderMapping;
-	
-    private PropertyTypeDefinition pageLimitPropDef;
-    private PropertyTypeDefinition recursivePropDef;
-    private PropertyTypeDefinition sortPropDef;
-
-	private List<PropertyDisplayConfig> listableProperties;
+    public ModelAndView handleRequest(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        String uri = RequestContext.getRequestContext().getResourceURI();
+        String token = SecurityContext.getSecurityContext().getToken();
+        Resource collection = this.repository.retrieve(token, uri, true);
         
+        Resource[] children = this.repository.listChildren(token,   uri, true);
+        List<Resource> subCollections = new ArrayList<Resource>();
+        for (Resource r: children) {
+            if (r.isCollection()) {
+                subCollections.add(r);
+            }
+        }
+        
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("collection", this.resourceManager.createResourceWrapper(collection.getURI()));
+        model.put("subCollections", subCollections);
 
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		String uri = RequestContext.getRequestContext().getResourceURI();
-		String token = SecurityContext.getSecurityContext().getToken();
-		Resource collection = this.repository.retrieve(token, uri, true);
-		
-		Resource[] children = this.repository.listChildren(token,	uri, true);
-		List<Resource> collections = new ArrayList<Resource>();
-		for (Resource r: children) {
-			if (r.isCollection()) {
-				collections.add(r);
-			}
-		}
-		
-		boolean recursive = false;
-		if (collection.getProperty(this.recursivePropDef) != null) {
-			recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
-		}
-		
-		int pageLimit = this.defaultPageLimit;
-		Property rPageLimit = collection.getProperty(this.pageLimitPropDef);
-		if (rPageLimit != null) {
-			pageLimit = rPageLimit.getIntValue();
-		}
-		
-		int page = 0;
-		if (request.getParameter("page") != null) {
-			try {
-				page = Integer.parseInt(request.getParameter("page"));	
-				if (page < 0) {
-					page = 0;
-				}
-			} catch (Throwable t) { }			
-		}
-		int offset = page * pageLimit;
+        for (SearchComponent component: this.searchComponents) {
+            Map<String, Object> subModel = new HashMap<String, Object>();
+            component.execute(request, collection, subModel);
+            model.put(component.getName(), subModel);
+        }
+        
+        return new ModelAndView(this.viewName, model);
+    }	
+	
+    @Required public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
-		PropertyTypeDefinition sortProp = this.defaultSortPropDef;
-		SortFieldDirection sortFieldDirection = this.defaultSortOrder;
+    @Required public void setResourceManager(ResourceWrapperManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
 
-		if (collection.getProperty(this.sortPropDef) != null) {
-			String sortString = collection.getProperty(this.sortPropDef).getStringValue();
-			if (this.sortPropertyMapping.containsKey(sortString)) {
-				sortProp = this.sortPropertyMapping.get(sortString);
-			}
-			if (this.sortOrderMapping.containsKey(sortString)) {
-				sortFieldDirection = this.sortOrderMapping.get(sortString);
-			}
-		}
-		
-		Search search = new Search();
-		Query query = this.queryParser.parse(this.query);
+    @Required public void setSearchComponents(List<SearchComponent> searchComponents) {
+        this.searchComponents = searchComponents;
+    }
+    
+    @Required public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
 
-		AndQuery andQuery = new AndQuery();
-		andQuery.add(query);
-		if (!recursive) {
-			int depth = URLUtil.splitUri(uri).length;
-			andQuery.add(new UriDepthQuery(depth));
-		}
 
-		search.setQuery(andQuery);
-		search.setLimit(pageLimit + 1);
-		search.setCursor(offset);
-		
-		List<SortField> sortFields = new ArrayList<SortField>();
-		sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
-		search.setSorting(new SortingImpl(sortFields));
-		ResultSet result = this.searcher.execute(token, search);
+    public static class SearchComponent {
+        private String name;
+        private String titleLocalizationKey;
+        
+        private int defaultPageLimit = 20;
+        private boolean defaultRecursive = false;
+        
+        private boolean supportPaging = true;
+        
+        private Searcher searcher;
+        private ResourceWrapperManager resourceManager;
+        private Service viewService;
+        
+        private String query;
+        private QueryParser queryParser;
+        
+        private PropertyTypeDefinition defaultSortPropDef;
+        private Map<String, PropertyTypeDefinition> sortPropertyMapping;
 
-		boolean more = result.getSize() == pageLimit + 1;
-		int num = result.getSize();
-		if (more) num--;
-		
-		Map<String, URL> urls = new HashMap<String, URL>();
-		List<PropertySet> files = new ArrayList<PropertySet>();
-		for (int i = 0; i < num; i++) {
-			PropertySet res = result.getResult(i);
-			files.add(res);
-			URL url = this.viewService.constructURL(res.getURI());
-			urls.put(res.getURI(), url);
-		}
-		
-		Map<String, Object> model = new HashMap<String, Object>();
-		
-		URL nextURL = null;
-		if (more && pageLimit > 0) {
-			nextURL = URL.create(request);
-			nextURL.setParameter("page", String.valueOf(page + 1));
-		}
-		URL prevURL = null;
-		if (page > 0 && pageLimit > 0) {
-			prevURL = URL.create(request);
-			if (page == 1) {
-				prevURL.removeParameter("page");
-			} else {
-				prevURL.setParameter("page", String.valueOf(page - 1));
-			}
-		}
+        private SortFieldDirection defaultSortOrder;
+        private Map<String, SortFieldDirection> sortOrderMapping;
+        
+        private PropertyTypeDefinition pageLimitPropDef;
+        private PropertyTypeDefinition recursivePropDef;
+        private PropertyTypeDefinition sortPropDef;
 
-		List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
-		for (PropertyDisplayConfig config: this.listableProperties) {
-			Property hide = null;
-			if (config.getPreventDisplayProperty() != null) {
-				hide = collection.getProperty(config.getPreventDisplayProperty());
-			}
-			if (hide == null) {
-				displayPropDefs.add(config.getDisplayProperty());
-			}
-		}
-		
-		model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
-		model.put("files", files);
-		model.put("collections", collections);
-		
-		model.put("urls", urls);
-		model.put("nextURL", nextURL);
-		model.put("prevURL", prevURL);
-		
-		model.put("displayPropDefs", displayPropDefs);
+        private List<PropertyDisplayConfig> listableProperties;
+        
+        public void execute(HttpServletRequest request, Resource collection,
+                Map<String, Object> model) throws Exception {
+            
+            boolean recursive = this.defaultRecursive;
+            if (collection.getProperty(this.recursivePropDef) != null) {
+                recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
+            }
+            
+            int pageLimit = this.defaultPageLimit;
+            Property rPageLimit = collection.getProperty(this.pageLimitPropDef);
+            if (rPageLimit != null) {
+                pageLimit = rPageLimit.getIntValue();
+            }
+            
+            int page = 0;
+            if (this.supportPaging && request.getParameter("page") != null) {
+                try {
+                    page = Integer.parseInt(request.getParameter("page"));  
+                    if (page < 0) {
+                        page = 0;
+                    }
+                } catch (Throwable t) { }           
+            }
+            int offset = page * pageLimit;
 
-		Map<String, Object> mainModel = new HashMap<String, Object>();
-		mainModel.put("collectionListing", model);
-		return new ModelAndView(this.viewName, mainModel);
-	}
+            PropertyTypeDefinition sortProp = this.defaultSortPropDef;
+            SortFieldDirection sortFieldDirection = this.defaultSortOrder;
 
-	@Required public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
+            if (this.sortPropDef != null && collection.getProperty(this.sortPropDef) != null) {
+                String sortString = collection.getProperty(this.sortPropDef).getStringValue();
+                if (this.sortPropertyMapping.containsKey(sortString)) {
+                    sortProp = this.sortPropertyMapping.get(sortString);
+                }
+                if (this.sortOrderMapping != null && this.sortOrderMapping.containsKey(sortString)) {
+                    sortFieldDirection = this.sortOrderMapping.get(sortString);
+                }
+            }
+            
+            Search search = new Search();
+            Query query = this.queryParser.parse(this.query);
 
-	@Required public void setSearcher(Searcher searcher) {
-		this.searcher = searcher;
-	}
+            AndQuery andQuery = new AndQuery();
+            andQuery.add(query);
+            if (!recursive) {
+                int depth = URLUtil.splitUri(collection.getURI()).length;
+                andQuery.add(new UriDepthQuery(depth));
+            }
 
-	@Required public void setViewName(String viewName) {
-		this.viewName = viewName;
-	}
+            search.setQuery(andQuery);
+            search.setLimit(pageLimit + 1);
+            search.setCursor(offset);
+            
+            String token = SecurityContext.getSecurityContext().getToken();
+            List<SortField> sortFields = new ArrayList<SortField>();
+            sortFields.add(new PropertySortField(sortProp, sortFieldDirection));
+            search.setSorting(new SortingImpl(sortFields));
 
-	@Required public void setViewService(Service viewService) {
-		this.viewService = viewService;
-	}
+            ResultSet result = this.searcher.execute(token, search);
 
-	@Required public void setResourceManager(ResourceWrapperManager resourceManager) {
-		this.resourceManager = resourceManager;
-	}
+            boolean more = result.getSize() == pageLimit + 1;
+            int num = result.getSize();
+            if (more) num--;
+            
+            Map<String, URL> urls = new HashMap<String, URL>();
+            List<PropertySet> files = new ArrayList<PropertySet>();
+            for (int i = 0; i < num; i++) {
+                PropertySet res = result.getResult(i);
+                files.add(res);
+                URL url = this.viewService.constructURL(res.getURI());
+                urls.put(res.getURI(), url);
+            }
+            
+            URL nextURL = null;
+            if (more && this.supportPaging && pageLimit > 0) {
+                nextURL = URL.create(request);
+                nextURL.setParameter("page", String.valueOf(page + 1));
+            }
+            URL prevURL = null;
+            if (page > 0 && this.supportPaging && pageLimit > 0) {
+                prevURL = URL.create(request);
+                if (page == 1) {
+                    prevURL.removeParameter("page");
+                } else {
+                    prevURL.setParameter("page", String.valueOf(page - 1));
+                }
+            }
 
-	@Required public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
-		this.pageLimitPropDef = pageLimitPropDef;
-	}
+            List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
+            for (PropertyDisplayConfig config: this.listableProperties) {
+                Property hide = null;
+                if (config.getPreventDisplayProperty() != null) {
+                    hide = collection.getProperty(config.getPreventDisplayProperty());
+                }
+                if (hide == null) {
+                    displayPropDefs.add(config.getDisplayProperty());
+                }
+            }
 
-	@Required public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
-		this.recursivePropDef = recursivePropDef;
-	}
+            String title = null;
+            if (this.titleLocalizationKey != null) {
+                org.springframework.web.servlet.support.RequestContext springRequestContext = 
+                    new org.springframework.web.servlet.support.RequestContext(request);
+                title = springRequestContext.getMessage(this.titleLocalizationKey, (String)null);
+            }
+            model.put("title", title);
+            model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
+            model.put("files", files);
+            
+            model.put("urls", urls);
+            model.put("nextURL", nextURL);
+            model.put("prevURL", prevURL);
+            
+            model.put("displayPropDefs", displayPropDefs);
 
-	@Required public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
-		this.sortPropDef = sortPropDef;
-	}
+        }
 
-	@Required public void setDefaultSortPropDef(PropertyTypeDefinition defaultSortPropDef) {
-		this.defaultSortPropDef = defaultSortPropDef;
-	}
+        @Required public void setName(String name) {
+            this.name = name;
+        }
+        
+        public String getName() {
+            return this.name;
+        }
+        
+        @Required public void setSearcher(Searcher searcher) {
+            this.searcher = searcher;
+        }
 
-	@Required public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
-		this.listableProperties = listableProperties;
-	}
+        @Required public void setViewService(Service viewService) {
+            this.viewService = viewService;
+        }
 
-	@Required public void setSortPropertyMapping(Map<String, PropertyTypeDefinition> sortPropertyMapping) {
-		this.sortPropertyMapping = sortPropertyMapping;
-	}
+        @Required public void setResourceManager(ResourceWrapperManager resourceManager) {
+            this.resourceManager = resourceManager;
+        }
 
-	@Required public void setSortOrderMapping(Map<String, SortFieldDirection> sortOrderMapping) {
-		this.sortOrderMapping = sortOrderMapping;
-	}
+        @Required public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
+            this.pageLimitPropDef = pageLimitPropDef;
+        }
 
-	@Required public void setDefaultSortOrder(SortFieldDirection defaultSortOrder) {
-		this.defaultSortOrder = defaultSortOrder;
-	}
+        @Required public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
+            this.recursivePropDef = recursivePropDef;
+        }
 
-	@Required public void setQuery(String query) {
-		this.query = query;
-	}
+        public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
+            this.sortPropDef = sortPropDef;
+        }
 
-	@Required public void setQueryParser(QueryParser queryParser) {
-		this.queryParser = queryParser;
-	}
+        @Required public void setDefaultSortPropDef(PropertyTypeDefinition defaultSortPropDef) {
+            this.defaultSortPropDef = defaultSortPropDef;
+        }
+
+        @Required public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
+            this.listableProperties = listableProperties;
+        }
+
+        public void setSortPropertyMapping(Map<String, PropertyTypeDefinition> sortPropertyMapping) {
+            this.sortPropertyMapping = sortPropertyMapping;
+        }
+
+        @Required public void setDefaultSortOrder(SortFieldDirection defaultSortOrder) {
+            this.defaultSortOrder = defaultSortOrder;
+        }
+
+        public void setSortOrderMapping(Map<String, SortFieldDirection> sortOrderMapping) {
+            this.sortOrderMapping = sortOrderMapping;
+        }
+
+        @Required public void setQuery(String query) {
+            this.query = query;
+        }
+
+        @Required public void setQueryParser(QueryParser queryParser) {
+            this.queryParser = queryParser;
+        }
+
+        public void setTitleLocalizationKey(String titleLocalizationKey) {
+            this.titleLocalizationKey = titleLocalizationKey;
+        }
+
+        public String getTitleLocalizationKey() {
+            return titleLocalizationKey;
+        }
+
+        public void setDefaultRecursive(boolean defaultRecursive) {
+            this.defaultRecursive = defaultRecursive;
+        }
+
+        public void setSupportPaging(boolean supportPaging) {
+            this.supportPaging = supportPaging;
+        }
+    }
+    
+        
 
 
 	public static class PropertyDisplayConfig {

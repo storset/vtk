@@ -54,7 +54,7 @@ label {
   font-size: .9em;
 }
 
-label.resource\.sorting, label.resource\.hide-last-modified, label.resource\.hide-published-date, label.resource\.hide-introduction, label.resource\.hide-introduction-image {
+label.resource\.sorting, label.resource\.recursive-listing, label.resource\.hide-last-modified, label.resource\.hide-published-date, label.resource\.hide-introduction, label.resource\.hide-introduction-image, label.resource\.hide-end-date, label.resource\.hide-location {
   display: inline;
 }
 

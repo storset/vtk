@@ -58,6 +58,14 @@
     <property name="handler" ref="editor.articleListingEditHandler" />
   </bean>
 
+  <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.eventListingEditHandler" />
+  </bean>
 
   <bean id="editor.documentEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -257,6 +265,13 @@
     <property name="successView" value="redirectToManage" />
   </bean>
 
+  <bean id="editor.eventListingEditHandler"
+        class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.eventListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToManage" />
+  </bean>
+
   <bean id="editor.editHandler"
         class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="resourceManager" />
@@ -320,13 +335,43 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
-
-            <!--ref bean="articleListing.recursiveListingPropDef" /-->
             <ref bean="collection.pageLimitPropDef" />
+
+            <ref bean="collection.recursiveListingPropDef" />
 
             <ref bean="articleListing.sortingPropDef" />
 
             <ref bean="articleListing.hidePublishedDatePropDef" />
+            <ref bean="articleListing.hideIntroductionPropDef" />
+            <ref bean="articleListing.hideIntroductionImagePropDef" />
+
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+
+  <bean id="editor.eventListingResourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="collection.pageLimitPropDef" />
+
+            <ref bean="collection.recursiveListingPropDef" />
+
+            <ref bean="eventListing.hideEndDatePropDef" />
+            <ref bean="eventListing.hideLocationPropDef" />
+
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
 

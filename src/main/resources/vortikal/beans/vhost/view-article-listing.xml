@@ -23,11 +23,23 @@
   <bean id="articleListing.handler" 
         class="org.vortikal.web.controller.CollectionListingController"
         parent="requestLocalRepositoryAware">
+    <property name="resourceManager" ref="resourceManager" />
     <property name="viewName" value="articleListing.view" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="articleListing.searchComponent" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="articleListing.searchComponent" 
+        class="org.vortikal.web.controller.CollectionListingController$SearchComponent">
+    <property name="name" value="articleListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />
 
@@ -95,6 +107,11 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
+          </list>
+        </entry>
+        <entry key="searchComponents">
+          <list>
+            <ref bean="articleListing.searchComponent" />
           </list>
         </entry>
       </map>

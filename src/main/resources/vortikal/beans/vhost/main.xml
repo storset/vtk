@@ -32,6 +32,7 @@
   <import resource="service.xml" />
   <import resource="view-collection-listing.xml" />
   <import resource="view-article-listing.xml" />
+  <import resource="view-event-listing.xml" />
   <import resource="manage.xml" />
   <import resource="commenting.xml" />
   <import resource="root-management.xml" />

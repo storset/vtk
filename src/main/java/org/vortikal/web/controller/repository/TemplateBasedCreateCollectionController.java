@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
@@ -176,6 +177,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         if (!"/".equals(uri)) destinationURI += "/";
         destinationURI += createFolderCommand.getName();
         
+       
         // Copy folder-template to destination (implicit rename) 
         this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
         createFolderCommand.setDone(true);
@@ -219,6 +221,51 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         }
         return name;
     }
+   
+   @Override
+   protected void onBindAndValidate(HttpServletRequest request,
+           Object command, BindException errors) throws Exception {
+       super.onBindAndValidate(request, command, errors);
+       RequestContext requestContext = RequestContext.getRequestContext();
+       SecurityContext securityContext = SecurityContext.getSecurityContext();
+       
+       CreateCollectionCommand createCollectionCommand =
+           (CreateCollectionCommand) command;
+       if (createCollectionCommand.getCancelAction() != null) {
+           return;
+       }
+       String uri = requestContext.getResourceURI();
+       String token = securityContext.getToken();
+
+       String name = createCollectionCommand.getName();       
+       if (null == name || "".equals(name.trim())) {
+           errors.rejectValue("name",
+                              "manage.create.collection.missing.name",
+                              "A name must be provided for the collection");
+           return;
+       }
+
+       if (name.indexOf("/") >= 0) {
+           errors.rejectValue("name",
+                              "manage.create.collection.invalid.name",
+                              "This is an invalid collection name");
+       }
+       name = fixCollectionName(name);
+       String newURI = uri;
+       if (!"/".equals(uri)) newURI += "/";
+       newURI += name;
+
+       try {
+           boolean exists = this.repository.exists(token, newURI);
+           if (exists) {
+               errors.rejectValue("name",
+                                  "manage.create.collection.exists",
+                                  "A collection with this name already exists");
+           }
+       } catch (Exception e) {
+           logger.warn("Unable to validate collection creation input", e);
+       }
+   }
 
 }
 

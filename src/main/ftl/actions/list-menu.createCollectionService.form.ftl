@@ -23,8 +23,15 @@
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
       </#if>
-     
-    <input type="text" name="name" value="new-folder">
+           <@spring.bind "createCollectionForm" + ".name" /> 
+        <#if spring.status.errorMessages?size &gt; 0>
+        <ul class="errors">
+          <#list spring.status.errorMessages as error> 
+            <li>${error}</li> 
+          </#list>
+        </ul>
+      </#if>
+    <input type="text" name="name">
     <div id="submitButtons">
       <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">

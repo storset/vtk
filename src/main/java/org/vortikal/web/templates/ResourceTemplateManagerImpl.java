@@ -176,7 +176,6 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 				}
 			}else{
 				foundTemplateBaseUris.add(folderTemplatesDefaultUri); // No config.txt is found
-				System.out.println("\n\n\n" + folderTemplatesDefaultUri + "\n\n\n");
 			}
 			
     	}catch (Exception e){

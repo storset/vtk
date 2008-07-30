@@ -30,18 +30,28 @@
  */
 package org.vortikal.web.controller.repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -49,50 +59,62 @@ import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
 
 
-public class TemplateBasedCreateController extends SimpleFormController
+public class TemplateBasedCreateCollectionController extends SimpleFormController
   implements InitializingBean {
 
 	private ResourceTemplateManager templateManager;
 	
     private Repository repository = null;
-    private DocumentTemplates documentTemplates;
     
-    public void setRepository(Repository repository) {
+    private PropertyTypeDefinition userTitlePropDef;
+    private boolean downcaseCollectionNames = false;
+    private Map<String, String> replaceNameChars; 
+    
+    public boolean isDowncaseCollectionNames() {
+		return downcaseCollectionNames;
+	}
+
+	public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
+		this.downcaseCollectionNames = downcaseCollectionNames;
+	}
+
+	public Map<String, String> getReplaceNameChars() {
+		return replaceNameChars;
+	}
+
+	public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+		this.replaceNameChars = replaceNameChars;
+	}
+
+	@Required public void setUserTitlePropDef(PropertyTypeDefinition userTitlePropDef) {
+		this.userTitlePropDef = userTitlePropDef;
+	}
+
+    @Required public void setRepository(Repository repository) {
         this.repository = repository;
     } 
 
-    public void afterPropertiesSet() throws Exception {
-        if (this.documentTemplates == null) {
-            throw new BeanInitializationException(
-                "Required bean property 'documentTemplates' not set.");
-        }
-
-    }
-    
-    protected Object formBackingObject(HttpServletRequest request)
-        throws Exception {
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
+                                                requestContext.getResourceURI(), false);
+        String url = service.constructLink(resource, securityContext.getPrincipal());
+         
+        CreateCollectionCommand command = new CreateCollectionCommand(url);
+        
         String uri = requestContext.getResourceURI();
 		String token = SecurityContext.getSecurityContext().getToken();
-
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
-                requestContext.getResourceURI(), false);
         
-        String url = service.constructLink(resource, securityContext.getPrincipal());
-
-        CreateDocumentCommand command = new CreateDocumentCommand(url);
-				
-        ArrayList <ResourceTemplate> l = (ArrayList<ResourceTemplate>) templateManager.getDocumentTemplates(token, uri);        
+        ArrayList <ResourceTemplate> l = (ArrayList<ResourceTemplate>) templateManager.getFolderTemplates(token, uri);        
         
         // Set first available template as the selected 
         if (!l.isEmpty()) {
         	command.setSourceURI(l.get(0).getUri());
-        }
-              
+        } 
+        
         return command;
     }
 
@@ -108,14 +130,20 @@ public class TemplateBasedCreateController extends SimpleFormController
         String uri = requestContext.getResourceURI();
 		String token = securityContext.getToken();
 				
-	    List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
+	    List <ResourceTemplate> l = templateManager.getFolderTemplates(token, uri);
+	    
+	    System.out.println("l.size=" + l.size());
+	    
+	    for (ResourceTemplate t: l){
+	    	System.out.println(t);
+	    }
 	    
 	    TreeMap <String,String> tmp = new TreeMap <String,String>();	    
         for (ResourceTemplate t: l) {
         	tmp.put(t.getUri(), t.getName());
 	    }
 		       
-        model.put("templates", tmp);
+        model.put("templates", tmp); 
 		    	
         return model;
     }
@@ -125,38 +153,72 @@ public class TemplateBasedCreateController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        CreateDocumentCommand createDocumentCommand =
-            (CreateDocumentCommand) command;
-        if (createDocumentCommand.getCancelAction() != null) {
-            createDocumentCommand.setDone(true);
+        CreateCollectionCommand createFolderCommand =
+            (CreateCollectionCommand) command;
+        if (createFolderCommand.getCancelAction() != null) {
+            createFolderCommand.setDone(true);
             return;
         }
         String uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        // The location of the file that we shall copy
-        String sourceURI = createDocumentCommand.getSourceURI();
+        // The location of the folder that we shall copy
+        String sourceURI = createFolderCommand.getSourceURI();
+        
+        if(sourceURI == null){ // Just create a new folder if no "folder-template" is selected
+        	createNewFolder(command,uri,token);
+            createFolderCommand.setDone(true);            
+            return;
+        }
 
+        // Setting the destination to the current folder/uri
         String destinationURI = uri;
         if (!"/".equals(uri)) destinationURI += "/";
-        destinationURI += createDocumentCommand.getName();
+        destinationURI += createFolderCommand.getName();
         
+        // Copy folder-template to destination (implicit rename) 
         this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
-        createDocumentCommand.setDone(true);
+        createFolderCommand.setDone(true);
         
     }
     
-
-    /**
-     * @param documentTemplates The documentTemplates to set.
-     */
-    public void setDocumentTemplates(DocumentTemplates documentTemplates) {
-        this.documentTemplates = documentTemplates;
+    private void createNewFolder(Object command, String uri, String token) throws Exception{
+    	CreateCollectionCommand createCollectionCommand = (CreateCollectionCommand) command;
+    	String newURI = uri;
+    	
+        if (!"/".equals(uri)) newURI += "/";
+        String title = createCollectionCommand.getName();
+        String name = fixCollectionName(title);
+        newURI += name;
+        Resource collection = this.repository.createCollection(token, newURI);
+        if (!title.equals(name)) {
+            Property titleProp = collection.createProperty(this.userTitlePropDef);
+            titleProp.setStringValue(title);
+            this.repository.store(token, collection);
+        }
     }
 
 	public void setTemplateManager(ResourceTemplateManager templateManager) {
 		this.templateManager = templateManager;
 	}
+
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	
+   private String fixCollectionName(String name) {
+        if (this.downcaseCollectionNames) {
+            name = name.toLowerCase();
+        }
+        if (this.replaceNameChars != null) {
+            for (String regex: this.replaceNameChars.keySet()) {
+                String replacement = this.replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
+    }
 
 }
 

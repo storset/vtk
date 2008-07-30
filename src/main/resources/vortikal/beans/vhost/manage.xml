@@ -837,7 +837,7 @@
 
 
   <bean id="createCollectionHandler" 
-    class="org.vortikal.web.controller.repository.CreateCollectionController"
+    class="org.vortikal.web.controller.repository.TemplateBasedCreateCollectionController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
@@ -846,6 +846,7 @@
       value="org.vortikal.web.controller.repository.CreateCollectionCommand" />
     <property name="userTitlePropDef" ref="userTitlePropDef" />
     <property name="downcaseCollectionNames" value="true" />
+    <property name="templateManager" ref="templates.resourceTemplateManager" />
     <property name="replaceNameChars">
       <map>
         <entry key=" +" value="-" />

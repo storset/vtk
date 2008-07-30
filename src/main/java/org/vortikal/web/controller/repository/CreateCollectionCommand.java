@@ -35,6 +35,7 @@ import org.vortikal.web.controller.AbstractSaveCancelCommand;
 public class CreateCollectionCommand extends AbstractSaveCancelCommand {
 
     private String name = null;
+    private String sourceURI = null;
     
     public CreateCollectionCommand(String submitURL) {
         super(submitURL);
@@ -58,6 +59,24 @@ public class CreateCollectionCommand extends AbstractSaveCancelCommand {
      */
     public void setName(String name)  {
         this.name = name.trim();
+    }
+    
+    /**
+     * Gets the value of sourceURI
+     *
+     * @return the value of sourceURI
+     */
+    public String getSourceURI() {
+        return this.sourceURI;
+    }
+
+    /**
+     * Sets the value of sourceURI
+     *
+     * @param sourceURI Value to assign to this.sourceURI
+     */
+    public void setSourceURI(String sourceURI)  {
+        this.sourceURI = sourceURI;
     }
     
 }

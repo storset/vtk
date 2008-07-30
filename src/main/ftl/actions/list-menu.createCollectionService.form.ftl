@@ -8,6 +8,8 @@
   <form name="createcollection" action="${createCollectionForm.submitURL?html}" method="POST">
     <h3 class="nonul"><@vrtx.msg code="actions.createCollectionService" default="Collection Name"/>:</h3>
     <@spring.bind "createCollectionForm.name" /> 
+    
+    <@spring.bind "createCollectionForm" + ".sourceURI" /> 
       <#if spring.status.errorMessages?size &gt; 0>
         <ul class="errors">
           <#list spring.status.errorMessages as error> 
@@ -15,7 +17,14 @@
           </#list>
 	</ul>
       </#if>
-    <input type="text" name="name">
+      
+      <#if templates?exists >
+        <ul>
+          <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
+        </ul>
+      </#if>
+     
+    <input type="text" name="name" value="new-folder">
     <div id="submitButtons">
       <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">

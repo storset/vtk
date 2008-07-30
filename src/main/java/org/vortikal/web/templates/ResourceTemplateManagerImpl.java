@@ -111,7 +111,10 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 			String keyInPropertyFile = "/";
 			for (Enumeration <String> e = (Enumeration<String>) documentTemplatesConfiguration.propertyNames(); e.hasMoreElements() ;) {
 				String propertyKey = e.nextElement();
-				if( propertyKey.startsWith(uri + "/") ){ //uri does not contain the last slash
+				if(propertyKey.endsWith("/") && !uri.endsWith("/") ){ //uri does not contain the last slash
+					uri += "/";
+				}
+				if( uri.startsWith(propertyKey) ){ 
 					keyInPropertyFile = propertyKey;
 					break;
 				}
@@ -139,9 +142,48 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
         return foundTemplateBaseUris;
     }
     
-    private Set<String> getFolderTemplateBaseUris(String uri) {
-        // Not implemented, for now
-        return null;
+    @SuppressWarnings("unchecked")
+	private Set<String> getFolderTemplateBaseUris(String uri) {
+    	
+    	HashSet <String> foundTemplateBaseUris = new HashSet <String> ();		
+		String[] templateLocations = null;
+		
+		try {			
+			// Runs through the property file trying to match property key and uri
+			// stops after the first hit
+			String keyInPropertyFile = "/";
+			for (Enumeration <String> e = (Enumeration<String>) folderTemplatesConfiguration.propertyNames(); e.hasMoreElements() ;) {
+				String propertyKey = e.nextElement();
+				if(propertyKey.endsWith("/") && !uri.endsWith("/") ){ //uri does not contain the last slash
+					uri += "/";
+				}
+				if( uri.startsWith(propertyKey) ){ 
+					keyInPropertyFile = propertyKey;
+					break;
+				}
+		     }
+			
+			// A key can point to multiple template folders that is separated by ","
+			String tmp = folderTemplatesConfiguration.getProperty(keyInPropertyFile);
+			if(tmp != null){
+				templateLocations = tmp.split(","); 
+			}			
+			
+			// Mapping the found template values to folders in the vortex file system
+			if(templateLocations != null){
+				for(int i = 0; i < templateLocations.length;i++){
+					foundTemplateBaseUris.add( folderTemplatesBaseUri + "/" + templateLocations[i].trim() );
+				}
+			}else{
+				foundTemplateBaseUris.add(folderTemplatesDefaultUri); // No config.txt is found
+				System.out.println("\n\n\n" + folderTemplatesDefaultUri + "\n\n\n");
+			}
+			
+    	}catch (Exception e){
+			e.printStackTrace();
+		}
+    	
+        return foundTemplateBaseUris;
     }
 
     @Required

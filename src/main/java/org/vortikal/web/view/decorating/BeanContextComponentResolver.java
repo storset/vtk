@@ -102,7 +102,22 @@ public class BeanContextComponentResolver
         if (!this.initialized) {
             init();
         }
-        return new ArrayList<DecoratorComponent>(this.components.values());
+        List<DecoratorComponent> result = new ArrayList<DecoratorComponent>();
+        for (DecoratorComponent component : this.components.values()) {
+            String namespace = component.getNamespace();
+            if (this.availableComponentNamespaces != null) {
+                if (!this.availableComponentNamespaces.contains(namespace)) {
+                    continue;
+                }
+            }
+            if (this.prohibitedComponentNamespaces != null) {
+                if (this.prohibitedComponentNamespaces.contains(namespace)) {
+                    continue;
+                }
+            }
+            result.add(component);
+        }
+        return result;
     }
     
 

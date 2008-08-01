@@ -125,7 +125,7 @@
                <td><ul>
               <#assign splitList = splitList + interval />
             </#if>
-            <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title", "" "")?html}</a></li>
+            <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title", "", "")?html}</a></li>
           </#list>                                                                                          
         </ul></td></tr>
        </table>

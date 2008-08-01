@@ -192,6 +192,11 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
 
     private String checkPathMatch(String uri) {
+        String collectionExactMatch = this.decorationConfiguration.getProperty(uri + "/");
+        if (collectionExactMatch != null) {
+            return collectionExactMatch.trim();
+        }
+        
         String[] path = URLUtil.splitUriIncrementally(uri);
         for (int i = path.length - 1; i >= 0; i--) {
             String prefix = path[i];

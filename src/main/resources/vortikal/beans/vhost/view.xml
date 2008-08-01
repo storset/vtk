@@ -179,53 +179,7 @@
   </bean>
 
 
-
-  <bean id="adminURLFooterDecorator"
-        class="org.vortikal.web.view.decorating.HtmlFooterDecorator">
-    <property name="view" ref="manageURLView" />
-  </bean>
-
-  <bean id="manageURLView" parent="freemarkerView">
-    <property name="url" value="layouts/manage-link.ftl" />
-  </bean>
-
-
   <!-- Model data providers -->
-
-  <bean id="resourceTitleProvider"
-        class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="modelNames">
-      <map>
-        <entry key="http://www.uio.no/vortex/custom-properties"
-               value="resourceTitle" />
-      </map>
-    </property>
-    <property name="properties">
-      <list>
-        <value>http://www.uio.no/vortex/custom-properties:title</value>
-      </list>
-    </property>
-  </bean>
-
-
-  <bean id="abstractHtmlTitleProvider"
-        class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider"
-        parent="requestLocalRepositoryAware" abstract="true">
-    <property name="modelNames">
-      <map>
-        <entry key="http://www.uio.no/vortex/custom-properties" value="title" />
-        <entry key="" value="title" />
-      </map>
-    </property>
-    <property name="properties">
-      <list>
-        <!--value>displayName</value-->
-        <value>name</value>
-        <value>http://www.uio.no/vortex/custom-properties:title</value>
-      </list>
-    </property>
-  </bean>
 
 
   <bean id="resourceDetailProvider"

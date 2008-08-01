@@ -92,30 +92,6 @@
     <!--property name="viewWrapper" ref="editViewWrapper" /-->
   </bean>
 
-  <!-- Override only the decorator list: -->
-  <!--
-  <bean id="editViewWrapper" parent="manageViewWrapper">
-    <property name="decorators" ref="editDecorators" />
-  </bean>
-
-  <bean id="editDecorators" class="org.springframework.beans.factory.config.ListFactoryBean">
-    <property name="sourceList">
-      <list>
-        <ref bean="xmledit.headDecorator" />
-        <ref bean="manageHeadDecorator" />
-        <ref bean="manageHeaderDecorator" />
-        <ref bean="manageFooterDecorator" />
-      </list>
-    </property>
-  </bean>
-  
-
-  <bean id="xmledit.headDecorator"
-        class="org.vortikal.web.view.decorating.HtmlHeadDecorator">
-    <property name="view" ref="xmledit.pingView"/>
-  </bean>
-  -->
-
 
   <bean id="xmledit.pingView" parent="freemarkerView">
     <property name="url" value="layouts/ping.ftl" />

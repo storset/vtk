@@ -1597,16 +1597,6 @@
     </property>
   </bean>
   
-  <bean id="adminHtmlTitleProvider" parent="abstractHtmlTitleProvider">
-    <property name="localizationKeys">
-      <map>
-        <entry key="name" value="title.title" />
-        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.title" />
-      </map>
-    </property>
-  </bean>
-
-
   <bean id="adminACLProvider" 
         class="org.vortikal.web.referencedata.provider.ACLProvider" 
         parent="requestLocalRepositoryAware">

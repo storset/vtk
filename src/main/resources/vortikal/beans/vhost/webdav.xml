@@ -595,7 +595,6 @@
         <ref bean="resourceContextProvider" />
         <ref bean="webdavBreadCrumbProvider" />
         <ref bean="webdavCollectionListingProvider" />
-        <ref bean="resourceTitleProvider" />
       </list>
     </property>
   </bean>

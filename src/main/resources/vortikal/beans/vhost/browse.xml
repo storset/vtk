@@ -61,8 +61,6 @@
         <ref bean="browseUrlProvider" />
         <ref bean="browseMenuProvider" /> 
         <ref bean="browseCollectionListingProvider" />
-        <ref bean="browseHtmlTitleProvider" />
-        <ref bean="resourceTitleProvider" />
       </list>
     </property>
   </bean>
@@ -145,16 +143,6 @@
       </list>
     </property>
     <property name="retrieveForProcessing" value="false" />
-  </bean>
-
-
-  <bean id="browseHtmlTitleProvider" parent="abstractHtmlTitleProvider">
-    <property name="localizationKeys">
-      <map>
-        <entry key="name" value="title.browse" />
-        <entry key="http://www.uio.no/vortex/custom-properties:title" value="title.browse" />
-      </map>
-    </property>
   </bean>
 
 

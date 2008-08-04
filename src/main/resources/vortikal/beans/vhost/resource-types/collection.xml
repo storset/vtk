@@ -126,7 +126,7 @@
     <property name="valueFormatter">
       <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
         <constructor-arg value="vortikal.beans.vhost.resource-types.collection-page" />
-        <constructor-arg value="STRING" />
+        <constructor-arg value="INT" />
       </bean>
     </property>
     <property name="vocabulary">

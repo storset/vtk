@@ -44,80 +44,74 @@ import org.vortikal.web.view.decorating.DecoratorResponse;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 
-
 /**
- * XXX: this class currently depends on the thread safety of the
- * SyndFeed implementation: if it turns out that it is not thread
- * safe, its data has to be extracted to a custom bean after
- * fetching a feed.
+ * XXX: this class currently depends on the thread safety of the SyndFeed implementation: if it turns out that it is not
+ * thread safe, its data has to be extracted to a custom bean after fetching a feed.
  */
-public class FeedComponent extends ViewRenderingDecoratorComponent
-  implements ServletContextAware {
+public class FeedComponent extends ViewRenderingDecoratorComponent implements ServletContextAware {
 
     private static final String PARAMETER_FEED_DESCRIPTION = "feed-description";
     private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
 
     private static final String PARAMETER_URL = "url";
-    private static final String PARAMETER_URL_DESC = "The feed url. For host " +
-            "local feeds, you get authenticated retrieval of the resource if you skip the protocol/host part";
+    private static final String PARAMETER_URL_DESC = "The feed url. For host "
+            + "local feeds, you get authenticated retrieval of the resource if you skip the protocol/host part";
 
     private static final String PARAMETER_FEED_TITLE = "feed-title";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
 
     private static final String PARAMETER_ALL_MESSAGES_LINK = "all-messages-link";
-    private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = 
-        "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
-    
+    private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
+
     private static final String PARAMETER_SORT = "sort";
-    private static final String PARAMETER_SORT_DESC = 
-        "Default sorted by published date. Set to 'item-title' to sort by this instead. " 
-        + "You can control the direction of the sorting by using the keywords 'asc' or 'desc'. " 
-        + "Usage examples: sort=[asc], sort=[item-title desc], sort=[published-date asc], etc. "
-        + "The default is descending direction (newest first) for published date and ascending when sorting by 'item-title'.";
-    
+    private static final String PARAMETER_SORT_DESC = "Default sorted by published date. Set to 'item-title' to sort by this instead. "
+            + "You can control the direction of the sorting by using the keywords 'asc' or 'desc'. "
+            + "Usage examples: sort=[asc], sort=[item-title desc], sort=[published-date asc], etc. "
+            + "The default is descending direction (newest first) for published date and ascending when sorting by 'item-title'.";
+
     private static final String PARAMETER_PUBLISHED_DATE = "published-date";
-    private static final String PARAMETER_PUBLISHED_DATE_DESC = 
-        "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date";
-    
+    private static final String PARAMETER_PUBLISHED_DATE_DESC = "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date";
+
     private static final String PARAMETER_MAX_MESSAGES = "max-messages";
     private static final String PARAMETER_MAX_MESSAGES_DESC = "The max number of messages to display, defaults to 10";
-    
+
     private static final String PARAMETER_ITEM_DESCRIPTION = "item-description";
     private static final String PARAMETER_ITEM_DESCRIPTION_DESC = "Must be set to 'true' to show item descriptions";
 
     private static final String PARAMETER_INCLUDE_IF_EMPTY = "include-if-empty";
     private static final String PARAMETER_INCLUDE_IF_EMPTY_DESC = "Set to 'false' if you don't want to display empty feeds. Default is 'true'.";
 
+    private static final String PARAMETER_DISPLAY_CATEGORIES = "display-catgories";
+    private static final String PARAMETER_DISPLAY_CATEGORIES_DESC = "Set to 'true' if feed elements should display contents of category field.";
+
     private ContentCache<String, SyndFeed> cache;
 
     private LocalFeedFetcher localFeedFetcher;
-    
-    
+
+
     @Override
-    protected void processModel(Map<Object, Object> model,
-            DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         super.processModel(model, request, response);
 
         Map<String, Object> conf = new HashMap<String, Object>();
-        
+
         String url = request.getStringParameter(PARAMETER_URL);
         if (url == null) {
-            throw new DecoratorComponentException(
-                "Component parameter 'url' is required");
+            throw new DecoratorComponentException("Component parameter 'url' is required");
         }
 
-        String feedTitleString = request.getStringParameter(PARAMETER_FEED_TITLE); 
+        String feedTitleString = request.getStringParameter(PARAMETER_FEED_TITLE);
         if (feedTitleString == null || !"false".equals(feedTitleString)) {
             conf.put("feedTitle", true);
         }
-        
+
         String feedDescriptionString = request.getStringParameter(PARAMETER_FEED_DESCRIPTION);
         if (feedDescriptionString != null && "true".equals(feedDescriptionString)) {
             conf.put("feedDescription", true);
         }
 
-        String itemDescriptionString = request.getStringParameter(PARAMETER_ITEM_DESCRIPTION); 
+        String itemDescriptionString = request.getStringParameter(PARAMETER_ITEM_DESCRIPTION);
         if (itemDescriptionString != null && "true".equals(itemDescriptionString)) {
             conf.put("itemDescription", true);
         }
@@ -130,7 +124,8 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
                 if (tmpInt > 0) {
                     conf.put("maxMsgs", tmpInt);
                 }
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
 
         String publishedDateString = request.getStringParameter(PARAMETER_PUBLISHED_DATE);
@@ -141,9 +136,8 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
         } else {
             conf.put("publishedDate", "long");
         }
-        
-        String bottomLinkToAllMessagesString = request.getStringParameter(
-            PARAMETER_ALL_MESSAGES_LINK);
+
+        String bottomLinkToAllMessagesString = request.getStringParameter(PARAMETER_ALL_MESSAGES_LINK);
         if (!"false".equals(bottomLinkToAllMessagesString)) {
             conf.put("bottomLinkToAllMessages", true);
         }
@@ -176,7 +170,6 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
             }
         }
 
-
         boolean includeIfEmpty = true;
         String includeIfEmptyParam = request.getStringParameter(PARAMETER_INCLUDE_IF_EMPTY);
         if ("false".equalsIgnoreCase(includeIfEmptyParam)) {
@@ -184,8 +177,15 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
         }
         conf.put("includeIfEmpty", includeIfEmpty);
 
+        boolean displayCategories = false;
+        String displayCategoriesParam = request.getStringParameter(PARAMETER_DISPLAY_CATEGORIES);
+        if ("true".equalsIgnoreCase(displayCategoriesParam)) {
+            displayCategories = true;
+        }
+        conf.put("displayCategories", displayCategories);
+
         SyndFeed feed = null;
-        
+
         try {
             if (!url.startsWith("/")) {
                 feed = this.cache.get(url);
@@ -197,8 +197,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
             if (m == null) {
                 m = e.getClass().getName();
             }
-            throw new RuntimeException(
-                    "Could not read feed url " + url + " ("+ m + ")");
+            throw new RuntimeException("Could not read feed url " + url + " (" + m + ")");
         }
 
         model.put("feed", feed);
@@ -222,6 +221,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
         map.put(PARAMETER_PUBLISHED_DATE, PARAMETER_PUBLISHED_DATE_DESC);
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         map.put(PARAMETER_INCLUDE_IF_EMPTY, PARAMETER_INCLUDE_IF_EMPTY_DESC);
+        map.put(PARAMETER_DISPLAY_CATEGORIES, PARAMETER_DISPLAY_CATEGORIES_DESC);
         return map;
     }
 
@@ -230,8 +230,8 @@ public class FeedComponent extends ViewRenderingDecoratorComponent
         this.localFeedFetcher = new LocalFeedFetcher(servletContext);
     }
 
+
     public void setContentCache(ContentCache<String, SyndFeed> cache) {
         this.cache = cache;
     }
-    
 }

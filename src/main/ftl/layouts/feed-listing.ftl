@@ -10,7 +10,7 @@
   <#if conf.feedDescription?exists>
     <div class="feed-description">${feed.description?html}</div> 
   </#if>
-
+  
   <#if feed.entries?size gt 0>
     <#assign entries = feed.entries />
       <#if conf.sortByTitle?exists>
@@ -36,11 +36,18 @@
        <#list entries[0..maxMsgs-1] as entry>
          <li>
           <a class="item-title" href="${entry.link?html}">${entry.title?html}</a>
-	  <#-- description -->
-	  <#if conf.itemDescription?exists && (entry.description.value)?exists>
-          <div class="item-description">
-            ${entry.description.value}
-          </div>
+	      <#-- description -->
+	      <#if conf.itemDescription?exists && (entry.description.value)?exists>
+            <div class="item-description">
+              ${entry.description.value}
+            </div>
+          </#if>
+          <#if conf.displayCategories?exists && (entry.categories)?exists>
+            <ul class="categories">
+              <#list entry.categories as category>
+                <li>${category.name}</li>
+              </#list>
+            </ul>
           </#if>
           <#if conf.publishedDate?exists && entry.publishedDate?exists>
           <span class="published-date">

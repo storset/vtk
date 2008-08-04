@@ -15,10 +15,10 @@
           <#list spring.status.errorMessages as error> 
             <li>${error}</li> 
           </#list>
-	</ul>
+	    </ul>
       </#if>
       
-      <#if templates?exists >
+      <#if templates?exists && templates?size &gt; 0>
         <ul>
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>

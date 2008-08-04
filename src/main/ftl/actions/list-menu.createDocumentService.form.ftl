@@ -18,7 +18,7 @@
 		</ul>
       </#if>
       <#assign defaultTemplate = "">        
-      <#if templates?exists>
+      <#if templates?exists && templates?size &gt; 0>
         <ul>
           <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>" />
         </ul>

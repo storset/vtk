@@ -87,9 +87,13 @@ public class MessageSourceValueFormatter implements ValueFormatter {
     }
 
     private Value stringToValueInternal(String stringValue) {
+        
         switch (this.type) {
         case BOOLEAN:
             return new Value(Boolean.parseBoolean(stringValue));
+            
+        case INT:
+            return new Value(Integer.parseInt(stringValue));
 
         default:
             return new Value(stringValue);

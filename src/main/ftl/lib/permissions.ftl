@@ -311,7 +311,7 @@
             <#case "pseudo:authenticated">
             <#case "pseudo:all">
               <#if user.name != groupingPrincipal.name>
-                <li><@vrtx.msg code="pseudoPrincipal.<@displayUserPrincipal principal=user />" default="<@displayUserPrincipal principal=user />" /><#t/>
+                <li><@vrtx.msg code="pseudoPrincipal." + user.name default="pseudoPrincipal." + user.name /><#t/>
                   <#if removeUserURLs?exists && removeUserURLs[user.name]?exists >
                     &nbsp;(&nbsp;<a href="${removeUserURLs[user.name]?html}"><#t/>
                       <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)

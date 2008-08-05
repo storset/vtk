@@ -38,9 +38,9 @@
     <#list resources as r>
       <div class="vrtx-resource">
         <#if collectionListing.urls[r.URI]?exists>
-          <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "" "")}</a></h3>
+          <h3><a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")}</a></h3>
         <#else>
-          <h3>${vrtx.propValue(r, "title", "" "")}</h3>
+          <h3>${vrtx.propValue(r, "title", "", "")}</h3>
         </#if>
 
         <#list collectionListing.displayPropDefs as displayPropDef>

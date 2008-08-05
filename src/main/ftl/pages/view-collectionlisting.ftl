@@ -48,7 +48,6 @@
 <body>
     <h1>${title}</h1> 
 
-    
        <#-- Image --> 
 
        <#assign imageRes = vrtx.propResource(resource, "picture") />
@@ -57,10 +56,8 @@
          <#if imageRes == "">
            <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
          <#else>
-
            <#assign userTitle = vrtx.propValue(imageRes, "userTitle", imageRes) />
            <#assign desc = imageRes.getValueByName("description")?default("") />
-
            <#if userTitle == "" && desc == "">  
              <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
            <#else>
@@ -69,23 +66,22 @@
              <#if pixelWidth != "">
                <#assign style = "width:" + pixelWidth+ "px;" />
              </#if>
-   	 	 
              <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-   	    <#if userTitle != "">
-   	      <img src="${introductionImage}" alt="${userTitle?html}" />
-   	    <#else>
-   	      <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-   	    </#if>
-               <div class="vrtx-imagetext">
-   	      <#if userTitle != "">
-   		<span class="vrtx-imagetitle">${userTitle?html}<#if desc != "">: </#if></span>
-   	      </#if>
-   	      <#if desc != "">
-   		<span class="vrtx-imagedescription">${desc?html}</span>
-   	      </#if>
-   	    </div> 
-   	  </div>
-   	</#if>
+	   	       <#if userTitle != "">
+	   	         <img src="${introductionImage}" alt="${userTitle?html}" />
+	   	       <#else>
+	   	         <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+	   	       </#if>
+	           <div class="vrtx-imagetext">
+	   	         <#if userTitle != "">
+	   		       <span class="vrtx-imagetitle">${userTitle?html}<#if desc != "">: </#if></span>
+	   	         </#if>
+	   	         <#if desc != "">
+	   		       <span class="vrtx-imagedescription">${desc?html}</span>
+	   	         </#if>
+	   	       </div>
+   	         </div>
+   	       </#if>
          </#if>
        </#if>
 
@@ -111,28 +107,33 @@
        <#else>
          <#assign splitList = -1 />
        </#if>
-
-
-       <div class="vrtx-collections">
-        <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
-        <table>
-        <tr>
-        <td> 
-         <ul>
-          <#list subCollections as c>
-            <#if c_index = splitList>
-              </ul></td>
-               <td><ul>
-              <#assign splitList = splitList + interval />
-            </#if>
-            <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title", "", "")?html}</a></li>
-          </#list>                                                                                          
-        </ul></td></tr>
-       </table>
-       </div>
+       
+       <#-- List subareasbox _only_ when collection contains at least on subarea that is not hidden -->
+       
+       <#assign containsUnhidden = "" />
+       <#list subCollections as c>
+         <#if vrtx.propValue(c, "hidden", "", "navigation") == "" >
+           <#assign containsUnhidden = "true" />
+           <#break>
+         </#if>
+       </#list>
+       
+       <#if containsUnhidden == "true">
+         <div class="vrtx-collections">
+           <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
+             <ul>
+	           <#list subCollections as c>
+	             <#if c_index = splitList>
+	               <#assign splitList = splitList + interval />
+	             </#if>
+	             <#if !(vrtx.propValue(c, "hidden", "", "navigation") == "true") >
+	               <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title")?html}</a></li>
+	             </#if>
+	           </#list>
+             </ul>
+         </div>
+       </#if>
      </#if>
-
-
 
      <#-- List resources: -->
 

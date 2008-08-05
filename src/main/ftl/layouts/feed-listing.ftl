@@ -42,7 +42,7 @@
               ${entry.description.value}
             </div>
           </#if>
-          <#if conf.displayCategories?exists && (entry.categories)?exists>
+          <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>
             <ul class="categories">
               <#list entry.categories as category>
                 <li>${category.name}</li>

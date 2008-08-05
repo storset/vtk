@@ -144,12 +144,10 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         }
         conf.put("includeIfEmpty", includeIfEmpty);
 
-        boolean displayCategories = false;
         String displayCategoriesParam = request.getStringParameter(Parameter.DISPLAY_CATEGORIES.getId());
-        if ("false".equalsIgnoreCase(displayCategoriesParam)) {
-            displayCategories = true;
+        if (displayCategoriesParam != null && "true".equalsIgnoreCase(displayCategoriesParam)) {
+            conf.put("displayCategories", true);
         }
-        conf.put("displayCategories", displayCategories);
 
         SyndFeed feed = new SyndFeedImpl();
         feed.setTitle("Aggregated Feed");

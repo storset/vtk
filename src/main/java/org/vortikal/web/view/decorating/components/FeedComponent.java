@@ -177,12 +177,10 @@ public class FeedComponent extends ViewRenderingDecoratorComponent implements Se
         }
         conf.put("includeIfEmpty", includeIfEmpty);
 
-        boolean displayCategories = false;
         String displayCategoriesParam = request.getStringParameter(PARAMETER_DISPLAY_CATEGORIES);
-        if ("true".equalsIgnoreCase(displayCategoriesParam)) {
-            displayCategories = true;
+        if (displayCategoriesParam != null && "true".equalsIgnoreCase(displayCategoriesParam)) {
+            conf.put("displayCategories", true);
         }
-        conf.put("displayCategories", displayCategories);
 
         SyndFeed feed = null;
 

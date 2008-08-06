@@ -264,9 +264,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Object> parameters = getResourceAsMap(r);
         if (!existed) {
             parameters.put("aclInheritedFrom", findNearestACL(r.getURI()));
-            // Inherit content_language from parent
-            ResourceImpl parent = load(r.getParent());
-            parameters.put("contentLanguage", parent.getContentLanguage());
         }
         parameters.put("depth", SqlDaoUtils.getUriDepth(r.getURI()));
 

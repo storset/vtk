@@ -30,20 +30,16 @@
  */
 package org.vortikal.web.templates;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.PropertiesResource;
-import org.vortikal.web.RequestContext;
-import org.vortikal.web.templates.ResourceTemplateManager;
+import org.vortikal.util.repository.URIUtil;
 
 /**
  * Main template manager implementation.
@@ -79,8 +75,9 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
      */
     public List<ResourceTemplate> getDocumentTemplates(String token, String uri) {
 
-    	Set <String> h = this.getDocumentTemplateBaseUris(uri) ;   	 	    	
-    	return templateLocator.findTemplates(token, h, documentTemplateResourceType);
+    	Set <String> baseUris = this.getDocumentTemplateBaseUris(uri);
+    	
+    	return templateLocator.findTemplates(token, baseUris, documentTemplateResourceType);
     	
     }
 
@@ -94,97 +91,60 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
         return templateLocator.findTemplatesNonRecursively(token, 
                                     baseUris, this.folderTemplateResourceType);
     }
-
-    @SuppressWarnings("unchecked")
-	private Set<String> getDocumentTemplateBaseUris(String uri) {
+    
+    private Set<String> getDocumentTemplateBaseUris(String uri) {
+        
+        return getBaseUris(uri, this.documentTemplatesConfiguration,
+                                this.documentTemplatesBaseUri,
+                                this.documentTemplatesDefaultUri);
+    }
      
-        // Read/parse configuration, find matching prefix and return list of base uris
-        // to use with locator.
-    	
-		HashSet <String> foundTemplateBaseUris = new HashSet <String> ();		
-		String[] templateLocations = null;
-		
-		try {
-			
-			// Runs through the property file trying to match property key and uri
-			// stops after the first hit
-			String keyInPropertyFile = "/";
-			for (Enumeration <String> e = (Enumeration<String>) documentTemplatesConfiguration.propertyNames(); e.hasMoreElements() ;) {
-				String propertyKey = e.nextElement();
-				if(propertyKey.endsWith("/") && !uri.endsWith("/") ){ //uri does not contain the last slash
-					uri += "/";
-				}
-				if( uri.startsWith(propertyKey) ){ 
-					keyInPropertyFile = propertyKey;
-					break;
-				}
-		     }
-			
-			// A key can point to multiple template folders that is separated by ","
-			String tmp = documentTemplatesConfiguration.getProperty(keyInPropertyFile);
-			if(tmp != null){
-				templateLocations = tmp.split(","); 
-			}
-			
-			// Mapping the found template values to folders in the vortex file system
-			if(templateLocations != null){
-				for(int i = 0; i < templateLocations.length;i++){
-					foundTemplateBaseUris.add( documentTemplatesBaseUri + "/" + templateLocations[i].trim() );
-				}
-			}else{
-				foundTemplateBaseUris.add(documentTemplatesDefaultUri); // No config.txt is found
-			}
-			
-    	}catch (Exception e){
-			e.printStackTrace();
-		}
-		
-        return foundTemplateBaseUris;
+    private Set<String> getFolderTemplateBaseUris(String uri) {
+        
+        return getBaseUris(uri, this.folderTemplatesConfiguration,
+                                this.folderTemplatesBaseUri,
+                                this.folderTemplatesDefaultUri);
     }
     
-    @SuppressWarnings("unchecked")
-	private Set<String> getFolderTemplateBaseUris(String uri) {
-    	
-    	HashSet <String> foundTemplateBaseUris = new HashSet <String> ();		
-		String[] templateLocations = null;
-		
-		try {			
-			// Runs through the property file trying to match property key and uri
-			// stops after the first hit
-			String keyInPropertyFile = "/";
-			for (Enumeration <String> e = (Enumeration<String>) folderTemplatesConfiguration.propertyNames(); e.hasMoreElements() ;) {
-				String propertyKey = e.nextElement();
-				if(propertyKey.endsWith("/") && !uri.endsWith("/") ){ //uri does not contain the last slash
-					uri += "/";
-				}
-				if( uri.startsWith(propertyKey) ){ 
-					keyInPropertyFile = propertyKey;
-					break;
-				}
-		     }
-			
-			// A key can point to multiple template folders that is separated by ","
-			String tmp = folderTemplatesConfiguration.getProperty(keyInPropertyFile);
-			if(tmp != null){
-				templateLocations = tmp.split(","); 
-			}			
-			
-			// Mapping the found template values to folders in the vortex file system
-			if(templateLocations != null){
-				for(int i = 0; i < templateLocations.length;i++){
-					foundTemplateBaseUris.add( folderTemplatesBaseUri + "/" + templateLocations[i].trim() );
-				}
-			}else{
-				foundTemplateBaseUris.add(folderTemplatesDefaultUri); // No config.txt is found
-			}
-			
-    	}catch (Exception e){
-			e.printStackTrace();
-		}
-    	
-        return foundTemplateBaseUris;
-    }
+    private Set<String> getBaseUris(String uri, 
+                                    Properties config, 
+                                    String templatesBase,
+                                    String defaultBaseUri) {
+        
+        Set<String> baseUris = new HashSet<String>();
+        
+        // Try direct match from config first
+        String matchValue = config.getProperty(uri);
+        if (matchValue == null) {
+            matchValue = config.getProperty(uri + "/");
+        }
 
+        // If no direct match, try ancestor URIs upwards until we find a match
+        if (matchValue == null) {
+            for (String ancestorUri: URIUtil.getAncestorURIs(uri)) {
+                matchValue = config.getProperty(ancestorUri);
+                if (matchValue == null) {
+                    matchValue = config.getProperty(ancestorUri + "/");
+                }
+                
+                if (matchValue != null) break; // Found a match
+            }
+        }
+        
+        if (matchValue != null) {
+            // OK, something is configured for the given URI, parse the value
+            StringTokenizer tokens = new StringTokenizer(matchValue, ",");
+            while (tokens.hasMoreElements()) {
+                baseUris.add(templatesBase + "/" + tokens.nextToken().trim());
+            }
+        } else {
+            // Nothing configured, return default base URI
+            baseUris.add(defaultBaseUri);
+        }
+        
+        return baseUris;
+    }
+    
     @Required
     public void setTemplateLocator(ResourceTemplateLocator templateLocator) {
         this.templateLocator = templateLocator;

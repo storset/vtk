@@ -264,6 +264,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<String, Object> parameters = getResourceAsMap(r);
         if (!existed) {
             parameters.put("aclInheritedFrom", findNearestACL(r.getURI()));
+            // Inherit content_language from parent
+            ResourceImpl parent = load(r.getParent());
+            parameters.put("contentLanguage", parent.getContentLanguage());
         }
         parameters.put("depth", SqlDaoUtils.getUriDepth(r.getURI()));
 
@@ -285,9 +288,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         storeLock(r);
         storeProperties(r);
+        
     }
-
-
 
     public void delete(ResourceImpl resource) {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -569,7 +571,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         List<Map<String, String>> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
         for (Map<String, String> map: resourceUris) {
-            String uri = (String) map.get("uri");
+            String uri = map.get("uri");
             String parentUri = URIUtil.getParentURI(uri);
             childMap.get(parentUri).add(uri);
         }

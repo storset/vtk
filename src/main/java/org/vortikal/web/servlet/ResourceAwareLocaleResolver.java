@@ -30,13 +30,12 @@
  */
 package org.vortikal.web.servlet;
 
-
-
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -85,7 +84,10 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
             Resource resource = this.repository.retrieve(token, uri, false);
             locale = LocaleHelper.getLocale(resource.getContentLanguage());
             if (locale == null) {
-                locale = this.defaultLocale;
+                // Check for the nearest ancestor that has a locale set and use it
+                // If no ancestor has a locale set, use the default of the host
+                Locale nearestAncestorLocale = getNearestAncestorLocale(token, resource);
+                locale = nearestAncestorLocale != null ? nearestAncestorLocale : this.defaultLocale;
             }
             return locale;
         } catch (Throwable t) {
@@ -94,8 +96,21 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     }
     
 
-    public void setLocale(HttpServletRequest request,
-                          HttpServletResponse response, Locale locale) {
+    private Locale getNearestAncestorLocale(String token, Resource resource) throws Exception {
+        String parentURI = resource.getParent();
+        while (parentURI != null) {
+            Resource parent = this.repository.retrieve(token, parentURI, false);
+            if (!StringUtils.isEmpty(parent.getContentLanguage())) {
+                return LocaleHelper.getLocale(parent.getContentLanguage());
+            }
+            parentURI = parent.getParent();
+        }
+        return null;
+    }
+
+
+    public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
         request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
     }
+    
 }

@@ -33,6 +33,7 @@ package org.vortikal.web.controller.repository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -63,6 +64,8 @@ import org.vortikal.web.templates.ResourceTemplateManager;
 public class TemplateBasedCreateCollectionController extends SimpleFormController
   implements InitializingBean {
 
+	private static final String NORMAL_FOLDER_IDENTIFYER = "NORMAL_FOLDER";
+	
 	private ResourceTemplateManager templateManager;
 	
     private Repository repository = null;
@@ -113,7 +116,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         
         // Set first available template as the selected 
         if (!l.isEmpty()) {
-        	command.setSourceURI(l.get(0).getUri());
+        	command.setSourceURI(NORMAL_FOLDER_IDENTIFYER);
         } 
         
         return command;
@@ -133,16 +136,15 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 				
 	    List <ResourceTemplate> l = templateManager.getFolderTemplates(token, uri);
 	    
-	    System.out.println("l.size=" + l.size());
-	    
-	    for (ResourceTemplate t: l){
-	    	System.out.println(t);
+	    LinkedHashMap <String,String> tmp = new LinkedHashMap <String,String>();
+	    if(!l.isEmpty()){
+	    	tmp.put(NORMAL_FOLDER_IDENTIFYER,"Standard");
 	    }
 	    
-	    TreeMap <String,String> tmp = new TreeMap <String,String>();	    
         for (ResourceTemplate t: l) {
         	tmp.put(t.getUri(), t.getName());
 	    }
+        
 		       
         model.put("templates", tmp); 
 		    	
@@ -166,7 +168,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         // The location of the folder that we shall copy
         String sourceURI = createFolderCommand.getSourceURI();
         
-        if(sourceURI == null){ // Just create a new folder if no "folder-template" is selected
+        if(sourceURI == null || sourceURI.equals(NORMAL_FOLDER_IDENTIFYER)){ // Just create a new folder if no "folder-template" is selected
         	createNewFolder(command,uri,token);
             createFolderCommand.setDone(true);            
             return;

@@ -337,7 +337,7 @@
             <ref bean="introductionImagePropDef" />
             <ref bean="collection.pageLimitPropDef" />
 
-            <ref bean="collection.recursiveListingPropDef" />
+            <ref bean="articleListing.recursiveListingPropDef" />
 
             <ref bean="articleListing.sortingPropDef" />
 
@@ -367,7 +367,7 @@
             <ref bean="introductionImagePropDef" />
             <ref bean="collection.pageLimitPropDef" />
 
-            <ref bean="collection.recursiveListingPropDef" />
+            <ref bean="eventListing.recursiveListingPropDef" />
 
             <ref bean="eventListing.hideEndDatePropDef" />
             <ref bean="eventListing.hideLocationPropDef" />

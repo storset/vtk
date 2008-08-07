@@ -21,8 +21,8 @@
     <property name="propertyTypeDefinitions">
       <list>
 
+        <ref bean="articleListing.recursiveListingPropDef" />
         <ref bean="articleListing.sortingPropDef" />
-
         <ref bean="articleListing.hidePublishedDatePropDef" />
         <ref bean="articleListing.hideIntroductionPropDef" />
         <ref bean="articleListing.hideIntroductionImagePropDef" />
@@ -31,7 +31,42 @@
     </property>
   </bean>
 
-  <bean id="articleListing.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="articleListing.recursiveListingPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="recursive-listing" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.article-listing-recursive-listing" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_FALSE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+
+  <bean id="articleListing.sortingPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="sorting" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

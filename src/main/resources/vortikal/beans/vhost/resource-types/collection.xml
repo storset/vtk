@@ -39,7 +39,8 @@
     </property>
   </bean>
 
-  <bean id="collection.typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="collection.typePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="collection-type" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -66,7 +67,8 @@
 
 
   <bean id="collectionTitlePropDef"
-        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+        class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
     <property name="name" value="collectionTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
@@ -92,7 +94,8 @@
     <property name="fallbackTitlePropDef" ref="collectionTitlePropDef"/>
   </bean>
 
-  <bean id="collection.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="collection.recursiveListingPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="recursive-listing" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -241,7 +244,8 @@
   </bean>
 
 
-  <bean id="collection.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="collection.hideIntroductionPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="hide-introduction" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

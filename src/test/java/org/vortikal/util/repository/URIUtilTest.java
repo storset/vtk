@@ -33,6 +33,48 @@ package org.vortikal.util.repository;
 import junit.framework.TestCase;
 
 public class URIUtilTest extends TestCase {
+    
+    private String[] invalidURIs = new String[] {null, "", "web", "/web//intranett", "/web/"};
+    
+    public void testGetParentURIIllegalArgument() {
+        for (int i = 0; i < invalidURIs.length; i++) {
+            checkGetParentURIFail(invalidURIs[i]);
+        }
+    }
+    
+    private void checkGetParentURIFail(String uri) {
+        try {
+            assertEquals("URI '" + uri + "' did not throw exception as expected", null, URIUtil.getParentURI(uri));
+            fail();
+        } catch (IllegalArgumentException iae) {
+        }
+    }
+    
+    public void testGetParentURI() {
+        assertEquals(null, URIUtil.getParentURI("/"));
+        assertEquals("/", URIUtil.getParentURI("/web"));
+        assertEquals("/web", URIUtil.getParentURI("/web/intranett"));
+    }
+    
+    public void testGetResourceNameIllegalArgument() {
+        for (int i = 0; i < invalidURIs.length; i++) {
+            checkGetResourceNameFail(invalidURIs[i]);
+        }
+    }
+    
+    private void checkGetResourceNameFail(String uri) {
+        try {
+            assertEquals("URI '" + uri + "' did not throw exception as expected", null, URIUtil.getResourceName(uri));
+            fail();
+        } catch (IllegalArgumentException iae) {
+        }
+    }
+    
+    public void testGetResourceName() {
+        assertEquals("/", URIUtil.getResourceName("/"));
+        assertEquals("web", URIUtil.getResourceName("/web"));
+        assertEquals("intranett", URIUtil.getResourceName("/web/intranett"));
+    }
 
     public void testVerifyEscaped() {
         assertFalse(URIUtil.isEscaped("http://www.uio.no/detteÆerikkeencoda"));

@@ -33,6 +33,7 @@ package org.vortikal.util.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
@@ -104,20 +105,15 @@ public class URIUtil {
      * start with a slash, or if it contains <code>//</code>.
      */
     public static String getParentURI(String uri) {
-        if (uri == null || uri.trim().equals("") || !uri.startsWith("/")) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
-        }
-
-        if (uri.indexOf("//") != -1) {
+        
+        if (StringUtils.isBlank(uri) 
+                || !uri.startsWith("/") || uri.contains("//") 
+                || (!uri.equals("/") && uri.endsWith("/"))) {
             throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
         }
         
         if ("/".equals(uri)) {
             return null;
-        }
-
-        if (uri.endsWith("/")) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
         }
 
         String parentURI = uri.substring(0, uri.lastIndexOf("/"));
@@ -129,20 +125,15 @@ public class URIUtil {
     }
     
     public static String getResourceName(String uri) {
-        if (uri == null || uri.trim().equals("") || !uri.startsWith("/")) {
+        
+        if (StringUtils.isBlank(uri) 
+                || !uri.startsWith("/") || uri.contains("//")
+                || (!uri.equals("/") && uri.endsWith("/"))) {
             throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
         }
 
-        if (uri.indexOf("//") != -1) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
-        }
-        
         if ("/".equals(uri)) {
             return uri;
-        }
-
-        if (uri.endsWith("/")) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
         }
 
         return uri.substring(uri.lastIndexOf("/") + 1);

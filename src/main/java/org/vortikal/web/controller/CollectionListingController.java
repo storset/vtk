@@ -338,6 +338,12 @@ public class CollectionListingController implements Controller {
         public void setSupportPaging(boolean supportPaging) {
             this.supportPaging = supportPaging;
         }
+        
+        public void setDefaultPageLimit(int defaultPageLimit) {
+            if (defaultPageLimit <= 0) throw new IllegalArgumentException(
+                    "Argument must be a positive integer");
+            this.defaultPageLimit = defaultPageLimit;            
+        }
     }
     
         

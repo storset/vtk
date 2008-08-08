@@ -47,21 +47,124 @@ span.error{
 }
 
 label {
-  display: block;
+  display: block; 
   margin-bottom: .2em;
   white-space: nowrap;
   width:1%;
   font-size: .9em;
 }
 
-label.resource\.sorting, label.resource\.recursive-listing, label.resource\.hide-last-modified, label.resource\.hide-published-date, label.resource\.hide-introduction, label.resource\.hide-introduction-image, label.resource\.hide-end-date, label.resource\.hide-location {
-  display: inline;
+label.resource\.recursive-listing, label.resource\.hide-last-modified, label.resource\.hide-published-date, label.resource\.hide-introduction, label.resource\.hide-introduction-image, label.resource\.hide-end-date, label.resource\.hide-location {
+	display: inline;
 }
+
+div.page-limit {
+	clear:both;
+	padding-bottom:1em;
+}
+
+.page-limit label{
+	margin-top:0;
+	padding-top:0;
+	padding-right:6px;
+	width:auto;
+	float:left;
+	clear:left;
+}
+
+.page-limit select{
+	float:left;
+}
+
+div.sorting,
+div.recursive-listing{
+	clear:both;
+	margin:0 0;
+	padding-bottom:.3em;
+	float:left;
+} 
+
+* html div.sorting,
+* html div.recursive-listing{
+	padding: 0;
+	float:none;
+}
+
+.sorting input,
+.recursive-listing input{
+	display:block;
+	float:left;
+	clear:left;
+	margin:0;
+	margin-right:.6em;
+	margin-top:.3em;
+}
+
+* html .sorting input,
+* html  .recursive-listing input{
+	margin-right:0;
+	margin-top:0;
+	height:auto;
+}
+
+.sorting label,
+.recursive-listing label{
+	margin:0;
+	paddinf:0;
+	display:block;
+	float:left;
+	padding-top:.1em;
+	height:1.4em;
+}
+
+* html .sorting label,
+* html .recursive-listing label {
+	float:none;
+	height:auto;
+}
+
+div.hide-last-modified,
+div.hide-published-date,
+div.hide-introduction,
+div.hide-end-date,
+div.hide-location,
+div.hide-introduction-image{
+	margin-bottom:0px !important;
+	clear:both;
+}
+
+.hide-location label,
+.hide-end-date label,
+.hide-published-date label,
+.hide-last-modified label, 
+.hide-introduction label,
+.hide-introduction-image label{
+	margin:0;
+	margin-top:.3em;
+}
+.hide-location input,
+.hide-end-date input,
+.hide-published-date input,
+.hide-last-modified input, 
+.hide-introduction input, 
+.hide-introduction-image input{
+	margin:0;
+	margin-right:.2em;
+}
+
 
 div.properties {
  clear:both;
  /* margin-bottom: 1em; */ 
  height: 1%; /* For IE */
+}
+
+div.save-cancel{
+	margin-top:1em;
+}
+
+* html div.save-cancel{
+	margin-top:0;
 }
 
 div.properties:after {
@@ -73,7 +176,7 @@ div.properties:after {
 }
 
 div.property-item {
-  /* XXX: temporary */ clear: both;
+  /* XXX: temporary clear: both;*/ 
   margin-bottom: 1em;
 }
 
@@ -86,6 +189,11 @@ div.introduction {
   float: left; 
   width: 500px;  
   margin-right: 1.2em;
+  margin-bottom:1em;
+}
+
+* html div.introduction{
+	margin-bottom:0;
 }
 
 div.introduction textarea {
@@ -110,7 +218,8 @@ div.picture {
   float:left;
   clear:right; /*IE7*/
   white-space: nowrap;
-  margin-bottom: 1em;
+  margin-bottom: 0em; /* IE 6 */
+
 }
 
 div.picture input{
@@ -219,9 +328,9 @@ a.calendar span {
    margin-top: -18.5em; 
    background-color:#f7f7f7;
    padding-top: 5px;
-   padding-left: -1px;
-   padding-right: -1px;
-   padding-bottom: -1px;
+   padding-left: 0px;
+   padding-right: 0px;
+   padding-bottom: 0px;
    border: 1px solid #ccc;
 }
 

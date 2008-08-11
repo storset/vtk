@@ -4,7 +4,7 @@
 <#assign requestContext = resourceContext.requestContext />
 
 <#list requestContext.errorMessages as msg>
-  <div class="infomessage ${msg.identifier?html}">
+  <div class="errormessage ${msg.identifier?html}">
     ${msg.title?html}
     <#if (msg.messages)?exists>
       <ul class="errors">
@@ -17,7 +17,7 @@
 </#list>
 
 <#list requestContext.infoMessages as msg>
-  <div class="errormessage ${msg.identifier?html}">
+  <div class="infomessage ${msg.identifier?html}">
     ${msg.title?html}
     <#if (msg.messages)?exists>
       <ul class="infoitems">

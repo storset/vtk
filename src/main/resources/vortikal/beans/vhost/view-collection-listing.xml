@@ -33,7 +33,7 @@
   </bean>
 
   <bean id="collectionListing.searchComponent"
-        class="org.vortikal.web.controller.CollectionListingController$SearchComponent">
+        class="org.vortikal.web.controller.search.SearchComponent">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -61,11 +61,11 @@
     </property>
     <property name="listableProperties">
       <list>
-        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="lastModifiedPropDef" />
           <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
         </bean>
-        <bean class="org.vortikal.web.controller.CollectionListingController$PropertyDisplayConfig">
+        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionPropDef" />
           <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
         </bean>

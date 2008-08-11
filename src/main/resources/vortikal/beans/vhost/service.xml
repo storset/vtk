@@ -312,24 +312,6 @@
      </property>
    </bean>
 
-   <!--
-  <bean id="collectionListingService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="0" />
-    <property name="assertions">
-      <list>
-        <ref bean="resourceInCollection" />
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
-    <property name="handler" ref="collectionListingHandler" />
-  </bean>
-  -->
-
   <!-- Not comfortable with this. This interceptor will also be added
   for child services. -->
   <bean id="noCacheViewHandlerInterceptor"
@@ -353,8 +335,43 @@
     </property>
     <property name="handler" ref="collectionListingAsFeedHandler" />
   </bean>
-
-
+  
+  <!-- ATOM FEEDS -->
+  
+  <bean id="collectionListingAsAtomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="atomParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="collectionListingAsAtomHandler" />
+  </bean>
+  
+  <bean id="articleListingAsAtomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListingAsAtomService" />
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsArticleListing" />
+      </list>
+    </property>
+    <property name="handler" ref="articleListingAsAtomHandler" />
+  </bean>
+  
+  <bean id="eventListingAsAtomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListingAsAtomService" />
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+      </list>
+    </property>
+    <property name="handler" ref="eventListingAsAtomHandler" />
+  </bean>
+  
+  <!-- END ATOM FEED -->
 
   <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -476,6 +493,12 @@
     class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="feed" />
+  </bean>
+  
+  <bean id="atomParameterSetAssertion" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="vrtx" />
+    <property name="parameterValue" value="atom" />
   </bean>
 
   <bean id="abstractResourcePrincipalPermissionAssertion" 

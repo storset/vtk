@@ -24,15 +24,6 @@
     <property name="supportedMethods" value="OPTIONS" />
     <property name="viewName" value="httpOptions" />
   </bean>
-
-  <!--
-  <bean id="collectionListingHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="viewName" value="collectionListing" />
-    <property name="displayProcessed" value="true" />
-  </bean>
-  -->
   
   <bean id="displayIndexFileHandler" class="org.vortikal.web.controller.IndexFileController"
         parent="requestLocalRepositoryAware">
@@ -44,6 +35,49 @@
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="collectionListingAsFeed" />
   </bean>
+  
+  <!-- ATOM FEED -->
+  
+  <bean id="collectionListingAsAtomHandler" 
+    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="abdera" ref="abdera" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="collectionListing.searchComponent" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="articleListingAsAtomHandler" 
+    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="abdera" ref="abdera" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="articleListing.searchComponent" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventListingAsAtomHandler" 
+    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="abdera" ref="abdera" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="eventListing.upcomingEventsSearchComponent" />
+        <ref bean="eventListing.previousEventsSearchComponent" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="abdera" class="org.apache.abdera.Abdera" />
+  
+  <!-- END ATOM FEED -->
   
   <bean id="displayResourceHandler" 
     class="org.vortikal.web.controller.DisplayResourceController"

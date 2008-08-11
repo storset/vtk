@@ -74,9 +74,9 @@ public class CollectionListingAsAtomFeed implements Controller {
 
         String viewUrl = viewService.constructLink(uri);
         String host = viewService.constructURL(uri).getHost();
+        Property published = resource.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
 
-        String prefix = "tag:" + host + ",2008:";
-        feed.setId(prefix + uri);
+        feed.setId(getFeedId(uri, host, published));
         feed.setTitle(resource.getTitle());
         Property description = resource.getProperty(NS, "description");
         if (description != null) {
@@ -122,6 +122,14 @@ public class CollectionListingAsAtomFeed implements Controller {
         return null;
     }
 
+    private String getFeedId(String uri, String host, Property published) {
+        StringBuilder sb = new StringBuilder("tag:");
+        sb.append(host + ",");
+        sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
+        sb.append(uri);
+        return sb.toString();
+    }
+    
     public void setRepository(Repository repository) {
         this.repository = repository;
     }

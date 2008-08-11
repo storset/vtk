@@ -88,6 +88,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         
         for (SearchComponent searchComponent : searchComponents) {
             Map<String, Object> searchResult = searchComponent.execute(request, resource);
+            @SuppressWarnings("unchecked")
             List<PropertySet> files = (List<PropertySet>) searchResult.get("files");
             for (PropertySet child : files) {
                 Entry entry = feed.addEntry();
@@ -115,7 +116,7 @@ public class CollectionListingAsAtomFeed implements Controller {
             }
         }
 
-        response.setContentType("application/atomxml;charset=utf-8");
+        response.setContentType("application/atom+xml;charset=utf-8");
         feed.writeTo(response.getWriter());
 
         return null;

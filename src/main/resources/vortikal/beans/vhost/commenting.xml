@@ -51,6 +51,9 @@
     <property name="parent" ref="webService" />
     <property name="assertions">
       <list>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion">
+          <property name="requiresAuthentication" value="false" />
+        </bean>
         <ref bean="commenting.requestParameterIsFeed" />
       </list>
     </property>

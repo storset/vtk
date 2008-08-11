@@ -19,6 +19,18 @@
     <property name="handler" ref="collectionListing.handler" />
   </bean>
   
+
+  <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="atomParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="collectionListing.atomHandler" />
+  </bean>
+  
   
   <bean id="collectionListing.handler" 
         class="org.vortikal.web.controller.CollectionListingController"
@@ -30,7 +42,27 @@
         <ref bean="collectionListing.searchComponent" />
       </list>
     </property>
+    <property name="alternativeRepresentations">
+      <map>
+        <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
+      </map>
+    </property>
   </bean>
+
+  
+  <bean id="collectionListing.atomHandler" 
+    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="abdera" ref="abdera" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="collectionListing.searchComponent" />
+      </list>
+    </property>
+  </bean>
+  
+
 
   <bean id="collectionListing.searchComponent"
         class="org.vortikal.web.controller.search.SearchComponent">
@@ -106,6 +138,5 @@
       </map>
     </property>
   </bean>
-
 
 </beans>

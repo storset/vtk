@@ -36,6 +36,9 @@
       <link rel="stylesheet" href="${cssURL}">
     </#list>
   </#if>
+  <#list alternativeRepresentations as alt>
+    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
+  </#list>
   <#if collectionFeedURL?exists>
     <#--
     <link rel="alternate" type="application/atom+xml"

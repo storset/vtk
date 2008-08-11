@@ -336,42 +336,6 @@
     <property name="handler" ref="collectionListingAsFeedHandler" />
   </bean>
   
-  <!-- ATOM FEEDS -->
-  
-  <bean id="collectionListingAsAtomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListing.viewService" />
-    <property name="order" value="-1" />
-    <property name="assertions">
-      <list>
-        <ref bean="atomParameterSetAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="collectionListingAsAtomHandler" />
-  </bean>
-  
-  <bean id="articleListingAsAtomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingAsAtomService" />
-    <property name="order" value="-2" />
-    <property name="assertions">
-      <list>
-        <ref bean="resourceIsArticleListing" />
-      </list>
-    </property>
-    <property name="handler" ref="articleListingAsAtomHandler" />
-  </bean>
-  
-  <bean id="eventListingAsAtomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListingAsAtomService" />
-    <property name="order" value="-2" />
-    <property name="assertions">
-      <list>
-        <ref bean="resourceIsEventListing" />
-      </list>
-    </property>
-    <property name="handler" ref="eventListingAsAtomHandler" />
-  </bean>
-  
-  <!-- END ATOM FEED -->
 
   <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />

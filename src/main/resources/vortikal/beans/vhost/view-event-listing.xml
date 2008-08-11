@@ -19,12 +19,42 @@
     <property name="handler" ref="eventListing.handler" />
   </bean>
   
+
+  <bean id="eventListing.atomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.atomService" />
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.atomHandler" />
+  </bean>
   
+
   <bean id="eventListing.handler" 
         class="org.vortikal.web.controller.CollectionListingController"
         parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="viewName" value="eventListing.view" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="eventListing.upcomingEventsSearchComponent" />
+        <ref bean="eventListing.previousEventsSearchComponent" />
+      </list>
+    </property>
+    <property name="alternativeRepresentations">
+      <map>
+        <entry key="application/atom+xml" value-ref="eventListing.atomService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="eventListing.atomHandler" 
+    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="abdera" ref="abdera" />
     <property name="searchComponents">
       <list>
         <ref bean="eventListing.upcomingEventsSearchComponent" />

@@ -32,8 +32,10 @@ package org.vortikal.web.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +49,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 /**
  * 
@@ -57,6 +61,7 @@ public class CollectionListingController implements Controller {
     private ResourceWrapperManager resourceManager;
     private String viewName;
     private List<SearchComponent> searchComponents;
+    private Map<String, Service> alternativeRepresentations;
 
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -82,9 +87,30 @@ public class CollectionListingController implements Controller {
             model.put(component.getName(), subModel);
         }
 
+        Set<Object> alt = new HashSet<Object>();
+        for (String contentType: this.alternativeRepresentations.keySet()) {
+            try {
+                Map<String, Object> m = new HashMap<String, Object>();
+                Service service = this.alternativeRepresentations.get(contentType);
+                URL url = service.constructURL(uri);
+                String title = service.getName();
+                org.springframework.web.servlet.support.RequestContext rc = 
+                new org.springframework.web.servlet.support.RequestContext(request);
+                title = rc.getMessage(service.getName(), new Object[]{collection.getTitle()}, service.getName());
+                
+                m.put("title", title);
+                m.put("url", url);
+                m.put("contentType", contentType);
+                
+                alt.add(m);
+            } catch (Throwable t) { }
+        }
+        model.put("alternativeRepresentations", alt);
+        
         return new ModelAndView(this.viewName, model);
     }
 
+    
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -103,6 +129,10 @@ public class CollectionListingController implements Controller {
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+    
+    public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
+        this.alternativeRepresentations = alternativeRepresentations;
     }
 
 }

@@ -42,6 +42,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -91,6 +92,7 @@ public class CommentsProvider implements ReferenceDataProvider {
     
     @SuppressWarnings(value={"unchecked"}) 
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
+        
         if (this.formSessionAttributeName != null) {
 
             if (servletRequest.getSession(false) != null) {
@@ -117,8 +119,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         boolean commentsEnabled =
             resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
 
-        model.put("commentsEnabled", Boolean.valueOf(commentsEnabled));
-        
+        model.put("commentsEnabled", commentsEnabled);
 
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();
 
@@ -161,16 +162,19 @@ public class CommentsProvider implements ReferenceDataProvider {
         }
 
         if (this.resourceCommentsFeedService != null) {
-            try {
-                URL feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
-                model.put("feedURL", feedURL);
-            } catch (Exception e) { }
+            
+            // Only provide feed subscription link if resource is READ for ALL.
+            if (resource.isAuthorized(RepositoryAction.READ, PrincipalFactory.ALL)) {    
+                try {
+                    URL feedURL = this.resourceCommentsFeedService.constructURL(resource, principal);
+                    model.put("feedURL", feedURL);
+                } catch (Exception e) { }
+            }
         }
     }
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         return java.util.Collections.<String, String>emptyMap();
     }
-
 
 }

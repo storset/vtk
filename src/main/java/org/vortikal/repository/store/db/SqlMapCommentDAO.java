@@ -85,10 +85,9 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         return comments;
     }
 
-
     public void deleteComment(Comment comment) {
         String sqlMap = getSqlMap("deleteComment");
-        getSqlMapClientTemplate().delete(sqlMap, comment);
+        getSqlMapClientTemplate().delete(sqlMap, Integer.valueOf(comment.getID()));
     }
     
     public void deleteAllComments(Resource resource) {
@@ -105,12 +104,11 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         return comment;
     }
     
-
     public Comment updateComment(Comment comment) {
         String sqlMap = getSqlMap("updateComment");
         getSqlMapClientTemplate().update(sqlMap, comment);
         sqlMap = getSqlMap("loadCommentById");
-        comment = (Comment) getSqlMapClientTemplate().queryForObject(sqlMap, new Integer(comment.getID()));
+        comment = (Comment) getSqlMapClientTemplate().queryForObject(sqlMap, Integer.valueOf(comment.getID()));
         return comment;
     }
 

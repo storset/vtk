@@ -642,8 +642,8 @@
   </select>
   
 
-  <delete id="deleteComment" parameterClass="org.vortikal.repository.Comment">
-    delete from vortex_comment where id = #ID#
+  <delete id="deleteComment" parameterClass="java.lang.Integer">
+    delete from vortex_comment where id = #value#
   </delete>
 
   <delete id="deleteAllComments" parameterClass="org.vortikal.repository.Resource">

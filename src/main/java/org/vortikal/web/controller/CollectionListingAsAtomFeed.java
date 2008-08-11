@@ -78,6 +78,10 @@ public class CollectionListingAsAtomFeed implements Controller {
         String prefix = "tag:" + host + ",2008:";
         feed.setId(prefix + uri);
         feed.setTitle(resource.getTitle());
+        Property description = resource.getProperty(NS, "description");
+        if (description != null) {
+            feed.setSubtitle(description.getFormattedValue());
+        }
         feed.setUpdated(resource.getLastModified());
         feed.addAuthor(resource.getModifiedBy().getDescription());
         feed.addLink(viewUrl, "self");

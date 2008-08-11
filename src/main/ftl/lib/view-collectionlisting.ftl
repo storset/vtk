@@ -120,7 +120,7 @@
         </#list -->
 
         <#if displayMoreURLs>
-          <a href="${collectionListing.urls[r.URI]?html}" class="read-more">
+          <a href="${collectionListing.urls[r.URI]?html}" class="more">
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>
         </#if>

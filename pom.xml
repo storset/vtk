@@ -47,12 +47,17 @@
       <id>tommae</id>
       <name>Tomm Anders Eriksen</name>
       <url>http://www.uio.no/sok?person=tommae</url>
-    </developer>  
+    </developer>
     <developer>
       <id>kristisy</id>
       <name>Kristian Syversen</name>
       <url>http://www.uio.no/sok?person=kristisy</url>
-    </developer>  
+    </developer>
+    <developer>
+      <id>rezam</id>
+      <name>Reza Mirzaei</name>
+      <url>http://www.uio.no/sok?person=rezam</url>
+    </developer>
   </developers>  
   <mailingLists>
     <mailingList>
@@ -128,6 +133,12 @@
       <url>http://people.apache.org/repo/m2-snapshot-repository</url>
     </repository>
     -->
+    
+    <repository>
+      <id>apache-incubating</id>
+      <name>Apache Incubating Repository</name>
+      <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+    </repository>
 
   </repositories>
   
@@ -354,7 +365,8 @@
   
   <dependencies>
     <!-- MP3 support: these dependencies are not in any known Maven
-         repository: -->
+         repository:
+-->
     <!--
     <dependency>
       <groupId>org.tritonus</groupId>
@@ -379,6 +391,18 @@
       <artifactId>dwr</artifactId>
       <version>2.0.1</version>
     </dependency-->
+	
+	<!-- Abdera Atom Feed -->
+	<dependency>
+		<groupId>org.apache.abdera</groupId>
+		<artifactId>abdera-core</artifactId>
+		<version>0.4.0-incubating</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.abdera</groupId>
+		<artifactId>abdera-parser</artifactId>
+		<version>0.4.0-incubating</version>
+	</dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -621,7 +645,8 @@
     </dependency>
 
     <!-- Requirements for Spring's tx:advice and Geronimo (XA-capable)
-         transaction manager: -->
+         transaction manager:
+-->
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>

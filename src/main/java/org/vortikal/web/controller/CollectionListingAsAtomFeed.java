@@ -1,6 +1,5 @@
 package org.vortikal.web.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +19,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.search.PropertySortField;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.SortField;
-import org.vortikal.repository.search.SortingImpl;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.Query;
-import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
 import org.vortikal.web.service.Service;

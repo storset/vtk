@@ -51,14 +51,14 @@
           <#if val?has_content>
             <div class="vrtx-prop ${displayPropDef.name}">
               ${val}
-              <#if displayMoreURLs>
-              <a href="${collectionListing.urls[r.URI]?html}" class="read-more">
-                <@vrtx.msg code="viewCollectionListing.readMore" />
-              </a>
-              </#if>
             </div>
           </#if>
         </#list>
+        <#if displayMoreURLs>
+          <a href="${collectionListing.urls[r.URI]?html}" class="read-more">
+            <@vrtx.msg code="viewCollectionListing.readMore" />
+          </a>
+        </#if>
       </div>
     </#list>
    </div>

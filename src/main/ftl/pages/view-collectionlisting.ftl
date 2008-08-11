@@ -142,9 +142,9 @@
 
      <#list searchComponents as model>
        <#if collection.resourceType = 'event-listing'>
-         <@coll.displayEvents model=model.name />
+         <@coll.displayEvents model=model.name displayMoreURLs=true />
        <#elseif collection.resourceType = 'article-listing'>
-         <@coll.displayResources model=model.name displayMoreURLs=true />
+         <@coll.displayArticles model=model.name displayMoreURLs=true />
        <#else>
          <@coll.displayResources model=model.name />
        </#if>

@@ -84,6 +84,7 @@ public final class PropertyType {
 
     /* Known evaluated prop (extra props) */
     public static final String TITLE_PROP_NAME = "title";
+    public static final String INTRODUCTION_PROP_NAME = "introduction";
     public static final String DESCRIPTION_PROP_NAME = "description";
 
     

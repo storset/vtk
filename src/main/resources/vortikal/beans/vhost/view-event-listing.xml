@@ -59,7 +59,6 @@
     <property name="searchComponents">
       <list>
         <ref bean="eventListing.upcomingEventsSearchComponent" />
-        <ref bean="eventListing.previousEventsSearchComponent" />
       </list>
     </property>
   </bean>

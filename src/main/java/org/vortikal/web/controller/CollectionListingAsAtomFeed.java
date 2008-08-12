@@ -75,13 +75,14 @@ public class CollectionListingAsAtomFeed implements Controller {
         String viewUrl = viewService.constructLink(uri);
         String host = viewService.constructURL(uri).getHost();
         Property published = resource.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
-
         feed.setId(getFeedId(uri, host, published));
         feed.setTitle(resource.getTitle());
-        Property description = resource.getProperty(NS, PropertyType.DESCRIPTION_PROP_NAME);
-        if (description != null) {
-            feed.setSubtitle(description.getFormattedValue());
+        
+        String subTitle = getIntroductionOrDescription(resource);
+        if (subTitle != null) {
+            feed.setSubtitleAsHtml(subTitle);
         }
+        
         feed.setUpdated(resource.getLastModified());
         feed.addAuthor(resource.getModifiedBy().getDescription());
         feed.addLink(viewUrl, "self");
@@ -98,9 +99,9 @@ public class CollectionListingAsAtomFeed implements Controller {
                 Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
                 entry.setTitle(prop.getFormattedValue("name", null));
 
-                prop = child.getProperty(NS, PropertyType.DESCRIPTION_PROP_NAME);
-                if (prop != null) {
-                    entry.setSummary(prop.getFormattedValue());
+                String summary = getIntroductionOrDescription(child);
+                if (summary != null) {
+                    entry.setSummaryAsHtml(summary);
                 }
 
                 prop = child.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
@@ -120,6 +121,16 @@ public class CollectionListingAsAtomFeed implements Controller {
         feed.writeTo(response.getWriter());
 
         return null;
+    }
+
+    private String getIntroductionOrDescription(PropertySet resource) {
+        Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
+        if (prop != null) {
+            return prop.getFormattedValue();
+        }
+        Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
+        prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
+        return prop != null ? prop.getFormattedValue() : null;
     }
 
     private String getFeedId(String uri, String host, Property published) {

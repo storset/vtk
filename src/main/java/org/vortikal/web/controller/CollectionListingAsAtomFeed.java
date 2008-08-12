@@ -93,7 +93,10 @@ public class CollectionListingAsAtomFeed implements Controller {
             List<PropertySet> files = (List<PropertySet>) searchResult.get("files");
             for (PropertySet child : files) {
                 Entry entry = feed.addEntry();
-                entry.setId(child.getURI());
+                
+                // Avoid illegal IRI characters:
+                entry.setId(child.getURI().replaceAll(" ", "_"));
+
                 entry.setTitle(child.getName());
                 entry.addCategory(child.getResourceType());
                 Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);

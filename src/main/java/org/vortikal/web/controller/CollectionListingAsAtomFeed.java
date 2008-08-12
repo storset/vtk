@@ -78,7 +78,7 @@ public class CollectionListingAsAtomFeed implements Controller {
 
         feed.setId(getFeedId(uri, host, published));
         feed.setTitle(resource.getTitle());
-        Property description = resource.getProperty(NS, "description");
+        Property description = resource.getProperty(NS, PropertyType.DESCRIPTION_PROP_NAME);
         if (description != null) {
             feed.setSubtitle(description.getFormattedValue());
         }
@@ -98,7 +98,7 @@ public class CollectionListingAsAtomFeed implements Controller {
                 Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
                 entry.setTitle(prop.getFormattedValue("name", null));
 
-                prop = child.getProperty(NS, "description");
+                prop = child.getProperty(NS, PropertyType.DESCRIPTION_PROP_NAME);
                 if (prop != null) {
                     entry.setSummary(prop.getFormattedValue());
                 }

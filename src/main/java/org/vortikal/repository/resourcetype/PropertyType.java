@@ -106,6 +106,7 @@ public final class PropertyType {
     public static final String PROPERTIESLASTMODIFIED_PROP_NAME = "propertiesLastModified";
     public static final String PROPERTIESMODIFIEDBY_PROP_NAME = "propertiesModifiedBy";
     public static final String CONTENTLENGTH_PROP_NAME = "contentLength";
+    public static final String DESCRIPTION_PROP_NAME = "description";
     
     public static final String[] SPECIAL_PROPERTIES = { 
         COLLECTION_PROP_NAME,
@@ -123,7 +124,8 @@ public final class PropertyType {
         CONTENTMODIFIEDBY_PROP_NAME,
         PROPERTIESLASTMODIFIED_PROP_NAME,
         PROPERTIESMODIFIEDBY_PROP_NAME, 
-        CONTENTLENGTH_PROP_NAME
+        CONTENTLENGTH_PROP_NAME,
+        DESCRIPTION_PROP_NAME
     };
     
     public static final Set<String> SPECIAL_PROPERTIES_SET =

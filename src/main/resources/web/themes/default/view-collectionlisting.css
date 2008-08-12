@@ -137,16 +137,18 @@ abbr {
 /* END vrtx-resource (standard, article, events) */
 
 /* RSS - stuff */
-p.rss {
+div.feed {
   clear:both;
+  background: url(rss-icon.jpg) no-repeat top left;
+  font-size: .9em;
+  height: 24px;
+  line-height: 20px;
+
 }
 
-p.rss a {
-  background: url(rss-icon.jpg) no-repeat top left;
+div.feed a {
   padding-left: 27px;
-  height: 24px;
-  display:block;
-  width: 16em;
+
 }
 
 .clear {

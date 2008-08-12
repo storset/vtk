@@ -128,12 +128,12 @@
     </#list>
    </div>
   </#if>
-  
+
   <#if collectionListing.prevURL?exists>
-    <a href="${collectionListing.prevURL?html}">previous</a>&nbsp;
+    <a class="vrtx-previous" href="${collectionListing.prevURL?html}">previous</a>
   </#if>
   <#if collectionListing.nextURL?exists>
-    <a href="${collectionListing.nextURL?html}">next</a>
+    <a class="vrtx-next" href="${collectionListing.nextURL?html}">next</a>
   </#if>
 </#macro>
 
@@ -189,10 +189,10 @@
   </#if>
 
   <#if collectionListing.prevURL?exists>
-    <a href="${collectionListing.prevURL?html}">previous</a>&nbsp;
+    <a class="vrtx-previous" href="${collectionListing.prevURL?html}">previous</a>
   </#if>
   <#if collectionListing.nextURL?exists>
-    <a href="${collectionListing.nextURL?html}">next</a>
+    <a class="vrtx-next" href="${collectionListing.nextURL?html}">next</a>
   </#if>
 
 </#macro>

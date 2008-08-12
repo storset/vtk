@@ -73,6 +73,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />

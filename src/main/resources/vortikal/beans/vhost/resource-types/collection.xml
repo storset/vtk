@@ -169,17 +169,17 @@
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="int">
-                <value>25</value>
-              </constructor-arg>
-            </bean>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="int">
                 <value>50</value>
               </constructor-arg>
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="int">
                 <value>100</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>500</value>
               </constructor-arg>
             </bean>
           </list>

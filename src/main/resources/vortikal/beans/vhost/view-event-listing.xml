@@ -73,6 +73,7 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="supportPaging" value="false" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
 
@@ -96,6 +97,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
 

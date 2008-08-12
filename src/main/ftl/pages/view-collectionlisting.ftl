@@ -149,7 +149,7 @@
     <#list alternativeRepresentations as alt>
       <#if alt.contentType = 'application/atom+xml'>
         <div class="feed">
-          <a href="${alt.title?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+          <a href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
         </div>
         <#break />
       </#if>

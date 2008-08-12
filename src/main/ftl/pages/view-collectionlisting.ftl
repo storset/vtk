@@ -144,10 +144,15 @@
        </#if>
      </#list>
 
-     <#-- Placeholder for feed-link -->  
-     <div class="feed">      
-       <a href="">Feed from this document</a>
-     </div>
 
+    <#-- XXX: display first link with content type = atom: -->
+    <#list alternativeRepresentations as alt>
+      <#if alt.contentType = 'application/atom+xml'>
+        <div class="feed">
+          <a href="${alt.title?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+        </div>
+        <#break />
+      </#if>
+    </#list>
   </body>
 </html>

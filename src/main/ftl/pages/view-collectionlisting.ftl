@@ -144,5 +144,10 @@
        </#if>
      </#list>
 
+     <#-- Placeholder for feed-link -->  
+     <div class="feed">      
+       <a href="">Feed from this document</a>
+     </div>
+
   </body>
 </html>

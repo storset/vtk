@@ -38,6 +38,7 @@
         class="org.vortikal.web.controller.CollectionListingController"
         parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="resourceManager" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="viewName" value="articleListing.view" />
     <property name="searchComponents">
       <list>

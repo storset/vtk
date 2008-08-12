@@ -110,32 +110,26 @@
        <#else>
          <#assign splitList = -1 />
        </#if>
-       
-       <#-- List subareasbox _only_ when collection contains at least on subarea that is not hidden -->
-       
-       <#assign containsUnhidden = "" />
-       <#list subCollections as c>
-         <#if vrtx.propValue(c, "hidden", "", "navigation") == "" >
-           <#assign containsUnhidden = "true" />
-           <#break>
-         </#if>
-       </#list>
-       
-       <#if containsUnhidden == "true">
-         <div class="vrtx-collections">
-           <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
-             <ul>
-	           <#list subCollections as c>
-	             <#if c_index = splitList>
-	               <#assign splitList = splitList + interval />
-	             </#if>
-	             <#if !(vrtx.propValue(c, "hidden", "", "navigation") == "true") >
-	               <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title")?html}</a></li>
-	             </#if>
-	           </#list>
-             </ul>
-         </div>
-       </#if>
+
+
+       <div class="vrtx-collections">
+         <h2><@vrtx.msg code="viewCollectionListing.subareas" default="Subareas"/></h2>
+         <table>
+           <tr>
+             <td> 
+               <ul>
+                 <#list subCollections as c>
+                   <#if c_index = splitList>
+                 </ul></td>
+                 <td><ul>
+                     <#assign splitList = splitList + interval />
+                   </#if>
+                   <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title")?html}</a></li>
+                 </#list>                                                                                          
+           </ul></td></tr>
+         </table>
+       </div>
+
      </#if>
 
      <#-- List resources: -->

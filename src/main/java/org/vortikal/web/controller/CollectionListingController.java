@@ -46,6 +46,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
@@ -59,10 +60,11 @@ public class CollectionListingController implements Controller {
 
     private Repository repository;
     private ResourceWrapperManager resourceManager;
+    private PropertyTypeDefinition hiddenPropDef;
     private String viewName;
     private List<SearchComponent> searchComponents;
     private Map<String, Service> alternativeRepresentations;
-
+    
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String uri = RequestContext.getRequestContext().getResourceURI();
@@ -72,7 +74,7 @@ public class CollectionListingController implements Controller {
         Resource[] children = this.repository.listChildren(token, uri, true);
         List<Resource> subCollections = new ArrayList<Resource>();
         for (Resource r : children) {
-            if (r.isCollection()) {
+            if (r.isCollection() && r.getProperty(this.hiddenPropDef) == null) {
                 subCollections.add(r);
             }
         }
@@ -121,6 +123,11 @@ public class CollectionListingController implements Controller {
         this.resourceManager = resourceManager;
     }
 
+    @Required
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) { 
+        this.hiddenPropDef = hiddenPropDef;
+    }
+    
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;

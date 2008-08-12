@@ -167,6 +167,13 @@ div.properties div.location {
     <#local value = resource.getValue(propDef) />
 
     <#local type = propDef.type />
+
+    <#if type = 'HTML' && name='userTitle' && (resource.resourceType = 'event-listing' ||
+         resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+      <#local value = resource.title />
+    </#if>
+      
+
     <#if type = 'HTML'>
       var fck_${name} = FCKeditorAPI.GetInstance('resource.${name}');
 
@@ -287,6 +294,17 @@ div.properties div.location {
       <#if type = 'HTML' && name != 'userTitle' && name != 'title'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' />
+
+      <#-- hack for setting collection titles: -->
+      <#elseif type = 'HTML' && name='userTitle' && (resource.resourceType = 'event-listing' ||
+               resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+        <#if value = ''>
+          <#local value = resource.title?html />
+        </#if>
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
+        <#if description != "">
+          <span class="input-description">(${description})</span>
+        </#if>
 
       <#elseif name = 'media'><#-- XXX -->
         <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}"> 

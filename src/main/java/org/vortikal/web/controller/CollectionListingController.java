@@ -31,9 +31,11 @@
 package org.vortikal.web.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +50,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.ResourcePropertyComparator;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -60,10 +63,12 @@ public class CollectionListingController implements Controller {
 
     private Repository repository;
     private ResourceWrapperManager resourceManager;
+    private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition hiddenPropDef;
     private String viewName;
     private List<SearchComponent> searchComponents;
     private Map<String, Service> alternativeRepresentations;
+
     
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -79,6 +84,9 @@ public class CollectionListingController implements Controller {
             }
         }
 
+        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
+        Collections.sort(subCollections, new ResourcePropertyComparator(this.titlePropDef, false, locale));
+        
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("collection", this.resourceManager
                 .createResourceWrapper(collection.getURI()));
@@ -128,6 +136,12 @@ public class CollectionListingController implements Controller {
         this.hiddenPropDef = hiddenPropDef;
     }
     
+    @Required 
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+
+
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;

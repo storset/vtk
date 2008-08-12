@@ -30,30 +30,22 @@
  */
 package org.vortikal.web.controller.repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.BeanInitializationException;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -142,7 +134,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 	    }
 	    
         for (ResourceTemplate t: l) {
-        	tmp.put(t.getUri(), t.getName());
+        	tmp.put(t.getUri(), t.getTitle());
 	    }
         
 		       
@@ -167,8 +159,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         // The location of the folder that we shall copy
         String sourceURI = createFolderCommand.getSourceURI();
-        
-        if(sourceURI == null || sourceURI.equals(NORMAL_FOLDER_IDENTIFYER)){ // Just create a new folder if no "folder-template" is selected
+
+        if (sourceURI == null || sourceURI.equals(NORMAL_FOLDER_IDENTIFYER)){ // Just create a new folder if no "folder-template" is selected
         	createNewFolder(command,uri,token);
             createFolderCommand.setDone(true);            
             return;
@@ -182,6 +174,10 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
        
         // Copy folder-template to destination (implicit rename) 
         this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
+        Resource dest = this.repository.retrieve(token, destinationURI, false);
+        dest.removeProperty(this.userTitlePropDef);
+        this.repository.store(token, dest);
+        
         createFolderCommand.setDone(true);
         
     }
@@ -257,15 +253,17 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
        if (!"/".equals(uri)) newURI += "/";
        newURI += name;
 
-       try {
-           boolean exists = this.repository.exists(token, newURI);
-           if (exists) {
-               errors.rejectValue("name",
-                                  "manage.create.collection.exists",
-                                  "A collection with this name already exists");
-           }
-       } catch (Exception e) {
-           logger.warn("Unable to validate collection creation input", e);
+       boolean exists = this.repository.exists(token, newURI);
+       if (exists) {
+           errors.rejectValue("name",
+                   "manage.create.collection.exists",
+           "A collection with this name already exists");
+       }
+       
+       if (uri.startsWith(newURI)) {
+           errors.rejectValue("name",
+                   "manage.create.collection.invalid.destination",
+                   "Cannot copy a collection into itself");
        }
    }
 

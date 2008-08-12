@@ -12,8 +12,8 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/fckeditor/fckeditor-textarea.ftl" as fck />
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Editor</title>
     <@fck.declareEditor />
@@ -45,7 +45,7 @@
     </script>
   </head>
   <body>
-    <form method="POST" action="#submit" onsubmit="needConfirmation=false;">
+    <form method="post" action="#submit" onsubmit="needConfirmation=false;">
 
       <#-- Preserve properties not edited here: -->
       <#list resource.contentProperties + resource.extraContentProperties as propDef>

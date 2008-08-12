@@ -27,14 +27,14 @@
 
 body
 {
-	padding: 1px;
-	margin: 0;
-	background-color: #ffffff;
+	padding: 0px;
+	margin: 0px 0px 0px 0px;
+        background-color: #ffffff;
 }
 
 #xEditingArea
 {
-	border: #696969 1px solid;
+/*	border: #696969 1px solid; */
 }
 
 .SourceField
@@ -56,9 +56,11 @@ body
 
 .TB_ToolbarSet
 {
-	padding: 1px;
+/*	padding: 1px;
 	border-top: #efefde 1px outset;
-	border-bottom: #efefde 1px outset;
+	border-bottom: #efefde 1px outset; */
+	border-bottom: 1px solid #999999;
+	padding: 1px;
 }
 
 .TB_ToolbarSet TD
@@ -110,7 +112,8 @@ body
 
 .TB_SideBorder
 {
-	background-color: #696969;
+	background-color: transparent;
+        width: 0px ! important;
 }
 
 .TB_Expand, .TB_Collapse
@@ -339,6 +342,7 @@ body
     border: 1px solid #8f8f73;
     padding-left: 2px;
     padding-right: 2px;
+    background-color: #ffffff;
 }
 
 .SC_Panel, .SC_Panel TD

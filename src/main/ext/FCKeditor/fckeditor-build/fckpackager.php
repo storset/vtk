@@ -166,7 +166,7 @@ class FCKConstantProcessor
 		}
 
 		$output = preg_replace_callback(
-			'/(?<!(var |...\.))(?:' . $this->_ContantsRegexPart . ')(?!\\w)/',
+			'/(?<!(var |...\.))(?:' . $this->_ContantsRegexPart . ')(?!(?:\s*=)|\w)/',
 			array( &$this, '_Contant_Replace_Evaluator' ), $output ) ;
 
 		return $output ;
@@ -223,7 +223,8 @@ class FCKFunctionProcessor
 		if ( !$this->_IsGlobal )
 			$processed = $this->_ProcessVars( $processed, $this->_Parameters ) ;
 
-		$numVarMatches = preg_match_all( '/\bvar\b\s+([\w_][\w\d_]+)/', $processed, $varsMatches ) ;
+		// Match "var" declarations.
+		$numVarMatches = preg_match_all( '/\bvar\b\s+((?:({(?:(?>[^{}]*)|(?2))*})|[^;])+?)(?=(?:\bin\b)|;)/', $processed, $varsMatches ) ;
 
 		if ( $numVarMatches > 0 )
 		{
@@ -231,7 +232,20 @@ class FCKFunctionProcessor
 
 			for ( $i = 0 ; $i < $numVarMatches ; $i++ )
 			{
-				$vars[] = $varsMatches[1][$i] ;
+				$varsMatch = $varsMatches[1][$i];
+				
+				// Removed all (...), [...] and {...} blocks from the var
+				// statement to avoid problems with commas inside them.
+				$varsMatch = preg_replace( '/(\((?:(?>[^\(\)]*)|(?1))*\))+/', '', $varsMatch ) ;
+				$varsMatch = preg_replace( '/(\[(?:(?>[^\[\]]*)|(?1))*\])+/', '', $varsMatch ) ;
+				$varsMatch = preg_replace( '/({(?:(?>[^{}]*)|(?1))*})+/', '', $varsMatch ) ;
+				
+				$numVarNameMatches = preg_match_all( '/(?:^|,)\s*([^\s=,]+)/', $varsMatch, $varNameMatches ) ;
+				
+				for ( $j = 0 ; $j < $numVarNameMatches ; $j++ )
+				{
+					$vars[] = $varNameMatches[1][$j] ;
+				}
 			}
 
 			$processed = $this->_ProcessVars( $processed, $vars ) ;
@@ -245,7 +259,7 @@ class FCKFunctionProcessor
 		foreach ( $vars as $var )
 		{
 			if ( strlen( $var) > 1 )
-				$source = preg_replace( '/(?<!\w|\d|\.)' . $var . '(?!\w|\d)/', $this->_GetVarName(), $source ) ;
+				$source = preg_replace( '/(?<!\w|\d|\.)' . preg_quote( $var ) . '(?!\w|\d)/', $this->_GetVarName(), $source ) ;
 		}
 
 		return $source ;
@@ -261,7 +275,7 @@ class FCKFunctionProcessor
 
 		$var = $this->_VarPrefix . $this->_VarChars[ $this->_LastCharIndex++ ] ;
 
-		if ( preg_match( '/(?<!\w|\d|\.)' . $var . '(?!\w|\d)/', $this->_Function ) )
+		if ( preg_match( '/(?<!\w|\d|\.)' . preg_quote( $var ) . '(?!\w|\d)/', $this->_Function ) )
 			return $this->_GetVarName() ;
 		else
 			return $var ;
@@ -284,6 +298,7 @@ class FCKFunctionProcessor
 }
 
 ?>
+
 <?php
 
 
@@ -306,16 +321,16 @@ class FCKJavaScriptCompressor
 		// Protect the script strings.
 		$script = $stringsProc->ProtectStrings( $script ) ;
 
-		// Remove "//" comments
-		$script = preg_replace(
-			'/\/\/.*$/m',
-			'', $script ) ;
-
 		// Remove "/* */" comments
 		$script = preg_replace(
-			'/(?m-s:^\s*\/\*).*?\*\//s',
+			'/(?<!\/)\/\*.*?\*\//s',
 			'', $script ) ;
 
+		// Remove "//" comments
+		$script = preg_replace(
+				'/\/\/.*$/m',
+				'', $script ) ;
+		
 		// Remove spaces before the ";" at the end of the lines
 		$script = preg_replace(
 			'/\s*(?=;\s*$)/m',
@@ -404,13 +419,31 @@ class FCKJavaScriptCompressor
 		else
 			$parameters = preg_split( '/\s*,\s*/', trim( $match[1] ) ) ;
 
-		$funcProcessor = new FCKFunctionProcessor( $match[0], $parameters, false ) ;
+		$hasfuncProcessor = isset( $GLOBALS['funcProcessor'] ) ;
 
-		return $funcProcessor->Process() ;
+		if ( $hasfuncProcessor != TRUE )
+			$GLOBALS['funcProcessor'] = new FCKFunctionProcessor( $match[0], $parameters, false ) ;
+		else
+		{
+			$GLOBALS['funcProcessor']->_Function = $match[0];
+			$GLOBALS['funcProcessor']->_Parameters = $parameters;
+		}
+
+		$processed = $GLOBALS['funcProcessor']->Process() ;
+		
+		$processed = substr_replace( $processed, '', 0, 8 ) ;
+
+		$processed = FCKJavaScriptCompressor::_ProcessFunctions( $processed ) ;
+
+		if ( $hasfuncProcessor != TRUE )
+			unset( $GLOBALS['funcProcessor'] ) ;
+		
+		return 'function'. $processed ;
 	}
 }
 
 ?>
+
 <?php
 
 
@@ -699,8 +732,9 @@ class FCKStringsProcessor
 
 	function ProtectStrings( $source )
 	{
+		// Catches string literals, regular expressions and conditional comments.
 		return preg_replace_callback(
-			'/(?:("|\').*?(?<!\\\\)\1|(?<![\/\\\\])\/[^\/\*].*?(?<!\\\\)\/)/',
+			'/(?:("|\').*?(?<!\\\\)\1)|(?:(?<![\*\/\\\\])\/[^\/\*].*?(?<!\\\\)\/(?=([\.\w])|(\s*[,;}\)])))|(?s:\/\*@(?:cc_on|if|elif|else|end).*?@\*\/)/',
 			array( &$this, '_ProtectStringsMatch' ), $source ) ;
 	}
 
@@ -769,6 +803,7 @@ class FCKStringsProcessor
 }
 
 ?>
+
 <?php
 
 

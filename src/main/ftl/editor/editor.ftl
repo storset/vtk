@@ -16,8 +16,8 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />
@@ -99,7 +99,7 @@
     </script>
 
     <!-- Yahoo YUI library: -->
-    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css">
+    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
 <!--[if IE]>
@@ -118,7 +118,7 @@ div.properties div.location {
     </#assign>
     <h2>${header}</h2>
 
-    <form id="form" class="editor" action="" method="POST">
+    <form id="form" class="editor" action="" method="post">
       <@handleProps />
 
       <div class="properties">
@@ -301,13 +301,13 @@ div.properties div.location {
         <#if value = ''>
           <#local value = resource.title?html />
         </#if>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
         <#if description != "">
           <span class="input-description">(${description})</span>
         </#if>
 
       <#elseif name = 'media'><#-- XXX -->
-        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}"> 
+        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
         <button type="button" onclick="browseServer('resource.${name}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
@@ -363,7 +363,7 @@ div.properties div.location {
                      }
              } //-->
         </script>
-        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}"> 
+        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" /> 
         <script language="Javascript" type="text/javascript"><!--
         document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
         document.write('<div id="resource.${name}.preview">');
@@ -503,7 +503,7 @@ div.properties div.location {
 
             <#if type = 'BOOLEAN' && !displayLabel>
               <#if value == allowedValues[0]>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="true" />
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
               <#else>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
               </#if>
@@ -511,7 +511,7 @@ div.properties div.location {
             <#else>
               <label class="resource.${name}">${allowedValues[0]?html}</label>
               <#if value == allowedValues[0]>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="true" />
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
               <#else>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}"/>
               </#if>
@@ -542,7 +542,7 @@ div.properties div.location {
               </#if>
 
               <#if v == value>
-                <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="true" />
+                <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="checked" />
                 <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
               <#else>
                 <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
@@ -563,7 +563,7 @@ div.properties div.location {
               <#list allowedValues as v>
                 <#local localized = propDef.getValueFormatter().valueToString(v, 'localized', springMacroRequestContext.getLocale()) />
                 <#if v == value>
-                  <option selected="true" value="${v?html}">${localized?html}</option>
+                  <option selected="selected" value="${v?html}">${localized?html}</option>
                 <#else>
                   <option value="${v?html}">${localized?html}</option>
                 </#if>
@@ -571,7 +571,7 @@ div.properties div.location {
             </select>
           </#if>
         <#else>
-          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32">
+          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
           <#if description != "">
             <span class="input-description">(${description})</span>
           </#if>

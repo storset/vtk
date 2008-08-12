@@ -121,6 +121,7 @@ public class ResourceWrapperManager {
             byte[] bytes = wrapper.getContent().getStringRepresentation().getBytes(resource.getCharacterEncoding());
             this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
         }
+        wrapper.setResource(resource);
     }
 
     @Required public void setRepository(Repository repository) {

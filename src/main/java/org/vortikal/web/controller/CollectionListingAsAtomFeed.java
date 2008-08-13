@@ -72,20 +72,23 @@ public class CollectionListingAsAtomFeed implements Controller {
 
         Resource resource = this.repository.retrieve(token, uri, true);
 
-        String viewUrl = viewService.constructLink(uri);
-        String host = viewService.constructURL(uri).getHost();
         Property published = resource.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
-        feed.setId(getFeedId(uri, host, published));
+        feed.setId(getId(uri, published));
         feed.setTitle(resource.getTitle());
         
-        String subTitle = getIntroductionOrDescription(resource);
+        String subTitle = getIntroduction(resource);
         if (subTitle != null) {
             feed.setSubtitleAsHtml(subTitle);
+        } else {
+            subTitle = getDescription(resource);
+            if (subTitle != null) {
+                feed.setSubtitle(subTitle);
+            }
         }
         
         feed.setUpdated(resource.getLastModified());
         feed.addAuthor(resource.getModifiedBy().getDescription());
-        feed.addLink(viewUrl, "self");
+        feed.addLink(viewService.constructLink(uri), "alternate");
         
         for (SearchComponent searchComponent : searchComponents) {
             Map<String, Object> searchResult = searchComponent.execute(request, resource);
@@ -94,17 +97,20 @@ public class CollectionListingAsAtomFeed implements Controller {
             for (PropertySet child : files) {
                 Entry entry = feed.addEntry();
                 
-                // Avoid illegal IRI characters:
-                entry.setId(child.getURI().replaceAll(" ", "_"));
-
-                entry.setTitle(child.getName());
+                entry.setId(getId(child.getURI(), resource.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME)));
                 entry.addCategory(child.getResourceType());
+                
                 Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
                 entry.setTitle(prop.getFormattedValue("name", null));
 
-                String summary = getIntroductionOrDescription(child);
+                String summary = getIntroduction(child);
                 if (summary != null) {
                     entry.setSummaryAsHtml(summary);
+                } else {
+                    summary = getDescription(resource);
+                    if (subTitle != null) {
+                        entry.setSummary(summary);
+                    }
                 }
 
                 prop = child.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
@@ -116,7 +122,7 @@ public class CollectionListingAsAtomFeed implements Controller {
                 prop = child.getProperty(NS, PropertyType.MODIFIEDBY_PROP_NAME);
                 entry.addAuthor(prop.getFormattedValue("name", null));
 
-                entry.addLink(viewService.constructLink(child.getURI()));
+                entry.addLink(viewService.constructLink(child.getURI()), "alternate");
             }
         }
 
@@ -126,22 +132,25 @@ public class CollectionListingAsAtomFeed implements Controller {
         return null;
     }
 
-    private String getIntroductionOrDescription(PropertySet resource) {
+    private String getIntroduction(PropertySet resource) {
         Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
-        if (prop != null) {
-            return prop.getFormattedValue();
-        }
+        return prop != null ? prop.getFormattedValue() : null;
+    }
+    
+    private String getDescription(PropertySet resource) {
         Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
-        prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
+        Property prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
         return prop != null ? prop.getFormattedValue() : null;
     }
 
-    private String getFeedId(String uri, String host, Property published) {
+    private String getId(String resourceUri, Property published) {
+        String host = viewService.constructURL(resourceUri).getHost();
         StringBuilder sb = new StringBuilder("tag:");
         sb.append(host + ",");
         sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
-        sb.append(uri);
-        return sb.toString();
+        sb.append(resourceUri);
+        // TODO Has to be a valid IRI, this isn't good enough
+        return sb.toString().replaceAll(" ", "");
     }
     
     public void setRepository(Repository repository) {

@@ -10,8 +10,7 @@
 
 <#assign title = vrtx.getMsg("vocabulary.title.prefix", "Vocabulary for")
          + " " + vrtx.getMsg(localePrefix, "Unknown")>
-
-<!doctype html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 
 <head>
@@ -30,67 +29,68 @@
 </#if>
 
 
-<script type="text/javascript">
+<script type="text/javascript"><!--
 
-function updateParent() {
-  var rootNodes = tree.getRoot().children;
-  var v = '';
-  for (i in rootNodes) {
-    v = getCheckedAsStringValue(rootNodes[i], v);
-  }
-  
-  opener.document.getElementById("value").value = v;
+   function updateParent() {
+     var rootNodes = tree.getRoot().children;
+     var v = '';
+     for (i in rootNodes) {
+       v = getCheckedAsStringValue(rootNodes[i], v);
+     }
+     
+     opener.document.getElementById("value").value = v;
 
-  self.close();
-  return false;
-}
+     self.close();
+     return false;
+   }
 
-function getCheckedAsStringValue(node, result) {
+   function getCheckedAsStringValue(node, result) {
 
-  if (node.checkState == 2) {
-    if (result == '') {
-      return node.taskCode;
-    } else {
-      return result + ', ' + node.taskCode;
-    }
-  } else if (node.checkState == 1 && node.children != null) {
-	var r = result;
-    for(var i=0; i<node.children.length; ++i) {
+     if (node.checkState == 2) {
+       if (result == '') {
+         return node.taskCode;
+       } else {
+         return result + ', ' + node.taskCode;
+       }
+     } else if (node.checkState == 1 && node.children != null) {
+   	var r = result;
+       for(var i=0; i<node.children.length; ++i) {
 
-	  r = getCheckedAsStringValue(node.children[i], r);	  
-    }    
-    return r;
-  } else {
-    return result;
-  }
-}
+   	  r = getCheckedAsStringValue(node.children[i], r);	  
+       }    
+       return r;
+     } else {
+       return result;
+     }
+   }
 
+           
+   
+   var tree;
+   var nodes = [];
+   var nodeIndex;
+   
+   
+   var nodes = new Array();
+   
+   function treeInit() {
+       document.getElementById("expandcontractdiv").style.visibility = "visible";
+       document.getElementById("insert").style.visibility = "visible";
+       tree = new YAHOO.widget.TreeView("treeDiv1");
+     <#if propertyDefinition.multiple>
+       <@createTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes parentchecked=false />
+     <#else>
+       <@createSingleTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes />
+     </#if>
+     tree.draw();
+   }
 
-	var tree;
-	var nodes = [];
-	var nodeIndex;
-	
-	
-	var nodes = new Array();
-	
-	function treeInit() {
-            document.getElementById("expandcontractdiv").style.visibility = "visible";
-            document.getElementById("insert").style.visibility = "visible";
-	    tree = new YAHOO.widget.TreeView("treeDiv1");
-	  <#if propertyDefinition.multiple>
-            <@createTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes parentchecked=false />
-          <#else>
-            <@createSingleTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes />
-          </#if>
-          tree.draw();
-	}
-
-	function treeNode(i, c) {
-		var item = i;
-		var children = c;
-	}
-	
-	var callback = null;
+   function treeNode(i, c) {
+   	var item = i;
+   	var children = c;
+   }
+   
+   var callback = null;
 
   <#if propertyDefinition.multiple>
     function checkAll() {
@@ -107,6 +107,7 @@ function getCheckedAsStringValue(node, result) {
         }
     }
   </#if>
+  // -->
 </script>
 
 </head>

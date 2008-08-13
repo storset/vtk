@@ -37,7 +37,7 @@
     <property name="valueFormatter">
       <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
         <constructor-arg value="vortikal.beans.vhost.resource-types.article-listing-recursive-listing" />
-        <constructor-arg value="STRING" />
+        <constructor-arg value="BOOLEAN" />
       </bean>
     </property>
     <property name="vocabulary">

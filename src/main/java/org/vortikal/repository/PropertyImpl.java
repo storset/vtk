@@ -292,10 +292,10 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         		if (getType() != Type.HTML 
         		    && getType() != Type.STRING 
         		    && getType() != Type.IMAGE_REF) {
-        			throw new ValueFormatException("Illegal value type " + 
-        					value.getType() + 
-        					" for property " + this + ". Should be " + 
-        					getType());
+                    throw new ValueFormatException("Illegal value type " + 
+                            value.getType() + 
+                            " for value [" + value + "] on property " + this 
+                            + ". Should be " +  getType());
 
         		}
         		break;
@@ -305,15 +305,15 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
                         && getType() != Type.TIMESTAMP) {
                     throw new ValueFormatException("Illegal value type " + 
                             value.getType() + 
-                            " for property " + this + ". Should be " + 
-                            getType());
+                            " for value [" + value + "] on property " + this 
+                            + ". Should be " +  getType());
         	    }
         	    break;
         	default:
-            	throw new ValueFormatException("Illegal value type " + 
+                throw new ValueFormatException("Illegal value type " + 
                         value.getType() + 
-                        " for property " + this + ". Should be " + 
-                        getType());
+                        " for value [" + value + "] on property " + this 
+                        + ". Should be " +  getType());
         	}
         }
         	        

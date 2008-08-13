@@ -134,7 +134,7 @@
        <#if previousEvents.prevURL?exists>
          <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
        <#else>
-         <@coll.displayEvents collectionListing=upcomingEvents displayMoreURLs=false />
+         <@coll.displayEvents collectionListing=upcomingEvents displayMoreURLs=true />
          <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
        </#if>
      <#else>

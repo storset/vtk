@@ -44,6 +44,11 @@
             <#assign val = getIntroduction(r) />
           <#elseif displayPropDef.type = 'IMAGE_REF'>
             <#assign val><img src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
+          <#elseif displayPropDef.name = 'lastModified'>
+            <#assign val>
+              <@vrtx.msg code="viewCollectionListing.publishedDate"
+                         args=[vrtx.propValue(r, displayPropDef.name, "long")] />
+            </#assign>
           <#else>
             <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
           </#if>
@@ -93,7 +98,11 @@
         ${title}</a> 
 
         <#if publishedDate?has_content && collectionListing.displayPropDefs?seq_contains(publishedDate.definition)> 
-        <div class="published-date">${publishedDate.getFormattedValue('long', locale)}</div>
+        <div class="published-date">
+          <@vrtx.msg code="viewCollectionListing.publishedDate"
+                     args=[publishedDate.getFormattedValue('long', locale)] />
+        </div>
+
 	</#if>
 
         <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>
@@ -160,10 +169,10 @@
         ${title}</a>
 
         <div class="time-and-place"> 
-        <abbr class="dtstart" title="${startDate.getFormattedValue('iso-8601', locale)}">${startDate.getFormattedValue('short', locale)}</abbr>
+        <abbr class="dtstart" title="${startDate.getFormattedValue('iso-8601', locale)}">${startDate.getFormattedValue('long', locale)}</abbr>
         <#if endDate?has_content && collectionListing.displayPropDefs?seq_contains(endDate.definition)>
         <span class="delimiter"> - </span>
-        <abbr class="dtend" title="${endDate.getFormattedValue('iso-8601', locale)}">${endDate.getFormattedValue('short', locale)}</abbr>
+        <abbr class="dtend" title="${endDate.getFormattedValue('iso-8601', locale)}">${endDate.getFormattedValue('long', locale)}</abbr>
         </#if>
         <#if location?has_content && collectionListing.displayPropDefs?seq_contains(location.definition)>
         <span class="location">${location.value}</span>

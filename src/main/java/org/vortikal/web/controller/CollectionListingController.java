@@ -95,11 +95,13 @@ public class CollectionListingController implements Controller {
                 .createResourceWrapper(collection.getURI()));
         model.put("subCollections", subCollections);
 
+        List<Object> searchComponents = new ArrayList<Object>();
         for (SearchComponent component : this.searchComponents) {
             Map<String, Object> subModel = component.execute(request, collection);
-            model.put(component.getName(), subModel);
+            searchComponents.add(subModel);
         }
-
+        model.put("searchComponents", searchComponents);
+        
         Set<Object> alt = new HashSet<Object>();
         for (String contentType: this.alternativeRepresentations.keySet()) {
             try {

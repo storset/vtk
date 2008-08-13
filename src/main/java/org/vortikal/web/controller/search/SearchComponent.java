@@ -194,17 +194,20 @@ public class SearchComponent {
 
         String title = null;
         if (this.titleLocalizationKey != null) {
-            org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
-                    request);
+            org.springframework.web.servlet.support.RequestContext springRequestContext = 
+                new org.springframework.web.servlet.support.RequestContext(request);
             title = springRequestContext.getMessage(this.titleLocalizationKey,
                     (String) null);
         }
         
+        // XXX: Make a real data model out of this map:
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("title", title);
+        model.put("name", this.name);
         model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
         model.put("files", files);
         model.put("urls", urls);
+        model.put("page", page);
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
         model.put("displayPropDefs", displayPropDefs);

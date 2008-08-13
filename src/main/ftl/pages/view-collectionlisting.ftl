@@ -39,17 +39,10 @@
   <#list alternativeRepresentations as alt>
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>
-  <#if collectionFeedURL?exists>
-    <#--
-    <link rel="alternate" type="application/atom+xml"
-          href="${collectionFeedURL.url?html}"
-          title="<@vrtx.msg code='viewCollectionListing.feed' args=[resourceContext.currentResource.title] />" />
-    -->
-  </#if>
   <title>${title?html}</title>
 </head>
 <body>
-    <h1>${title}</h1> 
+  <h1>${title}</h1> 
 
        <#-- Image --> 
 
@@ -134,16 +127,25 @@
 
      <#-- List resources: -->
 
-     <#list searchComponents as model>
-       <#if collection.resourceType = 'event-listing'>
-         <@coll.displayEvents model=model.name displayMoreURLs=true />
-       <#elseif collection.resourceType = 'article-listing'>
-         <@coll.displayArticles model=model.name displayMoreURLs=true />
-       <#else>
-         <@coll.displayResources model=model.name />
-       </#if>
-     </#list>
+     <#if collection.resourceType = 'event-listing'>
+       <#assign upcomingEvents = searchComponents[0] />
+       <#assign previousEvents = searchComponents[1] />
 
+       <#if previousEvents.prevURL?exists>
+         <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
+       <#else>
+         <@coll.displayEvents collectionListing=upcomingEvents displayMoreURLs=false />
+         <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
+       </#if>
+     <#else>
+       <#list searchComponents as searchComponent>
+         <#if collection.resourceType = 'article-listing'>
+           <@coll.displayArticles collectionListing=searchComponent displayMoreURLs=true />
+         <#else>
+           <@coll.displayResources collectionListing=searchComponent />
+         </#if>
+       </#list>
+     </#if>
 
     <#-- XXX: display first link with content type = atom: -->
     <#list alternativeRepresentations as alt>

@@ -24,12 +24,11 @@
 
 
 
-<#macro displayResources model>
+<#macro displayResources collectionListing>
 
-  <#local collectionListing = .vars[model] />
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
-    <div class="vrtx-resources ${model}">
+    <div class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists>
       <h2>${collectionListing.title?html}</h2>
     </#if>
@@ -70,12 +69,11 @@
 </#macro>
 
 
-<#macro displayArticles model displayMoreURLs=false>
+<#macro displayArticles collectionListing displayMoreURLs=false>
 
-  <#local collectionListing = .vars[model] />
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
-    <div class="vrtx-resources ${model}">
+    <div class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists>
       <h2>${collectionListing.title?html}</h2>
     </#if>
@@ -139,11 +137,10 @@
 
 
 
-<#macro displayEvents model displayMoreURLs=false>
-  <#local collectionListing = .vars[model] />
+<#macro displayEvents collectionListing displayMoreURLs=false>
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
-    <div class="vrtx-resources ${model}">
+    <div class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists>
       <h2>${collectionListing.title?html}</h2>
     </#if>

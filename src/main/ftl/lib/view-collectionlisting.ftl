@@ -46,7 +46,7 @@
             <#assign val><img src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
           <#elseif displayPropDef.name = 'lastModified'>
             <#assign val>
-              <@vrtx.msg code="viewCollectionListing.publishedDate"
+              <@vrtx.msg code="viewCollectionListing.lastModified"
                          args=[vrtx.propValue(r, displayPropDef.name, "long")] />
             </#assign>
           <#else>

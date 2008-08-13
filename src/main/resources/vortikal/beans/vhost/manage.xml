@@ -1236,9 +1236,19 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="logoutLinkProvider" />
       </list>
     </property>
   </bean>
+
+  <bean id="logoutLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="service" ref="logoutService" />
+    <property name="modelName" value="logout" />
+    <property name="matchAssertions" value="true" />
+  </bean>
+
 
   <bean id="manage.repositoryIdComponent" class="org.vortikal.web.view.decorating.components.StaticTextComponent">
     <property name="namespace" ref="decorating.manageNamespace" />

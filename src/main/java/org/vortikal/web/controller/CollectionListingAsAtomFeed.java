@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
+import org.apache.abdera.model.Link;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -87,6 +88,11 @@ public class CollectionListingAsAtomFeed implements Controller {
             }
         }
         
+        Property picture = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+        if (picture != null) {
+            feed.setIcon(viewService.constructLink(picture.getStringValue()));
+        }
+        
         feed.setUpdated(resource.getLastModified());
         feed.addAuthor(resource.getModifiedBy().getDescription());
         feed.addLink(viewService.constructLink(uri), "alternate");
@@ -98,7 +104,7 @@ public class CollectionListingAsAtomFeed implements Controller {
             for (PropertySet child : files) {
                 Entry entry = feed.addEntry();
                 
-                entry.setId(getId(child.getURI(), resource.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME)));
+                entry.setId(getId(child.getURI(), child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME)));
                 entry.addCategory(child.getResourceType());
                 
                 Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
@@ -122,8 +128,20 @@ public class CollectionListingAsAtomFeed implements Controller {
 
                 prop = child.getProperty(NS, PropertyType.MODIFIEDBY_PROP_NAME);
                 entry.addAuthor(prop.getFormattedValue("name", null));
-
-                entry.addLink(viewService.constructLink(child.getURI()), "alternate");
+                
+                Link link = abdera.getFactory().newLink();
+                prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
+                if (prop != null) {
+                    Resource mediaResource = repository.retrieve(token, prop.getStringValue(), true);
+                    link.setHref(viewService.constructLink(prop.getStringValue()));
+                    link.setRel("enclosure");
+                    link.setMimeType(mediaResource.getContentType());
+                } else {
+                    link.setHref(viewService.constructLink(child.getURI()));
+                    link.setRel("alternate");
+                }
+                
+                entry.addLink(link);
             }
         }
 

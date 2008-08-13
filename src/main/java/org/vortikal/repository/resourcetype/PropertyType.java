@@ -86,6 +86,8 @@ public final class PropertyType {
     public static final String TITLE_PROP_NAME = "title";
     public static final String INTRODUCTION_PROP_NAME = "introduction";
     public static final String DESCRIPTION_PROP_NAME = "description";
+    public static final String MEDIA_PROP_NAME = "media";
+    public static final String PICTURE_PROP_NAME = "picture";
 
     
     /*

@@ -108,7 +108,7 @@ public class CollectionListingAsAtomFeed implements Controller {
                 if (summary != null) {
                     entry.setSummaryAsXhtml(summary);
                 } else {
-                    summary = getDescription(resource);
+                    summary = getDescription(child);
                     if (subTitle != null) {
                         entry.setSummary(summary);
                     }

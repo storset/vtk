@@ -108,7 +108,7 @@ public class CollectionListingAsAtomFeed implements Controller {
                 entry.addCategory(child.getResourceType());
                 
                 Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
-                entry.setTitle(prop.getFormattedValue("name", null));
+                entry.setTitle(prop.getFormattedValue());
 
                 String summary = getIntroduction(child);
                 if (summary != null) {

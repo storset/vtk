@@ -53,7 +53,7 @@
                  <value>${yui.baseURL}/build/fonts/fonts-min.css</value>
                  <value>${yui.baseURL}/build/treeview/assets/skins/sam/treeview.css</value>
 
-                 <value>${jsBaseURL}/vocabulary.css</value>
+                 <value>${themeBaseURL}/vocabulary.css</value>
                </list>
             </entry>
          </map>

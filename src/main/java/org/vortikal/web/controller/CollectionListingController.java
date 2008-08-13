@@ -49,6 +49,7 @@ import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
 import org.vortikal.web.RequestContext;
@@ -73,7 +74,9 @@ public class CollectionListingController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String uri = RequestContext.getRequestContext().getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
+        SecurityContext securityContext = SecurityContext.getSecurityContext(); 
+        String token = securityContext.getToken();
+        Principal principal = securityContext.getPrincipal();
         Resource collection = this.repository.retrieve(token, uri, true);
 
         Resource[] children = this.repository.listChildren(token, uri, true);
@@ -102,7 +105,7 @@ public class CollectionListingController implements Controller {
             try {
                 Map<String, Object> m = new HashMap<String, Object>();
                 Service service = this.alternativeRepresentations.get(contentType);
-                URL url = service.constructURL(uri);
+                URL url = service.constructURL(collection, principal);
                 String title = service.getName();
                 org.springframework.web.servlet.support.RequestContext rc = 
                 new org.springframework.web.servlet.support.RequestContext(request);

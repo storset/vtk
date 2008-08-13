@@ -219,7 +219,6 @@ div.picture {
   clear:right; /*IE7*/
   white-space: nowrap;
   margin-bottom: 1em;
-
 }
 
 div.picture input{
@@ -234,7 +233,7 @@ div.picture img {
 
 * html div.picture img {
   margin-top: 5px;
- height: 70pt;
+  height: 70pt;
 }
 
 div.picture div {
@@ -246,12 +245,17 @@ div.picture div {
   height: 71pt;
 }
 
-div.authors, div.published-date{ 
-  clear: left; 
+div.authors { 
+  clear: left;
   float: left;
   white-space: nowrap;
 }
 
+div.published-date {  
+  clear: left;
+  float: left;
+  white-space: nowrap;  
+} 
 
 div.html-content {
  clear:both;
@@ -279,8 +283,10 @@ div.start-date, div.end-date, div.location {
   white-space: nowrap;
 }
 
+/* There is IE7-specific conditional comments in editor.ftl for time and place elements */
+
 div.start-date {
- clear:left;
+  clear:left;
 }
 
 input.date {
@@ -320,8 +326,8 @@ a.calendar span {
   visibility:hidden;
 }
 
-.yui-calcontainer{
-   font-size: 11px; 
+.yui-calcontainer {
+   font-size: 11px;
    position:absolute; 
    float: none;
    margin-left: 10.5em;
@@ -331,23 +337,32 @@ a.calendar span {
    padding-left: 0px;
    padding-right: 0px;
    padding-bottom: 0px;
-   border: 1px solid #ccc;
+   border: 1px solid #ccc;   
 }
 
-* html .yui-calcontainer{ 
+* html .yui-calcontainer { 
    margin-left: 0em;
    margin-top: -16.5em; 
 }
 
-a.calnavleft{
+/* Fix for wierd IE6-bug on mouseover on datepicker */
+
+* html .yui-calcontainer td a { 
+  padding-left: 0.4em !important;
+  padding-right: 0.4em !important;
+}
+
+/* There is IE7-specific conditional comments in editor.ftl for .yui-calcontainer */
+
+a.calnavleft {
   left: 0 !important;
 }
 
-a.calnavright{
+a.calnavright {
   right: 0 !important;
 }
 
-td.calcell.oom{
+td.calcell.oom {
   background-color:#eee !important;
   color: #666 !important;
 }
@@ -355,5 +370,5 @@ td.calcell.oom{
 .calheader {
   margin-bottom: 0 !important;
 }
-
+      
 /* END: YUI calendar */

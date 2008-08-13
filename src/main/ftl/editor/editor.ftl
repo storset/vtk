@@ -102,12 +102,25 @@
     <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
-<!--[if IE]>
+
+    <!--[if IE 6]>
       <style type="text/css">
-            div.properties div.start-date, div.properties div.end-date, 
-div.properties div.location {
-                clear: both;
-            }
+        div.start-date {
+          padding-bottom: 1em;
+        }
+      </style>
+    <![endif]-->
+
+    <!--[if IE 7]>
+      <style type="text/css">
+         div.properties div.start-date, div.properties div.end-date, div.properties div.location {
+           clear: both;
+         }
+
+         div.yui-calcontainer { 
+           margin-left: 0em;
+           margin-top: -16.5em; 
+         }
         </style>
     <![endif]-->
     

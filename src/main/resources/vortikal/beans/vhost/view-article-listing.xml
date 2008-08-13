@@ -58,11 +58,7 @@
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
-    <property name="searchComponents">
-      <list>
-        <ref bean="articleListing.searchComponent" />
-      </list>
-    </property>
+    <property name="searchComponent" ref="articleListing.searchComponent" />
   </bean>
   
 

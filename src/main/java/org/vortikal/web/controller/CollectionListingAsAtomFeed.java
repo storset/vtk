@@ -62,7 +62,7 @@ public class CollectionListingAsAtomFeed implements Controller {
     private Repository repository;
     private Service viewService;
     private Abdera abdera;
-    private List<SearchComponent> searchComponents;
+    private SearchComponent searchComponent;
 
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -97,52 +97,50 @@ public class CollectionListingAsAtomFeed implements Controller {
         feed.addAuthor(resource.getModifiedBy().getDescription());
         feed.addLink(viewService.constructLink(uri), "alternate");
         
-        for (SearchComponent searchComponent : searchComponents) {
-            Map<String, Object> searchResult = searchComponent.execute(request, resource);
-            @SuppressWarnings("unchecked")
-            List<PropertySet> files = (List<PropertySet>) searchResult.get("files");
-            for (PropertySet child : files) {
-                Entry entry = feed.addEntry();
-                
-                entry.setId(getId(child.getURI(), child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME)));
-                entry.addCategory(child.getResourceType());
-                
-                Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
-                entry.setTitle(prop.getFormattedValue());
+        Map<String, Object> searchResult = searchComponent.execute(request, resource);
+        @SuppressWarnings("unchecked")
+        List<PropertySet> files = (List<PropertySet>) searchResult.get("files");
+        for (PropertySet child : files) {
+            Entry entry = feed.addEntry();
+            
+            entry.setId(getId(child.getURI(), child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME)));
+            entry.addCategory(child.getResourceType());
+            
+            Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
+            entry.setTitle(prop.getFormattedValue());
 
-                String summary = getIntroduction(child);
-                if (summary != null) {
-                    entry.setSummaryAsXhtml(summary);
-                } else {
-                    summary = getDescription(child);
-                    if (subTitle != null) {
-                        entry.setSummary(summary);
-                    }
+            String summary = getIntroduction(child);
+            if (summary != null) {
+                entry.setSummaryAsXhtml(summary);
+            } else {
+                summary = getDescription(child);
+                if (subTitle != null) {
+                    entry.setSummary(summary);
                 }
-
-                prop = child.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
-                entry.setUpdated(prop.getDateValue());
-
-                prop = child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
-                entry.setPublished(prop.getDateValue());
-
-                prop = child.getProperty(NS, PropertyType.MODIFIEDBY_PROP_NAME);
-                entry.addAuthor(prop.getFormattedValue("name", null));
-                
-                Link link = abdera.getFactory().newLink();
-                prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
-                if (prop != null) {
-                    Resource mediaResource = repository.retrieve(token, prop.getStringValue(), true);
-                    link.setHref(viewService.constructLink(prop.getStringValue()));
-                    link.setRel("enclosure");
-                    link.setMimeType(mediaResource.getContentType());
-                } else {
-                    link.setHref(viewService.constructLink(child.getURI()));
-                    link.setRel("alternate");
-                }
-                
-                entry.addLink(link);
             }
+
+            prop = child.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
+            entry.setUpdated(prop.getDateValue());
+
+            prop = child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
+            entry.setPublished(prop.getDateValue());
+
+            prop = child.getProperty(NS, PropertyType.MODIFIEDBY_PROP_NAME);
+            entry.addAuthor(prop.getFormattedValue("name", null));
+            
+            Link link = abdera.getFactory().newLink();
+            prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
+            if (prop != null) {
+                Resource mediaResource = repository.retrieve(token, prop.getStringValue(), true);
+                link.setHref(viewService.constructLink(prop.getStringValue()));
+                link.setRel("enclosure");
+                link.setMimeType(mediaResource.getContentType());
+            } else {
+                link.setHref(viewService.constructLink(child.getURI()));
+                link.setRel("alternate");
+            }
+            
+            entry.addLink(link);
         }
 
         response.setContentType("application/atom+xml;charset=utf-8");
@@ -168,7 +166,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         sb.append(host + ",");
         sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
         sb.append(resourceUri);
-        // TODO Has to be a valid IRI, this isn't good enough
+        // TODO Check for validity of IRI
         return sb.toString().replaceAll(" ", "");
     }
     
@@ -187,8 +185,8 @@ public class CollectionListingAsAtomFeed implements Controller {
     }
 
     @Required
-    public void setSearchComponents(List<SearchComponent> searchComponents) {
-        this.searchComponents = searchComponents;
+    public void setSearchComponent(SearchComponent searchComponent) {
+        this.searchComponent = searchComponent;
     }
 
 }

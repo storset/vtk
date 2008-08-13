@@ -36,7 +36,7 @@
     <#list resources as r>
       <div class="vrtx-resource">
 
-        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")}</a>
+        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
 
@@ -66,10 +66,10 @@
   </#if>
   
   <#if collectionListing.prevURL?exists>
-    <a href="${collectionListing.prevURL?html}">previous</a>&nbsp;
+    <a class="vrtx-previous" href="${collectionListing.prevURL?html}">previous</a>&nbsp;
   </#if>
   <#if collectionListing.nextURL?exists>
-    <a href="${collectionListing.nextURL?html}">next</a>
+    <a class="vrtx-next" href="${collectionListing.nextURL?html}">next</a>
   </#if>
 </#macro>
 
@@ -95,7 +95,7 @@
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
         <img src="${introImg.value?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
-        ${title}</a> 
+        ${title?html}</a> 
 
         <#if publishedDate?has_content && collectionListing.displayPropDefs?seq_contains(publishedDate.definition)> 
         <div class="published-date">
@@ -166,7 +166,7 @@
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
         <img src="${introImg.value?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
-        ${title}</a>
+        ${title?html}</a>
 
         <div class="time-and-place"> 
         <abbr class="dtstart" title="${startDate.getFormattedValue('iso-8601', locale)}">${startDate.getFormattedValue('long', locale)}</abbr>

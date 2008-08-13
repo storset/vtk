@@ -23,7 +23,6 @@
     <property name="views">
       <map>
         <entry key="displayHTMLResource"  value-ref="displayResourceView" />
-        <entry key="collectionListing" value-ref="collectionListingView" />
         <entry key="displayArticle"  value-ref="displayArticleView" />
       </map>
     </property>
@@ -78,43 +77,6 @@
     </property>
   </bean>
 
-  <bean id="collectionListingView" parent="freemarkerView">
-    <property name="url" value="pages/view-collectionlisting.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="viewCollectionListingProvider" />
-        <ref bean="collectionListingFeedURLProvider" />
-      </list>
-    </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/view-collectionlisting.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-
-  <bean id="collectionListingFeedURLProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="service" ref="collectionListingAsFeedService" />
-    <property name="modelName" value="collectionFeedURL" />
-
-  </bean>
-
-
-  <bean id="viewCollectionListingProvider"
-        class="org.vortikal.web.referencedata.provider.SimpleCollectionListingProvider"
-        parent="requestLocalRepositoryAware" >
-    <property name="displayService" ref="viewService" />
-    <property name="titlePropDef" ref="titlePropDef" />
-    <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
-  </bean>
 
   <bean id="freemarkerView" abstract="true"
         class="org.vortikal.web.view.freemarker.FreeMarkerView">

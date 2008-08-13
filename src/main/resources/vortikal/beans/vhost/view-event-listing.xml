@@ -154,8 +154,6 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <!--ref bean="viewCollectionListingProvider" /-->
-        <ref bean="collectionListingFeedURLProvider" />
       </list>
     </property>
     <property name="attributesMap">

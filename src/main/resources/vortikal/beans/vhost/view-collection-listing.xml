@@ -21,10 +21,11 @@
   
 
   <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="collectionListing.viewService" />
+    <property name="parent" ref="viewService" />
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
+        <ref bean="resourceInCollection" />
         <ref bean="atomParameterSetAssertion" />
       </list>
     </property>
@@ -122,8 +123,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <!--ref bean="viewCollectionListingProvider" /-->
-        <ref bean="collectionListingFeedURLProvider" />
+        <!--ref bean="collectionListingFeedURLProvider" /-->
       </list>
     </property>
     <property name="attributesMap">

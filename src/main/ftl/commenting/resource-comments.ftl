@@ -11,7 +11,9 @@
                    args=[resource.title] default='Comments' />
       </#compress>
     </#assign>
-    <link type="application/atom+xml" rel="alternate" href="${feedURL?html}" title="${title?html}" />
+    <#if feedURL?exists>
+      <link type="application/atom+xml" rel="alternate" href="${feedURL?html}" title="${title?html}" />
+    </#if>
     <#if cssURLs?exists>
       <#list cssURLs as cssUrl>
         <link href="${cssUrl}" type="text/css" rel="stylesheet"/>

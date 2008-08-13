@@ -58,13 +58,13 @@ public class DateValueFormatter implements ValueFormatter {
 
         this.namedDateFormats.put("short_en", FastDateFormat.getInstance("MMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("short_no", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
-        this.namedDateFormats.put("short_nn", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("nn")));
+        this.namedDateFormats.put("short_nn", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
         this.namedDateFormats.put("long_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm a", new Locale("en")));
         this.namedDateFormats.put("long_no", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
-        this.namedDateFormats.put("long_nn", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("nn")));
+        this.namedDateFormats.put("long_nn", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
         this.namedDateFormats.put("hours-minutes_en", FastDateFormat.getInstance("hh:mm a", new Locale("en")));
         this.namedDateFormats.put("hours-minutes_no", FastDateFormat.getInstance("HH:mm", new Locale("no")));
-        this.namedDateFormats.put("hours-minutes_nn", FastDateFormat.getInstance("HH:mm", new Locale("nn")));
+        this.namedDateFormats.put("hours-minutes_nn", FastDateFormat.getInstance("HH:mm", new Locale("no")));
         this.namedDateFormats.put("iso-8601", FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssZZ", new Locale("en")));
         this.namedDateFormats.put("iso-8601-short", FastDateFormat.getInstance("yyyy-MM-dd", new Locale("en")));
         this.namedDateFormats.put("rfc-822", FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss Z", new Locale("en")));

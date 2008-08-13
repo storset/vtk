@@ -46,7 +46,7 @@ div.vrtx-collections {
   border: 1px solid #ccc;
   padding: 1em;
   height: 1%; /* Triggers hasLayout in IE browser */
-  margin: 0 0 2em 0;
+  margin: 0 0 1.5em 0;
 }
 
 /* div.vrtx-collections:after {
@@ -73,13 +73,22 @@ div.vrtx-collections ul {
 div.vrtx-resource {
    width: 100%;
    float: left; 
-   padding: .5em 0;
-   margin: 0 0 .5em 0; 
+   padding: 0;
+   margin: 0 0 1em 0; 
 }
 
 div.eventListing\.upcomingEventsSearchComponent h2,
 div.eventListing\.previousEventsSearchComponent h2 {
   float:left;
+  padding:0;
+}
+
+div.eventListing\.upcomingEventsSearchComponent h2 {
+  margin: 0em 0 .5em 0;
+}
+
+div.eventListing\.previousEventsSearchComponent h2 {
+  margin: .5em 0 .5em 0;
 }
 
 div.vrtx-resource a.vrtx-title{
@@ -115,16 +124,19 @@ div.vrtx-resource div.time-and-place {
 
 div.vrtx-resource div.introduction {
   padding: 0;
-  margin: 0 0 .5em 0; 
+  margin: 0; 
 }
 
 div.vrtx-resource div.introduction p{
-   margin:.5em 0 0 0;
+   margin: .5em 0 0 0;
    padding: 0; 
 }
 
 div.vrtx-resource a.more { 
-
+  margin: .5em 0 0 0;
+  display:block;
+  white-space: nowrap;
+  width: 1%;
 }
 
 

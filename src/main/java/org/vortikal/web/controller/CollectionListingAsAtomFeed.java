@@ -47,6 +47,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -78,7 +79,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         
         String subTitle = getIntroduction(resource);
         if (subTitle != null) {
-            feed.setSubtitleAsHtml(subTitle);
+            feed.setSubtitleAsXhtml(subTitle);
         } else {
             subTitle = getDescription(resource);
             if (subTitle != null) {
@@ -105,7 +106,7 @@ public class CollectionListingAsAtomFeed implements Controller {
 
                 String summary = getIntroduction(child);
                 if (summary != null) {
-                    entry.setSummaryAsHtml(summary);
+                    entry.setSummaryAsXhtml(summary);
                 } else {
                     summary = getDescription(resource);
                     if (subTitle != null) {
@@ -140,7 +141,7 @@ public class CollectionListingAsAtomFeed implements Controller {
     private String getDescription(PropertySet resource) {
         Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
         Property prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
-        return prop != null ? prop.getFormattedValue() : null;
+        return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
     }
 
     private String getId(String resourceUri, Property published) {

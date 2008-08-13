@@ -41,8 +41,8 @@ import org.vortikal.text.htmlparser.HtmlUtil;
  */
 public class HtmlValueFormatter implements ValueFormatter {
 
-    private static final String ESCAPED_FORMAT = "escaped";
-    private static final String FLATTENED_FORMAT = "flattened";
+    public static final String ESCAPED_FORMAT = "escaped";
+    public static final String FLATTENED_FORMAT = "flattened";
 
     private HtmlUtil htmlUtil;
     

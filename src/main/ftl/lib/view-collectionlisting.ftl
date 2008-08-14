@@ -66,10 +66,10 @@
   </#if>
   
   <#if collectionListing.prevURL?exists>
-    <a class="vrtx-previous" href="${collectionListing.prevURL?html}">previous</a>&nbsp;
+    <a class="vrtx-previous" href="${collectionListing.prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>&nbsp;
   </#if>
   <#if collectionListing.nextURL?exists>
-    <a class="vrtx-next" href="${collectionListing.nextURL?html}">next</a>
+    <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
 </#macro>
 
@@ -137,10 +137,10 @@
   </#if>
 
   <#if collectionListing.prevURL?exists>
-    <a class="vrtx-previous" href="${collectionListing.prevURL?html}">previous</a>
+    <a class="vrtx-previous" href="${collectionListing.prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
   </#if>
   <#if collectionListing.nextURL?exists>
-    <a class="vrtx-next" href="${collectionListing.nextURL?html}">next</a>
+    <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
 </#macro>
 
@@ -195,10 +195,10 @@
   </#if>
 
   <#if collectionListing.prevURL?exists>
-    <a class="vrtx-previous" href="${collectionListing.prevURL?html}">previous</a>
+    <a class="vrtx-previous" href="${collectionListing.prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
   </#if>
   <#if collectionListing.nextURL?exists>
-    <a class="vrtx-next" href="${collectionListing.nextURL?html}">next</a>
+    <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
 
 </#macro>

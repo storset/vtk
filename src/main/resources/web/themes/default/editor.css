@@ -97,7 +97,7 @@ div.recursive-listing{
 	clear:left;
 	margin:0;
 	margin-right:.6em;
-	margin-top:.3em;
+	height:22px;
 }
 
 * html .sorting input,
@@ -114,8 +114,8 @@ div.recursive-listing{
 	display:block;
 	float:inherit;
 	clear:right;
-	padding-top: -.1em;
-	height:1.4em;
+	margin-top:2px;
+	height:20px;
 }
 
 * html .sorting label,

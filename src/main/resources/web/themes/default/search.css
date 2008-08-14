@@ -17,3 +17,5 @@ div#brodtekst {margin-right: 1em;} /* Do we need this */
 
 h1 sup {font-size: 35%;vertical-align: top;}
 
+hr.pre-results {margin-left: 0px;}
+

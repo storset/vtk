@@ -33,6 +33,7 @@ package org.vortikal.web.service;
 
 import java.io.IOException;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -99,6 +100,7 @@ public class ResourcePrincipalPermissionAssertion
     private RoleManager roleManager = null;
     private Repository repository = null;
     private String trustedToken = null;
+    private boolean anonymous = false;
     
     Set<String> rootPrincipals;
     Set<String> readPrincipals;
@@ -132,6 +134,10 @@ public class ResourcePrincipalPermissionAssertion
         this.trustedToken = trustedToken;
     }
     
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+    
     public void afterPropertiesSet() throws Exception {
         if (this.principalManager == null) {
             throw new BeanInitializationException(
@@ -153,7 +159,6 @@ public class ResourcePrincipalPermissionAssertion
         
         this.rootPrincipals = this.roleManager.getPrincipals(RoleManager.ROOT);
         this.readPrincipals = this.roleManager.getPrincipals(RoleManager.READ_EVERYTHING);
-
     }
 
 
@@ -187,6 +192,9 @@ public class ResourcePrincipalPermissionAssertion
         }
         
         try {
+            if (this.anonymous) {
+                return resource.isAuthorized(this.permission, null);
+            }
             return resource.isAuthorized(this.permission, principal);
             
         } catch (IOException e) {

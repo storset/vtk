@@ -71,6 +71,53 @@
   </bean>
 
 
+  <bean id="browse.titleComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.browseNamespace" />
+    <property name="name" value="title" />
+    <property name="description" value="Inserts the browse title" />
+    <property name="view" ref="browse.titleView" />
+  </bean>
+
+  <bean id="browse.titleView" parent="freemarkerView">
+    <property name="url" value="system/title.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="localizationKey" value="title.browse">
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="browse.breadcrumbComponent"
+        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.browseNamespace" />
+    <property name="name" value="breadcrumb" />
+    <property name="description" value="Displays the browse breadcrumb trail" />
+    <property name="view" ref="browse.breadcrumbView" />
+  </bean>
+
+  <bean id="browse.breadcrumbView" parent="freemarkerView">
+    <property name="url" value="layouts/breadcrumb.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.BreadCrumbProvider" 
+              parent="requestLocalRepositoryAware">
+          <property name="breadcrumbName" value="breadcrumb" />
+          <property name="service" ref="browseService"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+
   <bean id="browse.globalMenuComponent"
         class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />

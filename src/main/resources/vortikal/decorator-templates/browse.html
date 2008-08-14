@@ -5,7 +5,7 @@
     ${browse:css}
     ${browse:javascript}
     ${document:element select=[html.head] exclude=[title]}
-    <title>Browse Yr Ass</title>
+    <title>${browse:title}</title>
   </head>
   <body${document:element-attributes select=[html.body]}>
 
@@ -23,11 +23,10 @@
     </div>
 
     <div class="body">
-      ${manage:breadcrumb}
+      ${browse:breadcrumb}
       <div id="titleContainer" class="clear">
         <div class="resource-title ${resource:property id=[type]}">  
-          <h1>${resource:property id=[name]}</h1> 
-          
+          <h1>${manage:resource-header}</h1>
           ${browse:global-menu}
 
           <!--

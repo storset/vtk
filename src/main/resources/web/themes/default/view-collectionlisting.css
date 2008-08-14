@@ -165,7 +165,7 @@ a.vrtx-next, a.vrtx-previous {
 
 
 /* RSS - stuff */
-div.vrtx-feed {
+div.vrtx-feed-link {
   clear:both;
   background: url(rss-icon.jpg) no-repeat top left;
   font-size: .9em;
@@ -174,7 +174,7 @@ div.vrtx-feed {
 
 }
 
-div.vrtx-feed a {
+div.vrtx-feed-link a {
   padding-left: 27px;
 
 }

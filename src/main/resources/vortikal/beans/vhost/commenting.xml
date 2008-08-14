@@ -52,7 +52,7 @@
     <property name="assertions">
       <list>
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="requiresAuthentication" value="true" />
+          <property name="requiresAuthentication" value="false" />
           <property name="permission" ref="ACTION_READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>

@@ -6,11 +6,33 @@
     </title>
   </properties>
 
-  <body version="0.5-SNAPSHOT">
+  <body version="0.5.0-SNAPSHOT">
 
-    <release date="In SVN" description="Release 0.4.6">
+    <release date="In SVN" description="Release 0.5.0">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="fix">
+        Various bug fixes
+      </action>
+      <action type="add">
+        Added new framework for creating collections and documents
+        based on template resources and a configuration file.
+      </action>
+      <action type="update">
+        Upgraded Yahoo YUI to version 2.5.2.
+      </action>
+      <action type="update">
+        Upgraded FCKEditor to version 2.6.2.
+      </action>
+      <action type="add">
+        Add ability to set default view locale for a collection and
+        all resources below it
+      </action>
+      <action type="add">
+        Added new collection types: article-listing and event
+        listing. All collection types have editable properties
+        controlling their display.
+      </action>
     </release>
 
     <release version="0.4.5" date="2008-06-17" description="Release 0.4.5">

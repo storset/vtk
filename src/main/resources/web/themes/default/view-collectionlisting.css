@@ -57,6 +57,14 @@ div.vrtx-collections {
   visibility: hidden;
 } */
 
+div.vrtx-collections table {
+  width:100%;
+}
+
+div.vrtx-collections table tr {
+  vertical-align: top;
+}
+
 div.vrtx-collections h2 {
   margin: 0 0 .5em 0;
   font-size: 1.2em;

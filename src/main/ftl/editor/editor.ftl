@@ -211,19 +211,22 @@
         </#if>
       </#if>
 
-      if ('${dateVal}' != document.getElementById('resource.${name}').value) {
+      if (document.getElementById('resource.${name}').value != null  && '${dateVal}' != document.getElementById('resource.${name}').value) {
         return true;
       }
-      if ('${hours}' != document.getElementById('resource.${name}.hours').value) {
+      if (document.getElementById('resource.${name}.hours') != null  && '${hours}' != document.getElementById('resource.${name}.hours').value) {
         return true;
       }
-      if ('${minutes}' != document.getElementById('resource.${name}.minutes').value) {
+      if (document.getElementById('resource.${name}.minutes') != null && '${minutes}' != document.getElementById('resource.${name}.minutes').value) {
         return true;
       }            
     <#else>
-      if ('${value?js_string}' != document.getElementById('resource.${name}').value) {
+      <#if !(propDef.vocabulary)?exists><#--XXX we don't handle changes to properties with vocabularies for now-->
+      if (document.getElementById('resource.${name}') != null && '${value?js_string}' != document.getElementById('resource.${name}').value) {
         return true;
       }
+      </#if>
+
     </#if>
   </#list>
 </#macro>
@@ -263,9 +266,14 @@
       if (!needToConfirm) {
         return;
       }
-
-      var contentChange = (propChange() || FCKeditorAPI.GetInstance('resource.content').IsDirty());
-      if (contentChange) {
+      var dirty = false;
+      if (propChange()) dirty = true;
+      <#if (resource.resourceType != 'event-listing' &&
+         resource.resourceType != 'article-listing' && resource.resourceType != 'collection')>
+      if (FCKeditorAPI.GetInstance('resource.content') .IsDirty()) dirty = true;
+      </#if>
+      
+      if (dirty) {
         return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
       }
     }
@@ -565,7 +573,7 @@
               </#if>
             </#list>
           <#else>
-            <select name="resource.${name}">
+            <select name="resource.${name}" id="resource.${name}">
               <#if !propDef.mandatory>
               <#attempt>
                 <#local nullValue = propDef.valueFormatter.valueToString(nullArg, "localized", springMacroRequestContext.getLocale()) />

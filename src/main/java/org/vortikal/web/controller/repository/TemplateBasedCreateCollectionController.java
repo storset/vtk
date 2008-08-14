@@ -38,7 +38,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -53,8 +52,7 @@ import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
 
 
-public class TemplateBasedCreateCollectionController extends SimpleFormController
-  implements InitializingBean {
+public class TemplateBasedCreateCollectionController extends SimpleFormController {
 
 	private static final String NORMAL_FOLDER_IDENTIFYER = "NORMAL_FOLDER";
 	
@@ -166,16 +164,27 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             return;
         }
 
+        String title = createFolderCommand.getName();
+        String name = fixCollectionName(title);
+        
         // Setting the destination to the current folder/uri
         String destinationURI = uri;
         if (!"/".equals(uri)) destinationURI += "/";
-        destinationURI += createFolderCommand.getName();
-        
+        destinationURI += name;
        
         // Copy folder-template to destination (implicit rename) 
         this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
         Resource dest = this.repository.retrieve(token, destinationURI, false);
+
         dest.removeProperty(this.userTitlePropDef);
+
+        if (!title.equals(name)) {
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
+            Property titleProp = dest.createProperty(this.userTitlePropDef);
+            titleProp.setStringValue(title);
+        }
+
+
         this.repository.store(token, dest);
         
         createFolderCommand.setDone(true);
@@ -191,7 +200,9 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String name = fixCollectionName(title);
         newURI += name;
         Resource collection = this.repository.createCollection(token, newURI);
+
         if (!title.equals(name)) {
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
             Property titleProp = collection.createProperty(this.userTitlePropDef);
             titleProp.setStringValue(title);
             this.repository.store(token, collection);
@@ -202,11 +213,6 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 		this.templateManager = templateManager;
 	}
 
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-	
    private String fixCollectionName(String name) {
         if (this.downcaseCollectionNames) {
             name = name.toLowerCase();

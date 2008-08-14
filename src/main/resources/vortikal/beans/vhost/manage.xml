@@ -1318,6 +1318,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <ref bean="expiresSecProvider" />
       </list>
     </property>
   </bean>

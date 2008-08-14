@@ -178,8 +178,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         dest.removeProperty(this.userTitlePropDef);
 
-        title = title.substring(0, 1).toUpperCase() + title.substring(1);
         if (!title.equals(name)) {
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
             Property titleProp = dest.createProperty(this.userTitlePropDef);
             titleProp.setStringValue(title);
         }
@@ -201,8 +201,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         newURI += name;
         Resource collection = this.repository.createCollection(token, newURI);
 
-        title = title.substring(0, 1).toUpperCase() + title.substring(1);
         if (!title.equals(name)) {
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
             Property titleProp = collection.createProperty(this.userTitlePropDef);
             titleProp.setStringValue(title);
             this.repository.store(token, collection);

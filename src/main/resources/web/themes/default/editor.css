@@ -110,10 +110,11 @@ div.recursive-listing{
 .sorting label,
 .recursive-listing label{
 	margin:0;
-	paddinf:0;
+	padding:0;
 	display:block;
-	float:left;
-	padding-top:.1em;
+	float:inherit;
+	clear:right;
+	padding-top: -.1em;
 	height:1.4em;
 }
 

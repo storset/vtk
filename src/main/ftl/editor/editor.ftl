@@ -359,8 +359,7 @@
              // Callback from the FCKEditor image browser:
              function SetUrl( url, width, height, alt ) {
                      // FIXME: do a full URL decode:
-                     url = url.replace('%20', ' ');
-
+                     url = url.replace(/%20/g, ' ');
                      document.getElementById(urlobj).value = url ;
                      oWindow = null;
                      previewImage(urlobj);

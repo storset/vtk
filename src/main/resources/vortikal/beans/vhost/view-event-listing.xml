@@ -82,6 +82,8 @@
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
 
     <property name="listableProperties" ref="eventListing.listableProperties" />
+    <property name="publishedDatePropDef" ref="startDatePropDef" />
+
   </bean>
 
 

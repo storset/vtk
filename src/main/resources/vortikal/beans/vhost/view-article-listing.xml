@@ -111,7 +111,8 @@
         </bean>
       </list>
     </property>
-
+    <property name="publishedDatePropDef" ref="publishedDatePropDef" />
+    <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
 
 

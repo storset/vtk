@@ -86,6 +86,9 @@ public class SearchComponent {
     private PropertyTypeDefinition recursivePropDef;
     private PropertyTypeDefinition sortPropDef;
 
+    private PropertyTypeDefinition authorDatePropDef;
+    private PropertyTypeDefinition publishedDatePropDef;
+    
     private List<PropertyDisplayConfig> listableProperties;
 
     public Map<String, Object> execute(HttpServletRequest request, Resource collection) throws Exception {
@@ -310,4 +313,21 @@ public class SearchComponent {
                     "Argument must be a positive integer");
         this.defaultPageLimit = defaultPageLimit;
     }
+    
+    public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
+        this.publishedDatePropDef = publishedDatePropDef;
+    }
+
+    public PropertyTypeDefinition getPublishedDatePropDef() {
+        return this.publishedDatePropDef;
+    }
+    
+    public void setAuthorPropDef(PropertyTypeDefinition authorPropDef) {
+        this.authorDatePropDef = authorPropDef;
+    }
+    
+    public PropertyTypeDefinition getAuthorPropDef() {
+        return this.authorDatePropDef;
+    }
+    
 }

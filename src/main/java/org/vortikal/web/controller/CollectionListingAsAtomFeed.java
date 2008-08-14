@@ -50,6 +50,8 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
@@ -72,32 +74,32 @@ public class CollectionListingAsAtomFeed implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
         String uri = RequestContext.getRequestContext().getResourceURI();
 
-        Resource resource = this.repository.retrieve(token, uri, true);
+        Resource collection = this.repository.retrieve(token, uri, true);
 
-        Property published = resource.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
+        Property published = collection.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
         feed.setId(getId(uri, published));
-        feed.setTitle(resource.getTitle());
+        feed.setTitle(collection.getTitle());
         
-        String subTitle = getIntroduction(resource);
+        String subTitle = getIntroduction(collection);
         if (subTitle != null) {
             feed.setSubtitleAsXhtml(subTitle);
         } else {
-            subTitle = getDescription(resource);
+            subTitle = getDescription(collection);
             if (subTitle != null) {
                 feed.setSubtitle(subTitle);
             }
         }
         
-        Property picture = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+        Property picture = collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (picture != null) {
-            feed.setIcon(viewService.constructLink(picture.getStringValue()));
+            feed.setLogo(viewService.constructLink(picture.getStringValue()));
         }
         
-        feed.setUpdated(resource.getLastModified());
-        feed.addAuthor(resource.getModifiedBy().getDescription());
+        feed.setUpdated(collection.getLastModified());
+        //feed.addAuthor(resource.getOwner().getDescription());
         feed.addLink(viewService.constructLink(uri), "alternate");
         
-        Map<String, Object> searchResult = searchComponent.execute(request, resource);
+        Map<String, Object> searchResult = searchComponent.execute(request, collection);
         @SuppressWarnings("unchecked")
         List<PropertySet> files = (List<PropertySet>) searchResult.get("files");
         for (PropertySet child : files) {
@@ -119,33 +121,50 @@ public class CollectionListingAsAtomFeed implements Controller {
                 }
             }
 
+            if (searchComponent.getPublishedDatePropDef() != null) {
+                prop = child.getProperty(searchComponent.getPublishedDatePropDef());
+                entry.setPublished(prop.getDateValue());
+            }
+
             prop = child.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
             entry.setUpdated(prop.getDateValue());
 
-            prop = child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
-            entry.setPublished(prop.getDateValue());
+            if (searchComponent.getAuthorPropDef() != null) {
+                prop = child.getProperty(searchComponent.getAuthorPropDef());
+                if (prop != null) {
+                    ValueFormatter vf = prop.getDefinition().getValueFormatter();
+                    if (prop.getDefinition().isMultiple()) {
+                        for (Value v: prop.getValues()) {
+                            entry.addAuthor(vf.valueToString(v, "name", null));
+                        }
+                    } else {
+                        entry.addAuthor(prop.getFormattedValue("name", null));
+                    }
+                }
+            }
 
-            prop = child.getProperty(NS, PropertyType.MODIFIEDBY_PROP_NAME);
-            entry.addAuthor(prop.getFormattedValue("name", null));
-            
             Link link = abdera.getFactory().newLink();
             prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
             if (prop != null) {
-                Resource mediaResource = repository.retrieve(token, prop.getStringValue(), true);
-                link.setHref(viewService.constructLink(prop.getStringValue()));
-                link.setRel("enclosure");
-                link.setMimeType(mediaResource.getContentType());
-            } else {
+                try {
+                    Resource mediaResource = repository.retrieve(token, prop.getStringValue(), true);
+                    link.setHref(viewService.constructLink(prop.getStringValue()));
+                    link.setRel("enclosure");
+                    link.setMimeType(mediaResource.getContentType());
+                    entry.addLink(link);
+                } catch (Throwable t) { }
+            }
+
+            try {
+                link = abdera.getFactory().newLink();
                 link.setHref(viewService.constructLink(child.getURI()));
                 link.setRel("alternate");
-            }
-            
-            entry.addLink(link);
+                entry.addLink(link);
+            } catch (Throwable t) { }
         }
 
         response.setContentType("application/atom+xml;charset=utf-8");
-        feed.writeTo(response.getWriter());
-
+        feed.writeTo("prettyxml", response.getWriter());
         return null;
     }
 

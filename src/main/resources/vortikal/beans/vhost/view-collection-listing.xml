@@ -103,6 +103,8 @@
         </bean>
       </list>
     </property>
+    <property name="publishedDatePropDef" ref="creationTimePropDef" />
+    <property name="authorPropDef" ref="createdByPropDef" />
   </bean>
 
 

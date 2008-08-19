@@ -1,6 +1,6 @@
 div.vrtx-comments {
-  margin-top: 1em;
-  background-color: #eee;  
+  margin-top: 0.5em;
+  background-color: #fff;  
   padding: 1em 0 0 0;
   height: 1%;
   border-radius: .75em;  /* CSS3 */
@@ -9,7 +9,7 @@ div.vrtx-comments {
 }
 
 div.vrtx-comments  div.comments-header {
-  margin: 0 1em 1em 1em;
+  margin: 0 1em 1em 0;
 }
 
 div.vrtx-comments  div.comments-header a.header-href {
@@ -20,7 +20,7 @@ div.vrtx-comments  div.comments-header a.header-href {
 }
 
 div.vrtx-comments div.vrtx-comment {
-  margin: 0 1em .5em 1em;
+  margin: 0 1em .5em 0;
 }
 
 
@@ -51,14 +51,14 @@ div.vrtx-comments div.comment-info {
   margin-top: -1px;
   background: transparent url(speech-bubble-tip.gif) 2em 0px no-repeat;
   font-size: .9em;
-  padding: 1em 1.1em;
+  padding: 1em 1.1em 1em 0;
 }
 
 /* Add comments */
 
 div.vrtx-comments  div.add-comment {
-  background-color: #ddd;
-  padding: 1em;
+  background-color: #fff;
+  padding: 1em 1em 1em 0;
   height: 1%; 
   margin: 0;
 
@@ -134,7 +134,7 @@ div.vrtx-comments div.comments-text textarea {
 div.vrtx-comments div.add-comment div.submit {
   margin-top: -2px;
   background: transparent url(speech-bubble-tip.gif) 2em 0px no-repeat;
-  padding: 1em 1em 0 1em;
+  padding: 1em 1em 0 0;
 }
 
 div.vrtx-comments .error {

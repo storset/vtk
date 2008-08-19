@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
   <version>0.5.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
   <name>The Vortikal Web Framework</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
-
   <description>The Vortikal Web Framework is an open source web
-  publishing solution. It consists of two principal parts, a file
-  repository for storing files and folders and a web framework
-  allowing functionality to be added in a resource centric way. On top
-  of this framework it provides both web based and webdav content
-  management solutions.</description>
+    publishing solution. It consists of two principal parts, a file
+    repository for storing files and folders and a web framework
+    allowing functionality to be added in a resource centric way. On top
+    of this framework it provides both web based and webdav content
+    management solutions.</description>
 
   <organization>
     <name>Vortikal Project</name>
     <url>http://www.usit.uio.no/it/vortex</url>
   </organization>
+
   <issueManagement>
     <system>Jira</system>
     <url>http://www.usit.uio.no/jira/browse/VTK</url>
   </issueManagement>
+
   <developers>
     <developer>
       <id>storset</id>
@@ -58,13 +61,15 @@
       <name>Reza Mirzaei</name>
       <url>http://www.uio.no/sok?person=rezam</url>
     </developer>
-  </developers>  
+  </developers>
+
   <mailingLists>
     <mailingList>
       <name>vortex-core</name>
       <post>vortex-core@usit.uio.no</post>
     </mailingList>
   </mailingLists>
+
   <ciManagement>
     <system>Continuum</system>
     <url>http://stirfry:8080/continuum/</url>
@@ -81,16 +86,18 @@
       </notifier>
     </notifiers>
   </ciManagement>
+
   <scm>
     <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
     <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
-    <!--url>svn://svn.uio.no/svnroot/vortikal/trunk</url-->
   </scm>
+
   <licenses>
     <license>
       <url>/LICENSE.txt</url>
     </license>
   </licenses>
+
   <distributionManagement>
     <site>
       <id>webdav-site</id>
@@ -102,7 +109,7 @@
       <url>scp://xml.uio.no/site/opt/apache2.2/virtual/xml.uio.no/htdocs/vortex/maven2</url>
     </repository>
   </distributionManagement>
-   
+
   <pluginRepositories>
     <pluginRepository>
       <id>xml.uio.no</id>
@@ -111,51 +118,30 @@
   </pluginRepositories>
 
   <repositories>
-
     <repository>
       <id>xml.uio.no</id>
       <url>http://xml.uio.no/vortex/maven2</url>
     </repository>
-
-    <!--repository>
-      <id>local-bundle</id>
-      <url>file://${basedir}/bundled-repo</url>
-    </repository-->
-
     <repository>
       <id>repo1.maven.org</id>
       <url>http://repo1.maven.org/maven2</url>
     </repository>
-
-    <!--
-    <repository>
-      <id>Apache snapshot repo</id>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-    </repository>
-    -->
-    
     <repository>
       <id>apache-incubating</id>
       <name>Apache Incubating Repository</name>
       <url>http://people.apache.org/repo/m2-incubating-repository/</url>
     </repository>
-
   </repositories>
   
-  <packaging>jar</packaging>
-
   <build>
     <defaultGoal>package</defaultGoal>
-
     <resources>
-
       <resource>
         <directory>src/main/resources</directory>
         <excludes>
           <exclude>war/</exclude>
         </excludes>
       </resource>
-
       <resource>
         <directory>src/main/ftl</directory>
         <excludes>
@@ -163,7 +149,6 @@
         </excludes>
         <targetPath>vortikal/ftl</targetPath>
       </resource>
-
       <resource>
         <directory>src/main/sql/</directory>
         <targetPath>vortikal/sql/</targetPath>
@@ -171,12 +156,10 @@
           <include>*-schema.sql</include>
         </includes>
       </resource>
-
       <resource>
         <directory>src/main/ext/FCKeditor/fckeditor-build</directory>
         <targetPath>web/fckeditor-build</targetPath>
       </resource>
-
       <resource>
         <directory>src/changes</directory>
         <targetPath>vortikal-changes</targetPath>
@@ -184,9 +167,7 @@
           <include>changes.xml</include>
         </includes>
       </resource>
-
     </resources>
-
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
@@ -198,7 +179,6 @@
         <artifactId>wagon-webdav</artifactId>
       </extension>
     </extensions>
-
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
@@ -219,15 +199,15 @@
           <systemProperties>
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>
-              <value>org.apache.commons.logging.impl.Log4JLogger</value>            
+              <value>org.apache.commons.logging.impl.Log4JLogger</value>
             </systemProperty>
             <systemProperty>
               <name>log4j.configuration</name>
               <value>log4j.vortex.xml</value>
             </systemProperty>
             <!--
-                See URL:
-                http://forum.java.sun.com/thread.jspa?threadID=592490&messageID=3100651
+              See URL:
+              http://forum.java.sun.com/thread.jspa?threadID=592490&messageID=3100651
             -->
             <systemProperty>
               <name>javax.xml.parsers.SAXParserFactory</name>
@@ -235,47 +215,44 @@
             </systemProperty>
             <systemProperty>
               <name>javax.xml.transform.TransformerFactory</name>
-              <value>org.apache.xalan.processor.TransformerFactoryImpl</value>            
+              <value>org.apache.xalan.processor.TransformerFactoryImpl</value>
             </systemProperty>
             <systemProperty>
               <name>javax.xml.parsers.DocumentBuilderFactory</name>
-              <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>            
+              <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
             </systemProperty>
           </systemProperties>
         </configuration>
       </plugin>
-
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-surefire-plugin</artifactId>
-	<configuration>
-	  <skip>true</skip>
-	  <forkMode>pertest</forkMode>
-	  <useFile>false</useFile>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <forkMode>pertest</forkMode>
+          <useFile>false</useFile>
           <systemProperties>
             <property>
               <name>log4j.configuration</name>
               <value>log4j.test.xml</value>
             </property>
           </systemProperties>
-	  <includes>
-	    <!--include>**/*Test.java</include-->
-	    <include>**/*TestCase.java</include>
-	  </includes>
-	  <excludes>
-	    <exclude>**/Abstract*.java</exclude>
-	    <!-- Threaded tests -->
-	    <exclude>**/SimpleDateFormatCacheTestCase.java</exclude>
-	    <exclude>**/SimpleMethodInvokingTriggerBeanTestCase.java</exclude>
-	    <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
-	    <exclude>**/MemoryContentStoreTestCase.java</exclude>
-	    <exclude>**/DataAccessor*.java</exclude>
-	    <!-- Failing test -->
-	    <exclude>**/RepositoryOperationsTestCase.java</exclude>
-	  </excludes>
+          <includes>
+            <include>**/*TestCase.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/Abstract*.java</exclude>
+	        <!-- Threaded tests -->
+            <exclude>**/SimpleDateFormatCacheTestCase.java</exclude>
+            <exclude>**/SimpleMethodInvokingTriggerBeanTestCase.java</exclude>
+            <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
+            <exclude>**/MemoryContentStoreTestCase.java</exclude>
+            <exclude>**/DataAccessor*.java</exclude>
+	        <!-- Failing test -->
+            <exclude>**/RepositoryOperationsTestCase.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
         <artifactId>maven-framework-version-plugin</artifactId>
@@ -292,7 +269,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
@@ -303,13 +279,11 @@
               <goal>javacc</goal>
             </goals>
             <configuration>
-
               <packageName>org.vortikal.repository.search</packageName>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -321,14 +295,11 @@
             </resource>
           </webResources>
         </configuration>
-
       </plugin>
-
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>
-            svn+ssh://svn.uio.no/svnroot/vortikal/tags
+          <tagBase> svn+ssh://svn.uio.no/svnroot/vortikal/tags 
           </tagBase>
         </configuration>
       </plugin>
@@ -340,15 +311,13 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-
       <plugin>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-site-plugin</artifactId>
-       <configuration>
-         <outputEncoding>utf-8</outputEncoding>
-       </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <outputEncoding>utf-8</outputEncoding>
+        </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -362,47 +331,55 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <dependencies>
-    <!-- MP3 support: these dependencies are not in any known Maven
-         repository:
--->
     <!--
-    <dependency>
-      <groupId>org.tritonus</groupId>
-      <artifactId>tritonus_share</artifactId>
-      <version>release</version>
-    </dependency>
-    <dependency>
-      <groupId>jlayer</groupId>
-      <artifactId>jl</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>mp3spi</groupId>
-      <artifactId>mp3spi</artifactId>
-      <version>1.9.4</version>
-    </dependency>
+      MP3 support: these dependencies are not in any known Maven
+      repository:
+    -->
+    <!--
+      <dependency> <groupId>org.tritonus</groupId>
+      <artifactId>tritonus_share</artifactId> <version>release</version>
+      </dependency> <dependency> <groupId>jlayer</groupId>
+      <artifactId>jl</artifactId> <version>1.0</version> </dependency>
+      <dependency> <groupId>mp3spi</groupId>
+      <artifactId>mp3spi</artifactId> <version>1.9.4</version>
+      </dependency>
     -->
 
     <!-- DWR support: this is only used by dwr extension: -->
-    <!--dependency>
-      <groupId>org.directwebremoting</groupId>
-      <artifactId>dwr</artifactId>
-      <version>2.0.1</version>
-    </dependency-->
+    <!--
+      dependency> <groupId>org.directwebremoting</groupId>
+      <artifactId>dwr</artifactId> <version>2.0.1</version> </dependency
+    -->
 	
 	<!-- Abdera Atom Feed -->
-	<dependency>
-		<groupId>org.apache.abdera</groupId>
-		<artifactId>abdera-core</artifactId>
-		<version>0.4.0-incubating</version>
-	</dependency>
-	<dependency>
-		<groupId>org.apache.abdera</groupId>
-		<artifactId>abdera-parser</artifactId>
-		<version>0.4.0-incubating</version>
-	</dependency>
+    <dependency>
+      <groupId>org.apache.abdera</groupId>
+      <artifactId>abdera-core</artifactId>
+      <version>0.4.0-incubating</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.abdera</groupId>
+      <artifactId>abdera-parser</artifactId>
+      <version>0.4.0-incubating</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openxri</groupId>
+      <artifactId>openxri-syntax</artifactId>
+      <version>1.0.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.ibm.icu</groupId>
+          <artifactId>icu4j</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>3.8</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -434,7 +411,6 @@
       <version>1.8.0.1</version>
       <scope>test</scope>
     </dependency>
-    
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -458,15 +434,15 @@
         <exclusion>
           <groupId>javax.jms</groupId>
           <artifactId>jms</artifactId>
-        </exclusion>        
+        </exclusion>
         <exclusion>
           <groupId>com.sun.jdmk</groupId>
           <artifactId>jmxtools</artifactId>
-        </exclusion>        
+        </exclusion>
         <exclusion>
           <groupId>com.sun.jmx</groupId>
           <artifactId>jmxri</artifactId>
-        </exclusion>        
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -501,20 +477,6 @@
       <artifactId>lucene-core</artifactId>
       <version>2.2.0</version>
     </dependency>
-    <!--dependency>
-      <groupId>org.apache.santuario</groupId>
-      <artifactId>xmlsec</artifactId>
-      <version>1.4.1</version>
-    </dependency-->
-
-
-    <!--
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-cache</artifactId>
-      <version>1.2.2</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
@@ -545,13 +507,6 @@
       <artifactId>jtidy</artifactId>
       <version>4aug2000r7-dev</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>opensymphony</groupId>
-      <artifactId>quartz-all</artifactId>
-      <version>1.6.0</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
@@ -572,13 +527,11 @@
       <artifactId>xercesImpl</artifactId>
       <version>2.8.1</version>
     </dependency>
-
     <dependency>
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
       <version>1.3.04</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-module-xhtml</artifactId>
@@ -589,20 +542,17 @@
       <artifactId>doxia-module-apt</artifactId>
       <version>1.0-alpha-11</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.ibatis</groupId>
       <artifactId>ibatis-sqlmap</artifactId>
       <version>2.3.0</version>
-    </dependency> 
-
+    </dependency>
     <dependency>
       <groupId>org.safehaus.jug</groupId>
       <artifactId>jug</artifactId>
       <version>2.0.0</version>
       <classifier>asl</classifier>
     </dependency>
-
     <dependency>
       <groupId>org.htmlparser</groupId>
       <artifactId>htmlparser</artifactId>
@@ -613,7 +563,7 @@
       <artifactId>jericho-html</artifactId>
       <version>2.5</version>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.0</version>
@@ -623,7 +573,6 @@
       <artifactId>commons-fileupload</artifactId>
       <version>1.2.1</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-io</artifactId>
@@ -643,22 +592,21 @@
       <version>1.4</version>
       <scope>runtime</scope>
     </dependency>
-
-    <!-- Requirements for Spring's tx:advice and Geronimo (XA-capable)
-         transaction manager:
--->
+    
+    <!--
+      Requirements for Spring's tx:advice and Geronimo (XA-capable)
+      transaction manager:
+    -->
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
       <version>1.5.4</version>
     </dependency>
-    
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib-nodep</artifactId>
       <version>2.1_3</version>
     </dependency>
-
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
@@ -667,28 +615,25 @@
         <exclusion>
           <groupId>dom4j</groupId>
           <artifactId>dom4j</artifactId>
-        </exclusion>        
+        </exclusion>
         <exclusion>
           <groupId>xom</groupId>
           <artifactId>xom</artifactId>
-        </exclusion>        
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>8.2-507.jdbc3</version>
       <scope>runtime</scope>
     </dependency>
-
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>3.2.1</version>
       <scope>runtime</scope>
     </dependency>
-    
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
@@ -699,13 +644,11 @@
       <artifactId>jackrabbit-core</artifactId>
       <version>1.4.1</version>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.4.3</version>
     </dependency>
-
 
     <!-- Code dependencies not used runtime = provided -->
     <dependency>
@@ -714,18 +657,12 @@
       <version>0.7.3</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.geronimo.modules</groupId>
       <artifactId>geronimo-transaction</artifactId>
       <version>1.2-beta</version>
       <scope>provided</scope>
     </dependency>
-    <!--dependency>
-      <groupId>org.eclipse.higgins</groupId>
-      <artifactId>saml2idp</artifactId>
-      <version>1.0.0</version>
-    </dependency-->
     <dependency>
       <groupId>org.openid4java</groupId>
       <artifactId>openid4java</artifactId>
@@ -741,9 +678,9 @@
         </exclusion>
       </exclusions>
       <scope>provided</scope>
-    </dependency> 
+    </dependency>
   </dependencies>
-  
+
   <reporting>
     <plugins>
       <plugin>
@@ -781,4 +718,5 @@
       </plugin>
     </plugins>
   </reporting>
+
 </project>

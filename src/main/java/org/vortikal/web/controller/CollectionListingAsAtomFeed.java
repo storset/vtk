@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,9 @@ import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
+import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -179,14 +183,25 @@ public class CollectionListingAsAtomFeed implements Controller {
         return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
     }
 
-    private String getId(String resourceUri, Property published) {
+    /**
+     * @param resourceUri The uri of the resource
+     * @param published The published date of the resource
+     * @return The id to set for an atomfeed or entry
+     * @throws URIException If an error occurs while parsing/encoding the string 
+     *         representing the URI
+     * @throws UnsupportedEncodingException If the default (UTF-8) encoding used for 
+     *         transformation from an URI to IRI is not supported
+     */
+    private String getId(String resourceUri, Property published) throws URIException, UnsupportedEncodingException {
         String host = viewService.constructURL(resourceUri).getHost();
         StringBuilder sb = new StringBuilder("tag:");
         sb.append(host + ",");
         sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
-        sb.append(resourceUri);
-        // TODO Check for validity of IRI
-        return sb.toString().replaceAll(" ", "");
+        resourceUri = resourceUri.replaceAll("[#% ]", "").replace("[", "").replace("]", "");
+        resourceUri = URIUtil.encode(resourceUri, null);
+        String iriString = IRIUtils.URItoIRI(resourceUri);
+        sb.append(iriString);
+        return sb.toString();
     }
     
     public void setRepository(Repository repository) {

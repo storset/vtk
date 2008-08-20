@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="autoCompleteService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="autocomplete" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="tagsAutoCompleteService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="autoCompleteService" />
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="field" />
+          <property name="parameterValue" ref="tagAutoCompleteFieldName" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="tagsAutoCompleteHandler" />
+  </bean>
+  
+  <bean id="tagsAutoCompleteHandler" class="org.vortikal.web.controller.autocomplete.AutoCompleteHandler">
+    <!-- property name="dataProvider" ref="tagsAutoCompleteDataProvider" /-->
+    <property name="fieldName" ref="tagAutoCompleteFieldName" />
+  </bean>
+  
+  <bean id="tagAutoCompleteFieldName" class="java.lang.String">
+    <constructor-arg value="keywords" />
+  </bean>
+  
+</beans>

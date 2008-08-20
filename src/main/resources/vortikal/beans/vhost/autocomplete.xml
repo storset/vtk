@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
-"http://www.springframework.org/dtd/spring-beans.dtd">
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
 
+  <!--  TODO: Move service to static location in URI namespace by 
+              adding more assertions. -->
+ 
   <bean id="autoCompleteService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-1" />
@@ -31,13 +34,20 @@
     <property name="handler" ref="tagsAutoCompleteHandler" />
   </bean>
   
-  <bean id="tagsAutoCompleteHandler" class="org.vortikal.web.controller.autocomplete.AutoCompleteHandler">
-    <!-- property name="dataProvider" ref="tagsAutoCompleteDataProvider" /-->
+  <bean id="tagsAutoCompleteHandler"
+    class="org.vortikal.web.controller.autocomplete.AutoCompleteController">
     <property name="fieldName" ref="tagAutoCompleteFieldName" />
+    <property name="dataProvider" ref="keywordsAutoCompleteDataProvider" />
   </bean>
   
   <bean id="tagAutoCompleteFieldName" class="java.lang.String">
     <constructor-arg value="keywords" />
   </bean>
   
+  <bean id="keywordsAutoCompleteDataProvider"
+    class="org.vortikal.web.controller.autocomplete.RepositoryKeywordsAutoCompleteDataProvider">
+    <property name="dataReportManager" ref="dataReportManager" />
+    <property name="keywordsPropDef" ref="keywordsPropDef" />
+  </bean>
+
 </beans>

@@ -799,7 +799,7 @@
   <bean id="documentTemplatesRefreshTrigger"
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
-    <property name="uriPattern" value="/vrtx/templates/.*" />
+    <property name="uriPattern" value="${documentTemplatesCollection}/.*" />
     <property name="targetObject" ref="defaultDocumentTemplates" />
     <property name="method" value="refresh" />
   </bean>

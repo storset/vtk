@@ -173,12 +173,12 @@
         <directory>src/test/resources</directory>
       </testResource>
     </testResources>
-    <extensions>
+    <!--extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav</artifactId>
       </extension>
-    </extensions>
+    </extensions-->
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>

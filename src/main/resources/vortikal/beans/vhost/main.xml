@@ -44,6 +44,7 @@
   <import resource="copy-move.xml" />
   <import resource="errorhandlers.xml" />
   <import resource="templates.xml" />
+  <import resource="autocomplete.xml" />
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml"/>

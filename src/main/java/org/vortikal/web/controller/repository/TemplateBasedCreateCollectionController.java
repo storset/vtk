@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,6 +51,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
+import org.vortikal.web.view.freemarker.MessageLocalizer;
 
 
 public class TemplateBasedCreateCollectionController extends SimpleFormController {
@@ -126,9 +128,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 				
 	    List <ResourceTemplate> l = templateManager.getFolderTemplates(token, uri);
 	    
-	    LinkedHashMap <String,String> tmp = new LinkedHashMap <String,String>();
+	    HttpServletRequest servletRequest = requestContext.getServletRequest();
+	    org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(servletRequest);
+	    MessageLocalizer standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext);
+	    
+	    TreeMap <String,String> tmp = new TreeMap <String,String>();
 	    if(!l.isEmpty()){
-	    	tmp.put(NORMAL_FOLDER_IDENTIFYER,"Standard");
+	    	tmp.put(NORMAL_FOLDER_IDENTIFYER,standardCollectionName.get(null).toString());
 	    }
 	    
         for (ResourceTemplate t: l) {

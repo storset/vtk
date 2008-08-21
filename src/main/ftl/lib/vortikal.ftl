@@ -36,7 +36,12 @@
   </#compress>
 </#macro>
 
-
+<#function resourceLanguage>
+  <#if resourceLocaleResolver?exists>
+	<#local l = resourceLocaleResolver.resolveLocale(null)?string />
+	<#return getMsg("language."+l, l) />
+  </#if>
+</#function>
 
 <#--
  * rawMsg

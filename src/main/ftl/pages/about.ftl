@@ -126,7 +126,9 @@
              value = url />
 
       <!-- Content language -->
-      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentLocale' />
+      <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentLocale' displayMacro = 'languagePropertyDisplay' />
+
+      
 
     <#if !resource.collection>
       <!-- Size -->
@@ -236,3 +238,23 @@
 </body>
 </html>
 
+<#macro languagePropertyDisplay name value prefix=false editURL="">
+  <tr>
+    <td class="key">
+      ${name}:
+    </td>
+    <td class="value">
+      <#if prefix?is_string>
+        ${prefix}
+      </#if>
+      ${value?trim}<#compress>
+      <#local l=vrtx.resourceLanguage()?string />
+      <#if value?trim != l?trim>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
+      </#if>
+      </#compress>
+      <#if editURL != "">
+        ${editURL}
+      </#if>
+    </td>
+  </tr>
+</#macro>

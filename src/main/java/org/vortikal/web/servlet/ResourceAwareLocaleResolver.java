@@ -44,6 +44,20 @@ import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 
 
+
+/**
+ * Resolves locale for the current resource.
+ * 
+ * <p>The locale is set to the first match:
+ * <ul>
+ *   <li>The resource {@link Resource#getContentLanguage() contentLanguage}
+ *   <li>The nearest parent with {@link Resource#getContentLanguage() contentLanguage} set
+ *   <li>defaultLocale
+ *   
+ *   XXX: Needs to be fixed (will give wrong locale if read-processed is used?), 
+ *   should probably use a trusted token?
+ * 
+ */
 public class ResourceAwareLocaleResolver implements LocaleResolver {
     
     protected static final String LOCALE_REQUEST_ATTRIBUTE_NAME =
@@ -70,25 +84,32 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     
 
     public Locale resolveLocale(HttpServletRequest request) {
-        Locale locale = (Locale) request.getAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME);
-        if (locale != null) {
-            return locale;
-        }
-        
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
+		
+    	if (request != null) {
+			Locale locale = (Locale) request.getAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME);
+    		if (locale != null) {
+    			return locale;
+    		}
+    	}
+
+    	SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         String uri = requestContext.getResourceURI();
         
         try {
-            Resource resource = this.repository.retrieve(token, uri, false);
-            locale = LocaleHelper.getLocale(resource.getContentLanguage());
+            Resource resource = this.repository.retrieve(token, uri, true);
+            Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
+
             if (locale == null) {
                 // Check for the nearest ancestor that has a locale set and use it
-                // If no ancestor has a locale set, use the default of the host
-                Locale nearestAncestorLocale = getNearestAncestorLocale(token, resource);
-                locale = nearestAncestorLocale != null ? nearestAncestorLocale : this.defaultLocale;
+                locale = getNearestAncestorLocale(token, resource);
             }
+            if (locale == null) {
+                // If no ancestor has a locale set, use the default of the host
+            	locale = this.defaultLocale;
+            }
+            
             return locale;
         } catch (Throwable t) {
             return this.defaultLocale;

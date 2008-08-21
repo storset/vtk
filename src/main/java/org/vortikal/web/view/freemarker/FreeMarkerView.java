@@ -39,6 +39,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
@@ -67,8 +68,14 @@ public class FreeMarkerView
 
     private boolean debug = false;
     private ReferenceDataProvider[] referenceDataProviders;
+    private LocaleResolver resourceLocaleResolver;
     
-    public void setDebug(boolean debug)  {
+    public void setResourceLocaleResolver(LocaleResolver resourceLocaleResolver) {
+		this.resourceLocaleResolver = resourceLocaleResolver;
+	}
+
+
+	public void setDebug(boolean debug)  {
         this.debug = debug;
     }
 
@@ -110,6 +117,11 @@ public class FreeMarkerView
             model.put("dumpedModel", debugModel);
         }
         model.put("debug", new Boolean(this.debug));
+
+        if (this.resourceLocaleResolver != null) {
+        	model.put("resourceLocaleResolver", this.resourceLocaleResolver);
+        }
+        
         super.processTemplate(template, model, response);
     }
 

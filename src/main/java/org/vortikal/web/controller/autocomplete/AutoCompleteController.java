@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller.autocomplete;
 
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +51,7 @@ import org.vortikal.security.SecurityContext;
 public class AutoCompleteController implements Controller {
     
     private final Log logger = LogFactory.getLog(getClass());
+    private final String callback = "callback";
     
     private AutoCompleteDataProvider dataProvider;
     private String fieldName;
@@ -86,10 +86,19 @@ public class AutoCompleteController implements Controller {
 
         try {
             JSONObject completionList = (JSONObject) JSONSerializer.toJSON(resultSet);
-            response.setContentType("application/json");
-            PrintWriter writer = response.getWriter();
-            completionList.write(writer);
-            writer.close();
+            String jsonString = completionList.toString();
+            
+            // YUI requires that any service returning JSON for autocomplete be
+            // wrapped by the 'callback' function if it's present on the request
+            String callbackFunction = request.getParameter(this.callback);
+            if (callbackFunction != null) {
+               jsonString = callbackFunction + "(" + jsonString + ")";
+            }
+            
+            // YUI prefers the contenttype to be text/javascript
+            // as opposed to application/json
+            response.setContentType("text/javascript;charset=utf-8");
+            response.getWriter().print(jsonString);
         } catch (JSONException jse) {
             logger.warn(
               "Unable to serialize auto-complete data provider result to JSON", jse);

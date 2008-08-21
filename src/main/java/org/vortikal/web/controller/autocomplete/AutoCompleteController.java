@@ -70,11 +70,11 @@ public class AutoCompleteController implements Controller {
         }
         // XXX: Further input data validation of some sorts necessary ?
         
-        Map resultSetRoot = new HashMap();
+        Map<String, Object> resultSet = new HashMap<String, Object>();
         List<Object> completions = 
                      this.dataProvider.getPrefixCompletions(query, null, token);
         
-        resultSetRoot.put(this.fieldName, completions);
+        resultSet.put(this.fieldName, completions);
         
         if (logger.isDebugEnabled()) {
             logger.debug("Completion items for query: '" 
@@ -85,8 +85,7 @@ public class AutoCompleteController implements Controller {
         }
 
         try {
-            JSONObject completionList = 
-                            (JSONObject) JSONSerializer.toJSON(resultSetRoot);
+            JSONObject completionList = (JSONObject) JSONSerializer.toJSON(resultSet);
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
             completionList.write(writer);

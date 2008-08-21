@@ -21,16 +21,18 @@
 <#if crumbs?size &gt; 0>
 <div class="breadcrumb">
   <span class="breadcrumb-prefix"><@vrtx.msg code="breadcrumb.locationTitle" default="You are here"/>:</span>
+  <#assign "counter" = 1>
   <#list crumbs as elem>
     <#assign name = elem.title/>
     <#if downcase>
       <#assign name = name?lower_case/>
     </#if>
     <#if elem.URL?exists>
-      <a href="${elem.URL?html}">${name?html}</a> ${elem.delimiter?if_exists?html}
+      <a class="vrtx-breadcrumb-level-${counter?html}" href="${elem.URL?html}">${name?html}</a> ${elem.delimiter?if_exists?html}
     <#else>
-      ${name?html} ${elem.delimiter?if_exists?html}
+      <span class="vrtx-breadcrumb-level-${counter?html}">${name?html}</span> ${elem.delimiter?if_exists?html}
     </#if>
+    <#assign counter = counter+1>
   </#list>
 </div>
 </#if>

@@ -44,6 +44,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -51,8 +52,7 @@ import org.vortikal.web.RequestContext;
 
 public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
-    private String schemaPropertyName = "schema";
-
+    private String schemaPropertyName = PropertyType.SCHEMA_PROP_NAME;
     private Namespace schemaNamespace = Namespace.DEFAULT_NAMESPACE;
 
     private String faqSchema = "http://www.uio.no/xsd/uio/faq/v001/faq.xsd";
@@ -83,20 +83,20 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         super.tearDown();
     }
 
-    private Property getUndefinedProperty(Namespace namespace, String name) {
-        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
-        propDef.setNamespace(namespace);
-        propDef.setName(name);
-        propDef.afterPropertiesSet();
-        return propDef.createProperty();
-    }
+//    private Property getUndefinedProperty(Namespace namespace, String name) {
+//        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+//        propDef.setNamespace(namespace);
+//        propDef.setName(name);
+//        propDef.afterPropertiesSet();
+//        return propDef.createProperty();
+//    }
 
     public void testLastModified() {
 
         long lastModified;
 
-        Property schemaProperty = getUndefinedProperty(this.schemaNamespace, this.schemaPropertyName);
-        schemaProperty.setStringValue(this.faqSchema);
+//        Property schemaProperty = getUndefinedProperty(this.schemaNamespace, this.schemaPropertyName);
+//        schemaProperty.setStringValue(this.faqSchema);
 
         Date lastModifiedExpected = new Date();
         Mock mockResource = mock(Resource.class);

@@ -365,8 +365,8 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.valueFactory = valueFactory;
     }
 
-    @Required public void setValueFormatterRegistry(
-            ValueFormatterRegistry valueFormatterRegistry) {
+    @Required 
+    public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 

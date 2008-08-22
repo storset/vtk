@@ -212,6 +212,7 @@ public class SearchComponent {
         model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
         model.put("files", files);
         model.put("urls", urls);
+        model.put("page", page);
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
         model.put("displayPropDefs", displayPropDefs);

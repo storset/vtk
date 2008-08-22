@@ -87,7 +87,7 @@ public class PrincipalFactory {
                     principal.setURL(url);
                 } catch (Exception e) {
                     LOG.warn(
-                      "Got a RepositoryException while fetching principal description", e);
+                      "Exception while fetching principal description", e);
                 }
             }
         }

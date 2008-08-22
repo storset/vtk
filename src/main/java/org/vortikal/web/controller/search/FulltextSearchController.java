@@ -130,7 +130,7 @@ public class FulltextSearchController implements Controller {
             searchModel.put("hostName", this.hostName);
         }
         
-        if (query == null) {
+        if (query == null || query.isEmpty()) {
             return new ModelAndView(this.viewName, model);
         }
 

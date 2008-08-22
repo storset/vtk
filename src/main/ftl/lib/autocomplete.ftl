@@ -37,7 +37,9 @@
  * Example: <@createAutoCompleteInputField fieldName="myInput" value="myInputValue" schema="['dataStructure']"
  *
  * @param fieldName The name of the testfield
+ * @param description A description of the fields content
  * @param value The current value in the inputfield
+ * @param size The size of the inputfield
  * @param schema Commaseperated list of strings that specifie in n-depth.object.notation
  *				 the path to retrieve values from result. MUST match the datastructure 
  *				 returned from service, MINUS the rootnode.
@@ -46,7 +48,7 @@
  *				 The same is true if data is returned as XML, e.g. <root><key>value</key></root>
  *
 -->
-<#macro createAutoCompleteInputField fieldName value schema=[]>
+<#macro createAutoCompleteInputField fieldName description value size schema=[]>
   
   <#assign schemaString = "" />
   <#list schema as s>
@@ -57,9 +59,12 @@
     </#if>
   </#list>
  
-  <#-- div class="yui-skin-sam" --> 
+  <div class="yui-skin-sam">
     <div id="${fieldName}.autoComplete">
-      <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" size="32" />
+      <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" size="${size}" />
+      <#if description != "">
+        <span class="input-description">(${description})</span>
+      </#if>
       <div id="${fieldName}.autoCompleteContainer"></div>
     </div>
     <script type="text/javascript">
@@ -70,5 +75,5 @@
       autoComplete.delimChar = [","];
     //-->
     </script>
-  <#-- /div -->
+  </div>
 </#macro>

@@ -76,7 +76,13 @@ public interface PrincipalManager {
      * member of that group, false otherwise.
      */
     public boolean isMember(Principal principal, Principal group);
-
+    
+    /**
+     * Get the group memberships of a <code>Principal</code>.
+     * 
+     * @param principal The <code>Principal</code>
+     * @return A set of group principals in which the given principal is a member. 
+     */
     public Set<Principal> getMemberGroups(Principal principal);
 
 }

@@ -77,17 +77,18 @@ public class PrincipalFactory {
                     // DAO may return null as description, that's ok.
                     String desc = this.principalMetadataDao.getDescription(
                                                                 principal.getName());
+                    
                     principal.setDescription(desc);
+                
+                    // Set URL (only for users existing in LDAP)
+                    // DAO may return null as URL, that's ok.
+                    String url = this.principalMetadataDao.getUrl(principal.getName(), 
+                                                                  principal.getDomain());
+                    principal.setURL(url);
                 } catch (Exception e) {
                     LOG.warn(
                       "Got a RepositoryException while fetching principal description", e);
                 }
-                
-                // Set URL
-                // DAO may return null as URL, that's ok.
-                String url = this.principalMetadataDao.getUrl(principal.getName(), 
-                                                              principal.getDomain());
-                principal.setURL(url);
             }
         }
         

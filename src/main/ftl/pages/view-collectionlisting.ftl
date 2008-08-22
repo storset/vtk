@@ -39,10 +39,19 @@
   <#list alternativeRepresentations as alt>
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>
-  <title>${title?html}</title>
+  
+  <#--Gets page from lib/view-collectionlisiting.ftl -->
+  <#list searchComponents as searchComponent>
+     <#assign page = coll.getPage(searchComponent)>
+  </#list>
+  
+  <#-- TODO: Needs to differ on language NO=" - Side 1,2,3,..." EN=" - Page 1,2,3,..." -->
+  <title>${title?html} - <#if page?has_content>${page}</#if></title>
+  
 </head>
 <body>
-  <h1>${title}</h1> 
+  <#-- TODO: Needs to differ on language. See above. -->
+  <h1>${title} - <#if page?has_content>${page}</#if></h1> 
 
        <#-- Image --> 
 
@@ -130,7 +139,7 @@
      <#if collection.resourceType = 'event-listing'>
        <#assign upcomingEvents = searchComponents[0] />
        <#assign previousEvents = searchComponents[1] />
-
+       
        <#if previousEvents.prevURL?exists>
          <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
        <#else>
@@ -146,6 +155,7 @@
          </#if>
        </#list>
      </#if>
+     
 
     <#-- XXX: display first link with content type = atom: -->
     <#list alternativeRepresentations as alt>

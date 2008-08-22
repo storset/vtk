@@ -46,12 +46,12 @@
   </#list>
   
   <#-- TODO: Needs to differ on language NO=" - Side 1,2,3,..." EN=" - Page 1,2,3,..." -->
-  <title>${title?html} - <#if page?has_content>${page}</#if></title>
+  <title>${title?html} - <@vrtx.msg code="viewCollectionListing.page" /> <#if page?has_content>${page}</#if></title>
   
 </head>
 <body>
   <#-- TODO: Needs to differ on language. See above. -->
-  <h1>${title} - <#if page?has_content>${page}</#if></h1> 
+  <h1>${title} - <@vrtx.msg code="viewCollectionListing.page" /> <#if page?has_content>${page}</#if></h1> 
 
        <#-- Image --> 
 

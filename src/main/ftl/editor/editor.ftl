@@ -15,7 +15,7 @@
 <#import "/lib/ping.ftl" as ping />
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#-- import "/lib/autocomplete.ftl" as autocomplete / -->
+<#import "/lib/autocomplete.ftl" as autocomplete />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -103,7 +103,7 @@
     <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
-    <#-- @autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/ -->
+    <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
 
     <!--[if IE 6]>
       <style type="text/css">
@@ -598,20 +598,15 @@
         <#else>
 
           <#-- AutoComplete only for the tags inputfield -->
-          <#-- if "${name}" = 'keywords'>
-            <@autocomplete.prepareAutoCompleteInputField fieldName="${name}" value="${value?html}"/>
+          <#if "${name}" = 'keywords'>
+            <@autocomplete.createAutoCompleteInputField fieldName="${name}" value="${value?html}" schema=["keyword"]/>
           <#else>
             <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
           </#if>
           <#if description != "">
             <span class="input-description">(${description})</span>
-          </#if -->
-          
-          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
-          <#if description != "">
-            <span class="input-description">(${description})</span>
           </#if>
-          
+        
         </#if>
       </#if>
       <#if error != ""><span class="error">${error}</span></#if> 

@@ -31,7 +31,6 @@
 package org.vortikal.web.controller.autocomplete;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -103,7 +102,7 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
             List<Object> result = new ArrayList<Object>(pfqList.size());
             
             for (Pair<Value, Integer> pair: pfqList) {
-                result.add(pair.first().getStringValue());
+                result.add(new Keyword(pair.first().getStringValue()));
             }
             
             return result;
@@ -117,14 +116,15 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
     
     // Filter *case-insensitively* by prefix
     private void filterByPrefix(String prefix, List<Object> list) {
-        Iterator iter = list.iterator();
-        while (iter.hasNext()) {
-            String item = (String) iter.next();
-            if (! (prefix.length() <= item.length()
-                    && item.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
-                iter.remove();
+        List<Object> filteredKeywords = new ArrayList<Object>();
+        for (Object obj : list) {
+            String keyword = ((Keyword) obj).getKeyword();
+            if (!(prefix.length() <= keyword.length()
+                    && keyword.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
+                filteredKeywords.add(obj);
             }
         }
+        list.removeAll(filteredKeywords);
     }
 
     @Required
@@ -139,6 +139,20 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
 
     public void setFilterByPrefix(boolean filterByPrefix) {
         this.filterByPrefix = filterByPrefix;
+    }
+    
+    public class Keyword {
+        
+        private String keyword;
+        
+        public Keyword(String keyword) {
+            this.keyword = keyword;
+        }
+        
+        public String getKeyword() {
+            return this.keyword;
+        }
+        
     }
 
 }

@@ -22,7 +22,11 @@
   <#return introduction />
 </#function>
 
-
+<#-- Function to get page -->
+<#function getPage collectionListing>
+  <#local page = "${collectionListing.page?html}" />
+  <#return page />
+</#function>
 
 <#macro displayResources collectionListing>
 
@@ -32,7 +36,7 @@
     <#if collectionListing.title?exists>
       <h2>${collectionListing.title?html}</h2>
     </#if>
-
+    
     <#list resources as r>
       <div class="vrtx-resource">
 
@@ -71,8 +75,8 @@
   <#if collectionListing.nextURL?exists>
     <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
+  
 </#macro>
-
 
 <#macro displayArticles collectionListing displayMoreURLs=false>
 
@@ -142,9 +146,8 @@
   <#if collectionListing.nextURL?exists>
     <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
+  
 </#macro>
-
-
 
 <#macro displayEvents collectionListing displayMoreURLs=false>
   <#local resources=collectionListing.files />
@@ -200,6 +203,9 @@
   <#if collectionListing.nextURL?exists>
     <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
+  
 
 </#macro>
+
+
 

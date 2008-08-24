@@ -48,7 +48,7 @@
  *				 The same is true if data is returned as XML, e.g. <root><key>value</key></root>
  *
 -->
-<#macro createAutoCompleteInputField fieldName description value size schema=[]>
+<#macro createAutoCompleteInputField fieldName description value width schema=[]>
   
   <#assign schemaString = "" />
   <#list schema as s>
@@ -59,9 +59,9 @@
     </#if>
   </#list>
  
-  <div class="yui-skin-sam">
+  <div class="yui-skin-sam" style="margin-bottom:2em; width:${width}em !important;">
     <div id="${fieldName}.autoComplete">
-      <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" size="${size}" />
+      <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" />
       <#if description != "">
         <span class="input-description">(${description})</span>
       </#if>

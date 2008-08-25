@@ -59,22 +59,26 @@
     </#if>
   </#list>
  
-  <#-- Must add "display: block !important;" to the style, otherwise... @see editor.css->div.yui-skin-sam -->
-  <div class="yui-skin-sam" style="display: block !important; padding-bottom:.8em; width:${width}em !important;">
-    <div id="${fieldName}.autoComplete">
-      <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" />
-      <div id="${fieldName}.autoCompleteContainer"></div>
+  <div style="padding-bottom:1.6em;">
+    <#-- Must add "display: block !important;" to the style, otherwise... @see editor.css->div.yui-skin-sam -->
+    <div class="yui-skin-sam" style="display: block !important; float: left; padding-bottom:.8em; width:${width}em !important;">
+      <div id="${fieldName}.autoComplete">
+        <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" />
+        <div id="${fieldName}.autoCompleteContainer"></div>
+      </div>
+      <script type="text/javascript">
+      <!--
+        var dataSource = new YAHOO.widget.DS_ScriptNode("/?vrtx=admin&action=autocomplete&field=${fieldName}", ["${fieldName}", ${schemaString}]);
+        dataSource.scriptQueryParam = "${fieldName}"; 
+        var autoComplete = new YAHOO.widget.AutoComplete("resource.${fieldName}", "${fieldName}.autoCompleteContainer", dataSource);
+        autoComplete.delimChar = [","];
+      //-->
+      </script>
     </div>
     <#if description != "">
-      <span class="input-description">(${description})</span>
+      <div style="float: left; padding-left: .7em; margin-top:.3em;">
+        <span class="input-description">(${description})</span>
+      </div>
     </#if>
-    <script type="text/javascript">
-    <!--
-      var dataSource = new YAHOO.widget.DS_ScriptNode("/?vrtx=admin&action=autocomplete&field=${fieldName}", ["${fieldName}", ${schemaString}]);
-      dataSource.scriptQueryParam = "${fieldName}"; 
-      var autoComplete = new YAHOO.widget.AutoComplete("resource.${fieldName}", "${fieldName}.autoCompleteContainer", dataSource);
-      autoComplete.delimChar = [","];
-    //-->
-    </script>
   </div>
 </#macro>

@@ -423,7 +423,7 @@
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         <script language="Javascript" type="text/javascript"><!--
         document.write('<a class="calendar" id="${uniqueName}.calendar.href"><span>cal</span></a>');
-        document.write('<div id="resource.${name}.calendar" class="editor-yui-skin-sam"></div>');
+        document.write('<div id="resource.${name}.calendar" class="yui-skin-sam"></div>');
         // -->
         </script>
         <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">

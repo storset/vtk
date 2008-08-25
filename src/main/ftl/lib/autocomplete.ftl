@@ -59,7 +59,8 @@
     </#if>
   </#list>
  
-  <div class="yui-skin-sam" style="margin-bottom:2em; width:${width}em !important;">
+  <#-- Must add "display: block !important;" to the style, otherwise... @see editor.css->div.yui-skin-sam -->
+  <div class="yui-skin-sam" style="display: block !important; padding-bottom:.7em; width:${width}em !important;">
     <div id="${fieldName}.autoComplete">
       <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" />
       <#if description != "">

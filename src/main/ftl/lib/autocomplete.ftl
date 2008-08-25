@@ -60,14 +60,14 @@
   </#list>
  
   <#-- Must add "display: block !important;" to the style, otherwise... @see editor.css->div.yui-skin-sam -->
-  <div class="yui-skin-sam" style="display: block !important; padding-bottom:.7em; width:${width}em !important;">
+  <div class="yui-skin-sam" style="display: block !important; padding-bottom:.8em; width:${width}em !important;">
     <div id="${fieldName}.autoComplete">
       <input type="text" id="resource.${fieldName}" name="resource.${fieldName}" value="${value?html}" />
-      <#if description != "">
-        <span class="input-description">(${description})</span>
-      </#if>
       <div id="${fieldName}.autoCompleteContainer"></div>
     </div>
+    <#if description != "">
+      <span class="input-description">(${description})</span>
+    </#if>
     <script type="text/javascript">
     <!--
       var dataSource = new YAHOO.widget.DS_ScriptNode("/?vrtx=admin&action=autocomplete&field=${fieldName}", ["${fieldName}", ${schemaString}]);

@@ -31,10 +31,12 @@
 package org.vortikal.edit.editor;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
@@ -148,24 +150,22 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
-    
-
-    
     protected void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
     	PropertyTypeDefinition propDef = prop.getDefinition();
 
         if (propDef.isMultiple()) {
             String[] strings = valueString.split(",");
-            Value[] values = new Value[strings.length];
-
-            int i = 0;
-            for (String string : strings) {
-                if (string.trim().equals("")) {
-                    throw new IllegalArgumentException("Value cannot be empty");
-                } 
-                values[i++] = propDef.getValueFormatter().stringToValue(string.trim(), null, null);
+            if (strings.length == 0) {
+                throw new IllegalArgumentException("Value cannot be empty");
             }
-            prop.setValues(values);
+            
+            List<Value> values = new ArrayList<Value>();
+            for (String string : strings) {
+                if (!StringUtils.isBlank(string)) {
+                    values.add(propDef.getValueFormatter().stringToValue(string.trim(), null, null));
+                }
+            }
+            prop.setValues(values.toArray(new Value[values.size()]));
         } else if (prop.getDefinition().getType() == PropertyType.Type.HTML) { 
             
             try {

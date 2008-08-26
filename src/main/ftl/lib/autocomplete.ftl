@@ -72,6 +72,7 @@
         dataSource.scriptQueryParam = "${fieldName}"; 
         var autoComplete = new YAHOO.widget.AutoComplete("resource.${fieldName}", "${fieldName}.autoCompleteContainer", dataSource);
         autoComplete.delimChar = [","];
+        autoComplete.maxResultsDisplayed = 5; 
       //-->
       </script>
     </div>

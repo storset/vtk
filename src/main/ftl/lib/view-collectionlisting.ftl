@@ -161,8 +161,6 @@
       <#local title = vrtx.propValue(r, 'title') />
       <#local introImg  = vrtx.prop(r, 'picture')  />
       <#local intro  = vrtx.prop(r, 'introduction')  />
-      <#local startDate  = vrtx.prop(r, 'start-date')  />
-      <#local endDate  = vrtx.prop(r, 'end-date')  />
       <#local location  = vrtx.prop(r, 'location')  />
       <div class="vrtx-resource vevent">
         <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
@@ -172,14 +170,7 @@
         ${title?html}</a>
 
         <div class="time-and-place"> 
-        <abbr class="dtstart" title="${startDate.getFormattedValue('iso-8601', locale)}">${startDate.getFormattedValue('long', locale)}</abbr>
-        <#if endDate?has_content && collectionListing.displayPropDefs?seq_contains(endDate.definition)>
-        <span class="delimiter"> - </span>
-        <abbr class="dtend" title="${endDate.getFormattedValue('iso-8601', locale)}">${endDate.getFormattedValue('long', locale)}</abbr>
-        </#if>
-        <#if location?has_content && collectionListing.displayPropDefs?seq_contains(location.definition)>
-        <span class="location">${location.value}</span>
-        </#if>
+          <@coll.showTimeAndPlace r />
         </div>
 
         <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>
@@ -204,7 +195,34 @@
     <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
   </#if>
   
+</#macro>
 
+<#--
+ * Shows the start- and end-date of an event, seperated by a "-".
+ * If the two dates are identical, only the time of enddate is shown.
+ * 
+ * @param resource The resource to evaluate dates from
+-->
+<#macro showTimeAndPlace resource>
+
+  <#assign start = vrtx.propValue(resource, "start-date") />
+  <#assign startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
+  <#assign startshort = vrtx.propValue(resource, "start-date", "short") />
+  <#assign end = vrtx.propValue(resource, "end-date") />
+  <#assign endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
+  <#assign endshort = vrtx.propValue(resource, "end-date", "short") />
+  <#assign endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
+  <#assign location = vrtx.propValue(resource, "location") />
+  
+  <#if start != ""><abbr class="dtstart" title="${startiso8601}">${start}</abbr></#if>
+  <#t /><#if end != ""><span class="delimiter"> - </span>
+    <#if startshort == endshort>
+      <#t /><abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr>
+    <#else>
+      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#rt />
+  <#t/></#if>
+  <#t /><#if location != "">, <span class="location">${location}</span></#if>
+        
 </#macro>
 
 

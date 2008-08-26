@@ -12,6 +12,7 @@
 
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/view-collectionlisting.ftl" as coll />
 
 
 <#assign title = vrtx.propValue(resource, "userTitle" , "flattened") />
@@ -134,25 +135,14 @@
     <#-- Start-date, end-date and location --> 
 
     <#assign start = vrtx.propValue(resource, "start-date") />
-    <#assign startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
-    <#assign startshort = vrtx.propValue(resource, "start-date", "short") />
     <#assign end = vrtx.propValue(resource, "end-date") />
-    <#assign endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
-    <#assign endshort = vrtx.propValue(resource, "end-date", "short") />
-    <#assign endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
     <#assign location = vrtx.propValue(resource, "location") />
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
         <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />: </span>
         <span class="summary" style="display:none;">${title}</span>
-        <#t /><#if start != ""><abbr class="dtstart" title="${startiso8601}">${start}</abbr></#if>
-        <#t /><#if end != "">
-          - <#if startshort == endshort>
-          <#t /><abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#else>
-          <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#rt />
-        <#t/></#if>
-        <#t /><#if location != "">, <span class="location">${location}</span></#if>
+        <#t /><@coll.showTimeAndPlace resource />
      </div>
     </#if>
 

@@ -32,6 +32,7 @@ package org.vortikal.repository.index.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
 
@@ -47,7 +48,7 @@ public class DanglingInconsistency extends AbstractConsistencyError {
 
     private static final Log LOG = LogFactory.getLog(DanglingInconsistency.class);
     
-    public DanglingInconsistency(String uri) {
+    public DanglingInconsistency(Path uri) {
         super(uri);
     }
     

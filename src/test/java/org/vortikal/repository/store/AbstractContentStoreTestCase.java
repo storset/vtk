@@ -38,7 +38,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.store.ContentStore;
+import org.vortikal.repository.Path;
 
 /**
  * Test case for <code>org.vortikal.repositoryimpl.dao.MemoryContentStore</code> 
@@ -70,14 +70,14 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
     public void testCreateResource() throws IOException {
 
         // Create a test directory
-        getStore().createResource("/test", true);
+        getStore().createResource(Path.fromString("/test"), true);
 
         // Now create a valid content resource
-        getStore().createResource("/test/empty-file.txt", false);
+        getStore().createResource(Path.fromString("/test/empty-file.txt"), false);
 
         // Create a new resource under invalid parent
         try {
-            getStore().createResource("/non-existant-parent/new-resource.txt",
+            getStore().createResource(Path.fromString("/non-existant-parent/new-resource.txt"),
                             false);
             fail("Expected Exception when creating new node under non-existing parent.");
         } catch (Exception e) {
@@ -93,17 +93,17 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         String testString = "HELLO WORLD, THIS IS CONTENT";
         byte[] content = testString.getBytes();
 
-        getStore().createResource("/file.txt", false);
-        getStore().storeContent("/file.txt", new ByteArrayInputStream(content));
+        getStore().createResource(Path.fromString("/file.txt"), false);
+        getStore().storeContent(Path.fromString("/file.txt"), new ByteArrayInputStream(content));
 
         // Test that content length is correct
-        assertEquals(content.length, getStore().getContentLength("/file.txt"));
+        assertEquals(content.length, getStore().getContentLength(Path.fromString("/file.txt")));
 
         // Test that content length on directory throws
         // IllegalOperationException
-        getStore().createResource("/dir", true);
+        getStore().createResource(Path.fromString("/dir"), true);
         try {
-            getStore().getContentLength("/dir");
+            getStore().getContentLength(Path.fromString("/dir"));
             fail("Expected IllegalOperationException when trying to get content length of directory");
         } catch (IllegalOperationException ioe) {
             // OK
@@ -117,7 +117,7 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
      */
     public void testDeleteResource() throws IOException {
         // Test delete of simple file
-        getStore().createResource("/short-lived-file.txt", false);
+        getStore().createResource(Path.fromString("/short-lived-file.txt"), false);
 
 //         assertEquals(true, getStore().exists("/short-lived-file.txt")
 //                 && !getStore().isCollection("/short-lived-file.txt"));
@@ -166,12 +166,15 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         String testString = "I AM A CONTENT STRING";
         byte[] content = testString.getBytes();
         
+        Path p = Path.fromString("/content.msg"); 
+        Path p2 = Path.fromString("/content2.msg"); 
+        
         // Create a node and store some content in it
-        getStore().createResource("/content.msg", false);
-        getStore().storeContent("/content.msg", new ByteArrayInputStream(content));
+        getStore().createResource(p, false);
+        getStore().storeContent(p, new ByteArrayInputStream(content));
         
         // Verify length
-        InputStream input = getStore().getInputStream("/content.msg");
+        InputStream input = getStore().getInputStream(p);
         assertNotNull(input);
         
         byte[] content2 = getContent(input);
@@ -180,13 +183,13 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         assertTrue(equals(content, content2));
         
         // Copy content and test again
-        getStore().copy("/content.msg", "/content2.msg");
+        getStore().copy(p, p2);
         
         // Truncate original file (make sure the copy is a real clone)
-        getStore().storeContent("/content.msg", new ByteArrayInputStream("".getBytes()));
-        assertEquals(0, getStore().getContentLength("/content.msg"));
+        getStore().storeContent(p, new ByteArrayInputStream("".getBytes()));
+        assertEquals(0, getStore().getContentLength(p));
         
-        input = getStore().getInputStream("/content2.msg");
+        input = getStore().getInputStream(p2);
         content2 = getContent(input);
         assertTrue(equals(content, content2));
         
@@ -203,19 +206,19 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         byte[] contentFile3 = "foo bar baz mik mak hey ho ØÆÅ øæå".getBytes();
         
         // Create content tree
-        getStore().createResource("/a", true);
-        getStore().createResource("/a/b", true);
-        getStore().createResource("/a/b/file1.txt", false);
-        getStore().createResource("/a/b/file2.txt", false);
-        getStore().createResource("/a/b/file3.txt", false);
-        getStore().createResource("/d", true);
-        getStore().createResource("/d/e", true);
-        getStore().createResource("/d/file4.txt", false);
+        getStore().createResource(Path.fromString("/a"), true);
+        getStore().createResource(Path.fromString("/a/b"), true);
+        getStore().createResource(Path.fromString("/a/b/file1.txt"), false);
+        getStore().createResource(Path.fromString("/a/b/file2.txt"), false);
+        getStore().createResource(Path.fromString("/a/b/file3.txt"), false);
+        getStore().createResource(Path.fromString("/d"), true);
+        getStore().createResource(Path.fromString("/d/e"), true);
+        getStore().createResource(Path.fromString("/d/file4.txt"), false);
         
         // Insert some content
-        getStore().storeContent("/a/b/file1.txt", new ByteArrayInputStream(contentFile1));
-        getStore().storeContent("/a/b/file2.txt", new ByteArrayInputStream(contentFile2));
-        getStore().storeContent("/a/b/file3.txt", new ByteArrayInputStream(contentFile3));
+        getStore().storeContent(Path.fromString("/a/b/file1.txt"), new ByteArrayInputStream(contentFile1));
+        getStore().storeContent(Path.fromString("/a/b/file2.txt"), new ByteArrayInputStream(contentFile2));
+        getStore().storeContent(Path.fromString("/a/b/file3.txt"), new ByteArrayInputStream(contentFile3));
 
 //         // Copy subtree '/d' to '/a/d', then check consistency      
 //         getStore().copy("/d", "/a/d");
@@ -253,19 +256,19 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
 //         assertFalse(getStore().isCollection("/a/d/file4.txt"));
 
         // Verify content
-        byte[] content = getContent(getStore().getInputStream("/a/x/file1.txt"));
+        byte[] content = getContent(getStore().getInputStream(Path.fromString("/a/x/file1.txt")));
         assertTrue(equals(contentFile1, content));
-        content = getContent(getStore().getInputStream("/a/x/file2.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/a/x/file2.txt")));
         assertTrue(equals(contentFile2, content));
-        content = getContent(getStore().getInputStream("/a/x/file3.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/a/x/file3.txt")));
         assertTrue(equals(contentFile3, content));
         
-        content = getContent(getStore().getInputStream("/a/d/file4.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/a/d/file4.txt")));
         assertTrue(equals(new byte[0], content));
                 
         // Rename '/a' subtree, then re-check consistency
-        getStore().copy("/a", "/Copy of a");
-        getStore().deleteResource("/a");
+        getStore().copy(Path.fromString("/a"), Path.fromString("/Copy of a"));
+        getStore().deleteResource(Path.fromString("/a"));
 //         assertFalse(getStore().exists("/a"));
         
 //         // Check consistency of entire '/Copy of a' subtree
@@ -287,14 +290,14 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
 //         assertFalse(getStore().isCollection("/Copy of a/d/file4.txt"));
 
         // Verify content
-        content = getContent(getStore().getInputStream("/Copy of a/x/file1.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file1.txt")));
         assertTrue(equals(contentFile1, content));
-        content = getContent(getStore().getInputStream("/Copy of a/x/file2.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file2.txt")));
         assertTrue(equals(contentFile2, content));
-        content = getContent(getStore().getInputStream("/Copy of a/x/file3.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/x/file3.txt")));
         assertTrue(equals(contentFile3, content));
         
-        content = getContent(getStore().getInputStream("/Copy of a/d/file4.txt"));
+        content = getContent(getStore().getInputStream(Path.fromString("/Copy of a/d/file4.txt")));
         assertTrue(equals(new byte[0], content));
                 
 
@@ -349,24 +352,24 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
                 } catch (InterruptedException ie) {}
                 
                 try {
-                    this.store.createResource(this.workdir, true);
-                    this.store.createResource(this.workdir + "/a", true);
-                    this.store.createResource(this.workdir + "/a/AN_EMPTY_FILE.dat", false);
-                    this.store.createResource(this.workdir + "/a/AN_EMPTY_FILE2.dat", false);
+                    this.store.createResource(Path.fromString(this.workdir), true);
+                    this.store.createResource(Path.fromString(this.workdir + "/a"), true);
+                    this.store.createResource(Path.fromString(this.workdir + "/a/AN_EMPTY_FILE.dat"), false);
+                    this.store.createResource(Path.fromString(this.workdir + "/a/AN_EMPTY_FILE2.dat"), false);
                     
-                    this.store.createResource(this.workdir + "/worker_name.txt", false);
-                    this.store.storeContent(this.workdir + "/worker_name.txt", new ByteArrayInputStream(this.name.getBytes()));
+                    this.store.createResource(Path.fromString(this.workdir + "/worker_name.txt"), false);
+                    this.store.storeContent(Path.fromString(this.workdir + "/worker_name.txt"), new ByteArrayInputStream(this.name.getBytes()));
                     
-                    this.store.copy(this.workdir + "/a", this.workdir + "/Copy of a (1)");
-                    this.store.copy(this.workdir + "/a", this.workdir + "/Copy of a (2)");
+                    this.store.copy(Path.fromString(this.workdir + "/a"), Path.fromString(this.workdir + "/Copy of a (1)"));
+                    this.store.copy(Path.fromString(this.workdir + "/a"), Path.fromString(this.workdir + "/Copy of a (2)"));
                     
-                    this.store.copy(this.workdir + "/a", this.workdir + "/x");
-                    this.store.deleteResource(this.workdir + "/a");
-                    this.store.deleteResource(this.workdir + "/Copy of a (1)");
-                    this.store.deleteResource(this.workdir + "/Copy of a (2)");
+                    this.store.copy(Path.fromString(this.workdir + "/a"), Path.fromString(this.workdir + "/x"));
+                    this.store.deleteResource(Path.fromString(this.workdir + "/a"));
+                    this.store.deleteResource(Path.fromString(this.workdir + "/Copy of a (1)"));
+                    this.store.deleteResource(Path.fromString(this.workdir + "/Copy of a (2)"));
                     
-                    this.store.copy(this.workdir + "/worker_name.txt", this.workdir + "/name.txt");
-                    this.store.deleteResource(this.workdir + "/worker_name.txt");
+                    this.store.copy(Path.fromString(this.workdir + "/worker_name.txt"), Path.fromString(this.workdir + "/name.txt"));
+                    this.store.deleteResource(Path.fromString(this.workdir + "/worker_name.txt"));
                     
                 } catch (Exception io) {
                     fail("Un-expected Exception while working in '" + this.workdir + "': " + io.getMessage());
@@ -375,10 +378,10 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         }
         
         // Set up store, create one subtree for workers, and one off-limit tree
-        getStore().createResource("/workers_play_area", true);
-        getStore().createResource("/off_limits", true);
-        getStore().createResource("/off_limits/i_will_survive.txt", false);
-        getStore().storeContent("/off_limits/i_will_survive.txt", 
+        getStore().createResource(Path.fromString("/workers_play_area"), true);
+        getStore().createResource(Path.fromString("/off_limits"), true);
+        getStore().createResource(Path.fromString("/off_limits/i_will_survive.txt"), false);
+        getStore().storeContent(Path.fromString("/off_limits/i_will_survive.txt"), 
                 new ByteArrayInputStream("I Will Surviveeee !".getBytes()));
         
         // Create the worker threads, add them all to a single thread group
@@ -414,7 +417,7 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
 //         assertTrue(getStore().exists("/off_limits/i_will_survive.txt"));
 //         assertFalse(getStore().isCollection("/off_limits/i_will_survive.txt"));
         byte[] originalContent = "I Will Surviveeee !".getBytes();
-        byte[] content = getContent(getStore().getInputStream("/off_limits/i_will_survive.txt"));
+        byte[] content = getContent(getStore().getInputStream(Path.fromString("/off_limits/i_will_survive.txt")));
         assertTrue(equals(originalContent, content));
         
         // Verify all worker areas in content store (should conform to specific pattern)

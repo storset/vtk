@@ -31,22 +31,17 @@
 package org.vortikal.repository;
 
 
-/**
- * Indicates that a requested resource does not exist in the
- * repository.
- *
- */
 public class ResourceNotModifiedException extends RepositoryException {
 
     private static final long serialVersionUID = 368935345110399323L;
     
-    private String uri = null;
+    private Path uri = null;
 
-    public ResourceNotModifiedException(String uri) {
+    public ResourceNotModifiedException(Path uri) {
         this.uri = uri;
     }
 
-    public String getURI() {
+    public Path getURI() {
         return this.uri;
     }
 }

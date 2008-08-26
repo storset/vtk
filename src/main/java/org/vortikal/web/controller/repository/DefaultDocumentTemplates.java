@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -71,12 +72,12 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
     private static Log logger = LogFactory.getLog(DefaultDocumentTemplates.class);
     
-    private String templatesCollection = null;
+    private Path templatesCollection = null;
     private Repository repository = null;
     private String trustedToken = null;
 
-    private Map<String, String> topTemplates;
-    private Map<String, Map<String, String>> categoryTemplates;
+    private Map<Path, String> topTemplates;
+    private Map<String, Map<Path, String>> categoryTemplates;
     
     private boolean parseTopTemplates = true;
     private boolean parseCategoryTemplates = true;
@@ -99,15 +100,15 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
     /* Sets the directory that contains templates */
     public void setTemplatesCollection(String templatesCollection) {   	
-        this.templatesCollection = templatesCollection;
+        this.templatesCollection = Path.fromString(templatesCollection);
     }
     
-    public Map<String, String> getTopTemplates() {
+    public Map<Path, String> getTopTemplates() {
         return this.topTemplates;
     }
 
 
-    public Map<String, Map<String, String>> getCategoryTemplates() {
+    public Map<String, Map<Path, String>> getCategoryTemplates() {
     	return this.categoryTemplates;
     }
 
@@ -157,8 +158,8 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
                 return;
             }
 
-            Map<String, String> topTemplates = null;
-            Map<String, Map<String, String>> categoryTemplates = null;
+            Map<Path, String> topTemplates = null;
+            Map<String, Map<Path, String>> categoryTemplates = null;
 
             if (this.parseTopTemplates) {
                 topTemplates = findTopTemplates();
@@ -180,9 +181,9 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         }
     }
     
-    private Map<String, String> findTopTemplates() throws IOException {
+    private Map<Path, String> findTopTemplates() throws IOException {
     		
-        Map<String, String> topTemplates = new HashMap<String, String>();
+        Map<String, Path> topTemplates = new HashMap<String, Path>();
 
         Resource[] templates = this.repository.listChildren(
             this.trustedToken, this.templatesCollection, true);
@@ -204,7 +205,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         String[] keys = set.toArray(new String[set.size()]);
         
         Arrays.sort(keys);
-        Map<String, String> sortedMap = new LinkedHashMap<String, String>();
+        Map<Path, String> sortedMap = new LinkedHashMap<Path, String>();
         
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
@@ -220,16 +221,16 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    private Map<String, Map<String, String>> findCategoryTemplates() throws IOException {
+    private Map<String, Map<Path, String>> findCategoryTemplates() throws IOException {
         Resource[] templates = this.repository.listChildren(this.trustedToken, this.templatesCollection, true);
 
-        Map<String, Map<String, String>> categories = new HashMap<String, Map<String, String>>();
+        Map<String, Map<Path, String>> categories = new HashMap<String, Map<Path, String>>();
         
         
         for (int i = 0; i < templates.length; i++) {
             Resource child = templates[i];
             if (child.isCollection()) {
-                Map<String, String> categoryTemplates = new HashMap<String, String>(); 
+                Map<String, Path> categoryTemplates = new HashMap<String, Path>(); 
                 findTemplatesRecursively(child, categoryTemplates);
                 if (categoryTemplates.size() > 0) {
 
@@ -239,7 +240,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
                         new String[set.size()]);
                     
                     Arrays.sort(keys);
-                    Map<String, String> sortedMap = new LinkedHashMap<String, String>();
+                    Map<Path, String> sortedMap = new LinkedHashMap<Path, String>();
                     
                     for (int j = 0; j < keys.length; j++) {
                         String key = keys[j];
@@ -260,7 +261,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    private void findTemplatesRecursively(Resource parent, Map<String, String> templates) 
+    private void findTemplatesRecursively(Resource parent, Map<String, Path> templates) 
         throws IOException {
 
         Resource[] children = this.repository.listChildren(this.trustedToken, parent.getURI(), true);

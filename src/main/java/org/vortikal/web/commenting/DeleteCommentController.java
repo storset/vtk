@@ -33,6 +33,7 @@ package org.vortikal.web.commenting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,8 +41,8 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -93,18 +94,18 @@ public class DeleteCommentController extends AbstractController implements Initi
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, true);
 
         if (this.deleteAllComments) {
             this.repository.deleteAllComments(token, resource);
         } else {
             String id = request.getParameter("comment-id");
-            if (id == null) throw new ResourceNotFoundException("Missing comment-id");
+            if (id == null) throw new ResourceNotFoundException(uri);
             List<Comment> comments = this.repository.getComments(token, resource);
             Comment comment = findComment(id, comments);
             if (comment == null) {
-                throw new ResourceNotFoundException("No such comment");
+                throw new ResourceNotFoundException(uri);
             }
             this.repository.deleteComment(token, resource, comment);
         }

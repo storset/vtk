@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -88,7 +89,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
     public void render(DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
         String format = request.getStringParameter(PARAMETER_FORMAT);
         
@@ -115,7 +116,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
                     return;
                 }
             } else {
-                uri = URIUtil.getAbsolutePath(uriString, uri);
+                uri = Path.fromString(URIUtil.getAbsolutePath(uriString, uri.toString()));
             }
         }
         
@@ -129,7 +130,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         }
 
         if (URI_IDENTIFIER.equals(id)) {
-            result = uri;
+            result = uri.toString();
         } else if (NAME_IDENTIFIER.equals(id)) {
             result = resource.getName();
         } else if (TYPE_IDENTIFIER.equals(id)) {
@@ -173,7 +174,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         }
     }
 
-    String getParentAtLevel(String uri, String uriLevelString) 
+    Path getParentAtLevel(Path uri, String uriLevelString) 
         throws NumberFormatException, IllegalArgumentException {
         
         int uriLevel = Integer.parseInt(uriLevelString);
@@ -181,7 +182,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         if (uriLevel < 0) {
             throw new NumberFormatException("uri-level must be a positive integer");
         } 
-        return URIUtil.getAncestorOrSelfAtLevel(uri, uriLevel);
+        return Path.fromString(URIUtil.getAncestorOrSelfAtLevel(uri.toString(), uriLevel));
     }
 
     public void setForProcessing(boolean forProcessing) {

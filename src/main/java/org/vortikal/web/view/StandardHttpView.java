@@ -80,7 +80,7 @@ public class StandardHttpView implements View {
     private String statusMessage = null;
     private Map<String, Object> headers = new HashMap<String, Object>();
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation" })
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
         

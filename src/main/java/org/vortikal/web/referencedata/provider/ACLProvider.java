@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
@@ -149,7 +150,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         
         

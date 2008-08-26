@@ -36,10 +36,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -70,7 +71,7 @@ public class LockResourceHandlerInterceptor implements HandlerInterceptor {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         
-        String resourceURI = requestContext.getResourceURI();
+        Path resourceURI = requestContext.getResourceURI();
         Principal principal = securityContext.getPrincipal();
         String token = securityContext.getToken();
         
@@ -78,13 +79,13 @@ public class LockResourceHandlerInterceptor implements HandlerInterceptor {
         Lock lock = resource.getLock();
         if (lock == null) {
             this.repository.lock(token, resourceURI, principal.getQualifiedName(),
-                                 "0", this.lockTimeout, null);
+                                 Depth.ZERO, this.lockTimeout, null);
         } else {
             if (!lock.getPrincipal().equals(principal)) {
                 return true;
             }
             this.repository.lock(token, resourceURI, principal.getQualifiedName(),
-                                 "0", this.lockTimeout, lock.getLockToken());
+                                 Depth.ZERO, this.lockTimeout, lock.getLockToken());
         }
         return true;
     }

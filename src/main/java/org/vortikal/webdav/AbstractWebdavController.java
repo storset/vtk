@@ -39,15 +39,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Namespace;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.webdav.ifheader.IfHeader;
 
 
@@ -215,8 +216,8 @@ public abstract class AbstractWebdavController implements Controller {
         return this.ifHeader.matches(resource, shouldMatchOnNoIfHeader);
     }
     
-    protected boolean allowedResourceName(String uri) {
-        String name = URIUtil.getResourceName(uri);
+    protected boolean allowedResourceName(Path uri) {
+        String name = uri.getName();
         for (Pattern pattern: this.deniedFileNamePatterns) {
             Matcher m = pattern.matcher(name);
             if (m.find()) {

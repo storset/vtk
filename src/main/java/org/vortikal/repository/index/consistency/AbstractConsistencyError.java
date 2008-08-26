@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
 
@@ -40,13 +41,13 @@ import org.vortikal.repository.index.PropertySetIndex;
  */
 public abstract class AbstractConsistencyError implements ConsistencyError {
     
-    private String uri;
+    private Path uri;
     
-    public AbstractConsistencyError(String uri) {
+    public AbstractConsistencyError(Path uri) {
         this.uri = uri;
     }
     
-    public String getUri() {
+    public Path getUri() {
         return this.uri;
     }
     

@@ -36,10 +36,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -89,14 +90,14 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
 
         Resource[] children = this.repository.listChildren(token, uri, true);
         List<Resource> collections = new ArrayList<Resource>();
         List<Resource> files = new ArrayList<Resource>();
-        Map<String, URL> urls = new HashMap<String, URL>();
+        Map<Path, URL> urls = new HashMap<Path, URL>();
         
         for (Resource child: children) {
             try {

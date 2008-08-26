@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 
 /**
@@ -43,7 +44,7 @@ public class InvalidUUIDInconsistency extends InvalidDataInconsistency {
     private int indexUUID = -1;
     private int daoUUID = -1;
     
-    public InvalidUUIDInconsistency(String uri, PropertySetImpl daoPropSet, int indexUUID, int daoUUID) {
+    public InvalidUUIDInconsistency(Path uri, PropertySetImpl daoPropSet, int indexUUID, int daoUUID) {
         super(uri, daoPropSet);
         this.indexUUID = indexUUID;
         this.daoUUID = daoUUID;

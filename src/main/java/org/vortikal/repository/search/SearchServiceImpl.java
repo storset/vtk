@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -69,8 +70,8 @@ public class SearchServiceImpl implements SearchService {
         return keywords;
     }
 
-    public SortedSet<String> getResourcesWithKeyword(String keyword) {
-        SortedSet<String> uris = new TreeSet<String>();
+    public SortedSet<Path> getResourcesWithKeyword(String keyword) {
+        SortedSet<Path> uris = new TreeSet<Path>();
 
         Search search = new Search();
         Query query = new PropertyTermQuery(propDef, keyword, TermOperator.EQ);

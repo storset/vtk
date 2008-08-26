@@ -32,10 +32,11 @@ package org.vortikal.repository.domain;
 
 import java.util.Map;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface ContextManager {
 
-    public Map<PropertyTypeDefinition, String> getContext(String uri);
+    public Map<PropertyTypeDefinition, String> getContext(Path uri);
 
 }

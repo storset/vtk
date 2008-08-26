@@ -33,7 +33,7 @@ package org.vortikal.repository;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import org.vortikal.repository.Resource;
+
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalImpl;
 import org.vortikal.util.io.StreamUtil;
@@ -42,7 +42,7 @@ import org.vortikal.util.io.StreamUtil;
 public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
     public void testRetrieve() throws Exception {
-        String uri = "/";
+        Path uri = Path.fromString("/");
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         Resource res = getRepository().retrieve(token, uri, true);
@@ -51,7 +51,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
     
 
     public void testCreateDocumentNoParent() throws Exception {
-        String uri = "/non-existing-collection/create-document-test.txt";
+        Path uri = Path.fromString("/non-existing-collection/create-document-test.txt");
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
@@ -64,7 +64,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
     }
 
     public void testCreateDocument() throws Exception {
-        String uri = "/create-document-test.txt";
+        Path uri = Path.fromString("/create-document-test.txt");
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
@@ -81,7 +81,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
 
 
     public void testCreateCollectionNoParent() throws Exception {
-        String uri = "/non-existing-collection/create-collection-test";
+        Path uri = Path.fromString("/non-existing-collection/create-collection-test");
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
         
@@ -97,7 +97,7 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
     public void testCreateCollection() throws Exception {
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
-        String uri = "/create-collection-test";
+        Path uri = Path.fromString("/create-collection-test");
         
         Resource res = getRepository().createCollection(token, uri);
         assertNotNull(res);
@@ -110,12 +110,12 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
     public void testListChildren() throws Exception {
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);
         String token = getTokenManager().getRegisteredToken(root);
-        String uri = "/create-collection-test";
+        Path uri = Path.fromString("/create-collection-test");
         int numChildren = 10;
-        Set<String> childUriSet = new HashSet<String>();
+        Set<Path> childUriSet = new HashSet<Path>();
         getRepository().createCollection(token, uri);
         for (int i = 0; i < numChildren; i++) {
-            String childUri = uri + "/child-" + i;
+            Path childUri = uri.extend("child-" + i);
             childUriSet.add(childUri);
             getRepository().createCollection(token, childUri);
         }
@@ -131,8 +131,8 @@ public class RepositoryOperationsTestCase extends AbstractRepositoryTestCase {
     
 
     public void testChangeAclInheritance() throws Exception {
-        String parentURI = "/parent";
-        String childURI = "/parent/child.txt";
+        Path parentURI = Path.fromString("/parent");
+        Path childURI = parentURI.extend("child.txt");
 
         Repository repo = getRepository();
         Principal root = new PrincipalImpl("root@localhost", Principal.Type.USER);

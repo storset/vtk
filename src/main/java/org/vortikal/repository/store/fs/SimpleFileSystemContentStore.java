@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.util.web.URLUtil;
@@ -58,7 +59,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
 
     private boolean urlEncodeFileNames = false;
 
-    public void createResource(String uri, boolean isCollection) 
+    public void createResource(Path uri, boolean isCollection) 
         throws DataAccessException {
 
         String fileName = getLocalFilename(uri);
@@ -82,7 +83,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
     
-    public long getContentLength(String uri) throws DataAccessException {
+    public long getContentLength(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
 
         try {
@@ -100,7 +101,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
-    public void deleteResource(String uri) {
+    public void deleteResource(Path uri) {
         String fileName = getLocalFilename(uri);
         //Don't delete root
         if (!uri.equals("/")) {
@@ -124,7 +125,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         f.delete();
     }
 
-    public InputStream getInputStream(String uri) throws DataAccessException {
+    public InputStream getInputStream(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
         try {
             return new java.io.FileInputStream(new File(fileName));
@@ -133,7 +134,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
 
-    public void storeContent(String uri, InputStream inputStream)
+    public void storeContent(Path uri, InputStream inputStream)
             throws DataAccessException {
         String fileName = getLocalFilename(uri);
 
@@ -157,7 +158,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
         }
     }
     
-    public void copy(String srcURI, String destURI) throws DataAccessException {
+    public void copy(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
 
@@ -201,7 +202,7 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
 
 
-    public void move(String srcURI, String destURI) throws DataAccessException {
+    public void move(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
         String fileNameTo = getLocalFilename(destURI);
         if (!new File(fileNameFrom).renameTo(new File(fileNameTo))) {
@@ -211,9 +212,9 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     }
     
 
-    private String getLocalFilename(String uri) {
+    private String getLocalFilename(Path uri) {
         return this.repositoryDataDirectory
-        + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri) : uri);
+        + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri.toString()) : uri);
     }
     
     public void setRepositoryDataDirectory(String repositoryDataDirectory) {

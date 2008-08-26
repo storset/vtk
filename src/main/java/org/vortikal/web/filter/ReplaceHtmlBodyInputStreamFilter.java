@@ -35,12 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.beans.factory.annotation.Required;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -122,7 +123,7 @@ public class ReplaceHtmlBodyInputStreamFilter extends AbstractRequestFilter {
 
         private Resource getResource() throws Exception {
             RequestContext ctx = RequestContext.getRequestContext();
-            String uri = ctx.getResourceURI();
+            Path uri = ctx.getResourceURI();
             String token = SecurityContext.getSecurityContext().getToken();
             Resource resource = repository.retrieve(token, uri, false);
             return resource;
@@ -131,7 +132,7 @@ public class ReplaceHtmlBodyInputStreamFilter extends AbstractRequestFilter {
 
         private HtmlPage getOriginalPage() throws Exception {
             RequestContext ctx = RequestContext.getRequestContext();
-            String uri = ctx.getResourceURI();
+            Path uri = ctx.getResourceURI();
             String token = SecurityContext.getSecurityContext().getToken();
             InputStream is = repository.getInputStream(token, uri, false);
             HtmlPage page = parser.parse(is, resource.getCharacterEncoding());

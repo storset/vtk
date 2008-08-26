@@ -50,6 +50,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -257,7 +258,7 @@ public class PropertyEditController extends SimpleFormController
             propertyCommand.setDone(true);
             return new ModelAndView(getSuccessView());
         }
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
         for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
             

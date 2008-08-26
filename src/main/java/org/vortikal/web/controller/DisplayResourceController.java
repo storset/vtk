@@ -48,6 +48,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -198,10 +199,11 @@ public class DisplayResourceController
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
-        if (this.childName != null)
-                uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
+        if (this.childName != null) {
+            uri = uri.extend(this.childName);
+        }
 
         String token = securityContext.getToken();
 
@@ -284,11 +286,10 @@ public class DisplayResourceController
 
         Resource resource = null;
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         
         if (this.childName != null) {
-            uri = requestContext.getResourceURI();
-            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
+            uri = uri.extend(this.childName);
         }
 
         if (logger.isDebugEnabled()) {

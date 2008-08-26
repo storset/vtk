@@ -30,9 +30,11 @@
  */
 package org.vortikal.web.controller.repository.copy;
 
+import org.vortikal.repository.Path;
+
 
 public interface CopyAction {
 
-    public void process(String originalUri, String copyUri) throws Exception;
+    public void process(Path originalUri, Path copyUri) throws Exception;
 
 }

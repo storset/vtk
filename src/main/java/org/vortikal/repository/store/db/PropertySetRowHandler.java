@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
@@ -122,7 +123,7 @@ class PropertySetRowHandler implements RowHandler {
         PropertySetImpl propertySet = new PropertySetImpl();
         String uri = (String)firstRow.get("uri");
 
-        propertySet.setUri(uri);
+        propertySet.setUri(Path.fromString(uri));
         populateStandardProperties(firstRow, propertySet);
         populateAncestorIds(firstRow, propertySet);
         populateExtraProperties(rowBuffer, propertySet);

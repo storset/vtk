@@ -31,6 +31,7 @@
 package org.vortikal.repository.event;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 
@@ -57,7 +58,7 @@ public class ACLModificationEvent extends RepositoryEvent {
         return this.resource;
     }
 
-    public String getURI() {
+    public Path getURI() {
         return this.resource.getURI();
     }
 

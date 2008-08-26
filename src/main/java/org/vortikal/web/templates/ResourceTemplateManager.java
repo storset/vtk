@@ -32,14 +32,16 @@ package org.vortikal.web.templates;
 
 import java.util.List;
 
+import org.vortikal.repository.Path;
+
 /**
  * Interface for repository resource template manager. 
  *
  */
 public interface ResourceTemplateManager {
 
-    public List<ResourceTemplate> getDocumentTemplates(String token, String uri);
+    public List<ResourceTemplate> getDocumentTemplates(String token, Path uri);
     
-    public List<ResourceTemplate> getFolderTemplates(String token, String uri);
+    public List<ResourceTemplate> getFolderTemplates(String token, Path uri);
     
 }

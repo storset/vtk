@@ -42,6 +42,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.mapping.DocumentMapper;
@@ -126,7 +127,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         } 
     }
     
-    public int deletePropertySetTree(String rootUri) 
+    public int deletePropertySetTree(Path rootUri) 
         throws IndexException {
         
         TermEnum tenum = null;
@@ -134,7 +135,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         try {
 
             IndexReader reader = this.indexAccessor.getIndexReader();
-            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri);
+            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri.toString());
             String fieldName = rootUriTerm.field();
             tenum = reader.terms(rootUriTerm);
             tdocs = reader.termDocs();
@@ -150,7 +151,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                 Term term = tenum.term();
                 if (term != null 
                     && term.field() == fieldName 
-                    && term.text().startsWith(rootUri)) {
+                    && term.text().startsWith(rootUri.toString())) {
                     
                     tdocs.seek(tenum);
                     
@@ -182,9 +183,9 @@ public class PropertySetIndexImpl implements PropertySetIndex {
         }
     }
     
-    public int deletePropertySet(String uri) throws IndexException {
+    public int deletePropertySet(Path uri) throws IndexException {
         try {
-            Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, uri);
+            Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString());
             IndexReader reader = this.indexAccessor.getIndexReader();
             
             if (logger.isDebugEnabled()) {
@@ -301,10 +302,10 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     }
     
     @SuppressWarnings("unchecked")
-    public Iterator orderedSubtreePropertySetIterator(String rootUri) throws IndexException {
+    public Iterator orderedSubtreePropertySetIterator(Path rootUri) throws IndexException {
         try {
             return new PropertySetIndexSubtreeIterator(this.indexAccessor.getIndexReader(), 
-                                                                    this.documentMapper, rootUri);
+                                                                    this.documentMapper, rootUri.toString());
         } catch (IOException io) {
             throw new IndexException(io);
         }

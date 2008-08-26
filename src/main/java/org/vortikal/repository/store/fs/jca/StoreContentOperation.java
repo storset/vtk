@@ -34,12 +34,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.vortikal.repository.Path;
+
 public class StoreContentOperation extends AbstractFileOperation {
-    private String uri;
+    private Path uri;
     private File file;
     private File tmp;
     
-    public StoreContentOperation(String uri, InputStream inputStream, FileMapper mapper) throws IOException {
+    public StoreContentOperation(Path uri, InputStream inputStream, FileMapper mapper) throws IOException {
         this.uri = uri;
         this.file = mapper.getFile(uri);
         this.tmp = new File(mapper.newTempFileName());

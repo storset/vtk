@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
@@ -80,15 +81,15 @@ public class IndexFileMessageProvider implements ReferenceDataProvider {
 
         RequestContext context = RequestContext.getRequestContext();
         
-        String index = context.getIndexFileURI();
+        Path index = context.getIndexFileURI();
         if (index == null) {
             return;
         }
-            org.springframework.web.servlet.support.RequestContext springContext =
-                new org.springframework.web.servlet.support.RequestContext(request);
-            String message = springContext.getMessage(this.localizationKey,
-                    new Object[] { index.substring(index.lastIndexOf('/') + 1, index.length()) },
-                    this.localizationKey);
+        org.springframework.web.servlet.support.RequestContext springContext =
+            new org.springframework.web.servlet.support.RequestContext(request);
+        String message = springContext.getMessage(this.localizationKey,
+                new Object[] { index.getName() },
+                this.localizationKey);
 
         model.put(this.modelName, message);
     }

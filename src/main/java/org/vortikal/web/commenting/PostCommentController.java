@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -175,7 +176,7 @@ public class PostCommentController extends SimpleFormController {
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         Resource resource = this.repository.retrieve(token, uri, false);

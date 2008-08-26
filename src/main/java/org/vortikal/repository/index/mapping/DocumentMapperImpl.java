@@ -45,6 +45,7 @@ import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
@@ -54,7 +55,6 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
-import org.vortikal.util.repository.URIUtil;
 
 /**
  * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
@@ -84,11 +84,11 @@ public class DocumentMapperImpl implements DocumentMapper {
         // Special fields
         // uri
         Field uriField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.URI_FIELD_NAME, 
-                                                                     propSet.getURI());
+                                                                     propSet.getURI().toString());
         doc.add(uriField);
         
         // uriDepth (not stored, but indexed for use in searches)
-        int uriDepth = URIUtil.getUriDepth(propSet.getURI());
+        int uriDepth = propSet.getURI().getDepth();
         Field uriDepthField = this.fieldValueMapper.getKeywordField(FieldNameMapping.URI_DEPTH_FIELD_NAME, 
                                                                     uriDepth);
         doc.add(uriDepthField);
@@ -226,7 +226,7 @@ public class DocumentMapperImpl implements DocumentMapper {
         throws DocumentMappingException {
         
         PropertySetImpl propSet = new PropertySetImpl();
-        propSet.setUri(doc.get(FieldNameMapping.URI_FIELD_NAME));
+        propSet.setUri(Path.fromString(doc.get(FieldNameMapping.URI_FIELD_NAME)));
         propSet.setAclInheritedFrom(this.fieldValueMapper.getIntegerFromStoredBinaryField(
                 doc.getField(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME)));
         propSet.setID(this.fieldValueMapper.getIntegerFromStoredBinaryField(
@@ -286,7 +286,7 @@ public class DocumentMapperImpl implements DocumentMapper {
     }
 
     private void addContext(PropertySetImpl propSet) {
-        String uri = propSet.getURI();
+        Path uri = propSet.getURI();
         Map<PropertyTypeDefinition, String> context = this.contextManager.getContext(uri);
 
         if (context == null)

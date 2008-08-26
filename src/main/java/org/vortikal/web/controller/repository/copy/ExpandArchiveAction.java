@@ -33,6 +33,7 @@ package org.vortikal.web.controller.repository.copy;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -43,7 +44,7 @@ public class ExpandArchiveAction implements CopyAction {
     private Repository repository;
     private ResourceArchiver archiver;
     
-    public void process(String uri, String copyUri) throws Exception {
+    public void process(Path uri, Path copyUri) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -52,9 +53,8 @@ public class ExpandArchiveAction implements CopyAction {
         if (resource.isCollection()) {
             throw new RuntimeException("Cannot unzip a collection");
         }
-        String base = copyUri;
         InputStream source = this.repository.getInputStream(token, uri, false);
-        this.archiver.expandArchive(token, source, base);
+        this.archiver.expandArchive(token, source, copyUri);
         
     }
 

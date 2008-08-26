@@ -70,7 +70,7 @@ public class RepositoryEventDumperImpl extends AbstractRepositoryEventDumper {
         this.dataAccessor.addChangeLogEntry(entry, true);
     }
 
-    public void deleted(String uri, int resourceId, boolean collection) {
+    public void deleted(Path uri, int resourceId, boolean collection) {
         
         ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, uri, 
                                             Operation.DELETED, resourceId, collection, 

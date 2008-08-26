@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -63,9 +64,9 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.ListMenu;
 import org.vortikal.web.view.components.menu.MenuItem;
 import org.vortikal.web.view.decorating.DecoratorRequest;
@@ -154,8 +155,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
         
-        int currentLevel = URLUtil.splitUriIncrementally(menuRequest.getCurrentFolder()).length;
-
+        int currentLevel = menuRequest.getCurrentFolder().getDepth();
+        
         if (menuRequest.getDisplayFromLevel() != -1) {
             if (currentLevel < menuRequest.getDisplayFromLevel()) {
                 return;
@@ -186,7 +187,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         Query query = buildMainSearch(menuRequest);
         ResultSet rs = search(menuRequest.getToken(), query);
 
-        String currentURI = menuRequest.getCurrentURI();
+        Path currentURI = menuRequest.getCurrentURI();
         String[] childNames = menuRequest.getChildNames();
         MenuItem<PropertySet> parent = null;
         
@@ -197,7 +198,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             PropertySet resource = rs.getResult(i);
 
             MenuItem<PropertySet> item = buildItem(resource);
-            String uri = resource.getURI();
+            Path uri = resource.getURI();
 
             // Hidden?
             if (childNames == null && this.hiddenPropDef != null
@@ -233,7 +234,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             items.add(0, parent);
 
             if (menu.getActiveItem() == null && 
-                    menuRequest.getCurrentURI().startsWith(menuRequest.getURI())) {
+                    menuRequest.getURI().isAncestorOf(menuRequest.getCurrentURI())) {
                 parent.setActive(true);
                 menu.setActiveItem(parent);
             }
@@ -245,8 +246,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
     private Query buildMainSearch(MenuRequest menuRequest) {
-        String uri = menuRequest.getURI();
-        int startDepth = URLUtil.splitUri(uri).length;
+        Path uri = menuRequest.getURI();
+        int startDepth = uri.getDepth();
         
         AndQuery query = new AndQuery();
         
@@ -269,7 +270,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         if (menuRequest.isParentIncluded()) {
             OrQuery or = new OrQuery();
             or.add(query);
-            or.add(new UriTermQuery(uri, UriOperator.EQ));
+            or.add(new UriTermQuery(uri.toString(), UriOperator.EQ));
             return or;
         }
         
@@ -277,7 +278,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private Query getRequestedChildren(String uri, String[] childNames) {
+    private Query getRequestedChildren(Path uri, String[] childNames) {
 
         if (childNames.length == 1) {
             String name = childNames[0];
@@ -294,12 +295,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     }
 
-    private Query getUriQuery(String uri, String name) {
+    private Query getUriQuery(Path uri, String name) {
         if (name.indexOf("/") != -1) {
             throw new DecoratorComponentException("Invalid child name: '" + name + "'");
         }
         name = name.trim();
-        String childURI = URIUtil.makeAbsoluteURI(name, uri);
+        String childURI = URIUtil.makeAbsoluteURI(name, uri.toString());
         return new UriTermQuery(childURI, UriOperator.EQ);
     }
 
@@ -320,14 +321,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     
     // List all children based on depth:
-    private Query getChildrenQuery(String uri, int depth) {
+    private Query getChildrenQuery(Path uri, int depth) {
         AndQuery q = new AndQuery();
 
-        if (!uri.equals("/")) {
-            uri += "/";
+        String uriString = uri.toString();
+        if (!uriString.equals("/")) {
+            uriString += "/";
         }
         
-        q.add(new UriPrefixQuery(uri));
+        q.add(new UriPrefixQuery(uriString));
         q.add(new UriDepthQuery(depth));
 
         return q;
@@ -339,16 +341,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         OrQuery orQuery = new OrQuery();
 
         // Starting at level 1 to construct prefix matches
-        int startDepth = URLUtil.splitUri(menuRequest.getURI()).length;
+        int startDepth = menuRequest.getURI().getDepth();
         
-        String[] uris = URLUtil.splitUriIncrementally(menuRequest.getCurrentURI());
+        List<Path> uris = menuRequest.getCurrentURI().getPaths();
 
         // Stopping 1 before depth level or on current uri
         int maxDepth = startDepth + menuRequest.getDepth() - 1;
-        maxDepth = Math.min(maxDepth, uris.length);
+        maxDepth = Math.min(maxDepth, uris.size());
 
         for (int i = startDepth; i < maxDepth; i++) {
-            String uri = uris[i];
+            Path uri = uris.get(i);
             orQuery.add(getChildrenQuery(uri, i+1));
         }
                 
@@ -381,8 +383,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     
-    private boolean isActive(String currentURI, String uri) {
-        return currentURI.equals(uri) || currentURI.startsWith(uri + "/");
+    private boolean isActive(Path currentURI, Path uri) {
+        return currentURI.equals(uri) || uri.isAncestorOf(currentURI);
     }
 
 
@@ -416,12 +418,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             return null;
         }
 
-        Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
+        Map<Path, List<PropertySet>> childMap = new HashMap<Path, List<PropertySet>>();
                         
         for (PropertySet resource: rs.getAllResults()) {
 
-            String uri = resource.getURI();
-            String parentURI = URIUtil.getParentURI(uri);
+            Path uri = resource.getURI();
+            Path parentURI = uri.getParent();
             
             List<PropertySet> childList = childMap.get(parentURI);
             if (childList == null) {
@@ -437,16 +439,16 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             childList.add(resource);
         }
                 
-        int rootDepth = URLUtil.splitUri(menuRequest.getURI()).length;
-        String[] uris = URLUtil.splitUriIncrementally(menuRequest.getCurrentURI());
-        String rootUri = uris[rootDepth];
+        int rootDepth = menuRequest.getURI().getDepth();
+        List<Path> uris = menuRequest.getCurrentURI().getPaths();
+        Path rootUri = uris.get(rootDepth);
         
 
         return buildSubItems(rootUri, childMap, menuRequest);
     }
     
     
-    private ListMenu<PropertySet> buildSubItems(String childrenKey, Map<String, List<PropertySet>> childMap, MenuRequest menuRequest) {
+    private ListMenu<PropertySet> buildSubItems(Path childrenKey, Map<Path, List<PropertySet>> childMap, MenuRequest menuRequest) {
         
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         List<PropertySet> children = childMap.get(childrenKey);
@@ -478,12 +480,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         
         // Url
-        String uri = resource.getURI();
-        if (!uri.equals("/")) {
-            // Know it's a folder, append "/"
-            uri += "/";
-        }
-        item.setUrl(this.viewService.constructURL(uri));
+        Path uri = resource.getURI();
+        URL url = this.viewService.constructURL(uri);
+        // Know it's a folder, append "/"
+        url.setCollection(true);
 
         // Label
         String label = resource.getName().replace(' ', '-');
@@ -502,10 +502,10 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     
     
     private class MenuRequest {
-        private String uri;
+        private Path uri;
         private int displayFromLevel = -1;
-        private String currentURI;
-        private String currentFolder;
+        private Path currentURI;
+        private Path currentFolder;
         private boolean parentIncluded;
         private String[] childNames;
         private String style;
@@ -538,7 +538,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
 
             if (uri != null && !"".equals(uri.trim())) {
-                this.uri = uri;
+                this.uri = Path.fromString(uri);
             }
 
             if (displayFromLevel != null && !"".equals(displayFromLevel.trim())) {
@@ -548,9 +548,8 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                         "Parameter '" + PARAMETER_DISPLAY_FROM_LEVEL + "' must be an integer > 0");
                 }
 
-                String[] path = URLUtil.splitUriIncrementally(requestContext.getCurrentCollection());
-                if (level <= path.length) {
-                    this.uri = path[level - 1];
+                if (level <= requestContext.getCurrentCollection().getPaths().size()) {
+                    this.uri = requestContext.getCurrentCollection().getPaths().get(level - 1);
                 }
                 this.displayFromLevel = level;
             }
@@ -617,7 +616,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             return this.excludedChildren;
         }
 
-        public String getURI() {
+        public Path getURI() {
             return this.uri;
         }
         
@@ -625,11 +624,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             return this.displayFromLevel;
         }
 
-        public String getCurrentURI() {
+        public Path getCurrentURI() {
             return this.currentURI;
         }
         
-        public String getCurrentFolder() {
+        public Path getCurrentFolder() {
             return this.currentFolder;
         }
         

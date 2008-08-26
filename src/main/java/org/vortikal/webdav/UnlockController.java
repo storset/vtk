@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -62,7 +63,7 @@ public class UnlockController extends AbstractWebdavController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
             this.ifHeader = new IfHeaderImpl(request);

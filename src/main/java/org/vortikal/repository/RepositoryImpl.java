@@ -61,7 +61,6 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.token.TokenManager;
-import org.vortikal.util.repository.URIUtil;
 
 
 
@@ -106,9 +105,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.id;
     }
 
-    public boolean exists(String token, String uri) throws IOException {
-        if (!this.uriValidator.validateURI(uri)) 
-            return false;
+    public boolean exists(String token, Path uri) throws IOException {
 
         if (this.dao.load(uri) != null) 
             return true;
@@ -116,16 +113,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return false;
     }
 
-    public Resource retrieve(String token, String uri, boolean forProcessing)
+    public Resource retrieve(String token, Path uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IOException {
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        if (!this.uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
-
         ResourceImpl resource = null;
-
-            
         resource = this.dao.load(uri);
 
         if (resource == null) 
@@ -146,16 +139,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     }
 
-    public InputStream getInputStream(String token, String uri,
+    public InputStream getInputStream(String token, Path uri,
             boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException,
             ResourceLockedException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
-        }
 
         ResourceImpl r = this.dao.load(uri);
 
@@ -176,13 +165,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
 
 
-    public Resource[] listChildren(String token, String uri, 
+    public Resource[] listChildren(String token, Path uri, 
             boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
 
         ResourceImpl collection = this.dao.load(uri);
 
@@ -215,7 +202,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return children;
     }
 
-    public Resource createDocument(String token, String uri) 
+    public Resource createDocument(String token, Path uri) 
     throws IllegalOperationException, AuthorizationException, 
     AuthenticationException, ResourceLockedException, ReadOnlyException, 
     IOException {
@@ -223,7 +210,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return create(token, uri, false);
     }
 
-    public Resource createCollection(String token, String uri) 
+    public Resource createCollection(String token, Path uri) 
     throws IllegalOperationException, AuthorizationException, 
     AuthenticationException, ResourceLockedException, ReadOnlyException, 
     IOException {
@@ -231,7 +218,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return create(token, uri, true);
     }
 
-    public void copy(String token, String srcUri, String destUri, String depth,
+    public void copy(String token, Path srcUri, Path destUri, Repository.Depth depth,
         boolean overwrite, boolean preserveACL)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
@@ -240,14 +227,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        if (!this.uriValidator.validateURI(srcUri)) {
-            throw new ResourceNotFoundException(srcUri);
-        }
-
-        if (!this.uriValidator.validateURI(destUri)) {
-            throw new IllegalOperationException("Invalid URI: '" + destUri + "'");
-        }
-        
         this.uriValidator.validateCopyURIs(srcUri, destUri);        
 
         ResourceImpl src = this.dao.load(srcUri);
@@ -264,7 +243,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 "Copy: cannot overwrite resource " + destUri);
         } 
             
-        String destParentUri = URIUtil.getParentURI(destUri);
+        Path destParentUri = destUri.getParent();
         ResourceImpl destParent = this.dao.load(destParentUri);
         if ((destParent == null) || !destParent.isCollection()) {
             throw new IllegalOperationException(
@@ -285,7 +264,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(
                 src, principal, destUri);
 
-
             ResourceImpl newResource = src.createCopy(destUri);
             newResource = this.resourceHelper.nameChange(newResource, principal);
             destParent = this.resourceHelper.contentModification(destParent, principal);
@@ -304,7 +282,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
 
 
-    public void move(String token, String srcUri, String destUri,
+    public void move(String token, Path srcUri, Path destUri,
         boolean overwrite)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
@@ -313,17 +291,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        if (!this.uriValidator.validateURI(srcUri)) {
-            throw new ResourceNotFoundException(srcUri);
-        }
-
-        if (!this.uriValidator.validateURI(destUri)) {
-            throw new IllegalOperationException("Invalid URI: '" + destUri +
-                "'");
-        }
-
         this.uriValidator.validateCopyURIs(srcUri, destUri);
-        
         
         // Loading and checking source resource
         ResourceImpl src = this.dao.load(srcUri);
@@ -341,10 +309,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceOverwriteException();
         } 
             
-        // checking destParent 
-        String destParentUri = URIUtil.getParentURI(destUri);
-
-        ResourceImpl destParent = this.dao.load(destParentUri);
+        // checking destParent
+        ResourceImpl destParent = this.dao.load(destUri.getParent());
 
         if ((destParent == null) || !destParent.isCollection()) {
             throw new IllegalOperationException("Invalid destination resource");
@@ -391,7 +357,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     
 
 
-    public void delete(String token, String uri)
+    public void delete(String token, Path uri)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, ResourceNotFoundException, 
             ResourceLockedException, FailedDependencyException, 
@@ -399,13 +365,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
-        }
-
-        if ("/".equals(uri)) {
+        if (uri.isRoot()) {
             throw new IllegalOperationException(
-                    "Cannot delete the root resource ('/')");
+            "Cannot delete the root resource ('/')");
         }
 
         ResourceImpl r = this.dao.load(uri);
@@ -419,10 +381,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.dao.delete(r);
         this.contentStore.deleteResource(r.getURI());
         
-
-        String parent = URIUtil.getParentURI(uri);
-
-        ResourceImpl parentCollection = this.dao.load(parent);
+        ResourceImpl parentCollection = this.dao.load(uri.getParent());
 
         parentCollection = this.resourceHelper.contentModification(
             parentCollection, principal);
@@ -435,7 +394,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
 
-    public Resource lock(String token, String uri, String ownerInfo, String depth,
+    public Resource lock(String token, Path uri, String ownerInfo, Repository.Depth depth,
                          int requestedTimeoutSeconds, 
             String lockToken) throws ResourceNotFoundException, 
             AuthorizationException, AuthenticationException, 
@@ -443,20 +402,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             IllegalOperationException, ReadOnlyException, IOException {
         
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
+        if (depth == Depth.ONE || depth == Depth.INF) {
+          throw new IllegalOperationException("Unsupported depth parameter: " + depth);
         }
-
-        if ("0".equals(depth) || "infinity".equals(depth)) {
-            depth = "0";
-        } else {
-            throw new IllegalOperationException("Invalid depth parameter: "
-                                                + depth);
-        }
-
         ResourceImpl r = this.dao.load(uri);
-
         if (r == null) {
             throw new ResourceNotFoundException(uri);
         }
@@ -483,18 +432,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return r;
     }
 
-    public void unlock(String token, String uri, String lockToken)
+    public void unlock(String token, Path uri, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, ReadOnlyException, 
             IOException {
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
-        }
-
         ResourceImpl r = this.dao.load(uri);
-
         if (r == null) {
             throw new ResourceNotFoundException(uri);
         }
@@ -515,20 +458,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         if (resource == null) {
-            throw new IllegalOperationException("Can't store nothing.");
+            throw new IllegalOperationException("Can't store nothingness.");
         }
 
         if (!(resource instanceof ResourceImpl)) {
             throw new IllegalOperationException("Can't store unknown implementation of resource..");
         }
-        String uri = resource.getURI();
-
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new IllegalOperationException("Invalid URI: " + uri);
-        }
+        Path uri = resource.getURI();
 
         ResourceImpl original = this.dao.load(uri);
-
         if (original == null) {
             throw new ResourceNotFoundException(uri);
         }
@@ -560,16 +498,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     /**
      * Requests that an InputStream be written to a resource.
      */
-    public Resource storeContent(String token, String uri, InputStream byteStream)
+    public Resource storeContent(String token, Path uri, InputStream byteStream)
         throws AuthorizationException, AuthenticationException, 
             ResourceNotFoundException, ResourceLockedException, 
             IllegalOperationException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) {
-            throw new ResourceNotFoundException(uri);
-        }
 
         ResourceImpl r = this.dao.load(uri);
 
@@ -620,12 +554,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        if (!this.uriValidator.validateURI(resource.getURI())) {
-            throw new ResourceNotFoundException(resource.getURI());
-        }
-
         ResourceImpl r = this.dao.load(resource.getURI());
-
         if (r == null) {
             throw new ResourceNotFoundException(resource.getURI());
         }
@@ -639,8 +568,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 return;
             }
             ResourceImpl parent = null;
-            if (!"/".equals(r.getURI())) {
-                parent = this.dao.load(r.getParent());
+            if (!r.getURI().isRoot()) {
+                parent = this.dao.load(r.getURI().getParent());
             }
 
             if ("/".equals(resource.getURI()) && resource.isInheritedAcl()) {
@@ -702,7 +631,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(resource.getURI(), principal);
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, deep, max);
             List<Comment> result = new ArrayList<Comment>();
-            Set<String> authCache = new HashSet<String>();
+            Set<Path> authCache = new HashSet<Path>();
             // Fetch N comments, authorize on the result set:
             for (Comment c: comments) {
                 try {
@@ -851,25 +780,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
     
 
-    private Resource create(String token, String uri, boolean collection)
+    private Resource create(String token, Path uri, boolean collection)
         throws AuthorizationException, AuthenticationException, 
         IllegalOperationException, ResourceLockedException, 
         ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        if (!this.uriValidator.validateURI(uri)) throw new ResourceNotFoundException(uri);
-
         ResourceImpl resource = this.dao.load(uri);
-
         if (resource != null) { 
             throw new ResourceOverwriteException("Resource already exists");
         }
-
-        String parentURI = URIUtil.getParentURI(uri);
-
-        ResourceImpl parent = this.dao.load(parentURI);
-
+        ResourceImpl parent = this.dao.load(uri.getParent());
         if ((parent == null) || !parent.isCollection()) {
             throw new IllegalOperationException("Either parent doesn't exist " +
                                                 "or parent is document");

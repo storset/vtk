@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -107,7 +108,7 @@ public class CommentsProvider implements ReferenceDataProvider {
 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         Service currentService = RequestContext.getRequestContext().getService();
 
         model.put("principal", principal);

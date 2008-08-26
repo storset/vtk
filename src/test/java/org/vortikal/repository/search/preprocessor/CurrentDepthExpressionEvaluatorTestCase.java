@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.context.BaseContext;
-import org.vortikal.repository.search.preprocessor.CurrentDepthExpressionEvaluator;
+import org.vortikal.repository.Path;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceImpl;
@@ -80,7 +80,7 @@ public class CurrentDepthExpressionEvaluatorTestCase extends TestCase {
         BaseContext.pushContext();
 
         RequestContext.setRequestContext(
-                new RequestContext(request, service, uri));
+                new RequestContext(request, service, Path.fromString(uri)));
         String s = evaluator.evaluate(token);
 
         BaseContext.popContext();

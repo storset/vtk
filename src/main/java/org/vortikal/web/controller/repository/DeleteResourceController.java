@@ -40,6 +40,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -101,16 +102,13 @@ public class DeleteResourceController extends AbstractController implements Init
             token = securityContext.getToken();
         }
         
-        String uri = requestContext.getResourceURI();
-
-        String parentUri = URIUtil.getParentURI(uri);
-
+        Path uri = requestContext.getResourceURI();
+        Path parentUri = uri.getParent();
         this.repository.delete(token, uri);
-    
-        Resource modelResource = this.repository.retrieve(token, parentUri, false);
 
+        Resource modelResource = this.repository.retrieve(token, parentUri, false);
         if (this.resourcePath != null) {
-            String newUri = URIUtil.getAbsolutePath(this.resourcePath, uri);
+            Path newUri = Path.fromString(URIUtil.getAbsolutePath(this.resourcePath, uri.toString()));
             if (newUri != null) {
                 try {
                     modelResource = this.repository.retrieve(token, newUri, false);

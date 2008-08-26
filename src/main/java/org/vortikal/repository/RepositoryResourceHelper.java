@@ -37,7 +37,7 @@ import org.vortikal.security.Principal;
 
 public interface RepositoryResourceHelper {
 
-    public ResourceImpl create(Principal principal, String uri,
+    public ResourceImpl create(Principal principal, Path uri,
             boolean collection) throws IOException;
 
     /**
@@ -59,6 +59,6 @@ public interface RepositoryResourceHelper {
     public ResourceImpl nameChange(ResourceImpl resource, Principal principal) throws IOException;
 
     public PropertySet getFixedCopyProperties(Resource resource,
-           Principal principal, String destUri) throws CloneNotSupportedException;
+           Principal principal, Path destUri) throws CloneNotSupportedException;
            
 }

@@ -37,7 +37,7 @@ import org.vortikal.security.Principal;
 
 public final class Comment {
 
-    private String uri;
+    private Path uri;
 
     private String id = null;
 
@@ -55,11 +55,11 @@ public final class Comment {
         this.id = id;
     }
     
-    public String getURI() {
+    public Path getURI() {
         return this.uri;
     }
 
-    public void setURI(String uri) {
+    public void setURI(Path uri) {
         this.uri = uri;
     }
     

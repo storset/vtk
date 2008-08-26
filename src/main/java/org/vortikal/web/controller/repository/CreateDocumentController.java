@@ -39,8 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -67,8 +69,8 @@ public class CreateDocumentController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        Map<String, String> topTemplates = this.documentTemplates.getTopTemplates();
-        Map<String, Map<String, String>> categories = this.documentTemplates.getCategoryTemplates();
+        Map<Path, String> topTemplates = this.documentTemplates.getTopTemplates();
+        Map<String, Map<Path, String>> categories = this.documentTemplates.getCategoryTemplates();
         
         Resource resource = this.repository.retrieve(securityContext.getToken(),
                                                 requestContext.getResourceURI(), false);
@@ -77,7 +79,7 @@ public class CreateDocumentController extends SimpleFormController
         CreateDocumentCommand command =
             new CreateDocumentCommand(url);
 
-        Map<String, String> m = null;
+        Map<Path, String> m = null;
 
         // Setting default value for CreateDocument dialog
 
@@ -90,10 +92,10 @@ public class CreateDocumentController extends SimpleFormController
         }
 
         if (m != null) {
-            Iterator<String> i = m.keySet().iterator(); 
+            Iterator<Path> i = m.keySet().iterator(); 
 
             if (i.hasNext()) {
-                command.setSourceURI(i.next());
+                command.setSourceURI(i.next().toString());
             }
         }
         
@@ -103,8 +105,8 @@ public class CreateDocumentController extends SimpleFormController
 
     @SuppressWarnings("unchecked")
     protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map<String, String> topTemplates = this.documentTemplates.getTopTemplates();
-        Map<String, Map<String, String>> categories = this.documentTemplates.getCategoryTemplates();
+        Map<Path, String> topTemplates = this.documentTemplates.getTopTemplates();
+        Map<String, Map<Path, String>> categories = this.documentTemplates.getCategoryTemplates();
         
         Map<String, Object> model = new HashMap<String, Object>();
         
@@ -125,16 +127,13 @@ public class CreateDocumentController extends SimpleFormController
             createDocumentCommand.setDone(true);
             return;
         }
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        String sourceURI = createDocumentCommand.getSourceURI();
+        Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
+        Path destinationURI = uri.extend(createDocumentCommand.getName());
 
-        String destinationURI = uri;
-        if (!"/".equals(uri)) destinationURI += "/";
-        destinationURI += createDocumentCommand.getName();
-
-        this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
+        this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
         createDocumentCommand.setDone(true);
     }
     

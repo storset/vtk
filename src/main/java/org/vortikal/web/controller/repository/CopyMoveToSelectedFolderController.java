@@ -43,7 +43,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.CopyMoveSessionBean;
@@ -93,14 +95,14 @@ public class CopyMoveToSelectedFolderController implements Controller {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String destinationUri = requestContext.getResourceURI();
+        Path destinationUri = requestContext.getCurrentCollection();
 
         CopyMoveSessionBean sessionBean = (CopyMoveSessionBean)
         request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 
         // Should probably give some feedback when there is no session variable, but ...
-        if (sessionBean != null){
-            List<String> filesFailed = new ArrayList<String>();
+        if (sessionBean != null) {
+            List<Path> filesFailed = new ArrayList<Path>();
             String action = sessionBean.getAction();
 
             // Getting the selected files from Session
@@ -111,17 +113,9 @@ public class CopyMoveToSelectedFolderController implements Controller {
             while (i.hasNext()) {
 
                 // Need to construct the uri to the new file in a more elegant way...
-                String resourceUri = i.next().toString();
-                String resourceFilename = 
-                    resourceUri.substring(resourceUri.lastIndexOf("/"));
-                String newResourceUri = "";
-
-                // Need to handle '/' as a special case
-                if (destinationUri.equals("/")) {
-                    newResourceUri = resourceFilename;
-                } else {
-                    newResourceUri = destinationUri + resourceFilename;    				
-                }
+                Path resourceUri = Path.fromString(i.next());
+                String resourceFilename = resourceUri.getName();
+                Path newResourceUri = destinationUri.extend(resourceFilename);
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Trying to copy(or move) resource from: " + resourceUri + " to: " + newResourceUri);
@@ -138,32 +132,29 @@ public class CopyMoveToSelectedFolderController implements Controller {
                             logger.debug("Trying to duplicate resource: " + newResourceUri);    		
                         }
 
-                        String newUri = newResourceUri;
-                        int index=1;
-                        boolean cont = true;
+                        Path newUri = newResourceUri;
 
-                        // Need to insert numbering before file-ending like "file(1).txt"
-                        String startOfUri = "";
-                        String endOfUri = "";
-                        int dot = newUri.lastIndexOf(".");
+                        while (this.repository.exists(token, newUri)) {
+                            String extension = "";
+                            String dot = "";
+                            int number = 1;
+                            String name = newUri.getName();
 
-                        if (dot != -1) {
-                            startOfUri = newUri.substring(0,dot);
-                            endOfUri = "." + newUri.substring(dot+1);
-                        } else {
-                            startOfUri = newUri;
-                        }	
+                            if (name.endsWith(".")) {
+                                name = name.substring(0, name.lastIndexOf("."));
 
-                        while (cont) {
-                            cont = this.repository.exists(token, startOfUri + "(" + index + ")" + endOfUri);	
-                            if (cont) index++;
+                            } else if (name.contains(".")) {
+                                extension = name.substring(name.lastIndexOf(".") + 1, name.length());
+                                dot = ".";
+                                name = name.substring(0, name.lastIndexOf("."));
+                            }
+                            name = name + "(" + number + ")" + dot + extension;
+                            newUri = newResourceUri.extend(name);
                         }
-
-                        newResourceUri = startOfUri + "(" + index + ")" + endOfUri;
-                        this.repository.copy(token, resourceUri, newResourceUri, "infinity", false, false);
+                        this.repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
 
                     } else {
-                        this.repository.copy(token, resourceUri, newResourceUri, "infinity", false, false );
+                        this.repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false );
                     }
 
                 } catch (Exception e) {

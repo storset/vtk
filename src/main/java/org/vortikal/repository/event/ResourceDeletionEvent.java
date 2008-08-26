@@ -30,17 +30,18 @@
  */
 package org.vortikal.repository.event;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 
 public class ResourceDeletionEvent extends RepositoryEvent {
 
     private static final long serialVersionUID = 4121138047560921652L;
     
-    private String uri = null;
+    private Path uri = null;
     private int resourceId;
     private boolean collection;
 
-    public ResourceDeletionEvent(Repository source, String uri, int resourceId,
+    public ResourceDeletionEvent(Repository source, Path uri, int resourceId,
                                  boolean collection) {
         super(source);
         this.uri = uri;
@@ -48,7 +49,7 @@ public class ResourceDeletionEvent extends RepositoryEvent {
         this.collection = collection;
     }
 
-    public String getURI() {
+    public Path getURI() {
         return this.uri;
     }
 

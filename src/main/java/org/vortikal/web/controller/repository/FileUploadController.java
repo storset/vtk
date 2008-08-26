@@ -46,6 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -143,9 +144,8 @@ public class FileUploadController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         }
 
-        String uri = RequestContext.getRequestContext().getResourceURI();
-
-        String itemURI = uri.equals("/") ? "/" + name : uri + "/" + name;
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path itemURI = uri.extend(name);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Uploaded resource will be: " + itemURI);

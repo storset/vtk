@@ -30,7 +30,10 @@
  */
 package org.vortikal.repository.store;
 
+import java.io.IOException;
 import java.io.InputStream;
+
+import org.vortikal.repository.Path;
 
 
 /**
@@ -44,14 +47,14 @@ import java.io.InputStream;
  */
 public interface ContentStore {
 
-    public void createResource(String uri, boolean isCollection)
+    public void createResource(Path uri, boolean isCollection)
             throws DataAccessException;
 
-    public long getContentLength(String uri) throws DataAccessException;
+    public long getContentLength(Path uri) throws DataAccessException;
 
-    public void deleteResource(String uri) throws DataAccessException;
+    public void deleteResource(Path uri) throws DataAccessException;
 
-    public InputStream getInputStream(String uri) throws DataAccessException;
+    public InputStream getInputStream(Path uri) throws DataAccessException;
 
     /**
      * Store content in the resource given by the URI.
@@ -62,9 +65,9 @@ public interface ContentStore {
      * @param inputStream
      * @throws IOException
      */
-    public void storeContent(String uri, InputStream inputStream) throws DataAccessException;
+    public void storeContent(Path uri, InputStream inputStream) throws DataAccessException;
 
-    public void copy(String srcURI, String destURI) throws DataAccessException;
+    public void copy(Path srcURI, Path destURI) throws DataAccessException;
     
-    public void move(String srcURI, String destURI) throws DataAccessException;
+    public void move(Path srcURI, Path destURI) throws DataAccessException;
 }

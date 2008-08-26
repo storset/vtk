@@ -33,12 +33,11 @@ package org.vortikal.web.controller.repository;
 import java.io.IOException;
 import java.util.Map;
 
+import org.vortikal.repository.Path;
+
 public interface DocumentTemplates {
 
+    public Map<Path, String> getTopTemplates() throws IOException;
     
-    public Map<String, String> getTopTemplates() throws IOException;
-    
-    public Map<String, Map<String, String>> getCategoryTemplates() throws IOException;
-    
-    public void setTemplatesCollection(String templatesCollection);
+    public Map<String, Map<Path, String>> getCategoryTemplates() throws IOException;
 }

@@ -37,11 +37,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -76,7 +79,7 @@ public class TemplateBasedCreateController extends SimpleFormController
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 		String token = SecurityContext.getSecurityContext().getToken();
 
         Resource resource = this.repository.retrieve(securityContext.getToken(),
@@ -90,7 +93,7 @@ public class TemplateBasedCreateController extends SimpleFormController
         
         // Set first available template as the selected 
         if (!l.isEmpty()) {
-        	command.setSourceURI(l.get(0).getUri());
+        	command.setSourceURI(l.get(0).getUri().toString());
         }
               
         return command;
@@ -105,14 +108,14 @@ public class TemplateBasedCreateController extends SimpleFormController
     	
     	Map<String, Object> model = new HashMap<String, Object>();
     	
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 		String token = securityContext.getToken();
 				
 	    List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 	    
-	    TreeMap <String,String> tmp = new TreeMap <String,String>();	    
+	    Map <String, String> tmp = new TreeMap <String, String>();
         for (ResourceTemplate t: l) {
-        	tmp.put(t.getUri(), t.getName());
+        	tmp.put(t.getUri().toString(), t.getName());
 	    }
 		       
         model.put("templates", tmp);
@@ -131,17 +134,15 @@ public class TemplateBasedCreateController extends SimpleFormController
             createDocumentCommand.setDone(true);
             return;
         }
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         // The location of the file that we shall copy
-        String sourceURI = createDocumentCommand.getSourceURI();
+        Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
 
-        String destinationURI = uri;
-        if (!"/".equals(uri)) destinationURI += "/";
-        destinationURI += createDocumentCommand.getName();
+        Path destinationURI = uri.extend(createDocumentCommand.getName());
         
-        this.repository.copy(token, sourceURI, destinationURI, "0", false, false);
+        this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
         createDocumentCommand.setDone(true);
         
     }

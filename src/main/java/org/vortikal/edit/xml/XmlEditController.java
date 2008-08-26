@@ -51,6 +51,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Lock;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
@@ -165,14 +166,14 @@ public class XmlEditController implements Controller {
     private void finish(HttpServletRequest request, EditDocument document)
     throws IOException {
         document.finish();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         String sessionID = XmlEditController.class.getName() + ":" + uri; 
         request.getSession(true).removeAttribute(sessionID);
     }
     
     private Map<String, Object> getSessionMap(HttpServletRequest request) throws IOException {
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         String sessionID = XmlEditController.class.getName() + ":" + uri; 
         @SuppressWarnings("unchecked")
@@ -228,7 +229,7 @@ public class XmlEditController implements Controller {
         // The Browse service is optional, must javadoc this
         if (this.browseService != null) {
             try {
-                Resource parentResource = this.repository.retrieve(token, resource.getParent(), false);
+                Resource parentResource = this.repository.retrieve(token, resource.getURI().getParent(), false);
                 Util.setXsltParameter(model, "BROWSEURL", this.browseService
                         .constructLink(parentResource, principal));
             } catch (AuthorizationException e) {
@@ -240,7 +241,7 @@ public class XmlEditController implements Controller {
             }
         }
 
-        String uri = resource.getURI();
+        Path uri = resource.getURI();
         Service service = RequestContext.getRequestContext().getService();
         Map<String,String> actionParam = new HashMap<String,String>();
 
@@ -313,7 +314,7 @@ public class XmlEditController implements Controller {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         
         String sessionID = XmlEditController.class.getName() + ":" + uri; 

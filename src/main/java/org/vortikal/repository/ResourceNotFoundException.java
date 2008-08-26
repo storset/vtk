@@ -40,13 +40,13 @@ public class ResourceNotFoundException extends RepositoryException {
 
     private static final long serialVersionUID = 3689351018110399794L;
     
-    private String uri = null;
+    private Path uri = null;
 
-    public ResourceNotFoundException(String uri) {
+    public ResourceNotFoundException(Path uri) {
         this.uri = uri;
     }
 
-    public String getURI() {
+    public Path getURI() {
         return this.uri;
     }
     

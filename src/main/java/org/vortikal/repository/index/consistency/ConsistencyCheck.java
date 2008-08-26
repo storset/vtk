@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
@@ -144,7 +145,7 @@ public class ConsistencyCheck {
     private void runConsistencyCheck(final PropertySetIndexRandomAccessor randomIndexAccessor,
                                      final Iterator indexUriIterator) 
         throws IndexException {
-        final Set<String> valid = new HashSet<String>(10000);
+        final Set<Path> valid = new HashSet<Path>(10000);
         
         // XXX: Don't know if I like this callback style, the only way to 
         //      abort the iteration is to throw an un-checked exception.
@@ -154,7 +155,7 @@ public class ConsistencyCheck {
             public void handlePropertySet(PropertySet propertySet) {
 
                 PropertySetImpl daoPropSet = (PropertySetImpl)propertySet;
-                String currentUri = daoPropSet.getURI();
+                Path currentUri = daoPropSet.getURI();
                 int indexInstances = 
                     randomIndexAccessor.countInstances(currentUri);
                 
@@ -206,7 +207,7 @@ public class ConsistencyCheck {
         
         // Need to make a complete pass over index URIs to detect dangling inconsistencies
         while (indexUriIterator.hasNext()) {
-            String currentUri = (String)indexUriIterator.next();
+            Path currentUri = (Path) indexUriIterator.next();
             if (! valid.contains(currentUri)) {
                 this.errors.add(new DanglingInconsistency(currentUri));
             }
@@ -223,7 +224,7 @@ public class ConsistencyCheck {
      * @throws IOException
      * @throws IndexException
      */
-    private void checkPropertySet(String indexUri, 
+    private void checkPropertySet(Path indexUri, 
                                   PropertySetIndexRandomAccessor randomIndexAccessor, 
                                   PropertySetImpl daoPropSet)
         throws IOException, IndexException {
@@ -280,8 +281,8 @@ public class ConsistencyCheck {
                                                 PropertySetIndexRandomAccessor randomIndexAccessor) 
         throws IOException, IndexException {
 
-        String indexUri = null;
-        String nextIndexUri = null;
+        Path indexUri = null;
+        Path nextIndexUri = null;
         PropertySetImpl nextDaoPropSet = null;
 
         while (indexUriIterator.hasNext() || nextIndexUri != null) {
@@ -290,7 +291,7 @@ public class ConsistencyCheck {
                 indexUri = nextIndexUri;
                 nextIndexUri = null;
             } else {
-                indexUri = (String) indexUriIterator.next();
+                indexUri = (Path) indexUriIterator.next();
             }
             
             if (daoIterator.hasNext() || nextDaoPropSet != null) {
@@ -302,7 +303,7 @@ public class ConsistencyCheck {
                     daoPropSet = (PropertySetImpl) daoIterator.next();
                 }
                 
-                String daoUri = daoPropSet.getURI();
+                Path daoUri = daoPropSet.getURI();
                 
                 int compare = indexUri.compareTo(daoUri);
                 if (compare == 0) {  // indexUri == daoUri
@@ -310,7 +311,7 @@ public class ConsistencyCheck {
                     // See if it is duplicated in index
                     int instances = 1;
                     while (indexUriIterator.hasNext()) {
-                        nextIndexUri = (String) indexUriIterator.next();
+                        nextIndexUri = (Path) indexUriIterator.next();
                         if (indexUri.compareTo(nextIndexUri) == 0) {
                             ++instances;
                         } else {
@@ -357,7 +358,7 @@ public class ConsistencyCheck {
                     
                     // Dangling until synced
                     while (indexUriIterator.hasNext()) {
-                        indexUri = (String)indexUriIterator.next();
+                        indexUri = (Path) indexUriIterator.next();
                         
                         compare = indexUri.compareTo(daoUri);
                         if (compare < 0) {

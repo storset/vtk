@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionEvent;
@@ -49,6 +50,8 @@ import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.ManagedConnectionMetaData;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
+
+import org.vortikal.repository.Path;
 
 public class FileSystemManagedConnection implements ManagedConnection {
 
@@ -154,7 +157,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
         }
     }
 
-    public void createResource(String uri, boolean isCollection) 
+    public void createResource(Path uri, boolean isCollection) 
         throws ResourceException {
         try {
             FileMapper mapper = new CascadingFileMapper(
@@ -166,7 +169,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
         }
     }
     
-    public long getContentLength(String uri) throws ResourceException {
+    public long getContentLength(Path uri) throws ResourceException {
         
         try {
             FileMapper mapper = this.context.getCurrentFileMapper();
@@ -188,7 +191,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
         }
     }
 
-    public InputStream getInputStream(String uri) throws ResourceException {
+    public InputStream getInputStream(Path uri) throws ResourceException {
         try {
             FileMapper mapper = this.context.getCurrentFileMapper();
             File file = null;
@@ -209,7 +212,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
         }
     }
 
-    public void storeContent(String uri, InputStream inputStream)
+    public void storeContent(Path uri, InputStream inputStream)
         throws ResourceException {
         try {
             FileMapper mapper = new CascadingFileMapper(
@@ -221,7 +224,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
         }
     }
     
-    public void deleteResource(String uri) throws ResourceException {
+    public void deleteResource(Path uri) throws ResourceException {
 
         try {
             FileMapper mapper = new CascadingFileMapper(
@@ -234,7 +237,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
     }
 
 
-    public void copy(String srcURI, String destURI) throws ResourceException {        
+    public void copy(Path srcURI, Path destURI) throws ResourceException {        
         try {
             FileMapper mapper = new CascadingFileMapper(
                 this.dataDirectory, this.workDirectory, this.context.getCurrentFileMapper());
@@ -246,7 +249,7 @@ public class FileSystemManagedConnection implements ManagedConnection {
     }
 
 
-    public void move(String srcURI, String destURI) throws ResourceException {
+    public void move(Path srcURI, Path destURI) throws ResourceException {
         try {
             FileMapper mapper = new CascadingFileMapper(
                 this.dataDirectory, this.workDirectory, this.context.getCurrentFileMapper());

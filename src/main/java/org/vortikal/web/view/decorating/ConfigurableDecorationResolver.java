@@ -47,12 +47,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
 
@@ -107,7 +107,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         
         InternalDescriptor descriptor = new InternalDescriptor();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         
         String paramString = null;
         
@@ -121,7 +121,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
 
         if (paramString == null && !errorPage) {
-            paramString = checkRegexpMatch(uri);
+            paramString = checkRegexpMatch(uri.toString());
         }
         
         if (paramString == null && !errorPage) {
@@ -191,17 +191,15 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         return null;
     }
 
-    private String checkPathMatch(String uri) {
+    private String checkPathMatch(Path uri) {
         String collectionExactMatch = this.decorationConfiguration.getProperty(uri + "/");
         if (collectionExactMatch != null) {
             return collectionExactMatch.trim();
         }
-        
-        String[] path = URLUtil.splitUriIncrementally(uri);
-        for (int i = path.length - 1; i >= 0; i--) {
-            String prefix = path[i];
+    
+        while (uri != null) {
+            String prefix = uri.toString();
             String value = this.decorationConfiguration.getProperty(prefix);
-
             if (value != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for URI prefix '" + prefix
@@ -209,6 +207,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                 }
                 return value.trim();
             }
+            uri = uri.getParent();
         }
         return null;
     }

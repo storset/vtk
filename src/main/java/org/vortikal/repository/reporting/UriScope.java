@@ -30,7 +30,7 @@
  */
 package org.vortikal.repository.reporting;
 
-import org.vortikal.repository.URIValidator;
+import org.vortikal.repository.Path;
 
 /**
  * A query scope defined by an URI. 
@@ -38,17 +38,15 @@ import org.vortikal.repository.URIValidator;
  */
 public class UriScope implements ReportQueryScope {
 
-    private String uri;
+    private Path uri;
     
-    public UriScope(String uri) {
-        if (! new URIValidator().validateURI(uri)) {
-            throw new IllegalArgumentException("Invalid URI: " + uri);
-        }
-        
+    public UriScope(Path uri) {
+        if (uri == null) throw new IllegalArgumentException(
+                "URI cannot be NULL"); 
         this.uri = uri;
     }
 
-    public String getUri() {
+    public Path getUri() {
         return this.uri;
     }
 

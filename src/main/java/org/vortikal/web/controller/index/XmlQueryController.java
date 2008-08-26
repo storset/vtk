@@ -45,6 +45,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.search.XmlSearcher;
 import org.vortikal.security.SecurityContext;
@@ -119,7 +120,7 @@ public class XmlQueryController implements Controller, InitializingBean {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         this.repository.retrieve(token, uri, true);
 
         String query = request.getParameter(this.expressionParameterName);

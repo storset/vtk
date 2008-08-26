@@ -37,8 +37,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -78,7 +80,7 @@ public class LockResourceController extends AbstractController {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         Resource resource = this.repository.retrieve(
@@ -86,8 +88,8 @@ public class LockResourceController extends AbstractController {
 
         if (resource.getLock() == null) {
             this.repository.lock(token, uri,
-                            securityContext.getPrincipal().getQualifiedName(), "0",
-                            this.requestedTimeoutSeconds, null);
+                            securityContext.getPrincipal().getQualifiedName(), 
+                            Depth.ZERO, this.requestedTimeoutSeconds, null);
         }
         
         return new ModelAndView(this.viewName);

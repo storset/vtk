@@ -35,6 +35,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -51,12 +52,12 @@ public class PropertyAccessor {
 
     public String propertyValue(String uri, String prefix, String name, String format) {
         
-            String currentUri = RequestContext.getRequestContext().getResourceURI();
+            Path currentUri = RequestContext.getRequestContext().getResourceURI();
             
             if (uri == null || uri.equals("")) {
-                uri = currentUri;
+                uri = currentUri.toString();
             } else {
-                uri = URIUtil.getAbsolutePath(uri, currentUri);
+                uri = URIUtil.getAbsolutePath(uri, currentUri.toString());
             }
             
             if (prefix != null && prefix.equals("")) {
@@ -80,7 +81,7 @@ public class PropertyAccessor {
                 new org.springframework.web.servlet.support.RequestContext(request).getLocale();
 
             try {
-                Resource resource = this.repository.retrieve(token, uri, true);
+                Resource resource = this.repository.retrieve(token, Path.fromString(uri), true);
                 Property prop = resource.getProperty(def);
                 if (prop != null)
                     return prop.getFormattedValue(format, locale);

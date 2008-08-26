@@ -39,8 +39,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.lucene.search.Searcher;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.fulltext.FulltextSearcher;
@@ -121,7 +123,7 @@ public class FulltextSearchController implements Controller {
         String query = request.getParameter("query");
 
         Service currentService = RequestContext.getRequestContext().getService();
-        String resourceURI = RequestContext.getRequestContext().getResourceURI();
+        Path resourceURI = RequestContext.getRequestContext().getResourceURI();
         
         URL searchURL = currentService.constructURL(resourceURI);
         searchModel.put("url", searchURL);

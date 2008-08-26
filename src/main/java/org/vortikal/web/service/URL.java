@@ -36,7 +36,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.vortikal.repository.Path;
 import org.vortikal.util.web.URLUtil;
 
 
@@ -51,11 +54,12 @@ public class URL {
     private String protocol = null;
     private String host = null;
     private Integer port = null;
-    private String path = null;
+    private Path path = null;
     private String characterEncoding = "utf-8";
     private Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     private String ref = null;
     private boolean pathOnly = false;
+    private boolean collection = false;
     
     private static final Integer PORT_80 = new Integer(80);
     private static final Integer PORT_443 = new Integer(443);
@@ -77,6 +81,8 @@ public class URL {
         this.path = original.path;
         this.characterEncoding = original.characterEncoding;
         this.ref = original.ref;
+        this.pathOnly = original.pathOnly;
+        this.collection = original.collection;
         
         // Copy parameter map
         for (Map.Entry<String, List<String>> entry: original.parameters.entrySet()) {
@@ -91,15 +97,15 @@ public class URL {
         }
     }
 
-    public URL(String protocol, String host, String path) {
+    public URL(String protocol, String host, Path path) {
         if (!(PROTOCOL_HTTP.equals(protocol) || PROTOCOL_HTTPS.equals(protocol))) {
             throw new IllegalArgumentException("Unknown protocol: '" + protocol + "'");
         }
         if (host == null || "".equals(host.trim())) {
             throw new IllegalArgumentException("Invalid hostname: '" + host + "'");
         }
-        if (path == null || "".equals(path.trim()) || !path.startsWith("/")) {
-            throw new IllegalArgumentException("Invalid path: '" + path + "'");
+        if (path == null) {
+            throw new IllegalArgumentException("Path argument cannot be NULL");
         }
 
         this.protocol = protocol.trim();
@@ -159,7 +165,7 @@ public class URL {
     }
 
 
-    public String getPath() {
+    public Path getPath() {
         return this.path;
     }
     
@@ -172,13 +178,20 @@ public class URL {
         return pathOnly;
     }
 
-    public void setPath(String path) {
-        if (path == null || "".equals(path.trim()) || !path.startsWith("/")) {
-            throw new IllegalArgumentException("Invalid path: '" + path + "'");
+    public void setPath(Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Path cannot be NULL");
         }
         this.path = path;
     }
     
+    public boolean isCollection() {
+        return this.collection;
+    }
+    
+    public void setCollection(boolean collection) {
+        this.collection = collection;
+    }
     
     public void addParameter(String name, String value) {
         List<String> values = this.parameters.get(name);
@@ -296,11 +309,15 @@ public class URL {
     public String getPathRepresentation() {
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append(URLUtil.urlEncode(this.path, this.characterEncoding));
+            sb.append(URLUtil.urlEncode(this.path.toString(), this.characterEncoding));
         } catch (java.io.UnsupportedEncodingException e) {
             // Ignore, this.characterEncoding is supposed to be valid.
         }
-        
+      
+        if (this.collection && !this.path.isRoot()) {
+            sb.append("/");
+        }
+  
         String qs = getQueryString();
         if (qs != null) {
             sb.append("?");
@@ -343,10 +360,14 @@ public class URL {
         String path = request.getRequestURI();
         if (path == null || "".equals(path)) path = "/";
 
+        if (!path.equals("/") && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        
         String host = request.getServerName();
         int port = request.getServerPort();
 
-        URL url = new URL(PROTOCOL_HTTP, host, path);
+        URL url = new URL(PROTOCOL_HTTP, host, Path.fromString(path));
         url.setPort(new Integer(port));
         if (request.isSecure()) {
             url.setProtocol(PROTOCOL_HTTPS);

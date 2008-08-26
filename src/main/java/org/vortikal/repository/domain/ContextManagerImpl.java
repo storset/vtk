@@ -39,12 +39,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.index.observation.ResourceChangeNotifier;
 import org.vortikal.repository.index.observation.ResourceChangeObserver;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.ContextDAO;
-import org.vortikal.util.web.URLUtil;
 
 public class ContextManagerImpl implements ContextManager, InitializingBean {
 
@@ -61,7 +61,7 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
     private Map<String, String> enabledMap;
     private Map<String, String> definesMap;
     
-    public Map<PropertyTypeDefinition, String> getContext(String uri) {
+    public Map<PropertyTypeDefinition, String> getContext(Path uri) {
 
         Map<PropertyTypeDefinition, String> context = new HashMap<PropertyTypeDefinition, String>();
 
@@ -70,13 +70,11 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
             return null;
         }
         
-        String[] uris = URLUtil.splitUriIncrementally(uri);
-
-        int i = uris.length - 2 ;
+        List<Path> uris = uri.getPaths();
+        
+        int i = uris.size() - 2 ;
         while (i > -1) {
-
-            String currentUri = uris[i];
-
+            Path currentUri = uris.get(i);
             if (enabledContext(currentUri) && definesContext(currentUri)) {
                 return extractContext(currentUri);
             }
@@ -85,7 +83,7 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
         return context;
     }
 
-    private Map<PropertyTypeDefinition, String> extractContext(String uri) {
+    private Map<PropertyTypeDefinition, String> extractContext(Path uri) {
         Map<PropertyTypeDefinition, String> context = new HashMap<PropertyTypeDefinition, String>();
 
         for (PropertyTypeDefinition propDef : this.contextPropertyDefinitions) {
@@ -99,11 +97,11 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
         return context;
     }
 
-    private boolean definesContext(String uri) {
+    private boolean definesContext(Path uri) {
         return "true".equals(this.definesMap.get(uri));
     }
     
-    private boolean enabledContext(String uri) {
+    private boolean enabledContext(Path uri) {
         return "true".equals(this.enabledMap.get(uri));
     }
 
@@ -131,7 +129,7 @@ public class ContextManagerImpl implements ContextManager, InitializingBean {
     private synchronized void populate() {
         long start = System.currentTimeMillis();
         Map<PropertyTypeDefinition, Map<String, String>> contextMaps = 
-            new HashMap<PropertyTypeDefinition, Map<String,String>>();
+            new HashMap<PropertyTypeDefinition, Map<String, String>>();
         
         for (PropertyTypeDefinition propDef : this.contextPropertyDefinitions) {
             contextMaps.put(propDef, this.contextDAO.getContextMap(propDef));

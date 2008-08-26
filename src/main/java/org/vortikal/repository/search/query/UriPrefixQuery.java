@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search.query;
 
+
 public class UriPrefixQuery implements UriQuery {
 
     private String uri;

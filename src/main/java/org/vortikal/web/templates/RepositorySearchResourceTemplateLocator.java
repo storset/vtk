@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
@@ -52,21 +53,20 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.util.repository.URIUtil;
 
 /**
  * Template locator which uses repository search mechanism to locate templates. 
  *
  */
 public class RepositorySearchResourceTemplateLocator implements ResourceTemplateLocator {
-
+    
     // Repository searcher used to locate templates.
     private Searcher searcher;
     
     private ResourceTypeTree resourceTypeTree; 
     
     public List<ResourceTemplate> findTemplates(String token, 
-                                                Set<String> baseUris,
+                                                Set<Path> baseUris,
                                                 ResourceTypeDefinition resourceType) {
         
         return findTemplatesInternal(token, baseUris, resourceType, true);
@@ -76,7 +76,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
      * @see org.vortikal.web.templates.ResourceTemplateLocator#findTemplates(java.lang.String, java.util.Set, int, org.vortikal.repository.resourcetype.ResourceTypeDefinition)
      */
     public List<ResourceTemplate> findTemplatesNonRecursively(String token,
-                                                      Set<String> baseUris, 
+                                                      Set<Path> baseUris, 
                                                       ResourceTypeDefinition resourceType) {
         
         return findTemplatesInternal(token, baseUris, resourceType, false);
@@ -87,7 +87,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
      * @see ResourceTemplateLocator#findTemplates(String, String, Set, ResourceTypeDefinition)
      */
     private List<ResourceTemplate> findTemplatesInternal(String token, 
-                                                Set<String> baseUris,
+                                                Set<Path> baseUris,
                                                 ResourceTypeDefinition resourceType,
                                                 boolean recursive) {
         
@@ -124,14 +124,13 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
             if (titleProp != null) {
                 template.setTitle(titleProp.getStringValue());
             }
-            
             templates.add(template);
         }
 
         return templates;
     }
     
-    private Query getQuery(Set<String> baseUris, 
+    private Query getQuery(Set<Path> baseUris, 
                            ResourceTypeDefinition resourceType, 
                            boolean recursive) {
         
@@ -152,21 +151,21 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         return query;
     }
     
-    private Query getBaseUrisQueryNode(Set<String> baseUris, 
+    private Query getBaseUrisQueryNode(Set<Path> baseUris, 
                                        boolean recursive) {
         OrQuery orQuery = new OrQuery();
 
         if (recursive) {
-            for (String uri: baseUris) {
-                orQuery.add(new UriPrefixQuery(uri));
+            for (Path uri: baseUris) {
+                orQuery.add(new UriPrefixQuery(uri.toString()));
             }
         } else {
             // Non-recursive, add depth-constraint.
-            for (String uri: baseUris) {
+            for (Path uri: baseUris) {
                 AndQuery uriPrefixAndDepth = new AndQuery();
-                int depth = URIUtil.getUriDepth(uri) + 1; // Only children
+                int depth = uri.getDepth() + 1; // Only children
                 
-                uriPrefixAndDepth.add(new UriPrefixQuery(uri));
+                uriPrefixAndDepth.add(new UriPrefixQuery(uri.toString()));
                 uriPrefixAndDepth.add(new UriDepthQuery(depth));
                 
                 orQuery.add(uriPrefixAndDepth);

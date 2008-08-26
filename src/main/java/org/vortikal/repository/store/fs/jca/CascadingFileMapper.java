@@ -33,9 +33,10 @@ package org.vortikal.repository.store.fs.jca;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.vortikal.util.web.URLUtil;
+import org.vortikal.repository.Path;
 
 
 public class CascadingFileMapper implements FileMapper {
@@ -43,7 +44,7 @@ public class CascadingFileMapper implements FileMapper {
     private File base;
     private File tmp;
     private FileMapper prev;
-    private Map<String, String> fileMap = new HashMap<String, String>();
+    private Map<Path, String> fileMap = new HashMap<Path, String>();
 
     public CascadingFileMapper(File base, File tmp, FileMapper prev) {
         this.base = base;
@@ -61,28 +62,27 @@ public class CascadingFileMapper implements FileMapper {
         return name;
     }
 
-    public File getFile(String uri) throws IOException {
+    public File getFile(Path uri) throws IOException {
         if (this.prev == null) {
-            return new File(this.base + uri);
+            return new File(this.base.toString() + uri);
         }
 
-        String[] incrPath = URLUtil.splitUriIncrementally(uri);
-        String[] path = URLUtil.splitUri(uri);
-        for (int i = 0; i < path.length; i++) {
-            String incr = incrPath[i];
+        List<Path> incrPath = uri.getPaths();
+        List<String> path = uri.getElements();
+        for (int i = 0; i < path.size(); i++) {
+            Path incr = incrPath.get(i);
             if (this.fileMap.containsKey(incr)) {
                 String mapping = this.fileMap.get(incr);
-                for (int j = i + 1; j < path.length; j++) {
-                    mapping += "/" + path[j];
+                for (int j = i + 1; j < path.size(); j++) {
+                    mapping += "/" + path.get(j);
                 }
-                System.out.println("__mapping for file " + uri + ": " + mapping);
                 return new File(mapping);
             }
         }
         return prev.getFile(uri);
     }
 
-    public void mapFile(String uri, File file) {
+    public void mapFile(Path uri, File file) {
         this.fileMap.put(uri, file.getAbsolutePath());
     }
 }

@@ -47,6 +47,7 @@ import org.jdom.input.SAXBuilder;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -120,7 +121,7 @@ public class PropfindController extends AbstractWebdavController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         try {
             Resource resource = this.repository.retrieve(token, uri, false);
@@ -343,7 +344,7 @@ public class PropfindController extends AbstractWebdavController {
      * @param token the client session
      * @return a <code>List</code> of <code>Resource</code> objects
      */
-    protected List<Resource> getResourceDescendants(String uri, String depth,
+    protected List<Resource> getResourceDescendants(Path uri, String depth,
                                           Repository repository, String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IOException {

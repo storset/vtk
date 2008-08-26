@@ -42,6 +42,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.Path;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -58,7 +59,7 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
                 return getUrlFromUrl(resourceUri);
             }
 
-            String uri = RequestContext.getRequestContext().getResourceURI();
+            String uri = RequestContext.getRequestContext().getResourceURI().toString();
 
             if (isSet(resourceUri)) {
                 uri = URIUtil.getAbsolutePath(resourceUri, uri);
@@ -92,7 +93,8 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
 //
 //        this.repository.retrieve(token, uri, true);
 
-        return service.constructLink(uri, parameters);
+        Path path = Path.fromString(uri);
+        return service.constructLink(path, parameters);
     }
 
     private boolean isSet(String value) {

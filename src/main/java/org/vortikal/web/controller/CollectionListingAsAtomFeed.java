@@ -48,6 +48,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -76,7 +77,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         Feed feed = abdera.newFeed();
 
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource collection = this.repository.retrieve(token, uri, true);
 
@@ -96,7 +97,14 @@ public class CollectionListingAsAtomFeed implements Controller {
         
         Property picture = collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (picture != null) {
-            feed.setLogo(viewService.constructLink(picture.getStringValue()));
+            String val = picture.getStringValue();
+            Path imageRef = null;
+            if (val.startsWith("/")) {
+                imageRef = Path.fromString(val);
+            } else {
+                imageRef = collection.getURI().extend(val);
+            }
+            feed.setLogo(viewService.constructLink(imageRef));
         }
         
         feed.setUpdated(collection.getLastModified());
@@ -155,8 +163,15 @@ public class CollectionListingAsAtomFeed implements Controller {
             prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
             if (prop != null) {
                 try {
-                    Resource mediaResource = repository.retrieve(token, prop.getStringValue(), true);
-                    link.setHref(viewService.constructLink(prop.getStringValue()));
+                    Path propRef = null;
+                    String val = prop.getStringValue();
+                    if (val.startsWith("/")) {
+                        propRef = Path.fromString(val);
+                    } else {
+                        propRef = child.getURI().extend(val);
+                    }
+                    Resource mediaResource = repository.retrieve(token, propRef, true);
+                    link.setHref(viewService.constructLink(propRef));
                     link.setRel("enclosure");
                     link.setMimeType(mediaResource.getContentType());
                     entry.addLink(link);
@@ -205,14 +220,16 @@ public class CollectionListingAsAtomFeed implements Controller {
      * @throws UnsupportedEncodingException If the default (UTF-8) encoding used for 
      *         transformation from an URI to IRI is not supported
      */
-    private String getId(String resourceUri, Property published) throws URIException, UnsupportedEncodingException {
+    private String getId(Path resourceUri, Property published) throws URIException, UnsupportedEncodingException {
         String host = viewService.constructURL(resourceUri).getHost();
         StringBuilder sb = new StringBuilder("tag:");
         sb.append(host + ",");
         sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
-        resourceUri = resourceUri.replaceAll("[#% ]", "").replace("[", "").replace("]", "");
-        resourceUri = URIUtil.encode(resourceUri, null);
-        String iriString = IRIUtils.URItoIRI(resourceUri);
+
+        String uriString = resourceUri.toString();
+        uriString = uriString.replaceAll("[#% ]", "").replace("[", "").replace("]", "");
+        uriString = URIUtil.encode(uriString, null);
+        String iriString = IRIUtils.URItoIRI(uriString);
         sb.append(iriString);
         return sb.toString();
     }

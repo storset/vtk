@@ -31,6 +31,7 @@
 package org.vortikal.repository.event;
 
 import org.springframework.context.ApplicationEvent;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 
 
@@ -45,6 +46,6 @@ public abstract class RepositoryEvent extends ApplicationEvent {
         return (Repository) getSource();
     }
 
-    public abstract String getURI();
+    public abstract Path getURI();
     
 }

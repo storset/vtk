@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import org.vortikal.repository.Path;
+
 /**
  * External interface to consistency errors.
  * 
@@ -38,7 +40,7 @@ package org.vortikal.repository.index.consistency;
  */
 public interface ConsistencyError {
 
-    public String getUri();
+    public Path getUri();
     
     public String getDescription();
     

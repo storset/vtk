@@ -43,8 +43,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -80,7 +82,7 @@ public class CopyResourceController implements Controller,
     private String trustedToken;
     private Repository repository;
     private String resourceName;
-    private String templateUri;
+    private Path templateUri;
     private String errorView = "admin";
     private String successView = "redirect";
     
@@ -90,7 +92,7 @@ public class CopyResourceController implements Controller,
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
         String token = this.trustedToken;
         if (token == null)
@@ -102,12 +104,7 @@ public class CopyResourceController implements Controller,
             name = template.getName();
         }
 
-        // ensure the uri won't start with '//'
-        String newResourceUri = "/" + name;
-        if (! uri.equals("/")) {
-            newResourceUri = uri + newResourceUri;
-        }
-
+        Path newResourceUri = uri.extend(name);
         boolean exists = this.repository.exists(token, newResourceUri);
 
         if (exists) {
@@ -115,8 +112,8 @@ public class CopyResourceController implements Controller,
             return new ModelAndView(this.errorView, model);
         }
             
-        this.repository.copy(this.trustedToken, this.templateUri, newResourceUri, "infinity", false, true);
-    	 	Resource newResource = this.repository.retrieve(this.trustedToken, newResourceUri, true);
+        this.repository.copy(this.trustedToken, this.templateUri, newResourceUri, Depth.INF, false, true);
+        Resource newResource = this.repository.retrieve(this.trustedToken, newResourceUri, true);
             
         model.put("resource", newResource);
         
@@ -157,7 +154,7 @@ public class CopyResourceController implements Controller,
     }
 
     public void setTemplateUri(String templateUri) {
-        this.templateUri = templateUri;
+        this.templateUri = Path.fromString(templateUri);
     }
     
     

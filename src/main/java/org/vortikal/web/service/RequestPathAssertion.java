@@ -32,7 +32,8 @@ package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
@@ -44,31 +45,18 @@ import org.vortikal.security.Principal;
  * 
  * <ul><li><code>path</code> - the path string to match against
  */
-public class RequestPathAssertion implements Assertion, InitializingBean {
+public class RequestPathAssertion implements Assertion {
 
-    private String path;
+    private Path path;
     
-    public void setPath(String path) {
-        this.path = path;
-    }    
-    
-
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestPathAssertion) {
-            return ! (this.path.equals(
-                          ((RequestPathAssertion)assertion).getPath()));
+            return ! (this.path.equals(((RequestPathAssertion)assertion).path));
         }
         return false;
     }
-
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; path = ").append(this.path);
-
-        return sb.toString();
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        return request.getRequestURI().equals(this.path);
     }
 
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
@@ -76,36 +64,21 @@ public class RequestPathAssertion implements Assertion, InitializingBean {
         return true;
     }
 
-    // XXX: This seems strange?
     public void processURL(URL url) {
         url.setPath(this.path);
     }
     
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        return request.getRequestURI().equals(this.path);
-    }
+    @Required public void setPath(String path) {
+        this.path = Path.fromString(path);
+    }    
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(super.toString());
+        sb.append("; path = ").append(this.path);
 
-
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() throws Exception {
-        if (this.path == null) throw new IllegalArgumentException(
-        "Property path cannot be null");
-
-    if (!this.path.startsWith("/")) throw new IllegalArgumentException(
-        "Prefix must start with a '/' character");
-
-    if (this.path.endsWith("/")) throw new IllegalArgumentException(
-        "Prefix must not end with a '/' character");        
-    }
-
-
-    /**
-     * @return Returns the path.
-     */
-    String getPath() {
-        return this.path;
+        return sb.toString();
     }
 
 }

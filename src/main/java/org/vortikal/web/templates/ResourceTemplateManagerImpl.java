@@ -37,9 +37,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.util.repository.PropertiesResource;
-import org.vortikal.util.repository.URIUtil;
 
 /**
  * Main template manager implementation.
@@ -54,28 +54,28 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     private ResourceTemplateLocator templateLocator;
     
     // Configuration for document templates
-    private String documentTemplatesBaseUri;
+    private Path documentTemplatesBaseUri;
     private PropertiesResource documentTemplatesConfiguration;
 
     // Default resource type for document templates
     private ResourceTypeDefinition documentTemplateResourceType;
     
     // Configuration for folder templates
-    private String folderTemplatesBaseUri;
+    private Path folderTemplatesBaseUri;
     private PropertiesResource folderTemplatesConfiguration;
 
     // Default resource type for folder templates
     private ResourceTypeDefinition folderTemplateResourceType;
     
-    private String documentTemplatesDefaultUri;
-    private String folderTemplatesDefaultUri;
+    private Path documentTemplatesDefaultUri;
+    private Path folderTemplatesDefaultUri;
     
     /**
      * @see ResourceTemplateManager#getDocumentTemplates(String, String) 
      */
-    public List<ResourceTemplate> getDocumentTemplates(String token, String uri) {
+    public List<ResourceTemplate> getDocumentTemplates(String token, Path uri) {
 
-    	Set <String> baseUris = this.getDocumentTemplateBaseUris(uri);
+    	Set <Path> baseUris = this.getDocumentTemplateBaseUris(uri);
     	
     	return templateLocator.findTemplates(token, baseUris, documentTemplateResourceType);
     	
@@ -84,49 +84,48 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     /**
      * @see ResourceTemplateManager#getFolderTemplates(String, String)
      */
-    public List<ResourceTemplate> getFolderTemplates(String token, String uri) {
+    public List<ResourceTemplate> getFolderTemplates(String token, Path uri) {
         
-        Set<String> baseUris = this.getFolderTemplateBaseUris(uri);
+        Set<Path> baseUris = this.getFolderTemplateBaseUris(uri);
         
         return templateLocator.findTemplatesNonRecursively(token, 
                                     baseUris, this.folderTemplateResourceType);
     }
     
-    private Set<String> getDocumentTemplateBaseUris(String uri) {
+    private Set<Path> getDocumentTemplateBaseUris(Path uri) {
         
         return getBaseUris(uri, this.documentTemplatesConfiguration,
                                 this.documentTemplatesBaseUri,
                                 this.documentTemplatesDefaultUri);
     }
      
-    private Set<String> getFolderTemplateBaseUris(String uri) {
+    private Set<Path> getFolderTemplateBaseUris(Path uri) {
         
         return getBaseUris(uri, this.folderTemplatesConfiguration,
                                 this.folderTemplatesBaseUri,
                                 this.folderTemplatesDefaultUri);
     }
     
-    private Set<String> getBaseUris(String uri, 
+    private Set<Path> getBaseUris(Path uri, 
                                     Properties config, 
-                                    String templatesBase,
-                                    String defaultBaseUri) {
+                                    Path templatesBase,
+                                    Path defaultBaseUri) {
         
-        Set<String> baseUris = new HashSet<String>();
+        Set<Path> baseUris = new HashSet<Path>();
         
         // Try direct match from config first
-        String matchValue = config.getProperty(uri);
+        String matchValue = config.getProperty(uri.toString());
         if (matchValue == null) {
             matchValue = config.getProperty(uri + "/");
         }
 
         // If no direct match, try ancestor URIs upwards until we find a match
         if (matchValue == null) {
-            for (String ancestorUri: URIUtil.getAncestorURIs(uri)) {
-                matchValue = config.getProperty(ancestorUri);
+            for (Path ancestorUri: uri.getAncestors()) {
+                matchValue = config.getProperty(ancestorUri.toString());
                 if (matchValue == null) {
                     matchValue = config.getProperty(ancestorUri + "/");
                 }
-                
                 if (matchValue != null) break; // Found a match
             }
         }
@@ -135,7 +134,8 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
             // OK, something is configured for the given URI, parse the value
             StringTokenizer tokens = new StringTokenizer(matchValue, ",");
             while (tokens.hasMoreElements()) {
-                baseUris.add(templatesBase + "/" + tokens.nextToken().trim());
+                Path baseUri = Path.fromString(templatesBase + "/" + tokens.nextToken().trim());
+                baseUris.add(baseUri);
             }
         } else {
             // Nothing configured, return default base URI
@@ -158,7 +158,7 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
     @Required
     public void setDocumentTemplatesBaseUri(String documentTemplatesBaseUri) {
-        this.documentTemplatesBaseUri = documentTemplatesBaseUri;
+        this.documentTemplatesBaseUri = Path.fromString(documentTemplatesBaseUri);
     }
     
     @Required
@@ -175,7 +175,7 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
     
     @Required
     public void setFolderTemplatesBaseUri(String folderTemplatesBaseUri) {
-        this.folderTemplatesBaseUri = folderTemplatesBaseUri;
+        this.folderTemplatesBaseUri = Path.fromString(folderTemplatesBaseUri);
     }
 
     @Required
@@ -186,12 +186,12 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
 
     @Required
 	public void setDocumentTemplatesDefaultUri(String documentTemplatesDefaultUri) {
-		this.documentTemplatesDefaultUri = documentTemplatesDefaultUri;
+		this.documentTemplatesDefaultUri = Path.fromString(documentTemplatesDefaultUri);
 	}
 
     @Required
     public void setFolderTemplatesDefaultUri(String folderTemplatesDefaultUri) {
-        this.folderTemplatesDefaultUri = folderTemplatesDefaultUri;
+        this.folderTemplatesDefaultUri = Path.fromString(folderTemplatesDefaultUri);
     }
     
     

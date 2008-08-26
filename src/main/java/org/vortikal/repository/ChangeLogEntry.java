@@ -86,7 +86,7 @@ public class ChangeLogEntry {
     }
     
     public String getUri() {
-        return this.uri;
+        return this.uri.toString();
     }
     
     public void setTimestamp(Date timestamp) {

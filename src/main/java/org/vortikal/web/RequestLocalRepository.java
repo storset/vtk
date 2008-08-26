@@ -36,14 +36,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
@@ -72,7 +71,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         }
     }
 
-    public Resource retrieve(String token, String uri, boolean forProcessing)
+    public Resource retrieve(String token, Path uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, ResourceLockedException, IOException {
 
@@ -123,7 +122,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         }
     }
 
-    public Resource[] listChildren(String token, String uri,
+    public Resource[] listChildren(String token, Path uri,
                                    boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, IOException {
@@ -143,7 +142,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.store(token, resource);
     }
 
-    public Resource storeContent(String token, String uri, InputStream byteStream)
+    public Resource storeContent(String token, Path uri, InputStream byteStream)
         throws AuthorizationException, AuthenticationException, 
         ResourceNotFoundException, ResourceLockedException, 
         IllegalOperationException, ReadOnlyException, IOException {
@@ -155,7 +154,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.storeContent(token, uri, byteStream);
     }
 
-    public InputStream getInputStream(String token, String uri,
+    public InputStream getInputStream(String token, Path uri,
                                       boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, ResourceLockedException, IOException {
@@ -163,7 +162,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.getInputStream(token, uri, forProcessing);
     }
 
-    public Resource createDocument(String token, String uri)
+    public Resource createDocument(String token, Path uri)
         throws IllegalOperationException, AuthorizationException, 
         AuthenticationException, ResourceLockedException, ReadOnlyException, 
         IOException {
@@ -175,14 +174,14 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.createDocument(token, uri);
     }
 
-    public Resource createCollection(String token, String uri)
+    public Resource createCollection(String token, Path uri)
         throws AuthorizationException, AuthenticationException, 
         IllegalOperationException, ResourceLockedException, 
         ReadOnlyException, IOException {
         return this.repository.createCollection(token, uri);
     }
 
-    public void copy(String token, String srcUri, String destUri, String depth,
+    public void copy(String token, Path srcUri, Path destUri, Depth depth,
                      boolean overwrite, boolean preserveACL)
         throws IllegalOperationException, AuthorizationException, 
         AuthenticationException, FailedDependencyException, 
@@ -196,7 +195,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         this.repository.copy(token, srcUri, destUri, depth, overwrite, preserveACL);
     }
 
-    public void move(String token, String srcUri, String destUri,
+    public void move(String token, Path srcUri, Path destUri,
                      boolean overwrite)
         throws IllegalOperationException, AuthorizationException, 
         AuthenticationException, FailedDependencyException, 
@@ -210,7 +209,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         this.repository.move(token, srcUri, destUri, overwrite);
     }
 
-    public void delete(String token, String uri)
+    public void delete(String token, Path uri)
         throws IllegalOperationException, AuthorizationException, 
         AuthenticationException, ResourceNotFoundException, 
         ResourceLockedException, FailedDependencyException, 
@@ -223,7 +222,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         this.repository.delete(token, uri);
     }
 
-    public boolean exists(String token, String uri)
+    public boolean exists(String token, Path uri)
         throws AuthorizationException, AuthenticationException, IOException {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
@@ -234,8 +233,8 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         return this.repository.exists(token, uri);
     }
 
-    public Resource lock(String token, String uri, String ownerInfo,
-                         String depth, int requestedTimoutSeconds,
+    public Resource lock(String token, Path uri, String ownerInfo,
+                         Depth depth, int requestedTimoutSeconds,
                          String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, FailedDependencyException, 
@@ -250,7 +249,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
                                requestedTimoutSeconds, lockToken);
     }
 
-    public void unlock(String token, String uri, String lockToken)
+    public void unlock(String token, Path uri, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
         AuthenticationException, ResourceLockedException, ReadOnlyException, 
         IOException {
@@ -311,7 +310,7 @@ public class RequestLocalRepository implements InitializingBean, Repository {
 
 
     // XXX: Losing stack traces unnecessary
-    private void throwAppropriateException(String uri, Throwable t) 
+    private void throwAppropriateException(Path uri, Throwable t) 
         throws AuthenticationException, AuthorizationException,
         FailedDependencyException, IOException, IllegalOperationException,
         ReadOnlyException, ResourceLockedException, ResourceNotFoundException,

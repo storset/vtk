@@ -31,24 +31,27 @@
 package org.vortikal.repository.store.fs.jca;
 
 import java.io.InputStream;
+
 import javax.resource.ResourceException;
+
+import org.vortikal.repository.Path;
 
 public interface FileSystemConnection {
 
-    public void createResource(String uri, boolean isCollection)
+    public void createResource(Path uri, boolean isCollection)
             throws ResourceException;
 
-    public long getContentLength(String uri) throws ResourceException;
+    public long getContentLength(Path uri) throws ResourceException;
 
-    public void deleteResource(String uri) throws ResourceException;
+    public void deleteResource(Path uri) throws ResourceException;
 
-    public InputStream getInputStream(String uri) throws ResourceException;
+    public InputStream getInputStream(Path uri) throws ResourceException;
 
-    public void storeContent(String uri, InputStream inputStream) throws ResourceException;
+    public void storeContent(Path uri, InputStream inputStream) throws ResourceException;
 
-    public void copy(String srcURI, String destURI) throws ResourceException;
+    public void copy(Path srcURI, Path destURI) throws ResourceException;
 
-    public void move(String srcURI, String destURI) throws ResourceException;
+    public void move(Path srcURI, Path destURI) throws ResourceException;
 
     public void close() throws ResourceException;
 

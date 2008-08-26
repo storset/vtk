@@ -144,7 +144,7 @@ public class LockView implements View {
 
         activeLock.addContent(
             new Element("depth", WebdavConstants.DAV_NAMESPACE).addContent(
-                lockInfo.getDepth()));
+                lockInfo.getDepth().toString()));
 
         activeLock.addContent(            
             buildLockOwnerElement(lockInfo.getOwnerInfo()));

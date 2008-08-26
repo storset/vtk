@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.index;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 
 /**
@@ -50,7 +51,7 @@ public interface PropertySetIndexRandomAccessor {
      * @return
      * @throws IndexException
      */
-    public boolean exists(String uri) throws IndexException;
+    public boolean exists(Path uri) throws IndexException;
     
     /**
      * Count number of existing property set instances for the given URI. This can be used
@@ -60,7 +61,7 @@ public interface PropertySetIndexRandomAccessor {
      * @return
      * @throws IndexException
      */
-    public int countInstances(String uri) throws IndexException;
+    public int countInstances(Path uri) throws IndexException;
     
     /**
      * Get a property set by URI
@@ -68,7 +69,7 @@ public interface PropertySetIndexRandomAccessor {
      * @return
      * @throws IndexException
      */
-    public PropertySet getPropertySetByURI(String uri) throws IndexException;
+    public PropertySet getPropertySetByURI(Path uri) throws IndexException;
     
     /**
      * Get a property set by UUID

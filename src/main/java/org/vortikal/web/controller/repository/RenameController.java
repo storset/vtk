@@ -32,16 +32,16 @@ package org.vortikal.web.controller.repository;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -78,7 +78,7 @@ public class RenameController extends SimpleFormController {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         RenameCommand rename = (RenameCommand) command;
@@ -102,7 +102,7 @@ public class RenameController extends SimpleFormController {
                     logger.debug("Setting new name '" + rename.getName()
                                  + "' for resource " + uri);
                 }
-                String newUri = uri.substring(0, uri.lastIndexOf("/") + 1 ) + rename.getName();
+                Path newUri = uri.getParent().extend(rename.getName());
                 this.repository.move(token, uri, newUri, false);
                 Resource newResource = this.repository.retrieve(token, newUri, false);
                 model = new HashMap<String, Object>();

@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
@@ -132,8 +133,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         if (uri != null) {
             if (!uri.startsWith("/")) {
-                String base = RequestContext.getRequestContext().getResourceURI();
-                uri = base.substring(0, base.lastIndexOf("/") + 1) + uri;
+                Path base = RequestContext.getRequestContext().getResourceURI();
+                uri = base.extend(uri).toString();
             }
             uri = URIUtil.expandPath(uri);
             handleDirectInclude(uri, request, response);
@@ -156,8 +157,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
         }
 
         if (!uri.startsWith("/")) {
-            String requestURI = RequestContext.getRequestContext().getResourceURI();
-            uri = requestURI.substring(0, requestURI.lastIndexOf("/") + 1) + uri;
+            Path requestURI = RequestContext.getRequestContext().getResourceURI();
+            uri = requestURI.extend(uri).toString();
             uri = URIUtil.expandPath(uri);
         }
 
@@ -174,9 +175,10 @@ public class IncludeComponent extends AbstractDecoratorComponent
         if (asCurrentPrincipal) {
             token = SecurityContext.getSecurityContext().getToken();
         }
+        Path uri = Path.fromString(address);
         Resource r = null;
         try {
-            r = this.repository.retrieve(token, address, false);
+            r = this.repository.retrieve(token, uri, false);
         } catch (ResourceNotFoundException e) {
             throw new DecoratorComponentException(
                     "Resource '" + address + "' not found");
@@ -198,7 +200,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         }
 
         String characterEncoding = r.getCharacterEncoding();
-        InputStream is = this.repository.getInputStream(token, address, true);
+        InputStream is = this.repository.getInputStream(token, uri, true);
 
         String elementParam = request.getStringParameter(PARAMETER_ELEMENT);
 
@@ -249,7 +251,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         decodedURI = URLUtil.urlDecode(decodedURI);
         
         URL url = URL.create(servletRequest);
-        url.setPath(decodedURI);
+        url.setPath(Path.fromString(decodedURI));
         url.clearParameters();
         for (String param: queryMap.keySet()) {
             for (String value: queryMap.get(param)) {

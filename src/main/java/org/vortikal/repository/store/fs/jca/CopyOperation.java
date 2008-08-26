@@ -33,13 +33,15 @@ package org.vortikal.repository.store.fs.jca;
 import java.io.File;
 import java.io.IOException;
 
+import org.vortikal.repository.Path;
+
 public class CopyOperation extends AbstractFileOperation {
-    private String srcURI, destURI;
+    private Path srcURI, destURI;
     private File src;
     private File tmp;
     private FileMapper mapper;
     
-    public CopyOperation(String srcURI, String destURI, FileMapper mapper) throws IOException {
+    public CopyOperation(Path srcURI, Path destURI, FileMapper mapper) throws IOException {
 
         this.srcURI = srcURI;
         this.src = mapper.getFile(srcURI);

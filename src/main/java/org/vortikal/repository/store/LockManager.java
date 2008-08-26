@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.store;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +37,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
+
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
 
 
 /**
@@ -54,8 +55,8 @@ public class LockManager {
 
 
 
-    public List<String> lock(String[] uris) {
-        List<String> list = java.util.Arrays.asList(uris);
+    public List<Path> lock(Path[] uris) {
+        List<Path> list = java.util.Arrays.asList(uris);
         return lock(list);
     }
     
@@ -69,12 +70,12 @@ public class LockManager {
      * @throws RuntimeException if not all of the requested locks
      * could be obtained
      */
-    public List<String> lock(List<String> uris) {
+    public List<Path> lock(List<Path> uris) {
 
         Collections.sort(uris);
 
-        List<String> claimedLocks = new ArrayList<String>();
-        for (String uri: uris) {
+        List<Path> claimedLocks = new ArrayList<Path>();
+        for (Path uri: uris) {
             Lock lock = null;
             boolean haveLock = false;
             int iterations = 0;
@@ -138,9 +139,9 @@ public class LockManager {
      *
      * @param uris the URIs to unlock.
      */
-    public void unlock(List<String> uris) {
+    public void unlock(List<Path> uris) {
 
-        for (String uri: uris) {
+        for (Path uri: uris) {
             Lock lock = getLock(uri);
             lock.release();
         }
@@ -155,7 +156,7 @@ public class LockManager {
      * @return the lock object corresponding to the URI
      */
     @SuppressWarnings("unchecked")
-    private synchronized Lock getLock(String uri) {
+    private synchronized Lock getLock(Path uri) {
 
         if (!this.locks.containsKey(uri)) {
             Lock lock = new Lock(uri);
@@ -169,7 +170,7 @@ public class LockManager {
      * 
      * @param uri a <code>String</code> value
      */
-    private synchronized void disposeLock(String uri) {
+    private synchronized void disposeLock(Path uri) {
         if (this.locks.containsKey(uri)) {
             this.locks.remove(uri);
         }
@@ -181,11 +182,11 @@ public class LockManager {
      */
     private class Lock {
 
-        private String uri;        
+        private Path uri;        
 
         private Thread owner = null;
 
-        public Lock(String uri) {
+        public Lock(Path uri) {
             this.uri = uri;
         }
 

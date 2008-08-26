@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -70,8 +71,8 @@ public class MoveController extends AbstractWebdavController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
-        String destURI = request.getHeader("Destination");
+        Path uri = requestContext.getResourceURI();
+        String dest = request.getHeader("Destination");
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
@@ -79,24 +80,18 @@ public class MoveController extends AbstractWebdavController {
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
-            if (destURI == null || destURI.trim().equals("")) {
+            if (dest == null || dest.trim().equals("")) {
                 throw new InvalidRequestException(
                     "Missing `Destination' request header");
             }
-            
-
-            destURI = mapToResourceURI(destURI);
-
+            dest = mapToResourceURI(dest);
             try {
-
-                destURI = URLUtil.urlDecode(destURI, "utf-8");
-
+                dest = URLUtil.urlDecode(dest, "utf-8");
             } catch (Exception e) {
                 throw new InvalidRequestException(
-                    "Error trying to URL decode uri" + destURI, e);
+                    "Error trying to URL decode uri" + dest, e);
             }
-            
-
+            Path destURI = Path.fromString(dest);
             String depth = request.getHeader("Depth");
             if (depth == null) {
                 depth = "infinity";
@@ -115,14 +110,14 @@ public class MoveController extends AbstractWebdavController {
                 verifyIfHeader(destination, true);
             }
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Moving " + uri + " to " + destURI + ", depth = "
+                this.logger.debug("Moving " + uri + " to " + dest + ", depth = "
                              + depth + ", overwrite = " + overwrite
                              + ", existed = " + existed);
             }
             this.repository.move(token, uri, destURI, overwrite);
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Moving " + uri + " to " + destURI + " succeeded");
+                this.logger.debug("Moving " + uri + " to " + dest + " succeeded");
             }
 
             if (existed) {

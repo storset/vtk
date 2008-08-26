@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.templates;
 
+import org.vortikal.repository.Path;
+
 /**
  * Just a simple bean encapsulating the necessary info about a 
  * resource template.  
@@ -37,23 +39,23 @@ package org.vortikal.web.templates;
  */
 public class ResourceTemplate {
 
-    private String uri;
+    private Path uri;
     private String title;
     private String name;
     
     public ResourceTemplate() {}
 
-    public ResourceTemplate(String uri, String title, String name) {
+    public ResourceTemplate(Path uri, String title, String name) {
         this.uri = uri;
         this.title = title;
         this.name = name;
     }
     
-    public String getUri() {
+    public Path getUri() {
         return uri;
     }
     
-    public void setUri(String uri) {
+    public void setUri(Path uri) {
         this.uri = uri;
     }
     

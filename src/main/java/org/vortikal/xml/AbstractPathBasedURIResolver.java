@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.util.repository.URIUtil;
 
 
@@ -79,7 +80,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * @param path a <code>String</code> value
      * @exception IOException if an error occurs
      */
-    protected abstract InputStream getInputStream(String path) throws IOException;
+    protected abstract InputStream getInputStream(Path path) throws IOException;
 
 
     /**
@@ -90,7 +91,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * @return a <code>Date</code>
      * @exception IOException if an error occurs
      */
-    public abstract Date getLastModifiedInternal(String path) throws IOException;
+    public abstract Date getLastModifiedInternal(Path path) throws IOException;
     
 
     /**
@@ -113,8 +114,8 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * @param path a <code>String</code> value
      * @exception IOException if an error occurs
      */
-    public final Date getLastModified(String path) throws IOException {
-        path = addPrefix(path);
+    public final Date getLastModified(String identifier) throws IOException {
+        Path path = Path.fromString(addPrefix(identifier));
         return getLastModifiedInternal(path);
     }
     
@@ -155,7 +156,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
 
             Source source = null;
 
-            InputStream inStream = getInputStream(path);
+            InputStream inStream = getInputStream(Path.fromString(path));
 
             if (inStream != null)
                 source = new StreamSource(inStream);

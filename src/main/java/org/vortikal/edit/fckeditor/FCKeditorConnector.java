@@ -52,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -161,14 +162,14 @@ public class FCKeditorConnector implements Controller {
         return new ModelAndView(this.browseViewName, model);
     }
     
-    private Map<String, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
+    private Map<Path, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
                                            Filter filter, Locale locale) throws Exception {
 
         Resource[] children = this.repository.listChildren(
             token, command.getCurrentFolder(), true);
 
-        Comparator<? super String> comparator = Collator.getInstance(locale);
-        Map<String, Map<String, Object>> result = new TreeMap<String, Map<String, Object>>(comparator);
+        Comparator<? super Path> comparator = Collator.getInstance(locale);
+        Map<Path, Map<String, Object>> result = new TreeMap<Path, Map<String, Object>>(comparator);
 
         for (Resource r: children) {
             if (!filter.isAccepted(r)) {
@@ -190,9 +191,9 @@ public class FCKeditorConnector implements Controller {
     
 
     private int createFolder(FCKeditorFileBrowserCommand command, String token) {
-        String newFolderURI = "/".equals(command.getCurrentFolder()) ?
-            command.getCurrentFolder() + command.getNewFolderName() :
-            command.getCurrentFolder() + "/" + command.getNewFolderName();
+
+        Path curFolder = command.getCurrentFolder();
+        Path newFolderURI = curFolder.extend(command.getNewFolderName());
         try {
             if (this.repository.exists(token, newFolderURI)) {
                 return 101;
@@ -223,19 +224,16 @@ public class FCKeditorConnector implements Controller {
                     break;
                 }
             }
-            String base = command.getCurrentFolder();
+            Path base = command.getCurrentFolder();
             String name = cleanupFileName(uploadItem.getName());
-
-            if (!"/".equals(base) && !base.endsWith("/")) {
-                base += "/";
-            }
+            base  = base.extend(name);
 
             boolean existed = false;
 
-            String uri = base + name;
+            Path uri = Path.fromString(base + name);
             if (this.repository.exists(token, uri)) {
                 existed = true;
-                uri = base + newFileName(command, token, uploadItem);
+                uri = newFileName(command, token, uploadItem);
             }
 
             this.repository.createDocument(token, uri);
@@ -272,20 +270,16 @@ public class FCKeditorConnector implements Controller {
     
 
 
-    private String ensureTrailingSlash(String path) {
-        if ("/".equals(path)) return path;
-        if (path.endsWith("/")) return path;
-        return path + "/";
+    private String ensureTrailingSlash(Path path) {
+        if (path.isRoot()) return path.toString();
+        return path.toString() + "/";
     }
     
-    private String newFileName(FCKeditorFileBrowserCommand command,
+    private Path newFileName(FCKeditorFileBrowserCommand command,
                                    String token, FileItem item) throws Exception {
         
         String name = item.getName();
-        String base = command.getCurrentFolder();
-        if (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
-        }
+        Path base = command.getCurrentFolder();
 
         String extension = "";
         String dot = "";
@@ -300,11 +294,12 @@ public class FCKeditorConnector implements Controller {
             name = name.substring(0, name.lastIndexOf("."));
         }
 
-        while (this.repository.exists(
-                   token, base + "/" + name + "(" + number + ")" + dot + extension)) {
+        Path newURI = base.extend(name);
+        while (this.repository.exists(token, newURI)) {
+            newURI = base.extend(name + "(" + number + ")" + dot + extension);
             number++;
         }
-        return  name + "(" + number + ")" + dot + extension;
+        return  newURI;
     }
     
 

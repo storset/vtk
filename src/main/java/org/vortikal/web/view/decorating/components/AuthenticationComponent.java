@@ -34,14 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
-
+import org.vortikal.repository.Path;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.web.view.decorating.DecoratorResponse;
-import org.vortikal.web.service.URL;
 
 
 public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
@@ -78,7 +78,7 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
                              DecoratorResponse response) throws Exception {
 
         super.processModel(model, request, response);
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         model.put("principal", principal);

@@ -38,6 +38,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -72,7 +73,7 @@ public class CopyCommandValidator implements Validator, InitializingBean {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         CopyCommand copyCommand =
@@ -84,11 +85,10 @@ public class CopyCommandValidator implements Validator, InitializingBean {
                 errors.rejectValue("name",
                                    "manage.rename.invalid.name",
                                    "The name is not valid for this resource");
-                copyCommand.setName(uri.substring(uri.lastIndexOf("/") + 1));
+                copyCommand.setName("");
         }
 
-        String newURI = (uri.equals("/")) ? uri + name
-            : uri.substring(0, uri.lastIndexOf("/") + 1) + name;
+        Path newURI = uri.extend(name);
 
         try {
             boolean exists = repository.exists(token, newURI);

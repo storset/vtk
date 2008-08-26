@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -73,7 +73,7 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
                                 DecoratorResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, this.forProcessing);
         Property prop = resource.getProperty(this.propertyTypeDefinition);

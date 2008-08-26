@@ -42,11 +42,11 @@ public class LockImpl implements Lock {
     private Principal principal;
     
     private String ownerInfo;
-    private String depth;
+    private Repository.Depth depth;
     private Date timeout;
     private String lockToken;
     
-    public LockImpl(String lockToken, Principal principal, String ownerInfo, String depth,
+    public LockImpl(String lockToken, Principal principal, String ownerInfo, Repository.Depth depth,
         Date timeout) {
         this.lockToken = lockToken;
         this.principal = principal;
@@ -60,7 +60,7 @@ public class LockImpl implements Lock {
         return this.ownerInfo;
     }
 
-    public String getDepth() {
+    public Repository.Depth getDepth() {
         return this.depth;
     }
 

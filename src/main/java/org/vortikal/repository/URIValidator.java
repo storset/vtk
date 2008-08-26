@@ -30,30 +30,16 @@
  */
 package org.vortikal.repository;
 
-import org.apache.commons.lang.StringUtils;
 
 public class URIValidator {
 
     public static final int MAX_URI_LENGTH = 1500;
 
-    public boolean validateURI(String uri) {
-
-        if (StringUtils.isBlank(uri)
-                || uri.length() >= MAX_URI_LENGTH
-                || !uri.startsWith("/")
-                || uri.contains("//") || uri.contains("/../")
-                || uri.endsWith("/..") || uri.endsWith("/.")
-                || (!uri.equals("/") && uri.endsWith("/"))) {
-
-            return false;
-
-        }
-
-        return true;
-    }
-
-    public void validateCopyURIs(String srcUri, String destUri)
+    public void validateCopyURIs(Path srcPath, Path destPath)
             throws IllegalOperationException {
+
+        String srcUri = srcPath.toString();
+        String destUri = destPath.toString();
 
         if ("/".equals(srcUri)) {
             throw new IllegalOperationException(

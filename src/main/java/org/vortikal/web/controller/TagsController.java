@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -85,10 +86,10 @@ public class TagsController implements Controller {
         String scope = request.getParameter("scope");
         if (scope != null && !scope.trim().equals("")) {
             if (".".equals(scope)) {
-                scope = RequestContext.getRequestContext().getCurrentCollection();
+                scope = RequestContext.getRequestContext().getCurrentCollection().toString();
             }
             if (scope.startsWith("/")) {
-                scopedResource = this.repository.retrieve(token, scope, true);
+                scopedResource = this.repository.retrieve(token, Path.fromString(scope), true);
 
                 AndQuery andQuery = new AndQuery(); 
                 andQuery.add(query);
@@ -105,7 +106,7 @@ public class TagsController implements Controller {
         model.put("tag", tag);
         model.put("scope", scopedResource);
         
-        List<String> urls = new ArrayList<String>();
+        List<Path> urls = new ArrayList<Path>();
         model.put("urls", urls);
         List<PropertySet> resources = new ArrayList<PropertySet>();
         model.put("resources", resources);

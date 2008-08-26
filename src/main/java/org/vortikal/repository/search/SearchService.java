@@ -32,10 +32,12 @@ package org.vortikal.repository.search;
 
 import java.util.SortedSet;
 
+import org.vortikal.repository.Path;
+
 public interface SearchService {
 
     public SortedSet<String> getKeywords();
 
-    public SortedSet<String> getResourcesWithKeyword(String keyword);
+    public SortedSet<Path> getResourcesWithKeyword(String keyword);
 
 }

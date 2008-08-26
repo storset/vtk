@@ -46,6 +46,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.output.DOMOutputter;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -166,7 +167,7 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
         Principal principal = securityContext.getPrincipal();
         String token = securityContext.getToken();
 
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource resource = (Resource) model.get("resource");
 
@@ -193,7 +194,7 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
             subModel.put(PATH_ELEMENTS, path);
 
             subModel.put(CONTENT_LANGUAGE, resource.getContentLanguage());
-            subModel.put(PARENT_COLLECTION, resource.getParent());
+            subModel.put(PARENT_COLLECTION, resource.getURI().getParent());
             subModel.put(CURRENT_URL, request.getRequestURL());
             subModel.put(ADMIN_URL, this.adminService.constructLink(resource,
                     principal, this.matchAdminServiceAssertions));

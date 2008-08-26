@@ -35,7 +35,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -122,23 +122,22 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion
         if (resource == null || !resource.isCollection()) {
             return false;
         }
-        String[] childURIs = resource.getChildURIs();
-        for (int i = 0; i < childURIs.length; i++) {
-            String childURI = childURIs[i];
-            if (this.childNameSet.contains(childURI.substring(childURI.lastIndexOf("/") + 1))) {
-                if (this.childResourceAssertions == null) return true;
-                
+        Path[] childURIs = resource.getChildURIs();
+        for (Path childURI: childURIs) {
+            if (this.childNameSet.contains(childURI.getName())) {
+                if (this.childResourceAssertions == null) {
+                    return true;
+                }
                 try {
                     Resource child = this.repository.retrieve(this.trustedToken, childURI, true);
-                    for (int j = 0; j < this.childResourceAssertions.length; j++) {
-                        if (this.childResourceAssertions[j].matches(null, child, null)) {
+                    for (Assertion assertion: this.childResourceAssertions) {
+                        if (assertion.matches(null, child, null)) {
                             return true;
                         }
                     }
                     return false;
                 } catch (Exception e) {
                     return false;
-                        //FIXME: catch IO/Auth/Repos instead?
                 }
             }
         }

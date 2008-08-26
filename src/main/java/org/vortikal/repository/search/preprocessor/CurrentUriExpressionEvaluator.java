@@ -55,7 +55,7 @@ public class CurrentUriExpressionEvaluator implements ExpressionEvaluator {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext != null) {
-            return requestContext.getResourceURI();
+            return requestContext.getResourceURI().toString();
         }
 
         return token;

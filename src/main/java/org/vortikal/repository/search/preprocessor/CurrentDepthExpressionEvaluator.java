@@ -36,8 +36,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.search.QueryException;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 
 
@@ -78,9 +78,9 @@ public class CurrentDepthExpressionEvaluator implements ExpressionEvaluator {
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
-        int depth = URIUtil.getUriDepth(uri);
+        int depth = uri.getDepth();
 
         if (m.group(1) != null) {
             String operator = m.group(2);

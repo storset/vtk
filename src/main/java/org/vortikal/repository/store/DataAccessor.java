@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Set;
 
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.security.Principal;
@@ -57,7 +58,7 @@ public interface DataAccessor {
     /**
      * Loads a single resource
      */
-    public ResourceImpl load(String uri) throws DataAccessException;
+    public ResourceImpl load(Path uri) throws DataAccessException;
 
 
     /**
@@ -130,13 +131,13 @@ public interface DataAccessor {
      * Finds any locks on a resource, or on resources in the URI
      * hierarchy defined by that resource.
      */
-    public String[] discoverLocks(String uri) throws DataAccessException;
+    public Path[] discoverLocks(Path uri) throws DataAccessException;
 
     /**
      * Finds any ACLs on a resource, or on resources in the URI
      * hierarchy defined by that resource.
      */
-    public String[] discoverACLs(String uri) throws DataAccessException;
+    public Path[] discoverACLs(Path uri) throws DataAccessException;
     
     /**
      * Discover all distinct groups currently present in the database.

@@ -34,12 +34,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
@@ -131,7 +132,7 @@ public class PutController extends AbstractWebdavController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -179,18 +180,8 @@ public class PutController extends AbstractWebdavController {
             } else {
 
                 /* check for parent: */
-                String parentURI =
-                    (uri.lastIndexOf("/") == uri.length() - 1) ?
-                    uri.substring(0, uri.length() - 2) :
-                    uri;
+                Path parentURI = uri.getParent();                
 
-                parentURI = parentURI.substring(
-                    0, parentURI.lastIndexOf("/") );
-
-                if (parentURI.trim().equals("")) {
-                    parentURI = "/";
-                }
-                
                 if (!this.repository.exists(token, parentURI)) {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Parent " + parentURI +

@@ -31,11 +31,11 @@
 package org.vortikal.web.service;
 
 import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.Assert;
-
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.util.web.URLUtil;
@@ -69,7 +69,7 @@ public class ConfigurableRequestURIAssertion implements Assertion {
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         boolean matches = true;
         if (match) {
-            matches = matchInternal(url.getPath());
+            matches = matchInternal(url.getPath().toString());
         }
         return matches;
     }

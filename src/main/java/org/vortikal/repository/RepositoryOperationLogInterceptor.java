@@ -36,8 +36,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.repository.OperationLog;
-import org.vortikal.repository.RepositoryImpl;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.token.TokenManager;
@@ -106,14 +104,14 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
                 operation == RepositoryOperation.STORE_CONTENT       ||
                 operation == RepositoryOperation.GET_COMMENTS) {            
 
-            String uri = (String)args[1];            
+            Path uri = (Path)args[1];            
             params = "(" + uri + ")";
             
         } else if (RepositoryOperation.COPY == operation ||
                    RepositoryOperation.MOVE == operation) {
             
-            String srcUri = (String)args[1];
-            String dstUri = (String)args[2];
+            Path srcUri = (Path)args[1];
+            Path dstUri = (Path)args[2];
             params = "(" + srcUri + ", " + dstUri + ")";
             
         } else if (RepositoryOperation.STORE == operation               ||
@@ -124,7 +122,7 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
                 RepositoryOperation.UPDATE_COMMENT == operation) {
 
             Resource resource = (Resource)args[1];
-            String uri = resource.getURI();
+            Path uri = resource.getURI();
             params = "(" + uri + ")";
 
         }
@@ -205,7 +203,7 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         Object[] args = mi.getArguments();
         
         String token = (String) args[0];
-        String uri = (String) args[1];
+        Path uri = (Path) args[1];
         
         Boolean retVal = (Boolean)mi.proceed();
         

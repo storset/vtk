@@ -113,7 +113,7 @@ public class RequestURIRegexpWrappingAssertion
     public boolean processURL(URL url, Resource resource,
                               Principal principal, boolean match) {
         if (this.uriPattern != null) {
-            Matcher m = this.uriPattern.matcher(url.getPath());
+            Matcher m = this.uriPattern.matcher(url.getPath().toString());
             if (!m.find()) {
                 // According to the regular expression, this URL
                 // should not be affected by the assertion:

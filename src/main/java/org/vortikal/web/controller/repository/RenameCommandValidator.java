@@ -37,6 +37,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -71,7 +72,7 @@ public class RenameCommandValidator implements Validator, InitializingBean {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         RenameCommand renameCommand =
@@ -83,12 +84,10 @@ public class RenameCommandValidator implements Validator, InitializingBean {
                 errors.rejectValue("name",
                                    "manage.rename.invalid.name",
                                    "The name is not valid for this resource");
-                renameCommand.setName(uri.substring(uri.lastIndexOf("/") + 1));
+                renameCommand.setName("");
         }
 
-        String newURI = (uri.equals("/")) ? uri + name
-            : uri.substring(0, uri.lastIndexOf("/") + 1) + name;
-
+        Path newURI = uri.extend(name);
         try {
             boolean exists = this.repository.exists(token, newURI);
             if (exists) {
@@ -96,7 +95,6 @@ public class RenameCommandValidator implements Validator, InitializingBean {
                                    "manage.rename.resource.exists",
                                    "A resource with this name already exists");
             }
-
         } catch (Exception e) {
             logger.warn("Unable to validate resource rename input", e);
         }

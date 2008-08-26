@@ -52,6 +52,7 @@ import java.util.zip.ZipInputStream;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -65,7 +66,6 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
-import org.vortikal.util.web.URLUtil;
 
 public class ResourceArchiver {
 
@@ -76,8 +76,8 @@ public class ResourceArchiver {
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     
     public interface EventListener {
-      public void expanded(String uri);
-      public void archived(String uri);
+      public void expanded(Path uri);
+      public void archived(Path uri);
     }
     
     public void createArchive(String token, Resource r, OutputStream out) throws Exception {
@@ -85,7 +85,7 @@ public class ResourceArchiver {
     }
     
     public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
-        int rootLevel = URLUtil.splitUri(r.getURI()).length;
+        int rootLevel = r.getURI().getDepth();
         
         File tmp = null;
         try {
@@ -102,11 +102,11 @@ public class ResourceArchiver {
         }
     }
 
-    public void expandArchive(String token, InputStream source, String base) throws Exception {
+    public void expandArchive(String token, InputStream source, Path base) throws Exception {
         expandArchive(token, source, base, null);
     }
 
-    public void expandArchive(String token, InputStream source, String base, EventListener listener) throws Exception {
+    public void expandArchive(String token, InputStream source, Path base, EventListener listener) throws Exception {
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
         Manifest manifest = jarIn.getManifest();
         if (manifest != null) {
@@ -120,11 +120,12 @@ public class ResourceArchiver {
         "true".equals(manifest.getMainAttributes().getValue("X-vrtx-archive-encoded"));
 
         JarEntry entry;
-        Set<String> dirCache = new HashSet<String>();
-        String[] basePath = URLUtil.splitUriIncrementally(base);
-        for (int i = 0; i < basePath.length - 1; i++) {
-            dirCache.add(basePath[i]);
-        }         
+        Set<Path> dirCache = new HashSet<Path>();
+        List<Path> paths = base.getPaths();
+        for (Path p: paths) {
+            dirCache.add(p);
+        }
+        
 // XXX: dir modification times
         while((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
@@ -133,16 +134,16 @@ public class ResourceArchiver {
             if (resourceURI.endsWith("/")) {
                 resourceURI = resourceURI.substring(0, resourceURI.length() - 1);
             }
-            
-            String dir = entry.isDirectory() ? 
-                    resourceURI : URIUtil.getParentURI(resourceURI);
+
+            Path uri = Path.fromString(resourceURI);
+            Path dir = entry.isDirectory() ? uri : uri.getParent();
             createDirectoryStructure(token, dir, dirCache);
 
             if (!entry.isDirectory()) {
-                writeFile(token, resourceURI, jarIn);
+                writeFile(token, uri, jarIn);
             }
-            storePropsAndPermissions(token, entry, resourceURI, decodeValues);
-            if (listener != null) listener.expanded(resourceURI);
+            storePropsAndPermissions(token, entry, uri, decodeValues);
+            if (listener != null) listener.expanded(uri);
         }
         jarIn.close();
     }
@@ -162,12 +163,12 @@ public class ResourceArchiver {
     }
     
     private String getJarPath(Resource resource, int fromLevel) {
-        String path = resource.getURI();
-        String[] splitPath = URLUtil.splitUri(path);
+        Path path = resource.getURI();
+        List<String> elements = path.getElements();
         StringBuilder result = new StringBuilder("/");
-        for (int i = fromLevel; i < splitPath.length; i++) {
-            if (i != 0) result.append(splitPath[i]);
-            if (i < splitPath.length - 1 && !"/".equals(splitPath[i])) result.append("/");
+        for (int i = fromLevel; i < elements.size(); i++) {
+            if (i != 0) result.append(elements.get(i));
+            if (i < elements.size() - 1 && !"/".equals(elements.get(i))) result.append("/");
         }
         if (resource.isCollection() && !"/".equals(result.toString())) result.append("/"); 
         return result.toString();
@@ -343,7 +344,7 @@ public class ResourceArchiver {
     
     
     
-    private void storePropsAndPermissions(String token, JarEntry entry, String resourceURI, boolean decode) throws Exception {
+    private void storePropsAndPermissions(String token, JarEntry entry, Path resourceURI, boolean decode) throws Exception {
         Attributes attributes = entry.getAttributes();
         if (attributes == null) {
             return;
@@ -487,7 +488,7 @@ public class ResourceArchiver {
         return !resource.isInheritedAcl();
     }
     
-    private void writeFile(String token, String uri, ZipInputStream is) throws Exception {
+    private void writeFile(String token, Path uri, ZipInputStream is) throws Exception {
         this.repository.createDocument(token, uri);
         this.repository.storeContent(token, uri, new PartialZipStream(is));
     }
@@ -500,13 +501,11 @@ public class ResourceArchiver {
         return s;
     }    
     
-    private void createDirectoryStructure(String token, String dir, Set<String> dirCache) throws Exception {
-        String[] path = URLUtil.splitUriIncrementally(dir);
-        for (String elem : path) {
-            if (!dirCache.contains(elem)) {
-                this.repository.createCollection(token, elem);
-                dirCache.add(elem);
-            }
+    private void createDirectoryStructure(String token, Path dir, Set<Path> dirCache) throws Exception {
+        List<Path> path = dir.getPaths();
+        for (Path p: path) {
+            this.repository.createCollection(token, p);
+            dirCache.add(p);
         }
     }
     

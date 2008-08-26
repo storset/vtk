@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -82,7 +83,7 @@ public class FixedResourceServiceURLProvider
     private Service service;
     private Repository repository;
     private boolean matchAssertions;
-    private String uri;
+    private Path uri;
     private String appendPath;
     private String urlName = "url";
 
@@ -99,7 +100,7 @@ public class FixedResourceServiceURLProvider
     }
     
     public void setUri(String uri) {
-        this.uri = uri;
+        this.uri = Path.fromString(uri);
     }
 
     public void setAppendPath(String appendPath) {

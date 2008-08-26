@@ -59,7 +59,6 @@ import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-import org.vortikal.web.view.LinkConstructor;
 import org.vortikal.xml.AbstractPathBasedURIResolver;
 import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
@@ -93,8 +92,6 @@ import org.vortikal.xml.TransformerManager;
  * <ul>
  *   <li><code>transformerManager</code> - the {@link
  *   TransformerManager} to use for obtaining stylesheets
- *   <li><code>linkConstructor</code> - optional {@link
- *   LinkConstructor} to supply to the the transformer
  *   <li><code>includeContentLanguageHeader</code> - whether to set the
  *   HTTP header <code>Content-Language</code> based on the content
  *   language of the transformed resource. Default is

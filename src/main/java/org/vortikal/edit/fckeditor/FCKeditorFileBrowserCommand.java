@@ -32,6 +32,8 @@ package org.vortikal.edit.fckeditor;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Path;
+
 
 public class FCKeditorFileBrowserCommand {
     private String currentFolder = "/";
@@ -77,8 +79,8 @@ public class FCKeditorFileBrowserCommand {
     }
     
     
-    public String getCurrentFolder() {
-        return this.currentFolder;
+    public Path getCurrentFolder() {
+        return Path.fromString(this.currentFolder);
     }
 
     public Command getCommand() {

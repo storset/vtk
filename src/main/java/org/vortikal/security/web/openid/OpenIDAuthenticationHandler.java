@@ -44,6 +44,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.Ordered;
+import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -147,7 +148,7 @@ public class OpenIDAuthenticationHandler
         String identifier = request.getParameter("openid_identifier");
 
         if (identifier == null) {
-            String redirectURL = this.formService.constructLink(request.getRequestURI());
+            String redirectURL = this.formService.constructLink(Path.fromString(request.getRequestURI()));
             if (true) {
                 try {
                     response.sendRedirect(redirectURL);
@@ -161,7 +162,7 @@ public class OpenIDAuthenticationHandler
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("openid_response", "true");
         String returnURL = this.openIDAuthenticationService.constructLink(
-            request.getRequestURI(), parameters);
+            Path.fromString(request.getRequestURI()), parameters);
 
         // perform discovery on the user-supplied identifier
         List<?> discoveries;
@@ -246,7 +247,7 @@ public class OpenIDAuthenticationHandler
     public boolean postAuthentication(HttpServletRequest request,
                                       HttpServletResponse response) {
         
-        String redirectURL = this.finalRedirectService.constructLink(request.getRequestURI());
+        String redirectURL = this.finalRedirectService.constructLink(Path.fromString(request.getRequestURI()));
         
         try {
         if (logger.isDebugEnabled()) {

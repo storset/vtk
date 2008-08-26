@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 
 /**
@@ -47,11 +48,11 @@ public interface IndexDao {
     public void orderedPropertySetIteration(PropertySetHandler handler)
         throws DataAccessException;
     
-    public void orderedPropertySetIteration(String startUri, 
+    public void orderedPropertySetIteration(Path startUri, 
                                             PropertySetHandler handler) 
         throws DataAccessException;
     
-    public void orderedPropertySetIterationForUris(List<String> uris, 
+    public void orderedPropertySetIterationForUris(List<Path> uris, 
                                                 PropertySetHandler handler)
         throws DataAccessException;
 

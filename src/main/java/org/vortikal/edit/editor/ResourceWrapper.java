@@ -38,6 +38,7 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -135,8 +136,9 @@ public class ResourceWrapper implements Resource {
     public ResourceWrapper getPropResource(PropertyTypeDefinition propDef) {
         if (propDef.getType().equals(PropertyType.Type.IMAGE_REF)) {
             try {
-                String uri = resource.getProperty(propDef).getStringValue();
-                uri = URIUtil.decode(uri);
+                String ref = resource.getProperty(propDef).getStringValue();
+                ref = URIUtil.decode(ref);
+                Path uri = Path.fromString(ref);
                 return this.resourceManager.createResourceWrapper(uri);
             } catch (IOException e) {
                 // XXX Auto-generated catch block
@@ -168,7 +170,7 @@ public class ResourceWrapper implements Resource {
         return this.resource.getCharacterEncoding();
     }
 
-    public String[] getChildURIs() {
+    public Path[] getChildURIs() {
         return this.resource.getChildURIs();
     }
 
@@ -226,10 +228,6 @@ public class ResourceWrapper implements Resource {
 
     public Principal getOwner() {
         return this.resource.getOwner();
-    }
-
-    public String getParent() {
-        return this.resource.getParent();
     }
 
     public Date getPropertiesLastModified() {
@@ -329,7 +327,7 @@ public class ResourceWrapper implements Resource {
         return this.resource.getResourceType();
     }
 
-    public String getURI() {
+    public Path getURI() {
         return this.resource.getURI();
     }
     

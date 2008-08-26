@@ -32,6 +32,7 @@ package org.vortikal.repository.index.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
@@ -47,7 +48,7 @@ public class InvalidDataInconsistency extends AbstractConsistencyError {
     private static final Log LOG = LogFactory.getLog(InvalidDataInconsistency.class);
     private PropertySetImpl repositoryPropSet;
     
-    public InvalidDataInconsistency(String uri, PropertySetImpl repositoryPropSet) {
+    public InvalidDataInconsistency(Path uri, PropertySetImpl repositoryPropSet) {
         super(uri);
         this.repositoryPropSet = repositoryPropSet;
     }

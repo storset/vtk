@@ -46,6 +46,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -159,12 +160,11 @@ public class CreateResourceFromResourceController implements Controller,
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
         Resource resource = this.repository.retrieve(token, uri, false);
-        String newResourceUri = uri.substring(0, uri.lastIndexOf("/") + 1)
-                + this.resourceName;
+        Path newResourceUri = uri.extend(this.resourceName);
 
         boolean exists = this.repository.exists(token, newResourceUri);
         if (exists) {
@@ -198,7 +198,7 @@ public class CreateResourceFromResourceController implements Controller,
         }
 
         Resource parent = null;
-        parent = this.repository.retrieve(token, resource.getParent(), false);
+        parent = this.repository.retrieve(token, resource.getURI().getParent(), false);
         model.put("resource", parent);
 
         return new ModelAndView(this.successView, model);

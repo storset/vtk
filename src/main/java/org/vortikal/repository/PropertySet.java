@@ -40,7 +40,7 @@ public interface PropertySet {
     public static final String TYPE_IDENTIFIER = "type";
     public static final String URI_IDENTIFIER = "uri";
 
-    public String getURI();
+    public Path getURI();
 
     public String getName();
 

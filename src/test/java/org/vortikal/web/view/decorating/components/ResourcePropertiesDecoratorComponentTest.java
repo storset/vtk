@@ -32,6 +32,8 @@ package org.vortikal.web.view.decorating.components;
 
 import junit.framework.TestCase;
 
+import org.vortikal.repository.Path;
+
 public class ResourcePropertiesDecoratorComponentTest extends TestCase {
 
     
@@ -40,7 +42,7 @@ public class ResourcePropertiesDecoratorComponentTest extends TestCase {
             new ResourcePropertiesDecoratorComponent();
 
         try {
-            comp.getParentAtLevel("/", "-1");
+            comp.getParentAtLevel(Path.fromString("/"), "-1");
             fail();
         } catch (NumberFormatException e) {
             // Expected
@@ -49,7 +51,7 @@ public class ResourcePropertiesDecoratorComponentTest extends TestCase {
         }
         
         try {
-            comp.getParentAtLevel("/", "lala");
+            comp.getParentAtLevel(Path.fromString("/"), "lala");
             fail();
         } catch (NumberFormatException e) {
             // Expected
@@ -58,7 +60,7 @@ public class ResourcePropertiesDecoratorComponentTest extends TestCase {
         }
         
         try {
-            comp.getParentAtLevel("/la/di/da", "5");
+            comp.getParentAtLevel(Path.fromString("/la/di/da"), "5");
             fail();
         } catch (IllegalArgumentException e) {
             // Expected

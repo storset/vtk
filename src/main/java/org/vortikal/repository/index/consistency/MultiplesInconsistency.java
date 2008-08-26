@@ -32,6 +32,7 @@ package org.vortikal.repository.index.consistency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
@@ -49,7 +50,7 @@ public class MultiplesInconsistency extends AbstractConsistencyError {
     private int multiples;
     private PropertySetImpl repositoryPropSet;
     
-    public MultiplesInconsistency(String uri, int multiples, PropertySetImpl repositoryPropSet) {
+    public MultiplesInconsistency(Path uri, int multiples, PropertySetImpl repositoryPropSet) {
         super(uri);
         this.multiples = multiples;
         this.repositoryPropSet = repositoryPropSet;

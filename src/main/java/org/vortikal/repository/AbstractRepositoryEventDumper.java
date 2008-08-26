@@ -105,7 +105,7 @@ public abstract class AbstractRepositoryEventDumper
 
     public abstract void created(Resource resource);
 
-    public abstract void deleted(String uri, int resourceId, boolean collection);
+    public abstract void deleted(Path uri, int resourceId, boolean collection);
 
     public abstract void modified(Resource resource, Resource originalResource);
 
@@ -115,13 +115,13 @@ public abstract class AbstractRepositoryEventDumper
                                      Acl originalACL, Acl newACL);
 
     protected ChangeLogEntry changeLogEntry(int loggerId, int loggerType,
-            String uri, Operation operation, int resourceId,
+            Path uri, Operation operation, int resourceId,
             boolean collection, Date timestamp) {
 
         ChangeLogEntry entry = new ChangeLogEntry();
         entry.setLoggerId(loggerId);
         entry.setLoggerType(loggerType);
-        entry.setUri(uri);
+        entry.setUri(uri.toString());
         entry.setOperation(operation);
         entry.setResourceId(resourceId);
         entry.setCollection(collection);

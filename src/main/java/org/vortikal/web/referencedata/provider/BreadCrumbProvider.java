@@ -36,17 +36,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -95,7 +93,6 @@ import org.vortikal.web.service.Service;
  */
 public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBean {
 
-    private static Log logger = LogFactory.getLog(BreadCrumbProvider.class);
     private Repository repository = null;
     private Service service = null;
     private String breadcrumbName = "breadcrumb";
@@ -156,7 +153,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         boolean skipLastElement = this.skipCurrentResource;
         Object includeLast = model.get("include-last-element");
@@ -171,18 +168,17 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
 
-    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, String uri, boolean skipLastElement, boolean isIndexFile) {
+    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, Path uri, boolean skipLastElement, boolean isIndexFile) {
         
         List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
-
-        if ("/".equals(uri)) {
+        if (uri.isRoot()) {
             return breadCrumb;
         }
         
-        String[] path = URLUtil.splitUri(uri);
-        String[] incrementalPath = URLUtil.splitUriIncrementally(uri);
+        List<String> path = uri.getElements();
+        List<Path> incrementalPath = uri.getPaths();
             
-        int length = path.length;
+        int length = path.size();
         if (this.skipIndexFile && isIndexFile) {
             length--;
         }
@@ -192,9 +188,9 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
         for (int i = 0; i < length; i++) {
             try {
-                Resource r = this.repository.retrieve(token, incrementalPath[i], true);
+                Resource r = this.repository.retrieve(token, incrementalPath.get(i), true);
 
-                if (checkIgnore(r)) {
+                if (hasIgnoreProperty(r)) {
                     continue;
                 }
                 String title = getTitle(r);
@@ -209,27 +205,17 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                     breadCrumb.add(new BreadcrumbElement(url, title));
                 }
             } catch (Exception e) {
-                breadCrumb.add(new BreadcrumbElement(null, path[i]));
+                breadCrumb.add(new BreadcrumbElement(null, path.get(i)));
                 String msg = e.getMessage();
                 if (msg == null) {
                     msg = e.getClass().getName();
                 }
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Unable to generate breadcrumb path element '"
-                            + incrementalPath[i] + "': " + msg);
-                }
             }
         }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Generated breadcrumb path: " + breadCrumb);
-        }
-
         return breadCrumb;
     }
 
-    private boolean checkIgnore(Resource resource) {
+    private boolean hasIgnoreProperty(Resource resource) {
         if (this.ignoreProperty != null) {
             Property p = resource.getProperty(this.ignoreProperty);
             if (p != null) {

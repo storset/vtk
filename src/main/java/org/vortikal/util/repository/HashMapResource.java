@@ -46,6 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 
 /**
@@ -82,7 +83,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
     private static Log logger = LogFactory.getLog(HashMapResource.class);
 
     private Repository repository;
-    private String uri;
+    private Path uri;
     private String token;
     private boolean demandResourceAvailability = false;
     private boolean lazyInit = false;
@@ -93,7 +94,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
         super();
     }
     
-    public HashMapResource(Repository repository, String uri, String token,
+    public HashMapResource(Repository repository, Path uri, String token,
                        boolean demandResourceAvailability, boolean lazyInit) {
         super();
         this.repository = repository;
@@ -109,7 +110,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
     }
 
 
-    public void setUri(String uri) {
+    public void setUri(Path uri) {
         this.uri = uri;
     }
 
@@ -163,11 +164,11 @@ public class HashMapResource extends HashMap implements InitializingBean,
         }
     }
 
-    public void load(Repository repository, String uri, String token) throws IOException {
+    public void load(Repository repository, Path uri, String token) throws IOException {
         this.load(repository, uri, token, false);
     }
     
-    public void load(Repository repository, String uri, String token,
+    public void load(Repository repository, Path uri, String token,
                      boolean demandResourceAvailability) throws IOException {
         if (demandResourceAvailability) {
             this.loadInternal(repository, uri, token);
@@ -192,7 +193,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
         this.load(this.repository, this.uri, this.token, this.demandResourceAvailability);
     }
     
-    private void loadInternal(Repository repository, String uri, String token)
+    private void loadInternal(Repository repository, Path uri, String token)
         throws IOException {
         InputStream inputStream = repository.getInputStream(token, uri, false);
         Properties p = new Properties();

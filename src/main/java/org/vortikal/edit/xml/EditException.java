@@ -30,48 +30,36 @@
  */
 package org.vortikal.edit.xml;
 
-
+import org.vortikal.repository.Path;
 
 /**
  * Indicates that an error occurred during document editing.
- *
- * @version $Id$
  */
 public class EditException extends RuntimeException {
     
     private static final long serialVersionUID = 3257847696919311409L;
 
-    private String url = null;
-
-
+    private Path url = null;
 
     public EditException(String msg) {
         super(msg);
     }
 
-    public EditException(String url, String msg) {
+    public EditException(String msg, Path url) {
         super(msg);
         this.url = url;
     }
     
-    
-
     public EditException(String msg, Throwable cause) {
         super(msg, cause);
     }
     
-    public EditException(String url, String msg, Throwable cause) {
+    public EditException(String msg, Path url, Throwable cause) {
         super(msg, cause);
         this.url = url;
     }
 
-    
-    /**
-     * Get the Url value.
-     * @return the Url value.
-     */
-    public String getURL() {
+    public Path getURI() {
         return this.url;
     }
-
 }

@@ -36,19 +36,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import org.vortikal.repository.Path;
+
 
 public class FilePathURIResolver extends AbstractPathBasedURIResolver {
 
-    public Date getLastModifiedInternal(String path) {
-        File f = new File(path);
+    public Date getLastModifiedInternal(Path path) {
+        File f = new File(path.toString());
         return new Date(f.lastModified());
     }
     
-    protected InputStream getInputStream(String path) throws IOException {
+    protected InputStream getInputStream(Path path) throws IOException {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Attempting to open input stream for file '" + path + "'");
         }
-
-        return new FileInputStream(path);
+        return new FileInputStream(path.toString());
     }
 }

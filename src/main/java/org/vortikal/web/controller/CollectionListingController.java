@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -73,7 +74,7 @@ public class CollectionListingController implements Controller {
     
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         SecurityContext securityContext = SecurityContext.getSecurityContext(); 
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();

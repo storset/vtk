@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 
@@ -59,8 +60,8 @@ public class MemoryContentStore implements ContentStore {
     
     private final DirectoryNode root = new DirectoryNode(URI_COMPONENT_SEPARATOR);
     
-    public synchronized void createResource(String uri, boolean isCollection) throws DataAccessException {
-        String name = getName(uri);
+    public synchronized void createResource(Path uri, boolean isCollection) throws DataAccessException {
+        String name = uri.getName();
         DirectoryNode parent = getParent(uri);
         
         if (parent == null) {
@@ -83,7 +84,7 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public long getContentLength(String uri) throws DataAccessException, IllegalOperationException {
+    public long getContentLength(Path uri) throws DataAccessException, IllegalOperationException {
         Node node = getNode(uri);
         
         if (node == null) {
@@ -97,8 +98,8 @@ public class MemoryContentStore implements ContentStore {
 
     }
 
-    public void deleteResource(String uri) {
-        String name = getName(uri);
+    public void deleteResource(Path uri) {
+        String name = uri.getName();
         DirectoryNode parent = getParent(uri);
         
         if (parent != null) {
@@ -108,7 +109,7 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public InputStream getInputStream(String uri) throws DataAccessException {
+    public InputStream getInputStream(Path uri) throws DataAccessException {
         Node node = getNode(uri);
         
         if (node == null) {
@@ -122,7 +123,7 @@ public class MemoryContentStore implements ContentStore {
         return new ByteArrayInputStream(((ContentNode)node).content);
     }
 
-    public void storeContent(String uri, InputStream inputStream)
+    public void storeContent(Path uri, InputStream inputStream)
             throws DataAccessException {
         
         Node node = getNode(uri);
@@ -152,7 +153,7 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public synchronized void copy(String srcURI, String destURI) throws DataAccessException {
+    public synchronized void copy(Path srcURI, Path destURI) throws DataAccessException {
         Node srcNode = getNode(srcURI);
         
         if (srcNode == null) {
@@ -164,7 +165,7 @@ public class MemoryContentStore implements ContentStore {
         }
         
         DirectoryNode parent = getParent(destURI);
-        String destNodeName = getName(destURI);
+        String destNodeName = destURI.getName();
         if (parent == null) {
             throw new DataAccessException("Cannot copy: destination parent node does not exist.");
         }
@@ -174,31 +175,19 @@ public class MemoryContentStore implements ContentStore {
         parent.entries.put(destNodeName, copy);
     }
     
-    public synchronized void move(String srcURI, String destURI) throws DataAccessException {
+    public synchronized void move(Path srcURI, Path destURI) throws DataAccessException {
         copy(srcURI, destURI);
         deleteResource(srcURI);
     }
     
 
-    private String getName(String uri) {
-        int i = uri.lastIndexOf(URI_COMPONENT_SEPARATOR);
-        if (i == -1) {
-            return uri;
-        }
-        return uri.substring(i+1, uri.length());
-    }
     
-    private DirectoryNode getParent(String uri) {
-        if (uri.equals(URI_COMPONENT_SEPARATOR)) {
+    private DirectoryNode getParent(Path uri) {
+        if (uri.isRoot()) {
             return null;
         }
         
-        if (uri.lastIndexOf(URI_COMPONENT_SEPARATOR) == 0) {
-            return this.root;
-        } 
-
-        Node node = getNode(uri.substring(0, uri.lastIndexOf(URI_COMPONENT_SEPARATOR)));
-        
+        Node node = getNode(uri.getParent());
         if (! (node instanceof DirectoryNode))
             return null;
 
@@ -206,17 +195,12 @@ public class MemoryContentStore implements ContentStore {
     }
     
     // Non-recursive search for node in tree
-    private Node getNode(String uri) {
-        if (uri.equals(URI_COMPONENT_SEPARATOR)) return this.root;
+    private Node getNode(Path uri) {
+        if (uri.isRoot()) return this.root;
         
-        if (! uri.startsWith(URI_COMPONENT_SEPARATOR)) return null;
-        
-        if (uri.endsWith(URI_COMPONENT_SEPARATOR)) {
-            uri = uri.substring(0, uri.length() - URI_COMPONENT_SEPARATOR.length());
-        }
-        
-        String[] components = uri.substring(URI_COMPONENT_SEPARATOR.length(), 
-                                uri.length()).split(URI_COMPONENT_SEPARATOR);
+        String uriString = uri.toString();
+        String[] components = uriString.substring(URI_COMPONENT_SEPARATOR.length(), 
+                                uriString.length()).split(URI_COMPONENT_SEPARATOR);
         
         Node node = null;
         DirectoryNode dir = this.root;
@@ -233,7 +217,6 @@ public class MemoryContentStore implements ContentStore {
                 }
             }
         }
-        
         return node;
     }
     

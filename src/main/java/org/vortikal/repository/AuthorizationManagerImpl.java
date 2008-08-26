@@ -39,7 +39,6 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
-import org.vortikal.util.repository.URIUtil;
 
 
 public class AuthorizationManagerImpl implements AuthorizationManager {
@@ -75,7 +74,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         }
     }
 
-    public void authorizeAction(String uri, RepositoryAction action, 
+    public void authorizeAction(Path uri, RepositoryAction action, 
             Principal principal) throws AuthenticationException, AuthorizationException,
             ResourceLockedException, IOException {
 
@@ -137,7 +136,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeReadProcessed(String uri, Principal principal) 
+    public void authorizeReadProcessed(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, IOException {
         ResourceImpl resource = this.dao.load(uri);
 
@@ -161,7 +160,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeRead(String uri, Principal principal) 
+    public void authorizeRead(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException {
 
@@ -187,7 +186,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeCreate(String uri, Principal principal)
+    public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         ResourceLockedException, IOException {
 
@@ -216,7 +215,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeWrite(String uri, Principal principal)
+    public void authorizeWrite(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -244,7 +243,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeAddComment(String uri, Principal principal)
+    public void authorizeAddComment(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -274,7 +273,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeEditComment(String uri, Principal principal)
+    public void authorizeEditComment(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -306,7 +305,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeAll(String uri, Principal principal)
+    public void authorizeAll(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -337,7 +336,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeUnlock(String uri, Principal principal) 
+    public void authorizeUnlock(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -367,7 +366,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeDelete(String uri, Principal principal) 
+    public void authorizeDelete(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         ResourceLockedException, IOException {
 
@@ -378,7 +377,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         this.lockManager.lockAuthorize(resource, principal, true);
         
         try {
-            authorizeWrite(URIUtil.getParentURI(uri), principal);
+            authorizeWrite(uri.getParent(), principal);
             return;
         } catch (Exception e) {
             // Continue..
@@ -401,7 +400,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizePropertyEditAdminRole(String uri, Principal principal) 
+    public void authorizePropertyEditAdminRole(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException {
         if (principal == null) {
@@ -429,7 +428,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizePropertyEditRootRole(String uri, Principal principal)
+    public void authorizePropertyEditRootRole(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException {
 
@@ -450,7 +449,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeCopy(String srcUri, String destUri, 
+    public void authorizeCopy(Path srcUri, Path destUri, 
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
@@ -462,13 +461,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         Resource resource = this.dao.load(srcUri);
 
         if (resource.isCollection()) {
-            String[] uris = this.dao.discoverACLs(srcUri);
+            Path[] uris = this.dao.discoverACLs(srcUri);
             for (int i = 0; i < uris.length; i++) {
                 authorizeRead(uris[i], principal);
             }
         }
 
-        String destParentUri = URIUtil.getParentURI(destUri);
+        Path destParentUri = destUri.getParent();
         authorizeCreate(destParentUri, principal);
 
         if (deleteDestination) authorizeDelete(destUri, principal);
@@ -484,7 +483,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeMove(String srcUri, String destUri,
+    public void authorizeMove(Path srcUri, Path destUri,
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {

@@ -52,8 +52,10 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.Xml;
@@ -85,7 +87,7 @@ public class EditDocument extends Document {
         super(root, docType);
         this.resource = resource;
         this.repository = repository;
-        this.setBaseURI(resource.getURI());
+        this.setBaseURI(resource.getURI().toString());
     }
 
 
@@ -97,9 +99,10 @@ public class EditDocument extends Document {
         
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         
-        repository.lock(token, uri, principal.getQualifiedName(), "0", lockTimeoutSeconds, null);
+        repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 
+                lockTimeoutSeconds, null);
 
         Resource resource = repository.retrieve(token, uri, false);
         
@@ -134,7 +137,7 @@ public class EditDocument extends Document {
     public void save() throws XMLEditException, IOException {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        String uri = this.resource.getURI();
+        Path uri = this.resource.getURI();
         String token = securityContext.getToken();
         
         if (logger.isDebugEnabled())

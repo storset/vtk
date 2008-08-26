@@ -40,6 +40,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -236,11 +237,11 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
         return urlObject;
     }
 
-    public String constructLink(String uri) {
+    public String constructLink(Path uri) {
         return constructURL(uri).toString();
     }
 
-    public URL constructURL(String uri) {
+    public URL constructURL(Path  uri) {
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
         for (Assertion assertion: this.allAssertions) {
@@ -252,11 +253,11 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
         return urlObject;
     }
 
-    public String constructLink(String uri, Map<String, String> parameters) {
+    public String constructLink(Path uri, Map<String, String> parameters) {
         return constructURL(uri, parameters).toString();
     }
 
-    public URL constructURL(String uri, Map<String, String> parameters) {
+    public URL constructURL(Path uri, Map<String, String> parameters) {
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
         if (parameters != null) {
@@ -341,12 +342,12 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     private URL constructInternal(Resource resource, Principal principal,
             Map<String, String> parameters, List<Assertion> assertions, boolean matchAssertions) {
 
-        String path = resource.getURI();
-        if (resource.isCollection()) {
-            path += "/";
-        }
+        Path path = resource.getURI();
         URL urlObject = new URL("http", NetUtils.guessHostName(), path);
-
+        if (resource.isCollection()) {
+            urlObject.setCollection(true);
+        }
+        
         if (parameters != null) {
             for (Map.Entry<String, String> entry: parameters.entrySet()) {
                 urlObject.addParameter(entry.getKey(), entry.getValue());

@@ -77,7 +77,7 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
         if (resource == null) {
             return false;
         }
-        Matcher m = this.pattern.matcher(resource.getURI());
+        Matcher m = this.pattern.matcher(resource.getURI().toString());
         
         if (this.invert)
             return !m.matches();

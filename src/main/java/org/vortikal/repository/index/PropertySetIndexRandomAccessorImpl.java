@@ -35,6 +35,7 @@ import java.io.IOException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
@@ -62,14 +63,14 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
   
     }
     
-    public boolean exists(String uri) throws IndexException {
+    public boolean exists(Path uri) throws IndexException {
         return (countInstances(uri) > 0);
     }
     
-    public int countInstances(String uri) throws IndexException {
+    public int countInstances(Path uri) throws IndexException {
         int count = 0;
         try {
-            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
+            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
             while (this.uriTermDocs.next()) {
                 if (! reader.isDeleted(this.uriTermDocs.doc())) ++count;
             }
@@ -80,11 +81,11 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
         return count;
     }
     
-    public PropertySet getPropertySetByURI(String uri) throws IndexException {
+    public PropertySet getPropertySetByURI(Path uri) throws IndexException {
         PropertySet propSet = null;
 
         try {
-            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
+            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
             while (this.uriTermDocs.next()) {
                 if (! reader.isDeleted(this.uriTermDocs.doc())) {
                     propSet = this.mapper.getPropertySet(

@@ -33,13 +33,15 @@ package org.vortikal.repository.store.fs.jca;
 import java.io.File;
 import java.io.IOException;
 
+import org.vortikal.repository.Path;
+
 public class DeleteOperation extends AbstractFileOperation {
-    private String uri;
+    private Path uri;
     private File file;
     private File tmp;
     private FileMapper mapper;
     
-    public DeleteOperation(String uri, FileMapper mapper) throws IOException {
+    public DeleteOperation(Path uri, FileMapper mapper) throws IOException {
 
         this.uri = uri;
         this.tmp = new File(mapper.newTempFileName());

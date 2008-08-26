@@ -40,11 +40,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.util.web.URLUtil;
@@ -77,7 +80,9 @@ public class CopyController extends AbstractWebdavController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+
+        Path uri = requestContext.getResourceURI();
+
         String destURI = request.getHeader("Destination");
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -102,9 +107,21 @@ public class CopyController extends AbstractWebdavController {
                     "Error trying to URL decode uri" + destURI, e);
             }
 
-            String depth = request.getHeader("Depth");
-            if (depth == null) {
-                depth = "infinity";
+            String depthString = request.getHeader("Depth");
+            Repository.Depth depth;
+            if (depthString == null) {
+                depthString = "infinity";
+            }
+            depthString = depthString.trim();
+            if (depthString.equals("0")) {
+                depth = Depth.ZERO;
+            } else if (depthString.equals("1")) {
+                depth = Depth.ONE;
+            } else if (depthString.equals("infinity")) {
+                depth = Depth.INF;
+            } else {
+                throw new InvalidRequestException(
+                        "Invalid depth header value: " + depthString);
             }
          
             boolean overwrite = false;
@@ -119,21 +136,21 @@ public class CopyController extends AbstractWebdavController {
                 preserveACL = true;
             }
 
-            boolean existed = this.repository.exists(token, destURI);
+            Path destPath = Path.fromString(destURI);
+            boolean existed = this.repository.exists(token, destPath);
             
             if (existed) {
-                Resource destination = this.repository.retrieve(token, destURI, false);
+                Resource destination = this.repository.retrieve(token, destPath, false);
                 verifyIfHeader(destination, true);
             }
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Copying " + uri + " to " + destURI + ", depth = "
-                             + depth + ", overwrite = " + overwrite
+                             + depthString + ", overwrite = " + overwrite
                              + ", preserveACL = " + preserveACL
                              + ", existed = " + existed);
             }
-            this.repository.copy(token, uri, destURI, depth,
-                            overwrite, preserveACL);
+            this.repository.copy(token, uri, destPath, depth, overwrite, preserveACL);
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Copying " + uri + " to " + destURI + " succeeded");
             }

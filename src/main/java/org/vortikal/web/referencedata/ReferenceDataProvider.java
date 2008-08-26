@@ -41,14 +41,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface ReferenceDataProvider {
 
-
-    
-    
     /** 
      * Build the model by adding reference data needed by the view
      * renderer.
      * @param model the model Map to populate with reference data.
      */
+    @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception;
     
 }

@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -96,7 +97,7 @@ public class ResourceServiceURLController implements Controller {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = securityContext.getToken();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
         String resourceURL = this.service.constructLink(resource, principal, false);
 

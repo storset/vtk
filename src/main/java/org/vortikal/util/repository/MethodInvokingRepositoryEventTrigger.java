@@ -36,13 +36,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.event.RepositoryEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
@@ -57,7 +56,7 @@ public class MethodInvokingRepositoryEventTrigger
     private static Log logger = LogFactory.getLog(MethodInvokingRepositoryEventTrigger.class);
 
     private Repository repository;
-    private String uri;
+    private Path uri;
     private Pattern uriPattern;
     private Object targetObject;
     private String method;
@@ -79,7 +78,7 @@ public class MethodInvokingRepositoryEventTrigger
     }
 
     public void setUri(String uri) {
-        this.uri = uri;
+        this.uri = Path.fromString(uri);
     }
     
     public void setUriPattern(String uriPattern) {
@@ -111,19 +110,19 @@ public class MethodInvokingRepositoryEventTrigger
             return;
         }
         
-        String resourceURI = ((RepositoryEvent) event).getURI();
+        Path resourceURI = ((RepositoryEvent) event).getURI();
 
         if (this.uri != null) {
             if (((event instanceof ResourceDeletionEvent)
                  || (event instanceof ResourceCreationEvent))
-                && (this.uri.startsWith(resourceURI)
-                    || resourceURI.startsWith(this.uri))) {
+                && (resourceURI.isAncestorOf(this.uri)
+                    || this.uri.isAncestorOf(resourceURI))) {
                 invoke();
             } else if (this.uri.equals(resourceURI)) {
                 invoke();
             }
         } else if (this.uriPattern != null) {
-            Matcher matcher = this.uriPattern.matcher(resourceURI);
+            Matcher matcher = this.uriPattern.matcher(resourceURI.toString());
             if (matcher.find()) {
                 invoke();
             }

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search.fulltext;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 
@@ -37,7 +38,7 @@ public interface FulltextSearcher {
 
     public ResultSet execute(String token, String query) throws QueryException;
     
-    public ResultSet execute(String token, String query, String uriPrefix) 
+    public ResultSet execute(String token, String query, Path uriPrefix) 
         throws QueryException;
 
 }

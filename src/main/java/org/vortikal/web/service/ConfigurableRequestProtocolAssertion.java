@@ -31,10 +31,11 @@
 package org.vortikal.web.service;
 
 import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.util.web.URLUtil;
@@ -76,15 +77,14 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     }
 
     public void processURL(URL url) {
-        String uri = url.getPath();
-        String[] path = URLUtil.splitUriIncrementally(uri);
+        Path uri = url.getPath();
         if (this.configuration == null || this.configuration.isEmpty()) {
             url.setProtocol(PROTO_HTTP);
             return;
         }
-        for (int i = path.length - 1; i >= 0; i--) {
-            String prefix = path[i];
-            String value = this.configuration.getProperty(prefix);
+        
+        while (uri != null) {
+            String value = this.configuration.getProperty(uri.toString());
             if (value != null) {
                 value = value.trim();
                 if (PROTO_HTTP.equals(value) || PROTO_HTTPS.equals(value)) {
@@ -92,8 +92,8 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
                     return;
                 }
             }
+            uri = uri.getParent();
         }
-        
         url.setProtocol(PROTO_HTTP);
     }
 

@@ -33,26 +33,27 @@ package org.vortikal.web.view.decorating;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 
 
 public class RepositoryTemplateSource implements TemplateSource {
 
-    private String uri;
+    private Path uri;
     private Repository repository;
     private String token;
     
     public RepositoryTemplateSource() {
     }
     
-    public RepositoryTemplateSource(String uri, Repository repository, String token) {
+    public RepositoryTemplateSource(Path uri, Repository repository, String token) {
         this.uri = uri;
         this.repository = repository;
         this.token = token;
     }
 
-    public void setUri(String uri) {
+    public void setUri(Path uri) {
         this.uri = uri;
     }
     

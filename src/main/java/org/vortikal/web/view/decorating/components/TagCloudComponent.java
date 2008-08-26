@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.DataReportManager;
 import org.vortikal.repository.reporting.Pair;
@@ -147,7 +148,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
 
         super.processModel(model, request, response);
 
-        String scopeUri = RequestContext.getRequestContext().getCurrentCollection();
+        Path scopeUri = RequestContext.getRequestContext().getCurrentCollection();
         String token = SecurityContext.getSecurityContext().getToken();
 
         if (request.getStringParameter(PARAMETER_SCOPE) != null) {
@@ -156,12 +157,12 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
             // Current collection is the default scope 
             if (! (".".equals(scopeUriParam) || "./".equals(scopeUriParam))) {
                 if (!scopeUriParam.startsWith("/")) {
-                    String requestURI = RequestContext.getRequestContext().getResourceURI();
-                    scopeUriParam = requestURI.substring(0, 
-                                requestURI.lastIndexOf("/") + 1) + scopeUriParam;
+                    Path requestURI = RequestContext.getRequestContext().getResourceURI();
+                    scopeUriParam = requestURI.toString().substring(0, 
+                                requestURI.toString().lastIndexOf("/") + 1) + scopeUriParam;
                     scopeUriParam = URIUtil.expandPath(scopeUriParam);
                 }
-                scopeUri = scopeUriParam;
+                scopeUri = Path.fromString(scopeUriParam);
             }
         }
         
@@ -234,7 +235,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent
     
     private PropertyValueFrequencyQueryResult executeDataReportQuery(int limit,
                                                                 int tagOccurenceMin,
-                                                                String scopeUri, 
+                                                                Path scopeUri, 
                                                                 String token) 
         throws DecoratorComponentException {
         

@@ -32,10 +32,11 @@ package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-
+import org.vortikal.repository.Path;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -60,14 +61,14 @@ import org.vortikal.web.service.URL;
  */
 public class StaticURIServiceURLProvider implements ReferenceDataProvider {
 
-    private String path;
+    private Path path;
     private Service service;
     private String modelName = null;
     private Map<String, String> parameters;
     
     
     @Required public void setPath(String path) {
-        this.path = path;
+        this.path = Path.fromString(path);
     }
 
     @Required public void setModelName(String modelName) {

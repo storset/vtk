@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.store.ContentStore;
 
@@ -56,11 +57,11 @@ import org.vortikal.repository.store.ContentStore;
 public class ContentImpl implements Content {
 
     private ContentStore contentStore;
-    private String uri;
+    private Path uri;
     private ContentRepresentationRegistry contentRegistry;
     private Map<Class<?>, Object> representations;
     
-    public ContentImpl(String uri, ContentStore contentStore,
+    public ContentImpl(Path uri, ContentStore contentStore,
                        ContentRepresentationRegistry contentRegistry) {
         this.representations = new HashMap<Class<?>, Object>();
         this.contentStore = contentStore;

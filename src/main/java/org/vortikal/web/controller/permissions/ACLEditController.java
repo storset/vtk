@@ -48,6 +48,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
@@ -123,7 +124,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
         
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
         
         Resource resource = this.repository.retrieve(token, uri, false);

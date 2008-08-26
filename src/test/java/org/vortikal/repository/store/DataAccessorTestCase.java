@@ -35,12 +35,12 @@ import java.util.Date;
 import org.vortikal.repository.AbstractRepositoryTestCase;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.RepositoryResourceHelper;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalImpl;
 
@@ -71,17 +71,17 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         DataAccessor dao = getDataAccessor();
         Principal rootPrincipal = new PrincipalImpl("root@localhost", Principal.Type.USER);
 
-        ResourceImpl root = dao.load("/");
+        ResourceImpl root = dao.load(Path.fromString("/"));
 
         // Create /parent with inherited ACL:
-        String parentURI = "/parent";
+        Path parentURI = Path.fromString("/parent");
         ResourceImpl parent = resourceHelper.create(rootPrincipal, parentURI, true);
         dao.store(parent);
         parent = dao.load(parentURI);
         assertEquals(root.getID(), parent.getAclInheritedFrom());
         
         // Create /parent/child with inherited ACL:
-        String childURI = parentURI + "/child";
+        Path childURI = parentURI.extend("child");
         ResourceImpl child = resourceHelper.create(rootPrincipal, childURI, false);
         dao.store(child);
         child = dao.load(childURI);
@@ -107,7 +107,7 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         assertEquals(parent.getID(), child.getAclInheritedFrom());
 
         // Create /parent/second-child with inherited ACL:
-        String secondChildURI = parentURI + "/second-child";
+        Path secondChildURI = parentURI.extend("second-child");
         ResourceImpl secondChild = resourceHelper.create(rootPrincipal, secondChildURI, false);
         dao.store(secondChild);        
         secondChild = dao.load(secondChildURI);
@@ -129,10 +129,10 @@ public class DataAccessorTestCase extends AbstractRepositoryTestCase {
         DataAccessor dao = getDataAccessor();
         Principal rootPrincipal = new PrincipalImpl("root@localhost", Principal.Type.USER);
 
-        dao.load("/");
+        dao.load(Path.fromString("/"));
 
         // Create /property-collection:
-        String collectionURI = "/property-collection";
+        Path collectionURI = Path.fromString("/property-collection");
         ResourceImpl collection = resourceHelper.create(rootPrincipal, collectionURI, true);
         Date lastModifiedBefore = collection.getLastModified();
         dao.store(collection);

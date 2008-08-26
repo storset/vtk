@@ -107,20 +107,6 @@ public interface Resource extends PropertySet, Cloneable {
     public String getEtag();
     
     /**
-     * Returns the uri of the parent.
-     *
-     * @return the URI
-     */
-    public String getParent();
-
-    /**
-     * Gets this resource's name.
-     *
-     * @return the name
-     */
-    public String getName();
-    
-    /**
      * Gets the size of a resource.
      *
      * @return the size of the resource's content (in bytes)
@@ -134,7 +120,7 @@ public interface Resource extends PropertySet, Cloneable {
      * @return the children's URIs, or <code>null</code> if the
      * resource is not a collection
      */
-    public String[] getChildURIs();
+    public Path[] getChildURIs();
 
     /**
      * Returns a lock for the resource, if one is set.

@@ -45,6 +45,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 import org.vortikal.repository.store.IndexDao;
@@ -84,7 +85,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         rowHandler.handleLastBufferedRows();
     }
     
-    public void orderedPropertySetIteration(String startUri, PropertySetHandler handler) 
+    public void orderedPropertySetIteration(Path startUri, PropertySetHandler handler) 
         throws DataAccessException {
         
         SqlMapClientTemplate client = getSqlMapClientTemplate();
@@ -105,7 +106,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         rowHandler.handleLastBufferedRows();
     }
     
-    public void orderedPropertySetIterationForUris(final List<String> uris, 
+    public void orderedPropertySetIterationForUris(final List<Path> uris, 
                                               PropertySetHandler handler)
         throws DataAccessException {
         
@@ -129,10 +130,10 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                             throws SQLException {
 
                         sqlMapExec.startBatch();
-                        for (String uri : uris) {
+                        for (Path uri : uris) {
                             Map<String, Object> params = new HashMap<String, Object>();
                             params.put("sessionId", sessionId);
-                            params.put("uri", uri);
+                            params.put("uri", uri.toString());
                             sqlMapExec.insert(insertUriTempTableStatement,
                                     params);
                         }

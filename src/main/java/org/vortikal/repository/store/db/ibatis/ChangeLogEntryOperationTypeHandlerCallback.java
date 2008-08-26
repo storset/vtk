@@ -32,7 +32,7 @@ package org.vortikal.repository.store.db.ibatis;
 
 import java.sql.SQLException;
 
-import static org.vortikal.repository.ChangeLogEntry.Operation;
+import org.vortikal.repository.ChangeLogEntry.Operation;
 
 import com.ibatis.sqlmap.client.extensions.ParameterSetter;
 import com.ibatis.sqlmap.client.extensions.ResultGetter;
@@ -49,7 +49,7 @@ public class ChangeLogEntryOperationTypeHandlerCallback implements
     public Object getResult(ResultGetter getter) throws SQLException {
         String value = getter.getString();
         
-        for(Operation op: Operation.values()) {
+        for (Operation op: Operation.values()) {
             if (value.equals(op.getOperationId())) {
                 return op;
             }

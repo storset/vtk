@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -97,7 +98,7 @@ public class CreateCollectionController extends SimpleFormController {
         if (createCollectionCommand.getCancelAction() != null) {
             return;
         }
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         String name = createCollectionCommand.getName();       
@@ -114,10 +115,7 @@ public class CreateCollectionController extends SimpleFormController {
                                "This is an invalid collection name");
         }
         name = fixCollectionName(name);
-        String newURI = uri;
-        if (!"/".equals(uri)) newURI += "/";
-        newURI += name;
-
+        Path newURI = uri.extend(name);
         try {
             boolean exists = this.repository.exists(token, newURI);
             if (exists) {
@@ -140,14 +138,13 @@ public class CreateCollectionController extends SimpleFormController {
             createCollectionCommand.setDone(true);
             return;
         }
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-
-        String newURI = uri;
-        if (!"/".equals(uri)) newURI += "/";
+        
         String title = createCollectionCommand.getName();
         String name = fixCollectionName(title);
-        newURI += name;
+        Path newURI = uri.extend(createCollectionCommand.getName());
+        
         Resource collection = this.repository.createCollection(token, newURI);
         if (!title.equals(name)) {
             Property titleProp = collection.createProperty(this.userTitlePropDef);

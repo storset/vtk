@@ -32,6 +32,7 @@ package org.vortikal.repository.index;
 
 import java.util.Iterator;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 
 /**
@@ -90,7 +91,7 @@ public interface PropertySetIndex {
      * @return The number of instances deleted.
      * @throws IndexException
      */
-    public int deletePropertySet(String uri) throws IndexException;
+    public int deletePropertySet(Path uri) throws IndexException;
     
     /**
      * Delete <code>PropertySet</code> with the given auxilliary UUID.
@@ -113,7 +114,7 @@ public interface PropertySetIndex {
      *         
      * @throws IndexException
      */
-    public int deletePropertySetTree(String rootUri) throws IndexException;
+    public int deletePropertySetTree(Path rootUri) throws IndexException;
     
     /**
      * Delete the <code>PropertySet</code> with the given auxilliary UUID and all its
@@ -175,7 +176,7 @@ public interface PropertySetIndex {
      * @return
      * @throws IndexException
      */
-    public Iterator<Object> orderedSubtreePropertySetIterator(String rootUri) throws IndexException;
+    public Iterator<Object> orderedSubtreePropertySetIterator(Path rootUri) throws IndexException;
 
     /**
      * Count all property set instances currently in index. This number includes any multiples

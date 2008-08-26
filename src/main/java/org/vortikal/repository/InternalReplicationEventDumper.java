@@ -72,7 +72,7 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
     }
 
 
-    public void deleted(String uri, int resourceId, boolean collection) {
+    public void deleted(Path uri, int resourceId, boolean collection) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
                 Operation.DELETED, resourceId,
                 collection, new Date());

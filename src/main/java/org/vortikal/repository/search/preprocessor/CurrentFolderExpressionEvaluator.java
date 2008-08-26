@@ -33,6 +33,7 @@ package org.vortikal.repository.search.preprocessor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.QueryException;
@@ -75,18 +76,16 @@ public class CurrentFolderExpressionEvaluator implements ExpressionEvaluator {
         if (requestContext != null && securityContext != null) {
 
             String securityToken = securityContext.getToken();
-            String uri = requestContext.getResourceURI();
+            Path uri = requestContext.getResourceURI();
 
             try {
                 Resource resource = this.repository.retrieve(securityToken, uri, true);
                 
-                String currentFolderUri = resource.getURI();
-                
+                Path currentFolderUri = resource.getURI();
                 if (!resource.isCollection()) { 
-                    currentFolderUri = resource.getParent();
+                    currentFolderUri = resource.getURI().getParent();
                 }
-                
-                return currentFolderUri;
+                return currentFolderUri.toString();
             } catch (Throwable t) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Unable to resolve current URI", t);

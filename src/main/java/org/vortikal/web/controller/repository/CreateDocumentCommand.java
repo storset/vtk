@@ -43,40 +43,18 @@ public class CreateDocumentCommand extends AbstractSaveCancelCommand {
         super(submitURL);
     }
 
-    
-
-    /**
-     * Gets the value of name
-     *
-     * @return the value of name
-     */
     public String getName() {
         return this.name;
     }
 
-    /**
-     * Sets the value of name
-     *
-     * @param name Value to assign to this.name
-     */
     public void setName(String name)  {
         this.name = name;
     }
     
-    /**
-     * Gets the value of sourceURI
-     *
-     * @return the value of sourceURI
-     */
     public String getSourceURI() {
         return this.sourceURI;
     }
 
-    /**
-     * Sets the value of sourceURI
-     *
-     * @param sourceURI Value to assign to this.sourceURI
-     */
     public void setSourceURI(String sourceURI)  {
         this.sourceURI = sourceURI;
     }

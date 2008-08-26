@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -78,11 +79,9 @@ public class CreateDocumentCommandValidator implements Validator {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
-        String destinationURI = uri;
-        if (!"/".equals(uri)) destinationURI += "/";
-        destinationURI += createDocumentCommand.getName();
+        Path destinationURI = uri.extend(createDocumentCommand.getName());
 
         try {
             if (this.repository.exists(token, destinationURI)) {

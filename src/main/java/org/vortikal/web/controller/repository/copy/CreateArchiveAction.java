@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -48,7 +49,7 @@ public class CreateArchiveAction implements CopyAction {
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private ResourceArchiver archiver;
     
-    public void process(String uri, String copyUri) throws Exception {
+    public void process(Path uri, Path copyUri) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();

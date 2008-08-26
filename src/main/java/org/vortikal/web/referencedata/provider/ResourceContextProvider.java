@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -147,7 +148,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         Principal principal = securityContext.getPrincipal();
 
         Resource resource = null;
-        String parent = null;
+        Path parent = null;
         
         if (model != null && this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
@@ -162,7 +163,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
             } catch (RepositoryException e) { }
         }
         if (resource != null) {
-            parent = resource.getParent();
+            parent = resource.getURI().getParent();
         }
 
         	   

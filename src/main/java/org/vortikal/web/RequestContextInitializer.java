@@ -47,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.OrderComparator;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -162,14 +163,14 @@ public class RequestContextInitializer implements ContextInitializer {
 
     public void createContext(HttpServletRequest request) throws Exception {
 
-        String uri = getResourceURI(request);
+        Path uri = getResourceURI(request);
         Resource resource = null;
 
         boolean retrieve = true;
         // Avoid doing repository retrievals if we know that this URI 
         // does not exist in the repository:
         for (String prefix : this.nonRepositoryRoots) {
-            if (uri.startsWith(prefix)) {
+            if (uri.toString().startsWith(prefix)) {
                 retrieve = false;
                 break;
             }
@@ -190,14 +191,14 @@ public class RequestContextInitializer implements ContextInitializer {
             throw new ServletException(msg, e);
         }
 
-        String indexFileUri = null;
+        Path indexFileUri = null;
         boolean isIndexFile = false;
         if (indexFileResolver != null && resource != null) {
             if (resource.isCollection())
                 indexFileUri = indexFileResolver.getIndexFile(resource);
             else {
                 try {
-                    Resource parent = this.repository.retrieve(this.trustedToken, resource.getParent(), false);
+                    Resource parent = this.repository.retrieve(this.trustedToken, resource.getURI().getParent(), false);
                     isIndexFile = uri.equals(indexFileResolver.getIndexFile(parent));
                 } catch (Exception e) {
                     // Ignore
@@ -315,16 +316,16 @@ public class RequestContextInitializer implements ContextInitializer {
     }
     
 
-    private String getResourceURI(HttpServletRequest req) throws Exception {
+    private Path getResourceURI(HttpServletRequest req) throws Exception {
 
         String uri = req.getRequestURI();
         if (uri == null || uri.equals("/")) {
-            return "/";
+            return Path.fromString("/");
         }
         if (uri.endsWith("/")) {
             uri = uri.substring(0, uri.length() - 1);
         }
-        return uri;
+        return Path.fromString(uri);
     }
 
     private StringBuffer printServiceTree() {

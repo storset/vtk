@@ -34,6 +34,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -58,10 +59,10 @@ public class DataImportUtil implements InitializingBean {
         if (!file.exists()) {
             throw new IOException("File " + file + " does not exist");
         }
-        create(file, token, targetPath);
+        create(file, token, Path.fromString(targetPath));
     }
     
-    private void create(File file, String token, String uri) throws IOException {
+    private void create(File file, String token, Path uri) throws IOException {
 
         if (file.isDirectory()) {
             this.repository.createCollection(token, uri);
@@ -74,7 +75,8 @@ public class DataImportUtil implements InitializingBean {
         if (file.isDirectory()) {
             File[] children = file.listFiles();
             for (int i = 0; i < children.length; i++) {
-                create(children[i], token, uri + "/" + children[i].getName());
+                Path childURI = uri.extend(children[i].getName());
+                create(children[i], token, childURI);
             }
         }
     }

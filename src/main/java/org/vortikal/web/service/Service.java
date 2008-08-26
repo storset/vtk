@@ -36,6 +36,7 @@ import java.util.Map;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.context.Categorizable;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
@@ -205,13 +206,13 @@ public interface Service extends Ordered, Categorizable {
                             boolean matchAssertions)
         throws ServiceUnlinkableException;
 
-    public String constructLink(String uri);
+    public String constructLink(Path uri);
 
-    public URL constructURL(String uri);
+    public URL constructURL(Path uri);
 
-    public String constructLink(String uri, Map<String, String> parameters);
+    public String constructLink(Path uri, Map<String, String> parameters);
 
-    public URL constructURL(String uri, Map<String, String> parameters);
+    public URL constructURL(Path uri, Map<String, String> parameters);
 
     /**
      * Gets the list of handler interceptors for this service, if any.

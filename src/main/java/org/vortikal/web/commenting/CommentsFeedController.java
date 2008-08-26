@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -80,13 +81,13 @@ public class CommentsFeedController implements Controller {
         if (!this.anonymous) {
             token = SecurityContext.getSecurityContext().getToken();
         }
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource resource = repository.retrieve(token, uri, true);
 
         List<Comment> comments = repository.getComments(token, resource, true, 50);
 
-        Map<String, Resource> resourceMap = new HashMap<String, Resource>();
-        Map<String, URL> urlMap = new HashMap<String, URL>();
+        Map<Path, Resource> resourceMap = new HashMap<Path, Resource>();
+        Map<Path, URL> urlMap = new HashMap<Path, URL>();
         resourceMap.put(resource.getURI(), resource);
         urlMap.put(resource.getURI(), this.viewService.constructURL(resource.getURI()));
         for (Comment comment: comments) {

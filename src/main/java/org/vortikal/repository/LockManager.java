@@ -57,7 +57,7 @@ public class LockManager {
         lockAuthorize(resource.getLock(), principal);
 
         if (resource.isCollection() && deep) {
-            String[] uris = this.dao.discoverLocks(resource.getURI());
+            Path[] uris = this.dao.discoverLocks(resource.getURI());
 
             for (int i = 0; i < uris.length; i++) {
                 Resource ancestor = this.dao.load(uris[i]);
@@ -67,7 +67,7 @@ public class LockManager {
     }
 
     public String lockResource(ResourceImpl resource, Principal principal,
-            String ownerInfo, String depth, int desiredTimeoutSeconds,
+            String ownerInfo, Repository.Depth depth, int desiredTimeoutSeconds,
             boolean refresh) throws AuthenticationException,
             AuthorizationException, ResourceLockedException, IOException {
 

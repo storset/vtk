@@ -38,11 +38,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -69,7 +71,7 @@ public class ResourceWrapperManager {
         return htmlPropsFilter;
     }
 
-    public ResourceWrapper createResourceWrapper(String uri) throws IOException, Exception {
+    public ResourceWrapper createResourceWrapper(Path uri) throws IOException, Exception {
         ResourceWrapper wrapper = new ResourceWrapper(this);
         
         populateWrapper(wrapper, uri, true);
@@ -79,20 +81,20 @@ public class ResourceWrapperManager {
     }
     
     public ResourceWrapper createResourceWrapper() throws IOException, Exception {
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         return createResourceWrapper(uri);
     }
 
     public ResourceEditWrapper createResourceEditWrapper() throws IOException, Exception {
         ResourceEditWrapper wrapper = new ResourceEditWrapper(this);
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         
         populateWrapper(wrapper, uri, false);
         
         return wrapper;
     }
 
-    private void populateWrapper(ResourceWrapper wrapper, String uri, boolean forProcessing) throws IOException,
+    private void populateWrapper(ResourceWrapper wrapper, Path uri, boolean forProcessing) throws IOException,
             Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         
@@ -110,7 +112,7 @@ public class ResourceWrapperManager {
 
     public void store(ResourceEditWrapper wrapper) throws IOException {
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource resource = wrapper.getResource();
     
         if (wrapper.isPropChange()) {
@@ -142,15 +144,15 @@ public class ResourceWrapperManager {
 
     public void unlock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException, FailedDependencyException, ResourceLockedException, IllegalOperationException, AuthenticationException, IOException {
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         this.repository.unlock(token, uri, null);
     }
 
     public void lock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException, ResourceLockedException, AuthenticationException, IOException {
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        this.repository.lock(token, uri, principal.getQualifiedName(), "0", 600, null);
+        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
     }
 
     public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {

@@ -46,10 +46,12 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
@@ -81,7 +83,7 @@ public class LockController extends AbstractWebdavController {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
         Resource resource;
         
@@ -94,11 +96,21 @@ public class LockController extends AbstractWebdavController {
         
         try {
             String ownerInfo = securityContext.getPrincipal().toString();
-            String depth = request.getHeader("Depth");
-            if (depth == null) {
-                depth = "infinity";
+            String depthString = request.getHeader("Depth");
+            if (depthString == null) {
+                depthString = "infinity";
             }
-            depth = depth.toLowerCase();
+            depthString = depthString.toLowerCase();
+            Depth depth = null;
+            if ("infinity".equals(depthString)) {
+                depth = Depth.INF;
+            } else if ("0".equals(depthString)) {
+                depth = Depth.ZERO;
+            } else if ("1".equals(depthString)) {
+                depth = Depth.ONE;
+            } else {
+                throw new InvalidRequestException("Invalid depth header: " + depthString);
+            }
             int timeout = parseTimeoutHeader(request.getHeader("TimeOut"));
            
             boolean exists = this.repository.exists(token, uri);
@@ -156,7 +168,7 @@ public class LockController extends AbstractWebdavController {
 
             if (this.logger.isDebugEnabled()) {
                 String msg = "Atttempting to lock " + uri + " with timeout: " + timeout
-                        + " seconds, " + "depth: " + depth;
+                        + " seconds, " + "depth: " + depthString;
                 if (lockToken != null)
                     msg += " (refreshing with token: " + lockToken + ")";
                 this.logger.debug(msg);
@@ -340,7 +352,6 @@ public class LockController extends AbstractWebdavController {
         }
 
         if (timeoutHeader.startsWith("Second-")) {
-
             try {
                 String timeoutStr = timeoutHeader.substring("Second-".length(), timeoutHeader
                         .length());
@@ -350,7 +361,6 @@ public class LockController extends AbstractWebdavController {
                 this.logger.warn("Invalid timeout header: " + timeoutHeader);
             }
         }
-
         return timeout;
     }
 

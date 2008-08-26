@@ -30,6 +30,7 @@
  */
 package org.vortikal.hessian;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -52,7 +53,7 @@ public class AuthorizationProviderImpl implements AuthorizationProvider {
 	public boolean authorize() {
 	    try {
 	        String token = SecurityContext.getSecurityContext().getToken();
-	        String uri = RequestContext.getRequestContext().getResourceURI();
+	        Path uri = RequestContext.getRequestContext().getResourceURI();
             this.repository.retrieve(token, uri, true);
         } catch (Exception e) {
             return false;
@@ -63,12 +64,13 @@ public class AuthorizationProviderImpl implements AuthorizationProvider {
     public boolean authorizeWithOwnership(String encodedScriptUri) {
         try {
             String token = SecurityContext.getSecurityContext().getToken();
-            String uri = RequestContext.getRequestContext().getResourceURI();
+            Path uri = RequestContext.getRequestContext().getResourceURI();
             Resource resource = this.repository.retrieve(token, uri, true);
 
             encodedScriptUri = URLUtil.urlDecode(encodedScriptUri);
+            Path scriptUri = Path.fromString(encodedScriptUri);
             
-            Resource scriptResource = this.repository.retrieve(token, encodedScriptUri, true);
+            Resource scriptResource = this.repository.retrieve(token, scriptUri, true);
             
             if (!resource.getOwner().equals(scriptResource.getOwner())) {
                 return false;

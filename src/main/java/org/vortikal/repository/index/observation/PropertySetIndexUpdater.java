@@ -40,6 +40,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.index.PropertySetIndex;
@@ -156,14 +157,14 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             
             // Updates/additions
             if (updates.size() > 0) {
-                List<String> updateUris = new ArrayList<String>(updates.size());
+                List<Path> updateUris = new ArrayList<Path>(updates.size());
                 
                 // Remove updated property sets from index in one batch, first, 
                 // before re-adding them. This is very necessary to keep things
                 // efficient.
                 for (ChangeLogEntry update: updates) {
-                    this.index.deletePropertySet(update.getUri());
-                    updateUris.add(update.getUri());
+                    this.index.deletePropertySet(Path.fromString(update.getUri()));
+                    updateUris.add(Path.fromString(update.getUri()));
                 }
                 
                 // Now query index dao for a list of all property sets that 

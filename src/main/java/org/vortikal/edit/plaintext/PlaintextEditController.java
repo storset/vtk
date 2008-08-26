@@ -47,8 +47,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -148,12 +150,12 @@ public class PlaintextEditController extends SimpleFormController
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         
-        this.repository.lock(token, uri, principal.getQualifiedName(), "0",
-                        this.lockTimeoutSeconds, null);
+        this.repository.lock(token, uri, principal.getQualifiedName(), 
+                Depth.ZERO, this.lockTimeoutSeconds, null);
 
         Resource resource = this.repository.retrieve(token, uri, false);
         String url = service.constructLink(resource, principal);
@@ -181,7 +183,7 @@ public class PlaintextEditController extends SimpleFormController
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         this.repository.unlock(token, uri, null);
         
         return new ModelAndView(this.cancelView);    
@@ -192,7 +194,7 @@ public class PlaintextEditController extends SimpleFormController
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         PlaintextEditCommand plaintextEditCommand = (PlaintextEditCommand) command;

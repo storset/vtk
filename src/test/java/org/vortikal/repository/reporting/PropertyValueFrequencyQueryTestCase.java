@@ -33,6 +33,7 @@ package org.vortikal.repository.reporting;
 import junit.framework.TestCase;
 
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 
@@ -125,14 +126,14 @@ public class PropertyValueFrequencyQueryTestCase extends TestCase {
         query2.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_PROPERTY_VALUE);
         assertTrue(query1.equals(query2));
         
-        query1.setUriScope(new UriScope("/foo"));
+        query1.setUriScope(new UriScope(Path.fromString("/foo")));
         assertFalse(query1.equals(query2));
-        query2.setUriScope(new UriScope("/foo"));
+        query2.setUriScope(new UriScope(Path.fromString("/foo")));
         assertTrue(query1.equals(query2));
 
-        query1.setUriScope(new UriScope("/foo/bar"));
+        query1.setUriScope(new UriScope(Path.fromString("/foo/bar")));
         assertFalse(query1.equals(query2));
-        query2.setUriScope(new UriScope("/foo/bar"));
+        query2.setUriScope(new UriScope(Path.fromString("/foo/bar")));
         assertTrue(query1.equals(query2));
         
     }
@@ -144,7 +145,7 @@ public class PropertyValueFrequencyQueryTestCase extends TestCase {
         query.setPropertyTypeDefinition(this.keywordsPropDef);
         query.setLimit(10);
         query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_PROPERTY_VALUE);
-        query.setUriScope(new UriScope("/"));
+        query.setUriScope(new UriScope(Path.ROOT));
         
         PropertyValueFrequencyQuery clone = (PropertyValueFrequencyQuery)query.clone();
         assertFalse(query == clone);

@@ -32,7 +32,10 @@ package org.vortikal.repository.store.fs.jca;
 
 
 import java.io.InputStream;
+
 import javax.resource.ResourceException;
+
+import org.vortikal.repository.Path;
 
 
 public class FileSystemConnectionImpl implements FileSystemConnection {
@@ -48,7 +51,7 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
         this.managedConnection = managedConnection;
     }
 
-    public void createResource(String uri, boolean isCollection) throws ResourceException {
+    public void createResource(Path uri, boolean isCollection) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }
@@ -57,7 +60,7 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
     }
     
 
-    public long getContentLength(String uri) throws ResourceException {
+    public long getContentLength(Path uri) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }
@@ -65,7 +68,7 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
     }
     
 
-    public void deleteResource(String uri) throws ResourceException {
+    public void deleteResource(Path uri) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }
@@ -73,7 +76,7 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
     }
     
 
-    public InputStream getInputStream(String uri) throws ResourceException {
+    public InputStream getInputStream(Path uri) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }
@@ -81,7 +84,7 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
     }
     
 
-    public void storeContent(String uri, InputStream inputStream) throws ResourceException {
+    public void storeContent(Path uri, InputStream inputStream) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }
@@ -89,14 +92,14 @@ public class FileSystemConnectionImpl implements FileSystemConnection {
     }
     
 
-    public void copy(String srcURI, String destURI) throws ResourceException {
+    public void copy(Path srcURI, Path destURI) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }
         this.managedConnection.copy(srcURI, destURI);
     }
     
-    public void move(String srcURI, String destURI) throws ResourceException {
+    public void move(Path srcURI, Path destURI) throws ResourceException {
         if (this.managedConnection == null) {
             throw new ResourceException("Connection is closed");
         }

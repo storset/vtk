@@ -46,6 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -151,10 +152,10 @@ public class DisplayXmlResourceController
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         if (this.childName != null) {
-            uri += (uri.equals("/")) ? this.childName : "/" + this.childName;
+            uri = uri.extend(this.childName);
         }
         
         Resource resource = null;
@@ -195,16 +196,12 @@ public class DisplayXmlResourceController
 		
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-
-        String uri = requestContext.getResourceURI();
-
-        if (childName != null) 
-            uri += (uri.equals("/")) ? childName : "/" + childName;
-        
+        Path uri = requestContext.getResourceURI();
+        if (this.childName != null) {
+            uri.equals(this.childName);
+        }
         String token = securityContext.getToken();
-
         Map<String, Object> model = new HashMap<String, Object>();
-
         Resource resource = this.repository.retrieve(token, uri, true);
 
         if (resource.isCollection()) {
@@ -221,7 +218,7 @@ public class DisplayXmlResourceController
                 
             SAXBuilder builder = new SAXBuilder();
             document = builder.build(stream);
-            document.setBaseURI(uri);
+            document.setBaseURI(uri.toString());
 
         } catch (Throwable t) {
             if (logger.isDebugEnabled()) {

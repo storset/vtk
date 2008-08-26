@@ -36,6 +36,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -95,7 +96,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
 
     
 
-    public Date getLastModifiedInternal(String path)
+    public Date getLastModifiedInternal(Path path)
         throws IOException {
         String token = this.token;
         if (token == null) {
@@ -118,7 +119,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
     }
 
     
-    protected InputStream getInputStream(String path) throws IOException {
+    protected InputStream getInputStream(Path path) throws IOException {
         try {
             String token = this.token;
             if (token == null) {

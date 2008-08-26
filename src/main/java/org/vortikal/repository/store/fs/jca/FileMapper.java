@@ -33,10 +33,12 @@ package org.vortikal.repository.store.fs.jca;
 import java.io.File;
 import java.io.IOException;
 
+import org.vortikal.repository.Path;
+
 
 public interface FileMapper {
-    public File getFile(String uri) throws IOException;
+    public File getFile(Path uri) throws IOException;
     public String newTempFileName() throws IOException;
-    public void mapFile(String uri, File file) throws IOException;
+    public void mapFile(Path uri, File file) throws IOException;
 }
 

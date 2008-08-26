@@ -30,10 +30,6 @@
  */
 package org.vortikal.util.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Resource;
@@ -68,7 +64,7 @@ public class URIUtil {
             return resource.getURI() + "/" + path; 
         }
 
-        String parentURI = resource.getURI();
+        String parentURI = resource.getURI().toString();
         parentURI = parentURI.substring(0, parentURI.lastIndexOf("/"));
 
         return parentURI + "/" + path;
@@ -92,99 +88,7 @@ public class URIUtil {
         return parentURI + "/" + ref;
         
     }
-
-
-    /**
-     * Finds the parent of a URI.
-     * 
-     * @param uri the URI for which to find the parent. Must start
-     * with a <code>/</code>.
-     * @return the expanded URI. If the provided URI is the root URI
-     * <code>/</code>, <code>null</code> is returned.
-     * @throws IllegalArgumentException if the provided URI does not
-     * start with a slash, or if it contains <code>//</code>.
-     */
-    public static String getParentURI(String uri) {
-        
-        if (StringUtils.isBlank(uri) 
-                || !uri.startsWith("/") || uri.contains("//") 
-                || (!uri.equals("/") && uri.endsWith("/"))) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
-        }
-        
-        if ("/".equals(uri)) {
-            return null;
-        }
-
-        String parentURI = uri.substring(0, uri.lastIndexOf("/"));
-        if (parentURI.equals("")) {
-            return "/";
-        }
-
-        return parentURI;
-    }
     
-    public static String getResourceName(String uri) {
-        
-        if (StringUtils.isBlank(uri) 
-                || !uri.startsWith("/") || uri.contains("//")
-                || (!uri.equals("/") && uri.endsWith("/"))) {
-            throw new IllegalArgumentException("Invalid uri: '" + uri + "'");
-        }
-
-        if ("/".equals(uri)) {
-            return uri;
-        }
-
-        return uri.substring(uri.lastIndexOf("/") + 1);
-    }
-
-    
-    
-    /**
-     * Get list of all absolute ancestor URIs for given absolute URI. 
-     * The list is ordered from closest ancestor first and upwards to 
-     * (and including) the '/'.
-     * 
-     * @param uri Absolute URI to get ancestors of.
-     * @return List of all ancestor URIs for given URI.
-     */
-    public static List<String> getAncestorURIs(String uri) {
-        List<String> ancestorUris = new ArrayList<String>();
-
-        if (uri.equals("/")) {
-            return ancestorUris;
-        }
-        if (uri.length() == 0 || uri.endsWith("/")) {
-            throw new IllegalArgumentException("Invalid URI '" + uri + "'");
-        }
-        
-        int from = uri.length();
-        while (from > 0) {
-            from = uri.lastIndexOf('/', from);
-            if (from == 0) {
-                ancestorUris.add("/");
-            } else {
-                ancestorUris.add(uri.substring(0, from--));
-            }
-        }
-        
-        return ancestorUris;
-    }
-
-    /**
-     * Calculate URI depth
-     * @param uri
-     * @return
-     */
-    public static int getUriDepth(String uri) {
-        if ("/".equals(uri)) {
-            return 0;
-        }
-        int count = 0;
-        for (int index = 0; (index = uri.indexOf('/', index)) != -1; count++, index ++);
-        return count;
-    }
     
     /**
      * Expands '../' strings in resource URIs. 

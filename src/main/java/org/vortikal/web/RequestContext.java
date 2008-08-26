@@ -37,8 +37,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.context.BaseContext;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.service.Service;
 
 
@@ -55,9 +55,9 @@ public class RequestContext {
 
     private final HttpServletRequest servletRequest;
     private final Service service;
-    private final String resourceURI;
-    private final String currentCollection;
-    private final String indexFileURI;
+    private final Path resourceURI;
+    private final Path currentCollection;
+    private final Path indexFileURI;
     private final boolean isIndexFile;
     private List<Message> infoMessages = new ArrayList<Message>();
     private List<Message> errorMessages = new ArrayList<Message>();
@@ -73,8 +73,8 @@ public class RequestContext {
      * (<code>null</code> if no index file exists)
      */
     public RequestContext(HttpServletRequest servletRequest,
-                          Service service, Resource resource, String uri,
-                          String indexFileURI, boolean isIndexFile) {
+                          Service service, Resource resource, Path uri,
+                          Path indexFileURI, boolean isIndexFile) {
         this.servletRequest = servletRequest;
         this.indexFileURI = indexFileURI;
         this.service = service;
@@ -84,7 +84,7 @@ public class RequestContext {
             if (resource.isCollection()) {
                 this.currentCollection = resource.getURI();
             } else {
-                this.currentCollection = URIUtil.getParentURI(resource.getURI());
+                this.currentCollection = resource.getURI().getParent();
             }
         } else {
             this.resourceURI = uri;
@@ -96,7 +96,7 @@ public class RequestContext {
      * Creates a new request context without a resource object.
      */
     public RequestContext(HttpServletRequest servletRequest,
-                          Service service, String uri) {
+                          Service service, Path uri) {
         this(servletRequest, service, null, uri, null, false);
     }
 
@@ -146,7 +146,7 @@ public class RequestContext {
      * 
      * @return the URI of the requested resource.
      */
-    public String getResourceURI() {
+    public Path getResourceURI() {
         return this.resourceURI;
     }
     
@@ -157,7 +157,7 @@ public class RequestContext {
      * resource URI} are the same, otherwise the current collection is
      * the nearest collection towards the root.
      */
-    public String getCurrentCollection() {
+    public Path getCurrentCollection() {
         return this.currentCollection;
     }
     
@@ -167,7 +167,7 @@ public class RequestContext {
      * @returns the index file URI, or <code>null</code> if this is
      * not an index file request.
      */
-    public String getIndexFileURI() {
+    public Path getIndexFileURI() {
         return this.indexFileURI;
     }
     

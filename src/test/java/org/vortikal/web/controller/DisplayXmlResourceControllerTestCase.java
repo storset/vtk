@@ -40,20 +40,15 @@ import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.context.BaseContext;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
 public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
-    private String schemaPropertyName = PropertyType.SCHEMA_PROP_NAME;
-    private Namespace schemaNamespace = Namespace.DEFAULT_NAMESPACE;
 
     private String faqSchema = "http://www.uio.no/xsd/uio/faq/v001/faq.xsd";
 
@@ -63,7 +58,7 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
 
     private DisplayXmlResourceController controller;
 
-    private String uri = "/hest.xml";
+    private Path uri = Path.fromString("/hest.xml");
 
     private String token;
 

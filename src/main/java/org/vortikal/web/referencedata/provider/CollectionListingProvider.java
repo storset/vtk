@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -186,7 +187,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         Map<String, Object> collectionListingModel = new HashMap<String, Object>();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         collectionListingModel.put("childInfoItems", this.childInfoItems);
@@ -264,9 +265,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         collectionListingModel.put("sortByLinks", sortByLinks);
 
         String parentURL = null;
-        if (resource.getParent() != null) {
+        if (resource.getURI().getParent() != null) {
             try {
-                Resource parent = this.repository.retrieve(token, resource.getParent(), true);
+                Resource parent = this.repository.retrieve(token, resource.getURI().getParent(), true);
                 parentURL = this.browsingService.constructLink(parent, principal);
             } catch (RepositoryException e) {
                 // Ignore

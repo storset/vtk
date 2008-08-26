@@ -54,6 +54,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+import org.vortikal.repository.Path;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.util.web.URLUtil;
@@ -208,10 +209,10 @@ public class DisplayClassPathResourceController
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         if (uriPrefix != null) {
-            uri = uri.substring(uriPrefix.length());
+            uri = Path.fromString(uri.toString().substring(uriPrefix.length()));
         }
 
         String path = resourceLocation;

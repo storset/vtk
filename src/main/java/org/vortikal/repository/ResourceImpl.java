@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.nodetype.PropertyDefinition;
+
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -44,14 +46,13 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
-import org.vortikal.util.repository.URIUtil;
 
 
 public class ResourceImpl extends PropertySetImpl implements Resource {
     
     private Acl acl;
     private Lock lock = null;
-    private String[] childURIs = null;
+    private Path[] childURIs = null;
     
     private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
@@ -60,7 +61,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         super();
     }
     
-    public ResourceImpl(String uri, ResourceTypeTree resourceTypeTree, 
+    public ResourceImpl(Path uri, ResourceTypeTree resourceTypeTree, 
             AuthorizationManager authorizationManager) {
         super();
         this.uri = uri;
@@ -166,20 +167,15 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         removeProperty(propDef.getNamespace(), propDef.getName());
     }    
 
-    public String getParent() {
-        return URIUtil.getParentURI(super.uri);
-    }
-
     public String getContentLanguage() {
         return getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME);
     }
 
-
-    public void setChildURIs(String[] childURIs) {
+    public void setChildURIs(Path[] childURIs) {
         this.childURIs = childURIs;
     }
 
-    public String[] getChildURIs() {
+    public Path[] getChildURIs() {
         return this.childURIs;
     }
 
@@ -199,20 +195,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         this.lock = lock;
     }
 
-    public String getURI() {
-        return super.uri;
-    }
-
-    public String getName() {
-        if (this.uri.equals("/")) {
-            return this.uri;
-        } 
-        return this.uri.substring(this.uri.lastIndexOf("/") + 1);
-    }
-    
-
     public String getSerial() {
-        String serial = getURI() + getContentLastModified() + getPropertiesLastModified();
+        String serial = getURI().toString() + getContentLastModified() + getPropertiesLastModified();
         serial = MD5.md5sum(serial);
         serial = "vortex-" + serial;
         return serial;
@@ -330,7 +314,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     
-    public ResourceImpl createCopy(String newUri) {
+    public ResourceImpl createCopy(Path newUri) {
         ResourceImpl resource = new ResourceImpl(newUri, this.resourceTypeTree,
                                                  this.authorizationManager);
         resource.setResourceType(getResourceType());
@@ -414,8 +398,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      *
      * @param childURI a <code>String</code> value
      */
-    public synchronized void addChildURI(String childURI) {
-            String[] newChildren = new String[this.childURIs.length + 1];
+    public synchronized void addChildURI(Path childURI) {
+            Path[] newChildren = new Path[this.childURIs.length + 1];
             for (int i = 0; i < this.childURIs.length; i++) {
                 newChildren[i] = this.childURIs[i];
             }

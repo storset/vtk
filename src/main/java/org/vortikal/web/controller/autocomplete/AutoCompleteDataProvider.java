@@ -32,6 +32,8 @@ package org.vortikal.web.controller.autocomplete;
 
 import java.util.List;
 
+import org.vortikal.repository.Path;
+
 /**
  * Generic auto-complete data provider/query interface of sorts. 
  *
@@ -48,7 +50,7 @@ public interface AutoCompleteDataProvider {
      * @return
      */
     public List<Object> getPrefixCompletions(String prefix, 
-                                             String contextUri,
+                                             Path contextUri,
                                              String token);
     
 }

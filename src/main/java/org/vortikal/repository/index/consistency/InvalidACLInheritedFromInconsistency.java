@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 
 /**
@@ -43,7 +44,7 @@ public class InvalidACLInheritedFromInconsistency extends InvalidDataInconsisten
     private int indexACL = -1;
     private int daoACL = -1;
     
-    public InvalidACLInheritedFromInconsistency(String uri, PropertySetImpl daoPropSet, 
+    public InvalidACLInheritedFromInconsistency(Path uri, PropertySetImpl daoPropSet, 
                                                 int indexACL, int daoACL) {
         super(uri, daoPropSet);
         this.indexACL = indexACL;

@@ -33,12 +33,14 @@ package org.vortikal.repository.store.fs.jca;
 import java.io.File;
 import java.io.IOException;
 
+import org.vortikal.repository.Path;
+
 public class CreateOperation extends AbstractFileOperation {
-    private String uri;
+    private Path uri;
     private File tmp;
     private FileMapper mapper;
 
-    public CreateOperation(String uri, boolean isCollection, FileMapper mapper) throws IOException {
+    public CreateOperation(Path uri, boolean isCollection, FileMapper mapper) throws IOException {
         this.uri = uri;
         this.mapper = mapper;
         String tmpFileName = mapper.newTempFileName();

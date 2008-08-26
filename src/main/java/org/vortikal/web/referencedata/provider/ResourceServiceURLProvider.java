@@ -32,16 +32,16 @@ package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.NoSuchMessageException;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -131,17 +131,15 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         Principal principal = securityContext.getPrincipal();
 
         Resource resource = null;
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         
         if (this.linkToParent) {
-            uri = URIUtil.getParentURI(uri);
+            uri = uri.getParent();
         }
 
         try {
-            if (uri != null) {
-                resource = this.repository.retrieve(
+            resource = this.repository.retrieve(
                     securityContext.getToken(), uri, true);
-            }
         } catch (Throwable t) { }
 
         Map urlMap = (Map) model.get(this.modelName);

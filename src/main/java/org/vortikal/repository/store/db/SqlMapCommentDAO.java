@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.security.Principal;
@@ -73,7 +74,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         for (Map<String, Object> commentMap: theComments) {
             Comment c = new Comment();
             c.setID(commentMap.get("ID").toString());
-            c.setURI((String) commentMap.get("URI"));
+            c.setURI(Path.fromString((String) commentMap.get("URI")));
             c.setTime((Date) commentMap.get("time"));
             Principal author = this.principalFactory.getPrincipal((String) commentMap.get("author"), Principal.Type.USER);
             c.setAuthor(author);

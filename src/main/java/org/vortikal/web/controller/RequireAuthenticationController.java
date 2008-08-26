@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
+import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -60,7 +60,7 @@ public class RequireAuthenticationController implements Controller {
         if (securityContext.getPrincipal() == null) {
             throw new AuthenticationException();
         }
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
         URL url = this.redirectService.constructURL(uri);
 
         String anchor = request.getParameter("anchor");

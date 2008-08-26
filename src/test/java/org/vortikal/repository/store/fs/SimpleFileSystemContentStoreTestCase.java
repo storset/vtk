@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Random;
 
 import org.apache.log4j.BasicConfigurator;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.store.AbstractContentStoreTestCase;
 import org.vortikal.repository.store.ContentStore;
 
@@ -80,7 +81,7 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
     
     
     public void testCreateResource() throws IOException {
-        String uri = "/test.html";
+        Path uri = Path.fromString("/test.html");
         getStore().createResource(uri, false);
         InputStream is = getStore().getInputStream(uri);
         assertNotNull(is);
@@ -89,7 +90,7 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
     }
 
     public void testStoreFileContentAndRetrieve() throws IOException {
-        String uri = "/test.html";
+        Path uri = Path.fromString("/test.html");
         getStore().createResource(uri, false);
         String testString = "This is a test æøå ÆØÅ";
 
@@ -122,8 +123,4 @@ public class SimpleFileSystemContentStoreTestCase extends AbstractContentStoreTe
             // ok
         }
     }
-    
-    
-    
-
 }

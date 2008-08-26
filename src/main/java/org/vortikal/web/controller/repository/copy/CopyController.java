@@ -39,13 +39,12 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-import org.vortikal.util.repository.URIUtil;
 
 
 public class CopyController extends SimpleFormController 
@@ -103,7 +102,7 @@ public class CopyController extends SimpleFormController
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = SecurityContext.getSecurityContext().getToken();
         
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         CopyCommand copyCommand =
             (CopyCommand) command;
@@ -113,14 +112,10 @@ public class CopyController extends SimpleFormController
             return new ModelAndView(this.cancelView);
         }
 
-        String copyToCollection = URIUtil.getParentURI(uri);
-        if (copyToCollection == null) copyToCollection = "/";
-        String baseUri = copyToCollection;
-        if (!"/".equals(baseUri) && !baseUri.endsWith("/")) baseUri += "/";
-        String copyUri = baseUri + copyCommand.getName();
-
+        Path copyToCollection = uri.getParent();
+        if (copyToCollection == null) copyToCollection = Path.fromString("/");
+        Path copyUri = copyToCollection.extend(copyCommand.getName());
         copyAction.process(uri, copyUri);
-        
         copyCommand.setDone(true);        
         
         Resource resource = null;

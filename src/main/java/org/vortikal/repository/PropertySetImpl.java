@@ -49,7 +49,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
      */
     public static final int NULL_RESOURCE_ID = -1;
     
-    protected String uri;
+    protected Path uri;
     protected String resourceType;
     protected Map<Namespace, Map<String, Property>> propertyMap =
         new HashMap<Namespace, Map<String, Property>>();
@@ -77,15 +77,12 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         this.id = id;
     }
      
-    public String getURI() {
+    public Path getURI() {
         return this.uri;
     }
 
     public String getName() {
-        if (this.uri.equals("/")) {
-            return this.uri;
-        } 
-        return this.uri.substring(this.uri.lastIndexOf("/") + 1);
+        return this.uri.getName();
     }
 
     public String getResourceType() {
@@ -221,7 +218,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return true;
     }
 
-    public void setUri(String uri) {
+    public void setUri(Path uri) {
         this.uri = uri;
     }
     

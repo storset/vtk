@@ -70,13 +70,13 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     private ContentStore contentStore;
     private ContentRepresentationRegistry contentRepresentationRegistry;
     
-    public ResourceImpl create(Principal principal, String uri, boolean collection) throws IOException {
+    public ResourceImpl create(Principal principal, Path uri, boolean collection) throws IOException {
 
         ResourceImpl resource = 
             new ResourceImpl(uri, this.resourceTypeTree, this.authorizationManager);
 
         if (collection) {
-            resource.setChildURIs(new String[]{});
+            resource.setChildURIs(new Path[]{});
         }
         
         EvaluationContext ctx = getCreateEvaluationContext(resource, principal, collection);
@@ -116,7 +116,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
      * XXX: This hard coded list must be replaced by standard prop handling methods..
      */
     public PropertySet getFixedCopyProperties(Resource resource,
-            Principal principal, String destUri)
+            Principal principal, Path destUri)
             throws CloneNotSupportedException {
         PropertySetImpl fixedProps = new PropertySetImpl();
         fixedProps.setUri(destUri);

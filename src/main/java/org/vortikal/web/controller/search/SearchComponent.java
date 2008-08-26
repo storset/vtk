@@ -55,7 +55,6 @@ import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -142,8 +141,7 @@ public class SearchComponent {
         AndQuery andQuery = new AndQuery();
         andQuery.add(query);
         if (!recursive) {
-            int depth = URLUtil.splitUri(collection.getURI()).length;
-            andQuery.add(new UriDepthQuery(depth));
+            andQuery.add(new UriDepthQuery(collection.getURI().getDepth()));
         }
 
         search.setQuery(andQuery);
@@ -169,7 +167,7 @@ public class SearchComponent {
             PropertySet res = result.getResult(i);
             files.add(res);
             URL url = this.viewService.constructURL(res.getURI());
-            urls.put(res.getURI(), url);
+            urls.put(res.getURI().toString(), url);
         }
 
         URL nextURL = null;

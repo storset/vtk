@@ -33,6 +33,7 @@ package org.vortikal.web.templates;
 import java.util.List;
 import java.util.Set;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
@@ -54,7 +55,7 @@ public interface ResourceTemplateLocator {
      *         in repository.
      */
     public List<ResourceTemplate> findTemplates(String token,
-                                                Set<String> baseUris, 
+                                                Set<Path> baseUris, 
                                                 ResourceTypeDefinition type)
         throws RepositoryException;
     
@@ -73,7 +74,7 @@ public interface ResourceTemplateLocator {
      *         in repository.
      */
     public List<ResourceTemplate> findTemplatesNonRecursively(String token,
-                                                              Set<String> baseUris,
+                                                              Set<Path> baseUris,
                                                               ResourceTypeDefinition type)
         throws RepositoryException;
 }

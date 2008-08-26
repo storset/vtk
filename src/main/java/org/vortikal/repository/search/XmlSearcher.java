@@ -49,6 +49,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -64,9 +65,9 @@ import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -224,13 +225,13 @@ public class XmlSearcher {
         Element propertySetElement = doc.createElement("resource");
         resultsElement.appendChild(propertySetElement);
         if (envir.reportUri())
-            propertySetElement.setAttribute(PropertySet.URI_IDENTIFIER, propSet.getURI());
+            propertySetElement.setAttribute(PropertySet.URI_IDENTIFIER, propSet.getURI().toString());
         if (envir.reportName())
             propertySetElement.setAttribute(PropertySet.NAME_IDENTIFIER, propSet.getName());
         if (envir.reportType())
             propertySetElement.setAttribute(PropertySet.TYPE_IDENTIFIER, propSet.getResourceType());
         if (envir.reportUrl())
-            propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet));
+            propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet).toString());
 
         for (Property prop: propSet.getProperties()) {
             addPropertyToPropertySetElement(propSet.getURI(), propertySetElement, prop, envir);
@@ -238,16 +239,17 @@ public class XmlSearcher {
         
     }
     
-    private String getUrl(PropertySet propSet) {
-        String uri = propSet.getURI();
+    private URL getUrl(PropertySet propSet) {
+        Path uri = propSet.getURI();
+        URL url = this.linkToService.constructURL(uri);
         if (collectionResourceTypeDef != null &&
-                collectionResourceTypeDef.getQName().equals(propSet.getResourceType()))
-            uri += "/";
-                        
-        return this.linkToService.constructLink(uri);
+                collectionResourceTypeDef.getQName().equals(propSet.getResourceType())) {
+            url.setCollection(true);
+        }
+        return url;
     }
     
-    private void addPropertyToPropertySetElement(String uri, Element propSetElement,
+    private void addPropertyToPropertySetElement(Path uri, Element propSetElement,
                                                  Property prop, SearchEnvironment envir) {
         
         PropertyTypeDefinition propDef = prop.getDefinition();
@@ -302,7 +304,7 @@ public class XmlSearcher {
     
 
     private Element getPropertyElement(PropertyTypeDefinition propDef, 
-                                             String uri, Value value, String format, 
+                                             Path uri, Value value, String format, 
                                              Locale locale, Document doc) {
 
         String valueString = propDef.getValueFormatter().valueToString(value, format, locale);
@@ -313,10 +315,10 @@ public class XmlSearcher {
 
             if (format.equals("url") && !valueString.startsWith("http")) {
                 if (!valueString.startsWith("/")) {
-                    valueString = URIUtil.getParentURI(uri) + "/" + valueString;
+                    valueString = uri.getParent().toString() + "/" + valueString;
                 }
                 try {
-                    valueString = this.linkToService.constructLink(valueString);
+                    valueString = this.linkToService.constructLink(Path.fromString(valueString));
                 } catch (Exception e) {
                     logger.warn(valueString + " led to exception ", e);
                 }
@@ -542,7 +544,7 @@ public class XmlSearcher {
                 RequestContext requestContext = RequestContext.getRequestContext();
                 SecurityContext securityContext = SecurityContext.getSecurityContext();
                 String token = securityContext.getToken();
-                String uri = requestContext.getResourceURI();
+                Path uri = requestContext.getResourceURI();
                 Resource resource = repository.retrieve(token, uri, true);
                 String contentLanguage = resource.getContentLanguage();
                 if (contentLanguage != null) {

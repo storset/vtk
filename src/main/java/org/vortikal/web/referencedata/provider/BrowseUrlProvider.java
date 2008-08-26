@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -94,7 +95,7 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
         Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
 
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         Resource resource = this.repository.retrieve(token, uri, false);
 
         // This is the url to the parent of the document that's being edited

@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
@@ -95,7 +96,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     	SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
-        String uri = requestContext.getResourceURI();
+        Path uri = requestContext.getResourceURI();
         
         try {
             Resource resource = this.repository.retrieve(token, uri, true);
@@ -118,13 +119,13 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     
 
     private Locale getNearestAncestorLocale(String token, Resource resource) throws Exception {
-        String parentURI = resource.getParent();
+        Path parentURI = resource.getURI().getParent();
         while (parentURI != null) {
             Resource parent = this.repository.retrieve(token, parentURI, false);
             if (!StringUtils.isBlank(parent.getContentLanguage())) {
                 return LocaleHelper.getLocale(parent.getContentLanguage());
             }
-            parentURI = parent.getParent();
+            parentURI = parentURI.getParent();
         }
         return null;
     }

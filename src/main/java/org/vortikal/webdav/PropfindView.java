@@ -448,7 +448,7 @@ public class PropfindView implements View, InitializingBean {
                 WebdavConstants.DAV_NAMESPACE)));
 
         activeLock.addContent(new Element("depth",
-                WebdavConstants.DAV_NAMESPACE).addContent(lock.getDepth()));
+                WebdavConstants.DAV_NAMESPACE).addContent(lock.getDepth().toString()));
 
         activeLock.addContent(LockView.buildLockOwnerElement(lock.getOwnerInfo()));
 

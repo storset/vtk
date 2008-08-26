@@ -38,12 +38,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -91,19 +91,19 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         String token = SecurityContext.getSecurityContext().getToken();
-        String uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, true);
         // If deepCommentListing is specified, always find the nearest collection:
         if (!resource.isCollection() && this.deepCommentsListing) {
-            uri = URIUtil.getParentURI(uri);
+            uri = uri.getParent();
             resource = this.repository.retrieve(token, uri, true);
         }
 
         List<Comment> comments = repository.getComments(token, resource, 
                 this.deepCommentsListing, this.maxComments);
 
-        Map<String, Resource> resourceMap = new HashMap<String, Resource>();
+        Map<Path, Resource> resourceMap = new HashMap<Path, Resource>();
         Map<String, URL> commentURLMap = new HashMap<String, URL>();
         for (Comment comment: comments) {
             try {

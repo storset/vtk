@@ -32,6 +32,7 @@ package org.vortikal.web.controller;
 
 import java.nio.charset.Charset;
 import java.util.Date;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +44,8 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
-
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.AuthenticationException;
@@ -126,13 +127,13 @@ public class IndexFileController
         RequestContext requestContext = RequestContext.getRequestContext();
         
         String token = securityContext.getToken();
-        String currentURI = requestContext.getResourceURI();
+        Path currentURI = requestContext.getResourceURI();
         Resource res = this.repository.retrieve(token, currentURI, true);
         if (!res.isCollection()) {
             throw new IllegalStateException("Resource " + res + " is not a collection");
         }
         
-        String indexURI = requestContext.getIndexFileURI();
+        Path indexURI = requestContext.getIndexFileURI();
         Resource indexFile = null;
         try {
             indexFile = this.repository.retrieve(token, indexURI, true);
@@ -156,7 +157,7 @@ public class IndexFileController
             ifModSince = Math.min(collectionLastMod, requestLastMod);
         }
 
-        String encodedURI = new String(indexURI.getBytes("utf-8"),
+        String encodedURI = new String(indexURI.toString().getBytes("utf-8"),
                                        this.uriCharacterEncoding);
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);

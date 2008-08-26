@@ -40,6 +40,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceNotFoundException;
 
@@ -73,7 +74,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;
-    private String uri;
+    private Path uri;
     private String token;
     private boolean demandResourceAvailability = false;
     private boolean lazyInit = false;
@@ -86,7 +87,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
         super(defaults);
     }
     
-    public PropertiesResource(Repository repository, String uri, String token,
+    public PropertiesResource(Repository repository, Path uri, String token,
                               boolean demandResourceAvailability, boolean lazyInit) 
         throws Exception {
         
@@ -105,7 +106,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
 
 
     public void setUri(String uri) {
-        this.uri = uri;
+        this.uri = Path.fromString(uri);
     }
 
 
@@ -168,7 +169,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
 
     }
     
-    private void doLoad(String token, String uri) throws IOException {
+    private void doLoad(String token, Path uri) throws IOException {
         InputStream inputStream = this.repository.getInputStream(token, uri, false);
         super.load(inputStream); 
         inputStream.close();

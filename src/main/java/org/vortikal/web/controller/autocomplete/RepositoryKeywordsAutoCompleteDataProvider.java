@@ -36,6 +36,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.DataReportManager;
 import org.vortikal.repository.reporting.Pair;
@@ -63,7 +64,7 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
      * @see AutoCompleteDataProvider#getPrefixCompletions(String, String)
      */
     public List<Object> getPrefixCompletions(String prefix, 
-                                             String contextUri, 
+                                             Path contextUri, 
                                              String token) {
         
         List<Object> repositoryKeywords = getRepositoryKeywords(contextUri, token);
@@ -77,7 +78,7 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
     
     // Fetch list of all existing unique repository keywords, sorted
     // by frequency, with most frequent on top.
-    private List<Object> getRepositoryKeywords(String contextUri, String token) {
+    private List<Object> getRepositoryKeywords(Path contextUri, String token) {
      
         // TODO might consider implementing limit on number of unique keywords that are 
         //  fetched (set limit on property value frequency query).

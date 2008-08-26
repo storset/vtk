@@ -44,6 +44,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceTypeTree;
@@ -61,8 +62,6 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -188,11 +187,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
 
     private Search buildSearch(MenuRequest menuRequest) {
-        String uri = menuRequest.getCurrentCollectionUri();
-        int depth = URLUtil.splitUri(uri).length;
+        Path uri = menuRequest.getCurrentCollectionUri();
+        int depth = uri.getDepth();
 
         AndQuery mainQuery = new AndQuery();
-        mainQuery.add(new UriPrefixQuery(uri));
+        mainQuery.add(new UriPrefixQuery(uri.toString()));
 
         if (menuRequest.getDepth() > 1) {
             // Needs search support for this:
@@ -210,9 +209,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
          * TODO: Maybe add inversion filter for whole set rather than and'ing a ton of inverted queries?
          */
         if (menuRequest.getExcludeURIs() != null && !menuRequest.getExcludeURIs().isEmpty()) {
-            for (Iterator<String> i = menuRequest.getExcludeURIs().iterator(); i.hasNext();) {
-                String exUri = (String) i.next();
-                mainQuery.add(new UriPrefixQuery(exUri, true));
+            for (Iterator<Path> i = menuRequest.getExcludeURIs().iterator(); i.hasNext();) {
+                Path exUri = i.next();
+                mainQuery.add(new UriPrefixQuery(exUri.toString(), true));
             }
         }
 
@@ -230,7 +229,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private ListMenu<PropertySet> buildListMenu(ResultSet rs, MenuRequest menuRequest) {
 
-        Map<String, List<PropertySet>> childMap = new HashMap<String, List<PropertySet>>();
+        Map<Path, List<PropertySet>> childMap = new HashMap<Path, List<PropertySet>>();
         List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
@@ -240,7 +239,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 continue;
             }
             
-            String parentURI = URIUtil.getParentURI(resource.getURI());
+            Path parentURI = resource.getURI().getParent();
             if (parentURI.equals(menuRequest.getCurrentCollectionUri())) {
                 toplevel.add(resource);
             }
@@ -266,15 +265,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
 
-    private MenuItem<PropertySet> buildItem(PropertySet resource, Map<String, List<PropertySet>> childMap,
+    private MenuItem<PropertySet> buildItem(PropertySet resource, Map<Path, List<PropertySet>> childMap,
             MenuRequest menuRequest) {
-        String uri = resource.getURI();
-        if (!uri.equals("/")) {
-            // Know it's a folder, append "/"
-            uri += "/";
-        }
-
+        Path uri = resource.getURI();
         URL url = this.viewService.constructURL(uri);
+        url.setCollection(true);
         Property titleProperty = resource.getProperty(this.titlePropDef);
         Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
 
@@ -297,13 +292,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     }
 
     private class MenuRequest {
-        private String currentCollectionUri;
+        private Path currentCollectionUri;
         private String title;
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
         private int resultSets = 1;
         private int depth = 1;
-        private ArrayList<String> excludeURIs;
+        private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
 
@@ -356,15 +351,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             if (excludeFolders != null) {
                 try {
                     StringTokenizer excludeFoldersTokenized = new StringTokenizer(excludeFolders, ",");
-                    ArrayList<String> excludeUIRs = new ArrayList<String>();
-                    boolean addSlash = currentCollectionUri.endsWith("/") ? false : true;
+                    ArrayList<Path> excludeUIRs = new ArrayList<Path>();
                     while (excludeFoldersTokenized.hasMoreTokens()) {
-                        String uri = excludeFoldersTokenized.nextToken().trim();
-                        if (addSlash) {
-                            uri = currentCollectionUri + "/" + uri;
-                        } else {
-                            uri = currentCollectionUri + uri;
-                        }
+                        String excludedFolder = excludeFoldersTokenized.nextToken().trim();
+                        Path uri = this.currentCollectionUri.extend(excludedFolder);
                         excludeUIRs.add(uri);
                     }
                     this.excludeURIs = excludeUIRs;
@@ -378,7 +368,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
 
-        public String getCurrentCollectionUri() {
+        public Path getCurrentCollectionUri() {
             return this.currentCollectionUri;
         }
 
@@ -421,7 +411,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
 
-        public ArrayList<String> getExcludeURIs() {
+        public ArrayList<Path> getExcludeURIs() {
             return excludeURIs;
         }
 

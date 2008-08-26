@@ -32,8 +32,9 @@ package org.vortikal.repository;
 
 
 import java.io.IOException;
-import org.vortikal.security.Principal;
+
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 
 /**
  * Manager for authorizing principals at specific authorization level.
@@ -66,7 +67,7 @@ public interface AuthorizationManager {
      * defined in {@link #ACTION_AUTHORIZATIONS}.
      * @param principal the principal performing the action
      */
-    public void authorizeAction(String uri, RepositoryAction action, Principal principal)
+    public void authorizeAction(Path uri, RepositoryAction action, Principal principal)
     throws AuthorizationException, AuthenticationException, ResourceLockedException, IOException;
     
     /**
@@ -77,7 +78,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeReadProcessed(String uri, Principal principal) 
+    public void authorizeReadProcessed(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException;
     
@@ -89,7 +90,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeRead(String uri, Principal principal) 
+    public void authorizeRead(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException;
 
@@ -103,7 +104,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeCreate(String uri, Principal principal)
+    public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         ResourceLockedException, IOException;
     
@@ -116,7 +117,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeWrite(String uri, Principal principal)
+    public void authorizeWrite(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
     
@@ -129,7 +130,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeAll(String uri, Principal principal)
+    public void authorizeAll(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
     
@@ -141,7 +142,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeUnlock(String uri, Principal principal) 
+    public void authorizeUnlock(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
 
@@ -155,7 +156,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeDelete(String uri, Principal principal) 
+    public void authorizeDelete(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         ResourceLockedException, IOException;
 
@@ -169,7 +170,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizePropertyEditAdminRole(String uri, Principal principal) 
+    public void authorizePropertyEditAdminRole(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException;
 
@@ -183,7 +184,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizePropertyEditRootRole(String uri, Principal principal)
+    public void authorizePropertyEditRootRole(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException;
 
@@ -198,7 +199,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeCopy(String srcUri, String destUri, 
+    public void authorizeCopy(Path srcUri, Path destUri, 
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
@@ -213,7 +214,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeMove(String srcUri, String destUri,
+    public void authorizeMove(Path srcUri, Path destUri,
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
@@ -229,7 +230,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeAddComment(String uri, Principal principal) 
+    public void authorizeAddComment(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
 
@@ -243,7 +244,7 @@ public interface AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeEditComment(String uri, Principal principal) 
+    public void authorizeEditComment(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException;
 

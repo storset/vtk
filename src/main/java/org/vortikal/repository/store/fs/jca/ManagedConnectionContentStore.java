@@ -34,6 +34,7 @@ import java.io.InputStream;
 
 import javax.resource.ResourceException;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 
@@ -46,7 +47,7 @@ public class ManagedConnectionContentStore implements ContentStore {
         this.connectionFactory = connectionFactory;
     }
     
-    public void createResource(String uri, boolean isCollection) throws DataAccessException {
+    public void createResource(Path uri, boolean isCollection) throws DataAccessException {
 
         FileSystemConnection conn = null;
         try {
@@ -66,7 +67,7 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
 
-    public long getContentLength(String uri) throws DataAccessException {
+    public long getContentLength(Path uri) throws DataAccessException {
         FileSystemConnection conn = null;
         try {
             conn = this.connectionFactory.getConnection();
@@ -85,7 +86,7 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
 
-    public void deleteResource(String uri) throws DataAccessException {
+    public void deleteResource(Path uri) throws DataAccessException {
         FileSystemConnection conn = null;
         try {
             conn = this.connectionFactory.getConnection();
@@ -104,7 +105,7 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
 
-    public InputStream getInputStream(String uri) throws DataAccessException {
+    public InputStream getInputStream(Path uri) throws DataAccessException {
         FileSystemConnection conn = null;
         try {
             conn = this.connectionFactory.getConnection();
@@ -123,7 +124,7 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
 
-    public void storeContent(String uri, InputStream inputStream) throws DataAccessException {
+    public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
         FileSystemConnection conn = null;
         try {
             conn = this.connectionFactory.getConnection();
@@ -142,7 +143,7 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
 
-    public void copy(String srcURI, String destURI) throws DataAccessException {
+    public void copy(Path srcURI, Path destURI) throws DataAccessException {
         FileSystemConnection conn = null;
         try {
             conn = this.connectionFactory.getConnection();
@@ -161,7 +162,7 @@ public class ManagedConnectionContentStore implements ContentStore {
     }
     
     
-    public void move(String srcURI, String destURI) throws DataAccessException {
+    public void move(Path srcURI, Path destURI) throws DataAccessException {
         FileSystemConnection conn = null;
         try {
             conn = this.connectionFactory.getConnection();

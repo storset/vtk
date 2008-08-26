@@ -41,11 +41,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.vortikal.repository.Path;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.service.URL;
 
@@ -94,7 +96,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     public ConfigurableRequestWrapper(HttpServletRequest request, String uri) {
         super(request);
         this.url = URL.create(request);
-        this.url.setPath(uri);
+        this.url.setPath(Path.fromString(uri));
         initHeaders();
     }
 
@@ -105,7 +107,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
      * @param requestURI the resource path (must start with a slash (<code>/</code>).
      */
     public void setRequestURI(String requestURI) {
-        this.url.setPath(requestURI);
+        this.url.setPath(Path.fromString(requestURI));
     }
     
 
@@ -180,7 +182,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
 
     public String getPathInfo() {
-        return this.url.getPath();
+        return this.url.getPath().toString();
     }
 
     public String getServletPath() {
@@ -200,7 +202,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
 
     public String getRequestURI() {
-        return this.url.getPath();
+        return this.url.getPath().toString();
     }
     
     public StringBuffer getRequestURL() {

@@ -117,6 +117,10 @@ public class CollectionListingAsAtomFeed implements Controller {
 
             String summary = getIntroduction(child);
             if (summary != null) {
+                Property pic = child.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+                if (pic != null) {
+                    summary = prepareSummary(pic, summary);
+                }
                 entry.setSummaryAsXhtml(summary);
             } else {
                 summary = getDescription(child);
@@ -181,6 +185,15 @@ public class CollectionListingAsAtomFeed implements Controller {
         Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
         Property prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
         return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
+    }
+    
+    private String prepareSummary(Property pic, String summary) {
+        StringBuilder sb = new StringBuilder();
+        String imgPath = pic.getStringValue();
+        String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.indexOf("."));
+        sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
+        sb.append(summary);
+        return sb.toString();
     }
 
     /**

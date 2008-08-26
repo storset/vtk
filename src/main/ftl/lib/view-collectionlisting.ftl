@@ -205,14 +205,14 @@
 -->
 <#macro showTimeAndPlace resource>
 
-  <#assign start = vrtx.propValue(resource, "start-date") />
-  <#assign startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
-  <#assign startshort = vrtx.propValue(resource, "start-date", "short") />
-  <#assign end = vrtx.propValue(resource, "end-date") />
-  <#assign endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
-  <#assign endshort = vrtx.propValue(resource, "end-date", "short") />
-  <#assign endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
-  <#assign location = vrtx.propValue(resource, "location") />
+  <#local start = vrtx.propValue(resource, "start-date") />
+  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
+  <#local startshort = vrtx.propValue(resource, "start-date", "short") />
+  <#local end = vrtx.propValue(resource, "end-date") />
+  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
+  <#local endshort = vrtx.propValue(resource, "end-date", "short") />
+  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
+  <#local location = vrtx.propValue(resource, "location") />
   
   <#if start != ""><abbr class="dtstart" title="${startiso8601}">${start}</abbr></#if>
   <#t /><#if end != ""><span class="delimiter"> - </span>

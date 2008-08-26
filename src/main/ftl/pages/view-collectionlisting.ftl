@@ -22,6 +22,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-collectionlisting.ftl" as coll />
 <#import "/lib/dump.ftl" as dumper>
+<#import "/lib/view-utils.ftl" as viewutils />
 
 <#assign resource = collection />
 
@@ -60,48 +61,16 @@
     </#if>
   </h1> 
 
-       <#-- Image --> 
+     <#-- Image -->
+     <@viewutils.displayImage resource />
 
-       <#assign imageRes = vrtx.propResource(resource, "picture") />
-       <#assign introductionImage = vrtx.propValue(resource, "picture") />
-       <#if introductionImage != "">
-         <#if imageRes == "">
-           <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-         <#else>
-           <#assign userTitle = vrtx.propValue(imageRes, "userTitle", imageRes) />
-           <#assign desc = imageRes.getValueByName("description")?default("") />
-           <#if userTitle == "" && desc == "">  
-             <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-           <#else>
-             <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
-             <#assign style="" />
-             <#if pixelWidth != "">
-               <#assign style = "width:" + pixelWidth+ "px;" />
-             </#if>
-             <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-	   	       <#if userTitle != "">
-	   	         <img src="${introductionImage}" alt="${userTitle?html}" />
-	   	       <#else>
-	   	         <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-	   	       </#if>
-	           <div class="vrtx-imagetext">
-	   	         <#if userTitle != "">
-	   		       <span class="vrtx-imagetitle">${userTitle?html}<#if desc != "">: </#if></span>
-	   	         </#if>
-	   	         <#if desc != "">
-	   		       <span class="vrtx-imagedescription">${desc?html}</span>
-	   	         </#if>
-	   	       </div>
-   	         </div>
-   	       </#if>
-         </#if>
-       </#if>
-
+     <#-- Introduction -->
+     <#-- @viewutils.displayIntroduction resource / -->
      <#assign introduction = coll.getIntroduction(resource) />
      <#if introduction?has_content>
-     <div class="vrtx-introduction">
-       ${introduction}
-     </div>
+       <div class="vrtx-introduction">
+         ${introduction}
+       </div>
      </#if>
 
      <#-- List collections: -->

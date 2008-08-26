@@ -12,7 +12,7 @@
 
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/view-collectionlisting.ftl" as coll />
+<#import "/lib/view-utils.ftl" as viewutils />
 
 
 <#assign title = vrtx.propValue(resource, "userTitle" , "flattened") />
@@ -38,54 +38,12 @@
     <h1>${h1}</h1>
 
     <#-- Image --> 
+    <@viewutils.displayImage resource />
 
-    <#assign imageRes = vrtx.propResource(resource, "picture") />
-    <#assign introductionImage = vrtx.propValue(resource, "picture") />
-    <#if introductionImage != "">
-      <#if imageRes == "">
-        <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-      <#else>
+    <#-- Introduction -->
+    <@viewutils.displayIntroduction resource />
 
-        <#assign userTitle = vrtx.propValue(imageRes, "userTitle") />
-        <#assign desc = imageRes.getValueByName("description")?default("") />
-
-	<#if userTitle == "" && desc == "">  
-          <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-	<#else>
-          <#assign pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
-          <#if pixelWidth != "">
-            <#assign style = "width:" + pixelWidth+ "px;" />
-          </#if>
-	 	 
-          <div class="vrtx-introduction-image" style="${style}">
-	    <#if userTitle != "">
-	      <img src="${introductionImage}" alt="${userTitle?html}" />
-	    <#else>
-	      <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-	    </#if>
-            <div class="vrtx-imagetext">
-	      <#if userTitle != "">
-		<span class="vrtx-imagetitle">${userTitle?html}<#if desc != "">: </#if></span>
-	      </#if>
-	      <#if desc != "">
-		<span class="vrtx-imagedescription">${desc?html}</span>
-	      </#if>
-	    </div> 
-	  </div>
-	</#if>
-      </#if>
-    </#if>
-
-    <#-- Introduction --> 
-
-    <#assign introduction = vrtx.propValue(resource, "introduction") />
-    <#if introduction != "">
-      <div class="vrtx-introduction">
-        ${introduction}
-      </div>
-    </#if>
-
-    <#-- Media ref --> 
+    <#-- Media ref -->
 
     <#assign mediaRes = vrtx.propResource(resource, "media") />
     <#assign media = vrtx.propValue(resource, "media") />
@@ -142,7 +100,7 @@
       <div class="vevent">
         <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />: </span>
         <span class="summary" style="display:none;">${title}</span>
-        <#t /><@coll.showTimeAndPlace resource />
+        <#t /><@viewutils.displayTimeAndPlace resource />
      </div>
     </#if>
 

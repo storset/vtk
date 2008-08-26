@@ -50,12 +50,12 @@
 -->
 <#macro createAutoCompleteInputField fieldName description value width schema=[]>
   
-  <#assign schemaString = "" />
+  <#local schemaString = "" />
   <#list schema as s>
     <#if schemaString = "">
-      <#assign schemaString = "\"" + s + "\"" />
+      <#local schemaString = "\"" + s + "\"" />
     <#else>
-      <#assign schemaString = schemaString + ", \"" + s + "\"" />
+      <#local schemaString = schemaString + ", \"" + s + "\"" />
     </#if>
   </#list>
  

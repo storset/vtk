@@ -10,6 +10,7 @@
   -->
 
 <#import "vortikal.ftl" as vrtx />
+<#import "view-utils.ftl" as viewutils />
 
 
 <#-- XXX: remove this when properties 'introduction' and 'description'
@@ -170,7 +171,7 @@
         ${title?html}</a>
 
         <div class="time-and-place"> 
-          <@coll.showTimeAndPlace r />
+          <@viewutils.displayTimeAndPlace r />
         </div>
 
         <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>
@@ -196,34 +197,3 @@
   </#if>
   
 </#macro>
-
-<#--
- * Shows the start- and end-date of an event, seperated by a "-".
- * If the two dates are identical, only the time of enddate is shown.
- * 
- * @param resource The resource to evaluate dates from
--->
-<#macro showTimeAndPlace resource>
-
-  <#local start = vrtx.propValue(resource, "start-date") />
-  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
-  <#local startshort = vrtx.propValue(resource, "start-date", "short") />
-  <#local end = vrtx.propValue(resource, "end-date") />
-  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
-  <#local endshort = vrtx.propValue(resource, "end-date", "short") />
-  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
-  <#local location = vrtx.propValue(resource, "location") />
-  
-  <#if start != ""><abbr class="dtstart" title="${startiso8601}">${start}</abbr></#if>
-  <#t /><#if end != ""><span class="delimiter"> - </span>
-    <#if startshort == endshort>
-      <#t /><abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr>
-    <#else>
-      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#rt />
-  <#t/></#if>
-  <#t /><#if location != "">, <span class="location">${location}</span></#if>
-        
-</#macro>
-
-
-

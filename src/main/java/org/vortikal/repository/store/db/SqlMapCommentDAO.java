@@ -58,7 +58,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         String sqlMap = getSqlMap("listCommentsByResource");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("resource", resource);
+        parameters.put("uri", resource.getURI().toString());
         parameters.put("max", max);
         parameters.put("deep", deep);
         parameters.put("uriWildcard", 

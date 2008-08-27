@@ -629,7 +629,7 @@
     select c.id as ID, r.uri as URI, c.time, c.author, c.title, c.content, c.approved
     from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id 
     where c.resource_id in
-      (select resource_id from vortex_resource where uri = #resource.URI# or uri like #uriWildcard# escape '@')
+      (select resource_id from vortex_resource where uri = #uri# or uri like #uriWildcard# escape '@')
     order by c.time desc
     <include refid="listCommentsLimitAppend" />
   </select>
@@ -648,7 +648,7 @@
 
   <delete id="deleteAllComments" parameterClass="org.vortikal.repository.Resource">
     delete from vortex_comment where resource_id in 
-       (select resource_id from vortex_resource where uri = #URI#)
+       (select resource_id from vortex_resource where uri = #URI,handler=org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback#)
   </delete>
 
   <!-- See: http://issues.apache.org/jira/browse/IBATIS-244 -->
@@ -658,7 +658,7 @@
     select <include refid="nextVortexCommentId" />, r.resource_id, 
            #author.qualifiedName#, #time#, #title#, #content#,
            #approved,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#
-    from vortex_resource r where r.uri = #URI#
+    from vortex_resource r where r.uri = #URI,handler=org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback#
   </insert>
 
   <update id="updateComment" parameterClass="org.vortikal.repository.Comment">

@@ -81,13 +81,23 @@
   <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
   <#local location = vrtx.propValue(resource, "location") />
   
-  <#if start != ""><abbr class="dtstart" title="${startiso8601}">${start}</abbr></#if>
-  <#t /><#if end != ""><span class="delimiter"> - </span>
+  <#local isoendhour = "" />
+  <#if endiso8601 != "" >
+    <#local isoendhour = endiso8601?substring(11, 16) />
+  </#if>
+  
+  <#if start != "">
+    <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
+  </#if>
+  <#if end != "">
     <#if startshort == endshort>
-      <#t /><abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr>
+      <#if isoendhour != "00:00">
+        <#t /> - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#rt />
+      </#if>
     <#else>
-      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr></#if><#rt />
-  <#t/></#if>
+      <#t /> - <abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
+    </#if>
+  </#if>
   <#t /><#if location != "">, <span class="location">${location}</span></#if>
         
 </#macro>

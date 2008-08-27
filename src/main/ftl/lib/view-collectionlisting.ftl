@@ -98,7 +98,7 @@
       <div class="vrtx-resource">
         <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
-        <img src="${introImg.value?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+        <img src="${introImg.formattedValue?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
         ${title?html}</a> 
 

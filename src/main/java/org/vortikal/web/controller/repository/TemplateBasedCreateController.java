@@ -113,7 +113,7 @@ public class TemplateBasedCreateController extends SimpleFormController
 				
 	    List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 	    
-	    Map <String, String> tmp = new TreeMap <String, String>();
+	    TreeMap <String, String> tmp = new TreeMap <String, String>();
         for (ResourceTemplate t: l) {
         	tmp.put(t.getUri().toString(), t.getName());
 	    }

@@ -36,7 +36,7 @@ import org.vortikal.repository.Path;
 
 
 public class FCKeditorFileBrowserCommand {
-    private String currentFolder = "/";
+    private Path currentFolder = Path.fromString("/");
     private String newFolderName;
     private Command command;
     private ResourceType type = ResourceType.File;
@@ -59,7 +59,7 @@ public class FCKeditorFileBrowserCommand {
         if (!"/".equals(currentFolder) && currentFolder.endsWith("/")) {
             currentFolder = currentFolder.substring(0, currentFolder.length() -1);
         }
-        this.currentFolder = currentFolder;
+        this.currentFolder = Path.fromString(currentFolder);
         
         String command = request.getParameter("Command");
         if (command == null) {
@@ -78,9 +78,8 @@ public class FCKeditorFileBrowserCommand {
         }
     }
     
-    
     public Path getCurrentFolder() {
-        return Path.fromString(this.currentFolder);
+        return this.currentFolder;
     }
 
     public Command getCommand() {

@@ -33,7 +33,6 @@ package org.vortikal.edit.fckeditor;
 import java.io.File;
 import java.io.InputStream;
 import java.text.Collator;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +58,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
+
 
 
 public class FCKeditorConnector implements Controller {
@@ -161,15 +161,16 @@ public class FCKeditorConnector implements Controller {
 
         return new ModelAndView(this.browseViewName, model);
     }
+
     
-    private Map<Path, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
+    private Map<String, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
                                            Filter filter, Locale locale) throws Exception {
 
         Resource[] children = this.repository.listChildren(
             token, command.getCurrentFolder(), true);
 
-        Comparator<? super Path> comparator = Collator.getInstance(locale);
-        Map<Path, Map<String, Object>> result = new TreeMap<Path, Map<String, Object>>(comparator);
+        Map<String, Map<String, Object>> result = 
+            new TreeMap<String, Map<String, Object>>(Collator.getInstance(locale));
 
         for (Resource r: children) {
             if (!filter.isAccepted(r)) {
@@ -183,7 +184,7 @@ public class FCKeditorConnector implements Controller {
                 entry.put("contentLength", r.getContentLength());
             }
             
-            result.put(r.getURI(), entry);
+            result.put(r.getURI().toString(), entry);
         }
         return result;
     }
@@ -224,13 +225,9 @@ public class FCKeditorConnector implements Controller {
                     break;
                 }
             }
-            Path base = command.getCurrentFolder();
             String name = cleanupFileName(uploadItem.getName());
-            base  = base.extend(name);
-
+            Path uri = command.getCurrentFolder().extend(name);
             boolean existed = false;
-
-            Path uri = Path.fromString(base + name);
             if (this.repository.exists(token, uri)) {
                 existed = true;
                 uri = newFileName(command, token, uploadItem);
@@ -293,7 +290,6 @@ public class FCKeditorConnector implements Controller {
             dot = ".";
             name = name.substring(0, name.lastIndexOf("."));
         }
-
         Path newURI = base.extend(name);
         while (this.repository.exists(token, newURI)) {
             newURI = base.extend(name + "(" + number + ")" + dot + extension);

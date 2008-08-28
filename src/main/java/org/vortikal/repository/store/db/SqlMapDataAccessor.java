@@ -87,11 +87,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         this.optimizedAclCopySupported = optimizedAclCopySupported;
     }
     
+
     public boolean validate() {
         throw new DataAccessException("Not implemented");
     }
-
-
     
 
     public ResourceImpl load(Path uri) {
@@ -222,7 +221,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters = new HashMap<String, Object>();
             parameters.put("previouslyInheritedFrom", oldInheritedFrom);
             parameters.put("inheritedFrom", r.getID());
-            parameters.put("uri", r.getURI());
+            parameters.put("uri", r.getURI().toString());
             parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
                                r.getURI(), SQL_ESCAPE_CHAR));
             

@@ -46,6 +46,8 @@ import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
@@ -99,6 +101,8 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         
         search.setQuery(query);
         
+        
+        
         // Restrict what properties are loaded from search index (optimization)
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         
@@ -110,6 +114,12 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         select.addPropertyDefinition(titlePropDef);
         
         search.setPropertySelect(select);
+        
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new TypedSortField(PropertySet.NAME_IDENTIFIER));
+        
+        search.setSorting(sorting); 
+        
 
         // Do repository search
         ResultSet results = searcher.execute(token, search);

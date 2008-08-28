@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004,2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,14 @@
  */
 package org.vortikal.web.controller.repository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -52,25 +50,17 @@ import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
 
 
-public class TemplateBasedCreateController extends SimpleFormController
-  implements InitializingBean {
+public class TemplateBasedCreateController extends SimpleFormController {
 
 	private ResourceTemplateManager templateManager;
 	
-    private Repository repository = null;
-    private DocumentTemplates documentTemplates;
+    private Repository repository;
     
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     } 
 
-    public void afterPropertiesSet() throws Exception {
-        if (this.documentTemplates == null) {
-            throw new BeanInitializationException(
-                "Required bean property 'documentTemplates' not set.");
-        }
-
-    }
     
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
@@ -89,7 +79,7 @@ public class TemplateBasedCreateController extends SimpleFormController
 
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 				
-        ArrayList <ResourceTemplate> l = (ArrayList<ResourceTemplate>) templateManager.getDocumentTemplates(token, uri);        
+        List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);        
         
         // Set first available template as the selected 
         if (!l.isEmpty()) {
@@ -101,8 +91,7 @@ public class TemplateBasedCreateController extends SimpleFormController
 
 
     @SuppressWarnings("unchecked")
-    protected Map referenceData(HttpServletRequest request) throws Exception {
-        
+    protected Map referenceData(HttpServletRequest request) throws Exception {       
         RequestContext requestContext = RequestContext.getRequestContext();        
         SecurityContext securityContext = SecurityContext.getSecurityContext();
     	
@@ -113,17 +102,15 @@ public class TemplateBasedCreateController extends SimpleFormController
 				
 	    List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 	    
-	    TreeMap <String, String> tmp = new TreeMap <String, String>();
+	    Map <String, String> tmp = new LinkedHashMap <String, String>();
         for (ResourceTemplate t: l) {
-        	tmp.put(t.getUri().toString(), t.getName());
+        	tmp.put(t.getUri().toString(),t.getName());
 	    }
-		       
-        model.put("templates", tmp);
-		    	
+
+        model.put("templates", tmp);		    	
         return model;
     }
     
-
     protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -147,13 +134,6 @@ public class TemplateBasedCreateController extends SimpleFormController
         
     }
     
-
-    /**
-     * @param documentTemplates The documentTemplates to set.
-     */
-    public void setDocumentTemplates(DocumentTemplates documentTemplates) {
-        this.documentTemplates = documentTemplates;
-    }
 
 	public void setTemplateManager(ResourceTemplateManager templateManager) {
 		this.templateManager = templateManager;

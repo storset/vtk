@@ -83,9 +83,15 @@ public class PathTest extends TestCase {
         
         assertTrue(p.isAncestorOf(Path.fromString("/a/b/c/d/e")));
         assertFalse(p.isAncestorOf(Path.fromString("/a/b/c/e")));
+        
+        // Self should not be ancestor of self
+        assertFalse(Path.fromString("/a/b").isAncestorOf(Path.fromString("/a/b")));
+        assertFalse(Path.fromString("/a/b/c").isAncestorOf(Path.fromString("/a/b/d")));
+        assertFalse(Path.fromString("/").isAncestorOf(Path.fromString("/")));
  
         assertEquals(p.extend("e"), Path.fromString("/a/b/c/d/e"));
         assertEquals(p.extend("e/f/g"), Path.fromString("/a/b/c/d/e/f/g"));
+        
     }
     
     private void assertInvalid(String path) {

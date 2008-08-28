@@ -171,14 +171,19 @@ public final class Path implements Comparable<Path> {
 	 * @return true if this path contains the other, false otherwise.
 	 */
 	public boolean isAncestorOf(Path other) {
-	    if (other.elements.size() < this.elements.size()) {
+	    if (other.elements.size() <= this.elements.size()) {
+	        // If other path's depth is less than or equal to this, we cannot
+	        // be ancestor.
 	        return false;
-	    }
+	    } 
+	    
+	    // Compare elements from the root down to last element of this path
 	    for (int i = 0; i < this.elements.size(); i++) {
             if (!this.elements.get(i).equals(other.elements.get(i))) {
                 return false;
             }
         }
+	    
 	    return true;
 	}
 	

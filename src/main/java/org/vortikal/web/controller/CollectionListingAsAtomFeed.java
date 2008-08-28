@@ -43,6 +43,7 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang.StringUtils;
 import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -108,7 +109,6 @@ public class CollectionListingAsAtomFeed implements Controller {
         }
         
         feed.setUpdated(collection.getLastModified());
-        //feed.addAuthor(resource.getOwner().getDescription());
         feed.addLink(viewService.constructLink(uri), "alternate");
         
         Map<String, Object> searchResult = searchComponent.execute(request, collection);
@@ -123,17 +123,19 @@ public class CollectionListingAsAtomFeed implements Controller {
             Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
             entry.setTitle(prop.getFormattedValue());
 
-            String summary = getIntroduction(child);
-            if (summary != null) {
-                Property pic = child.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
-                if (pic != null) {
-                    summary = prepareSummary(pic, summary);
-                }
+            Property type = child.getProperty(NS, PropertyType.XHTML_PROP_NAME);
+            // Add introduction and/or pic as xhtml if resource is event or article...
+            if (StringUtils.equals(type.getStringValue(), "event")
+                ||StringUtils.equals(type.getStringValue(), "article")) {
+
+                String summary = prepareSummary(child);
                 entry.setSummaryAsXhtml(summary);
+                
+            // ...add description as plain text else
             } else {
-                summary = getDescription(child);
-                if (subTitle != null) {
-                    entry.setSummary(summary);
+                String description = getDescription(child);
+                if (description != null) {
+                    entry.setSummary(description);
                 }
             }
 
@@ -163,13 +165,7 @@ public class CollectionListingAsAtomFeed implements Controller {
             prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
             if (prop != null) {
                 try {
-                    Path propRef = null;
-                    String val = prop.getStringValue();
-                    if (val.startsWith("/")) {
-                        propRef = Path.fromString(val);
-                    } else {
-                        propRef = child.getURI().extend(val);
-                    }
+                    Path propRef = getPropRef(child, prop.getStringValue());
                     Resource mediaResource = repository.retrieve(token, propRef, true);
                     link.setHref(viewService.constructLink(propRef));
                     link.setRel("enclosure");
@@ -202,13 +198,26 @@ public class CollectionListingAsAtomFeed implements Controller {
         return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
     }
     
-    private String prepareSummary(Property pic, String summary) {
+    private String prepareSummary(PropertySet resource) {
         StringBuilder sb = new StringBuilder();
-        String imgPath = pic.getStringValue();
-        String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.indexOf("."));
-        sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
-        sb.append(summary);
+        String summary = getIntroduction(resource);
+        Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+        if (pic != null) {
+            String imgPath = viewService.constructLink(getPropRef(resource, pic.getStringValue()));
+            String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.indexOf("."));
+            sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
+        }
+        if (summary != null) {
+            sb.append(summary);
+        }        
         return sb.toString();
+    }
+    
+    private Path getPropRef(PropertySet resource, String val) {
+        if (val.startsWith("/")) {
+           return Path.fromString(val);
+        }
+        return resource.getURI().extend(val);
     }
 
     /**

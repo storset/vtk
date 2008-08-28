@@ -136,14 +136,19 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     
     public Property getPropertyByPrefix(String prefix, String name) {
         Namespace namespace = Namespace.getNamespaceFromPrefix(prefix);
-        if (namespace.getPrefix().equals(namespace.getUri())) {
-            for (Namespace ns : this.propertyMap.keySet()) {
-                if (prefix.equals(ns.getPrefix())) {
-                    namespace = ns;
-                    break;
-                }
-            }
-        }
+        
+        // XXX: Hack for fear of non-working hashcode/equals ?
+//        if (namespace.getPrefix() != null && 
+//                namespace.getPrefix().equals(namespace.getUri())) {
+//            // Typical case for unknown/unregistered namespaces
+//            for (Namespace ns : this.propertyMap.keySet()) {
+//                if (prefix.equals(ns.getPrefix())) {
+//                    namespace = ns;
+//                    break;
+//                }
+//            }
+//        }
+//        
         Map<String, Property> map = this.propertyMap.get(namespace);
         if (map == null) return null;
         return map.get(name);

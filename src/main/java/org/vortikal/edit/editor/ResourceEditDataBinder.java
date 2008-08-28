@@ -54,13 +54,14 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
     private HtmlPageParser htmlParser;
     private HtmlPageFilter htmlPropsFilter;
 
-    
-    public ResourceEditDataBinder(Object target, String objectName, HtmlPageParser htmlParser, 
-                                  HtmlPageFilter htmlPropsFilter) {
+
+    public ResourceEditDataBinder(Object target, String objectName, HtmlPageParser htmlParser,
+            HtmlPageFilter htmlPropsFilter) {
         super(target, objectName);
         this.htmlParser = htmlParser;
         this.htmlPropsFilter = htmlPropsFilter;
     }
+
 
     @Override
     public void bind(ServletRequest request) {
@@ -75,12 +76,12 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             } else {
                 return;
             }
-            
+
             Resource resource = command.getResource();
-            
+
             setProperties(request, command, resource, command.getPreContentProperties());
             setProperties(request, command, resource, command.getPostContentProperties());
-            
+
             if (command.getContent() != null) {
                 String content = command.getContent().getStringRepresentation();
                 String postedHtml = request.getParameter("resource.content");
@@ -93,15 +94,15 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
-    protected void setProperties(ServletRequest request,
-            ResourceEditWrapper command, Resource resource,
+
+    protected void setProperties(ServletRequest request, ResourceEditWrapper command, Resource resource,
             List<PropertyTypeDefinition> propDefs) {
 
-        for (PropertyTypeDefinition propDef: propDefs) {
+        for (PropertyTypeDefinition propDef : propDefs) {
             String value = null;
 
-            if (propDef.getType().equals(PropertyType.Type.TIMESTAMP) ||
-                    propDef.getType().equals(PropertyType.Type.DATE)) {
+            if (propDef.getType().equals(PropertyType.Type.TIMESTAMP)
+                    || propDef.getType().equals(PropertyType.Type.DATE)) {
                 value = request.getParameter("resource." + propDef.getName() + ".date");
                 String time = request.getParameter("resource." + propDef.getName() + ".hours");
                 if (value != null && time != null && !time.trim().equals("")) {
@@ -111,7 +112,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                     }
                     value += " " + time;
                 }
-            } else { 
+            } else {
                 value = request.getParameter("resource." + propDef.getName());
             }
 
@@ -135,7 +136,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                 if (propDef.isMandatory()) {
                     command.reject(propDef, propDef.getName() + " is required");
                     continue;
-                } 
+                }
                 command.setPropChange(true);
                 resource.removeProperty(propDef);
                 continue;
@@ -150,15 +151,16 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
+
     protected void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
-    	PropertyTypeDefinition propDef = prop.getDefinition();
+        PropertyTypeDefinition propDef = prop.getDefinition();
 
         if (propDef.isMultiple()) {
             String[] strings = valueString.split(",");
             if (strings.length == 0) {
                 throw new IllegalArgumentException("Value cannot be empty");
             }
-            
+
             List<Value> values = new ArrayList<Value>();
             for (String string : strings) {
                 if (!StringUtils.isBlank(string)) {
@@ -166,8 +168,8 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
                 }
             }
             prop.setValues(values.toArray(new Value[values.size()]));
-        } else if (prop.getDefinition().getType() == PropertyType.Type.HTML) { 
-            
+        } else if (prop.getDefinition().getType() == PropertyType.Type.HTML) {
+
             try {
                 HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
                 fragment.filter(this.htmlPropsFilter);
@@ -183,31 +185,40 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
         }
     }
 
+
     protected void parseContent(ResourceEditWrapper command, String postedHtml) {
 
-        if (postedHtml == null) postedHtml = "";
+        if (postedHtml == null)
+            postedHtml = "";
         try {
             postedHtml = "<html><head></head><body>" + postedHtml + "</body></html>";
-            ByteArrayInputStream in = new ByteArrayInputStream(postedHtml.getBytes(command.getResource().getCharacterEncoding()));
+            ByteArrayInputStream in = new ByteArrayInputStream(postedHtml.getBytes(command.getResource()
+                    .getCharacterEncoding()));
             HtmlPage parsed = this.htmlParser.parse(in, command.getResource().getCharacterEncoding());
 
             HtmlElement body = command.getContent().selectSingleElement("html.body");
             HtmlElement suppliedBody = parsed.selectSingleElement("html.body");
-            
-            if (body == null || suppliedBody == null) {
-                throw new RuntimeException("No HTML body to save");
+
+            // If body tag is non-excisting add standard web-page with supplied body-content
+            if (body == null) {
+                body = command.getContent().createElement("html.body");
+                command.setContent(parsed);
+                // Else: Normal behaviour
+            } else {
+                body.setChildNodes(suppliedBody.getChildNodes());
             }
-            body.setChildNodes(suppliedBody.getChildNodes());
             command.setContentChange(true);
         } catch (Throwable t) {
             throw new RuntimeException("Unable to save content", t);
         }
     }
 
+
     public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
     }
-    
+
+
     protected HtmlPageParser getHtmlParser() {
         return htmlParser;
     }

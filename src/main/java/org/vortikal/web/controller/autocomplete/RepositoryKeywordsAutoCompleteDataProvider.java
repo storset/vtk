@@ -31,7 +31,6 @@
 package org.vortikal.web.controller.autocomplete;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -113,7 +112,7 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
             logger.warn("Failed to execute data report query", de);
             
             // Return empty list when failed, for now.
-            return Collections.emptyList();
+            return new ArrayList<Object>(0);
         }
     }
     

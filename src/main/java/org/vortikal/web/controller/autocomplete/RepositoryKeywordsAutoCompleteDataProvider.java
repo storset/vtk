@@ -31,6 +31,7 @@
 package org.vortikal.web.controller.autocomplete;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -46,6 +47,7 @@ import org.vortikal.repository.reporting.UriScope;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQuery.Ordering;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+
 
 /**
  * Provide keywords completion data from repository.
@@ -111,7 +113,7 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
             logger.warn("Failed to execute data report query", de);
             
             // Return empty list when failed, for now.
-            return new ArrayList<Object>(0);
+            return Collections.emptyList();
         }
     }
     

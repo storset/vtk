@@ -63,7 +63,7 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
  * </ul>
  *
  * <p>When the cache reaches its maximum size, a FIFO scheme is
- * applied; a configurable percentage of the items are removed, the
+ * applied; a configurable percentage of the items are removed,
  * starting with the oldest ones.
  *
  * <p>Configurable JavaBean properties:
@@ -305,6 +305,12 @@ public class Cache implements DataAccessor, InitializingBean {
         try {
             this.wrappedAccessor.storeACL(r);
             for (Path uri: uris) {
+                // XXX: Why test for containsURI here ? Removing non-existing URI does no harm
+                //      and this test will in most cases return true, I would think ..
+                //      Trying to possibly avoid synchronized call to remove() ?
+                //      This also feels a bit wrong, since containsURI() is *not* synchronized, while
+                //      remove() is .. but I don't know if there really is any problematic race
+                //      conditions here..
                 if (this.items.containsURI(uri)) {
                     this.items.remove(uri);
                 }
@@ -550,6 +556,20 @@ public class Cache implements DataAccessor, InitializingBean {
         this.items.dump(out);
     }
 
+    private class Item {
+        Item older = null;
+        Item newer = null;
+        ResourceImpl resource;
+
+        Item(ResourceImpl resource) {
+            this.resource = resource;
+        }
+
+        ResourceImpl getResource() {
+            return this.resource;
+        }
+    }
+
     private class Items {
         @SuppressWarnings("unchecked")
         private Map<Path, Item> map = new ConcurrentReaderHashMap();
@@ -674,20 +694,6 @@ public class Cache implements DataAccessor, InitializingBean {
     
     public Set<Principal> discoverGroups() throws DataAccessException {
         return this.wrappedAccessor.discoverGroups();
-    }
-
-    private class Item {
-        Item older = null;
-        Item newer = null;
-        ResourceImpl resource;
-
-        Item(ResourceImpl resource) {
-            this.resource = resource;
-        }
-
-        ResourceImpl getResource() {
-            return this.resource;
-        }
     }
 
 

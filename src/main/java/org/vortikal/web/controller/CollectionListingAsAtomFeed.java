@@ -204,7 +204,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (pic != null) {
             String imgPath = viewService.constructLink(getPropRef(resource, pic.getStringValue()));
-            String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.indexOf("."));
+            String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.lastIndexOf("."));
             sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
         }
         if (summary != null) {

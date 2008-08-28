@@ -32,7 +32,6 @@ package org.vortikal.web.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +60,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
+import org.vortikal.web.controller.search.SearchComponent.Listing;
 import org.vortikal.web.service.Service;
 
 public class CollectionListingAsAtomFeed implements Controller {
@@ -111,9 +111,8 @@ public class CollectionListingAsAtomFeed implements Controller {
         feed.setUpdated(collection.getLastModified());
         feed.addLink(viewService.constructLink(uri), "alternate");
         
-        Map<String, Object> searchResult = searchComponent.execute(request, collection);
-        @SuppressWarnings("unchecked")
-        List<PropertySet> files = (List<PropertySet>) searchResult.get("files");
+        Listing searchResult = searchComponent.execute(request, collection, 0, 25);
+        List<PropertySet> files = searchResult.getFiles();
         for (PropertySet child : files) {
             Entry entry = feed.addEntry();
             

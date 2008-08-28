@@ -47,6 +47,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -55,6 +56,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.search.SearchComponent;
+import org.vortikal.web.controller.search.SearchComponent.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -67,11 +69,13 @@ public class CollectionListingController implements Controller {
     private ResourceWrapperManager resourceManager;
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition hiddenPropDef;
+    private int defaultPageLimit = 20;
+    private PropertyTypeDefinition pageLimitPropDef;
+
     private String viewName;
     private List<SearchComponent> searchComponents;
     private Map<String, Service> alternativeRepresentations;
 
-    
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -96,13 +100,84 @@ public class CollectionListingController implements Controller {
                 .createResourceWrapper(collection.getURI()));
         model.put("subCollections", subCollections);
 
-        List<Object> searchComponents = new ArrayList<Object>();
+        // Setting the default pagelimit
+        int pageLimit = this.defaultPageLimit;
+        Property rPageLimit = collection.getProperty(this.pageLimitPropDef);
+        if (rPageLimit != null) {
+            pageLimit = rPageLimit.getIntValue();
+        }
+
+        int page = 0;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+                if (page < 1) {
+                    page = 1;
+                }
+            } catch (Throwable t) { }
+        }
+
+        if (page == 0) {
+            page = 1;
+        }
+
+        int offset = (page - 1) * pageLimit;
+        int limit = pageLimit;
+        
+        List<Listing> searchComponents = new ArrayList<Listing>();
         for (SearchComponent component : this.searchComponents) {
-            Map<String, Object> subModel = component.execute(request, collection);
-            searchComponents.add(subModel);
+            Listing listing = component.execute(request, collection, offset, limit);
+
+            // Add the listing to the results
+            if (listing.getFiles().size() > 0) {
+                searchComponents.add(listing);
+            }
+
+            // Check previous result (by redoing the previous search),  
+            // to see if we need to adjust the offset.
+            // XXX: is there a better way?
+            if (listing.getFiles().size() == 0 && offset > 0) {
+                int prevOffset = offset - ((page - 1) * pageLimit);
+                Listing prevListing = component.execute(request, collection, prevOffset, limit);
+                if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
+                   offset -= prevListing.getFiles().size();
+                }
+             }
+
+            // We have more results to display for this listing 
+            if (listing.hasMoreResults()) {
+                break;
+            }
+
+            // Only include enough results to fill the page:
+            if (listing.getFiles().size() > 0) {
+               limit -= listing.getFiles().size();
+            }
         }
         model.put("searchComponents", searchComponents);
+        model.put("page", page);
+
+        URL nextURL = null;
+        URL prevURL = null;
+        if (searchComponents.size() > 0) {
+            Listing last = searchComponents.get(searchComponents.size() - 1);
+            if (last.hasMoreResults()) {
+                nextURL = URL.create(request);
+                nextURL.setParameter("page", String.valueOf(page + 1));
+            }
+            if (page > 1) {
+                prevURL = URL.create(request);
+                if (page == 1) {
+                    prevURL.removeParameter("page");
+                } else {
+                    prevURL.setParameter("page", String.valueOf(page - 1));
+                }
+            }
+        }
         
+        model.put("nextURL", nextURL);
+        model.put("prevURL", prevURL);
+
         Set<Object> alt = new HashSet<Object>();
         for (String contentType: this.alternativeRepresentations.keySet()) {
             try {
@@ -145,6 +220,17 @@ public class CollectionListingController implements Controller {
     @Required 
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
         this.titlePropDef = titlePropDef;
+    }
+
+    @Required
+    public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
+        this.pageLimitPropDef = pageLimitPropDef;
+    }
+
+    public void setDefaultPageLimit(int defaultPageLimit) {
+        if (defaultPageLimit <= 0)
+            throw new IllegalArgumentException("Argument must be a positive integer");
+        this.defaultPageLimit = defaultPageLimit;
     }
 
 

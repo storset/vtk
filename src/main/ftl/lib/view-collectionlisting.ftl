@@ -23,18 +23,12 @@
   <#return introduction />
 </#function>
 
-<#-- Function to get page -->
-<#function getPage collectionListing>
-  <#local page = "${collectionListing.page?html}" />
-  <#return page />
-</#function>
-
 <#macro displayResources collectionListing>
 
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
     <div class="vrtx-resources ${collectionListing.name}">
-    <#if collectionListing.title?exists>
+    <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>
     </#if>
     
@@ -70,13 +64,6 @@
    </div>
   </#if>
   
-  <#if collectionListing.prevURL?exists>
-    <a class="vrtx-previous" href="${collectionListing.prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>&nbsp;
-  </#if>
-  <#if collectionListing.nextURL?exists>
-    <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-  </#if>
-  
 </#macro>
 
 <#macro displayArticles collectionListing displayMoreURLs=false>
@@ -84,7 +71,7 @@
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
     <div class="vrtx-resources ${collectionListing.name}">
-    <#if collectionListing.title?exists>
+    <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>
     </#if>
 
@@ -141,21 +128,14 @@
    </div>
   </#if>
 
-  <#if collectionListing.prevURL?exists>
-    <a class="vrtx-previous" href="${collectionListing.prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-  </#if>
-  <#if collectionListing.nextURL?exists>
-    <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-  </#if>
-  
 </#macro>
 
 <#macro displayEvents collectionListing displayMoreURLs=false>
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
     <div class="vrtx-resources ${collectionListing.name}">
-    <#if collectionListing.title?exists>
-      <h2>${collectionListing.title?html}</h2>
+    <#if collectionListing.title?exists && collectionListing.offset == 0>
+      <h2>${collectionListing.title?html}</h2> 
     </#if>
     <#local locale = springMacroRequestContext.getLocale() />
     <#list resources as r>
@@ -189,11 +169,4 @@
    </div>
   </#if>
 
-  <#if collectionListing.prevURL?exists>
-    <a class="vrtx-previous" href="${collectionListing.prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-  </#if>
-  <#if collectionListing.nextURL?exists>
-    <a class="vrtx-next" href="${collectionListing.nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-  </#if>
-  
 </#macro>

@@ -39,6 +39,8 @@
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="viewName" value="eventListing.view" />
+    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponents">
       <list>
         <ref bean="eventListing.upcomingEventsSearchComponent" />
@@ -67,9 +69,6 @@
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="supportPaging" value="false" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
 
@@ -94,8 +93,6 @@
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
 

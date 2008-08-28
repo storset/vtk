@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.edit.editor.ResourceWrapper;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -63,10 +64,7 @@ public class SearchComponent {
     private String name;
     private String titleLocalizationKey;
 
-    private int defaultPageLimit = 20;
     private boolean defaultRecursive = false;
-
-    private boolean supportPaging = true;
 
     private Searcher searcher;
     private ResourceWrapperManager resourceManager;
@@ -81,7 +79,6 @@ public class SearchComponent {
     private SortFieldDirection defaultSortOrder;
     private Map<String, SortFieldDirection> sortOrderMapping;
 
-    private PropertyTypeDefinition pageLimitPropDef;
     private PropertyTypeDefinition recursivePropDef;
     private PropertyTypeDefinition sortPropDef;
 
@@ -91,37 +88,14 @@ public class SearchComponent {
     private List<PropertyDisplayConfig> listableProperties;
 
 
-    public Map<String, Object> execute(HttpServletRequest request, Resource collection) throws Exception {
+    public Listing execute(HttpServletRequest request, Resource collection, 
+                           int offset, int limit) throws Exception {
 
         boolean recursive = this.defaultRecursive;
         if (collection.getProperty(this.recursivePropDef) != null) {
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
         }
-        // Setting the default pagelimit
-        int pageLimit = this.defaultPageLimit;
-        Property rPageLimit = collection.getProperty(this.pageLimitPropDef);
-        if (rPageLimit != null) {
-            pageLimit = rPageLimit.getIntValue();
-        }
-
-        int page = 0;
-        if (this.supportPaging && request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-                if (page < 1) {
-                    page = 1;
-                }
-            } catch (Throwable t) {
-            }
-        }
-
-        if (page == 0) {
-            page = 1;
-        }
-
-        // Adds +1 to url and subtracts it here again to get minimum recoding.
-        int offset = (page - 1) * pageLimit;
-
+        
         PropertyTypeDefinition sortProp = this.defaultSortPropDef;
         SortFieldDirection sortFieldDirection = this.defaultSortOrder;
 
@@ -145,7 +119,7 @@ public class SearchComponent {
         }
 
         search.setQuery(andQuery);
-        search.setLimit(pageLimit + 1);
+        search.setLimit(limit + 1);
         search.setCursor(offset);
 
         String token = SecurityContext.getSecurityContext().getToken();
@@ -155,7 +129,7 @@ public class SearchComponent {
 
         ResultSet result = this.searcher.execute(token, search);
 
-        boolean more = result.getSize() == pageLimit + 1;
+        boolean more = result.getSize() == limit + 1;
         int num = result.getSize();
         if (more) {
             num--;
@@ -170,20 +144,6 @@ public class SearchComponent {
             urls.put(res.getURI().toString(), url);
         }
 
-        URL nextURL = null;
-        if (more && this.supportPaging && pageLimit > 0) {
-            nextURL = URL.create(request);
-            nextURL.setParameter("page", String.valueOf(page + 1));
-        }
-        URL prevURL = null;
-        if (page > 1 && this.supportPaging && pageLimit > 0) {
-            prevURL = URL.create(request);
-            if (page == 1) {
-                prevURL.removeParameter("page");
-            } else {
-                prevURL.setParameter("page", String.valueOf(page - 1));
-            }
-        }
 
         List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
         for (PropertyDisplayConfig config : this.listableProperties) {
@@ -203,20 +163,16 @@ public class SearchComponent {
             title = springRequestContext.getMessage(this.titleLocalizationKey, (String) null);
         }
 
-        // XXX: Make a real data model out of this map:
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("title", title);
-        model.put("name", this.name);
-        model.put("resource", this.resourceManager.createResourceWrapper(collection.getURI()));
-        model.put("files", files);
-        model.put("urls", urls);
-        model.put("page", page);
-        model.put("nextURL", nextURL);
-        model.put("prevURL", prevURL);
-        model.put("displayPropDefs", displayPropDefs);
-        return model;
+        ResourceWrapper resourceWrapper = this.resourceManager.createResourceWrapper(collection.getURI());
+ 
+        Listing listing = new Listing(resourceWrapper, title, name, offset);
+        listing.setMore(more);
+        listing.setFiles(files);
+        listing.setUrls(urls);
+        listing.setDisplayPropDefs(displayPropDefs);
+        
+        return listing;
     }
-
 
     @Required
     public void setName(String name) {
@@ -244,12 +200,6 @@ public class SearchComponent {
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
-    }
-
-
-    @Required
-    public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
-        this.pageLimitPropDef = pageLimitPropDef;
     }
 
 
@@ -319,18 +269,6 @@ public class SearchComponent {
     }
 
 
-    public void setSupportPaging(boolean supportPaging) {
-        this.supportPaging = supportPaging;
-    }
-
-
-    public void setDefaultPageLimit(int defaultPageLimit) {
-        if (defaultPageLimit <= 0)
-            throw new IllegalArgumentException("Argument must be a positive integer");
-        this.defaultPageLimit = defaultPageLimit;
-    }
-
-
     public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
         this.publishedDatePropDef = publishedDatePropDef;
     }
@@ -348,6 +286,73 @@ public class SearchComponent {
 
     public PropertyTypeDefinition getAuthorPropDef() {
         return this.authorDatePropDef;
+    }
+
+
+    public class Listing {
+        private ResourceWrapper resource;
+        private String title;
+        private String name;
+        private int offset;
+        private boolean more;
+        private List<PropertySet> files = new ArrayList<PropertySet>();
+        private Map<String, URL> urls = new HashMap<String, URL>();
+        private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
+
+        public Listing(ResourceWrapper resource, String title, String name, int offset) {
+            this.resource = resource;
+            this.title = title;
+            this.name = name;
+            this.offset = offset;
+        }
+
+        public ResourceWrapper getResource() {
+            return resource;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getName() {
+            return name;
+        }
+        
+        public int getOffset() {
+            return this.offset;
+        }
+
+        public void setFiles(List<PropertySet> files) {
+            this.files = files;
+        }
+
+        public List<PropertySet> getFiles() {
+            return files;
+        }
+
+        public void setUrls(Map<String, URL> urls) {
+            this.urls = urls;
+        }
+
+        public Map<String, URL> getUrls() {
+            return urls;
+        }
+
+        public void setDisplayPropDefs(List<PropertyTypeDefinition> displayPropDefs) {
+            this.displayPropDefs = displayPropDefs;
+        }
+
+        public List<PropertyTypeDefinition> getDisplayPropDefs() {
+            return displayPropDefs;
+        }
+
+        public void setMore(boolean more) {
+            this.more = more;
+        }
+
+        public boolean hasMoreResults() {
+            return more;
+        }
     }
 
 }

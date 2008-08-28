@@ -40,6 +40,8 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="hiddenPropDef" ref="hiddenPropDef" />
+    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="viewName" value="articleListing.view" />
     <property name="searchComponents">
       <list>
@@ -68,8 +70,6 @@
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="defaultRecursive" value="true" />
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />

@@ -41,11 +41,6 @@
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>
   
-  <#--Gets page from lib/view-collectionlisiting.ftl -->
-  <#list searchComponents as searchComponent>
-     <#assign page = coll.getPage(searchComponent)>
-  </#list>
-  
   <title>${title?html}
     <#if page?has_content>
       <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
@@ -54,6 +49,8 @@
   
 </head>
 <body>
+  
+  <#assign page = page?default(1) />
 
   <h1>${title}
     <#if page?has_content>
@@ -61,6 +58,7 @@
     </#if>
   </h1> 
 
+     <#if page == 1>
      <#-- Image -->
      <@viewutils.displayImage resource />
 
@@ -72,9 +70,11 @@
          ${introduction}
        </div>
      </#if>
+     </#if>
 
      <#-- List collections: -->
-
+     <#if page == 1>
+     
      <#if subCollections?size &gt; 0>
        <#if subCollections?size &gt; 15>
           <#assign splitList = ((subCollections?size/4)+0.75)?int />
@@ -109,10 +109,13 @@
        </div>
 
      </#if>
+     </#if>
+
 
      <#-- List resources: -->
 
-     <#if collection.resourceType = 'event-listing'>
+     <#if false && collection.resourceType = 'event-listing'>
+       <#--
        <#assign upcomingEvents = searchComponents[0] />
        <#assign previousEvents = searchComponents[1] />
        
@@ -122,16 +125,28 @@
          <@coll.displayEvents collectionListing=upcomingEvents displayMoreURLs=true />
          <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
        </#if>
+       -->
      <#else>
        <#list searchComponents as searchComponent>
          <#if collection.resourceType = 'article-listing'>
            <@coll.displayArticles collectionListing=searchComponent displayMoreURLs=true />
+         <#elseif collection.resourceType = 'event-listing'>
+           <@coll.displayEvents collectionListing=searchComponent displayMoreURLs=true />
          <#else>
            <@coll.displayResources collectionListing=searchComponent />
          </#if>
        </#list>
      </#if>
      
+
+     <#-- Previous/next URLs: -->
+
+     <#if prevURL?exists>
+       <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
+     </#if>
+     <#if nextURL?exists>
+       <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+     </#if>
 
     <#-- XXX: display first link with content type = atom: -->
     <#list alternativeRepresentations as alt>

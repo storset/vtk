@@ -82,18 +82,18 @@ public final class PropertyType {
         RepositoryAction.UNEDITABLE_ACTION;
  
 
-    /* Known evaluated prop (extra props) */
+    /* Known evaluated props (extra props) */
     public static final String TITLE_PROP_NAME = "title";
     public static final String INTRODUCTION_PROP_NAME = "introduction";
     public static final String DESCRIPTION_PROP_NAME = "description";
     public static final String MEDIA_PROP_NAME = "media";
     public static final String PICTURE_PROP_NAME = "picture";
     public static final String SCHEMA_PROP_NAME = "schema";
+    public static final String XHTML_PROP_NAME = "xhtml10-type";
     
     /*
      * Special properties
      */
-    
     public static final String COLLECTION_PROP_NAME = "collection";
     public static final String OWNER_PROP_NAME = "owner";
     public static final String CREATIONTIME_PROP_NAME = "creationTime";

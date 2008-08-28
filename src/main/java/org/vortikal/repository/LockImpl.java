@@ -91,7 +91,7 @@ public class LockImpl implements Lock {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append("[");
         sb.append(", depth =").append(this.depth);
         sb.append(", principal = ").append(this.principal);

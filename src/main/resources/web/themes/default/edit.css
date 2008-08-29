@@ -29,6 +29,11 @@ h3 {font-size: 115%;}
 
 .documentTitle {font-size: 150%; font-weight: bold;} 
 
+/* List */
+
+ul {margin: 1em 1em 1em 2.5em;}
+
+
 /* Form section */
 
 form {margin:0;padding:0;}
@@ -150,4 +155,6 @@ ul.finishButton {
     padding: 0; margin: 0;
     float: right;
 }
+
+
 

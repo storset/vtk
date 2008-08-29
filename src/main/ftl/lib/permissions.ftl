@@ -268,7 +268,7 @@
   <#assign grouped = false />
 
   <@spring.bind formName + ".submitURL" /> 
-  <form class="aclEdit" action="${spring.status.value?html}" method="POST">
+  <form class="aclEdit" action="${spring.status.value?html}" method="post">
     <h3>${privilegeHeading}</h3>
     <ul class="everyoneOrSelectedUsers">
     <@spring.bind formName + ".grouped" /> 

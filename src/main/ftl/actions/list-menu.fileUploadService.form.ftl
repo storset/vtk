@@ -5,7 +5,7 @@
 <#if uploadForm?exists && !uploadForm.done>
 <div style="clear:both;height:1px;visibility:hidden;"></div>
 <form class="collectionMenu" 
-        action="${uploadForm.submitURL?html}" method="POST"
+        action="${uploadForm.submitURL?html}" method="post"
         enctype="multipart/form-data">
     <h3><@vrtx.msg code="actions.fileUploadService" default="Upload File"/>:</h3>
     <@spring.bind "uploadForm.file" /> 

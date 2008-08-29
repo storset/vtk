@@ -32,7 +32,7 @@
 </#if>
 
 <#if withForm>
-  <form name="collectionListingForm" action="${action}" method="POST">
+  <form name="collectionListingForm" action="${action}" method="post">
 </#if>
 
 <table class="directoryListing">

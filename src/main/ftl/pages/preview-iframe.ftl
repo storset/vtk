@@ -72,20 +72,20 @@
     <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">
       [Your user agent does not support frames or is currently configured
       not to display frames. However, you may visit
-      <A href="${resourceReference}">the related document.</A>]
+      <a href="${resourceReference}">the related document.</a>]
     </iframe>
 
     <#-- iframe name="previewIframe" id="previewIframe" class="preview" src="${url}">
       [Your user agent does not support frames or is currently configured
       not to display frames. However, you may visit
-      <A href="${resourceReference}">the related document.</A>]
+      <a href="${resourceReference}">the related document.</a>]
     </iframe -->
 
     <#--
     <noframes>
       [Your user agent does not support frames or is currently configured
       not to display frames. However, you may visit
-      <A href="${resourceReference}">the related document.</A>]
+      <a href="${resourceReference}">the related document.</a>]
     -->
 
 
@@ -95,7 +95,7 @@
             type="${resourceContext.currentResource.*contentType*}">
       [Your user agent does not support frames or is currently configured
       not to display frames. However, you may visit
-      <A href="${resourceReference}">the related document.</A>]
+      <a href="${resourceReference}">the related document.</a>]
     </object>
     -->
 

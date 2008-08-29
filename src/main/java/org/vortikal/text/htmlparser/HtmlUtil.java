@@ -30,12 +30,14 @@
  */
 package org.vortikal.text.htmlparser;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
 
@@ -44,6 +46,10 @@ public class HtmlUtil {
 
     private HtmlPageParser htmlParser;
     private Map<String, String> htmlEntityMap = new HashMap<String, String>();
+
+    public HtmlPage parse(InputStream in, String encoding) throws Exception {
+        return this.htmlParser.parse(in, encoding);
+    }
 
 
     public String flatten(String html) {

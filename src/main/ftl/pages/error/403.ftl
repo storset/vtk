@@ -1,17 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>403 - Forbidden</title>
 </head>
 <body>
 
-<H1>403 - Access denied</H1>
+<h1>403 - Access denied</h1>
 
-<P>The web page <strong>${resourceContext.currentURI?html?if_exists}</strong>
-is restricted to a specific set of users.</P> 
+<p>The web page <strong>${resourceContext.currentURI?html?if_exists}</strong>
+is restricted to a specific set of users.</p> 
 
 <#if debugErrors?exists && debugErrors>
-<HR STYLE="width: 98%;">
+<hr />
 <#include "/lib/error-detail.ftl" />
 </#if>
 

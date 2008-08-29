@@ -101,24 +101,9 @@
         <div class="description introduction">${intro.value}</div>
         </#if>
 
-        <#-- list collectionListing.displayPropDefs as displayPropDef>
+        <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
 
-          <#if displayPropDef.name = 'introduction'>
-            <#assign val = getIntroduction(r) />
-          <#elseif displayPropDef.type = 'IMAGE_REF'>
-            <#assign val><img src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
-          <#else>
-            <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> 
-          </#if>
-
-          <#if val?has_content>
-            <div class="vrtx-prop ${displayPropDef.name}">
-              ${val}
-            </div>
-          </#if>
-        </#list -->
-
-        <#if displayMoreURLs>
+        <#if displayMoreURLs && hasBody>
           <a href="${collectionListing.urls[r.URI]?html}" class="more">
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>
@@ -158,7 +143,9 @@
         <div class="description introduction">${intro.value}</div>
         </#if>
 
-        <#if displayMoreURLs>
+        <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
+
+        <#if displayMoreURLs && hasBody>
           <a href="${collectionListing.urls[r.URI]?html}" class="more" title="${title?html}">
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>

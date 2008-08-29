@@ -115,29 +115,15 @@
 
      <#-- List resources: -->
 
-     <#if false && collection.resourceType = 'event-listing'>
-       <#--
-       <#assign upcomingEvents = searchComponents[0] />
-       <#assign previousEvents = searchComponents[1] />
-       
-       <#if previousEvents.prevURL?exists>
-         <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
+     <#list searchComponents as searchComponent>
+       <#if collection.resourceType = 'article-listing'>
+         <@coll.displayArticles collectionListing=searchComponent displayMoreURLs=true />
+       <#elseif collection.resourceType = 'event-listing'>
+         <@coll.displayEvents collectionListing=searchComponent displayMoreURLs=true />
        <#else>
-         <@coll.displayEvents collectionListing=upcomingEvents displayMoreURLs=true />
-         <@coll.displayEvents collectionListing=previousEvents displayMoreURLs=true />
+         <@coll.displayResources collectionListing=searchComponent />
        </#if>
-       -->
-     <#else>
-       <#list searchComponents as searchComponent>
-         <#if collection.resourceType = 'article-listing'>
-           <@coll.displayArticles collectionListing=searchComponent displayMoreURLs=true />
-         <#elseif collection.resourceType = 'event-listing'>
-           <@coll.displayEvents collectionListing=searchComponent displayMoreURLs=true />
-         <#else>
-           <@coll.displayResources collectionListing=searchComponent />
-         </#if>
-       </#list>
-     </#if>
+     </#list>
      
 
      <#-- Previous/next URLs: -->

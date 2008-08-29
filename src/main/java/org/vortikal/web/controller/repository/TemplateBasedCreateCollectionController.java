@@ -32,6 +32,7 @@ package org.vortikal.web.controller.repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -105,7 +106,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
 		String token = SecurityContext.getSecurityContext().getToken();
         
-        ArrayList <ResourceTemplate> l = (ArrayList<ResourceTemplate>) templateManager.getFolderTemplates(token, uri);        
+        List <ResourceTemplate> l = (ArrayList<ResourceTemplate>) templateManager.getFolderTemplates(token, uri);        
         
         // Set first available template as the selected 
         if (!l.isEmpty()) {
@@ -133,14 +134,18 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 	    org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(servletRequest);
 	    MessageLocalizer standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext);
 	    
-	    TreeMap <String, String> tmp = new TreeMap <String, String>();
-	    if(!l.isEmpty()){
-	    	tmp.put(NORMAL_FOLDER_IDENTIFYER, standardCollectionName.get(null).toString());
-	    }
-	    
-        for (ResourceTemplate t: l) {
+	    Map <String, String> tmp = new LinkedHashMap <String, String>();
+	    String standardCollection = standardCollectionName.get(null).toString();
+        for (ResourceTemplate t: l){
+        	if(standardCollection.compareTo(t.getTitle()) < 1){ // puts normal folder lexicographically correct 
+        		tmp.put(NORMAL_FOLDER_IDENTIFYER, standardCollection);
+        	}
         	tmp.put(t.getUri().toString(), t.getTitle());
 	    }
+       
+        if(!tmp.containsKey(NORMAL_FOLDER_IDENTIFYER)){ // if normal folder is lexicographically last
+        	tmp.put(NORMAL_FOLDER_IDENTIFYER, standardCollection);
+        }
 		       
         model.put("templates", tmp); 
         return model;

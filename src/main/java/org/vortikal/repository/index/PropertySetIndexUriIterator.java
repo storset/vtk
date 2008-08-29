@@ -36,6 +36,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 
 /**
@@ -46,7 +47,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
  */
 public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
 
-    private String next = null;
+    private Path next = null;
     private TermEnum te;
     private TermDocs td;
     private IndexReader reader;
@@ -64,10 +65,10 @@ public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
     }
     
     // Next non-deleted URI _including_ any multiples
-    private String nextUri() throws IOException {
+    private Path nextUri() throws IOException {
         while (td.next()) {
             if (! reader.isDeleted(td.doc())) {
-                return te.term().text();
+                return Path.fromString(te.term().text());
             }
         }
         
@@ -76,7 +77,7 @@ public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
             td.seek(te);
             while (td.next()) {
                 if (! reader.isDeleted(td.doc())) {
-                    return te.term().text();
+                    return Path.fromString(te.term().text());
                 }
             }
         }
@@ -93,7 +94,7 @@ public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
             throw new IllegalStateException("No more elements");
         }
         
-        String retVal = next;
+        Path retVal = next;
         
         try {
             next = nextUri();

@@ -103,12 +103,12 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         List<Comment> comments = repository.getComments(token, resource, 
                 this.deepCommentsListing, this.maxComments);
 
-        Map<Path, Resource> resourceMap = new HashMap<Path, Resource>();
+        Map<String, Resource> resourceMap = new HashMap<String, Resource>();
         Map<String, URL> commentURLMap = new HashMap<String, URL>();
         for (Comment comment: comments) {
             try {
                 Resource r = this.repository.retrieve(token, comment.getURI(), true);
-                resourceMap.put(r.getURI(), r);
+                resourceMap.put(r.getURI().toString(), r);
                 URL commentURL = this.viewService.constructURL(r, principal);
                 commentURLMap.put(comment.getID(), commentURL);
             } catch (Throwable t) { }

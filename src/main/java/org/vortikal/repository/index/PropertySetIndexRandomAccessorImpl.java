@@ -105,7 +105,7 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
             this.uuidTermDocs.seek(new Term(FieldNameMapping.ID_FIELD_NAME, uuid));
             while (this.uuidTermDocs.next()) {
                 if (! reader.isDeleted(this.uuidTermDocs.doc())) {
-                    propSet = mapper.getPropertySet(
+                    propSet = this.mapper.getPropertySet(
                         reader.document(this.uuidTermDocs.doc()));
                 }
             }

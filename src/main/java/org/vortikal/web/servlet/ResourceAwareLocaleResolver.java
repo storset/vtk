@@ -36,11 +36,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 
@@ -66,6 +66,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     
     private Locale defaultLocale;
     private Repository repository;
+    private String trustedToken;
     
 
     /**
@@ -79,10 +80,15 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     }
 
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
     
+    @Required
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
 
     public Locale resolveLocale(HttpServletRequest request) {
 		
@@ -93,18 +99,16 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     		}
     	}
 
-    	SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        RequestContext requestContext = RequestContext.getRequestContext();
+    	RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         
         try {
-            Resource resource = this.repository.retrieve(token, uri, true);
+            Resource resource = this.repository.retrieve(this.trustedToken, uri, true);
             Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
 
             if (locale == null) {
                 // Check for the nearest ancestor that has a locale set and use it
-                locale = getNearestAncestorLocale(token, resource);
+                locale = getNearestAncestorLocale(this.trustedToken, resource);
             }
             if (locale == null) {
                 // If no ancestor has a locale set, use the default of the host
@@ -121,7 +125,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     private Locale getNearestAncestorLocale(String token, Resource resource) throws Exception {
         Path parentURI = resource.getURI().getParent();
         while (parentURI != null) {
-            Resource parent = this.repository.retrieve(token, parentURI, false);
+            Resource parent = this.repository.retrieve(token, parentURI, true);
             if (!StringUtils.isBlank(parent.getContentLanguage())) {
                 return LocaleHelper.getLocale(parent.getContentLanguage());
             }

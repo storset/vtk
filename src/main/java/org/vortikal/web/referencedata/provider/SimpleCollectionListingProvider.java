@@ -111,8 +111,11 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
             } catch (ServiceUnlinkableException e) { }
         }
 
+        List<PropertyTypeDefinition> sortPropDefs = new ArrayList<PropertyTypeDefinition>();
+        sortPropDefs.add(this.titlePropDef);
+        
         Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        Collections.sort(collections, new ResourcePropertyComparator(this.titlePropDef, false, locale));
+        Collections.sort(collections, new ResourcePropertyComparator(sortPropDefs, false, locale));
 
         Map<String, URL> sortURLs = new HashMap<String, URL>();
         URL sortByTitleURL = URL.create(request);
@@ -129,10 +132,12 @@ public class SimpleCollectionListingProvider implements ReferenceDataProvider {
 
         String sortBy = request.getParameter("sort-by");
         if ("last-modified".equals(sortBy)) {
-            Collections.sort(files, new ResourcePropertyComparator(this.lastModifiedPropDef, true));
+            List<PropertyTypeDefinition> lastModifiedPropList = new ArrayList<PropertyTypeDefinition>();
+            lastModifiedPropList.add(this.lastModifiedPropDef);
+            Collections.sort(files, new ResourcePropertyComparator(lastModifiedPropList, true));
         } else {
             sortBy = "title";
-            Collections.sort(files, new ResourcePropertyComparator(this.titlePropDef, false, locale));
+            Collections.sort(files, new ResourcePropertyComparator(sortPropDefs, false, locale));
         }
 
         Map<String, Object> subModel = new HashMap<String, Object>();

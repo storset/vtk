@@ -66,11 +66,11 @@ import org.vortikal.web.service.URL;
 public class CollectionListingController implements Controller {
 
     private Repository repository;
-    private ResourceWrapperManager resourceManager;
-    private PropertyTypeDefinition titlePropDef;
+    private ResourceWrapperManager resourceManager;    
     private PropertyTypeDefinition hiddenPropDef;
     private int defaultPageLimit = 20;
     private PropertyTypeDefinition pageLimitPropDef;
+    private List<PropertyTypeDefinition> sortPropDefs;
 
     private String viewName;
     private List<SearchComponent> searchComponents;
@@ -93,7 +93,7 @@ public class CollectionListingController implements Controller {
         }
 
         Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        Collections.sort(subCollections, new ResourcePropertyComparator(this.titlePropDef, false, locale));
+        Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, false, locale));
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("collection", this.resourceManager
@@ -218,8 +218,8 @@ public class CollectionListingController implements Controller {
     }
     
     @Required 
-    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
-        this.titlePropDef = titlePropDef;
+    public void setSortPropDefs(List<PropertyTypeDefinition> sortPropDefs) {
+        this.sortPropDefs = sortPropDefs;
     }
 
     @Required

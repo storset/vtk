@@ -36,6 +36,7 @@ import java.util.Locale;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
 /**
@@ -90,6 +91,8 @@ public interface Property extends Cloneable {
     public String getFormattedValue();
     
     public String getFormattedValue(String format, Locale locale);
+    
+    public Type getType();
 
 }
 

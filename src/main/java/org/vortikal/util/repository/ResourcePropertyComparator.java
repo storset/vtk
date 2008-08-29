@@ -32,62 +32,119 @@ package org.vortikal.util.repository;
 
 import java.text.Collator;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
+/**
+ * Compare and sort resources based on propertydefs in a list. For each propertydef in
+ * the list, if it is set by both resources, use it (sequentially in the order provided).
+ * If one or both of the resources miss the given property or the propertyvalues are 
+ * equal, move to the next propertydef in the list.
+ */
 public class ResourcePropertyComparator implements Comparator<Resource> {
 
-    private PropertyTypeDefinition propDef;
+    private List<PropertyTypeDefinition> propDefs;
     private boolean invert = false;
     private Locale locale = null;
     
 
-    public ResourcePropertyComparator(PropertyTypeDefinition propDef) {
-        this(propDef, false);
+    public ResourcePropertyComparator(List<PropertyTypeDefinition> propDefs) {
+        this(propDefs, false);
     }
 
-    public ResourcePropertyComparator(PropertyTypeDefinition propDef, boolean invert) {
-        this(propDef, invert, null);
+    public ResourcePropertyComparator(List<PropertyTypeDefinition> propDefs, boolean invert) {
+        this(propDefs, invert, null);
     }
     
-    public ResourcePropertyComparator(PropertyTypeDefinition propDef, boolean invert, Locale locale) {
-        if (propDef == null) {
-            throw new IllegalArgumentException("Invalid property type definition: " + propDef);
+    public ResourcePropertyComparator(List<PropertyTypeDefinition> propDefs, boolean invert, Locale locale) {
+        if (propDefs == null || propDefs.size() < 1) {
+            throw new IllegalArgumentException("No property type definition is supplied: " + propDefs);
         }
-        this.propDef = propDef;
+        this.propDefs = propDefs;
         this.invert = invert;
         this.locale = locale;
     }
 
     public int compare(Resource r1, Resource r2) {
+        
         if (this.invert) {
             Resource tmp = r1; r1 = r2; r2 = tmp;
         }
-
-        Property p1 = r1.getProperty(this.propDef);
-        if (p1 == null) {
-            throw new IllegalArgumentException(
-                "Unable to compare resources " + r1 + " and " + r2 + ": " +
-                "resource " + r1 + " has no such property: " + this.propDef);
-        }
-        Property p2 = r2.getProperty(this.propDef);
-        if (p2 == null) {
-            throw new IllegalArgumentException(
-                "Unable to compare resources " + r1 + " and " + r2 + ": " +
-                "resource " + r2 + " has no such property: " + this.propDef);
+        
+        for (PropertyTypeDefinition propDef : this.propDefs) {
+            
+            Property p1 = r1.getProperty(propDef);
+            Property p2 = r2.getProperty(propDef);
+            
+            int result = 0;
+            
+            if (p1 != null && p2 != null) {
+                switch (p1.getType()) {
+                case STRING:
+                case HTML:
+                case IMAGE_REF:
+                case DATE:
+                case TIMESTAMP:
+                    result = compare(p1, p2);
+                    break;
+                case INT:
+                    result = compareAsInt(p1, p2);
+                    break;
+                case LONG:
+                    result = compareAsLong(p1, p2);
+                    break;
+                case BOOLEAN:
+                    result = compareAsBoolean(p1, p2);
+                    break;
+                case PRINCIPAL:
+                    result = compareAsPrincipal(p1, p2);
+                    break;
+                default:
+                    break;
+                }
+            }
+            
+            if (result != 0) {
+                return result;
+            }
+            
         }
         
+        return 0;
+    }
+
+    private int compare(Property p1, Property p2) {
         if (this.locale != null) {
             Collator collator = Collator.getInstance(this.locale);
             return collator.compare(p1.getValue().getStringValue(), p2.getValue().getStringValue());
-        } else {
-            return p1.getValue().compareTo(p2.getValue());
         }
+        return p1.getValue().compareTo(p2.getValue());
     }
     
+    private int compareAsInt(Property p1, Property p2) {
+        int i1 = p1.getIntValue();
+        int i2 = p2.getIntValue();
+        return i1 != i2 ? i2 - i1 : 0;
+    }
+    
+    private int compareAsLong(Property p1, Property p2) {
+        // TODO Implement as needed
+        return 0;
+    }
+    
+    private int compareAsBoolean(Property p1, Property p2) {
+        // TODO Implement as needed
+        return 0;
+    }
+    
+    private int compareAsPrincipal(Property p1, Property p2) {
+        // TODO Implement as needed
+        return 0;
+    }
     
 }
 

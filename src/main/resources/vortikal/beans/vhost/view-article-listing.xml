@@ -38,7 +38,12 @@
         class="org.vortikal.web.controller.CollectionListingController"
         parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="resourceManager" />
-    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="sortPropDefs">
+      <list>
+        <ref bean="importancePropDef" />
+        <ref bean="titlePropDef" />        
+      </list>
+    </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,10 @@
  */
 package org.vortikal.web.controller.repository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,7 +56,7 @@ import org.vortikal.web.view.freemarker.MessageLocalizer;
 
 public class TemplateBasedCreateCollectionController extends SimpleFormController {
 
-    private static final String NORMAL_FOLDER_IDENTIFYER = "NORMAL_FOLDER";
+    private static final String NORMAL_FOLDER_IDENTIFIER = "NORMAL_FOLDER";
 	
 	private ResourceTemplateManager templateManager;
 	
@@ -106,11 +104,11 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
 		String token = SecurityContext.getSecurityContext().getToken();
         
-        List <ResourceTemplate> l = (ArrayList<ResourceTemplate>) templateManager.getFolderTemplates(token, uri);        
+        List <ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);        
         
         // Set first available template as the selected 
-        if (!l.isEmpty()) {
-        	command.setSourceURI(NORMAL_FOLDER_IDENTIFYER);
+        if (!templates.isEmpty()) {
+        	command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
         } 
         
         return command;
@@ -128,23 +126,25 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
 		String token = securityContext.getToken();
 				
-	    List <ResourceTemplate> l = templateManager.getFolderTemplates(token, uri);
+	    List <ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
 	    
 	    HttpServletRequest servletRequest = requestContext.getServletRequest();
 	    org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(servletRequest);
-	    MessageLocalizer standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext);
-	    
 	    Map <String, String> tmp = new LinkedHashMap <String, String>();
-	    String standardCollection = standardCollectionName.get(null).toString();
-        for (ResourceTemplate t: l){
-        	if(standardCollection.compareTo(t.getTitle()) < 1){ // puts normal folder lexicographically correct 
-        		tmp.put(NORMAL_FOLDER_IDENTIFYER, standardCollection);
+
+	    String standardCollectionName = 
+	        new MessageLocalizer("property.standardCollectionName", "Standard collection", null, springRequestContext).get(null).toString();
+
+	    // puts normal folder lexicographically correct
+	    for (ResourceTemplate t: templates) {
+        	if(standardCollectionName.compareTo(t.getTitle()) < 1){  
+        		tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
         	}
         	tmp.put(t.getUri().toString(), t.getTitle());
 	    }
        
-        if(!tmp.containsKey(NORMAL_FOLDER_IDENTIFYER)){ // if normal folder is lexicographically last
-        	tmp.put(NORMAL_FOLDER_IDENTIFYER, standardCollection);
+        if(!tmp.containsKey(NORMAL_FOLDER_IDENTIFIER) && !tmp.isEmpty()){ // if normal folder is lexicographically last
+        	tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
         }
 		       
         model.put("templates", tmp); 
@@ -167,7 +167,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         // The location of the folder that we shall copy
         String source = createFolderCommand.getSourceURI();
-        if (source== null || source.equals(NORMAL_FOLDER_IDENTIFYER)) { 
+        if (source== null || source.equals(NORMAL_FOLDER_IDENTIFIER)) { 
             // Just create a new folder if no "folder-template" is selected
         	createNewFolder(command, uri, token);
             createFolderCommand.setDone(true);            

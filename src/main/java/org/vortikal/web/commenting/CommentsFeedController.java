@@ -86,14 +86,14 @@ public class CommentsFeedController implements Controller {
 
         List<Comment> comments = repository.getComments(token, resource, true, 50);
 
-        Map<Path, Resource> resourceMap = new HashMap<Path, Resource>();
-        Map<Path, URL> urlMap = new HashMap<Path, URL>();
-        resourceMap.put(resource.getURI(), resource);
-        urlMap.put(resource.getURI(), this.viewService.constructURL(resource.getURI()));
+        Map<String, Resource> resourceMap = new HashMap<String, Resource>();
+        Map<String, URL> urlMap = new HashMap<String, URL>();
+        resourceMap.put(resource.getURI().toString(), resource);
+        urlMap.put(resource.getURI().toString(), this.viewService.constructURL(resource.getURI()));
         for (Comment comment: comments) {
             Resource r = this.repository.retrieve(token, comment.getURI(), true);
-            resourceMap.put(r.getURI(), r);
-            urlMap.put(r.getURI(), this.viewService.constructURL(r.getURI()));
+            resourceMap.put(r.getURI().toString(), r);
+            urlMap.put(r.getURI().toString(), this.viewService.constructURL(r.getURI()));
         }
         URL selfURL = URL.create(request);
         

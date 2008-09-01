@@ -247,7 +247,6 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     private Query buildMainSearch(MenuRequest menuRequest) {
         Path uri = menuRequest.getURI();
-        int startDepth = uri.getDepth();
         
         AndQuery query = new AndQuery();
         
@@ -255,7 +254,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         if (childNames == null) {
             // Get all children
-            query.add(getChildrenQuery(uri, startDepth));
+            query.add(getChildrenQuery(uri));
 
             // Excluded children?
             String[] excludedChildren = menuRequest.getExcludedChildren();
@@ -321,17 +320,14 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
     
     // List all children based on depth:
-    private Query getChildrenQuery(Path uri, int depth) {
+    private Query getChildrenQuery(Path uri) {
         AndQuery q = new AndQuery();
-
         String uriString = uri.toString();
-        if (!uriString.equals("/")) {
+        if (!uri.isRoot()) {
             uriString += "/";
         }
-        
         q.add(new UriPrefixQuery(uriString));
-        q.add(new UriDepthQuery(depth));
-
+        q.add(new UriDepthQuery(uri.getDepth() + 1));
         return q;
     }
     
@@ -351,7 +347,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         for (int i = startDepth; i < maxDepth; i++) {
             Path uri = uris.get(i);
-            orQuery.add(getChildrenQuery(uri, i+1));
+            orQuery.add(getChildrenQuery(uri));
         }
                 
         return search(menuRequest.getToken(), orQuery);
@@ -484,6 +480,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         URL url = this.viewService.constructURL(uri);
         // Know it's a folder, append "/"
         url.setCollection(true);
+        item.setUrl(url);
 
         // Label
         String label = resource.getName().replace(' ', '-');

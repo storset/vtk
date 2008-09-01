@@ -188,8 +188,8 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private Search buildSearch(MenuRequest menuRequest) {
         Path uri = menuRequest.getCurrentCollectionUri();
-        int depth = uri.getDepth();
-
+        int depth = uri.getDepth() + 1;
+        
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(uri.toString()));
 

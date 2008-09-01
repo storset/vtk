@@ -65,5 +65,11 @@ public class UriPrefixQuery implements UriQuery {
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";uri=").append(this.uri);
+        return sb.toString();
+    }
 
 }

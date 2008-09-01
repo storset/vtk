@@ -58,4 +58,9 @@ public class UriDepthQuery implements UriQuery {
         return visitor.visit(this, data);
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";depth=").append(this.depth);
+        return sb.toString();
+    }
 }

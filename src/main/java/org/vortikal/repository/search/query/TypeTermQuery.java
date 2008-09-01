@@ -70,4 +70,11 @@ public class TypeTermQuery implements Query {
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";term=").append(this.term);
+        return sb.toString();
+    }
+
 }

@@ -64,4 +64,19 @@ public abstract class AbstractMultipleQuery implements Query {
 //
 //        return buf.toString();
 //    }
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        if (this.queries != null) {
+            sb.append(": [");
+            String separator = "";
+            for (Query qry: this.queries) {
+                sb.append(separator);
+                sb.append(qry);
+                separator = ", ";
+            }
+            sb.append("]");
+        }
+        return sb.toString();
+    }
+
 }

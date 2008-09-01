@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.web.view.decorating.DecoratorRequest;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.htmlparser.HtmlPageParserImpl;
+import org.vortikal.text.html.HtmlPageParserImpl;
 
 
 public class MockStringDecoratorRequest implements DecoratorRequest {

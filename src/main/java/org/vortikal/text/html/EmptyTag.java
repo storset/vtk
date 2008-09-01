@@ -28,21 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
-import org.vortikal.text.html.HtmlText;
+public class EmptyTag extends org.htmlparser.nodes.TagNode {
+    private static final long serialVersionUID = 6281870117698844538L;
+    private String[] ids;
 
-public class HtmlTextImpl implements HtmlText {
-
-    private String content;
-
-    public HtmlTextImpl(String content) {
-        this.content = content;
+    public EmptyTag (String[] ids) {
+        this.ids = ids;
     }
 
-    public String getContent() {
-        return this.content;
+    public String[] getIds() {
+        return(this.ids);
     }
-    
-    
+
+    public String[] getEnders() {
+        return new String[0];
+    }
+
 }

@@ -28,19 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.vortikal.text.html.HtmlComment;
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlPageFilter;
-import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlPageFilter.NodeResult;
+
 
 
 public class HtmlPageImpl implements HtmlPage {

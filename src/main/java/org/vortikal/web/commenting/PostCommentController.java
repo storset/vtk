@@ -51,11 +51,12 @@ import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlElementDescriptor;
+import org.vortikal.text.html.HtmlElementImpl;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.text.html.SimpleHtmlPageFilter;
-import org.vortikal.text.htmlparser.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -156,7 +157,6 @@ public class PostCommentController extends SimpleFormController {
                                "You must type something in the comment field");
         }
         commentCommand.setParsedText(parsedText);
-
         if (this.formSessionAttributeName == null) {
             return;
         }
@@ -207,31 +207,35 @@ public class PostCommentController extends SimpleFormController {
             if (empty) {
                 return null;
             }
-
             nodes = trimNodes(nodes);
 
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < nodes.size(); i++) {
-                HtmlContent c = nodes.get(i);
-                
-                String childContent = "";
-
-                if (c instanceof HtmlElement) {
-                    childContent = ((HtmlElement) c).getEnclosedContent();
-                } else if (c instanceof HtmlText) {
-                    childContent = HtmlUtil.escapeHtmlString(c.getContent());
-                } 
-                if ((i == 0 || i == nodes.size() - 1) && !childContent.trim().startsWith("<")) {
-                    // Wrap top-level text nodes in a <p>:
-                    result.append("<p>").append(childContent).append("</p>");
+            List<HtmlContent> content = new ArrayList<HtmlContent>();
+            HtmlElement currentParagraph = new HtmlElementImpl("p", true, false);
+            content.add(currentParagraph);
+            for (HtmlContent c: nodes) {
+                if (c instanceof HtmlElement && "p".equals(((HtmlElement) c).getName())) {
+                    content.add(c);
+                    currentParagraph = new HtmlElementImpl("p", true, false);
+                    content.add(currentParagraph);
                 } else {
-                    result.append(childContent);
+                    currentParagraph.addContent(c);
                 }
+            }
+            
+            StringBuilder result = new StringBuilder();
+            for (HtmlContent c: content) {
+                if (c instanceof HtmlElement) {
+                    result.append(((HtmlElement) c).getEnclosedContent());
+                } else if (c instanceof HtmlText) {
+                    result.append(HtmlUtil.escapeHtmlString(c.getContent()));
+                } 
             }
             return result.toString();
         }
         return text;
     }
+
+    
 
     private List<HtmlContent> trimNodes(List<HtmlContent> nodes) {
         List<HtmlContent> result = new ArrayList<HtmlContent>();

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,27 +28,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
-public class CompositeTag extends org.htmlparser.tags.CompositeTag {
 
-    private static final long serialVersionUID = -5030340189588601473L;
-    private String[] ids;
+public class HtmlCommentImpl implements HtmlComment {
 
-    public CompositeTag (String[] ids) {
-        this.ids = ids;
+    private HtmlText content;
+
+    public HtmlCommentImpl(HtmlText content) {
+        this.content = content;
     }
 
-    public String[] getIds() {
-        return(this.ids);
+    public String getContent() {
+        return this.content.getContent();
     }
-
-
-    public String[] getEnders() {
-        return (this.ids);
+    
+    public String getEnclosedContent() {
+        return "<!--" + this.content.getContent() + "-->";
     }
-
-    public String[] getEndTagEnders() {
-        return new String[0];
+    
+    public void setContent(HtmlText content) {
+        this.content = content;
+    }
+    
+    public HtmlContent[] getChildNodes() {
+        return new HtmlContent[] {this.content};
     }
 }

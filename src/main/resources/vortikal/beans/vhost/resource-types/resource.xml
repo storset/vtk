@@ -57,7 +57,7 @@
     <property name="valueFormatter" ref="htmlFormatter" />
   </bean>
 
-  <bean id="htmlUtil" class="org.vortikal.text.htmlparser.HtmlUtil">
+  <bean id="htmlUtil" class="org.vortikal.text.html.HtmlUtil">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlEntityMap" ref="htmlEntityMap" />
   </bean>

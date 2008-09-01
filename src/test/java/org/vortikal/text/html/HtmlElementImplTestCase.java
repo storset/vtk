@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, University of Oslo, Norway
+/* Copyright (c) 2007, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,33 +28,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
-import org.vortikal.text.html.HtmlComment;
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlText;
+import junit.framework.TestCase;
 
-public class HtmlCommentImpl implements HtmlComment {
 
-    private HtmlText content;
+public class HtmlElementImplTestCase extends TestCase {
 
-    public HtmlCommentImpl(HtmlText content) {
-        this.content = content;
-    }
-
-    public String getContent() {
-        return this.content.getContent();
-    }
-    
-    public String getEnclosedContent() {
-        return "<!--" + this.content.getContent() + "-->";
-    }
-    
-    public void setContent(HtmlText content) {
-        this.content = content;
-    }
-    
-    public HtmlContent[] getChildNodes() {
-        return new HtmlContent[] {this.content};
+    public void testUppercaseElementName() {
+        HtmlElementImpl element = new HtmlElementImpl("lala",  false, false);
+        element.addContent(new HtmlElementImpl("LALA", false, false));
+        
+        HtmlElement[] childElements = element.getChildElements("lala");
+        assertNotNull(childElements);
+        assertEquals(1, childElements.length);
     }
 }

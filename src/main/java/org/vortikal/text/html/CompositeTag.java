@@ -28,13 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
-public class EmptyTag extends org.htmlparser.nodes.TagNode {
-    private static final long serialVersionUID = 6281870117698844538L;
+public class CompositeTag extends org.htmlparser.tags.CompositeTag {
+
+    private static final long serialVersionUID = -5030340189588601473L;
     private String[] ids;
 
-    public EmptyTag (String[] ids) {
+    public CompositeTag (String[] ids) {
         this.ids = ids;
     }
 
@@ -42,8 +43,12 @@ public class EmptyTag extends org.htmlparser.nodes.TagNode {
         return(this.ids);
     }
 
+
     public String[] getEnders() {
-        return new String[0];
+        return (this.ids);
     }
 
+    public String[] getEndTagEnders() {
+        return new String[0];
+    }
 }

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,12 +36,6 @@ import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
-
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlNodeFilter;
-import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlPageParserException;
 
 
 public class HtmlPageParserImplTestCase extends TestCase {

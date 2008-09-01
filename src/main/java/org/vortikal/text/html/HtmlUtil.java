@@ -28,18 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlFragment;
-import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.html.HtmlText;
 
 
 public class HtmlUtil {

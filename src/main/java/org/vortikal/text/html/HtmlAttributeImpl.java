@@ -28,42 +28,45 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
-import java.util.Collections;
-import java.util.List;
 
-import org.vortikal.text.html.EnclosingHtmlContent;
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlFragment;
-import org.vortikal.text.html.HtmlPageFilter;
 
-public class HtmlFragmentImpl implements HtmlFragment {
+public class HtmlAttributeImpl implements HtmlAttribute {
+    private String name;
+    private String value;
+        
+    public HtmlAttributeImpl(String name, String value) {
+        this.name = name.toLowerCase();
+        this.value = value;
+    }
+        
+    public String getName() {
+        return this.name;
+    }
 
-    private List<HtmlContent> content;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
     
-    public HtmlFragmentImpl(List<HtmlContent> content) {
-        if (content == null) throw new IllegalArgumentException("Constructor argument cannot be NULL");
-        this.content = content;
-    }
-
-    public List<HtmlContent> getContent() {
-        return Collections.unmodifiableList(this.content);
-    }
-
-    public void filter(HtmlPageFilter filter) {
-        this.content = HtmlPageImpl.filterContent(this.content, filter);
+    public boolean hasValue() {
+        return this.value != null;
     }
     
-    public String getStringRepresentation() {
-        StringBuilder result = new StringBuilder();
-        for (HtmlContent c : this.content) {
-            if (c instanceof EnclosingHtmlContent) {
-                result.append(((EnclosingHtmlContent) c).getEnclosedContent());
-            } else {
-                result.append(c.getContent());
-            }
-        }
-        return result.toString();
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(": name=").append(this.name).append(", value=").append(this.value);
+        return sb.toString();
     }
+    
 }
+
+

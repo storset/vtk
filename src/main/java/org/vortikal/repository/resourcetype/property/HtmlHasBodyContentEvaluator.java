@@ -12,7 +12,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
-import org.vortikal.text.htmlparser.HtmlUtil;
+import org.vortikal.text.html.HtmlUtil;
 
 public class HtmlHasBodyContentEvaluator implements
         ContentModificationPropertyEvaluator {

@@ -28,21 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
+package org.vortikal.text.html;
 
-import org.vortikal.text.html.HtmlElement;
+import java.util.Collections;
+import java.util.List;
 
-import junit.framework.TestCase;
 
+public class HtmlFragmentImpl implements HtmlFragment {
 
-public class HtmlElementImplTestCase extends TestCase {
+    private List<HtmlContent> content;
+    
+    public HtmlFragmentImpl(List<HtmlContent> content) {
+        if (content == null) throw new IllegalArgumentException("Constructor argument cannot be NULL");
+        this.content = content;
+    }
 
-    public void testUppercaseElementName() {
-        HtmlElementImpl element = new HtmlElementImpl("lala",  false, false);
-        element.addContent(new HtmlElementImpl("LALA", false, false));
-        
-        HtmlElement[] childElements = element.getChildElements("lala");
-        assertNotNull(childElements);
-        assertEquals(1, childElements.length);
+    public List<HtmlContent> getContent() {
+        return Collections.unmodifiableList(this.content);
+    }
+
+    public void filter(HtmlPageFilter filter) {
+        this.content = HtmlPageImpl.filterContent(this.content, filter);
+    }
+    
+    public String getStringRepresentation() {
+        StringBuilder result = new StringBuilder();
+        for (HtmlContent c : this.content) {
+            if (c instanceof EnclosingHtmlContent) {
+                result.append(((EnclosingHtmlContent) c).getEnclosedContent());
+            } else {
+                result.append(c.getContent());
+            }
+        }
+        return result.toString();
     }
 }

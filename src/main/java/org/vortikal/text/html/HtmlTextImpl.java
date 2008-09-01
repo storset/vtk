@@ -28,46 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.text.htmlparser;
-
-import org.vortikal.text.html.HtmlAttribute;
+package org.vortikal.text.html;
 
 
-public class HtmlAttributeImpl implements HtmlAttribute {
-    private String name;
-    private String value;
-        
-    public HtmlAttributeImpl(String name, String value) {
-        this.name = name.toLowerCase();
-        this.value = value;
-    }
-        
-    public String getName() {
-        return this.name;
+public class HtmlTextImpl implements HtmlText {
+
+    private String content;
+
+    public HtmlTextImpl(String content) {
+        this.content = content;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return this.value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public String getContent() {
+        return this.content;
     }
     
-    public boolean hasValue() {
-        return this.value != null;
-    }
-    
-    public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(": name=").append(this.name).append(", value=").append(this.value);
-        return sb.toString();
-    }
     
 }
-
-

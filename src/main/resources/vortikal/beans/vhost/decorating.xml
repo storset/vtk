@@ -37,7 +37,7 @@
 
 
   <bean id="decorating.htmlParser"
-        class="org.vortikal.text.htmlparser.HtmlPageParserImpl">
+        class="org.vortikal.text.html.HtmlPageParserImpl">
     <property name="compositeTags" ref="decorating.htmlParser.compositeTags" />
     <property name="emptyTags" ref="decorating.htmlParser.emptyTags" />
   </bean>

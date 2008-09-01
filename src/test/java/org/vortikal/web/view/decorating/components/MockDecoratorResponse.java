@@ -37,11 +37,11 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
-import org.vortikal.web.view.decorating.DecoratorResponse;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.text.htmlparser.HtmlPageParserImpl;
+import org.vortikal.text.html.HtmlPageParserImpl;
+import org.vortikal.web.view.decorating.DecoratorResponse;
 
 
 public class MockDecoratorResponse implements DecoratorResponse {

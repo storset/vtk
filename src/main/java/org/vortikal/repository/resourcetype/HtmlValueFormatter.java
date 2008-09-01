@@ -32,7 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
-import org.vortikal.text.htmlparser.HtmlUtil;
+import org.vortikal.text.html.HtmlUtil;
 
 /**
  * This value formatter represents HTML value types. 

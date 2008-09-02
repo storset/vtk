@@ -102,9 +102,9 @@ public class CollectionListingController implements Controller {
 
         // Setting the default pagelimit
         int pageLimit = this.defaultPageLimit;
-        Property rPageLimit = collection.getProperty(this.pageLimitPropDef);
-        if (rPageLimit != null) {
-            pageLimit = rPageLimit.getIntValue();
+        Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
+        if (pageLimitProp != null) {
+            pageLimit = pageLimitProp.getIntValue();
         }
 
         int page = 0;
@@ -127,7 +127,6 @@ public class CollectionListingController implements Controller {
         List<Listing> searchComponents = new ArrayList<Listing>();
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, offset, limit);
-
             // Add the listing to the results
             if (listing.getFiles().size() > 0) {
                 searchComponents.add(listing);

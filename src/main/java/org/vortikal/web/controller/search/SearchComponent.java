@@ -115,7 +115,7 @@ public class SearchComponent {
         AndQuery andQuery = new AndQuery();
         andQuery.add(query);
         if (!recursive) {
-            andQuery.add(new UriDepthQuery(collection.getURI().getDepth()));
+            andQuery.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
         }
 
         search.setQuery(andQuery);
@@ -352,6 +352,16 @@ public class SearchComponent {
 
         public boolean hasMoreResults() {
             return more;
+        }
+        
+        public String toString() {
+            StringBuilder sb = new StringBuilder(this.getClass().getName());
+            sb.append(": title: " + this.title);
+            sb.append("; resource: ").append(this.resource.getURI());
+            sb.append("; offset: " + this.offset);
+            sb.append("; size: " + this.files.size());
+            sb.append("; more:").append(this.more);
+            return sb.toString();
         }
     }
 

@@ -526,6 +526,9 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
 
             if (uri != null && !"".equals(uri.trim())) {
+                if (!"/".equals(uri) && uri.endsWith("/")) {
+                    uri = uri.substring(0, uri.length() - 1);
+                }
                 this.uri = Path.fromString(uri);
             }
 

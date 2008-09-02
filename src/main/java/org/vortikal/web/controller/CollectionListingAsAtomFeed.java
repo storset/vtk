@@ -99,8 +99,13 @@ public class CollectionListingAsAtomFeed implements Controller {
         Property picture = collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (picture != null) {
             String val = picture.getStringValue();
-            Path imageRef = getPropRef(collection, val);
-            feed.setLogo(viewService.constructLink(imageRef));
+            // TODO find a good regex for this instead
+            if (val.startsWith("http") || val.startsWith("www.")) {
+                feed.setLogo(val);
+            } else {
+                Path imageRef = getPropRef(collection, val);
+                feed.setLogo(viewService.constructLink(imageRef));
+            }
         }
         
         feed.setUpdated(collection.getLastModified());

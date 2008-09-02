@@ -119,8 +119,8 @@ public class CollectionListingAsAtomFeed implements Controller {
 
             Property type = child.getProperty(NS, PropertyType.XHTML_PROP_NAME);
             // Add introduction and/or pic as xhtml if resource is event or article...
-            if (StringUtils.equals(type.getStringValue(), "event")
-                ||StringUtils.equals(type.getStringValue(), "article")) {
+            if (type != null && (StringUtils.equals(type.getStringValue(), "event")
+                ||StringUtils.equals(type.getStringValue(), "article"))) {
 
                 String summary = prepareSummary(child);
                 entry.setSummaryAsXhtml(summary);

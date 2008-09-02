@@ -99,8 +99,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         Property picture = collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (picture != null) {
             String val = picture.getStringValue();
-            // TODO find a good regex for this instead
-            if (val.startsWith("http") || val.startsWith("www.")) {
+            if (isURL(val)) {
                 feed.setLogo(val);
             } else {
                 Path imageRef = getPropRef(collection, val);
@@ -202,7 +201,13 @@ public class CollectionListingAsAtomFeed implements Controller {
         String summary = getIntroduction(resource);
         Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (pic != null) {
-            String imgPath = viewService.constructLink(getPropRef(resource, pic.getStringValue()));
+            String val = pic.getStringValue();
+            String imgPath = "";
+            if (isURL(val)) {
+                imgPath = val;
+            } else {
+                imgPath = viewService.constructLink(getPropRef(resource, val));
+            }
             String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.lastIndexOf("."));
             sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
         }
@@ -217,6 +222,11 @@ public class CollectionListingAsAtomFeed implements Controller {
            return Path.fromString(val);
         }
         return resource.getURI().extend(val);
+    }
+    
+    private boolean isURL(String val) {
+        // TODO find a good regex for this instead
+        return val.startsWith("http") || val.startsWith("www.");
     }
 
     /**

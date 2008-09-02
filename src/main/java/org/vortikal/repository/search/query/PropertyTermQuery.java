@@ -63,4 +63,11 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         return visitor.visit(this, data);
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";propdef=").append(getPropertyDefinition());
+        sb.append(";term=").append(this.term);
+        sb.append(";operator=").append(this.operator);
+        return sb.toString();
+    }
 }

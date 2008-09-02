@@ -6,9 +6,15 @@
     </title>
   </properties>
 
-  <body version="0.5.0-SNAPSHOT">
+  <body version="0.5.1-SNAPSHOT">
 
-    <release date="In SVN" description="Release 0.5.0">
+    <release date="In SVN" description="Release 0.5.1" version="0.5.1">
+      <!-- add 'action' entries here, newest on top: -->
+      <!-- type: update|fix|add|remove -->
+
+    </release>
+
+    <release date="2008-08-14" description="Release 0.5.0" version="0.5.0">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
       <action type="fix">

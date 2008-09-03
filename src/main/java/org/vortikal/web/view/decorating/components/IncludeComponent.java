@@ -261,6 +261,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         ConfigurableRequestWrapper requestWrapper =
             new ConfigurableRequestWrapper(servletRequest, url);
+        requestWrapper.setHeader("If-Modified-Since", null);
+        
 		BufferedResponse servletResponse = new BufferedResponse();
 
 		try {

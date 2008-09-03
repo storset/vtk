@@ -205,8 +205,7 @@ public class ResourceXsltView extends AbstractView
             new org.springframework.web.servlet.support.RequestContext(request));
 
         if (this.staticAttributes != null) {
-            for (Iterator<String> i = this.staticAttributes.keySet().iterator(); i.hasNext();) {
-                String key = i.next();
+            for (String key: this.staticAttributes.keySet()) {
                 transformer.setParameter(PARAMETER_NAMESPACE + key, this.staticAttributes.get(key));
             }
         }
@@ -369,10 +368,12 @@ public class ResourceXsltView extends AbstractView
         TransformerException error = null;
         
         public void error(TransformerException e) {
+            logger.error("Transformation error: " + e.getMessage(), e);
             this.error = e;
         }
         
         public void fatalError(TransformerException e) {
+            logger.error("Transformation fatal error: " + e.getMessage(), e);
             this.error = e;
         }
 

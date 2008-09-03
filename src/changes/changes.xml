@@ -11,7 +11,26 @@
     <release date="In SVN" description="Release 0.5.1" version="0.5.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
-
+      <action type="add">
+        Add autocomplete for tag editing based on existing tags.
+      </action>
+      <action type="add">
+        Display the full name of the authenticated user in the admin
+        interface.
+      </action>
+      <action type="fix">
+        Fix issue with event listing, in which not all upcoming events
+        would be displayed under given circumstances.
+      </action>
+      <action type="fix">
+         Commenting: bold and italic HTML tags are no longer removed.
+      </action>
+      <action type="add">
+        Collection listing atom feed: include image in summary.
+      </action>
+      <action type="fix">
+        Various bug fixes
+      </action>
     </release>
 
     <release date="2008-08-14" description="Release 0.5.0" version="0.5.0">

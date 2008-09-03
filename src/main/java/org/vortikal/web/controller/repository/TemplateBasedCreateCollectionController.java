@@ -179,7 +179,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String name = fixCollectionName(title);
         
         // Setting the destination to the current folder/uri
-        Path destinationURI = uri.extend(createFolderCommand.getName());
+        Path destinationURI = uri.extend(name);
 
         // Copy folder-template to destination (implicit rename) 
         this.repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);

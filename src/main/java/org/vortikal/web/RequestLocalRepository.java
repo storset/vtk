@@ -36,8 +36,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.FailedDependencyException;
@@ -53,23 +52,17 @@ import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.security.AuthenticationException;
 
 
-public class RequestLocalRepository implements InitializingBean, Repository {
+public class RequestLocalRepository implements Repository {
 
     private static Log logger = LogFactory.getLog(RequestLocalRepository.class);
     private Repository repository;
 
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-    }
 
     public Resource retrieve(String token, Path uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
@@ -316,8 +309,6 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         ReadOnlyException, ResourceLockedException, ResourceNotFoundException,
         ResourceOverwriteException {
 
-        t = t.fillInStackTrace();
-
         if (logger.isDebugEnabled()) {
             logger.debug("Re-throwing exception: " + t);
         }
@@ -349,6 +340,11 @@ public class RequestLocalRepository implements InitializingBean, Repository {
         if (t instanceof ResourceOverwriteException) {
             throw (ResourceOverwriteException) t;
         }
+        
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException)t;
+        }
+
         throw new RuntimeException(t);
     }
     

@@ -870,3 +870,11 @@ div.contextual-help {
 div.contextual-help a { 
         font-size:80%;
 }
+
+div.createCollectionDiv {
+
+  height: 1% !important;
+  position: relative !important;
+
+}
+

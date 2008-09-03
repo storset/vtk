@@ -110,7 +110,7 @@ public class CollectionListingAsAtomFeed implements Controller {
         feed.setUpdated(collection.getLastModified());
         feed.addLink(viewService.constructLink(uri), "alternate");
         
-        Listing searchResult = searchComponent.execute(request, collection, 0, 25);
+        Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
         List<PropertySet> files = searchResult.getFiles();
         for (PropertySet child : files) {
             Entry entry = feed.addEntry();

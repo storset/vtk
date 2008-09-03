@@ -89,7 +89,7 @@ public class SearchComponent {
 
 
     public Listing execute(HttpServletRequest request, Resource collection, 
-                           int offset, int limit) throws Exception {
+                           int page, int pageLimit, int baseOffset) throws Exception {
 
         boolean recursive = this.defaultRecursive;
         if (collection.getProperty(this.recursivePropDef) != null) {
@@ -118,8 +118,10 @@ public class SearchComponent {
             andQuery.add(new UriDepthQuery(collection.getURI().getDepth() + 1));
         }
 
+        int offset = baseOffset + (pageLimit * (page - 1));
+        
         search.setQuery(andQuery);
-        search.setLimit(limit + 1);
+        search.setLimit(pageLimit + 1);
         search.setCursor(offset);
 
         String token = SecurityContext.getSecurityContext().getToken();
@@ -129,7 +131,7 @@ public class SearchComponent {
 
         ResultSet result = this.searcher.execute(token, search);
 
-        boolean more = result.getSize() == limit + 1;
+        boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
         if (more) {
             num--;
@@ -328,6 +330,10 @@ public class SearchComponent {
 
         public List<PropertySet> getFiles() {
             return files;
+        }
+        
+        public int size() {
+            return this.files.size();
         }
 
         public void setUrls(Map<String, URL> urls) {

@@ -33,7 +33,7 @@
   
 
   <bean id="eventListing.handler" 
-        class="org.vortikal.web.controller.CollectionListingController"
+        class="org.vortikal.web.controller.EventListingController"
         parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
@@ -46,12 +46,8 @@
     <property name="viewName" value="eventListing.view" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
-    <property name="searchComponents">
-      <list>
-        <ref bean="eventListing.upcomingEventsSearchComponent" />
-        <ref bean="eventListing.previousEventsSearchComponent" />
-      </list>
-    </property>
+    <property name="upcomingEventsSearch" ref="eventListing.upcomingEventsSearchComponent" />
+    <property name="previousEventsSearch" ref="eventListing.previousEventsSearchComponent" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="eventListing.atomService" />

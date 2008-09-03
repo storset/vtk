@@ -115,7 +115,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * @exception IOException if an error occurs
      */
     public final Date getLastModified(String identifier) throws IOException {
-        Path path = Path.fromString(addPrefix(identifier));
+        Path path = Path.fromStringRemoveTrailingSlash(addPrefix(identifier));
         return getLastModifiedInternal(path);
     }
     
@@ -156,7 +156,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
 
             Source source = null;
 
-            InputStream inStream = getInputStream(Path.fromString(path));
+            InputStream inStream = getInputStream(Path.fromStringRemoveTrailingSlash(path));
 
             if (inStream != null)
                 source = new StreamSource(inStream);

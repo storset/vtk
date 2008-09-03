@@ -121,6 +121,13 @@ public final class Path implements Comparable<Path> {
 		return instance(path);
 	}
 
+	
+	public static Path fromStringRemoveTrailingSlash(String path) {
+        if (path.endsWith("/") && !path.equals("/"))
+            path = path.substring(0, path.length() - 1);
+        return fromString(path);
+	}
+	
 	/**
 	 * Gets the string representation of this path. 
 	 * This is the same string used to 

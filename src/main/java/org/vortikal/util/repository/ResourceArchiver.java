@@ -85,7 +85,7 @@ public class ResourceArchiver {
     }
     
     public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
-        int rootLevel = r.getURI().getDepth();
+        int rootLevel = r.getURI().getDepth() + 1;
         
         File tmp = null;
         try {
@@ -121,7 +121,7 @@ public class ResourceArchiver {
 
         JarEntry entry;
         Set<Path> dirCache = new HashSet<Path>();
-        List<Path> paths = base.getPaths();
+        List<Path> paths = base.getParent().getPaths();
         for (Path p: paths) {
             dirCache.add(p);
         }
@@ -504,8 +504,10 @@ public class ResourceArchiver {
     private void createDirectoryStructure(String token, Path dir, Set<Path> dirCache) throws Exception {
         List<Path> path = dir.getPaths();
         for (Path p: path) {
-            this.repository.createCollection(token, p);
-            dirCache.add(p);
+            if (!dirCache.contains(p)) {
+                this.repository.createCollection(token, p);
+                dirCache.add(p);
+            }
         }
     }
     

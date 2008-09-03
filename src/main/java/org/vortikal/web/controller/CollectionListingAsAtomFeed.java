@@ -225,8 +225,7 @@ public class CollectionListingAsAtomFeed implements Controller {
     }
     
     private boolean isURL(String val) {
-        // TODO find a good regex for this instead
-        return val.startsWith("http") || val.startsWith("www.");
+        return val.matches("^(http(s?)\\:\\/\\/|www)\\S*");
     }
 
     /**

@@ -87,9 +87,6 @@ public class CopyMoveToSelectedFolderController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        // For logging purposes
-        long before = System.currentTimeMillis();
-
         Map model = new HashMap();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -101,82 +98,78 @@ public class CopyMoveToSelectedFolderController implements Controller {
         request.getSession(true).getAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 
         // Should probably give some feedback when there is no session variable, but ...
-        if (sessionBean != null) {
-            List<Path> filesFailed = new ArrayList<Path>();
-            String action = sessionBean.getAction();
+        if (sessionBean == null) {
+            return new ModelAndView(this.viewName, model);
+        }
+        
+        // For logging purposes
+        long before = System.currentTimeMillis();
 
-            // Getting the selected files from Session
-            List<String> filesToBeCopied = sessionBean.getFilesToBeCopied();
+        List<Path> filesFailed = new ArrayList<Path>();
+        String action = sessionBean.getAction();
 
-            ListIterator<String> i = filesToBeCopied.listIterator();
+        // Getting the selected files from Session
+        List<String> filesToBeCopied = sessionBean.getFilesToBeCopied();
 
-            while (i.hasNext()) {
+        ListIterator<String> i = filesToBeCopied.listIterator();
 
-                // Need to construct the uri to the new file in a more elegant way...
-                Path resourceUri = Path.fromString(i.next());
-                String resourceFilename = resourceUri.getName();
-                Path newResourceUri = destinationUri.extend(resourceFilename);
+        while (i.hasNext()) {
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Trying to copy(or move) resource from: " + resourceUri + " to: " + newResourceUri);
-                }
+            // Need to construct the uri to the new file in a more elegant
+            // way...
+            Path resourceUri = Path.fromString(i.next());
+            String resourceFilename = resourceUri.getName();
+            Path newResourceUri = destinationUri.extend(resourceFilename);
 
-                try {
-                    if (action.equals("move-resources")) {
-                        this.repository.move(token, resourceUri, newResourceUri, false);			
-
-                    } else if (resourceUri.equals(newResourceUri)) {
-                        // Identical source- and destination-directory
-
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Trying to duplicate resource: " + newResourceUri);    		
-                        }
-
-                        Path newUri = newResourceUri;
-
-                        while (this.repository.exists(token, newUri)) {
-                            String extension = "";
-                            String dot = "";
-                            int number = 1;
-                            String name = newUri.getName();
-
-                            if (name.endsWith(".")) {
-                                name = name.substring(0, name.lastIndexOf("."));
-
-                            } else if (name.contains(".")) {
-                                extension = name.substring(name.lastIndexOf(".") + 1, name.length());
-                                dot = ".";
-                                name = name.substring(0, name.lastIndexOf("."));
-                            }
-                            name = name + "(" + number + ")" + dot + extension;
-                            newUri = newResourceUri.extend(name);
-                        }
-                        this.repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
-
-                    } else {
-                        this.repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false );
-                    }
-
-                } catch (Exception e) {
-                    filesFailed.add(resourceUri);  
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Copy/Move action failed: " + e.getClass().getName() + " " + e.getMessage());    		
-                    }
-
-                }
-            } 	
-
-            // A small effort to provide some form of errorhandling  	
-            if (filesFailed.size() > 0){
-                model.put("createErrorMessage", "copyMove.error.copyMoveFailed"); 
-                model.put("errorItems", filesFailed); 
-                // return new ModelAndView(errorViewName, model);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Trying to copy(or move) resource from: "
+                        + resourceUri + " to: " + newResourceUri);
             }
 
-            // Removing session variable
-            request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
-        } 
+            try {
+                if (action.equals("move-resources")) {
+                    this.repository.move(token, resourceUri, newResourceUri, false);
+
+                } else if (resourceUri.equals(newResourceUri)) {
+                    // Identical source- and destination-directory
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Trying to duplicate resource: " + newResourceUri);
+                    }
+
+                    Path newUri = newResourceUri;
+
+                    while (this.repository.exists(token, newUri)) {
+                        newUri = appendCopySuffix(newUri);
+                    }
+                    this.repository.copy(token, resourceUri, newUri, Depth.INF,
+                            false, false);
+
+                } else {
+                    this.repository.copy(token, resourceUri, newResourceUri,
+                            Depth.INF, false, false);
+                }
+
+            } catch (Exception e) {
+                filesFailed.add(resourceUri);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Copy/Move action failed: "
+                            + e.getClass().getName() + " " + e.getMessage());
+                }
+
+            }
+        }
+
+        // A small effort to provide some form of errorhandling
+        if (filesFailed.size() > 0) {
+            model.put("createErrorMessage", "copyMove.error.copyMoveFailed");
+            model.put("errorItems", filesFailed);
+            // return new ModelAndView(errorViewName, model);
+        }
+
+        // Removing session variable
+        request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 
         long total = System.currentTimeMillis() - before;
 
@@ -185,6 +178,25 @@ public class CopyMoveToSelectedFolderController implements Controller {
         }
 
         return new ModelAndView(this.viewName, model);
+    }
+
+    public static Path appendCopySuffix(Path newUri) {
+        String extension = "";
+        String dot = "";
+        int number = 1;
+        String name = newUri.getName();
+
+        if (name.endsWith(".")) {
+            name = name.substring(0, name.lastIndexOf("."));
+
+        } else if (name.contains(".")) {
+            extension = name.substring(
+                    name.lastIndexOf(".") + 1, name.length());
+            dot = ".";
+            name = name.substring(0, name.lastIndexOf("."));
+        }
+        name = name + "(" + number + ")" + dot + extension;
+        return newUri.getParent().extend(name);
     }
 
 }

@@ -150,30 +150,23 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         int resultSets = menuRequest.getResultSets();
         List<MenuItem<PropertySet>> allItems = menu.getItemsSorted();
-
+        
         if (resultSets > allItems.size()) {
             resultSets = allItems.size();
         }
 
         int itemsPerResultSet = Math.round((float) allItems.size() / (float) resultSets);
-
-        // The remainder: fill the results on resultsets until it is empty.
         int remainder = allItems.size() - (resultSets * itemsPerResultSet);
 
         for (int i = 0; i < resultSets; i++) {
-
             int startIdx = i * itemsPerResultSet;
-
             int endIdx = startIdx + itemsPerResultSet;
 
+            if (i == resultSets - 1 && remainder > 0) {
+                endIdx += remainder;
+            }
             if (endIdx > allItems.size()) {
                 endIdx = allItems.size();
-            }
-
-            // Add the remainder 1 by 1 linear until it is empty.
-            if (remainder > 0) {
-                endIdx++;
-                remainder--;
             }
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
@@ -196,7 +189,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private Search buildSearch(MenuRequest menuRequest) {
         Path uri = menuRequest.getCurrentCollectionUri();
         int depth = uri.getDepth() + 1;
-
+        
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(uri.toString()));
 
@@ -240,12 +233,12 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         List<PropertySet> toplevel = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {
             PropertySet resource = rs.getResult(i);
-
+            
             // Hidden?
             if (this.hiddenPropDef != null && resource.getProperty(this.hiddenPropDef) != null) {
                 continue;
             }
-
+            
             Path parentURI = resource.getURI().getParent();
             if (parentURI.equals(menuRequest.getCurrentCollectionUri())) {
                 toplevel.add(resource);
@@ -389,11 +382,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             return this.sortProperty;
         }
 
-
         public PropertyTypeDefinition getImportancePropDef() {
             return importancePropDef;
         }
-
 
         public boolean isAscendingSort() {
             return this.ascendingSort;
@@ -460,7 +451,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private PropertyTypeDefinition sortPropDef;
         private PropertyTypeDefinition importancePropDef;
 
-
         public SubFolderMenuComparator(MenuRequest menuRequest) {
             this.ascending = menuRequest.isAscendingSort();
             this.collator = Collator.getInstance(menuRequest.getLocale());
@@ -510,16 +500,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         this.titlePropDef = titlePropDef;
     }
 
-
     public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
         this.hiddenPropDef = hiddenPropDef;
     }
-
-
+    
     public void setImportancePropDef(PropertyTypeDefinition importancePropDef) {
         this.importancePropDef = importancePropDef;
     }
-
 
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;

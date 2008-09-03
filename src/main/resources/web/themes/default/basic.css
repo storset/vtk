@@ -317,8 +317,16 @@ ul.lock li {
 /*  Start of 'TabMenuLine' section: */
 
 div.activeTab { 
-        padding: 5px 10px 4px 15px;                   
+        padding: 5px 10px 4px 15px;  
 	/* border-bottom: 1px solid #aaa; */
+}
+
+/* IE6 overflow fix */
+* html div.activeTab {
+
+  height: 1% !important;
+  overflow: hidden !important; 
+
 }
 
 /* TabMenu1 */
@@ -396,13 +404,16 @@ div.activeTab form {
         width: 95%;
         margin-top: 5px;
         margin-bottom: 7px;
-	padding: 15px; 
-        clear: both;
-        float: left;
+	    padding: 15px; 
+        clear: left;
+        float: left;     
 }
 
 * html div.activeTab form {
         margin-top: -9px;
+        width: 95% !important;
+        height: 1% !important;
+        overflow: hidden !important;   
 }
 
 form div#submitButtons {
@@ -869,12 +880,5 @@ div.contextual-help {
 
 div.contextual-help a { 
         font-size:80%;
-}
-
-div.createCollectionDiv {
-
-  height: 1% !important;
-  position: relative !important;
-
 }
 

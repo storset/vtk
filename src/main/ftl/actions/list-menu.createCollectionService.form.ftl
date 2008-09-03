@@ -4,7 +4,10 @@
 
   <#if createCollectionForm?exists && !createCollectionForm.done>
   <#-- Need this div coz of IEs sucky boxmodel implementation -->
-  <div style="clear:both;height:1px;visibility:hidden;"></div>
+  <div style="clear: none;
+  height: 1px;
+  visibility: hidden"></div>
+  <div class="createCollectionDiv">
   
   <form name="createcollection" action="${createCollectionForm.submitURL?html}" method="post">
   <h3 class="nonul"><@vrtx.msg code="actions.createCollectionService" default="Create collection"/>:</h3>
@@ -38,6 +41,7 @@
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">
     </div>
   </form>
+  </div>
   <script language="JavaScript" type="text/javascript">
   <!--          
   document.createcollection.name.focus();

@@ -140,12 +140,8 @@ public class ResourceWrapper implements Resource {
                 ref = URIUtil.decode(ref);
                 Path uri = Path.fromString(ref);
                 return this.resourceManager.createResourceWrapper(uri);
-            } catch (IOException e) {
-                // XXX Auto-generated catch block
-                e.printStackTrace();
             } catch (Exception e) {
-                // XXX Auto-generated catch block
-                e.printStackTrace();
+                // XXX: whatever
             }
         }
         return null; 

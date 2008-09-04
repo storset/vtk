@@ -51,9 +51,13 @@
 	  <div class="result">
             <#if introImageProp != "">
               <a href="${urls[resource_index]?html}">
+                <#assign src = introImageProp.formattedValue />
+                <#if !src?starts_with("/")>
+                  <#assign src = r.URI.getParent().extend(src) />
+                </#if>
                 <img class="introduction-image" 
                      alt="IMG for ${title}"
-                     src="${introImageProp.formattedValue}" />
+                     src="${src?html}" />
               </a>
             </#if>
             

@@ -123,12 +123,6 @@ public final class Path implements Comparable<Path> {
 	}
 
 	
-	public static Path fromStringRemoveTrailingSlash(String path) {
-        if (path.endsWith("/") && !path.equals("/"))
-            path = path.substring(0, path.length() - 1);
-        return fromString(path);
-	}
-	
 	/**
 	 * Gets the string representation of this path. 
 	 * This is the same string used to 
@@ -257,11 +251,26 @@ public final class Path implements Comparable<Path> {
 	    }
 	}
 	
+	/**
+	 * XXX: refactor
+	 */
 	public Path extendAndProcess(String subPath) {
-	    
-	    String expandPath = URIUtil.expandPath(this.path + "/" + subPath);
+	    String expandPath = this.path.equals("/") ?
+	            URIUtil.expandPath(this.path + subPath) :
+	            URIUtil.expandPath(this.path + "/" + subPath);
 	    return fromString(expandPath);
 	}
+
+    /**
+     * XXX: refactor
+     */
+    public static Path fromStringRemoveTrailingSlash(String path) {
+        if (path.endsWith("/") && !path.equals("/"))
+            path = path.substring(0, path.length() - 1);
+        return fromString(path);
+    }
+    
+	
 	
 	public boolean equals(Object o) {
 	    if (!(o instanceof Path)) return false;

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.vortikal.util.repository.URIUtil;
 
 /**
  * The <code>Path</code> class represents a set of 
@@ -254,6 +255,12 @@ public final class Path implements Comparable<Path> {
 	    } else {
 	        return fromString(this.path + "/" + subPath);
 	    }
+	}
+	
+	public Path extendAndProcess(String subPath) {
+	    
+	    String expandPath = URIUtil.expandPath(this.path + "/" + subPath);
+	    return fromString(expandPath);
 	}
 	
 	public boolean equals(Object o) {

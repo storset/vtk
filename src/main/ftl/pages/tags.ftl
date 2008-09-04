@@ -52,8 +52,8 @@
             <#if introImageProp != "">
               <a href="${urls[resource_index]?html}">
                 <#assign src = introImageProp.formattedValue />
-                <#if !src?starts_with("/")>
-                  <#assign src = resource.URI.getParent().extend(src) />
+                <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
+                  <#assign src = resource.URI.getParent().extendAndProcess(src) />
                 </#if>
                 <img class="introduction-image" 
                      alt="IMG for ${title}"

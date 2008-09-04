@@ -86,8 +86,8 @@
         <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
-          <#if !src?starts_with("/")>
-            <#local src = r.URI.getParent().extend(src) />
+          <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
+            <#local src = r.URI.getParent().extendAndProcess(src) />
           </#if>
           <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
@@ -138,10 +138,10 @@
         <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
-          <#if !src?starts_with("/")>
-            <#local src = r.URI.getParent().extend(src) />
+          <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
+            <#local src = r.URI.getParent().extendAndProcess(src) />
           </#if>
-        <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+          <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
         ${title?html}</a>
 

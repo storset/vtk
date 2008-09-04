@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo acl discover <uri:string>";
+    return "repo acl discover <uri:path>";
 }
 
 void execute(context, args, out) {

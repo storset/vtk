@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo ls <uri:string>";
+    return "repo ls <uri:path>";
 }
 
 void execute(context, args, out) {

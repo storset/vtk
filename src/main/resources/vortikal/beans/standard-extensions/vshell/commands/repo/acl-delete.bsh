@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo acl delete <uri:string>";
+    return "repo acl delete <uri:path>";
 }
 
 void execute(context, args, out) {

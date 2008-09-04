@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.vortikal.context.BaseContext;
+import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.shell.AbstractConsole;
 
@@ -99,7 +100,7 @@ public class VShell extends AbstractConsole {
         }
         
         CommandNode commandNode = (CommandNode) result.get(result.size() - 1);
-        Map<String, String> args = populateArgs(commandNode, tokens.subList(result.size(), tokens.size()), out);
+        Map<String, Object> args = populateArgs(commandNode, tokens.subList(result.size(), tokens.size()), out);
         if (args == null) {
             out.println("Usage: " + commandNode.getCommand().getUsage());
             return;
@@ -218,8 +219,8 @@ public class VShell extends AbstractConsole {
     }
 
     
-    private Map<String, String> populateArgs(CommandNode commandNode, List<String> args, PrintStream out) {
-        Map<String, String> result = new HashMap<String, String>();
+    private Map<String, Object> populateArgs(CommandNode commandNode, List<String> args, PrintStream out) {
+        Map<String, Object> result = new HashMap<String, Object>();
         List<ParamNode> argList = commandNode.getParamNodes();
         int paramIdx = 0;
         for (ParamNode arg : argList) {
@@ -232,20 +233,24 @@ public class VShell extends AbstractConsole {
                 break;
             }
             if (arg.isRest()) {
-                StringBuilder multiple = new StringBuilder();
+                List<Object> multiple = new ArrayList<Object>();
                 for (int i = paramIdx; i < args.size(); i++) {
-                    multiple.append(args.get(i));
-                    if (i < args.size() - 1) multiple.append(" ");
+                    multiple.add(getTypedArg(args.get(i), arg.getType()));
                 }
-                result.put(arg.name, multiple.toString());
+                result.put(arg.name, multiple);
                 return result;
             }
-            result.put(arg.name, args.get(paramIdx++));
+            result.put(arg.name, getTypedArg(args.get(paramIdx++), arg.getType()));
         }
         return result;
     }
     
-
+    private Object getTypedArg(String val, String type) {
+        if ("path".equals(type)) {
+            return Path.fromString(val);
+        }
+        return val;
+    }
     
     private int findCommand(List<PathNode> result, Set<PathNode> nodes, List<String> tokens, int idx) {
         for (PathNode node : nodes) {
@@ -303,10 +308,10 @@ public class VShell extends AbstractConsole {
             return "help [<command:string...>]";
         }
 
-        public void execute(VShellContext c, Map<String, String> args,
+        public void execute(VShellContext c, Map<String, Object> args,
                 PrintStream out) {
 
-            String command = args.get("command");
+            String command = (String) args.get("command");
             
             if (command != null) {
                 List<String> tokens = tokenize(command);

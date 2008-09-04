@@ -3,13 +3,14 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo acl update <operation:string> <permission:string> <uri:string> <principals:string...>";
+    return "repo acl update <operation:string> <permission:string> <uri:path> <principals:string...>";
 }
 
 void execute(context, args, out) {
 
     repo = context.get("context").getBean("repository");
     token = context.get("context").getBean("writeAllToken");
+    principalFactory = context.get("context").getBean("principalFactory");
 
     operation = args.get("operation");
 
@@ -29,17 +30,18 @@ void execute(context, args, out) {
 
     r = repo.retrieve(token, uri, true);
 
-    principals = new ArrayList();
+    principals = args.get("principals");
 
-    for (p: principalList.split(" ")) {
+    newPrincipals = new ArrayList();
+    for (p: principals) {
         if (p.startsWith("g:")) {
 
-            principals.add(new org.vortikal.security.Principal(
+            newPrincipals.add(principalFactory.getPrincipal(
                            p.substring(2), org.vortikal.security.Principal.Type.GROUP));
         } else if (p.startsWith("pseudo:")) {
-            principals.add(org.vortikal.security.Principal.getPseudoPrincipal(p));
+            newPrincipals.add(principalFactory.getPseudoPrincipal(p));
         } else {
-            principals.add(new org.vortikal.security.Principal(
+            newPrincipals.add(principalFactory.getPrincipal(
                           p, org.vortikal.security.Principal.Type.USER));
         }
     }
@@ -48,11 +50,11 @@ void execute(context, args, out) {
     
     acl = r.getAcl();
     if (r.isInheritedAcl()) {
-        out.print("removing ACL inheritance");
+        out.println("Removing ACL inheritance");
         r.setInheritedAcl(false);
     }
 
-    for (p: principals) {
+    for (p: newPrincipals) {
         if ("grant".equals(operation)) {
             acl.addEntry(action, p);
         } else {
@@ -61,5 +63,5 @@ void execute(context, args, out) {
     }
 
     repo.storeACL(token, r);
-    out.println("ACL stored");
+    out.println("Stored ACL");
 }

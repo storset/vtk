@@ -39,6 +39,6 @@ public interface VCommand {
 
     public String getUsage();
 
-    public void execute(VShellContext c, Map<String, String> args, PrintStream out);
+    public void execute(VShellContext c, Map<String, Object> args, PrintStream out);
 
 }

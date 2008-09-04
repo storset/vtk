@@ -311,12 +311,12 @@ public class VShell extends AbstractConsole {
         public void execute(VShellContext c, Map<String, Object> args,
                 PrintStream out) {
 
-            String command = (String) args.get("command");
+            @SuppressWarnings("unchecked")
+            List<String> commands = (List<String>) args.get("command");
             
-            if (command != null) {
-                List<String> tokens = tokenize(command);
+            if (commands != null) {
                 List<PathNode> result = new ArrayList<PathNode>();
-                findCommand(result, toplevelNodes, tokens, 0);
+                findCommand(result, toplevelNodes, commands, 0);
 
                 if (!result.isEmpty()) {
                     PathNode last = result.get(result.size() - 1);

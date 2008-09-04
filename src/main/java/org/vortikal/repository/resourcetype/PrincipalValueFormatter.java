@@ -39,9 +39,18 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
 /**
- * Value formatter for {@link Principal} objects. 
+ * Value formatter for {@link Principal} values.
+ * <p>
+ * Principals can be formatted to string in the following formats:
+ * <ul><li>default: {@link Principal#getName()}
+ * <li>'name': {@link Principal#getDescription()}
+ * <li>'link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
  */
 public class PrincipalValueFormatter implements ValueFormatter {
+
+    // Possible formats for principal objects
+    public static final String NAME_FORMAT = "name";
+    public static final String LINK_FORMAT = "link";
 
     private PrincipalFactory principalFactory;
 
@@ -59,9 +68,9 @@ public class PrincipalValueFormatter implements ValueFormatter {
         }
 
         Principal principal = value.getPrincipalValue();
-        if ("link".equals(format) && principal.getURL() != null) {
+        if (LINK_FORMAT.equals(format) && principal.getURL() != null) {
             return "<a href=\"" + principal.getURL() + "\">" + principal.getDescription() + "</a>"; 
-        } else if ("name".equals(format)) {
+        } else if (NAME_FORMAT.equals(format)) {
             return principal.getDescription();
         }
         

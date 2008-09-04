@@ -86,7 +86,7 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
 
     private String modelName = null;
     private Service service = null;
-    private Repository repository = null;
+    private Repository repository;
     private boolean matchAssertions = false;
     private boolean linkToParent = false;
     private String urlName = "url";

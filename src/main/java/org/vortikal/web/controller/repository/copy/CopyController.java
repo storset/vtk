@@ -35,8 +35,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
@@ -47,8 +46,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 
-public class CopyController extends SimpleFormController 
-    implements InitializingBean {
+public class CopyController extends SimpleFormController {
 
     private String cancelView;
     
@@ -58,20 +56,9 @@ public class CopyController extends SimpleFormController
 
     private boolean parentViewOnSuccess = false;
     
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
-        }
-        if (this.copyAction == null) {
-            throw new BeanInitializationException(
-                "Bean property 'copyAction' must be set");
-        }
-
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -134,6 +121,7 @@ public class CopyController extends SimpleFormController
         this.cancelView = cancelView;
     }
 
+    @Required
     public void setCopyAction(CopyAction copyAction) {
         this.copyAction = copyAction;
     }

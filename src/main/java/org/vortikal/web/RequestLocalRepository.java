@@ -342,7 +342,7 @@ public class RequestLocalRepository implements Repository {
         }
         
         if (t instanceof RuntimeException) {
-            throw (RuntimeException)t;
+            throw (RuntimeException) t;
         }
 
         throw new RuntimeException(t);

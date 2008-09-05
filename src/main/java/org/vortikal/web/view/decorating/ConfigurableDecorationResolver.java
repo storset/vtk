@@ -151,6 +151,10 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                 descriptor.parse = false;
             }
         }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Resolved request " + request.getRequestURI() 
+                    + " to decorating descriptor " + descriptor);
+        }
         return descriptor;
     }
 
@@ -261,6 +265,14 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
         public Template getTemplate() {
             return this.template;
+        }
+        
+        public String toString() {
+            StringBuilder sb = new StringBuilder(this.getClass().getName());
+            sb.append(" [template=").append(this.template);
+            sb.append(", parse=").append(this.parse);
+            sb.append(", tidy=").append(this.tidy).append("]");
+            return sb.toString();
         }
     }
 

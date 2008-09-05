@@ -161,12 +161,12 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
 
             try {
                 Template template = new StandardDecoratorTemplate(this.templateParser, templateSource);
-                //String name = resource.getURI().substring(this.collectionName.length() + 1);
-                String name = resource.getName();
+                String identifier = resource.getURI().toString().substring(this.collectionName.length() + 1);
+
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Loaded template '" + name + "'");
+                    logger.debug("Loaded template '" + identifier + "'");
                 }
-                map.put(name, template);
+                map.put(identifier, template);
                 numTemplates++;
             } catch (Throwable t) {
                 logger.info("Unable to compile template from resource " + resource, t);

@@ -6,11 +6,14 @@
     </title>
   </properties>
 
-  <body version="0.5.1-SNAPSHOT">
+  <body version="0.5.1.1-SNAPSHOT">
 
-    <release date="In SVN" description="Release 0.5.1" version="0.5.1">
+    <release date="In SVN" description="Release 0.5.1.1" version="0.5.1.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release date="2008-09-04" description="Release 0.5.1" version="0.5.1">
       <action type="add">
         Add autocomplete for tag editing based on existing tags.
       </action>

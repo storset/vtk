@@ -103,13 +103,6 @@ public final class Path implements Comparable<Path> {
      * @throws IllegalArgumentException if the parameter is not well-formed
      */
 	public static Path fromString(String path) {
-		if (path == null || "".equals(path.trim())) {
-			throw new IllegalArgumentException("Invalid path: '" + path + "'");
-		}
-		if (!path.startsWith("/")) {
-			throw new IllegalArgumentException("Invalid path: '" + path + "'");
-		}
-
 		if (StringUtils.isBlank(path)
                 || path.length() >= MAX_LENGTH
                 || !path.startsWith("/")

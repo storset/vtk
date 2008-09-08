@@ -31,15 +31,14 @@
 package org.vortikal.web.filter;
 
 import java.nio.charset.Charset;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.util.web.URLUtil;
 
 
@@ -127,6 +126,12 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
             }
 
             return uri;
+        }
+        
+        public String toString() {
+            StringBuilder sb = new StringBuilder(this.getClass().getName());
+            sb.append(": ").append(this.request.getRequestURL());
+            return sb.toString();
         }
     }
     

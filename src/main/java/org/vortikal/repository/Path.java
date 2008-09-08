@@ -58,36 +58,15 @@ public final class Path implements Comparable<Path> {
     public static final Path ROOT = new Path("/");
 	
 	private String path;
-	private List<String> elements;
-    private List<Path> paths;
+	private String name;
     
 	private Path(String path) {
         this.path = path;
-        this.elements = new ArrayList<String>();
-        this.paths = new ArrayList<Path>();
-        if ("/".equals(this.path)) {
-            this.elements.add("/");
-            this.paths.add(this);
-            return;
+        if ("/".equals(path)) {
+            this.name = "/";
+        } else {
+            this.name = path.substring(path.lastIndexOf("/") + 1);
         }
-        StringTokenizer st = new StringTokenizer(this.path, "/");
-        while (st.hasMoreTokens()) {
-            String name = st.nextToken();
-            this.elements.add(name);
-            StringBuilder ancestorString = new StringBuilder();
-            
-            for (int i = 0; i < this.elements.size() - 1; i++) {
-                String s = this.elements.get(i);
-                ancestorString.append("/").append(s);
-            }
-            
-            if (ancestorString.length() > 0) { 
-                this.paths.add(instance(ancestorString.toString()));
-            }
-        }
-        this.elements.add(0, "/");
-        this.paths.add(0, instance("/"));
-        this.paths.add(this);
 	}
 	
 	private static Path instance(String path) {
@@ -138,7 +117,7 @@ public final class Path implements Comparable<Path> {
 	 * @return the last element of the path
 	 */
 	public String getName() {
-		return this.elements.get(this.elements.size() - 1);
+		return this.name;
 	}
 
 	/**
@@ -155,7 +134,7 @@ public final class Path implements Comparable<Path> {
 	 * minus one.
 	 */
 	public int getDepth() {
-		return this.elements.size() - 1;
+		return this.elements().size() - 1;
 	}
 	
 	/**
@@ -166,19 +145,21 @@ public final class Path implements Comparable<Path> {
 	 * @return true if this path contains the other, false otherwise.
 	 */
 	public boolean isAncestorOf(Path other) {
-	    if (other.elements.size() <= this.elements.size()) {
+	    if (other.elements().size() <= this.elements().size()) {
 	        // If other path's depth is less than or equal to this, we cannot
 	        // be ancestor.
 	        return false;
 	    } 
+
+	    List<String> thisPath = this.elements();
+        List<String> otherPath = other.elements();
 	    
 	    // Compare elements from the root down to last element of this path
-	    for (int i = 0; i < this.elements.size(); i++) {
-            if (!this.elements.get(i).equals(other.elements.get(i))) {
+	    for (int i = 0; i < thisPath.size(); i++) {
+            if (!thisPath.get(i).equals(otherPath.get(i))) {
                 return false;
             }
         }
-	    
 	    return true;
 	}
 	
@@ -187,7 +168,7 @@ public final class Path implements Comparable<Path> {
 	 * @return the path elements
 	 */
 	public List<String> getElements() {
-		return Collections.unmodifiableList(this.elements);
+		return Collections.unmodifiableList(this.elements());
 	}
 	
 	/**
@@ -199,7 +180,7 @@ public final class Path implements Comparable<Path> {
 	 * @return the paths that make up this path
 	 */
 	public List<Path> getPaths() {
-	    return Collections.unmodifiableList(this.paths);
+	    return Collections.unmodifiableList(this.paths());
 	}
 	
 	/**
@@ -212,7 +193,8 @@ public final class Path implements Comparable<Path> {
 	    if (this.path.equals("/")) {
 	        return Collections.emptyList();
 	    } else {
-	        List<Path> result = this.paths.subList(0, this.paths.size() - 1); 
+	        List<Path> paths = this.paths();
+	        List<Path> result = paths.subList(0, paths.size() - 1); 
 	        return Collections.unmodifiableList(result);
 	    }
 	}
@@ -223,10 +205,11 @@ public final class Path implements Comparable<Path> {
 	 * this path is the root path.
 	 */
 	public Path getParent() {
-	    if (this.paths.size() == 1) {
+	    List<Path> paths = this.paths();
+	    if (paths.size() == 1) {
 	        return null;
 	    }
-	    return this.paths.get(this.paths.size() - 2);
+	    return paths.get(paths.size() - 2);
 	}
 	
 	/**
@@ -263,8 +246,6 @@ public final class Path implements Comparable<Path> {
         return fromString(path);
     }
     
-	
-	
 	public boolean equals(Object o) {
 	    if (!(o instanceof Path)) return false;
 	    return ((Path)o).path.equals(this.path);
@@ -273,4 +254,47 @@ public final class Path implements Comparable<Path> {
 	public int hashCode() {
 	    return this.path.hashCode();
 	}
+	
+	private List<String> elements() {
+        List<String> elements = new ArrayList<String>();
+        if ("/".equals(this.path)) {
+            elements.add("/");
+            return elements;
+        }
+        StringTokenizer st = new StringTokenizer(this.path, "/");
+        while (st.hasMoreTokens()) {
+            String name = st.nextToken();
+            elements.add(name);
+        }
+        elements.add(0, "/");
+        return elements;
+	}
+	
+    private List<Path> paths() {
+        List<String> elements = new ArrayList<String>();
+        List<Path> paths = new ArrayList<Path>();
+        if ("/".equals(this.path)) {
+            paths.add(this);
+            return paths;
+        }
+        StringTokenizer st = new StringTokenizer(this.path, "/");
+        while (st.hasMoreTokens()) {
+            String name = st.nextToken();
+            elements.add(name);
+            StringBuilder ancestorString = new StringBuilder();
+            
+            for (int i = 0; i < elements.size() - 1; i++) {
+                String s = elements.get(i);
+                ancestorString.append("/").append(s);
+            }
+            
+            if (ancestorString.length() > 0) { 
+                paths.add(instance(ancestorString.toString()));
+            }
+        }
+        paths.add(0, instance("/"));
+        paths.add(this);
+        return paths;
+    }
+	
 }

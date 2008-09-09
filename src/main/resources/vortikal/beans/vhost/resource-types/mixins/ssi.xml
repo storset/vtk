@@ -43,7 +43,7 @@
 
   <bean id="ssiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
     <property name="pattern">
-      <value>(&lt;!--#include\s+\w+\s*="[a-zA-Z://.@]+"\s*--&gt;)|(\$\{[^\}]+\})</value>
+      <value>(&lt;!--\s*#include\s+\w+\s*="[^"]+"\s*--&gt;)|(\$\{[^\}]+\})</value>
     </property>
   </bean>
 

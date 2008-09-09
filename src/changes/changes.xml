@@ -11,6 +11,22 @@
     <release date="In SVN" description="Release 0.5.1.1" version="0.5.1.1">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+      <action type="fix">
+        Fix for memory leak caused by refactoring in previous version.
+      </action>
+      <action type="fix">
+        Decorating: fixed error with resolving of relative paths in
+        include component.
+      </action>
+      <action type="fix">
+        Decorating: Fixed broken parsing of server side include (SSI)
+        directives.
+      </action>
+      <action type="fix">
+        Decorating: Fixed bug in template resolving mechanism that
+        prevented templates located in subfolders from being
+        referenced.
+      </action>
     </release>
 
     <release date="2008-09-04" description="Release 0.5.1" version="0.5.1">

@@ -59,7 +59,6 @@ import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
@@ -133,10 +132,9 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         if (uri != null) {
             if (!uri.startsWith("/")) {
-                Path base = RequestContext.getRequestContext().getResourceURI();
-                uri = base.extend(uri).toString();
+                Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+                uri = currentCollection.extendAndProcess(uri).toString();
             }
-            uri = URIUtil.expandPath(uri);
             handleDirectInclude(uri, request, response);
             return;
         }
@@ -157,9 +155,8 @@ public class IncludeComponent extends AbstractDecoratorComponent
         }
 
         if (!uri.startsWith("/")) {
-            Path requestURI = RequestContext.getRequestContext().getResourceURI();
-            uri = requestURI.extend(uri).toString();
-            uri = URIUtil.expandPath(uri);
+            Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+            uri = currentCollection.extendAndProcess(uri).toString();
         }
 
         handleVirtualInclude(uri, request, response);

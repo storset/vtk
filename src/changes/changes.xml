@@ -6,11 +6,9 @@
     </title>
   </properties>
 
-  <body version="0.5.1.1-SNAPSHOT">
+  <body version="0.5.1.1">
 
-    <release date="In SVN" description="Release 0.5.1.1" version="0.5.1.1">
-      <!-- add 'action' entries here, newest on top: -->
-      <!-- type: update|fix|add|remove -->
+    <release date="2008-09-10" description="Release 0.5.1.1" version="0.5.1.1">
       <action type="fix">
         Fix for memory leak caused by refactoring in previous version.
       </action>

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>0.5.1.1-SNAPSHOT</version>
+  <version>0.5.1.1</version>
   <packaging>jar</packaging>
   <name>The Vortikal Web Framework</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
@@ -88,8 +87,8 @@
   </ciManagement>
 
   <scm>
-    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/tags/release-0.5.1.1</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/tags/release-0.5.1.1</developerConnection>
   </scm>
 
   <licenses>
@@ -354,8 +353,7 @@
     <!-- DWR support: this is only used by dwr extension: -->
     <!--
       dependency> <groupId>org.directwebremoting</groupId>
-      <artifactId>dwr</artifactId> <version>2.0.1</version> </dependency
-    -->
+      <artifactId>dwr</artifactId> <version>2.0.1</version> </dependency -->
     
     <!-- JSON -->
     <dependency>

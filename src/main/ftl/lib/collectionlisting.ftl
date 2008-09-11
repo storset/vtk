@@ -35,7 +35,7 @@
   <form name="collectionListingForm" action="${action}" method="post">
 </#if>
 
-<table class="directoryListing">
+<table id="directoryListing" class="directoryListing">
   <tr class="directoryListingHeader">
    <#list collectionListing.childInfoItems as item>
       <#if collectionListing.sortedBy = item>
@@ -49,32 +49,32 @@
       </#if>
       <#switch item>
           <#case "last-modified">
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.lastModified" default="Last Modified"/></a>
             <#break>
 
           <#case "locked">
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.locked" default="Locked (by)"/></a>
             <#break>
 
           <#case "content-type">
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.contentType" default="Content Type"/></a>
             <#break>
 
           <#case "owner">
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.owner" default="Owner"/></a>
             <#break>
 
           <#case "content-length">
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.size" default="Size"/></a>
             <#break>
 
           <#case "name">
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a>
                <#if withForm>
                  </th><th class="checkbox">
@@ -82,7 +82,7 @@
             <#break>
 
           <#default>
-            <a href="${collectionListing.sortByLinks[item]?html}">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a>
 
       </#switch>

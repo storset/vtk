@@ -17,10 +17,10 @@
     <#if tab.url?exists>
       <#if tab.active>
         <li class="current activeTab ${tab.label}">
-          <a href="${tab.url?html}">${tab.title}</a>
+          <a id="${tab.label}" href="${tab.url?html}">${tab.title}</a>
         </li>
       <#else>
-        <li class="${tab.label}"><a href="${tab.url?html}">${tab.title}</a></li>
+        <li class="${tab.label}"><a id="${tab.label}" href="${tab.url?html}">${tab.title}</a></li>
       </#if>
     </#if>
   </#list>

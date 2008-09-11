@@ -46,7 +46,7 @@
   </h2>
 
 
-  <table class="resourceInfo">
+  <table id="resourceInfoMain" class="resourceInfo">
 
       <!-- Last modified -->
       <#assign modifiedByStr = resource.modifiedBy.name />
@@ -171,7 +171,7 @@
                       'content:authorName', 'content:authorEmail', 
                       'content:authorURL' ] / -->
 
-  <table class="resourceInfo">
+  <table id="resourceInfoContent" class="resourceInfo">
     <!-- title -->
     <@propList.editOrDisplayPropertyItem item=aboutItems['userTitle'] defaultItem=aboutItems['title'] />
 
@@ -203,7 +203,7 @@
        code="resource.metadata.about.technical"
        default="Technical details"/>
   </h3>
-  <table class="resourceInfo">
+  <table id="resourceInfoTechnical" class="resourceInfo">
 
   <#if resource.collection>
     <!-- navigation:hidden -->

@@ -118,10 +118,12 @@ public class ResourceTemplateManagerImpl implements ResourceTemplateManager {
         if (matchValue == null) {
             matchValue = config.getProperty(uri + "/");
         }
-
+        
         // If no direct match, try ancestor URIs upwards until we find a match
         if (matchValue == null) {
-            for (Path ancestorUri: uri.getAncestors()) {
+            List<Path> ancestors = uri.getAncestors();
+            for (int i = ancestors.size()-1; i >= 0; i--) {
+                Path ancestorUri = ancestors.get(i);
                 matchValue = config.getProperty(ancestorUri.toString());
                 if (matchValue == null) {
                     matchValue = config.getProperty(ancestorUri + "/");

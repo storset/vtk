@@ -36,6 +36,7 @@
  * Creates an inputfield with added functionality for autocomplete.
  * Example: <@createAutoCompleteInputField fieldName="myInput" value="myInputValue" schema="['dataStructure']"
  *
+ * @param appSrcBase The appResourceURL that the service is matched to
  * @param fieldName The name of the testfield
  * @param description A description of the fields content
  * @param value The current value in the inputfield
@@ -48,7 +49,7 @@
  *				 The same is true if data is returned as XML, e.g. <root><key>value</key></root>
  *
 -->
-<#macro createAutoCompleteInputField fieldName description value width schema=[]>
+<#macro createAutoCompleteInputField appSrcBase fieldName description value width schema=[]>
   
   <#local schemaString = "" />
   <#list schema as s>
@@ -68,7 +69,7 @@
       </div>
       <script type="text/javascript">
       <!--
-        var dataSource = new YAHOO.widget.DS_ScriptNode("/?vrtx=admin&action=autocomplete&field=${fieldName}", ["${fieldName}", ${schemaString}]);
+        var dataSource = new YAHOO.widget.DS_ScriptNode("${appSrcBase}/?vrtx=admin&action=autocomplete&field=${fieldName}", ["${fieldName}", ${schemaString}]);
         dataSource.scriptQueryParam = "${fieldName}"; 
         var autoComplete = new YAHOO.widget.AutoComplete("resource.${fieldName}", "${fieldName}.autoCompleteContainer", dataSource);
         autoComplete.delimChar = [","];

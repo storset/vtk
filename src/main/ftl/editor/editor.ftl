@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true>
 <#--
-  - File: fckeditor.ftl
+  - File: editor.ftl
   - 
   - Required model data:
   -  
@@ -10,6 +10,9 @@
   -  fckBrowse.url
   -  
   - Optional model data:
+  -
+  -  yuiBase.url
+  -  autoCompleteBaseURL
   -
   -->
 <#import "/lib/ping.ftl" as ping />
@@ -599,8 +602,8 @@
 
           <#-- AutoComplete only for the tags inputfield -->
           <#if "${name}" = 'keywords'>
-            <@autocomplete.createAutoCompleteInputField fieldName="${name}" description="${description}" 
-            		value="${value?html}" width="18" schema=["keyword"]/>
+            <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" fieldName="${name}" 
+                    description="${description}" value="${value?html}" width="18" schema=["keyword"]/>
           <#else>
             <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
             <#if description != "">

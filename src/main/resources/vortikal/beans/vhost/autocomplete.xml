@@ -3,15 +3,12 @@
                        "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
-  <!--  TODO: Move service to static location in URI namespace by 
-              adding more assertions. -->
  
   <bean id="autoCompleteService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="order" value="-1" />
+    <property name="order" value="-999" />
     <property name="assertions">
       <list>
+        <ref bean="autoComplete.appResourceAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="autocomplete" />
@@ -48,6 +45,11 @@
     class="org.vortikal.web.controller.autocomplete.RepositoryKeywordsAutoCompleteDataProvider">
     <property name="dataReportManager" ref="dataReportManager" />
     <property name="keywordsPropDef" ref="keywordsPropDef" />
+  </bean>
+  
+  <bean id="autoComplete.appResourceAssertion"
+    class="org.vortikal.web.service.RequestURIRegexpAssertion">
+    <property name="pattern" value="${autoComplete.appResourceURL}" />
   </bean>
 
 </beans>

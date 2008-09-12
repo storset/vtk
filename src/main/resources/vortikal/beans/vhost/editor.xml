@@ -192,6 +192,7 @@
             <map>
               <entry key="cssURLs" value-ref="editor.editCSSURLs" />
               <entry key="editorHelpURL" value="${editor.helpURL}" />
+              <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
             </map>
           </property>
         </bean>

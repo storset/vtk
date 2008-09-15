@@ -17,7 +17,7 @@
                 <ref bean="treatyDateEnactedPropDef" />
                 <ref bean="treatyInForcePropDef" />
                 <ref bean="treatyClassificationsPropDef" />
-                <ref bean="treatyTypePropDef" />
+                <ref bean="treatyRegionPropDef" />
             </list>
         </property>
         <property name="assertions">
@@ -104,14 +104,14 @@
     </bean>
     
     <!-- Added: 12 sept. 2008. used for sorting on different world regions. -->
-    <bean id="treatyTypePropDef"
+    <bean id="treatyRegionPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-        <property name="name" value="type" />
+        <property name="name" value="region" />
         <property name="type" value="STRING" />
         <property name="multiple" value="false" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="treatyTypeEvaluator" />
+        <property name="contentModificationEvaluator" ref="treatyRegionEvaluator" />
     </bean>
   
     <bean id="treatyClassificationsEvaluator" parent="abstractXPathEvaluator">
@@ -119,7 +119,7 @@
     </bean>
     
     <!-- Added: 12 sept. 2008. used for sorting on different world regions. -->
-    <bean id="treatyTypeEvaluator" parent="abstractXPathEvaluator">
+    <bean id="treatyRegionEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/treaty/meta-data/type" />
     </bean>
     

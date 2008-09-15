@@ -161,11 +161,11 @@ public class CreateResourceFromResourceController implements Controller,
         Map<String, Object> model = new HashMap<String, Object>();
 
         Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
         String token = SecurityContext.getSecurityContext().getToken();
 
         Resource resource = this.repository.retrieve(token, uri, false);
-        Path newResourceUri = uri.extend(this.resourceName);
-
+        Path newResourceUri = currentCollection.extend(this.resourceName);
         boolean exists = this.repository.exists(token, newResourceUri);
         if (exists) {
             model.put("createErrorMessage", this.resourceAlreadyExistsMessageKey);

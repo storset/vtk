@@ -27,15 +27,15 @@
 
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
-    <div class="vrtx-resources ${collectionListing.name}">
+    <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>
     </#if>
     
     <#list resources as r>
-      <div class="vrtx-resource">
+      <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
 
-        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
+        <a id="${collectionListing.name}-vrtx-title" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
 
@@ -70,7 +70,7 @@
 
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
-    <div class="vrtx-resources ${collectionListing.name}">
+    <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>
     </#if>
@@ -82,8 +82,8 @@
       <#local publishedDate  = vrtx.prop(r, 'published-date')  />
       <#local intro  = vrtx.prop(r, 'introduction')  />
 
-      <div class="vrtx-resource">
-        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
+      <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
+        <a id="${collectionListing.name}-vrtx-title" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
@@ -94,7 +94,7 @@
         ${title?html}</a> 
 
         <#if publishedDate?has_content && collectionListing.displayPropDefs?seq_contains(publishedDate.definition)> 
-        <div class="published-date">
+        <div id="published-date" class="published-date">
           <@vrtx.msg code="viewCollectionListing.publishedDate"
                      args=[publishedDate.getFormattedValue('long', locale)] />
         </div>
@@ -122,7 +122,7 @@
 <#macro displayEvents collectionListing displayMoreURLs=false>
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
-    <div class="vrtx-resources ${collectionListing.name}">
+    <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2> 
     </#if>
@@ -133,9 +133,9 @@
       <#local intro  = vrtx.prop(r, 'introduction')  />
       <#local location  = vrtx.prop(r, 'location')  />
 
-      <div class="vrtx-resource vevent">
+      <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource vevent">
         
-        <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
+        <a id="${collectionListing.name}-vrtx-title" class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
@@ -145,7 +145,7 @@
         </#if>
         ${title?html}</a>
 
-        <div class="time-and-place"> 
+        <div id="time-and-place" class="time-and-place"> 
           <@viewutils.displayTimeAndPlace r />
         </div>
 

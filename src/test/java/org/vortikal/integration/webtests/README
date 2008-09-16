@@ -1,0 +1,29 @@
+
+Creating/running the tests in this package:
+
+* Create (in your home folder) and add proper values to vrtx-automatedtest.properties:
+	- adminUrl -> URL of host to run admintests against
+	- adminUser -> self explanatory
+	- adminPassword -> self explanatory
+	- viewUrl -> URL of host to run "normal" tests (viewtests) against
+	- webdavUrl -> URL of host to run webdavtests against
+
+# HOW TO AUTOMIZE THIS???
+* Create required resources on host that tests are to run against:
+	- Rootcollection with name AND title "automatedtestresources", all other testresources are created in here
+	- One collectionfolder per testcase, with the same name AND title as the testclass in lowercase
+	- Make sure the collection contains resources/files that are relevant to the testcase
+
+* Create tests by extending one of the following:
+	- AuthenticatedWebTest -> for tests that require authentication (package admin)
+	- WebTest -> for "normal" tests (viewtests) (package view)
+	- WebdavWebTest -> for webdav tests (package webdav)
+
+* NB! Tests should be created in one of the following subpackages:
+	- org.vortikal.integration.webtests.admin
+	- org.vortikal.integration.webtests.view
+	- org.vortikal.integration.webtests.webdav
+
+* Run the tests (as integration tests) with maven using the "webtests" profile:
+	- mvn -Pwebtests integration-test
+	- The profile will NOT run Abstract* or *WebTest.java, ONLY *Test.java

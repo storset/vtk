@@ -53,7 +53,7 @@
       // -->
     </script>
   </head>
-  <body onload="pageLoaded()" onresize="dyniframesize()">
+  <body onload="pageLoaded()">
 
     <#if !previewRefreshParameter?exists>
       <#assign previewRefreshParameter = 'force-refresh' />

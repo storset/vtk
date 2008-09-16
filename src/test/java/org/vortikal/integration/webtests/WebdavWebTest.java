@@ -8,7 +8,7 @@ public abstract class WebdavWebTest extends AbstractWebTest {
 
     @Override
     protected boolean requiresAuthentication() {
-        return false;
+        return true;
     }
 
 }

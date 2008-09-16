@@ -169,19 +169,22 @@
         <includes>
           <include>changes.xml</include>
         </includes>
-      </resource>
+      </resource>      
     </resources>
+    
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
       </testResource>
     </testResources>
+    
     <!--extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav</artifactId>
       </extension>
     </extensions-->
+    
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
@@ -225,35 +228,6 @@
               <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
             </systemProperty>
           </systemProperties>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skipTests>${test.skip}</skipTests>
-          <forkMode>pertest</forkMode>
-          <useFile>false</useFile>
-          <systemProperties>
-            <property>
-              <name>log4j.configuration</name>
-              <value>log4j.test.xml</value>
-            </property>
-          </systemProperties>
-          <includes>
-            <include>**/*TestCase.java</include>
-          </includes>
-          <excludes>
-            <exclude>**/Abstract*.java</exclude>
-	        <!-- Threaded tests -->
-            <exclude>**/SimpleDateFormatCacheTestCase.java</exclude>
-            <exclude>**/SimpleMethodInvokingTriggerBeanTestCase.java</exclude>
-            <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
-            <exclude>**/MemoryContentStoreTestCase.java</exclude>
-            <exclude>**/DataAccessor*.java</exclude>
-	        <!-- Failing test -->
-            <exclude>**/RepositoryOperationsTestCase.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -302,8 +276,7 @@
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase> svn+ssh://svn.uio.no/svnroot/vortikal/tags 
-          </tagBase>
+          <tagBase>svn+ssh://svn.uio.no/svnroot/vortikal/tags</tagBase>
         </configuration>
       </plugin>
       <plugin>
@@ -332,9 +305,77 @@
           </projectnatures>
         </configuration>
       </plugin>
+      <!-- Surefire -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>${test.skip}</skip>
+          <forkMode>pertest</forkMode>
+          <useFile>false</useFile>
+          <systemProperties>
+            <property>
+              <name>log4j.configuration</name>
+              <value>log4j.test.xml</value>
+            </property>
+          </systemProperties>
+          <includes>
+            <include>**/*TestCase.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/Abstract*.java</exclude>
+            <!-- Threaded tests -->
+            <exclude>**/SimpleDateFormatCacheTestCase.java</exclude>
+            <exclude>**/SimpleMethodInvokingTriggerBeanTestCase.java</exclude>
+            <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
+            <exclude>**/MemoryContentStoreTestCase.java</exclude>
+            <exclude>**/DataAccessor*.java</exclude>
+            <!-- Failing test -->
+            <exclude>**/RepositoryOperationsTestCase.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-
+  
+  <profiles>
+    <profile>
+      <id>webtests</id>
+      <activation>
+        <property>
+          <name>webtests</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>surefire-it</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <configuration>
+                  <skip>false</skip>
+                  <includes>
+                    <include>**/integration/webtests/**/*Test.java</include>
+                  </includes>
+                  <excludes>
+                    <exclude>**/Abstract*.java</exclude>
+                    <exclude>**/*WebTest.java</exclude>
+                  </excludes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  
   <dependencies>
     <!--
       MP3 support: these dependencies are not in any known Maven

@@ -45,13 +45,13 @@ public abstract class AbstractWebTest extends WebTestCase {
         }
         
         // Make sure the rootcollection containing testresources is available
-        assertLinkPresentWithText(rootCollection);
+        assertLinkPresent(rootCollection);
         clickLinkWithText(rootCollection);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
     }
     
     protected void prepare(String testResourceName) {
-        assertLinkPresentWithText(testResourceName);
+        assertLinkPresent(testResourceName);
         clickLinkWithText(testResourceName);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
     }

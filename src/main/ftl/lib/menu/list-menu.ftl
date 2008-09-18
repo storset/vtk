@@ -40,7 +40,7 @@
         <#attempt>
           <#include "/actions/list-menu.${item.label}.ftl" />
         <#recover>
-          ${prepend}<a href="${item.url?html}">${item.title}</a>${append}
+          ${prepend}<a id="${item.label}" href="${item.url?html}">${item.title}</a>${append}
         </#recover>
       </li>
     </#if>

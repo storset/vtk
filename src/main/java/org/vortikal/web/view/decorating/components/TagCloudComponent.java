@@ -326,7 +326,8 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         }
 
 
-        // VTK-1107: Sets the text to compare to lowercase, thus avoiding problem with sorting.
+        // VTK-1107: Sets the text to compare to lowercase,
+        // thus avoiding problem with sorting.
         public int compareTo(TagElement other) {
             return this.text.toLowerCase().compareTo(other.text.toLowerCase());
         }

@@ -8,9 +8,9 @@ import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
 
 import org.apache.commons.lang.StringUtils;
-import org.vortikal.integration.webtests.AuthenticatedWebTest;
+import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
-public class CollectionListingTest extends AuthenticatedWebTest {
+public class CollectionListingTest extends BaseAuthenticatedWebTest {
     
     private enum SORT_ORDER {
         ASC,

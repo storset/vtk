@@ -1,8 +1,8 @@
 package org.vortikal.integration.webtests.admin;
 
-import org.vortikal.integration.webtests.AuthenticatedWebTest;
+import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
-public class ManageResourceTest extends AuthenticatedWebTest {
+public class ManageResourceTest extends BaseAuthenticatedWebTest {
     
     protected void setUp() throws Exception {
         super.setUp();
@@ -45,7 +45,8 @@ public class ManageResourceTest extends AuthenticatedWebTest {
         assertLinkPresent(resourceName);
         
         // Delete resource and copy, verify result
-        setExpectedJavaScriptConfirm("Are you sure you want to delete \""+ resourceName + "\"?", true);
+        // Ignore the javascript popup
+        setScriptingEnabled(false);
         clickLink("delete-" + resourceName);
         assertLinkNotPresent(resourceName);
         

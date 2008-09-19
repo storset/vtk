@@ -1,8 +1,8 @@
 package org.vortikal.integration.webtests.view;
 
-import org.vortikal.integration.webtests.WebTest;
+import org.vortikal.integration.webtests.BaseWebTest;
 
-public class EventlistingTest extends WebTest {
+public class EventlistingTest extends BaseWebTest {
     
     protected void setUp() throws Exception {
         super.setUp();

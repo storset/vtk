@@ -1,9 +1,9 @@
 package org.vortikal.integration.webtests;
 
-public abstract class AuthenticatedWebTest extends AbstractWebTest {
-    
+public abstract class BaseWebdavWebTest extends AbstractWebTest {
+
     protected String getBaseUrl() throws Exception {
-        return getProperty(PROP_ADMIN_URL);
+        return getProperty(PROP_WEBDAV_URL);
     }
 
     @Override

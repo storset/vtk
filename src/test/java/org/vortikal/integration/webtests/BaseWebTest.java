@@ -3,7 +3,7 @@ package org.vortikal.integration.webtests;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class WebTest extends AbstractWebTest {
+public abstract class BaseWebTest extends AbstractWebTest {
     
     private List<String> collectionListingElements;
     private List<String> eventListingElements;

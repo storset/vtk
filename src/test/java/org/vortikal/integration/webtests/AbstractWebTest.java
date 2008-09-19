@@ -1,6 +1,5 @@
 package org.vortikal.integration.webtests;
 
-import java.io.FileInputStream;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -10,23 +9,22 @@ import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractWebTest extends WebTestCase {
     
-    protected static final String PROP_ADMIN_URL = "adminUrl";
-    protected static final String PROP_ADMIN_USR = "adminUser";
-    protected static final String PROP_ADMIN_PASSWORD = "adminPassword";
-    protected static final String PROP_VIEW_URL = "viewUrl";
-    protected static final String PROP_WEBDAV_URL = "webdavUrl";
+    protected static final String PROP_ADMIN_URL = "admin.url";
+    protected static final String PROP_ADMIN_USR = "admin.user";
+    protected static final String PROP_ADMIN_PASSWORD = "admin.password";
+    protected static final String PROP_VIEW_URL = "view.url";
+    protected static final String PROP_WEBDAV_URL = "webdav.url";
     
     private static Properties props;
-    private static final String propFile = "vrtx-automatedtest.properties";
+    private static final String propFile = "webtests.properties";
     private static final String rootCollection = "automatedtestresources";
     
     protected void setUp() throws Exception {
         super.setUp();
         
         if (props == null) {
-            String userHome = System.getProperty("user.home");
             props = new Properties();
-            props.load(new FileInputStream(userHome + "/" + propFile));
+            props.load(this.getClass().getResourceAsStream( "/" + propFile));
         }
         
         getTestContext().setLocale(new Locale("en"));

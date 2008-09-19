@@ -1,8 +1,8 @@
 package org.vortikal.integration.webtests.webdav;
 
-import org.vortikal.integration.webtests.WebdavWebTest;
+import org.vortikal.integration.webtests.BaseWebdavWebTest;
 
-public class CollectionListingTest extends WebdavWebTest {
+public class CollectionListingTest extends BaseWebdavWebTest {
 
     protected void setUp() throws Exception {
         super.setUp();

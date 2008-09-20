@@ -158,22 +158,48 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         int itemsPerResultSet = Math.round((float) allItems.size() / (float) resultSets);
         int remainder = allItems.size() - (resultSets * itemsPerResultSet);
 
+        // Moving startIdx and endIdx when remainder > 0
+        int startMov = 0;
+        int endMov = 0;
+        // Because of for-loop, could be solved with do-while
+        boolean lastOne = false;
+
         for (int i = 0; i < resultSets; i++) {
             int startIdx = i * itemsPerResultSet;
             int endIdx = startIdx + itemsPerResultSet;
 
             /*
-             * if (i == resultSets - 1 && remainder > 0) { endIdx += remainder; }
+             * Old code for remainder, places them last if (i == resultSets - 1 && remainder > 0) { endIdx += remainder;
+             * }
              */
 
             if (endIdx > allItems.size()) {
                 endIdx = allItems.size();
-            }
+            } else {
 
-            // Add the remainder 1 by 1 linear until it is empty.
-            if (remainder > 0) {
-                endIdx++;
-                remainder--;
+                if (lastOne == true) {
+                    startMov++;
+                    lastOne = false;
+                }
+
+                if (remainder > 0) {
+
+                    if (i > 0) {
+                        startMov++;
+                    }
+
+                    endMov++;
+                    remainder--;
+
+                    if (remainder == 0) {
+                        lastOne = true;
+                    }
+
+                }
+
+                startIdx = startIdx + startMov;
+                endIdx = endIdx + endMov;
+
             }
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);

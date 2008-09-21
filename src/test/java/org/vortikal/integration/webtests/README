@@ -15,11 +15,11 @@ Creating/running the tests in this package:
 	  <profile>
         <id>webtests</id>
         <properties>
-          <admin.url>xxx</admin.url>
-          <admin.user>xxx</admin.user>
-          <admin.password>xxx</admin.password>
-          <view.url>xxx</view.url>
-          <webdav.url>xxx</webdav.url>
+          <webtests.admin.url>xxx</webtests.admin.url>
+          <webtests.admin.user>xxx</webtests.admin.user>
+          <webtests.admin.password>xxx</webtests.admin.password>
+          <webtests.view.url>xxx</webtests.view.url>
+          <webtests.webdav.url>xxx</webtests.webdav.url>
         </properties>
       </profile>
       

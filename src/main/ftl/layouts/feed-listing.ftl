@@ -8,7 +8,7 @@
   </#if>
 
   <#if conf.feedDescription?exists>
-    <div class="feed-description">${feed.description?html}</div> 
+    <div class="feed-description">${feed.descriptionl}</div> 
   </#if>
   
   <#if feed.entries?size gt 0>

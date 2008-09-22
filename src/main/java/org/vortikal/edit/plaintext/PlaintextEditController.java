@@ -33,6 +33,7 @@ package org.vortikal.edit.plaintext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -227,14 +228,16 @@ public class PlaintextEditController extends SimpleFormController
             characterEncoding = postedEncoding;
             maybeSetEncoding = true;
         }
+        try {
+            Charset.forName(characterEncoding);
+        } catch (Throwable t) {
+            characterEncoding = this.defaultCharacterEncoding;
+        }
+        
         if (this.updateEncodingProperty == null) {
             maybeSetEncoding = false;
         }
         if (maybeSetEncoding) {
-            if (this.logger.isDebugEnabled())
-                this.logger.debug("New character encoding for document "
-                             + resource + " resolved to: " + characterEncoding);
-
             resource.setUserSpecifiedCharacterEncoding(characterEncoding);
             this.repository.store(token, resource);
         }
@@ -255,6 +258,11 @@ public class PlaintextEditController extends SimpleFormController
         throws IOException {
 
         String encoding = resource.getCharacterEncoding();
+        try {
+            Charset.forName(encoding);
+        } catch (Throwable t) {
+            encoding = this.defaultCharacterEncoding;
+        }
         InputStream is = this.repository.getInputStream(token, resource.getURI(),
                                                    false);
         byte[] bytes = StreamUtil.readInputStream(is);

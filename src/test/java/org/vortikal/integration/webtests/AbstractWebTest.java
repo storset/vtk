@@ -50,7 +50,7 @@ public abstract class AbstractWebTest extends WebTestCase {
     
     protected void prepare(String testResourceName) {
         assertLinkPresent(testResourceName);
-        clickLinkWithText(testResourceName);
+        clickLink(testResourceName);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
     }
     

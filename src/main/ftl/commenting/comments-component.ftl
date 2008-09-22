@@ -182,7 +182,7 @@
           value="<@vrtx.msg code='commenting.form.submit'
           default='Submit' />" />
         (<@vrtx.rawMsg code="commenting.post.comment-as" default="as ${principal.description}" args=[principalStr] />)
-
+        </div> 
       </form>
 
       <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />

@@ -3,12 +3,14 @@ package org.vortikal.integration.webtests;
 import java.util.Locale;
 import java.util.Properties;
 
+import junit.framework.AssertionFailedError;
 import net.sourceforge.jwebunit.junit.WebTestCase;
 
 import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractWebTest extends WebTestCase {
     
+    protected static final String rootCollection = "automatedtestresources";
     protected static final String PROP_ADMIN_URL = "admin.url";
     protected static final String PROP_ADMIN_USR = "admin.user";
     protected static final String PROP_ADMIN_PASSWORD = "admin.password";
@@ -16,8 +18,7 @@ public abstract class AbstractWebTest extends WebTestCase {
     protected static final String PROP_WEBDAV_URL = "webdav.url";
     
     private static Properties props;
-    private static final String propFile = "webtests.properties";
-    private static final String rootCollection = "automatedtestresources";
+    private static final String propFile = "integration/webtests/webtests.properties";
     
     protected void setUp() throws Exception {
         super.setUp();
@@ -44,12 +45,21 @@ public abstract class AbstractWebTest extends WebTestCase {
         
         // Make sure the rootcollection containing testresources is available
         assertLinkPresent(rootCollection);
-        clickLinkWithText(rootCollection);
+        clickLink(rootCollection);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
+        
+        prepare();
     }
     
-    protected void prepare(String testResourceName) {
-        assertLinkPresent(testResourceName);
+    private void prepare() {
+        String testResourceName = this.getClass().getSimpleName().toLowerCase();
+        try {
+            assertLinkPresent(testResourceName);
+        } catch (AssertionFailedError afe) {
+            throw new MissingWebTestResourceException("A required resource for this test was not found. \n" +
+            		"Make sure a collection with the same name and title as the testclass " +
+            		"(" + testResourceName + ") exists under the rootcollection.");
+        }
         clickLink(testResourceName);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
     }

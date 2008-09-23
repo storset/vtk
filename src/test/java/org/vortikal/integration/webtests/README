@@ -27,10 +27,16 @@ Creating/running the tests in this package:
     </profiles>
 	
 
-# TODO: HOW TO AUTOMIZE THIS?
-* Create required resources on host that tests are to run against:
-	- Rootcollection with name "automatedtestresources", all other testresources are created in here
-	- One collectionfolder per testcase, with the same name as the testclass in lowercase
+# TODO: RECONSIDER THIS???
+* Resources for the tests are created and setup using createArchiveService and expandArchiveService
+	- A resourcebundle (automatedtestresources.jar) is located under test/resources/integration/webtests
+	- Expand the bundle using the expandArchiveService under the rootfolder of the instance to run the tests against
+	- If you create new tests, make sure you update the resourcebundle at the same time using the createArchiveService
+	- NB!! Create resources for new tests with the same user as the one used in the bundle.
+
+* Manually creating required resources on host that tests are to run against:
+	- Rootcollection with name AND title "automatedtestresources", all other testresources are created in here
+	- One collectionfolder per testcase, with the same name AND title as the testclass in lowercase
 	- Make sure the collection contains resources/files that are relevant to the testcase
 
 * Create tests by extending one of the following:

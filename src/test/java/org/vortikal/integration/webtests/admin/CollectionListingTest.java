@@ -16,11 +16,6 @@ public class CollectionListingTest extends BaseAuthenticatedWebTest {
         ASC,
         DESC
     }
-    
-    protected void setUp() throws Exception {
-        super.setUp();
-        prepare(this.getClass().getSimpleName().toLowerCase());
-    }
 
     public void testSortCollections() {
         

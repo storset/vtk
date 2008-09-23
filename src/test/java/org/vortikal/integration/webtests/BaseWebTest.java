@@ -15,13 +15,10 @@ public abstract class BaseWebTest extends AbstractWebTest {
         collectionListingElements = new ArrayList<String>();
         collectionListingElements.add("collectionListing.searchComponent");
         collectionListingElements.add("collectionListing.searchComponent-vrtx-resource");
-        collectionListingElements.add("collectionListing.searchComponent-vrtx-title");
         // Elements we expect to find for eventlistings
         eventListingElements = new ArrayList<String>();
         eventListingElements.add("eventListing.previousEventsSearchComponent-vrtx-resource");
         eventListingElements.add("eventListing.upcomingEventsSearchComponent-vrtx-resource");
-        eventListingElements.add("eventListing.previousEventsSearchComponent-vrtx-title");
-        eventListingElements.add("eventListing.upcomingEventsSearchComponent-vrtx-title");
         eventListingElements.add("eventListing.previousEventsSearchComponent");
         eventListingElements.add("eventListing.upcomingEventsSearchComponent");
         eventListingElements.add("time-and-place");
@@ -29,7 +26,6 @@ public abstract class BaseWebTest extends AbstractWebTest {
         articleListingElements = new ArrayList<String>();
         articleListingElements.add("articleListing.searchComponent");
         articleListingElements.add("articleListing.searchComponent-vrtx-resource");
-        articleListingElements.add("articleListing.searchComponent-vrtx-title");
         articleListingElements.add("published-date");
     }
     

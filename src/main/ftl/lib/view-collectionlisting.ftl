@@ -35,7 +35,7 @@
     <#list resources as r>
       <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
 
-        <a id="${vrtx.propValue(r, "title", "", "")?html}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
+        <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
 
@@ -83,7 +83,7 @@
       <#local intro  = vrtx.prop(r, 'introduction')  />
 
       <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
-        <a id="${collectionListing.name}-vrtx-title" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
+        <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
@@ -135,7 +135,7 @@
 
       <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource vevent">
         
-        <a id="${collectionListing.name}-vrtx-title" class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
+        <a id="${r.name}" class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>

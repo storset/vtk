@@ -3,22 +3,17 @@ package org.vortikal.integration.webtests.view;
 import org.vortikal.integration.webtests.BaseWebTest;
 
 public class PathTest extends BaseWebTest {
-	
-    protected void setUp() throws Exception {
-        super.setUp();
-        prepare(this.getClass().getSimpleName().toLowerCase());
-    }
     
     public void testVisualProfileOff() { 
     	clickLink("visualprofileoff"); 
     	assertElementPresent("breadcrumb");
-    	assertElementPresent("vrtx-manage-url");
+    	assertLinkPresent("vrtx-manage-url");
     }
 
     public void testVisualProfileOn() {
      	clickLink("visualprofileon"); 
     	assertElementPresent("breadcrumb");
-    	assertElementPresent("vrtx-admin-link");
+    	assertLinkPresent("vrtx-admin-link");
     }
     
     public void testFeedElement() {
@@ -27,8 +22,10 @@ public class PathTest extends BaseWebTest {
     
     public void testFeedList() {
     	assertLinkPresent("feedentry1.html");
-    	assertLinkPresent("feedentry2.txt");
+    	assertLinkPresent("feedentry2.html");
     	clickLink("vrtx-feed-link");
+    	// TODO implement regex to check result
+    	assertMatch("(link href=\")\\S*");
     }
     
 }

@@ -1,72 +1,59 @@
 package org.vortikal.integration.webtests.admin;
 
+import org.apache.commons.lang.StringUtils;
 import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
 public class ManageResourceTest extends BaseAuthenticatedWebTest {
-
-	private String className = this.getClass().getSimpleName().toLowerCase();
-
-	protected void setUp() throws Exception {
-		super.setUp();
-		prepare(className);
-	}
 
 	/**
 	 * Create and delete a collection
 	 */
 	public void testManageCollection() {
-		createAndDeleteResource("createCollectionService", "createcollection",
-				"testcollection");
+		createAndDeleteResource("createCollectionService", "createcollection", "testcollection");
 	}
 
 	/**
 	 * Create and delete a document
 	 */
 	public void testManageDocument() {
-		createAndDeleteResource("createDocumentService", "createDocumentForm",
-				"testdocument");
+		createAndDeleteResource("createDocumentService", "createDocumentForm", "testdocument");
 	}
 
 	/**
 	 * Copy a resource to same folder
 	 */
 	public void testCopyResourceToSameFolder() {
-
-		String resourceName = "testcopy";
-
-		assertLinkPresent(resourceName + ".html");
-		checkCheckbox("/" + rootCollection + "/" + className + "/"
-				+ resourceName + ".html");
-		clickLink("copyResourceService");
-		clickLink("copyToSelectedFolderService");
-
-		assertLinkPresent(resourceName + "(1).html");
-		deleteResource(resourceName + "(1).html");
-
+	    copyResource(null);
 	}
 
 	/**
 	 * Copy a resource to another folder
-	 * 
 	 */
 	public void testCopyResourceToOtherFolder() {
+	    copyResource("copyfolder");
+	}
+	
+	private void copyResource(String folderToCopyTo) {
+	    String resourceName = "testcopy";
 
-		String resourceName = "testcopy";
-
-		assertLinkPresent(resourceName + ".html");
-		checkCheckbox("/" + rootCollection + "/" + className + "/"
-				+ resourceName + ".html");
-		clickLink("copyResourceService");
-		clickLink("copyfolder");
-		clickLink("copyToSelectedFolderService");
-
-		assertLinkPresent(resourceName + ".html");
-		deleteResource(resourceName + ".html");
-
+	    assertLinkPresent(resourceName + ".html");
+	    String className = this.getClass().getSimpleName().toLowerCase();
+	    checkCheckbox("/" + rootCollection + "/" + className + "/" + resourceName + ".html");
+	    clickLink("copyResourceService");
+	    
+	    String copiedResourceName = resourceName;
+	    if (!StringUtils.isBlank(folderToCopyTo)) {
+	        clickLink(folderToCopyTo);
+	        copiedResourceName = copiedResourceName + ".html";
+	    } else {
+	        copiedResourceName = copiedResourceName + "(1).html";
+	    }
+	    clickLink("copyToSelectedFolderService");
+	    assertLinkPresent(copiedResourceName);
+	    deleteResource(copiedResourceName);
 	}
 
-	private void createAndDeleteResource(String serviceName, String formName,
-			String resourceName) {
+	private void createAndDeleteResource(String serviceName, String formName, String resourceName) {
 		// Start of fresh
 		assertLinkNotPresent(resourceName);
 		assertFormNotPresent(formName);
@@ -79,16 +66,15 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
 		submit();
 		// Verify it's there and delete it
 		assertLinkPresent(resourceName);
+		
 		deleteResource(resourceName);
 
 	}
 
 	/**
 	 * Delete resource and verify result
-	 * 
 	 */
 	private void deleteResource(String resourceName) {
-
 		// Ignore the javascript popup
 		setScriptingEnabled(false);
 		clickLink("delete-" + resourceName);

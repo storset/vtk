@@ -35,7 +35,7 @@
     <#list resources as r>
       <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
 
-        <a id="${collectionListing.name}-vrtx-title" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
+        <a id="${vrtx.propValue(r, "title", "", "")?html}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
 

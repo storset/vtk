@@ -138,8 +138,8 @@
     <#-- XXX: display first link with content type = atom: -->
     <#list alternativeRepresentations as alt>
       <#if alt.contentType = 'application/atom+xml'>
-        <div id="vrtx-feed-link" class="vrtx-feed-link">
-          <a href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+        <div class="vrtx-feed-link">
+          <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
         </div>
         <#break />
       </#if>

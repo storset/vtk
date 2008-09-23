@@ -24,9 +24,9 @@ public class PathTest extends BaseWebTest {
     	assertLinkPresent("feedentry1.html");
     	assertLinkPresent("feedentry2.html");
     	clickLink("vrtx-feed-link");
-    	// TODO implement regex to check result
-    	assertMatch("(link href=\"http://.*/automatedtestresources/pathtest/feedentry1.html)");
-    	assertMatch("(link href=\"http://.*/automatedtestresources/pathtest/feedentry2.html)");
+    	String feedEntryPath = rootCollection + "/" + this.getClass().getSimpleName().toLowerCase();
+    	// Links for feedentry 1&2 should be found
+        assertMatch("(link href=\"http://)\\S*(/" + feedEntryPath + "/feedentry[1-2].html\"\\S*)");
     }
     
 }

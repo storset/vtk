@@ -24,5 +24,5 @@
 
   <#-- Display nothing -->
 <#else>
-  <a class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>
+  <a id="vrtx-manage-url" class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>
 </#if>

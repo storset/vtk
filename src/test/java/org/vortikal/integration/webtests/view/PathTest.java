@@ -25,7 +25,8 @@ public class PathTest extends BaseWebTest {
     	assertLinkPresent("feedentry2.html");
     	clickLink("vrtx-feed-link");
     	// TODO implement regex to check result
-    	assertMatch("(link href=\")\\S*");
+    	assertMatch("(link href=\"http://.*/automatedtestresources/pathtest/feedentry1.html)");
+    	assertMatch("(link href=\"http://.*/automatedtestresources/pathtest/feedentry2.html)");
     }
     
 }

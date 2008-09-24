@@ -59,6 +59,7 @@
          // Misc setup
          fck.Config['FullPage'] = false;
          fck.Config['ToolbarCanCollapse'] = false;
+         fck.Config['TabSpaces'] = 4;
          <#if resource.resourceTypeDefinition.name == 'xhtml10trans'>
            fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
          <#else>

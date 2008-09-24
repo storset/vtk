@@ -64,9 +64,9 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
 		setWorkingForm(formName);
 		setTextField("name", resourceName);
 		submit();
-		// Verify it's there and delete it
+		// Verify it's there
 		assertLinkPresent(resourceName);
-		
+		// Delete it
 		deleteResource(resourceName);
 
 	}

@@ -1,19 +1,19 @@
 
 Creating/running the tests in this package:
 
-* Define the following properties in your local maven settings.xml as part of a webtests profile:
+* Define the following properties in your local maven settings.xml as part of a default active profile:
 	- admin.url -> URL of host to run admintests against
 	- admin.user -> self explanatory
 	- admin.password -> self explanatory
 	- view.url -> URL of host to run "normal" tests (viewtests) against
 	- webdav.url -> URL of host to run webdavtests against
-	- Like so:
+	- e.g:
 	
 	<profiles>
 	  ...
 	  
 	  <profile>
-        <id>webtests</id>
+        <id>default</id>
         <properties>
           <webtests.admin.url>xxx</webtests.admin.url>
           <webtests.admin.user>xxx</webtests.admin.user>
@@ -26,6 +26,9 @@ Creating/running the tests in this package:
       ...
     </profiles>
 	
+	<activeProfiles>
+      <activeProfile>default</activeProfile>
+    </activeProfiles>
 
 # TODO: RECONSIDER THIS???
 * Resources for the tests are created and setup using createArchiveService and expandArchiveService

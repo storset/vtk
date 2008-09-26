@@ -119,10 +119,27 @@ public class DoxiaHtmlView implements View {
 
     private class InsertHeaderSink extends XhtmlSink {
     	private String title;
+    	private boolean wroteTitle = false;
     	
     	public InsertHeaderSink(Writer writer, String title) {
     		super(writer);
     		this.title = title;
+    	}
+    	
+    	public void head_() {
+    	    if (!this.wroteTitle) {
+    	        if (this.title != null) {
+    	            writeStartTag(Tag.TITLE);
+    	            write(this.title);
+    	            writeEndTag(Tag.TITLE);
+    	        }
+    	    }
+    	    super.head_();
+    	}
+    	
+    	public void title() {
+    	    super.title();
+    	    this.wroteTitle = true;
     	}
     	
         public void body() {
@@ -133,6 +150,7 @@ public class DoxiaHtmlView implements View {
         		writeEndTag(Tag.H1);
         	}
         }
+        
     }
     
 }

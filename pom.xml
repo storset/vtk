@@ -21,7 +21,7 @@
 
   <issueManagement>
     <system>Jira</system>
-    <url>http://www.usit.uio.no/jira/browse/VTK</url>
+    <url>https://www.usit.uio.no/jira/browse/VTK</url>
   </issueManagement>
 
   <developers>
@@ -68,23 +68,6 @@
       <post>vortex-core@usit.uio.no</post>
     </mailingList>
   </mailingLists>
-
-  <ciManagement>
-    <system>Continuum</system>
-    <url>http://stirfry:8080/continuum/</url>
-    <notifiers>
-      <notifier>
-        <type>mail</type>
-        <sendOnSuccess>false</sendOnSuccess>
-        <sendOnWarning>false</sendOnWarning>
-        <sendOnError>true</sendOnError>
-        <sendOnFailure>true</sendOnFailure>
-        <configuration>
-          <address>vortex-core@usit.uio.no</address>
-        </configuration>
-      </notifier>
-    </notifiers>
-  </ciManagement>
 
   <scm>
     <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>

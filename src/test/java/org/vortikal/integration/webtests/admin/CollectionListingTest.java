@@ -44,7 +44,7 @@ public class CollectionListingTest extends BaseAuthenticatedWebTest {
         Table resourceInfo = getTable("resourceInfoMain");
         Row languageRow = (Row)resourceInfo.getRows().get(6);
         Cell language = (Cell)languageRow.getCells().get(1);
-        assertTrue("Language is blank", !StringUtils.isBlank(language.getValue()));
+        assertTrue("Language is blank", StringUtils.isNotBlank(language.getValue()));
         // TODO test better compared to parent (inherits etc...)
     }
     
@@ -60,7 +60,7 @@ public class CollectionListingTest extends BaseAuthenticatedWebTest {
         Row resourceTypeRow = (Row)resourceInfo.getRows().get(2);
         Cell resourceType = (Cell)resourceTypeRow.getCells().get(1);
         String type = resourceType.getValue();
-        assertTrue("Resourcetype is blank", !StringUtils.isBlank(type));
+        assertTrue("Resourcetype is blank", StringUtils.isNotBlank(type));
         // TODO test other fields/properties
     }
 

@@ -163,7 +163,7 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
 
             List<Value> values = new ArrayList<Value>();
             for (String string : strings) {
-                if (!StringUtils.isBlank(string)) {
+                if (StringUtils.isNotBlank(string)) {
                     values.add(propDef.getValueFormatter().stringToValue(string.trim(), null, null));
                 }
             }

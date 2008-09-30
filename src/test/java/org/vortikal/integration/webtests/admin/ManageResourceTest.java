@@ -59,7 +59,7 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
         clickLink("copyResourceService");
 
         String copiedResourceName = resourceName;
-        if (!StringUtils.isBlank(folderToCopyTo)) {
+        if (StringUtils.isNotBlank(folderToCopyTo)) {
             clickLink(folderToCopyTo);
             copiedResourceName = copiedResourceName + ".html";
         } else {

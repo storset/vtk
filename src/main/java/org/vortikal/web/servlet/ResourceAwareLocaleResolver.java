@@ -126,7 +126,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         Path parentURI = resource.getURI().getParent();
         while (parentURI != null) {
             Resource parent = this.repository.retrieve(token, parentURI, true);
-            if (!StringUtils.isBlank(parent.getContentLanguage())) {
+            if (StringUtils.isNotBlank(parent.getContentLanguage())) {
                 return LocaleHelper.getLocale(parent.getContentLanguage());
             }
             parentURI = parentURI.getParent();

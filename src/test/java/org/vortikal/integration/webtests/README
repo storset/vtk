@@ -1,35 +1,6 @@
 
 Creating/running the tests in this package:
 
-* Define the following properties in your local maven settings.xml as part of a default active profile:
-	- admin.url -> URL of host to run admintests against
-	- admin.user -> self explanatory
-	- admin.password -> self explanatory
-	- view.url -> URL of host to run "normal" tests (viewtests) against
-	- webdav.url -> URL of host to run webdavtests against
-	- e.g:
-	
-	<profiles>
-	  ...
-	  
-	  <profile>
-        <id>default</id>
-        <properties>
-          <webtests.admin.url>xxx</webtests.admin.url>
-          <webtests.admin.user>xxx</webtests.admin.user>
-          <webtests.admin.password>xxx</webtests.admin.password>
-          <webtests.view.url>xxx</webtests.view.url>
-          <webtests.webdav.url>xxx</webtests.webdav.url>
-        </properties>
-      </profile>
-      
-      ...
-    </profiles>
-	
-	<activeProfiles>
-      <activeProfile>default</activeProfile>
-    </activeProfiles>
-
 # TODO: RECONSIDER THIS???
 * Resources for the tests are created and setup using createArchiveService and expandArchiveService
 	- A resourcebundle (automatedtestresources.jar) is located under test/resources/integration/webtests

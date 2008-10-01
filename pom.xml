@@ -158,7 +158,6 @@
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
-        <filtering>true</filtering>
       </testResource>
     </testResources>
     
@@ -185,6 +184,8 @@
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
+          <stopKey>stop</stopKey>
+          <!-- stopPort>9322</stopPort -->
           <scanIntervalSeconds>0</scanIntervalSeconds>
           <systemProperties>
             <systemProperty>
@@ -213,7 +214,7 @@
             </systemProperty>
           </systemProperties>
         </configuration>
-        <executions>
+        <!-- executions>
           <execution>
             <id>start-jetty</id>
             <phase>pre-integration-test</phase>
@@ -231,7 +232,7 @@
               <goal>stop</goal>
             </goals>
           </execution>
-        </executions>
+        </executions -->
       </plugin>
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
@@ -359,6 +360,15 @@
         <webtests.admin.url>http://localhost:9322</webtests.admin.url>
       </properties>
       <build>
+        <testResources>
+          <testResource>
+            <directory>src/test/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/integration/webtests/*.properties</include>
+            </includes>
+          </testResource>
+        </testResources>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>

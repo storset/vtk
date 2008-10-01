@@ -184,7 +184,6 @@
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
-          <stopKey>stop</stopKey>
           <!-- stopPort>9322</stopPort -->
           <scanIntervalSeconds>0</scanIntervalSeconds>
           <systemProperties>

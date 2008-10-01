@@ -101,6 +101,7 @@
           <property name="attributes">
             <set>
               <value>href</value>
+              <value>rel</value>
             </set>
           </property>
         </bean>

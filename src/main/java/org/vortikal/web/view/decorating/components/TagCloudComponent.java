@@ -284,14 +284,12 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         if (serviceUrl == null) {
             if (this.defaultURLPattern == null) {
                 return null;
-            } else {
-                Matcher matcher = URL_REPLACEMENT_VALUE_PATTERN.matcher(this.defaultURLPattern);
-                return matcher.replaceAll(text);
-            }
-        } else {
-            Matcher matcher = URL_REPLACEMENT_VALUE_PATTERN.matcher(serviceUrl);
-            return matcher.replaceAll(text);
-        }
+            } 
+            serviceUrl = this.defaultURLPattern;
+        } 
+        
+        Matcher matcher = URL_REPLACEMENT_VALUE_PATTERN.matcher(serviceUrl);
+        return matcher.replaceAll(text);
     }
 
     /**

@@ -15,7 +15,7 @@
     management solutions.</description>
 
   <organization>
-    <name>Vortikal Project</name>
+    <name>Vortex Project</name>
     <url>http://www.usit.uio.no/it/vortex</url>
   </organization>
 
@@ -213,6 +213,25 @@
             </systemProperty>
           </systemProperties>
         </configuration>
+        <executions>
+          <execution>
+            <id>start-jetty</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <daemon>true</daemon>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-jetty</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>no.uio.usit.mvn.plugins</groupId>
@@ -330,6 +349,15 @@
           <name>webtests</name>
         </property>
       </activation>
+      <properties>
+        <!-- Default values, override in your own settings.xml -->
+        <!-- for your own setup. -->
+        <webtests.admin.user>vortex@localhost</webtests.admin.user>
+        <webtests.admin.password>surfer</webtests.admin.password>
+        <webtests.view.url>http://localhost:9322</webtests.view.url>
+        <webtests.webdav.url>http://localhost:9321</webtests.webdav.url>
+        <webtests.admin.url>http://localhost:9322</webtests.admin.url>
+      </properties>
       <build>
         <plugins>
           <plugin>

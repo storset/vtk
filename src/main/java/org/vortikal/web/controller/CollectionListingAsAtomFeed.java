@@ -244,13 +244,22 @@ public class CollectionListingAsAtomFeed implements Controller {
         sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
 
         String uriString = resourceUri.toString();
-        uriString = uriString.replaceAll("[#% ]", "").replace("[", "").replace("]", "");
+        // Remove any invalid character before decoding
+        uriString = removeInvalid(uriString);
+        uriString = URIUtil.decode(uriString);
+        // Remove any unknown character after decoding
+        uriString = removeInvalid(uriString);
         uriString = URIUtil.encode(uriString, null);
         String iriString = IRIUtils.URItoIRI(uriString);
         sb.append(iriString);
         return sb.toString();
     }
     
+    private String removeInvalid(String s) {
+    	return s.replaceAll("[#%?\\[\\] ]", "");
+    }
+    
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }

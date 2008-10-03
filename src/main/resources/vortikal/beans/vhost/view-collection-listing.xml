@@ -26,7 +26,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceInCollection" />
-        <ref bean="atomParameterSetAssertion" />
+        <ref bean="feedParameterSetAssertion" />
       </list>
     </property>
     <property name="handler" ref="collectionListing.atomHandler" />

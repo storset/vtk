@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.service;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
@@ -43,6 +45,7 @@ public class RequestParameterAssertion implements Assertion {
 
     private String parameterName = "";
     private String parameterValue = "";
+    private Set<String> legalValueParameters; 
 	
     public void setParameterName(String parameterName) {
         this.parameterName = parameterName;
@@ -94,6 +97,17 @@ public class RequestParameterAssertion implements Assertion {
     }
     
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+    	if(legalValueParameters != null){
+    		return legalValueParameters.contains(request.getParameter(this.parameterName));
+    	}
         return this.parameterValue.equals(request.getParameter(this.parameterName)); 
     }
+
+	public void setLegalValueParameters(Set<String> legalValueParameters) {
+		this.legalValueParameters = legalValueParameters;
+	}
+
+	public Set<String> getLegalParameters() {
+		return legalValueParameters;
+	}
 }

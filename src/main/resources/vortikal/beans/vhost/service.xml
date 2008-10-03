@@ -331,7 +331,7 @@
     <property name="order" value="-1" />
     <property name="assertions">
       <list>
-        <ref bean="feedParameterSetAssertion" />
+        <ref bean="legacy.feedParameterSetAssertion" />
       </list>
     </property>
     <property name="handler" ref="collectionListingAsFeedHandler" />
@@ -448,22 +448,23 @@
   </bean>
 
 
-  <bean id="rssParameterSetAssertion" 
+  <bean id="legacy.feedParameterSetAssertion" 
         class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="rss" />
+    <property name="parameterValue" value="collection-feed" />
   </bean>
 
   <bean id="feedParameterSetAssertion" 
     class="org.vortikal.web.service.RequestParameterAssertion">
     <property name="parameterName" value="vrtx" />
     <property name="parameterValue" value="feed" />
-  </bean>
-  
-  <bean id="atomParameterSetAssertion" 
-    class="org.vortikal.web.service.RequestParameterAssertion">
-    <property name="parameterName" value="vrtx" />
-    <property name="parameterValue" value="atom" />
+    <property name="legalValueParameters">
+        <set>
+	    <value>rss</value>
+	    <value>feed</value>
+	    <value>atom</value>
+        </set>
+    </property>
   </bean>
 
   <bean id="abstractResourcePrincipalPermissionAssertion" 

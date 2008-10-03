@@ -2,11 +2,12 @@ package org.vortikal.webdav.header.ifheader;
 
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import junit.framework.TestCase;
+
 import org.apache.log4j.BasicConfigurator;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;
@@ -14,25 +15,17 @@ import org.vortikal.webdav.ifheader.IfHeader;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 @SuppressWarnings("unchecked")
-public class IfHeaderImplTestCase extends MockObjectTestCase {
+public class IfHeaderImplTestCase extends TestCase {
 
-    protected static Log logger = LogFactory.getLog(IfHeaderImplTestCase.class);
-    Resource resource;
-    String ifHeaderContent;
-    String etag;
-    String lockToken;
+    private final String ifHeaderContent = "(<locktoken:a-write-lock-token> [\"I am an ETag\"])";
+    private final String etag = "\"I am an ETag\"";
+    private final String lockToken = "locktoken:a-write-lock-token";
+    
+    private Mockery context = new JUnit4Mockery();
     
     protected void setUp() throws Exception {
         super.setUp();
         BasicConfigurator.configure();
-
-        this.etag = "\"I am an ETag\"";
-        this.lockToken = "locktoken:a-write-lock-token";
-        
-        //ifHeaderContent = "(<locktoken:a-write-lock-token> [\"I am an ETag\"]) ([\"I am another ETag\"])";
-        this.ifHeaderContent = "(<locktoken:a-write-lock-token> [\"I am an ETag\"])";
-        
-
     }
 
     protected void tearDown() throws Exception {
@@ -52,7 +45,6 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
             String token = (String) iter.next();
             assertNotNull(token);
             assertNotSame("", token);
-            logger.info("token:" + token);
             count++;
         }
         assertEquals(1, count);
@@ -63,16 +55,14 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         
-        Mock mockLock = mock(Lock.class);
-        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue(this.lockToken));
-        Lock lock = (Lock) mockLock.proxy();
+        final Lock mockLock = context.mock(Lock.class, "matchTrueLock");
+        context.checking(new Expectations() {{ one(mockLock).getLockToken(); will(returnValue(lockToken)); }});
         
-        Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(this.etag));
-        mockResource.expects(atLeastOnce()).method("getLock").withNoArguments().will(returnValue(lock));
-        this.resource = (Resource) mockResource.proxy();
+        final Resource mockResource = context.mock(Resource.class, "matchTrueResource");
+        context.checking(new Expectations() {{ one(mockResource).getEtag(); will(returnValue(etag)); }});
+        context.checking(new Expectations() {{ atLeast(2).of(mockResource).getLock(); will(returnValue(mockLock)); }});
         
-        assertTrue(ifHeader.matches(this.resource, true));
+        assertTrue(ifHeader.matches(mockResource, true));
     }
     
     public void testMatchWrongEtag() {
@@ -80,16 +70,15 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         
-        Mock mockLock = mock(Lock.class);
-        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue(this.lockToken));
-        Lock lock = (Lock) mockLock.proxy();
+        final Lock mockLock = context.mock(Lock.class, "matchWrongEtagLock");
+        context.checking(new Expectations() {{ one(mockLock).getLockToken(); will(returnValue(lockToken)); }});
         
-        Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue("dummy"));
-        mockResource.expects(atLeastOnce()).method("getLock").withNoArguments().will(returnValue(lock));
-        this.resource = (Resource) mockResource.proxy();
+        final Resource mockResource = context.mock(Resource.class, "matchWrongEtagResource");
+        context.checking(new Expectations() {{ one(mockResource).getEtag(); will(returnValue("dummy")); }});
+        context.checking(new Expectations() {{ atLeast(2).of(mockResource).getLock(); will(returnValue(mockLock)); }});
         
-        assertFalse(ifHeader.matches(this.resource, true));
+        
+        assertFalse(ifHeader.matches(mockResource, true));
     }
 
     public void testMatchWrongLockToken() {
@@ -97,16 +86,15 @@ public class IfHeaderImplTestCase extends MockObjectTestCase {
         request.addHeader("If", this.ifHeaderContent);
         IfHeader ifHeader = new IfHeaderImpl(request);
         
-        Mock mockLock = mock(Lock.class);
-        mockLock.stubs().method("getLockToken").withNoArguments().will(returnValue("dummy"));
-        Lock lock = (Lock) mockLock.proxy();
+        final Lock mockLock = context.mock(Lock.class, "matchWrongLockTokenLock");
+        context.checking(new Expectations() {{ one(mockLock).getLockToken(); will(returnValue("dummy")); }});
         
-        Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(this.etag));
-        mockResource.expects(atLeastOnce()).method("getLock").withNoArguments().will(returnValue(lock));
-        this.resource = (Resource) mockResource.proxy();
+        final Resource mockResource = context.mock(Resource.class, "matchWrongLockTokenResource");
+        context.checking(new Expectations() {{ one(mockResource).getEtag(); will(returnValue(etag)); }});
+        context.checking(new Expectations() {{ atLeast(2).of(mockResource).getLock(); will(returnValue(mockLock)); }});
         
-        assertFalse(ifHeader.matches(this.resource, true));
+        
+        assertFalse(ifHeader.matches(mockResource, true));
     }
     
 }

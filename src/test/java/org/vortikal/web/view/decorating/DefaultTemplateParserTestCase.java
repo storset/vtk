@@ -38,13 +38,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.vortikal.repository.Resource;
+
+import junit.framework.TestCase;
 
 
-public class DefaultTemplateParserTestCase extends MockObjectTestCase {
+public class DefaultTemplateParserTestCase extends TestCase {
 
     private static final String EMPTY_TEMPLATE = "";
+    
+    private Mockery context = new JUnit4Mockery();
+    private final DecoratorRequest mockRequest = context.mock(DecoratorRequest.class);
+    private final DecoratorResponse mockResponse = context.mock(DecoratorResponse.class);
 
     public void testEmpty() throws Exception {
         DefaultTemplateParser parser = createParser();
@@ -124,14 +132,9 @@ public class DefaultTemplateParserTestCase extends MockObjectTestCase {
     }
     
     private String renderComponent(DecoratorComponent c) throws Exception {
-        Writer writer = new StringWriter();
-        Mock mockRequest = mock(DecoratorRequest.class);
-        Mock mockResponse = mock(DecoratorResponse.class);
-
-        mockResponse.expects(atLeastOnce()).method("getWriter").will(returnValue(writer));
-        DecoratorRequest request = (DecoratorRequest) mockRequest.proxy();
-        DecoratorResponse response = (DecoratorResponse) mockResponse.proxy();
-        c.render(request, response);
+        final Writer writer = new StringWriter();
+        context.checking(new Expectations() {{ one(mockResponse).getWriter(); will(returnValue(writer)); }});
+        c.render(mockRequest, mockResponse);
         return writer.toString();
     }
     

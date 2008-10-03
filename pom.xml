@@ -465,27 +465,17 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.5</version>
       <scope>test</scope>
     </dependency>
+    
     <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <version>1.1.0</version>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit4</artifactId>
+      <version>2.5.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock-cglib</artifactId>
-      <version>1.1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>no.uio.usit.miyagi</groupId>
-      <artifactId>miyagi</artifactId>
-      <version>0.2</version>
-      <scope>test</scope>
-    </dependency>
+    
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>

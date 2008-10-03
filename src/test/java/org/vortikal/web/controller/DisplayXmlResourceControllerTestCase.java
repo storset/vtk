@@ -30,14 +30,18 @@
  */
 package org.vortikal.web.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jmock.Mock;
-import org.jmock.cglib.MockObjectTestCase;
+import junit.framework.TestCase;
+
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Path;
@@ -47,20 +51,17 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
 
-public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
-
+public class DisplayXmlResourceControllerTestCase extends TestCase {
 
     private String faqSchema = "http://www.uio.no/xsd/uio/faq/v001/faq.xsd";
-
-    private Mock mockRepository;
-
     private HttpServletRequest request;
-
     private DisplayXmlResourceController controller;
-
-    private Path uri = Path.fromString("/hest.xml");
-
-    private String token;
+    private final Path uri = Path.fromString("/hest.xml");
+    private final String token = "";
+    
+    private Mockery context = new JUnit4Mockery();
+    private final Resource mockResource = context.mock(Resource.class);
+    private final Repository mockRepository = context.mock(Repository.class);
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -69,7 +70,6 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         BaseContext.pushContext();
         RequestContext requestContext = new RequestContext(this.request, null, this.uri);
         RequestContext.setRequestContext(requestContext);
-        this.token = "";
         SecurityContext securityContext = new SecurityContext(this.token, null);
         SecurityContext.setSecurityContext(securityContext);
     }
@@ -78,36 +78,17 @@ public class DisplayXmlResourceControllerTestCase extends MockObjectTestCase {
         super.tearDown();
     }
 
-//    private Property getUndefinedProperty(Namespace namespace, String name) {
-//        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
-//        propDef.setNamespace(namespace);
-//        propDef.setName(name);
-//        propDef.afterPropertiesSet();
-//        return propDef.createProperty();
-//    }
-
-    public void testLastModified() {
+    public void testLastModified() throws IOException {
 
         long lastModified;
-
-//        Property schemaProperty = getUndefinedProperty(this.schemaNamespace, this.schemaPropertyName);
-//        schemaProperty.setStringValue(this.faqSchema);
-
-        Date lastModifiedExpected = new Date();
-        Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("isCollection").withNoArguments().will(
-                returnValue(false));
-        mockResource.expects(atLeastOnce()).method("getLastModified").withNoArguments().will(
-                returnValue(lastModifiedExpected));
-        Resource resource = (Resource) mockResource.proxy();
-
-        this.mockRepository = mock(Repository.class);
-        this.mockRepository.expects(atLeastOnce()).method("retrieve").
-            with(eq(this.token), eq(this.uri), eq(true))
-                .will(returnValue(resource));
-
-        assertNotNull(this.mockRepository);
-        this.controller.setRepository((Repository) this.mockRepository.proxy());
+        final Date lastModifiedExpected = new Date();
+        
+        context.checking(new Expectations() {{ one(mockResource).isCollection(); will(returnValue(false)); }});
+        context.checking(new Expectations() {{ one(mockResource).getLastModified(); will(returnValue(lastModifiedExpected)); }});
+        
+        context.checking(new Expectations() {{ one(mockRepository).retrieve(token, uri, true); will(returnValue(mockResource)); }});
+        
+        this.controller.setRepository(mockRepository);
 
         lastModified = this.controller.getLastModified(this.request);
         assertEquals(-1, lastModified);

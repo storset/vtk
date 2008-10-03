@@ -30,20 +30,26 @@
  */
 package org.vortikal.webdav.header.ifheader;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.BasicConfigurator;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.vortikal.repository.Resource;
 import org.vortikal.webdav.ifheader.IfMatchHeader;
 import org.vortikal.webdav.ifheader.IfNoneMatchHeader;
 
-public class IfMatchTestCase extends MockObjectTestCase {
+public class IfMatchTestCase extends TestCase {
 
     private Resource resource;
     
     private final String etag = "\"I am an ETag\"";
     private final String anotherEtag = "\"I am another ETag\"";
+    
+    private Mockery context = new JUnit4Mockery();
+    private final Resource mockResource = context.mock(Resource.class);
 
     static {
         BasicConfigurator.configure();
@@ -51,10 +57,8 @@ public class IfMatchTestCase extends MockObjectTestCase {
     
     protected void setUp() throws Exception {
         super.setUp();
-                
-        Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getEtag").withNoArguments().will(returnValue(this.etag));
-        this.resource = (Resource) mockResource.proxy();
+        context.checking(new Expectations() {{ one(mockResource).getEtag(); will(returnValue(etag)); }});
+        this.resource = mockResource;
     }
 
     protected void tearDown() throws Exception {

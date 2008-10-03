@@ -34,59 +34,57 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 
 
-public class EditDocumentTest extends MockObjectTestCase {
+public class EditDocumentTest extends TestCase {
 
-    Document schemaDocument;
-    EditDocument testDocument;
-    SchemaDocumentDefinition definition;
+    private EditDocument testDocument;
+    private SchemaDocumentDefinition definition;
 
-    SchemaDocumentDefinition optionalElementDefinition;
-    EditDocument optionalElementDocument;
+    private SchemaDocumentDefinition optionalElementDefinition;
+    private EditDocument optionalElementDocument;
+    
+    private Mockery context = new JUnit4Mockery();
+    private final Resource mockResource = context.mock(Resource.class);
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        SAXBuilder builder = new SAXBuilder(
-                "org.apache.xerces.parsers.SAXParser");
+        SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
         builder.setValidation(true);
 
         /* turn on schema support */
-        builder.setFeature("http://apache.org/xml/features/validation/schema",
-                true);
+        builder.setFeature("http://apache.org/xml/features/validation/schema", true);
 
-        URL testXML = 
-            this.getClass().getResource("test.xml");
+        URL testXML = this.getClass().getResource("test.xml");
 
         Document d = builder.build(testXML);
         Element root = d.getRootElement();
         root.detach();
-
-        Mock mockResource = mock(Resource.class);
-        mockResource.expects(atLeastOnce()).method("getURI").withNoArguments().will(
-                returnValue("/foo.xml"));
+        
+        context.checking(new Expectations() {{ one(mockResource).getURI(); will(returnValue(Path.fromString("/foo.xml"))); }});
+        
         // XXX: will tests run without a resource?
-        this.testDocument = new EditDocument(root, d.getDocType(), 
-                (Resource) mockResource.proxy(), null);
+        this.testDocument = new EditDocument(root, d.getDocType(), mockResource, null);
 
-        URL testXSD = 
-            this.getClass().getResource("test.xsd");
+        URL testXSD = this.getClass().getResource("test.xsd");
         this.definition = new SchemaDocumentDefinition("test", testXSD);
 
-        this.optionalElementDefinition = 
-            new SchemaDocumentDefinition("optionalElement", this.getClass().getResource("optionalelement.xsd")); 
+        this.optionalElementDefinition =  new SchemaDocumentDefinition("optionalElement", this.getClass().getResource("optionalelement.xsd")); 
         d = builder.build(this.getClass().getResource("optionalElement.xml"));
         root = d.getRootElement();
         root.detach();
-        this.optionalElementDocument = new EditDocument(root, d.getDocType(), 
-                (Resource) mockResource.proxy(), null);
+        this.optionalElementDocument = new EditDocument(root, d.getDocType(), mockResource, null);
     }
 
     public void testOptionalTopLevelElement() {

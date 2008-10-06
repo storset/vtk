@@ -116,7 +116,7 @@
       <div class="vrtx-keywords">
         ${tagsProp.definition.getLocalizedName(springMacroRequestContext.locale)}:
 	<#list tagsProp.values as tag>
-          <a href="./?vrtx=tags&amp;tag=${tag.stringValue?html}">${tag.stringValue?html}</a><#if tag_has_next>,</#if> 
+          <a href="${tagServiceDefaultExpression?replace("%v", tag.stringValue?html)}">${tag.stringValue?html}</a><#if tag_has_next>,</#if> 
 	</#list>
       </div>
     </#if>

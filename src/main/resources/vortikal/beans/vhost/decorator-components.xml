@@ -161,14 +161,19 @@
   </bean>
 
 
-  <!-- To be moved to vortex -->
+  <bean id="decorating.tagServiceExpression" class="java.lang.String">
+    <description>The url expression used to generate links to tag listings</description>
+    <constructor-arg value="${tagService.defaultExpression}" />
+  </bean>  
+  
+  
   <bean id="decorating.keywordsComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.view.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="keywordsPropDef" />
-    <property name="description" value="Inserts the resource keywords, linked to search" />
-    <property name="defaultURLpattern" value="./?vrtx=tags&amp;tag=%v" />
+    <property name="description" value="Inserts the resource keywords, linked to the tags view" />
+    <property name="defaultURLpattern" ref="decorating.tagServiceExpression" />
     <property name="view" ref="decorating.keywordsComponent.view" />
   </bean>
 
@@ -178,7 +183,7 @@
     <property name="keywordsPropDef" ref="keywordsPropDef"/>
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="tag-cloud" />
-    <property name="defaultURLPattern" value="./?vrtx=tags&amp;tag=%v" />
+    <property name="defaultURLPattern" ref="decorating.tagServiceExpression" />
     <property name="view" ref="decorating.tagCloudComponent.view" />
   </bean>
 

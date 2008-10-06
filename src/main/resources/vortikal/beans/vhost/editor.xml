@@ -193,18 +193,10 @@
               <entry key="cssURLs" value-ref="editor.editCSSURLs" />
               <entry key="editorHelpURL" value="${editor.helpURL}" />
               <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
-            </map>
-          </property>
-        </bean>
-
-        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
-          <property name="modelDataMap">
-            <map>
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
             </map>
           </property>
         </bean>
-
       </list>
     </property>
   </bean>

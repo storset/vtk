@@ -60,6 +60,7 @@
     <property name="attributesMap">
       <map>
         <entry key="cssURL" value="${themeBaseURL}/view-article.css" />
+        <entry key="tagServiceDefaultExpression" value="${tagService.defaultExpression}" />
       </map>
     </property>
   </bean>

@@ -194,7 +194,7 @@ public class RequestContext {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getName());
+        StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append(": [");
         sb.append("resourceURI = ").append(this.resourceURI);
         sb.append(", service = ").append(this.service.getName());

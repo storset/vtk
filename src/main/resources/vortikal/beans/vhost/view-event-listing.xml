@@ -74,7 +74,7 @@
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
 
     <property name="query">
-      <value>uri = {$currentFolder}/* AND type IN event AND start-date &gt;= {$currentTime}</value>
+      <value>(uri = {$currentFolder}/* AND type IN event) AND (start-date &gt; {$currentTime} OR end-date &gt; {$currentTime}) </value>
     </property>
     <property name="queryParser" ref="searchParser" />
 
@@ -98,7 +98,7 @@
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
 
     <property name="query">
-      <value>uri = {$currentFolder}/* AND type IN event AND start-date &lt; {$currentTime}</value>
+      <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND start-date &lt; {$currentTime}))</value>
     </property>
     <property name="queryParser" ref="searchParser" />
 

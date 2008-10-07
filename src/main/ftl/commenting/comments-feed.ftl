@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <#import "/lib/vortikal.ftl" as vrtx />
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <#--title type="html">${resource.title?html}</title-->
   <title type="html"><@vrtx.msg code='commenting.comments' args=[resource.title] default='Comments' /></title>
   <#assign uri = resource.URI.toString() />
   <link href="${urlMap[uri]?html}" />
@@ -13,8 +12,8 @@
   <#assign resource = resourceMap[comment.URI] />
   <entry>
     <title>${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" /> ${resource.title?html}</title>
-    <link href="${(urlMap[uri] + '#comment-' + comment.ID)?html}" />
-    <id>${(urlMap[uri] + '#comment-' + comment.ID)?html}</id>
+    <link href="${(urlMap[comment.URI] + '#comment-' + comment.ID)?html}" />
+    <id>${(urlMap[comment.URI] + '#comment-' + comment.ID)?html}</id>
     <author>
       <name>${comment.author.description?html}</name>
       <#if comment.author.URL?exists>

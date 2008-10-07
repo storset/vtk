@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -47,6 +48,7 @@ public final class Value implements Cloneable, Comparable<Value> {
     private int intValue;
     private long longValue;
     private Principal principalValue;
+    private byte[] binaryValue;
 
     public Value(String stringValue) {
         if (stringValue == null || stringValue.equals(""))
@@ -101,6 +103,11 @@ public final class Value implements Cloneable, Comparable<Value> {
         this.type = PropertyType.Type.PRINCIPAL;
         this.principalValue = principalValue;
     }
+    
+    public Value(byte[] binaryValue) {
+    	this.binaryValue = binaryValue;
+    	this.type = PropertyType.Type.BINARY;
+    }
 
     public Type getType() {
         return this.type;
@@ -129,6 +136,10 @@ public final class Value implements Cloneable, Comparable<Value> {
     public String getStringValue() {
         return this.stringValue;
     }
+    
+    public byte[] getBinaryValue() {
+    	return this.binaryValue;
+    }
  
    public Object getObjectValue() {
         switch (this.type) {
@@ -153,6 +164,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             
             case PRINCIPAL:
                 return this.principalValue;
+            case BINARY:
+            	return this.binaryValue;
         }
         
         throw new IllegalStateException(
@@ -186,6 +199,8 @@ public final class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return (this.principalValue == null && v.getPrincipalValue() == null) ||
                 (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
+        case BINARY:
+        	return Arrays.equals(this.binaryValue, v.getBinaryValue());
         default:
             return (this.stringValue == null && v.getStringValue() == null) ||
                 (this.stringValue != null && this.stringValue.equals(v.getStringValue()));
@@ -207,7 +222,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             return hash + 4 + (this.dateValue == null ? 0 : this.dateValue.hashCode());
         case PRINCIPAL:
             return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
-            
+        case BINARY:
+        	return hash + 6 + (this.binaryValue == null ? 0 : this.binaryValue.hashCode());
         default:
             return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
         }
@@ -228,6 +244,8 @@ public final class Value implements Cloneable, Comparable<Value> {
             return new Value((Date)this.dateValue.clone(), false);
         case PRINCIPAL:
             return new Value(this.principalValue);
+        case BINARY:
+        	return new Value(this.binaryValue);
         default:
             return new Value(this.stringValue);
         }
@@ -322,6 +340,9 @@ public final class Value implements Cloneable, Comparable<Value> {
         case IMAGE_REF:
             representation = this.stringValue;
             break;
+        case BINARY:
+        	representation = this.binaryValue.toString();
+        	break;
             
         case PRINCIPAL:
             Principal principal = this.principalValue;

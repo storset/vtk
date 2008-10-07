@@ -93,6 +93,10 @@ public interface Property extends Cloneable {
     public String getFormattedValue(String format, Locale locale);
     
     public Type getType();
+    
+    public void setBinaryValue(byte[] binary) throws ValueFormatException;
+    
+    public byte[] getBinaryValue() throws ValueFormatException;
 
 }
 

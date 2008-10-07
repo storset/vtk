@@ -52,7 +52,8 @@ public final class PropertyType {
         TIMESTAMP, 
         DATE, 
         BOOLEAN, 
-        PRINCIPAL;
+        PRINCIPAL,
+        BINARY;
     }
     
     

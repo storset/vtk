@@ -1,6 +1,8 @@
 package org.vortikal.graphics;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -66,6 +68,19 @@ public class ImageServiceImplTestIntegration extends TestCase {
     	assertNotNull("No image was fetched", scaledImage);
     	assertEquals("Wrong format", "jpg", scaledImage.getFormat());
     	assertEquals("Wrong width after resizing", scaledWidth, String.valueOf(scaledImage.getImage().getWidth()));
+    }
+    
+    public void testGetImageBytes() throws IOException {
+    	String scaledWidth = "100";
+    	BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));
+    	ScaledImage scaledImage = imageService.scaleImage(originalImage, "png", scaledWidth, null);
+    	assertNotNull("No image returned", scaledImage);
+    	byte[] imageBytes = scaledImage.getImageBytes();
+    	assertTrue("No imagebytes returned", imageBytes != null && imageBytes.length > 0);
+    	ByteArrayInputStream in = new ByteArrayInputStream(imageBytes);
+    	BufferedImage imageFromBytes = ImageIO.read(in);
+    	assertNotNull("Could not recreate image from bytes", imageFromBytes);
+    	assertEquals("Wrong width", scaledWidth, String.valueOf(imageFromBytes.getWidth()));
     }
     
     private void assertProperResize(String imageName, String width, String height) throws IOException {

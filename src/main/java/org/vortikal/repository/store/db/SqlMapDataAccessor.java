@@ -900,7 +900,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                     executor.startBatch();
                     for (Property property: properties) {
 
-                        if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
+                        if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName()) &&
+                        		!PropertyType.Type.BINARY.equals(property.getType())) {
                             Map<String, Object> parameters = new HashMap<String, Object>();
                             parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                             parameters.put("name", property.getDefinition().getName());

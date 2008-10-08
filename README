@@ -18,6 +18,7 @@ are necessary:
   jdbcPassword = [your JDBC password]
   repositoryDataDirectory = [an empty directory for storing files]
   databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
+  xslFilePath = [the path to webdocuments]
 
 4. Run the command 'mvn jetty:run' (standing in the project
    directory). 

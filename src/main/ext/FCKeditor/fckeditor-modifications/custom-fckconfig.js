@@ -14,6 +14,9 @@ FCKConfig.ToolbarSets['Inline'] = [
             ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']
 ] ;
 
+FCKConfig.ToolbarSets['Inline-Without-Sub-SuperScript'] = [
+            ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough']
+] ;
 
 FCKConfig.ToolbarSets['Vortikal'] = [
             ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],

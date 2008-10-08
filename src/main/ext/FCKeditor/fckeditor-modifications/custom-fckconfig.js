@@ -14,7 +14,7 @@ FCKConfig.ToolbarSets['Inline'] = [
             ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']
 ] ;
 
-FCKConfig.ToolbarSets['Inline-Without-Sub-SuperScript'] = [
+FCKConfig.ToolbarSets['Inline-S'] = [
             ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough']
 ] ;
 

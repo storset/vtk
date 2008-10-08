@@ -374,7 +374,22 @@
     values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
             #namespaceUri#, #name#, #value#)
   </insert>
-
+  
+  <insert id="insertBinaryPropertyEntry" parameterClass="java.util.Map">
+    insert into binary_prop_entry
+      (binary_prop_entry_id, resource_id, binary_prop_ref, binary_mimetype, binary_content)
+    values (<include refid="nextBinaryPropEntryId" />, #resourceId#, #binaryPropRef#, #binaryMimeType#, 
+              #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#)
+  </insert>
+  
+  <resultMap id="BinaryContent" class="java.util.HashMap">
+    <result property="binaryMimetype" column="binary_mimetype" />
+    <result property="binaryContent" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
+  </resultMap>
+  
+  <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryContent">
+    select binary_mimetype, binary_content from binary_prop_entry where binary_prop_ref = #binaryPropRef#
+  </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">
     insert into extra_prop_entry

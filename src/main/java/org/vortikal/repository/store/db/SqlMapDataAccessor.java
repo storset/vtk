@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -900,8 +901,33 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                     executor.startBatch();
                     for (Property property: properties) {
 
-                        if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName()) &&
-                        		!PropertyType.Type.BINARY.equals(property.getType())) {
+                    	if (PropertyType.Type.BINARY.equals(property.getType())) {
+                    		
+                    		if (logger.isDebugEnabled()) {
+                        		logger.debug("Storing binary data " + property.getDefinition().getName()
+                        				+ " with format " + property.getBinaryMimeType() + " for resource "
+                        				+ r.getName());
+                        	}
+                    		
+                    		// TODO find a better solution for "binaryRef" property -> what if a 
+                    		// resource has more than one binary property?
+                    		Property binaryRefProperty = r.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.BINARY_REF);
+                    		
+                    		if (binaryRefProperty == null || StringUtils.isBlank(binaryRefProperty.getStringValue())) {
+                    			logger.warn("No binary referense is set for the binary property " 
+                    					+ property.getDefinition().getName() + " of resource " + r.getName());
+                    			break;
+                    		}
+                    		
+                    		String binarySqlMap = getSqlMap("insertBinaryPropertyEntry");
+                    		Map<String, Object> binaryParameters = new HashMap<String, Object>();
+                    		binaryParameters.put("resourceId", r.getID());
+                    		binaryParameters.put("binaryPropRef", binaryRefProperty.getStringValue());
+                    		binaryParameters.put("binaryContent", property.getBinaryValue());
+                    		binaryParameters.put("binaryMimeType", property.getBinaryMimeType());
+                        	executor.update(binarySqlMap, binaryParameters);
+                        	                    		
+                    	} else if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
                             Map<String, Object> parameters = new HashMap<String, Object>();
                             parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                             parameters.put("name", property.getDefinition().getName());
@@ -927,13 +953,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                     executor.executeBatch();
                     return null;
                 }
-            });            
-        }
+            });
+        }        
     }
-    
 
-
-    private void populateCustomProperties(ResourceImpl[] resources, List<Map<String, Object>> propertyList) {
+	private void populateCustomProperties(ResourceImpl[] resources, List<Map<String, Object>> propertyList) {
 
         Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
 

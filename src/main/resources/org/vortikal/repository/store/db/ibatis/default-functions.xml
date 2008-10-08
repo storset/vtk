@@ -11,6 +11,10 @@
   <sql id="nextExtraPropEntryId">
     nextval('extra_prop_entry_seq_pk')
   </sql>
+  
+  <sql id="nextBinaryPropEntryId">
+    nextval('binary_prop_entry_seq_pk')
+  </sql>
 
   <sql id="nextAclEntryId">
     nextval('acl_entry_seq_pk')

@@ -49,6 +49,7 @@ public final class Value implements Cloneable, Comparable<Value> {
     private long longValue;
     private Principal principalValue;
     private byte[] binaryValue;
+    private String binaryMimeType;
 
     public Value(String stringValue) {
         if (stringValue == null || stringValue.equals(""))
@@ -104,8 +105,9 @@ public final class Value implements Cloneable, Comparable<Value> {
         this.principalValue = principalValue;
     }
     
-    public Value(byte[] binaryValue) {
+    public Value(byte[] binaryValue, String binaryMimeType) {
     	this.binaryValue = binaryValue;
+    	this.binaryMimeType = binaryMimeType;
     	this.type = PropertyType.Type.BINARY;
     }
 
@@ -139,6 +141,10 @@ public final class Value implements Cloneable, Comparable<Value> {
     
     public byte[] getBinaryValue() {
     	return this.binaryValue;
+    }
+    
+    public String getBinaryMimeType() {
+    	return this.binaryMimeType;
     }
  
    public Object getObjectValue() {
@@ -245,7 +251,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:
-        	return new Value(this.binaryValue);
+        	return new Value(this.binaryValue, this.binaryMimeType);
         default:
             return new Value(this.stringValue);
         }

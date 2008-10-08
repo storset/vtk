@@ -32,12 +32,12 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
             String imageFormat = ancestorPropertySet.getURI().toString();
             imageFormat = imageFormat.substring(imageFormat.lastIndexOf(".") + 1);
             ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
-            property.setBinaryValue(thumbnail.getImageBytes());
+            property.setBinaryValue(thumbnail.getImageBytes(), "image/" + imageFormat.toLowerCase());
             return true;
 
 
         } catch (Exception e) {
-            log.warn("Unable to get BufferedImage representation of content", e);
+            log.warn("Unable to get create thumbnail of content", e);
             return false;
         }
         

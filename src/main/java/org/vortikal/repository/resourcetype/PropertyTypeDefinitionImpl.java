@@ -84,10 +84,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private ContentRelation contentRelation;
 
     private TypeLocalizationProvider typeLocalizationProvider = null;
-    
-//    public boolean isContent() {
-//        return this.contentRelation == ContentRelation.PRE_CONTENT;
-//    }
 
     public void setContentRelation(ContentRelation contentRelation) {
             this.contentRelation = contentRelation;

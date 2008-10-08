@@ -11,6 +11,7 @@
       <list>
         <ref bean="introductionPropDef" />
         <ref bean="introductionImagePropDef" />
+        <ref bean="introductionImageCaptionPropDef" />
       </list>
     </property>
   </bean>  
@@ -27,6 +28,14 @@
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="picture"/>
     <property name="type" value="IMAGE_REF"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+  
+  <bean id="introductionImageCaptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="caption"/>
+    <property name="type" value="HTML"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
   </bean>

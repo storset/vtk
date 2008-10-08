@@ -9,11 +9,15 @@ FCKConfig.ToolbarSets['Complete'] = [
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']
 ] ;
 
-
+//This
 FCKConfig.ToolbarSets['Inline'] = [
             ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']
 ] ;
 
+//This is a ToolbarSet without Subscript and Superscript
+FCKConfig.ToolbarSets['Inline-S'] = [
+            ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough']
+] ;
 
 FCKConfig.ToolbarSets['Vortikal'] = [
             ['Save','-','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],

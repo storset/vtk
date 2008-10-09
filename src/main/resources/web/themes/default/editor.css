@@ -188,9 +188,9 @@ span.input-description{
 div.introduction {
   clear:left;
   float: left; 
-  width: 500px;  
+  width: 56%;  
   margin-right: 1.2em;
-  margin-bottom:1em;
+  margin-bottom: 1em;
 }
 
 * html div.introduction{
@@ -198,16 +198,17 @@ div.introduction {
 }
 
 div.introduction textarea {
-  height: 17.5ex; /* Used when fck-editor is disabled */
-  width: 500px;  
+  height: 20.5ex; /* Used when fck-editor is disabled */
+  width: 56%;    
 }
 
 /* div.introduction iframe {
   height: 13ex;
 } */
 
+
 #resource\.introduction___Frame {
-  height: 13ex;
+  height: 16ex;
 }
 
 
@@ -215,36 +216,78 @@ div.introduction textarea {
   height: 90pt;
 }
 
+/* ********** START Picture (input, button, preview) and caption styling */
+
 div.picture {
-  float:left;
-  clear:right; /*IE7*/
-  white-space: nowrap;
+  float: left;
+  position: relative;
+  clear: right; /*IE7*/
   margin-bottom: 1em;
+  width: 490px;
 }
 
 div.picture input{
+  float: left;
+  position: relative;
   width: 15em;
   margin-right: .25em;
 }
 
+div.picture button{
+  float: left;
+  position: relative;
+  margin-right: 1.25em;
+}
+
 div.picture img { 
- margin-top: 7px; 
- height: 10ex;
+ float: left;
+ position: relative;
+ height: 14.5ex;
 }
 
 * html div.picture img {
-  margin-top: 5px;
-  height: 70pt;
+  /* margin-top: 5px; */
+  height: 14.5ex;
 }
 
 div.picture div {
   /* border: 1px solid #ccc; */  
-  overflow: hidden;
+
  }
 
 * html div.picture div {
   height: 71pt;
 }
+
+div.caption {
+  float: left;
+  width: 36.5ex;
+  position: relative;
+  margin-top: -74px;
+}
+
+/* Opera 7+ filter hack */
+@media screen and (min-width: 0px){
+   div.caption { 
+      width: 33ex; 
+      margin-top: -73px;
+     }
+}
+
+/* IE6 fix */
+* html div.caption {
+   width: 37.25ex; 
+   margin-top: -77px;
+}
+
+div.caption textarea{
+	height: 8ex;
+}
+#resource\.caption___Frame {
+	height: 8ex;
+}
+
+/* ************* END Picture (input, button, preview) and caption styling */
 
 div.authors { 
   clear: left;

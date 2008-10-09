@@ -27,8 +27,11 @@
     <@ping.ping url=pingURL['url'] interval=300 />
     <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
     <script language="Javascript" type="text/javascript"><!--
-      function newEditor(name, completeEditor) {
-        var completeEditor = completeEditor != null ? completeEditor : false; 
+      function newEditor(name, completeEditor, withoutSubSuper) {
+      
+        var completeEditor = completeEditor != null ? completeEditor : false;
+        var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
+        //Det som må defineres er hvordan det kan/bør settes en inputverdi i denne metoden.
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
 
@@ -40,6 +43,10 @@
             fck.ToolbarSet = 'Complete';
          } else {
             fck.ToolbarSet = 'Inline';
+         }
+         
+         if(withoutSubSuper) {
+           fck.ToolbarSet = 'Inline-S';
          }
 
          // File browser
@@ -149,8 +156,7 @@
       <div class="html-content">
       <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
        <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
-
-       <@fck 'resource.content' true />
+       <@fck 'resource.content' true false />
 
       </div>
       </#if>
@@ -318,9 +324,14 @@
       <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
       </#if>
 
-      <#if type = 'HTML' && name != 'userTitle' && name != 'title'>
+      <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
-        <@fck 'resource.${name}' />
+        <@fck 'resource.${name}' false false />
+        
+      <#elseif type = 'HTML' && name == 'caption'>
+        <textarea id="resource.${name}" name="resource.${name}" rows="1" cols="60">${value?html}</textarea>
+        <@fck 'resource.${name}' false true />
+        </div><#-- On the fly div STOP caption -->
 
       <#-- hack for setting collection titles: -->
       <#elseif type = 'HTML' && name='userTitle' && (resource.resourceType = 'event-listing' ||
@@ -334,10 +345,11 @@
         </#if>
 
       <#elseif name = 'media'><#-- XXX -->
-        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
+        <input type="text" id="resource.${name}"  name="resource.${name}" value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ="${value?html}" />
         <button type="button" onclick="browseServer('resource.${name}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
+        <div id="picture-and-caption"><#-- On the fly <div> START caption -->
         <script language="Javascript" type="text/javascript"><!--
              var urlobj;
              <#if resourceContext.parentURI?exists>
@@ -387,7 +399,8 @@
                             document.getElementById(previewobj).innerHTML = 
                             '<img src="' + url + '" alt="preview">';
                         } else {
-                            document.getElementById(previewobj).innerHTML = '';
+                            document.getElementById(previewobj).innerHTML = 
+                            '<img src=""  alt="no-image" style="visibility: hidden">';
                         }
                      }
              } //-->
@@ -398,7 +411,11 @@
         document.write('<div id="resource.${name}.preview">');
           <#if value != ''>
             document.write('<img src="${value}"  alt="preview">');
+            <#else>
+            document.write('<img src=""  alt="no-image" style="visibility: hidden">');
           </#if>
+          
+          
         document.write('</div>');
         // -->
         </script>
@@ -619,10 +636,11 @@
     </#list>
 </#macro>
 
-<#macro fck content completeEditor=false>
+<#macro fck content completeEditor=false withoutSubSuper=false>
     <script language="Javascript" type="text/javascript"><!--
       var needToConfirm = true;
-      newEditor('${content}', ${completeEditor?string});
+      
+      newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string});
       
 
       function cSave() {

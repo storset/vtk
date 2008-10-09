@@ -14,19 +14,28 @@ public abstract class BaseWebTest extends AbstractWebTest {
         // Elements that we expect to find on a standard collectionview
         collectionListingElements = new ArrayList<String>();
         collectionListingElements.add("collectionListing.searchComponent");
-        collectionListingElements.add("collectionListing.searchComponent-vrtx-resource");
+        collectionListingElements.add("collectionlisting-article.html-vrtx-resource");
+        collectionListingElements.add("collectionlisting-article.html");
+        collectionListingElements.add("collectionlisting-event.html-vrtx-resource");
+        collectionListingElements.add("collectionlisting-event.html");
+        collectionListingElements.add("standard.html-vrtx-resource");
+        collectionListingElements.add("standard.html");
         // Elements we expect to find for eventlistings
         eventListingElements = new ArrayList<String>();
-        eventListingElements.add("eventListing.previousEventsSearchComponent-vrtx-resource");
-        eventListingElements.add("eventListing.upcomingEventsSearchComponent-vrtx-resource");
         eventListingElements.add("eventListing.previousEventsSearchComponent");
+        eventListingElements.add("previousevent.html-vrtx-resource");
+        eventListingElements.add("previousevent.html");
+        eventListingElements.add("previousevent.html-time-and-place");
         eventListingElements.add("eventListing.upcomingEventsSearchComponent");
-        eventListingElements.add("time-and-place");
+        eventListingElements.add("upcomingevent.html");
+        eventListingElements.add("upcomingevent.html-vrtx-resource");
+        eventListingElements.add("upcomingevent.html-time-and-place");
         // Elements we expect to find for articlelistings
         articleListingElements = new ArrayList<String>();
         articleListingElements.add("articleListing.searchComponent");
-        articleListingElements.add("articleListing.searchComponent-vrtx-resource");
-        articleListingElements.add("published-date");
+        articleListingElements.add("article.html");
+        articleListingElements.add("article.html-vrtx-resource");
+        articleListingElements.add("article.html-published-date");
     }
     
     protected List<String> getCollectionListingElements() {

@@ -33,7 +33,7 @@
     </#if>
     
     <#list resources as r>
-      <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
+      <div id="${r.name}-vrtx-resource" class="vrtx-resource">
 
         <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 
@@ -82,7 +82,7 @@
       <#local publishedDate  = vrtx.prop(r, 'published-date')  />
       <#local intro  = vrtx.prop(r, 'introduction')  />
 
-      <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource">
+      <div id="${r.name}-vrtx-resource" class="vrtx-resource">
         <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
@@ -91,10 +91,10 @@
           </#if>
           <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
         </#if>
-        ${title?html}</a> 
+        ${title?html}</a>
 
         <#if publishedDate?has_content && collectionListing.displayPropDefs?seq_contains(publishedDate.definition)> 
-        <div id="published-date" class="published-date">
+        <div id="${r.name}-published-date" class="published-date">
           <@vrtx.msg code="viewCollectionListing.publishedDate"
                      args=[publishedDate.getFormattedValue('long', locale)] />
         </div>
@@ -133,7 +133,7 @@
       <#local intro  = vrtx.prop(r, 'introduction')  />
       <#local location  = vrtx.prop(r, 'location')  />
 
-      <div id="${collectionListing.name}-vrtx-resource" class="vrtx-resource vevent">
+      <div id="${r.name}-vrtx-resource" class="vrtx-resource vevent">
         
         <a id="${r.name}" class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
@@ -145,7 +145,7 @@
         </#if>
         ${title?html}</a>
 
-        <div id="time-and-place" class="time-and-place"> 
+        <div id="${r.name}-time-and-place" class="time-and-place"> 
           <@viewutils.displayTimeAndPlace r />
         </div>
 

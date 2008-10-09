@@ -31,7 +31,7 @@
       
         var completeEditor = completeEditor != null ? completeEditor : false;
         var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
-        //Det som må defineres er hvordan det kan/bør settes en inputverdi i denne metoden.
+        
         var fck = new FCKeditor( name ) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
 

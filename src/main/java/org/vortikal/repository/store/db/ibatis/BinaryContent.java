@@ -59,8 +59,7 @@ public class BinaryContent implements Blob {
 		return 0;
 	}
 
-	public int setBytes(long pos, byte[] bytes, int offset, int len)
-			throws SQLException {
+	public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -76,7 +75,7 @@ public class BinaryContent implements Blob {
 			System.arraycopy(binaryContent, pos, newbytes, 0, length);
 			return newbytes;
 		} catch (Exception e) {
-			throw new java.sql.SQLException("Could not get subset of array", e);
+			throw new SQLException("Could not get subset of array");
 		}
 	}
 

@@ -28,39 +28,37 @@
   
   <#local imageRes = vrtx.propResource(resource, "picture") />
   <#local introductionImage = vrtx.propValue(resource, "picture") />
+  <#local caption = vrtx.propValue(resource, "caption") />
+  
+  <#-- Flattened caption for alt-tag in image -->
+  <#local captionFlattened>
+        <@vrtx.flattenHtml value=caption escape=false />
+  </#local>
   
   <#if introductionImage != "">
+  
     <#if imageRes == "">
-      <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+      <img class="vrtx-introduction-image" src="" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
     <#else>
-      <#local userTitle = vrtx.propValue(imageRes, "userTitle", imageRes) />
-      <#local desc = imageRes.getValueByName("description")?default("") />
-      <#if userTitle == "" && desc == "">
-        <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-      <#else>
+      <#if caption != "">
         <#local pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
         <#local style="" />
         <#if pixelWidth != "">
           <#local style = "width:" + pixelWidth+ "px;" />
         </#if>
         <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
-	      <#if userTitle != "">
-	        <img src="${introductionImage}" alt="${userTitle?html}" />
-	      <#else>
-	        <img src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-	      </#if>
-	      <div class="vrtx-imagetext">
-	        <#if userTitle != "">
-	          <span class="vrtx-imagetitle">${userTitle?html}<#if desc != "">: </#if></span>
-	        </#if>
-	        <#if desc != "">
-	          <span class="vrtx-imagedescription">${desc?html}</span>
-	        </#if>
-	      </div> 
-	    </div>
+	         <img src="${introductionImage}" alt="${captionFlattened}" />
+            <div class="vrtx-imagetext">
+                 <span class="vrtx-imagedescription">${caption}</span>
+           </div> 
+       </div>
+      <#else>
+        <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
 	  </#if>
     </#if>
+    
   </#if>
+  
 </#macro>
 
 

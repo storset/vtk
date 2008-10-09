@@ -305,6 +305,9 @@ public final class Value implements Cloneable, Comparable<Value> {
             case PRINCIPAL:
                 sb.append(this.principalValue);
                 break;
+            case BINARY:
+            	sb.append(this.binaryMimeType + ", contentlength:" + this.binaryValue.length);
+            	break;
             default:
                 sb.append(this.stringValue);
                 break;

@@ -89,11 +89,11 @@ public final class DatabaseQueryResultAuthorizationManager implements
             if (isAuthorizedByConfig(principal)) {
                 this.logger.info("Unconditionally authorizing all results for principal '" + 
                         principal + "'");
-                
+
                 for (ResultSecurityInfo rsi: rsiList) {
                     rsi.setAuthorized(true);
                 }
-            
+
                 return;
             }
             
@@ -104,11 +104,11 @@ public final class DatabaseQueryResultAuthorizationManager implements
                     this.logger.debug("Authorizing all results for principal '" 
                             + principal.getQualifiedName() + "' by role");
                 }
-                
+
                 for (ResultSecurityInfo rsi: rsiList) {
                     rsi.setAuthorized(true);
                 }
-                
+
                 return;
             }
         }

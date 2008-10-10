@@ -65,6 +65,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     private int loggerType;
 
     private int queryAuthorizationBatchSize = 1000;
+    
+    // Non-adjustable batch size limit for group member-ships (Oracle hard limit is 1000)
+    private static final int GROUP_MEMBERSHIP_BATCH_SIZE = 980;
 
     private ResourceTypeTree resourceTypeTree;
 
@@ -213,6 +216,9 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                             List<ResultSecurityInfo> rsiList)
         throws DataAccessException {
 
+        // List used for batch processing of principal names
+        List<String> principalNamesList = new ArrayList<String>(principalNames);
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Processing list of " 
                     + rsiList.size() + " elements");
@@ -253,32 +259,47 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                 }
 
                 params.put("sessionId", sessionId);
-                // XXX: No no no, iBATIS does not allow Set value iteration,
-                // must wrap in List implementation... :(
-                params.put("principalNames", new ArrayList<String>(principalNames));
+                
+                // Dispatch these queries in batches to avoid more than 1000 groups/principal names per query.
+                int principalNamesBatchStart = 0;
+                int principalNamesBatchEnd = GROUP_MEMBERSHIP_BATCH_SIZE > principalNamesList.size() 
+                                        ? principalNamesList.size() : GROUP_MEMBERSHIP_BATCH_SIZE;
+                do {
+                    List<String> principalNamesBatch = 
+                            principalNamesList.subList(principalNamesBatchStart, 
+                                                       principalNamesBatchEnd);
+                    params.put("principalNames", principalNamesBatch);
+                    
+                    // Dispatch SQL query for current group batch
+                    List<Integer> authorizedList = client.queryForList(statement, params);
 
-                List<Integer> authorizedList = client.queryForList(statement, params);
+                    // Update authorized resource ids
+                    for (Integer authorizedId : authorizedList) {
+                        boolean added = authorizedIds.add(authorizedId);
+                        if (LOG.isDebugEnabled()) {
+                            if (added) {
+                                LOG.debug("Adding ACL node id " + authorizedId
+                                        + " to set of authorized IDs");
+                            }
 
-                for (Integer authorizedId : authorizedList) {
-                    boolean added = authorizedIds.add(authorizedId);
-                    if (LOG.isDebugEnabled()) {
-
-                        if (added) {
-                            LOG.debug("Adding ACL node id " + authorizedId
-                                    + " to set of authorized IDs");
+                            LOG.debug("Current ACL node id: " + authorizedId);
                         }
-
-                        LOG.debug("Current ACL node id: " + authorizedId);
                     }
-                }
+                    
+                    principalNamesBatchStart = principalNamesBatchEnd;
+                    principalNamesBatchEnd += GROUP_MEMBERSHIP_BATCH_SIZE;
+                    if (principalNamesBatchEnd > principalNamesList.size()) {
+                        // Avoid overflow for last batch
+                        principalNamesBatchEnd = principalNamesList.size();
+                    }
+                } while (principalNamesBatchStart < principalNamesBatchEnd);
 
-                // Clean up temp table for current batch
+                // Clean up temp table for current result set batch
                 statement = getSqlMap("deleteFromTempTableBySessionId");
                 client.delete(statement, sessionId);
-
             }
 
-            // Process current batch
+            // Process current result set batch
             for (int i = batchStart; i < batchEnd; i++) {
                 ResultSecurityInfo rsi = rsiList.get(i);
 

@@ -81,6 +81,12 @@
       <#local introImg  = vrtx.prop(r, 'picture')  />
       <#local publishedDate  = vrtx.prop(r, 'published-date')  />
       <#local intro  = vrtx.prop(r, 'introduction')  />
+      <#local caption = vrtx.propValue(r, 'caption')  />
+      
+      <#-- Flattened caption for alt-tag in image -->
+     <#local captionFlattened>
+        <@vrtx.flattenHtml value=caption escape=true />
+      </#local>
 
       <div id="${r.name}-vrtx-resource" class="vrtx-resource">
         <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
@@ -89,7 +95,11 @@
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
             <#local src = r.URI.getParent().extendAndProcess(src) />
           </#if>
-          <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+             <#if caption != ''>
+                <img src="${src?html}" alt="${captionFlattened}" />
+             <#else>
+                <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+             </#if> 
         </#if>
         ${title?html}</a>
 
@@ -132,6 +142,12 @@
       <#local introImg  = vrtx.prop(r, 'picture')  />
       <#local intro  = vrtx.prop(r, 'introduction')  />
       <#local location  = vrtx.prop(r, 'location')  />
+      <#local caption = vrtx.propValue(r, 'caption')  />
+      
+      <#-- Flattened caption for alt-tag in image -->
+     <#local captionFlattened>
+        <@vrtx.flattenHtml value=caption escape=true />
+      </#local>
 
       <div id="${r.name}-vrtx-resource" class="vrtx-resource vevent">
         
@@ -141,7 +157,11 @@
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
             <#local src = r.URI.getParent().extendAndProcess(src) />
           </#if>
-          <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+          <#if caption != ''>
+                <img src="${src?html}" alt="${captionFlattened}" />
+           <#else>
+                <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+           </#if>
         </#if>
         ${title?html}</a>
 

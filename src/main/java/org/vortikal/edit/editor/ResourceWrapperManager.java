@@ -57,149 +57,151 @@ import org.vortikal.web.RequestContext;
 
 public class ResourceWrapperManager {
 
-	private Repository repository;
-	private HtmlPageParser htmlParser;
-	private HtmlPageFilter htmlPropsFilter;
-	private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
-	private ResourceTypeDefinition contentResourceType;
-	private final static String defaultCharacterEncoding = "utf-8";
+    private Repository repository;
+    private HtmlPageParser htmlParser;
+    private HtmlPageFilter htmlPropsFilter;
+    private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
+    private ResourceTypeDefinition contentResourceType;
+    private final static String defaultCharacterEncoding = "utf-8";
 
+    public HtmlPageParser getHtmlParser() {
+        return this.htmlParser;
+    }
 
-	public HtmlPageParser getHtmlParser() {
-		return this.htmlParser;
-	}
+    public HtmlPageFilter getHtmlPropsFilter() {
+        return htmlPropsFilter;
+    }
 
+    public ResourceWrapper createResourceWrapper(Path uri) throws IOException, Exception {
+        ResourceWrapper wrapper = new ResourceWrapper(this);
 
-	public HtmlPageFilter getHtmlPropsFilter() {
-		return htmlPropsFilter;
-	}
+        populateWrapper(wrapper, uri, true);
 
+        return wrapper;
 
-	public ResourceWrapper createResourceWrapper(Path uri) throws IOException, Exception {
-		ResourceWrapper wrapper = new ResourceWrapper(this);
+    }
 
-		populateWrapper(wrapper, uri, true);
+    public ResourceWrapper createResourceWrapper() throws IOException, Exception {
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        return createResourceWrapper(uri);
+    }
 
-		return wrapper;
+    public ResourceEditWrapper createResourceEditWrapper() throws IOException, Exception {
+        ResourceEditWrapper wrapper = new ResourceEditWrapper(this);
+        Path uri = RequestContext.getRequestContext().getResourceURI();
 
-	}
+        populateWrapper(wrapper, uri, false);
 
+        return wrapper;
+    }
 
-	public ResourceWrapper createResourceWrapper() throws IOException, Exception {
-		Path uri = RequestContext.getRequestContext().getResourceURI();
-		return createResourceWrapper(uri);
-	}
+    private void populateWrapper(ResourceWrapper wrapper, Path uri, boolean forProcessing) throws IOException,
+            Exception {
+        String token = SecurityContext.getSecurityContext().getToken();
 
+        Resource resource = this.repository.retrieve(token, uri, forProcessing);
 
-	public ResourceEditWrapper createResourceEditWrapper() throws IOException, Exception {
-		ResourceEditWrapper wrapper = new ResourceEditWrapper(this);
-		Path uri = RequestContext.getRequestContext().getResourceURI();
+        if (resource.isOfType(this.contentResourceType)) {
+            InputStream is = this.repository.getInputStream(token, uri, forProcessing);
+            HtmlPage content = null;
 
-		populateWrapper(wrapper, uri, false);
+            if (resource.getCharacterEncoding() != null) {
+                // Read as default encoding (utf-8) if unsupported encoding.
+                if (Charset.isSupported(resource.getCharacterEncoding())) {
+                    content = this.htmlParser.parse(is, resource.getCharacterEncoding());
+                } else {
+                    content = this.htmlParser.parse(is, defaultCharacterEncoding);
+                }
+            } else {
+                content = this.htmlParser.parse(is, defaultCharacterEncoding);
+            }
+            wrapper.setContent(content);
+        }
+        wrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource));
+        wrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource));
+        wrapper.setResource(resource);
+    }
 
-		return wrapper;
-	}
+    public void store(ResourceEditWrapper wrapper) throws IOException {
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Resource resource = wrapper.getResource();
 
+        if (wrapper.isPropChange()) {
+            // Checks that is not a folder
+            if (resource.getCharacterEncoding() != null) {
+                // Set default encoding if unsupported encoding
+                if (Charset.isSupported(resource.getCharacterEncoding())) {
+                    resource = this.repository.store(token, resource);
+                } else {
+                    resource.setUserSpecifiedCharacterEncoding(defaultCharacterEncoding);
+                    resource = this.repository.store(token, resource);
+                }
+            } else {
+                resource = this.repository.store(token, resource);
+            }
+        }
 
-	private void populateWrapper(ResourceWrapper wrapper, Path uri, boolean forProcessing) throws IOException,
-			Exception {
-		String token = SecurityContext.getSecurityContext().getToken();
+        if (wrapper.isContentChange()) {
+            byte[] bytes;
 
-		Resource resource = this.repository.retrieve(token, uri, forProcessing);
+            // Checks that is not a folder
+            if (resource.getCharacterEncoding() != null) {
+                // Store default encoding if unsupported encoding
+                if (Charset.isSupported(resource.getCharacterEncoding())) {
+                    bytes = wrapper.getContent().getStringRepresentation().getBytes(resource.getCharacterEncoding());
+                    this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
 
-		if (resource.isOfType(this.contentResourceType)) {
-			InputStream is = this.repository.getInputStream(token, uri, forProcessing);
-			HtmlPage content = null;
-			// Read as default encoding (utf-8) if unsupported encoding.
-			if (Charset.isSupported(resource.getCharacterEncoding())) {
-				content = this.htmlParser.parse(is, resource.getCharacterEncoding());
-			} else {
-				content = this.htmlParser.parse(is, defaultCharacterEncoding);
-			}
-			wrapper.setContent(content);
-		}
-		wrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource));
-		wrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource));
-		wrapper.setResource(resource);
-	}
+                } else {
+                    bytes = wrapper.getContent().getStringRepresentation().getBytes(defaultCharacterEncoding);
+                    this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
+                }
+            } else {
+                bytes = wrapper.getContent().getStringRepresentation().getBytes(defaultCharacterEncoding);
+                this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
+            }
+        }
+        wrapper.setResource(resource);
+    }
 
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
-	public void store(ResourceEditWrapper wrapper) throws IOException {
-		String token = SecurityContext.getSecurityContext().getToken();
-		Path uri = RequestContext.getRequestContext().getResourceURI();
-		Resource resource = wrapper.getResource();
+    @Required
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
 
-		if (wrapper.isPropChange()) {
-			// Set default encoding if unsupported encoding
-			if (Charset.isSupported(resource.getCharacterEncoding())) {
-				resource = this.repository.store(token, resource);
-			} else {
-				resource.setUserSpecifiedCharacterEncoding(defaultCharacterEncoding);
-				resource = this.repository.store(token, resource);
-			}
-		}
+    @Required
+    public void setContentResourceType(ResourceTypeDefinition contentResourceType) {
+        this.contentResourceType = contentResourceType;
+    }
 
-		if (wrapper.isContentChange()) {
-			byte[] bytes;
+    @Required
+    public void setHtmlPropsFilter(HtmlPageFilter htmlPropsFilter) {
+        this.htmlPropsFilter = htmlPropsFilter;
+    }
 
-			// Store default encoding if unsupported encoding
-			if (Charset.isSupported(resource.getCharacterEncoding())) {
-				bytes = wrapper.getContent().getStringRepresentation().getBytes(resource.getCharacterEncoding());
-				this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
+    public void unlock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException,
+            FailedDependencyException, ResourceLockedException, IllegalOperationException, AuthenticationException,
+            IOException {
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        this.repository.unlock(token, uri, null);
+    }
 
-			} else {
-				bytes = wrapper.getContent().getStringRepresentation().getBytes(defaultCharacterEncoding);
-				this.repository.storeContent(token, uri, new ByteArrayInputStream(bytes));
-			}
-		}
-		wrapper.setResource(resource);
-	}
+    public void lock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException,
+            ResourceLockedException, AuthenticationException, IOException {
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
+    }
 
-
-	@Required
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-
-
-	@Required
-	public void setHtmlParser(HtmlPageParser htmlParser) {
-		this.htmlParser = htmlParser;
-	}
-
-
-	@Required
-	public void setContentResourceType(ResourceTypeDefinition contentResourceType) {
-		this.contentResourceType = contentResourceType;
-	}
-
-
-	@Required
-	public void setHtmlPropsFilter(HtmlPageFilter htmlPropsFilter) {
-		this.htmlPropsFilter = htmlPropsFilter;
-	}
-
-
-	public void unlock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException,
-			FailedDependencyException, ResourceLockedException, IllegalOperationException, AuthenticationException,
-			IOException {
-		String token = SecurityContext.getSecurityContext().getToken();
-		Path uri = RequestContext.getRequestContext().getResourceURI();
-		this.repository.unlock(token, uri, null);
-	}
-
-
-	public void lock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException,
-			ResourceLockedException, AuthenticationException, IOException {
-		String token = SecurityContext.getSecurityContext().getToken();
-		Path uri = RequestContext.getRequestContext().getResourceURI();
-		Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-		this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
-	}
-
-
-	public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {
-		this.editPropertyProvider = editPropertyProvider;
-	}
+    public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {
+        this.editPropertyProvider = editPropertyProvider;
+    }
 
 }

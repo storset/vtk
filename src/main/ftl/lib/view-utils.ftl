@@ -32,7 +32,7 @@
   
   <#-- Flattened caption for alt-tag in image -->
   <#local captionFlattened>
-        <@vrtx.flattenHtml value=caption escape=false />
+        <@vrtx.flattenHtml value=caption escape=true />
   </#local>
   
   <#if introductionImage != "">
@@ -49,7 +49,7 @@
         <div class="vrtx-introduction-image" <#if style?has_content>style="${style}"</#if>>
 	         <img src="${introductionImage}" alt="${captionFlattened}" />
             <div class="vrtx-imagetext">
-                 <span class="vrtx-imagedescription">${caption}</span>
+                 <div class="vrtx-imagedescription">${caption}</div>
            </div> 
        </div>
       <#else>

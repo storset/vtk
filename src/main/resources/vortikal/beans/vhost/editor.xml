@@ -302,6 +302,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
             
             <!--ref bean="collection.recursiveListingPropDef" /-->
             <ref bean="collection.pageLimitPropDef" />
@@ -328,6 +329,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
             <ref bean="collection.pageLimitPropDef" />
 
             <ref bean="articleListing.recursiveListingPropDef" />
@@ -358,6 +360,7 @@
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
             <ref bean="collection.pageLimitPropDef" />
 
             <ref bean="eventListing.recursiveListingPropDef" />

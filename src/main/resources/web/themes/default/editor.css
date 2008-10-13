@@ -262,15 +262,17 @@ div.picture div {
 
 div.caption {
   float: left;
-  width: 36.5ex;
+  width: 17.5em;
   position: relative;
   margin-top: -74px;
+  height: 1%;
+  display: inline;
 }
 
 /* Opera 7+ filter hack */
 @media screen and (min-width: 0px){
    div.caption { 
-      width: 33ex; 
+      width: 16.5em; 
       margin-top: -73px;
      }
 }
@@ -278,7 +280,7 @@ div.caption {
 
 /* IE6 fix */
 * html div.caption {
-   width: 37.25ex; 
+   width: 18.5em; 
    margin-top: -71px;
 }
 

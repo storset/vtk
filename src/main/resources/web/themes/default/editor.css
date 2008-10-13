@@ -184,11 +184,12 @@ div.property-item {
 span.input-description{
     font-size: .8em;
 }
+/* TODO: hvordan editoren settes opp for safari og FF 2 */
 
 div.introduction {
   clear:left;
   float: left; 
-  width: 56%;  
+  width: 40%;  
   margin-right: 1.2em;
   margin-bottom: 1em;
 }
@@ -199,7 +200,7 @@ div.introduction {
 
 div.introduction textarea {
   height: 20.5ex; /* Used when fck-editor is disabled */
-  width: 56%;    
+  width: 40%;    
 }
 
 /* div.introduction iframe {
@@ -223,7 +224,7 @@ div.picture {
   position: relative;
   clear: right; /*IE7*/
   margin-bottom: 1em;
-  width: 490px;
+  width: 540px;
 }
 
 div.picture input{
@@ -247,7 +248,7 @@ div.picture img {
 
 * html div.picture img {
   /* margin-top: 5px; */
-  height: 14.5ex;
+  height: 13.5ex;
 }
 
 div.picture div {
@@ -266,18 +267,10 @@ div.caption {
   margin-top: -74px;
 }
 
-/* Opera 7+ filter hack */
-@media screen and (min-width: 0px){
-   div.caption { 
-      width: 33ex; 
-      margin-top: -73px;
-     }
-}
-
 /* IE6 fix */
 * html div.caption {
    width: 37.25ex; 
-   margin-top: -77px;
+   margin-top: -71px;
 }
 
 div.caption textarea{
@@ -325,6 +318,11 @@ div.start-date, div.end-date, div.location {
   float:left;
   margin-right: 1em;
   white-space: nowrap;
+}
+
+* html div.end-date, * html div.location {
+  clear: left;
+  padding-bottom: 1em;
 }
 
 /* There is IE7-specific conditional comments in editor.ftl for time and place elements */

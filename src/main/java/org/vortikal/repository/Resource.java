@@ -79,6 +79,8 @@ public interface Resource extends PropertySet, Cloneable {
     public Property createProperty(Namespace namespace, String name);
     
     public Property createProperty(PropertyTypeDefinition propDef);
+    
+    public Property createBinaryProperty(Namespace namespace, String name, byte[] binaryContent, String mimetype);
 
 
     /**

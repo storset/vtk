@@ -38,7 +38,7 @@
   <#if introductionImage != "">
   
     <#if imageRes == "">
-      <img class="vrtx-introduction-image" src="" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+      <img class="vrtx-introduction-image" src="${introductionImage}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
     <#else>
       <#if caption != "">
         <#local pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />

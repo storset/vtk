@@ -92,6 +92,7 @@ public final class PropertyType {
     public static final String SCHEMA_PROP_NAME = "schema";
     public static final String XHTML_PROP_NAME = "xhtml10-type";
     public static final String BINARY_REF = "binaryRef";
+    public static final String BINARY_CONTENT = "binaryContent";
     
     /*
      * Special properties

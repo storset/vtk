@@ -909,8 +909,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                         				+ r.getName());
                         	}
                     		
-                    		// TODO find a better solution for "binaryRef" property -> what if a 
-                    		// resource has more than one binary property?
                     		Property binaryRefProperty = r.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.BINARY_REF);
                     		
                     		if (binaryRefProperty == null || StringUtils.isBlank(binaryRefProperty.getStringValue())) {

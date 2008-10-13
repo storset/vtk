@@ -42,6 +42,7 @@ import org.vortikal.repository.Comment;
 import org.vortikal.repository.FailedDependencyException;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
@@ -360,6 +361,10 @@ public class RequestLocalRepository implements Repository {
 
     public void setReadOnly(String token, boolean readOnly) throws AuthorizationException, IOException {
         this.repository.setReadOnly(token, readOnly);
+    }
+    
+    public Property loadBinaryContent(Resource resource) {
+    	return this.repository.loadBinaryContent(resource);
     }
 
 

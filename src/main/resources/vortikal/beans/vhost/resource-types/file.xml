@@ -98,7 +98,7 @@
   </bean>
 
   <bean id="contentTypeMatchesImage" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="image/.+" />
+    <property name="pattern" value="image/(.+)" />
   </bean>
 
   <bean id="contentTypeMatchesZip" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">

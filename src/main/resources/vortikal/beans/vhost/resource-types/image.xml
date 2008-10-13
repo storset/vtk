@@ -27,11 +27,6 @@
     </property>
   </bean>
 
-  <bean id="contentTypeMatchesImage" 
-        class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="image/(.+)" />
-  </bean>
-
   <bean id="imageHeightPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelHeight" />
@@ -87,7 +82,26 @@
   <bean id="binaryRefEvaluator" 
         class="org.vortikal.repository.resourcetype.property.BinaryReferenceEvaluator">
   </bean>
+  
+  <bean id="displayThumbnailService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="displayResourceService" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesImage" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="thumbnail" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="displayThumbnailHandler" />
+  </bean>
 
+  <bean id="displayThumbnailHandler"
+    class="org.vortikal.web.controller.graphics.DisplayThumbnailController">
+    <property name="repository" ref="repository" />
+  </bean>
+  
 </beans>
 
 

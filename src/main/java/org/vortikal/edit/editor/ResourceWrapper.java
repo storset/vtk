@@ -157,6 +157,10 @@ public class ResourceWrapper implements Resource {
     public Property createProperty(PropertyTypeDefinition propDef) {
         return this.resource.createProperty(propDef);
     }
+    
+    public Property createBinaryProperty(Namespace namespace, String name, byte[] binaryContent, String mimetype) {
+        return this.resource.createBinaryProperty(namespace, name, binaryContent, mimetype);
+    }
 
     public Acl getAcl() {
         return this.resource.getAcl();

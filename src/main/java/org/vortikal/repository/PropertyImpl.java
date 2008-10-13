@@ -244,7 +244,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(this.getClass().getName()).append(": ");
         sb.append("[ ").append(this.getDefinition().getNamespace());

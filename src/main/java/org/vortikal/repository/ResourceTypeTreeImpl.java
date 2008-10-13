@@ -241,7 +241,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         if (namespace == null) {
             return null;
         }
-        return getPropertyTypeDefinition(namespace, name);
+        PropertyTypeDefinition propertyTypeDefinition = getPropertyTypeDefinition(namespace, name);
+        return propertyTypeDefinition;
     }
 
     /**

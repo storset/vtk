@@ -6,10 +6,12 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.vortikal.graphics.ImageService;
 import org.vortikal.graphics.ScaledImage;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
 
 public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator {
@@ -29,10 +31,11 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
                 return false;
             }
 
-            String imageFormat = ancestorPropertySet.getURI().toString();
-            imageFormat = imageFormat.substring(imageFormat.lastIndexOf(".") + 1);
+            Property contentType = ancestorPropertySet.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            String mimetype = contentType.getStringValue();
+            String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
             ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
-            property.setBinaryValue(thumbnail.getImageBytes(), "image/" + imageFormat.toLowerCase());
+            property.setBinaryValue(thumbnail.getImageBytes(), mimetype);
             return true;
 
 

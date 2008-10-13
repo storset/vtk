@@ -589,4 +589,13 @@ public interface Repository {
      */
     public String getId();
     
+    
+    /**
+     * Load binary content for a resource
+     * 
+     * @param resource The resource to load binary content for
+     * @return A property containing the binary content and its mimetype
+     */
+    public Property loadBinaryContent(Resource resource);
+    
 }

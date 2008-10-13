@@ -84,13 +84,24 @@
       <#local caption = vrtx.propValue(r, 'caption')  />
       
       <#-- Flattened caption for alt-tag in image -->
-     <#local captionFlattened>
+      <#local captionFlattened>
         <@vrtx.flattenHtml value=caption escape=true />
       </#local>
 
       <div id="${r.name}-vrtx-resource" class="vrtx-resource">
         <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
+        
+          <#-- TODO: fix this! -->
+          
+          <#-- local image = vrtx.propResource(r, 'picture') />
+          <#local binaryRef = vrtx.getPropValue(image, 'binaryRef') />
+          
+          <#local thumbnailResource = "?vrtx=thumbnail" />
+          <#if !binaryRef?has_content>
+            <#local thumbnailResource = "" />
+          </#if-->
+        
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
             <#local src = r.URI.getParent().extendAndProcess(src) />

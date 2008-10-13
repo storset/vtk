@@ -1,9 +1,7 @@
 package org.vortikal.repository.resourcetype.property;
 
-import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.Date;
-
-import javax.imageio.ImageTypeSpecifier;
 
 import org.apache.log4j.Logger;
 import org.vortikal.repository.Property;
@@ -20,14 +18,10 @@ public class BinaryReferenceEvaluator implements ContentModificationPropertyEval
 			PropertySet ancestorPropertySet, Content content, Date time) throws PropertyEvaluationException {
         try {
         	
-        	BufferedImage image = (BufferedImage) content.getContentRepresentation(BufferedImage.class);
-            if (image == null) {
-                return false;
-            }
-            
-            ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
-            property.setStringValue(property.getDefinition().getName() + ":" + imageTypeSpecifier.hashCode());
+        	InputStream in = content.getContentInputStream();
+            property.setStringValue(String.valueOf(in.hashCode()));
             return true;
+            
         } catch (Exception e) {
             log.warn("Unable to set binary reference for resource", e);
             return false;

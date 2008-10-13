@@ -41,7 +41,9 @@ import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -144,6 +146,22 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         addProperty(prop);
         return prop;
     }
+    
+	public Property createBinaryProperty(Namespace prefix, String name,
+			byte[] content, String mimetype) {
+		
+		 PropertyImpl binaryProperty = new PropertyImpl();
+         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+         propDef.setType(PropertyType.Type.BINARY);
+         propDef.setNamespace(prefix);
+         propDef.setName(name);
+         binaryProperty.setDefinition(propDef);
+         binaryProperty.setValue(new Value(content, mimetype));
+         
+         addProperty(binaryProperty);
+         return binaryProperty;
+		
+	}
 
     
     public void removeProperty(Namespace namespace, String name) {

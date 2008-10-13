@@ -33,6 +33,11 @@
    padding: 0.5em; 
    background-color: #eee;
  }
+ 
+  * html div.vrtx-introduction-image div.vrtx-imagetext {
+   margin-top: -0.3em;
+   margin-right: -0.3em;
+ }
 
  div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle{
    font-weight: bold;

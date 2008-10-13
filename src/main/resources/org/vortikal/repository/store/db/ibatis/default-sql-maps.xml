@@ -388,7 +388,8 @@
   </resultMap>
   
   <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryContent">
-    select binary_mimetype, binary_content from binary_prop_entry where binary_prop_ref = #binaryPropRef#
+    select binary_mimetype, binary_content from binary_prop_entry 
+      where resource_id = #resourceId# and binary_prop_ref = #binaryPropRef#
   </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">

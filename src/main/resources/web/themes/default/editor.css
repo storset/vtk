@@ -267,6 +267,15 @@ div.caption {
   margin-top: -74px;
 }
 
+/* Opera 7+ filter hack */
+@media screen and (min-width: 0px){
+   div.caption { 
+      width: 33ex; 
+      margin-top: -73px;
+     }
+}
+
+
 /* IE6 fix */
 * html div.caption {
    width: 37.25ex; 

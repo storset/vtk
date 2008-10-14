@@ -199,7 +199,7 @@ div.introduction {
 }
 
 div.introduction textarea {
-  height: 20.5ex; /* Used when fck-editor is disabled */
+  height: 23.25ex; /* Used when fck-editor is disabled */
   width: 40%;    
 }
 
@@ -209,7 +209,7 @@ div.introduction textarea {
 
 
 #resource\.introduction___Frame {
-  height: 16ex;
+  height: 15.75ex;
 }
 
 
@@ -223,7 +223,7 @@ div.picture {
   float: left;
   position: relative;
   clear: right; /*IE7*/
-  margin-bottom: 1em;
+  margin-bottom: 0;
   width: 540px;
 }
 
@@ -237,7 +237,11 @@ div.picture input{
 div.picture button{
   float: left;
   position: relative;
-  margin-right: 1.25em;
+  margin-right: 1.40em;
+}
+
+* html div.picture button {
+  margin-right: 0.8em;	
 }
 
 div.picture img { 
@@ -264,7 +268,7 @@ div.caption {
   float: left;
   width: 17.5em;
   position: relative;
-  margin-top: -74px;
+  margin-top: -76px;
   height: 1%;
   display: inline;
 }
@@ -273,7 +277,7 @@ div.caption {
 @media screen and (min-width: 0px){
    div.caption { 
       width: 16.5em; 
-      margin-top: -73px;
+      margin-top: -75px;
      }
 }
 
@@ -281,7 +285,7 @@ div.caption {
 /* IE6 fix */
 * html div.caption {
    width: 18.5em; 
-   margin-top: -71px;
+   margin-top: -72px;
 }
 
 div.caption textarea{

@@ -30,28 +30,35 @@
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">
-    <#assign header>
-      <@vrtx.msg code="commenting.header"
-                 default="Comments (" + comments?size + ")"
-                 args=[comments?size] />
-    </#assign>
-    <#if baseCommentURL?exists>
-      <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
-    <#else>
-      ${header}
-    </#if>
-
-
-    <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
-      <#assign confirmation>
-        <@vrtx.msg code="commenting.deleteall.confirmation" 
-                   default="Are you sure you want to delete all ${comments?size} comments?" 
-                   args=[comments?size] />
-      </#assign>
-
-    <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
+    
+    <div id="comments-header-left">
+	    <#assign header>
+	      <@vrtx.msg code="commenting.header"
+	                 default="Comments (" + comments?size + ")"
+	                 args=[comments?size] />
+	    </#assign>
+	    <#if baseCommentURL?exists>
+	      <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
+	    <#else>
+	      ${header}
+	    </#if>
+	
+	
+	    <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
+	      <#assign confirmation>
+	        <@vrtx.msg code="commenting.deleteall.confirmation" 
+	                   default="Are you sure you want to delete all ${comments?size} comments?" 
+	                   args=[comments?size] />
+	      </#assign>  
+	
+	    <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
+	    
+    </div>
+    
     <#if feedURL?exists>
-      (&nbsp;<a href="${feedURL?html}"><@vrtx.msg code="commenting.subscribe" default="subscribe" /></a>&nbsp;)
+      <div id="comments-header-feedHref">
+         <a href="${feedURL?html}"><@vrtx.msg code="commenting.subscribe" default="subscribe" /></a>
+      </div>
     </#if>
   </#if>
  </div>

@@ -1,9 +1,8 @@
 package org.vortikal.repository.store;
 
-import org.vortikal.repository.Property;
-import org.vortikal.repository.Resource;
+import java.io.InputStream;
 
-public interface LazyDataAccessor {
+public interface BinaryContentDataAccessor {
 	
 	/**
 	 * Loads the binary content for a given property of a resource
@@ -12,6 +11,6 @@ public interface LazyDataAccessor {
 	 * @return A binary property containing the binary content as a bytearray and
 	 *    its mimetype, null if the resource has no binary content
 	 */
-	public Property loadBinaryContent(Resource resource);
+	public InputStream getBinaryStream(String binaryRef);
 
 }

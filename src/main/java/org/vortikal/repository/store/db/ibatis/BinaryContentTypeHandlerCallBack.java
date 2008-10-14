@@ -17,15 +17,18 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 
 	public Object getResult(ResultGetter getter) throws SQLException {
 		Blob blob = getter.getBlob();
-		InputStream is = blob.getBinaryStream();
-        byte[] binaryContent = new byte[(int)blob.length()];
         try {
-			is.read(binaryContent);
-			return binaryContent;
+        	InputStream is = blob.getBinaryStream();
+        	// No, we don't want the whole array in memory
+            byte[] byteArray = new byte[(int)blob.length()];
+			is.read(byteArray);
+			BinaryContent binaryContent = new BinaryContent(byteArray);
+			return binaryContent.getBinaryStream();
 		} catch (IOException e) {
-			log.error("An error occured while getting binary content from BLOB", e);
+			log.error("An error occured while getting binary stream for a blob", e);
 		}
 		return null;
+		
 	}
 
 	public void setParameter(ParameterSetter setter, Object parameter) throws SQLException {

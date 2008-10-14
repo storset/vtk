@@ -19,9 +19,6 @@
       <list>
         <ref bean="imageHeightPropDef" />
         <ref bean="imageWidthPropDef" />
-        <!-- Ref to the binary property, stored in "default" property table (extra_prop_entry) -->
-        <ref bean="thumbnailRefPropDef" />
-        <!-- The actual binary property, stored in separate table (binary_prop_entry) -->
         <ref bean="thumbnailPropDef" />
       </list>
     </property>
@@ -68,19 +65,6 @@
         class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
     <property name="imageService" ref="imageService" />
     <property name="width" value="250" />
-  </bean>
-  
-  <bean id="thumbnailRefPropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="binaryRef" />
-    <property name="type" value="STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="binaryRefEvaluator" />
-  </bean>
-  
-  <bean id="binaryRefEvaluator" 
-        class="org.vortikal.repository.resourcetype.property.BinaryReferenceEvaluator">
   </bean>
   
   <bean id="displayThumbnailService" class="org.vortikal.web.service.ServiceImpl">

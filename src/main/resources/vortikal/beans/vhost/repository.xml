@@ -59,7 +59,6 @@
     <property name="tokenManager" ref="tokenManager" />
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="dao" ref="${repositoryBackend}" />
-    <property name="lazyDao" ref="repository.sqlLazyMapSqlDataAccessor" />
     <property name="commentDAO" ref="${repository.commentDao}" />
     <property name="contentStore" ref="${repository.contentStore}" />
     <property name="lockManager" ref="repository.lockManager" />
@@ -108,11 +107,6 @@
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
     <property name="principalFactory" ref="principalFactory" />
-  </bean>
-  
-  <bean id="repository.sqlLazyMapSqlDataAccessor" class="org.vortikal.repository.store.db.SqlLazyMapDataAccessor">
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
   
   <bean id="repository.fsContentStore" 

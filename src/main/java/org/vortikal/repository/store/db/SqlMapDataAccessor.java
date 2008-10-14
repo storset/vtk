@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store.db;
 
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -388,15 +388,20 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resource.getURI().toString());
-        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                           resource.getURI(), SQL_ESCAPE_CHAR));
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resource.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("destUri", destURI.toString());
-        parameters.put("destUriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                           destURI, SQL_ESCAPE_CHAR));
+        parameters.put("destUriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI, SQL_ESCAPE_CHAR));
         parameters.put("depthDiff", depthDiff);
 
         if (fixedProperties != null) {
             supplyFixedProperties(parameters, fixedProperties);
+        }
+        
+        // Copy any binary props for this resource
+        for (Property prop: newResource.getProperties()) {
+        	if (PropertyType.Type.BINARY.equals(prop.getType())) {
+        		setBinaryContent(prop, newResource.getURI().toString());
+        	}
         }
 
         String sqlMap = getSqlMap("copyResource");
@@ -416,8 +421,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
             parameters = new HashMap<String, Object>();
             parameters.put("uri", destURI.toString());
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                               destURI, SQL_ESCAPE_CHAR));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI, SQL_ESCAPE_CHAR));
             parameters.put("inheritedFrom", destNearestACL);
             parameters.put("previouslyInheritedFrom", srcNearestACL);
 
@@ -450,8 +454,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             int nearestAclNode = findNearestACL(destURI);
             parameters = new HashMap<String, Object>();
             parameters.put("uri", destURI.toString());
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                               destURI, SQL_ESCAPE_CHAR));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI, SQL_ESCAPE_CHAR));
             parameters.put("inheritedFrom", nearestAclNode);
 
             sqlMap = getSqlMap("updateAclInheritedFromByUri");
@@ -460,8 +463,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         parameters = new HashMap<String, Object>();
         parameters.put("uri", destURI.toString());
-        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                           destURI, SQL_ESCAPE_CHAR));
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI, SQL_ESCAPE_CHAR));
         sqlMap = getSqlMap("clearPrevResourceIdByUri");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
@@ -485,25 +487,25 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     public void move(ResourceImpl resource, ResourceImpl newResource) {
         Path destURI = newResource.getURI();
-
         int depthDiff = destURI.getDepth() - resource.getURI().getDepth();
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("srcUri", resource.getURI().toString());
         parameters.put("destUri", newResource.getURI().toString());
-
-        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                           resource.getURI(), SQL_ESCAPE_CHAR));
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resource.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("depthDiff", depthDiff);
-
+        
         String sqlMap = getSqlMap("moveResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
-
+        
         sqlMap = getSqlMap("moveDescendants");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
         ResourceImpl created = loadResourceInternal(newResource.getURI());
         for (Property prop: newResource.getProperties()) {
+        	if (PropertyType.Type.BINARY.equals(prop.getType())) {
+        		setBinaryContent(prop, created.getURI().toString());
+        	}
             created.addProperty(prop);
         }
         storeProperties(created);
@@ -513,8 +515,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             int nearestAclNode = findNearestACL(newResource.getURI());
             parameters = new HashMap<String, Object>();
             parameters.put("uri", newResource.getURI().toString());
-            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
-                               newResource.getURI(), SQL_ESCAPE_CHAR));
+            parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(newResource.getURI(), SQL_ESCAPE_CHAR));
             parameters.put("inheritedFrom", nearestAclNode);
             parameters.put("previouslyInheritedFrom", srcNearestAcl);
 
@@ -522,13 +523,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
             getSqlMapClientTemplate().update(sqlMap, parameters);
         }
+        
     }
-    
 
-    private void loadChildUris(ResourceImpl parent) {
+	private void loadChildUris(ResourceImpl parent) {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("uriWildcard",
-                       SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
+        parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("depth", parent.getURI().getDepth() + 1);
 
         String sqlMap = getSqlMap("loadChildUrisForChildren");
@@ -900,32 +900,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
                     executor.startBatch();
                     for (Property property: properties) {
-
-                    	if (PropertyType.Type.BINARY.equals(property.getType())) {
-                    		
-                    		if (logger.isDebugEnabled()) {
-                        		logger.debug("Storing binary data " + property.getDefinition().getName()
-                        				+ " with format " + property.getBinaryMimeType() + " for resource "
-                        				+ r.getName());
-                        	}
-                    		
-                    		Property binaryRefProperty = r.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.BINARY_REF);
-                    		
-                    		if (binaryRefProperty == null || StringUtils.isBlank(binaryRefProperty.getStringValue())) {
-                    			logger.warn("No binary referense is set for the binary property " 
-                    					+ property.getDefinition().getName() + " of resource " + r.getName());
-                    			break;
-                    		}
-                    		
-                    		String binarySqlMap = getSqlMap("insertBinaryPropertyEntry");
-                    		Map<String, Object> binaryParameters = new HashMap<String, Object>();
-                    		binaryParameters.put("resourceId", r.getID());
-                    		binaryParameters.put("binaryPropRef", binaryRefProperty.getStringValue());
-                    		binaryParameters.put("binaryContent", property.getBinaryValue());
-                    		binaryParameters.put("binaryMimeType", property.getBinaryMimeType());
-                        	executor.update(binarySqlMap, binaryParameters);
-                        	                    		
-                    	} else if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
+                    	
+                    	if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
                             Map<String, Object> parameters = new HashMap<String, Object>();
                             parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                             parameters.put("name", property.getDefinition().getName());
@@ -936,17 +912,21 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
                                 Value[] values = property.getValues();
                                 for (int i = 0; i < values.length; i++) {
-                                    parameters.put("value",
-                                                   values[i].getNativeStringRepresentation());
-                            
+                                    parameters.put("value", values[i].getNativeStringRepresentation());
                                     executor.update(batchSqlMap, parameters);
                                 }
                             } else {
                                 Value value = property.getValue();
-                                parameters.put("value", value.getNativeStringRepresentation());
+                                if (PropertyType.Type.BINARY.equals(value.getType())) {
+                                	parameters.put("binaryContent", value.getBinaryValue());
+                                	parameters.put("value", value.getBinaryRef());
+                                } else {
+                                	parameters.put("value", value.getNativeStringRepresentation());
+                                }
                                 executor.update(batchSqlMap, parameters);
                             }
                         }
+                    	
                     }
                     executor.executeBatch();
                     return null;
@@ -1154,6 +1134,18 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             
         return groups;
     }
+    
+    private void setBinaryContent(Property prop, String resourceUri) {
+        try {
+        	InputStream in = prop.getBinaryStream();
+        	byte[] byteArray = new byte[in.available()];
+			in.read(byteArray);
+			String binaryRef = prop.getDefinition().getName() + ":" + resourceUri;
+			prop.setBinaryValue(byteArray, binaryRef);
+		} catch (Exception e) {
+			logger.error("Colud not read binary stream for property " + prop.getDefinition().getName(), e);
+		}
+	}
     
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Locale;
 
@@ -94,11 +95,9 @@ public interface Property extends Cloneable {
     
     public Type getType();
     
-    public void setBinaryValue(byte[] binary, String binaryMimeType) throws ValueFormatException;
-    
-    public byte[] getBinaryValue();
-    
-    public String getBinaryMimeType();
+    public void setBinaryValue(byte[] binary, String binaryRef) throws ValueFormatException;
+
+    public InputStream getBinaryStream() throws IllegalOperationException;
 
 }
 

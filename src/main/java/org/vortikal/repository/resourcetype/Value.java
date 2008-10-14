@@ -48,8 +48,10 @@ public final class Value implements Cloneable, Comparable<Value> {
     private int intValue;
     private long longValue;
     private Principal principalValue;
+    
+    // Oh no...
     private byte[] binaryValue;
-    private String binaryMimeType;
+    private String binaryRef;
 
     public Value(String stringValue) {
         if (stringValue == null || stringValue.equals(""))
@@ -105,9 +107,9 @@ public final class Value implements Cloneable, Comparable<Value> {
         this.principalValue = principalValue;
     }
     
-    public Value(byte[] binaryValue, String binaryMimeType) {
+    public Value(byte[] binaryValue, String binaryRef) {
     	this.binaryValue = binaryValue;
-    	this.binaryMimeType = binaryMimeType;
+    	this.binaryRef = binaryRef;
     	this.type = PropertyType.Type.BINARY;
     }
 
@@ -143,11 +145,11 @@ public final class Value implements Cloneable, Comparable<Value> {
     	return this.binaryValue;
     }
     
-    public String getBinaryMimeType() {
-    	return this.binaryMimeType;
+    public String getBinaryRef() {
+    	return this.binaryRef;
     }
- 
-   public Object getObjectValue() {
+    
+    public Object getObjectValue() {
         switch (this.type) {
         
             case BOOLEAN:
@@ -251,7 +253,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:
-        	return new Value(this.binaryValue, this.binaryMimeType);
+        	return new Value(this.binaryValue, this.binaryRef);
         default:
             return new Value(this.stringValue);
         }
@@ -306,7 +308,7 @@ public final class Value implements Cloneable, Comparable<Value> {
                 sb.append(this.principalValue);
                 break;
             case BINARY:
-            	sb.append(this.binaryMimeType + ", contentlength:" + this.binaryValue.length);
+            	sb.append(this.binaryRef + ", contentlength:" + this.binaryValue.length);
             	break;
             default:
                 sb.append(this.stringValue);

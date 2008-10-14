@@ -1,0 +1,1 @@
+ALTER TABLE extra_prop_entry ADD COLUMN binary_content BLOB;

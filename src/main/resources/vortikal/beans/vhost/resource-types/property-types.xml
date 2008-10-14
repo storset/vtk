@@ -19,6 +19,12 @@
   <!-- Value factory -->
   <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
     <property name="principalFactory" ref="principalFactory" />
+    <property name="binaryDao" ref ="binaryDao" />
+  </bean>
+  
+  <bean id="binaryDao" class="org.vortikal.repository.store.db.SqlBinaryContentMapDataAccessor">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
 

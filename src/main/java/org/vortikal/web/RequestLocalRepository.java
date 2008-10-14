@@ -362,10 +362,5 @@ public class RequestLocalRepository implements Repository {
     public void setReadOnly(String token, boolean readOnly) throws AuthorizationException, IOException {
         this.repository.setReadOnly(token, readOnly);
     }
-    
-    public Property loadBinaryContent(Resource resource) {
-    	return this.repository.loadBinaryContent(resource);
-    }
-
 
 }

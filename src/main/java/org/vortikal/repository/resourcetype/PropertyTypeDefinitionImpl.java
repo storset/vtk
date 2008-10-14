@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -350,7 +351,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         }
         return this.defaultValueSeparator;
     }
-
+    
+    public InputStream getBinaryStream(String binaryRef) {
+    	return this.valueFactory.getBinaryStream(binaryRef);
+    }
 
     public void setValueSeparators(Map<String, ValueSeparator> valueSeparators) {
         this.valueSeparators = valueSeparators;

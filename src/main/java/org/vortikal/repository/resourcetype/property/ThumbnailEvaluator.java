@@ -35,7 +35,8 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
             String mimetype = contentType.getStringValue();
             String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
             ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
-            property.setBinaryValue(thumbnail.getImageBytes(), mimetype);
+            String binaryRef = property.getDefinition().getName() + ":" + ancestorPropertySet.getURI().toString();
+            property.setBinaryValue(thumbnail.getImageBytes(), binaryRef);
             return true;
 
 

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -212,6 +213,10 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
 
     public ValueSeparator getValueSeparator(String format) {
         return this.overriddenPropDef.getValueSeparator(format);
+    }
+    
+    public InputStream getBinaryStream(String binaryRef) {
+    	return this.overriddenPropDef.getBinaryStream(binaryRef);
     }
 
 }

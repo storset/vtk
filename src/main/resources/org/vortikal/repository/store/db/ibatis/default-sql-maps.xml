@@ -370,26 +370,23 @@
 
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
-      (extra_prop_entry_id, resource_id, name_space, name, value)
+      (extra_prop_entry_id, resource_id, name_space, name, value
+        <isNotEmpty property="binaryContent">
+          , binary_content
+        </isNotEmpty>)
     values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
-            #namespaceUri#, #name#, #value#)
+      #namespaceUri#, #name#, #value#
+        <isNotEmpty property="binaryContent">
+          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#
+        </isNotEmpty>)
   </insert>
   
-  <insert id="insertBinaryPropertyEntry" parameterClass="java.util.Map">
-    insert into binary_prop_entry
-      (binary_prop_entry_id, resource_id, binary_prop_ref, binary_mimetype, binary_content)
-    values (<include refid="nextBinaryPropEntryId" />, #resourceId#, #binaryPropRef#, #binaryMimeType#, 
-              #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#)
-  </insert>
-  
-  <resultMap id="BinaryContent" class="java.util.HashMap">
-    <result property="binaryMimetype" column="binary_mimetype" />
-    <result property="binaryContent" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
+  <resultMap id="BinaryStream" class="java.util.HashMap">
+    <result property="binaryStream" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
   </resultMap>
   
-  <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryContent">
-    select binary_mimetype, binary_content from binary_prop_entry 
-      where resource_id = #resourceId# and binary_prop_ref = #binaryPropRef#
+  <select id="selectBinaryPropertyEntry" parameterClass="string" resultMap="BinaryStream">
+    select binary_content from extra_prop_entry where value = #binaryPropRef#
   </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">
@@ -413,6 +410,11 @@
           and r.prev_resource_id is not null
           order by p.extra_prop_entry_id) t
   </insert>    
+  
+  <update id="updateBinaryRef" parameterClass="java.util.Map">
+    update extra_prop_entry set value = #binaryRef#
+      where resource_id = #resourceId# and name = #binaryPropName#
+  </update>
 
 
   <delete id="deletePropertiesByResourceId" parameterClass="int">

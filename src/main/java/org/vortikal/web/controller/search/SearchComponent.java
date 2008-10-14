@@ -141,7 +141,7 @@ public class SearchComponent {
         List<PropertySet> files = new ArrayList<PropertySet>();
         for (int i = 0; i < num; i++) {
             PropertySet res = result.getResult(i);
-            files.add(res);
+            files.add(resourceManager.createResourceWrapper(res.getURI()));
             URL url = this.viewService.constructURL(res.getURI());
             urls.put(res.getURI().toString(), url);
         }

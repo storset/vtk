@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -56,11 +55,9 @@ import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
-import org.vortikal.repository.store.LazyDataAccessor;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.token.TokenManager;
@@ -91,9 +88,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
     private URIValidator uriValidator = new URIValidator();
-    
-    private LazyDataAccessor lazyDao;
-    
+        
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     
     private String id;
@@ -239,11 +234,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(srcUri);
         }
         
-        Property binaryRef = src.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.BINARY_REF);
-        if (binaryRef != null && StringUtils.isNotBlank(binaryRef.getStringValue())) {
-        	this.lazyDao.loadBinaryContent(src);
-        }
-
         ResourceImpl dest = this.dao.load(destUri);
 
         if (dest == null) {
@@ -837,10 +827,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.context.publishEvent(new ResourceCreationEvent(this, newResource));
         return newResource;
     }
-    
-    public Property loadBinaryContent(Resource resource) {
-    	return this.lazyDao.loadBinaryContent(resource);
-    }
 
     /**
      * Writes to a temporary file (used to avoid lengthy blocking on
@@ -925,10 +911,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
-    }
-    
-    public void setLazyDao(LazyDataAccessor lazyDao) {
-    	this.lazyDao = lazyDao;
     }
 
     public void setTempDir(String tempDirPath) {

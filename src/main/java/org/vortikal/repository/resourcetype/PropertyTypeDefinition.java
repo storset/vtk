@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 
@@ -127,6 +128,13 @@ public interface PropertyTypeDefinition {
      * Create a {@link Property} instance.
      */
     public Property createProperty();
-
     
+    /**
+     * Get a stream for the binary content of this property
+     * 
+     * @param binaryRef The reference to the binary content
+     * @return Stream holding the binary content
+     */
+    public InputStream getBinaryStream(String binaryRef);
+
 }

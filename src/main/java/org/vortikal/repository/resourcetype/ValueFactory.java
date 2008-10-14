@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
+
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
@@ -45,8 +47,7 @@ public interface ValueFactory {
      * @return An array of Values 
      * @throws ValueFormatException
      */
-    public Value[] createValues(String[] stringValues, Type type) 
-        throws ValueFormatException ;
+    public Value[] createValues(String[] stringValues, Type type) throws ValueFormatException;
 
     /**
      * Create a <code>Value</code> object from the given string
@@ -56,6 +57,13 @@ public interface ValueFactory {
      * @return The Value based on the stringValue and type
      * @throws ValueFormatException
      */
-    public Value createValue(String stringValue, Type type)
-        throws ValueFormatException ;
+    public Value createValue(String stringValue, Type type) throws ValueFormatException;
+    
+    /**
+     * Get a stream for the binary content of a property
+     * 
+     * @param binaryRef The reference to the binary content
+     * @return Stream holding the binary content
+     */
+    public InputStream getBinaryStream(String binaryRef);
 }

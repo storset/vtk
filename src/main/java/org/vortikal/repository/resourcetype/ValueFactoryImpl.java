@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.store.BinaryContentDataAccessor;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -48,6 +50,7 @@ import org.vortikal.security.PrincipalFactory;
 public class ValueFactoryImpl implements ValueFactory {
 
     private PrincipalFactory principalFactory;
+    private BinaryContentDataAccessor binaryDao;
     
     private static final String[] dateFormats = new String[] {        
         "dd.MM.yyyy HH:mm:ss",
@@ -132,11 +135,18 @@ public class ValueFactoryImpl implements ValueFactory {
             } catch (InvalidPrincipalException e) {
                 throw new ValueFormatException(e.getMessage(), e);
             }
+        case BINARY:
+        	// Don't fetch any of the binary content until it's specifically needed
+        	return new Value(new byte[0], stringValue);        	
         }
 
         throw new IllegalArgumentException("Cannot convert '" + stringValue 
                 + "' to unknown type '" + type+ "'");
 
+    }
+    
+    public InputStream getBinaryStream(String binaryRef) {
+    	return this.binaryDao.getBinaryStream(binaryRef);
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
@@ -165,6 +175,11 @@ public class ValueFactoryImpl implements ValueFactory {
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+    
+    @Required
+    public void setBinaryDao(BinaryContentDataAccessor binaryDao) {
+    	this.binaryDao = binaryDao;
     }
 
 }

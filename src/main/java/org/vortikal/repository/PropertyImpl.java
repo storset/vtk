@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -409,23 +410,16 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return sb.toString();
     }
     
-    public void setBinaryValue(byte[] binaryValue, String format) {
-    	Value v = new Value(binaryValue, format);
+    public void setBinaryValue(byte[] binaryValue, String binaryRef) {
+    	Value v = new Value(binaryValue, binaryRef);
         setValue(v);
     }
     
-    public byte[] getBinaryValue() {
+    public InputStream getBinaryStream() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
-            throw new IllegalOperationException("Property " + this + " not of type binary");
+            throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-        return this.value.getBinaryValue();
-    }
-    
-    public String getBinaryMimeType() {
-    	if (this.value == null || getType() != PropertyType.Type.BINARY) {
-            throw new IllegalOperationException("Property " + this + " not of type binary");
-        }
-        return this.value.getBinaryMimeType();
+    	return this.getDefinition().getBinaryStream(this.value.getBinaryRef());
     }
 
 }

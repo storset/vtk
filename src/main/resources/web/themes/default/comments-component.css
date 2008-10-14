@@ -19,6 +19,20 @@ div.vrtx-comments  div.comments-header a.header-href {
   text-decoration: none;
 }
 
+div.vrtx-comments div#comments-header-left {
+  float: left;	
+  position: relative;	
+}
+
+div.vrtx-comments div#comments-header-feedHref {
+  background: url(rss-icon-no-shadow.png) left no-repeat;
+  float: right;	
+  position: relative;	
+}
+div.vrtx-comments div#comments-header-feedHref {
+  padding-left: 1.5em;	
+}
+
 div.vrtx-comments div.vrtx-comment {
   margin: 0 1em .5em 0;
 }

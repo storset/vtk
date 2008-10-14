@@ -29,7 +29,8 @@ div.vrtx-comments div#comments-header-feedHref {
   float: right;	
   position: relative;	
 }
-div.vrtx-comments div#comments-header-feedHref {
+
+div.vrtx-comments div#comments-header-feedHref a {
   padding-left: 1.5em;	
 }
 
@@ -42,7 +43,7 @@ div.vrtx-comments div.comment-body {
   border: 1px solid #ccc;
   padding: 0 1em 0 1em;
   height: 1%;
-  background-color: #fff;   
+  background-color: #fff;
 
   border-radius: .75em;  /* CSS3 */
   -moz-border-radius: .75em;
@@ -54,11 +55,11 @@ div.vrtx-comments div.comment-body {
 } 
 
 div.vrtx-comments div.even {
-
+  clear: left;
 }
 
 div.vrtx-comments div.odd {
-
+  clear: left;
 }
 
 div.vrtx-comments div.comment-info {
@@ -75,7 +76,8 @@ div.vrtx-comments  div.add-comment {
   padding: 1em 1em 1em 0;
   height: 1%; 
   margin: 0;
-
+  clear: left;
+  
   border-radius: .75em;  /* CSS3 */
   -moz-border-radius: .75em;
   -webkit-border-radius: .75em; 

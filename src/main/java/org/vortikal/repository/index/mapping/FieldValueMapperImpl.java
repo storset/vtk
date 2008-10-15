@@ -179,7 +179,7 @@ public class FieldValueMapperImpl implements FieldValueMapper {
             return FieldDataEncoder.encodeLongToString(value.getLongValue());
 
         default:
-            throw new FieldDataEncodingException("Unknown type: "
+            throw new FieldDataEncodingException("Unknown or unsupported type: "
                     + value.getType());
         }
 
@@ -268,7 +268,7 @@ public class FieldValueMapperImpl implements FieldValueMapper {
             }
 
         default:
-            throw new FieldDataEncodingException("Unknown type " + type);
+            throw new FieldDataEncodingException("Unknown or unsupported type " + type);
 
         }
 
@@ -312,9 +312,9 @@ public class FieldValueMapperImpl implements FieldValueMapper {
             } catch (UnsupportedEncodingException ue) {
             } // Should never occur.
             break;
-
+            
         default:
-            throw new FieldDataEncodingException("Unknown type: "
+            throw new FieldDataEncodingException("Unknown or unsupported type: "
                     + value.getType());
 
         }

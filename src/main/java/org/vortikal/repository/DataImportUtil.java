@@ -35,6 +35,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -42,11 +44,10 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class DataImportUtil implements InitializingBean {
 
+    private final Log logger = LogFactory.getLog(DataImportUtil.class);
+    
     private Repository repository;
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
+    private boolean skipExistingResources = false;
 
     public void afterPropertiesSet() {
         if (this.repository == null) {
@@ -65,20 +66,42 @@ public class DataImportUtil implements InitializingBean {
     private void create(File file, String token, Path uri) throws IOException {
 
         if (file.isDirectory()) {
-            this.repository.createCollection(token, uri);
-        } else {
-            this.repository.createDocument(token, uri);
-            this.repository.storeContent(
-                token, uri, new BufferedInputStream(new FileInputStream(file)));
-        }
+            if (this.skipExistingResources && this.repository.exists(token, uri)) {
+                logger.info("Skipping directory '" + file + "', resource already exists at URI '" 
+                        + uri + "'");
+            } else {
+                logger.info("Importing directory '" + file + "' to URI '" + uri + "'");
+                this.repository.createCollection(token, uri);
+            }
 
-        if (file.isDirectory()) {
+            // Recursively process children of directory
             File[] children = file.listFiles();
             for (int i = 0; i < children.length; i++) {
                 Path childURI = uri.extend(children[i].getName());
                 create(children[i], token, childURI);
             }
+            
+        } else {
+            if (this.skipExistingResources && this.repository.exists(token, uri)) {
+                logger.info("Skipping import of file '" + file + "', resource already exists at URI '"
+                        + uri + "'");
+                return;
+            }
+            
+            logger.info("Importing file '" + file + "' to URI '" + uri + "'");
+            this.repository.createDocument(token, uri);
+            this.repository.storeContent(
+                token, uri, new BufferedInputStream(new FileInputStream(file)));
         }
+        
+    }
+    
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setSkipExistingResources(boolean skipExistingResources) {
+        this.skipExistingResources = skipExistingResources;
     }
     
 }

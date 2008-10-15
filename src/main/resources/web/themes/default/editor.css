@@ -230,12 +230,13 @@ div.picture {
 div.picture input{
   float: left;
   position: relative;
-  width: 15em;
+  width: 200px;
   margin-right: .25em;
 }
 
 div.picture button{
   float: left;
+  width: 120px;
   position: relative;
   margin-right: 1.40em;
 }
@@ -266,25 +267,25 @@ div.picture div {
 
 div.caption {
   float: left;
-  width: 17.5em;
+  width: 328px;
   position: relative;
   margin-top: -76px;
   height: 1%;
   display: inline;
 }
 
-/* Opera 7+ filter hack */
+/* Opera 7+ filter hack 
 @media screen and (min-width: 0px){
    div.caption { 
       width: 16.5em; 
       margin-top: -75px;
      }
-}
+}*/
 
 
 /* IE6 fix */
 * html div.caption {
-   width: 18.5em; 
+   width: 326px; 
    margin-top: -72px;
 }
 

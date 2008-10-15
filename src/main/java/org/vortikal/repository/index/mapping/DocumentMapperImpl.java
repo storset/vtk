@@ -55,6 +55,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
  * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
@@ -78,6 +79,9 @@ public class DocumentMapperImpl implements DocumentMapper {
 
     private ContextManager contextManager;
     
+    /**
+     * Map <code>PropertySetImpl</code> to Lucene <code>Document</code>.
+     */
     public Document getDocument(PropertySetImpl propSet) throws DocumentMappingException {
         Document doc = new Document();
         
@@ -131,13 +135,14 @@ public class DocumentMapperImpl implements DocumentMapper {
         List<PropertyTypeDefinition> propDefs = 
             this.resourceTypeTree.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
         
-        // Index only properties that satisfy both of the following conditions:
+        // Index only properties that satisfy the following conditions:
         // 1) Belongs to the resource type's definition
         // 2) Exists in the property set.
+        // 3) Is not of binary type.
         for (PropertyTypeDefinition propDef: propDefs) {
             Property property = propSet.getProperty(propDef);
             
-            if (property == null) continue;
+            if (property == null || property.getType() == Type.BINARY) continue;
            
             // The field used for searching on the property (w/multi-values encoded for proper analysis)
             Field indexedField = getIndexedFieldFromProperty(property, false);
@@ -205,7 +210,7 @@ public class DocumentMapperImpl implements DocumentMapper {
     
     /**
      * Map from Lucene <code>Document</code> instance to a  repository 
-     * <code>PropertySet</code> instance. 
+     * <code>PropertySetImpl</code> instance. 
      * 
      * This method is heavily used when generating query results and
      * is critical for general query performance. Emphasis should be placed
@@ -234,7 +239,7 @@ public class DocumentMapperImpl implements DocumentMapper {
         propSet.setResourceType(doc.get(FieldNameMapping.RESOURCETYPE_FIELD_NAME));
         
         // Loop through all stored binary fields and re-create properties with
-        // values. Multi-valued properties are stored as a sequence of binary fields
+        // values. Multi-valued properties are stored as a _sequence_of_binary_fields_
         // (with the same name) in the index.
         // Note that the iteration will _only_ contain _stored_ fields.
         String currentName = null;

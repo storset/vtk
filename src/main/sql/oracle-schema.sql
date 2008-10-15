@@ -214,7 +214,8 @@ create table extra_prop_entry
     prop_type_id number default 0 not null,
     name_space varchar2 (128) null,
     name varchar2 (64) not null,
-    value varchar2 (2048) not null
+    value varchar2 (2048) not null,
+    binary_content BLOB
 );
 
 alter table extra_prop_entry

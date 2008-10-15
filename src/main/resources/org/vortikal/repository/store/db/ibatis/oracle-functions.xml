@@ -39,6 +39,14 @@
   <sql id="destinationDescendantUriMove">
     #destUri# || substr(uri, length(#srcUri#) + 1)
   </sql>
+  
+  <sql id="binaryDestinationDescendantUriMove">
+    #destUri# || substr(value, length(#srcUri#) + 1)
+  </sql>
+  
+  <sql id="blobTypeHandler">
+    org.springframework.orm.ibatis.support.BlobSerializableTypeHandler
+  </sql>
 
   <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
     update vortex_resource r1
@@ -68,6 +76,5 @@
     <!--  Oracle query limiting appendix -->
     ) WHERE ROWNUM &lt;= #limit#
   </sql>
-
 
 </sqlMap>

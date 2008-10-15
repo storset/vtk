@@ -52,6 +52,10 @@
     #destUri# || substring(value, length(#srcUri#) + 1)
   </sql>
   
+  <sql id="blobTypeHandler">
+    org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack
+  </sql>
+  
   <sql id="dataReportingLimitPrepend">
   <!-- By default, nothing is prepend to query for limiting. --> 
   </sql>

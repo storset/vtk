@@ -224,7 +224,7 @@ div.picture {
   position: relative;
   clear: right; /*IE7*/
   margin-bottom: 0;
-  width: 540px;
+  width: 508px;
 }
 
 div.picture input{
@@ -246,14 +246,14 @@ div.picture button{
 }
 
 div.picture img { 
- float: left;
+ float: right;
  position: relative;
- height: 15.5ex;
+ height: 13.5ex;
 }
 
 * html div.picture img {
   /* margin-top: 5px; */
-  height: 15.25ex;
+  height: 13.25ex;
 }
 
 div.picture div {
@@ -269,7 +269,7 @@ div.caption {
   float: left;
   width: 328px;
   position: relative;
-  margin-top: -82px;
+  margin-top: 16px;
   height: 1%;
   display: inline;
 }
@@ -286,7 +286,7 @@ div.caption {
 /* IE6 fix */
 * html div.caption {
    width: 326px; 
-   margin-top: -84px;
+   margin-top: 17px;
 }
 
 div.caption textarea{

@@ -73,7 +73,7 @@ public class RequestURIRegexpAssertion
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 		
         sb.append(super.toString());
         sb.append("; pattern = ").append(this.pattern.pattern());

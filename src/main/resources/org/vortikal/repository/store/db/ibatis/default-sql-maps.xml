@@ -260,7 +260,7 @@
       <isPropertyAvailable property="lastModified">#lastModified#</isPropertyAvailable>
       <isNotPropertyAvailable property="lastModified">last_modified</isNotPropertyAvailable>
     from vortex_resource
-    where uri = #uri# or uri like #uriWildcard# escape '@'
+    where uri = #srcUri# or uri like #uriWildcard# escape '@'
   </insert>
 
   
@@ -395,7 +395,8 @@
        resource_id,
        name_space,
        name,
-       value)
+       value,
+       binary_content)
     select
       <include refid="nextExtraPropEntryId" />, t.*
       from
@@ -403,15 +404,24 @@
           r.resource_id,
           p.name_space,
           p.name,
-          p.value
+          p.value,
+          p.binary_content
         from vortex_resource r inner join extra_prop_entry p 
              on r.prev_resource_id = p.resource_id
         where (r.uri = #destUri# or r.uri like #destUriWildcard# escape '@')
           and r.prev_resource_id is not null
           order by p.extra_prop_entry_id) t
-  </insert>    
+  </insert>
   
-  <update id="updateBinaryRefs" parameterClass="java.util.Map">
+  
+  <update id="updateBinaryRefsForCopy">
+    update extra_prop_entry set value = <include refid="binaryDestinationDescendantUriMove" />
+        where binary_content is not null and value like #uriWildcard# escape '@'
+        and resource_id in (select resource_id from vortex_resource where uri like #destUriWildcard#)
+  </update>
+  
+  
+  <update id="updateBinaryRefsForMove" parameterClass="java.util.Map">
     update extra_prop_entry set
         value = <include refid="binaryDestinationDescendantUriMove" />
         where binary_content is not null and value like #uriWildcard# escape '@'

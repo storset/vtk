@@ -38,12 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.vortikal.repository.Resource;
-
-import junit.framework.TestCase;
 
 
 public class DefaultTemplateParserTestCase extends TestCase {

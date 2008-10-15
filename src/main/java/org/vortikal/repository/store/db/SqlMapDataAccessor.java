@@ -387,7 +387,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         int depthDiff = destURI.getDepth() - resource.getURI().getDepth();
     
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("uri", resource.getURI().toString());
+        parameters.put("srcUri", resource.getURI().toString());
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(resource.getURI(), SQL_ESCAPE_CHAR));
         parameters.put("destUri", destURI.toString());
         parameters.put("destUriWildcard", SqlDaoUtils.getUriSqlWildcard(destURI, SQL_ESCAPE_CHAR));
@@ -403,11 +403,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         		setBinaryContent(prop, newResource.getURI().toString());
         	}
         }
-
+        
         String sqlMap = getSqlMap("copyResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
         sqlMap = getSqlMap("copyProperties");
+        getSqlMapClientTemplate().update(sqlMap, parameters);
+        
+        sqlMap = getSqlMap("updateBinaryRefsForCopy");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
         if (copyACLs) {
@@ -501,7 +504,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         sqlMap = getSqlMap("moveDescendants");
         getSqlMapClientTemplate().update(sqlMap, parameters);
         
-        sqlMap = getSqlMap("updateBinaryRefs");
+        sqlMap = getSqlMap("updateBinaryRefsForMove");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
         ResourceImpl created = loadResourceInternal(newResource.getURI());

@@ -29,7 +29,7 @@
   </sql>
 
   <sql id="destinationUriCopy">
-    #destUri# || substring(uri, length(#uri#) + 1)
+    #destUri# || substring(uri, length(#srcUri#) + 1)
   </sql>
 
   <sql id="nextVortexCommentId">

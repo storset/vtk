@@ -573,9 +573,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Map<String, String> map: resourceUris) {
             Path uri = Path.fromString((String) map.get("uri"));
             Path parentUri = uri.getParent();
-            if (parentUri == null) {
-                System.out.println("___________________: " + uri);
-            }
             if (parentUri != null) {
                 childMap.get(parentUri).add(uri);
             }

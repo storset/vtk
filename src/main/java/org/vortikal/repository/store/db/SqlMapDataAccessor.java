@@ -500,6 +500,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         
         sqlMap = getSqlMap("moveDescendants");
         getSqlMapClientTemplate().update(sqlMap, parameters);
+        
+        sqlMap = getSqlMap("updateBinaryRefs");
+        getSqlMapClientTemplate().update(sqlMap, parameters);
 
         ResourceImpl created = loadResourceInternal(newResource.getURI());
         for (Property prop: newResource.getProperties()) {
@@ -1140,8 +1143,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         	InputStream in = prop.getBinaryStream();
         	byte[] byteArray = new byte[in.available()];
 			in.read(byteArray);
-			String binaryRef = prop.getDefinition().getName() + ":" + resourceUri;
-			prop.setBinaryValue(byteArray, binaryRef);
+			prop.setBinaryValue(byteArray, resourceUri);
 		} catch (Exception e) {
 			logger.error("Colud not read binary stream for property " + prop.getDefinition().getName(), e);
 		}

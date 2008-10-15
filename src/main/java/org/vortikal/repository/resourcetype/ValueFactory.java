@@ -65,5 +65,5 @@ public interface ValueFactory {
      * @param binaryRef The reference to the binary content
      * @return Stream holding the binary content
      */
-    public InputStream getBinaryStream(String binaryRef);
+    public InputStream getBinaryStream(String binaryName, String binaryRef);
 }

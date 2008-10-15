@@ -1,6 +1,7 @@
 package org.vortikal.repository.store.db;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,12 +12,15 @@ public class SqlBinaryContentMapDataAccessor extends AbstractSqlMapDataAccessor 
 	
 	private static final Logger log = Logger.getLogger(SqlBinaryContentMapDataAccessor.class);
     
-    public InputStream getBinaryStream(String binaryRef) {
+    public InputStream getBinaryStream(String binaryName, String binaryRef) {
     	
     	try {
     		String sqlMap = getSqlMap("selectBinaryPropertyEntry");
+    		Map<String, Object> params = new HashMap<String, Object>();
+    		params.put("binaryName", binaryName);
+    		params.put("binaryRef", binaryRef);
     		@SuppressWarnings("unchecked")
-    		List<Map<String, Object>> resultList = getSqlMapClientTemplate().queryForList(sqlMap, binaryRef);
+    		List<Map<String, Object>> resultList = getSqlMapClientTemplate().queryForList(sqlMap, params);
     		return (InputStream) resultList.get(0).get("binaryStream");
 		} catch (Exception e) {
 			log.error("An error occured while getting the binary stream for " + binaryRef, e);

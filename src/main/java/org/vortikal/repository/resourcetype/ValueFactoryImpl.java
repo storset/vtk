@@ -145,8 +145,8 @@ public class ValueFactoryImpl implements ValueFactory {
 
     }
     
-    public InputStream getBinaryStream(String binaryRef) {
-    	return this.binaryDao.getBinaryStream(binaryRef);
+    public InputStream getBinaryStream(String binaryName, String binaryRef) {
+    	return this.binaryDao.getBinaryStream(binaryName, binaryRef);
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {

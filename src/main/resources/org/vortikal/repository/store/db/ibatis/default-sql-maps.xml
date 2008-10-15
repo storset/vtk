@@ -385,8 +385,8 @@
     <result property="binaryStream" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
   </resultMap>
   
-  <select id="selectBinaryPropertyEntry" parameterClass="string" resultMap="BinaryStream">
-    select binary_content from extra_prop_entry where value = #binaryPropRef#
+  <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryStream">
+    select binary_content from extra_prop_entry where name = #binaryName# and value = #binaryRef#
   </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">
@@ -411,9 +411,10 @@
           order by p.extra_prop_entry_id) t
   </insert>    
   
-  <update id="updateBinaryRef" parameterClass="java.util.Map">
-    update extra_prop_entry set value = #binaryRef#
-      where resource_id = #resourceId# and name = #binaryPropName#
+  <update id="updateBinaryRefs" parameterClass="java.util.Map">
+    update extra_prop_entry set
+        value = <include refid="binaryDestinationDescendantUriMove" />
+        where binary_content is not null and value like #uriWildcard# escape '@'
   </update>
 
 

@@ -11,6 +11,6 @@ public interface BinaryContentDataAccessor {
 	 * @return A binary property containing the binary content as a bytearray and
 	 *    its mimetype, null if the resource has no binary content
 	 */
-	public InputStream getBinaryStream(String binaryRef);
+	public InputStream getBinaryStream(String propName, String binaryRef);
 
 }

@@ -230,13 +230,13 @@ div.picture {
 div.picture input{
   float: left;
   position: relative;
-  width: 230px;
+  width: 220px;
   margin-right: .25em;
 }
 
 div.picture button{
   float: left;
-  width: 90px;
+  width: 100px;
   position: relative;
   margin-right: 1.40em;
 }
@@ -248,7 +248,7 @@ div.picture button{
 div.picture img { 
  float: left;
  position: relative;
- height: 15.75ex;
+ height: 15.5ex;
 }
 
 * html div.picture img {
@@ -269,7 +269,7 @@ div.caption {
   float: left;
   width: 328px;
   position: relative;
-  margin-top: -86px;
+  margin-top: -82px;
   height: 1%;
   display: inline;
 }

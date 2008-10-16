@@ -30,9 +30,12 @@
     <#-- Comments -->
     <#include "/commenting/comments-feed-url.ftl" />
 
-    <#if cssURL?exists>
-      <link rel="stylesheet" type="text/css" href="${cssURL?html}" />
+    <#if cssURLs?exists>
+      <#list cssURLs as cssURL>
+        <link rel="stylesheet" type="text/css" href="${cssURL?html}" />
+      </#list>
     </#if>
+    
 </head>
   <body>
     <h1>${h1}</h1>

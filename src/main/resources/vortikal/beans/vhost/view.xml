@@ -59,11 +59,19 @@
     </property>    
     <property name="attributesMap">
       <map>
-        <entry key="cssURL" value="${themeBaseURL}/view-article.css" />
-	<entry key="cssURL" value="${themeBaseURL}/box.css" />
+        <entry key="cssURLs" value-ref="displayArticleCSSURLs" />
         <entry key="tagServiceDefaultExpression" value="${tagService.defaultExpression}" />
       </map>
     </property>
+  </bean>
+  
+  <bean id="displayArticleCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${themeBaseURL}/view-article.css</value>
+        <value>${themeBaseURL}/box.css</value>
+      </list>
+    </constructor-arg>
   </bean>
 
   <bean id="displayResourceView"

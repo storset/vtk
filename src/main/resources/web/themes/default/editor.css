@@ -1,5 +1,8 @@
 /* Vortex overriding section */
 
+
+/* ****** START: tab styling */
+
 div.activeTab { 
   background-color: #efefef;
   border-bottom: 0px; 
@@ -8,6 +11,11 @@ div.activeTab {
 div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
   background-color: #efefef;
 }
+
+/* ****** END: tab styling */
+
+
+/* ****** START: content and generic styling */
 
 #contents {
   background-color: #efefef;
@@ -35,7 +43,6 @@ form.editor {
   margin-top: -14px;
 }
 
-
 iframe {
   border: 1px solid #ddd;
 }
@@ -59,6 +66,38 @@ label {
 label.resource\.recursive-listing, label.resource\.hide-last-modified, label.resource\.hide-published-date, label.resource\.hide-introduction, label.resource\.hide-introduction-image, label.resource\.hide-end-date, label.resource\.hide-location {
 	display: inline;
 }
+
+div.properties {
+ clear:both;
+ /* margin-bottom: 1em; */ 
+ height: 1%; /* For IE */
+}
+
+div.save-cancel{
+	margin-top:1em;
+}
+
+* html div.save-cancel{
+	margin-top:0;
+}
+
+div.properties:after {
+  clear:both;
+  content:".";
+  display:block;
+  visibility:hidden;
+  height: 0;
+}
+
+div.property-item {
+  /* XXX: temporary clear: both;*/ 
+  margin-bottom: 1em;
+}
+
+/* ****** END: content and generic styling */
+
+
+/* ****** START: collection- event and articlelisting parameters styling */
 
 div.page-limit {
 	clear:both;
@@ -155,38 +194,14 @@ div.hide-introduction-image{
 	margin-right:.2em;
 }
 
+/* ****** END: collection- event and articlelisting parameters styling */
 
-div.properties {
- clear:both;
- /* margin-bottom: 1em; */ 
- height: 1%; /* For IE */
-}
 
-div.save-cancel{
-	margin-top:1em;
-}
-
-* html div.save-cancel{
-	margin-top:0;
-}
-
-div.properties:after {
-  clear:both;
-  content:".";
-  display:block;
-  visibility:hidden;
-  height: 0;
-}
-
-div.property-item {
-  /* XXX: temporary clear: both;*/ 
-  margin-bottom: 1em;
-}
+/* ****** START: Introduction styling */
 
 span.input-description{
     font-size: .8em;
 }
-/* TODO: hvordan editoren settes opp for safari og FF 2 */
 
 div.introduction {
   clear:left;
@@ -215,7 +230,10 @@ div.introduction textarea {
   height: 15.75ex;
 }
 
-/* ********** START Picture (input, button, preview) and caption styling */
+/* ****** END: Introduction styling */
+
+
+/* ****** START: Picture (input, button, preview) and caption styling */
 
 div.picture {
   float: left;
@@ -298,19 +316,10 @@ div.caption textarea{
 	height: 10ex;
 }
 
-/* ************* END Picture (input, button, preview) and caption styling */
+/* ****** END Picture: (input, button, preview) and caption styling */
 
-div.authors { 
-  clear: left;
-  float: left;
-  white-space: nowrap;
-}
 
-div.published-date {  
-  clear: left;
-  float: left;
-  white-space: nowrap;  
-} 
+/* ****** START: (Main) Content styling */
 
 div.html-content {
  clear:both;
@@ -329,6 +338,23 @@ div.html-content textarea {
 #resource\.content___Frame{
   height: 20em;
 }
+
+/* ****** END: (Main) Content styling */
+
+
+/* ****** START: Event and Article specific styling */
+
+div.authors { 
+  clear: left;
+  float: left;
+  white-space: nowrap;
+}
+
+div.published-date {  
+  clear: left;
+  float: left;
+  white-space: nowrap;  
+} 
 
 /* START time and place */
 
@@ -432,3 +458,5 @@ td.calcell.oom {
 }
       
 /* END: YUI calendar */
+
+/* ****** END: Event and Article specific styling */

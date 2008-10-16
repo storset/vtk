@@ -96,6 +96,8 @@
       <#t /> - <abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
     </#if>
   </#if>
-  <#t /><#if location != "">, <span class="location">${location}</span></#if>
-        
+  <#t /><#if location != "">, <span class="location">${location}.</span></#if>
+  <span class="ical">
+    <a id="ical" href='${resource.URI}?ical'><@vrtx.msg code="event.add-to-calendar" /></a>
+  </span>
 </#macro>

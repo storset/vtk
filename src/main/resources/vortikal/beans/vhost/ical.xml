@@ -5,23 +5,21 @@
 <beans>
 
   <bean id="icalService" class="org.vortikal.web.service.ServiceImpl">
+  <property name="parent" ref="webService" />
     <property name="order" value="-999" />
     <property name="assertions">
       <list>
-        <ref bean="ical.appResourceAssertion" />
         <ref bean="isEventAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="ical" />
+        </bean>
       </list>
     </property>
     <property name="handler" ref="icalHandler" />
   </bean>
   
-  <bean id="icalHandler" class="org.vortikal.web.controller.ical.IcalHandler">
+  <bean id="icalHandler" class="org.vortikal.web.controller.ical.IcalController">
     <property name="repository" ref="repository" />
-  </bean>
-  
-  <bean id="ical.appResourceAssertion"
-    class="org.vortikal.web.service.RequestURIRegexpAssertion">
-    <property name="pattern" value="${ical.appResourceURL}" />
   </bean>
 
 </beans>

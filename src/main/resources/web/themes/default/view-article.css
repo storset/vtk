@@ -1,84 +1,78 @@
 @import url(comments-component.css);
 
- /* Ingress */
-
- div.vrtx-introduction {margin:0;padding:0;}
-
- /* Bilde uten bildetekst */
-
- img.vrtx-introduction-image {
-   float: right;
-   margin: 0 0 0.5em 0.75em;
-   border:1px solid #ddd; 
-/*   max-width: 300px; 
-   width: expression(this.width > 300 ? 300: true); */
- }
-
- /* Bilde med bildetekst */
-
- div.vrtx-introduction-image {
-   border:1px solid #ddd; 
-   float: right;
-   margin: 0em 0em 0.5em 0.75em;
- }
-
- div.vrtx-introduction-image img {
- }
-
- div.vrtx-introduction-image div.vrtx-imagetext {
-   overflow: hidden;
-   padding: 0.5em; 
-   background-color: #eee;
- }
- 
- * html div.vrtx-introduction-image div.vrtx-imagetext {
-   margin-top: -0.3em;
- }
-
- div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle{
-   font-weight: bold;
- }
-
- object#audioplayer1 {
-   margin-top: -0.5em;
-   margin-bottom: 0.5em;
- }
-
- object#videoplayer1, embed {
-   margin-bottom: 1em;
- }
-
- /* Byline */
-
-/*
-
-hr.vrtx-byline
-{
-  background: #ccc;
-  border: 0;
-  color: #ccc;
-  height: 1px;
-  margin: 0.25em 0em 0.5em 0;
+/* Ingress */
+div.vrtx-introduction {
+	margin: 0;
+	padding: 0;
 }
 
-*/
+/* Bilde uten bildetekst */
+img.vrtx-introduction-image {
+	float: right;
+	margin: 0 0 0.5em 0.75em;
+	border: 1px solid #ddd;
+	/*   max-width: 300px; 
+   width: expression(this.width > 300 ? 300: true); */
+}
 
- /* Start, slutt og sted */
+/* Bilde med bildetekst */
+div.vrtx-introduction-image {
+	border: 1px solid #ddd;
+	float: right;
+	margin: 0em 0em 0.5em 0.75em;
+}
 
- abbr {
-   text-decoration: none;
-   border-bottom: 0;
- }
+div.vrtx-introduction-image img {
+}
 
-/* Media-ref */  
+div.vrtx-introduction-image div.vrtx-imagetext {
+	overflow: hidden;
+	padding: 0.5em;
+	background-color: #eee;
+}
 
- a.vrtx-media {
-   white-space: nowrap;
-   width: 1%;
-   margin-bottom: 1em;
-   display: block;
- }
+* html div.vrtx-introduction-image div.vrtx-imagetext {
+	margin-top: -0.3em;
+}
 
-/* Body */  
+div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle {
+	font-weight: bold;
+}
 
-div.vrtx-bodytext {clear:left;} 
+object#audioplayer1 {
+	margin-top: -0.5em;
+	margin-bottom: 0.5em;
+}
+
+object#videoplayer1,embed {
+	margin-bottom: 1em;
+}
+
+/* Start, slutt og sted */
+abbr {
+	text-decoration: none;
+	border-bottom: 0;
+}
+
+/* Media-ref */
+a.vrtx-media {
+	white-space: nowrap;
+	width: 1%;
+	margin-bottom: 1em;
+	display: block;
+}
+
+/* Body */
+div.vrtx-bodytext {
+	clear: left;
+}
+
+/* iCal */
+span.ical {
+	background: url(ical.gif) no-repeat;
+	font-size: .9em;
+}
+
+span.ical a {
+	padding-left: 20px;
+}

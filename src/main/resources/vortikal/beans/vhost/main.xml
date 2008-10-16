@@ -45,6 +45,7 @@
   <import resource="errorhandlers.xml" />
   <import resource="templates.xml" />
   <import resource="autocomplete.xml" />
+  <import resource="ical.xml" />
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml"/>

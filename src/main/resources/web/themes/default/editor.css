@@ -11,6 +11,8 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 
 #contents {
   background-color: #efefef;
+  /* Fix for wide images */
+  overflow: hidden;
 }
 
 #contents h2 {
@@ -194,13 +196,9 @@ div.introduction {
   margin-bottom: 1em;
 }
 
-* html div.introduction{
-	margin-bottom:0;
-}
-
 div.introduction textarea {
-  height: 23.25ex; /* Used when fck-editor is disabled */
-  width: 40%;    
+  height: 22.5ex; /* Used when fck-editor is disabled */
+  width: 40%;  
 }
 
 /* div.introduction iframe {
@@ -209,12 +207,12 @@ div.introduction textarea {
 
 
 #resource\.introduction___Frame {
-  height: 15.75ex;
+  height: 16.75ex;
 }
 
 
 * html #resource\.introduction___Frame {
-  height: 90pt;
+  height: 15.75ex;
 }
 
 /* ********** START Picture (input, button, preview) and caption styling */
@@ -224,76 +222,80 @@ div.picture {
   position: relative;
   clear: right; /*IE7*/
   margin-bottom: 0;
-  width: 508px;
+  width: 520px;
+  height: 16.75ex;
 }
 
 div.picture input{
   float: left;
   position: relative;
-  width: 220px;
   margin-right: .25em;
+  width: 200px;
+}
+
+* html div.picture input {
+  margin-top: 0.2em;	
 }
 
 div.picture button{
   float: left;
-  width: 100px;
   position: relative;
-  margin-right: 1.40em;
 }
 
 * html div.picture button {
-  margin-right: 0.8em;	
+  margin-top: 0.1em;	
+}
+
+/* Fix for wide images breaking */
+#resource\.picture\.preview {
+  whitespace: nowrap;
+  margin: 0 0 0 308px;
+}
+
+* html #resource\.picture\.preview {
+  margin: 0 0 0 310px;
+  margin-top: 0.1em;
 }
 
 div.picture img { 
- float: right;
- position: relative;
- height: 13.5ex;
+  float: left;
+  position: relative;
+  height: 16.5ex;
+}
+* html div.picture img { 
+  height: 15.5ex;
 }
 
-* html div.picture img {
-  /* margin-top: 5px; */
-  height: 13.25ex;
-}
-
+/*
 div.picture div {
-  /* border: 1px solid #ccc; */  
+  border: 1px solid #ccc;
 
  }
 
 * html div.picture div {
   height: 71pt;
 }
+*/
 
 div.caption {
   float: left;
-  width: 328px;
+  width: 288px;
   position: relative;
-  margin-top: 16px;
-  height: 1%;
-  display: inline;
+  margin-top: -98px;
+  overflow: hidden;
 }
-
-/* Opera 7+ filter hack 
-@media screen and (min-width: 0px){
-   div.caption { 
-      width: 16.5em; 
-      margin-top: -75px;
-     }
-}*/
-
 
 /* IE6 fix */
 * html div.caption {
-   width: 326px; 
-   margin-top: 17px;
+   width: 294px; 
+   margin-top: -96px;
 }
 
 div.caption textarea{
-	height: 8ex;
+	height: 10ex;
 }
 #resource\.caption___Frame {
-	height: 8ex;
+	height: 10ex;
 }
 
 /* ************* END Picture (input, button, preview) and caption styling */

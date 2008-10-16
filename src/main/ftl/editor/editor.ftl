@@ -79,9 +79,15 @@
          fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
          fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';
 
-	 <#if fckEditorAreaCSSURL?exists>
-           fck.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL?html}';
-	 </#if>
+	var cssFileList = new Array(
+	<#if fckEditorAreaCSSURL?exists>
+		<#list fckEditorAreaCSSURL as cssURL>
+  			"${cssURL?html}",
+		</#list>
+	</#if>
+	"");
+
+        fck.Config['EditorAreaCSS'] = cssFileList;
 
          fck.ReplaceTextarea();
       }

@@ -229,9 +229,12 @@
     </constructor-arg>
   </bean>
 
-  <bean id="editor.fckEditorAreaCSSURL" class="java.lang.String">
+  <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
     <constructor-arg>
-      <value>${themeBaseURL}/fck_editorarea.css</value>
+	<list>
+              <value>${themeBaseURL}/box.css</value>
+              <value>${themeBaseURL}/fck_editorarea.css</value>
+        </list>
     </constructor-arg>
   </bean>
 

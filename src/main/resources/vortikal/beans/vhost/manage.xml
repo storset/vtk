@@ -1118,6 +1118,7 @@
             <value>${themeBaseURL}/admin.css</value>
             <value>${themeBaseURL}/basic.css</value>
             <value>${themeBaseURL}/tabs.css</value>
+            <value>${themeBaseURL}/box.css</value>
           </list>
         </entry>
       </map>

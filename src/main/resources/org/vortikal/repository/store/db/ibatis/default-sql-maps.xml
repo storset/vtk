@@ -367,19 +367,6 @@
         where uri like #uriWildcard# escape '@' and depth = #depth#)
     order by p.resource_id, p.extra_prop_entry_id
   </select>
-
-  <insert id="insertPropertyEntry" parameterClass="java.util.Map">
-    insert into extra_prop_entry
-      (extra_prop_entry_id, resource_id, name_space, name, value
-        <isNotEmpty property="binaryContent">
-          , binary_content
-        </isNotEmpty>)
-    values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
-      #namespaceUri#, #name#, #value#
-        <isNotEmpty property="binaryContent">
-          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#
-        </isNotEmpty>)
-  </insert>
   
   <resultMap id="BinaryStream" class="java.util.HashMap">
     <result property="binaryStream" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />

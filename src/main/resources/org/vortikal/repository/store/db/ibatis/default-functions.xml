@@ -52,9 +52,18 @@
     #destUri# || substring(value, length(#srcUri#) + 1)
   </sql>
   
-  <sql id="blobTypeHandler">
-    org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack
-  </sql>
+  <insert id="insertPropertyEntry" parameterClass="java.util.Map">
+    insert into extra_prop_entry
+      (extra_prop_entry_id, resource_id, name_space, name, value
+        <isNotEmpty property="binaryContent">
+          , binary_content
+        </isNotEmpty>)
+    values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
+      #namespaceUri#, #name#, #value#
+        <isNotEmpty property="binaryContent">
+          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#
+        </isNotEmpty>)
+  </insert>
   
   <sql id="dataReportingLimitPrepend">
   <!-- By default, nothing is prepend to query for limiting. --> 

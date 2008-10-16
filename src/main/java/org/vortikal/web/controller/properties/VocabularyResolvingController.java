@@ -83,10 +83,7 @@ public class VocabularyResolvingController implements Controller {
             HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
             model.put("propertyDefinition", propDef);
             model.put("rootNodes", hv.getRootNodes());
-            String[] selectedItems = getList(selected, hv);
-            model.put("selected_nodes", selectedItems);
-            String[] tmp = (String[]) model.get("selected_nodes");
-            logger.warn(Arrays.asList(tmp));
+            model.put("selected", selected);
         }
         
         return new ModelAndView(this.viewName, model );

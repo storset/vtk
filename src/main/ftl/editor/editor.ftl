@@ -458,6 +458,7 @@
              new YAHOO.widget.Calendar("cal1", "resource.${name}.calendar");
           }
 
+         cal1.cfg.setProperty("iframe", true);
          <#if value != "">
            cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
            cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
@@ -524,12 +525,22 @@
               } else if (e.srcElement) {
                  target = e.srcElement;
               }
-              var inCalendar = "${uniqueName}.calendar.href" == target.id;
-              if (!${uniqueName}_hidden && !inCalendar) {
-                 ${uniqueName}_hide();
-              } else if (inCalendar) {
-                 ${uniqueName}_toggle();
+              var inCalendarRef = "${uniqueName}.calendar.href" == target.id;
+
+              var inCalendar = false;
+              
+              for (t = target; t; t = t.parentNode) {
+                if ("resource.${name}.calendar" == t.id) {
+                  inCalendar = true;
+                  break;
+                }
               }
+
+              if (inCalendarRef) {
+                 ${uniqueName}_toggle();
+              } else if (!${uniqueName}_hidden && !inCalendarRef && !inCalendar) {
+                 ${uniqueName}_hide();
+              } else 
               return true;
           }
 

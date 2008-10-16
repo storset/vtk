@@ -32,6 +32,11 @@
 
 <script type="text/javascript"><!--
 
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        Lang = YAHOO.lang,
+        Widget = YAHOO.widget;
+
    function updateParent() {
      var rootNodes = tree.getRoot().children;
      var v = '';
@@ -65,32 +70,16 @@
      }
    }
 
-           
-   
    var tree;
-   var nodes = [];
-   var nodeIndex;
-   
-   
-   var nodes = new Array();
    
    function treeInit() {
        document.getElementById("expandcontractdiv").style.visibility = "visible";
        document.getElementById("insert").style.visibility = "visible";
+       selected = '${selected}';
        tree = new YAHOO.widget.TreeView("treeDiv1");
-     <#if propertyDefinition.multiple>
-       <@createTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes parentchecked=false />
-     <#else>
-       <@createSingleTree nodes=rootNodes parent="tree.getRoot()" name="vra" selected=selected_nodes />
-     </#if>
-     tree.draw();
+       tree.draw();
    }
 
-   function treeNode(i, c) {
-   	var item = i;
-   	var children = c;
-   }
-   
    var callback = null;
 
   <#if propertyDefinition.multiple>
@@ -108,6 +97,7 @@
         }
     }
   </#if>
+
   // -->
 </script>
 
@@ -154,41 +144,9 @@
       <#list nodes as node>
         <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
 
-        <li>${node.entry?string} - ${displayName}
+        <li id="${node.entry?string}">${node.entry?string} - ${displayName}
           <#if node.children?exists><@listNodes nodes=node.children /></#if>
         </li>
       </#list>
     </ul>
-  </#macro>
-  
-  <#macro listNodesForAC nodes>
-      <#list nodes as node>
-        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
-        ["${displayName}", "${node.entry?string}"], ["${node.entry?string}", "${displayName}"]<#if node.children?exists>, <@listNodesForAC nodes=node.children /></#if><#if node_has_next>, </#if>
-      </#list>
-  </#macro>
-  
-  <#macro createTree nodes parent name selected parentchecked>
-    <#list nodes as node>
-      <#assign checked=parentchecked />
-      <#if !checked>
-	<#assign checked=selected?seq_contains(node.entry) />
-      </#if>
-        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
-      var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
-      <#if node.children?exists>
-	<@createTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected parentchecked=checked />     	         
-      </#if>	
-    </#list>
-  </#macro>
-
-  <#macro createSingleTree nodes parent name selected>
-    <#list nodes as node>
-      <#assign checked=selected?seq_contains(node.entry) />
-        <#assign displayName = propertyDefinition.vocabulary.valueFormatter.valueToString(node.entry, "localized", springMacroRequestContext.locale) />
-      var ${name}_${node_index}_node = new YAHOO.widget.TaskNode("${displayName}",${parent}, "${node.entry}", false<#if checked>, ${checked?string}</#if>);
-      <#if node.children?exists>
-	<@createSingleTree nodes=node.children parent=name+"_"+node_index+"_node" name=name + "_" + node_index selected=selected />     	         
-      </#if>	
-    </#list>
   </#macro>

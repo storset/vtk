@@ -43,9 +43,10 @@
                  <value>${yui.baseURL}/build/animation/animation.js</value>
                  <value>${yui.baseURL}/build/yahoo/yahoo.js</value>
                  <value>${yui.baseURL}/build/event/event.js</value>
-                 <value>${yui.baseURL}/build/treeview/treeview.js</value>
-
-                 <value>${jsBaseURL}/vocabulary.js</value>
+                 <!--value>${yui.baseURL}/build/treeview/treeview.js</value-->
+                 <value>${jsBaseURL}/treeview.js</value>
+                  
+                 <value>${jsBaseURL}/tasknode.js</value>
                </list>
             </entry>
             <entry key="cssURLs">

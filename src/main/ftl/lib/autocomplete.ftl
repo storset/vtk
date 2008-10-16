@@ -19,15 +19,11 @@
 -->
 <#macro addAutoCompleteScripts srcBase>
   <link type="text/css" rel="stylesheet" href="${srcBase}/build/autocomplete/assets/skins/sam/autocomplete.css">
-  <script type="text/javascript" src="${srcBase}/build/utilities/utilities.js"></script>
-  <script type="text/javascript" src="${srcBase}/build/autocomplete/autocomplete-min.js"></script>
-  
-  <#-- script type="text/javascript" src="${srcBase}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-  <script type="text/javascript" src="${srcBase}/build/get/get-min.js"></script>
-  <script type="text/javascript" src="${srcBase}/build/connection/connection-min.js"></script>
-  <script type="text/javascript" src="${srcBase}/build/animation/animation-min.js"></script>
-  <script type="text/javascript" src="${srcBase}/build/json/json-min.js"></script -->
-  
+
+<script type="text/javascript" src="${srcBase}/build/utilities/utilities.js"></script> 
+<script type="text/javascript" src="${srcBase}/build/datasource/datasource-min.js"></script> 
+<script type="text/javascript" src="${srcBase}/build/autocomplete/autocomplete-min.js"></script>
+
 </#macro>
 
 <#--
@@ -69,7 +65,8 @@
       </div>
       <script type="text/javascript">
       <!--
-        var dataSource = new YAHOO.widget.DS_ScriptNode("${appSrcBase}/?vrtx=admin&action=autocomplete&field=${fieldName}", ["${fieldName}", ${schemaString}]);
+        var dataSource = new YAHOO.util.ScriptNodeDataSource("${appSrcBase}/?vrtx=admin&action=autocomplete&field=${fieldName}");
+        dataSource._aDeprecatedSchema = ["${fieldName}", ${schemaString}];
         dataSource.scriptQueryParam = "${fieldName}"; 
         var autoComplete = new YAHOO.widget.AutoComplete("resource.${fieldName}", "${fieldName}.autoCompleteContainer", dataSource);
         autoComplete.delimChar = [","];

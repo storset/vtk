@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store.db;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -1141,9 +1142,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     private void setBinaryContent(Property prop, String resourceUri) {
         try {
         	InputStream in = prop.getBinaryStream();
-        	byte[] byteArray = new byte[in.available()];
-			in.read(byteArray);
-			prop.setBinaryValue(byteArray, resourceUri);
+        	ByteArrayOutputStream out = new ByteArrayOutputStream();
+			int i;
+			while ((i = in.read()) != -1) {
+				out.write(i);
+			}
+			prop.setBinaryValue(out.toByteArray(), resourceUri);
 		} catch (Exception e) {
 			logger.error("Colud not read binary stream for property " + prop.getDefinition().getName(), e);
 		}

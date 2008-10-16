@@ -13,7 +13,7 @@ $(document).ready(function()
 			for (var i = 0, j = iFrames.length; i < j; i++)
 			{
 				// Set inline style to equal the body height of the iframed content.
-				iFrames[i].style.height = (iFrames[i].contentWindow.document.body.offsetHeight + 20) + 'px';
+				iFrames[i].style.height = (iFrames[i].contentWindow.document.body.offsetHeight + 35) + 'px';
 			}
 		}
 
@@ -41,7 +41,7 @@ $(document).ready(function()
 			$('iframe').load(function()
 				{
 					// Set inline style to equal the body height of the iframed content.
-					this.style.height = (this.contentWindow.document.body.offsetHeight + 20) + 'px';
+					this.style.height = (this.contentWindow.document.body.offsetHeight + 35) + 'px';
 				}
 			);
 		}

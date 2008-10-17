@@ -40,6 +40,8 @@ public class TagsTest extends BaseWebTest {
         assertLinkPresentWithText("title k1");
         assertLinkPresentWithText("title k1k2");
         assertLinkPresentWithText("title k1-in-subfolder");
+        // TODO We should not show unpublished articles
+        assertLinkPresentWithText("title unpublished article");
 
     }
 
@@ -73,4 +75,20 @@ public class TagsTest extends BaseWebTest {
         assertTextNotPresent("No resources tagged with tagstest-k2.");
     }
 
+
+    public void testTagK1InSubfolderNoScope() {
+        clickLink("k1-subfolder-no-scope");
+        assertElementPresent("vrtx-tagview");
+        assertLinkPresentWithText("title k1");
+        assertLinkPresentWithText("title k1k2");
+        assertLinkPresentWithText("title k1-in-subfolder");
+    }
+
+
+    public void testArticleIntroductionImagePresent() {
+        clickLink("k1");
+        assertImagePresent("/automatedtestresources/tagstest/article/omuios1.gif",
+                "IMG for 'title unpublished article'");
+
+    }
 }

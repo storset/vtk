@@ -1,47 +1,149 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
 
   <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-1"/>
-    <property name="parent" ref="collectionListing.viewService"/>
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="0" />
     <property name="assertions">
       <list>
         <ref bean="tags.tagsParameterAssertion" />
       </list>
     </property>
-    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}"/>
-    <property name="handler" ref="tags.tagsHandler" />
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="tags.handler" />
   </bean>
   
+<!-- 
+  <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceInCollection" />
+        <ref bean="feedParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="collectionListing.atomHandler" />
+  </bean>
+  
+-->
+  <bean id="tags.handler" 
+        class="org.vortikal.web.controller.TagsController"
+        parent="requestLocalRepositoryAware">
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="viewName" value="tags.tagsview" />
+    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
+    <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
+    <property name="searchComponents">
+      <list>
+        <ref bean="tags.searchComponent" />
+      </list>
+    </property>
+    <property name="alternativeRepresentations">
+      <map>
+        <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
+      </map>
+    </property>
+  </bean>
+
+  <!-- 
+  <bean id="collectionListing.atomHandler" 
+    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    parent="requestLocalRepositoryAware">
+    <property name="viewService" ref="viewService" />
+    <property name="abdera" ref="abdera" />
+    <property name="searchComponent" ref="collectionListing.searchComponent" />
+  </bean>
+  -->
+
+
+  <bean id="tags.searchComponent"
+        class="org.vortikal.web.controller.search.SearchComponent">
+    <property name="name" value="tags.searchComponent" />
+    <property name="viewService" ref="webService" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="defaultRecursive" value="false" />
+    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+    <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="query">
+      <value>uri = %1 AND content:keywords = %2</value>
+    </property>
+    <property name="queryParser" ref="searchParser" />
+    <property name="defaultSortPropDef" ref="lastModifiedPropDef" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortPropertyMapping">
+      <map>
+        <entry key="lastModified" value-ref="lastModifiedPropDef" />
+      </map>
+    </property>
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="lastModifiedPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
+        </bean>
+        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+    <property name="publishedDatePropDef" ref="creationTimePropDef" />
+    <property name="authorPropDef" ref="createdByPropDef" />
+  </bean>
+
+
+  <bean id="tags.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="tags.tagsview"  value-ref="tags.tagsview" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="tags.tagsview" parent="freemarkerView">
+  <!-- 
+    <property name="url" value="pages/view-tags-collectionlisting.ftl" />
+     -->
+    <property name="url" value="pages/tags.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <!--ref bean="collectionListingFeedURLProvider" /-->
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/tags.css</value>
+          </list>
+        </entry>
+        <entry key="searchComponents">
+          <list>
+            <ref bean="tags.searchComponent" />
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
   <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">
     <property name="parameterValue" value="tags" />
   </bean>
-
-  <bean name="tags.tagsHandler"
-        class="org.vortikal.web.controller.TagsController"
-        parent="requestLocalRepositoryAware">
-    <property name="viewName" value="tags.tags" />
-    <property name="searcher" ref="systemIndexSearcher" />
-    <property name="propDef" ref="keywordsPropDef" />
-  </bean>
-
-  <bean id="tags.viewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
-    <property name="views">
-      <map>
-        <entry key="tags.tags"  value-ref="tags.tagsView" />
-      </map>
-    </property>
-    <property name="viewWrapper" ref="decoratingViewWrapper" />
-  </bean>
-
-  <bean id="tags.tagsView" parent="freemarkerView">
-    <property name="url" value="pages/tags.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs"><list><value>${themeBaseURL}/tags.css</value></list></entry>
-      </map>
-    </property>
-  </bean>
+  
 </beans>

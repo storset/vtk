@@ -37,6 +37,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapper;
 import org.vortikal.edit.editor.ResourceWrapperManager;
@@ -87,15 +89,28 @@ public class SearchComponent {
 
     private List<PropertyDisplayConfig> listableProperties;
 
+    protected final Log logger = LogFactory.getLog(this.getClass());
 
-    public Listing execute(HttpServletRequest request, Resource collection, 
-                           int page, int pageLimit, int baseOffset) throws Exception {
 
-        boolean recursive = this.defaultRecursive;
+    public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
+            throws Exception {
+        return execute(request, collection, page, pageLimit, baseOffset, null, null);
+    }
+
+
+    public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset,
+            String[] queryParameters, Boolean pRecursive) throws Exception {
+
+        boolean recursive;
+        if (pRecursive != null) {
+            recursive = pRecursive;
+        } else {
+            recursive = this.defaultRecursive;
+        }
         if (collection.getProperty(this.recursivePropDef) != null) {
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
         }
-        
+
         PropertyTypeDefinition sortProp = this.defaultSortPropDef;
         SortFieldDirection sortFieldDirection = this.defaultSortOrder;
 
@@ -110,8 +125,14 @@ public class SearchComponent {
         }
 
         Search search = new Search();
-        Query query = this.queryParser.parse(this.query);
 
+        String queryWithParameters = this.query;
+        if (queryParameters != null) {
+            for (int i = 0; i < queryParameters.length; i++) {
+                queryWithParameters = queryWithParameters.replace("%" + (i + 1), queryParameters[i]);
+            }
+        }
+        Query query = this.queryParser.parse(queryWithParameters);
         AndQuery andQuery = new AndQuery();
         andQuery.add(query);
         if (!recursive) {
@@ -119,7 +140,7 @@ public class SearchComponent {
         }
 
         int offset = baseOffset + (pageLimit * (page - 1));
-        
+
         search.setQuery(andQuery);
         search.setLimit(pageLimit + 1);
         search.setCursor(offset);
@@ -146,7 +167,6 @@ public class SearchComponent {
             urls.put(res.getURI().toString(), url);
         }
 
-
         List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
         for (PropertyDisplayConfig config : this.listableProperties) {
             Property hide = null;
@@ -166,15 +186,16 @@ public class SearchComponent {
         }
 
         ResourceWrapper resourceWrapper = this.resourceManager.createResourceWrapper(collection.getURI());
- 
+
         Listing listing = new Listing(resourceWrapper, title, name, offset);
         listing.setMore(more);
         listing.setFiles(files);
         listing.setUrls(urls);
         listing.setDisplayPropDefs(displayPropDefs);
-        
+
         return listing;
     }
+
 
     @Required
     public void setName(String name) {
@@ -290,7 +311,6 @@ public class SearchComponent {
         return this.authorDatePropDef;
     }
 
-
     public class Listing {
         private ResourceWrapper resource;
         private String title;
@@ -301,6 +321,7 @@ public class SearchComponent {
         private Map<String, URL> urls = new HashMap<String, URL>();
         private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
 
+
         public Listing(ResourceWrapper resource, String title, String name, int offset) {
             this.resource = resource;
             this.title = title;
@@ -308,58 +329,73 @@ public class SearchComponent {
             this.offset = offset;
         }
 
+
         public ResourceWrapper getResource() {
             return resource;
         }
+
 
         public String getTitle() {
             return title;
         }
 
+
         public String getName() {
             return name;
         }
-        
+
+
         public int getOffset() {
             return this.offset;
         }
+
 
         public void setFiles(List<PropertySet> files) {
             this.files = files;
         }
 
+
         public List<PropertySet> getFiles() {
             return files;
         }
-        
+
+
         public int size() {
             return this.files.size();
         }
+
 
         public void setUrls(Map<String, URL> urls) {
             this.urls = urls;
         }
 
+
         public Map<String, URL> getUrls() {
             return urls;
         }
+
 
         public void setDisplayPropDefs(List<PropertyTypeDefinition> displayPropDefs) {
             this.displayPropDefs = displayPropDefs;
         }
 
+
         public List<PropertyTypeDefinition> getDisplayPropDefs() {
             return displayPropDefs;
         }
+
 
         public void setMore(boolean more) {
             this.more = more;
         }
 
+
         public boolean hasMoreResults() {
             return more;
         }
-        
+
+
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
             sb.append(": title: " + this.title);

@@ -174,7 +174,7 @@
         ${title?html}</a>
 
         <div id="${r.name}-time-and-place" class="time-and-place"> 
-          <@viewutils.displayTimeAndPlace r />
+          <@viewutils.displayTimeAndPlace r title/>
         </div>
 
         <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>

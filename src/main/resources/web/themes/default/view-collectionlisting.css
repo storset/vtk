@@ -144,6 +144,12 @@ abbr {
 	border-bottom: 0 !important;
 }
 
+span.time-and-place {
+	background: url(cal.gif) no-repeat;
+	background-position: 0 50%;
+        padding-left: 20px;
+}
+
 /* END vrtx-resource (standard, article, events) */
 	/* next / previous links */
 a.vrtx-next,a.vrtx-previous {
@@ -172,12 +178,3 @@ div.vrtx-feed-link a {
 	clear: both;
 }
 
-/* iCal */
-span.ical {
-	background: url(ical.gif) no-repeat;
-	font-size: .9em;
-}
-
-span.ical a {
-	padding-left: 20px;
-}

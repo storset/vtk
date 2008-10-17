@@ -101,10 +101,8 @@
 
     <#if start != "" || end != "" || location != "">
       <div class="vevent">
-        <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />: </span>
-        <span class="summary" style="display:none;">${title}</span>
-        <#t /><@viewutils.displayTimeAndPlace resource />
-     </div>
+        <#t /><@viewutils.displayTimeAndPlace resource title/>
+      </div> 
     </#if>
 
     <div class="vrtx-bodytext">

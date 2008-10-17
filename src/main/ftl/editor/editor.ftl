@@ -411,9 +411,11 @@
                      }
              } //-->
         </script>
+        <div id="input-and-button-container">
         <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" /> 
         <script language="Javascript" type="text/javascript"><!--
         document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
+        document.write('</div>');
         document.write('<div id="resource.${name}.preview">');
           <#if value != ''>
             document.write('<img src="${value}"  alt="preview">');
@@ -421,8 +423,8 @@
             document.write('<img src=""  alt="no-image" style="visibility: hidden">');
           </#if>
           
-          
-        document.write('</div>');
+        document.write('</div>');  
+        
         // -->
         </script>
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>

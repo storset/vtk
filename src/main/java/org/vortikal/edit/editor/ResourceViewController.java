@@ -30,6 +30,7 @@
  */
 package org.vortikal.edit.editor;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ public class ResourceViewController implements Controller {
             HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", this.resourceManager.createResourceWrapper());
+        model.put("currentDate", Calendar.getInstance().getTime());
         return new ModelAndView(this.viewName, model);
     }
 

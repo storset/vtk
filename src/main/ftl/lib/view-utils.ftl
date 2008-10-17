@@ -96,15 +96,37 @@
         <#t /> - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#rt />
       </#if>
     <#else>
-      <#t /> - <abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
+      <#if start == "">
+        (<@vrtx.msg code="event.ends" />) 
+      <#else>
+        - 
+      </#if>
+      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
     </#if>
   </#if>
   <#t /><#if location != "">, <span class="location">${location}.</span></#if>
-  <#if start != "">
+  
+  <#local isValidStartDate = validateStartDate(resource, currentDate) />
+  <#if isValidStartDate?string == "true">
     <span class="ical">
       <a href='${resource.URI}?ical'><@vrtx.msg code="event.add-to-calendar" /></a>
     </span>
   </#if>
 
 </#macro>
+
+<#--
+ * Check the start date of an event to see if it's greater than the current date
+ * Check if the event is "upcoming" and has a valid start date
+ * 
+ * @param event The resource to evaluate start date for
+ * @param currentDate The date to compare the events start date to
+-->
+<#function validateStartDate event currentDate>
+  <#local startDate = event.getPropertyByPrefix("", "start-date")?default("") />
+  <#if startDate != "">
+    <#return startDate.getDateValue()?datetime &gt; currentDate?datetime />
+  </#if>
+  <#return "false"/>
+</#function>
 

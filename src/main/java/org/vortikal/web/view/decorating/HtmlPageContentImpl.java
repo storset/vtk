@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,18 +30,24 @@
  */
 package org.vortikal.web.view.decorating;
 
-public class ContentImpl implements PageContent {
+import org.vortikal.text.html.HtmlPage;
 
-    private String content;
+public class HtmlPageContentImpl implements HtmlPageContent {
     private String originalCharacterEncoding;
+    private HtmlPage content;
     
-    public ContentImpl(String content, String originalCharacterEncoding) {
-        this.content = content;
+    
+    public HtmlPageContentImpl(String originalCharacterEncoding, HtmlPage content) {
         this.originalCharacterEncoding = originalCharacterEncoding;
+        this.content = content;
+    }
+
+    public HtmlPage getHtmlContent() {
+        return this.content;
     }
 
     public String getContent() {
-        return this.content;
+        return this.content.getStringRepresentation();
     }
 
     public String getOriginalCharacterEncoding() {

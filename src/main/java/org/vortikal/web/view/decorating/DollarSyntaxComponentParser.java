@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2007, 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,20 +32,18 @@ package org.vortikal.web.view.decorating;
 
 import java.io.BufferedReader;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-public class DefaultTemplateParser implements TemplateParser {
+public class DollarSyntaxComponentParser implements TextualComponentParser {
 
-    private static Log logger = LogFactory.getLog(DefaultTemplateParser.class);
+    private static Log logger = LogFactory.getLog(DollarSyntaxComponentParser.class);
 
     private ComponentResolver componentResolver;
     
@@ -53,7 +51,7 @@ public class DefaultTemplateParser implements TemplateParser {
         this.componentResolver = componentResolver;
     }
     
-    public ComponentInvocation[] parseTemplate(Reader reader) throws Exception {
+    public ComponentInvocation[] parse(Reader reader) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(reader);
         
         StringBuilder sb = new StringBuilder();
@@ -315,61 +313,17 @@ public class DefaultTemplateParser implements TemplateParser {
             logger.debug("Static text: '" + s + "'");
         }
         if (fragmentList.size() > 0) {
-            ComponentInvocation inv = (ComponentInvocation)
-                fragmentList.get(fragmentList.size() - 1);
+            ComponentInvocation inv = fragmentList.get(fragmentList.size() - 1);
             DecoratorComponent c = inv.getComponent();
-            if (c instanceof StaticComponent) {
-                StaticComponent staticComponent = (StaticComponent) c;
-                staticComponent.getBuffer().append(s);
+            if (c instanceof StaticTextComponent) {
+                // Append to existing static text at end:
+                ((StaticTextComponent) c).getBuffer().append(s);
                 return;
             }
         }
-        StaticComponent c = new StaticComponent();
-        c.setContent(new StringBuilder(s));
+        StaticTextComponent c = new StaticTextComponent(new StringBuilder(s));
         fragmentList.add(new ComponentInvocationImpl(c, new HashMap<String, Object>()));
     }
-    
-    private class StaticComponent implements DecoratorComponent {
-    
-        private StringBuilder content;
-    
-        public void setContent(StringBuilder content) {
-            this.content = content;
-        }
 
-        public void render(DecoratorRequest request, DecoratorResponse response)
-            throws Exception {
-            
-            Writer out = response.getWriter();
-            out.write(this.content.toString());
-            out.close();
-        }
-    
-    
-        public String getNamespace() {
-            return null;
-        }
-    
-        public String getName() {
-            return "StaticText";
-        }
-    
-        public String getDescription() {
-            return "";
-        }
-
-        public Map<String, String> getParameterDescriptions() {
-            return new HashMap<String, String>();
-        }
-
-        public String toString() {
-            return getName();
-        }
-    
-        public StringBuilder getBuffer() {
-            return this.content;
-        }
-        
-    }
     
 }

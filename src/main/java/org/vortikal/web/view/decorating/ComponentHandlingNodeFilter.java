@@ -37,21 +37,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
-import org.vortikal.web.RequestContext;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlText;
+import org.vortikal.web.RequestContext;
 
 
 public class ComponentHandlingNodeFilter implements HtmlNodeFilter, InitializingBean {
@@ -68,7 +67,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     private Map<String, DecoratorComponent> ssiDirectiveComponentMap;
     private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
-    private TemplateParser contentComponentParser;
+    private TextualComponentParser contentComponentParser;
     private boolean parseAttributes = false;
     
 
@@ -84,7 +83,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
     }
     
-    public void setContentComponentParser(TemplateParser contentComponentParser) {
+    public void setContentComponentParser(TextualComponentParser contentComponentParser) {
         this.contentComponentParser = contentComponentParser;
     }
     
@@ -123,7 +122,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                     if (attribute.hasValue()) {
                         try {
                             ComponentInvocation[] parsedValue =
-                                this.contentComponentParser.parseTemplate(
+                                this.contentComponentParser.parse(
                                     new java.io.StringReader(value));
                             value = invokeComponentsAsString(parsedValue);
                         } catch (Exception e) {
@@ -145,7 +144,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             String content = ((HtmlText) node).getContent();
             try {
                 ComponentInvocation[] parsedContent =
-                    this.contentComponentParser.parseTemplate(new java.io.StringReader(content));
+                    this.contentComponentParser.parse(new java.io.StringReader(content));
                 HtmlContent filteredNode = invokeComponentsAsContent(parsedContent);
                 return filteredNode;
             } catch (Exception e) {
@@ -195,6 +194,12 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             public DecoratorComponent getComponent() {
                 return component;
             }
+            public String toString() {
+                StringBuilder sb = new StringBuilder(this.getClass().getName());
+                sb.append("; component=").append(component);
+                sb.append("; params=").append(invocationParams);
+                return sb.toString();
+            }
         };
     }
     
@@ -235,7 +240,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                 boolean render = true;
                 if (component.getNamespace() != null) {
                 	if (!this.availableComponentNamespaces.contains(component.getNamespace()) 
-                			&& !this.availableComponentNamespaces.contains("*")) {
+                	        && !this.availableComponentNamespaces.contains("*")) {
                 		result = "Invalid component reference: " + component.getNamespace()
                 		+ ":" + component.getName();
                 		render = false;
@@ -253,7 +258,8 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                 }
                 
             } catch (Throwable t) {
-                logger.warn("Error invoking component: " + invocation, t);
+                logger.warn("Error invoking component on page " + 
+                        servletRequest.getRequestURI() + ": " + invocation, t);
                 String msg = t.getMessage();
                 if (msg == null) {
                     msg = t.getClass().getName();

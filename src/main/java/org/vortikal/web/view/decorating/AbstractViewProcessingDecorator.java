@@ -95,11 +95,11 @@ public abstract class AbstractViewProcessingDecorator
      * @exception Exception if an error occurs
      */
     @SuppressWarnings("unchecked")
-    public final void decorate(Map model, HttpServletRequest request,
-            HttpServletResponse response, Content content) throws Exception {
+    public final PageContent decorate(Map model, HttpServletRequest request,
+                                  PageContent content) throws Exception {
 
         String viewContent = renderView(model, request);
-        processInternal(content, viewContent);
+        return processInternal(content, viewContent);
     }
     
     
@@ -116,7 +116,7 @@ public abstract class AbstractViewProcessingDecorator
      * @return the merged content from the two views
      * @exception Exception if an error occurs
      */
-    protected abstract void processInternal(Content content, String viewContent) 
+    protected abstract PageContent processInternal(PageContent content, String viewContent) 
         throws Exception;
     
 

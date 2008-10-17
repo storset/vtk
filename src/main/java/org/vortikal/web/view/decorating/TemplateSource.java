@@ -30,13 +30,15 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.Reader;
+import java.io.InputStream;
 
 public interface TemplateSource {
 
     public long getLastModified() throws Exception;
 
-    public Reader getTemplateReader() throws Exception;
+    public String getCharacterEncoding();
+    
+    public InputStream getInputStream() throws Exception;
     
 }
 

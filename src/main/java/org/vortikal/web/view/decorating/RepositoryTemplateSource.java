@@ -30,8 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -40,46 +39,33 @@ import org.vortikal.repository.Resource;
 
 public class RepositoryTemplateSource implements TemplateSource {
 
-    private Path uri;
     private Repository repository;
     private String token;
-    
-    public RepositoryTemplateSource() {
-    }
-    
-    public RepositoryTemplateSource(Path uri, Repository repository, String token) {
-        this.uri = uri;
+    private Resource resource;
+
+    public RepositoryTemplateSource(Path uri, Repository repository, String token) throws Exception {
         this.repository = repository;
         this.token = token;
+        this.resource = repository.retrieve(token, uri, true);
     }
 
-    public void setUri(Path uri) {
-        this.uri = uri;
-    }
-    
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-    
     public long getLastModified() throws Exception {
-        Resource resource = this.repository.retrieve(this.token, this.uri, true);
-        return resource.getLastModified().getTime();
+        return this.resource.getLastModified().getTime();
     }
-    
-    public Reader getTemplateReader() throws Exception {
-        Resource resource = this.repository.retrieve(this.token, this.uri, true);
-        String encoding = resource.getCharacterEncoding();
 
-        return new InputStreamReader(
-            this.repository.getInputStream(this.token, this.uri, true),
-            encoding);
+    public String getCharacterEncoding() {
+        return this.resource.getCharacterEncoding();
     }
-    
+
+    public InputStream getInputStream() throws Exception {
+        return this.repository.getInputStream(this.token, this.resource.getURI(), true);
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(":").append(this.resource);
+        return sb.toString();
+    }
 
 }
 

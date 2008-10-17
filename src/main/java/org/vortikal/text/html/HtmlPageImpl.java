@@ -33,6 +33,7 @@ package org.vortikal.text.html;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.vortikal.text.html.HtmlPageFilter.NodeResult;
 
@@ -41,16 +42,27 @@ import org.vortikal.text.html.HtmlPageFilter.NodeResult;
 public class HtmlPageImpl implements HtmlPage {
 
     private String doctype;
+    private String characterEncoding;
     private HtmlElement root;
     private boolean xhtml;
+    private final Set<String> emptyTags;
     
-    public HtmlPageImpl(HtmlElement root, String doctype, boolean xhtml) {
+    public HtmlPageImpl(HtmlElement root, String doctype, 
+            String characterEncoding, boolean xhtml, Set<String> emptyTags) {
         if (root == null) {
             throw new IllegalArgumentException("Root element cannot be NULL");
         }
-        
+        if (doctype == null) {
+            throw new IllegalArgumentException("Doctype cannot be NULL");
+        }
+        if (characterEncoding == null) {
+            throw new IllegalArgumentException("Character encoding cannot be NULL");
+        }
         this.root = root;
         this.doctype = doctype;
+        this.characterEncoding = characterEncoding.toLowerCase();
+        this.xhtml = xhtml;
+        this.emptyTags = emptyTags;
     }
 
     public HtmlElement getRootElement() {
@@ -60,7 +72,21 @@ public class HtmlPageImpl implements HtmlPage {
     public String getDoctype() {
         return this.doctype;
     }
+    
+    public String getCharacterEncoding() {
+        return this.characterEncoding;
+    }
 
+    public boolean isFrameset() {
+        if (this.root != null) {
+            HtmlElement[] children = this.root.getChildElements("frameset");
+            if (children != null && children.length > 0) {
+                return true;
+            }
+        } 
+        return false;
+    }
+    
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE ").append(this.doctype).append(">\n");
@@ -111,14 +137,29 @@ public class HtmlPageImpl implements HtmlPage {
     }
 
     public HtmlElement createElement(String name) {
-        return new HtmlElementImpl(name, this.xhtml, false);
+        if (name == null || "".equals(name.trim())) {
+            throw new IllegalArgumentException("Illegal element name: " + name);
+        }
+        return new HtmlElementImpl(name, this.xhtml, 
+                this.emptyTags.contains(name));
     }
 
     public HtmlText createTextNode(String content) {
         return new HtmlTextImpl(content);
     }
+
     public HtmlComment createComment(String comment) {
         return new HtmlCommentImpl(createTextNode(comment));
+    }
+    
+    public HtmlAttribute createAttribute(String name, String value) {
+        if (name == null || "".equals(name.trim())) {
+            throw new IllegalArgumentException("Illegal attribute name: " + name);
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Illegal attribute value: NULL");
+        }
+        return new HtmlAttributeImpl(name, value);
     }
 }
 

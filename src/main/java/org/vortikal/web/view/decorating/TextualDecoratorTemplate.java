@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
 
@@ -40,21 +42,21 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.text.html.HtmlPage;
 
 
-public class StandardDecoratorTemplate implements Template {
+public class TextualDecoratorTemplate implements Template {
 
     private static final String DEFAULT_DOCTYPE =
         "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
 
-    private static Log logger = LogFactory.getLog(StandardDecoratorTemplate.class);
+    private static Log logger = LogFactory.getLog(TextualDecoratorTemplate.class);
 
-    private TemplateParser parser;
+    private TextualComponentParser parser;
     private ComponentInvocation[] fragments;
     private TemplateSource templateSource;
     private long lastModified = -1;
     
 
-    public StandardDecoratorTemplate(TemplateParser parser,
-                                     TemplateSource templateSource) throws Exception {
+    public TextualDecoratorTemplate(TextualComponentParser parser,
+                                     TemplateSource templateSource) throws InvalidTemplateException {
         if (parser == null) {
             throw new IllegalArgumentException("Argument 'parser' is NULL");
         }
@@ -63,12 +65,19 @@ public class StandardDecoratorTemplate implements Template {
         }
         this.parser = parser;
         this.templateSource = templateSource;
-        compile();
+        try {
+            compile();
+        } catch (Exception e) {
+            throw new InvalidTemplateException("Unable to compile template " 
+                    + templateSource, e);
+        }
     }
 
-    public String render(HtmlPage html, HttpServletRequest request,
+    public PageContent render(HtmlPageContent content, HttpServletRequest request,
                        Map<Object, Object> model) throws Exception {
 
+        HtmlPage html = content.getHtmlContent();
+        
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
@@ -103,11 +112,10 @@ public class StandardDecoratorTemplate implements Template {
                 sb.append(": ").append(msg);
             }
         }
-
-        return sb.toString();
+        return new ContentImpl(sb.toString(), 
+                content.getOriginalCharacterEncoding());
     }
     
-
     private String renderComponent(DecoratorComponent c, DecoratorRequest request)
         throws Exception {
         
@@ -130,9 +138,11 @@ public class StandardDecoratorTemplate implements Template {
             return;
         }
         
-        this.fragments = this.parser.parseTemplate(
-            this.templateSource.getTemplateReader());
+        Reader reader = new InputStreamReader(
+                this.templateSource.getInputStream(), 
+                this.templateSource.getCharacterEncoding());
 
+        this.fragments = this.parser.parse(reader);
         this.lastModified = templateSource.getLastModified();
     }
     

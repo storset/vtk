@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
@@ -79,7 +78,7 @@ public class TemplateDecorator implements Decorator {
     }
     
     @SuppressWarnings("unchecked")
-    public void decorate(Map model, HttpServletRequest request, HttpServletResponse response, Content content)
+    public PageContent decorate(Map model, HttpServletRequest request, PageContent content)
         throws Exception, UnsupportedEncodingException, IOException {
 
         DecorationDescriptor descriptor = (DecorationDescriptor) request.getAttribute(DECORATION_DESCRIPTOR_REQ_ATTR);
@@ -87,65 +86,45 @@ public class TemplateDecorator implements Decorator {
             logger.debug("Resolved decorator descriptor for request " 
                     + request + ": " + descriptor);
         }
+        if (descriptor != null) {
+            request.removeAttribute(DECORATION_DESCRIPTOR_REQ_ATTR);
+        }
         if (descriptor == null || !descriptor.decorate()) {
-            return;
+            return content;
         }
 
         boolean filter = descriptor.parse();
-        HtmlPage html = parseHtml(content, filter);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Parsed document [root element: " + html.getRootElement() + " "
-                         + ", doctype: "+ html.getDoctype() + "]");
-        }
+        HtmlPageContent htmlContent = parseHtml(content, filter);
 
-        Template template = descriptor.getTemplate();
-        if (template == null) {
-            replaceContentFromPage(content, html, descriptor.tidy());
-            return;
-        }
-
-        if (isFrameset(html)) {
-            // Framesets are not decorated:
-            replaceContentFromPage(content, html, false);
-            return;
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Rendering request for " + request.getRequestURI()
-                         + " using template '" + template + "'");
-        }
-
-        content.setContent(template.render(html, request, model));
-        if (descriptor.tidy()) {
-            tidyContent(content);
-        }
-    }
-
-    protected boolean isFrameset(HtmlPage page) {
-        HtmlElement rootElement = page.getRootElement();
-        if (rootElement != null) {
-            HtmlElement[] children = rootElement.getChildElements("frameset");
-            if (children != null && children.length > 0) {
-                return true;
+        List<Template> templates = descriptor.getTemplates();
+        if (templates.isEmpty()) {
+            if (descriptor.tidy()) {
+                return tidyContent(htmlContent);
             }
-        } 
-        return false;
-    }
-    
-
-    protected void replaceContentFromPage(Content content, HtmlPage page,
-                                          boolean tidy) throws Exception {
-        if (page.getRootElement() == null) {
-            return;
         }
-        content.setContent(page.getStringRepresentation());
-        if (tidy) {
-            tidyContent(content);
-        }
-    }
-    
 
-    protected void tidyContent(Content content) throws Exception {
+        if (htmlContent.getHtmlContent().isFrameset()) {
+            // Framesets are not decorated:
+            return content;
+        }
+
+        for (Template template: templates) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rendering request for " + request.getRequestURI()
+                        + " using template '" + template + "'");
+            }
+            htmlContent = parseHtml(htmlContent, filter);
+            content = template.render(htmlContent, request, model);
+            
+            if (descriptor.tidy()) {
+                content = tidyContent(content);
+            }
+        }
+        return content;
+    }
+
+
+    protected PageContent tidyContent(PageContent content) throws Exception {
         java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(
             content.getContent().getBytes("utf-8"));
 
@@ -162,7 +141,9 @@ public class TemplateDecorator implements Decorator {
         java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
         tidy.pprint(document, outputStream);
             
-        content.setContent(new String(outputStream.toByteArray(), "utf-8"));
+        content = new ContentImpl(new String(outputStream.toByteArray(), "utf-8"),
+                content.getOriginalCharacterEncoding());
+        return content;
     }
     
     protected DecorationDescriptor resolveDecorationDescriptor(
@@ -171,12 +152,19 @@ public class TemplateDecorator implements Decorator {
     }
     
 
-    protected HtmlPage parseHtml(Content content, boolean filter) throws Exception {
+    protected HtmlPageContent parseHtml(PageContent content, boolean filter) throws Exception {
+        if (content instanceof HtmlPageContent) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("HTML content already parsed");
+            }
+            return (HtmlPageContent) content;
+        }
+        
         long before = System.currentTimeMillis();
         String encoding = content.getOriginalCharacterEncoding();
         String source = content.getContent();
 
-        // Best-effort attempt to parse empty and "markup-less"
+        // Best-effort attempt to parse empty and "non-markup"
         // documents:
         if (source == null || "".equals(source.trim())) {
             source = EMPTY_DOCUMENT;
@@ -198,7 +186,8 @@ public class TemplateDecorator implements Decorator {
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing document took " + duration + " ms");
         }
-        return html;
+        System.out.println("__Parsing document took " + duration + " ms");
+        return new HtmlPageContentImpl(content.getOriginalCharacterEncoding(), html);
     }
     
 

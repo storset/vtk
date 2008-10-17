@@ -44,12 +44,18 @@ public interface HtmlElement extends EnclosingHtmlContent {
      */
     public HtmlAttribute[] getAttributes();
 
-
+    
     /**
      * Sets the attributes of this element.
      */
     public void setAttributes(HtmlAttribute[] attributes);
     
+
+    /**
+     * Gets a named attribute of this element.
+     */
+    public HtmlAttribute getAttribute(String name);
+
 
     /**
      * Gets the child elements of this element.

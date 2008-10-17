@@ -32,8 +32,6 @@ package org.vortikal.web.view.decorating;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
 
 import org.springframework.core.io.ClassPathResource;
@@ -51,15 +49,6 @@ public class URLTemplateSource implements TemplateSource {
         this.characterEncoding = characterEncoding;
     }
 
-    
-    public void setUrl(String url) {
-        this.url = url;
-    }
-    
-    public void setCharacterEncoding(String characterEncoding) {
-        this.characterEncoding = characterEncoding;
-    }
-
     public long getLastModified() throws Exception {
         if (this.url.startsWith("file://")) {
             URL fileURL = new URL(this.url);
@@ -69,12 +58,14 @@ public class URLTemplateSource implements TemplateSource {
         return -1;
     }
     
-    public Reader getTemplateReader() throws Exception {
+    public String getCharacterEncoding() {
         String encoding = (this.characterEncoding != null) ?
-            this.characterEncoding : System.getProperty("file.encoding");
-
+                this.characterEncoding : System.getProperty("file.encoding");
+        return encoding;
+    }
+    
+    public InputStream getInputStream() throws Exception {
         InputStream is = null;
-        
         if (this.url.startsWith("classpath://")) {
             String actualPath = url.substring("classpath://".length());
             Resource resource = new ClassPathResource(actualPath);
@@ -82,7 +73,7 @@ public class URLTemplateSource implements TemplateSource {
         } else {
             is = new URL(this.url).openStream();
         }
-        return new InputStreamReader(is, encoding);
+        return is;
     }
     
     public String toString() {

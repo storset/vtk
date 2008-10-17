@@ -67,6 +67,8 @@
         <value>kbd</value>
         <value>var</value>
         <value>iframe</value>
+
+	<value>v:component</value>
       </set>
     </property>
   </bean>
@@ -85,27 +87,12 @@
         <value>col</value>
         <value>base</value>
         <value>meta</value>
+
+	<value>v:parameter</value>
       </set>
     </property>
   </bean>
 
-
-  <!--
-  <bean id="decorating.nodeLabelFilter"
-        class="org.vortikal.web.view.decorating.NodeLabellingFilter">
-    <property name="labelElements">
-      <set>
-        <value>h2</value>
-        <value>h3</value>
-        <value>h4</value>
-        <value>h5</value>
-        <value>h6</value>
-        <value>h7</value>
-        <value>h8</value>
-      </set>
-    </property>
-  </bean>
-  -->
 
   <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
     <property name="ssiDirectiveComponentMap">
@@ -120,7 +107,7 @@
         <ref bean="decorating.resourceNamespace" />
       </set>
     </property>
-    <property name="contentComponentParser" ref="decorating.defaultTemplateParser" />
+    <property name="contentComponentParser" ref="decorating.dollarSyntaxTemplateParser" />
     <property name="parseAttributes" value="true" />
   </bean>
 
@@ -132,7 +119,6 @@
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
   </bean>
 
-  
   <bean id="decorating.configurationPropertiesFile"
         class="org.vortikal.util.repository.PropertiesResource">
     <property name="repository" ref="repository" />
@@ -148,11 +134,10 @@
     <property name="method" value="load" />
   </bean>
 
-
   <bean id="decorating.templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
     <property name="repository" ref="repository" />
     <property name="collectionName" value="${decorating.templatesCollection}" />
-    <property name="templateParser" ref="decorating.defaultTemplateParser" />
+    <property name="templateFactory" ref="decorating.defaultTemplateFactory" />
     <property name="templateResourceType" ref="htmlResourceTypeDefinition" />
   </bean>
 
@@ -165,7 +150,29 @@
   </bean>
 
 
-  <bean id="decorating.defaultTemplateParser" class="org.vortikal.web.view.decorating.DefaultTemplateParser">
+  <bean id="decorating.defaultTemplateFactory"
+            class="org.vortikal.web.view.decorating.FallbackTemplateFactory">
+    <property name="templateFactories">
+      <list>
+	<ref bean="decorating.htmlParserTemplateFactory" />
+	<ref bean="decorating.dollarSyntaxTemplateFactory" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.htmlParserTemplateFactory"
+            class="org.vortikal.web.view.decorating.ParsedHtmlDecoratorTemplateFactory">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
+  </bean>
+  
+  <bean id="decorating.dollarSyntaxTemplateFactory"
+            class="org.vortikal.web.view.decorating.TextualDecoratorTemplateFactory">
+    <property name="parser" ref="decorating.dollarSyntaxTemplateParser" />
+  </bean>
+
+  <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.view.decorating.DollarSyntaxComponentParser">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 

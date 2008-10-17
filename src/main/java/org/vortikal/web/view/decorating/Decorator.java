@@ -37,8 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface Decorator {
 
-    public boolean match(HttpServletRequest request, 
-                        HttpServletResponse response) throws Exception;
+    public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
     /**
      * Decorate the content.
@@ -46,9 +45,10 @@ public interface Decorator {
      * @param model the MVC model.
      * @param request the servlet request
      * @param content the textual content to filter
+     * @return the decorated content
      * @exception Exception if an error occurs
      */
     @SuppressWarnings("unchecked")
-    public void decorate(Map model, HttpServletRequest request, HttpServletResponse response, Content content) throws Exception;
+    public PageContent decorate(Map model, HttpServletRequest request, PageContent content) throws Exception;
 
 }

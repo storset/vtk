@@ -54,9 +54,9 @@ public class DefaultTemplateParserTestCase extends TestCase {
     private final DecoratorResponse mockResponse = context.mock(DecoratorResponse.class);
 
     public void testEmpty() throws Exception {
-        DefaultTemplateParser parser = createParser();
+        DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(EMPTY_TEMPLATE);
-        ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
+        ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(1, parsedTemplate.length);
     }
     
@@ -65,9 +65,9 @@ public class DefaultTemplateParserTestCase extends TestCase {
         "<html>${namespace:name var1=[20] var2=[30]}</html>";
 
     public void testSimple() throws Exception {
-        DefaultTemplateParser parser = createParser();
+        DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(SIMPLE_TEMPLATE_WITH_PARAMS);
-        ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
+        ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(3, parsedTemplate.length);
         
         String begin = renderComponent(parsedTemplate[0].getComponent());
@@ -86,9 +86,9 @@ public class DefaultTemplateParserTestCase extends TestCase {
         "<html>${namespace:name var1=[20}] var2=[30]]}</html>";
 
     public void testMalformed() throws Exception {
-        DefaultTemplateParser parser = createParser();
+        DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(MALFORMED_TEMPLATE);
-        ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
+        ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(1, parsedTemplate.length);
         String result = renderComponent(parsedTemplate[0].getComponent());
         assertEquals(MALFORMED_TEMPLATE, result);
@@ -98,9 +98,9 @@ public class DefaultTemplateParserTestCase extends TestCase {
         "${${component:ref}}";
 
     public void testMalformedNestedDirectives() throws Exception {
-        DefaultTemplateParser parser = createParser();
+        DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(NESTED_DIRECTIVES);
-        ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
+        ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(3, parsedTemplate.length);
         assertEquals(DummyComponent.class, parsedTemplate[1].getComponent().getClass());
         String begin = renderComponent(parsedTemplate[0].getComponent());
@@ -113,9 +113,9 @@ public class DefaultTemplateParserTestCase extends TestCase {
         "${<html>${namespace:name\nvar1 = [20] \r\nvar2=\r\n[30\\]] \rvar3=[400]}</html>}";
 
     public void testComplexTemplate() throws Exception {
-        DefaultTemplateParser parser = createParser();
+        DollarSyntaxComponentParser parser = createParser();
         Reader reader = new StringReader(COMPLEX_TEMPLATE);
-        ComponentInvocation[] parsedTemplate = parser.parseTemplate(reader);
+        ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(3, parsedTemplate.length);
         ComponentInvocation c = parsedTemplate[1];
         assertEquals("20", c.getParameters().get("var1"));
@@ -124,8 +124,8 @@ public class DefaultTemplateParserTestCase extends TestCase {
     }
 
 
-    private DefaultTemplateParser createParser() {
-        DefaultTemplateParser parser = new DefaultTemplateParser();
+    private DollarSyntaxComponentParser createParser() {
+        DollarSyntaxComponentParser parser = new DollarSyntaxComponentParser();
         parser.setComponentResolver(new DummyComponentResolver());
         return parser;
     }

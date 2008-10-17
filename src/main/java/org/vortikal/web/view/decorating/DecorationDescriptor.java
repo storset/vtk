@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.List;
+
 public interface DecorationDescriptor {
 
     public boolean decorate();
@@ -38,5 +40,5 @@ public interface DecorationDescriptor {
 
     public boolean parse();
 
-    public Template getTemplate();
+    public List<Template> getTemplates();
 }

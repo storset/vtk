@@ -51,6 +51,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -108,6 +109,15 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         InternalDescriptor descriptor = new InternalDescriptor();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
+        Resource resource = null;
+        String token = SecurityContext.getSecurityContext().getToken();
+        try {
+            resource = this.repository.retrieve(token, uri, true);
+        } catch (ResourceNotFoundException e) {
+        } catch (Throwable t) {
+            throw new RuntimeException(
+                    "Unrecoverable error when decorating '" + uri + "'", t);
+        }
         
         String paramString = null;
         
@@ -125,7 +135,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
         
         if (paramString == null && !errorPage) {
-            paramString = checkPathMatch(uri);
+            paramString = checkPathMatch(uri, resource);
         }
         
         if (paramString != null) {
@@ -134,19 +144,11 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             populateDescriptor(descriptor, locale, paramString);
         }
         
-        
         // Checking if there is a reason to parse content
         if (this.parseableContentPropDef != null && descriptor.parse) {
-            Resource resource = null;
-            String token = SecurityContext.getSecurityContext().getToken();
-            try {
-                resource = this.repository.retrieve(token, uri, true);
-            } catch (ResourceNotFoundException e) {
+            if (resource == null) {
                 descriptor.parse = false;
-            } catch (Exception e) {
-                throw new RuntimeException("Unrecoverable error when decorating '" + uri + "'", e);
             }
-            
             if (resource != null && resource.getProperty(this.parseableContentPropDef) == null) {
                 descriptor.parse = false;
             }
@@ -195,15 +197,36 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         return null;
     }
 
-    private String checkPathMatch(Path uri) {
+    
+    private String checkPathMatch(Path uri, Resource resource) {
+
+        // XXX: what about this:
         String collectionExactMatch = this.decorationConfiguration.getProperty(uri + "/");
         if (collectionExactMatch != null) {
             return collectionExactMatch.trim();
         }
-    
+
         while (uri != null) {
+
+            PrimaryResourceTypeDefinition type = resource.getResourceTypeDefinition();
             String prefix = uri.toString();
+            
+            while (type != null) {
+                String typeKey = prefix + "[" + type.getName() + "]";
+                String typeValue = this.decorationConfiguration.getProperty(typeKey);
+                System.out.println("__get: " + typeKey + ": " + typeValue);
+                if (typeValue != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Found match for URI prefix '" + prefix
+                                     + ", type: " + type + 
+                                     "': descriptor: '" + typeValue + "'");
+                    }
+                    return typeValue.trim();
+                }
+                type = type.getParentTypeDefinition();
+            }
             String value = this.decorationConfiguration.getProperty(prefix);
+            System.out.println("__get: " + prefix + ": " + value);
             if (value != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for URI prefix '" + prefix
@@ -213,6 +236,18 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             }
             uri = uri.getParent();
         }
+//        while (uri != null) {
+//            String prefix = uri.toString();
+//            String value = this.decorationConfiguration.getProperty(prefix);
+//            if (value != null) {
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("Found match for URI prefix '" + prefix
+//                                 + "': descriptor: '" + value + "'");
+//                }
+//                return value.trim();
+//            }
+//            uri = uri.getParent();
+//        }
         return null;
     }
     
@@ -234,14 +269,17 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             if ("NONE".equals(param)) {
                 descriptor.tidy = false;
                 descriptor.parse = false;
-                descriptor.template = null;
+                descriptor.templates.clear();
                 break;
             } else if ("TIDY".equals(param)) {
                 descriptor.tidy = true;
             } else if ("NOPARSING".equals(param)) {
                 descriptor.parse = false;
             } else {
-                descriptor.template = resolveTemplateReference(locale, param);
+                Template t = resolveTemplateReferences(locale, param);
+                if (t != null) {
+                    descriptor.templates.add(t);
+                }
             }
         }
         
@@ -251,10 +289,10 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private class InternalDescriptor implements DecorationDescriptor {
         private boolean tidy = false;
         private boolean parse = true;
-        private Template template = null;
+        private List<Template> templates = new ArrayList<Template>();
         
         public boolean decorate() {
-            return this.template != null || this.tidy || this.parse;
+            return !this.templates.isEmpty() || this.tidy || this.parse;
         }
         
         public boolean tidy() {
@@ -263,13 +301,13 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         public boolean parse() {
             return this.parse;
         }
-        public Template getTemplate() {
-            return this.template;
+        public List<Template> getTemplates() {
+            return this.templates;
         }
         
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
-            sb.append(" [template=").append(this.template);
+            sb.append(" [templates=").append(this.templates.toString());
             sb.append(", parse=").append(this.parse);
             sb.append(", tidy=").append(this.tidy).append("]");
             return sb.toString();
@@ -277,9 +315,9 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
 
 
-    private Template resolveTemplateReference(Locale locale, String mapping)
+    private Template resolveTemplateReferences(Locale locale, String mapping)
         throws Exception {
-
+        
         String[] localizedRefs = buildLocalizedReferences(mapping, locale);
         for (int j = 0; j < localizedRefs.length; j++) {
             String localizedRef = localizedRefs[j];
@@ -332,6 +370,5 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
-    
+
 }

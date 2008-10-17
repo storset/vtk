@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,7 @@
  */
 package org.vortikal.web.view.decorating;
 
-public interface Content {
-
-    public String getContent();
+public interface TemplateResult {
     
-    public void setContent(String content);
-
-    public String getOriginalCharacterEncoding();
+    public String toString();
 }

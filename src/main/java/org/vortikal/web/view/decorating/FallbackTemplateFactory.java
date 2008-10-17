@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,42 @@
  */
 package org.vortikal.web.view.decorating;
 
-public class ContentImpl implements PageContent {
+import java.util.Collections;
+import java.util.List;
 
-    private String content;
-    private String originalCharacterEncoding;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
+
+
+public class FallbackTemplateFactory implements TemplateFactory {
+    private static Log logger = LogFactory.getLog(FallbackTemplateFactory.class);
     
-    public ContentImpl(String content, String originalCharacterEncoding) {
-        this.content = content;
-        this.originalCharacterEncoding = originalCharacterEncoding;
+    private List<TemplateFactory> templateFactories;
+    
+    public Template newTemplate(TemplateSource templateSource)
+            throws InvalidTemplateException {
+        for (int i = 0; i < this.templateFactories.size(); i++) {
+            TemplateFactory tf = this.templateFactories.get(i);
+
+            logger.info("Trying template factory " + tf);
+
+            if (i == this.templateFactories.size() - 1) {
+                return tf.newTemplate(templateSource);
+            } else {
+                try {
+                    return tf.newTemplate(templateSource);
+                } catch (InvalidTemplateException e) {
+                    logger.info("Unable to create template using template factory " + tf, e);
+                    continue;
+                }
+            }
+        }
+        throw new InvalidTemplateException("Unable to create template " 
+                + templateSource);
     }
 
-    public String getContent() {
-        return this.content;
+    @Required public void setTemplateFactories(List<TemplateFactory> templateFactories) {
+        this.templateFactories = Collections.unmodifiableList(templateFactories);
     }
-
-    public String getOriginalCharacterEncoding() {
-        return this.originalCharacterEncoding;
-    }
-
 }

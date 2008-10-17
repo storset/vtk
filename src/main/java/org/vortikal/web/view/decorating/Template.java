@@ -34,10 +34,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.vortikal.text.html.HtmlPage;
-
 public interface Template {
 
-    public String render(HtmlPage html, HttpServletRequest request,
-                       Map<Object, Object> model) throws Exception;
+    public PageContent render(HtmlPageContent html, HttpServletRequest request,
+                          Map<Object, Object> model) throws Exception;
 }

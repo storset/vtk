@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,24 @@
  */
 package org.vortikal.web.view.decorating;
 
-public class ContentImpl implements PageContent {
+import java.util.List;
 
-    private String content;
-    private String originalCharacterEncoding;
+public class ListTemplateResult implements TemplateResult {
+    private List<Object> segments;
     
-    public ContentImpl(String content, String originalCharacterEncoding) {
-        this.content = content;
-        this.originalCharacterEncoding = originalCharacterEncoding;
+    public ListTemplateResult(List<Object> segments) {
+        this.segments = segments;
     }
-
-    public String getContent() {
-        return this.content;
+    
+    public List<Object> getSegments() {
+        return this.segments;
     }
-
-    public String getOriginalCharacterEncoding() {
-        return this.originalCharacterEncoding;
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Object o: this.segments) {
+            sb.append(o.toString());
+        }
+        return sb.toString();
     }
-
 }

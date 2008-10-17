@@ -41,7 +41,11 @@ public interface HtmlPage {
 
     public String getDoctype();
     
+    public String getCharacterEncoding();
+    
     public HtmlElement getRootElement();
+    
+    public boolean isFrameset();
     
     public String getStringRepresentation();
 
@@ -56,5 +60,7 @@ public interface HtmlPage {
     public HtmlText createTextNode(String content);
 
     public HtmlComment createComment(String comment);
+    
+    public HtmlAttribute createAttribute(String name, String value);
 
 }

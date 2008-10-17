@@ -78,7 +78,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         this.emptyTags = emptyTags;
     }
     
-
     public HtmlPage parse(InputStream in, String encoding) throws Exception {
         return parse(in, encoding, new ArrayList<HtmlNodeFilter>());
     }
@@ -95,11 +94,12 @@ public class HtmlPageParserImpl implements HtmlPageParser {
 
     public HtmlPage parse(InputStream in, String encoding, List<HtmlNodeFilter> filters)
         throws Exception {
-        Page page = new Page(in, encoding);
 
+        Page page = new Page(in, encoding);
         Lexer lexer = new Lexer(page);
 
         Parser parser = new Parser(lexer);
+
         PrototypicalNodeFactory factory = new PrototypicalNodeFactory();
 
         for (String tag: this.compositeTags) {
@@ -131,7 +131,9 @@ public class HtmlPageParserImpl implements HtmlPageParser {
             rootElement = new HtmlElementImpl("html", xhtml, false);
             rootElement.setChildNodes(new HtmlContent[]{html});
         }
-        return new HtmlPageImpl(rootElement, doctype, xhtml);
+        return new HtmlPageImpl(rootElement, doctype, 
+                parser.getEncoding(), xhtml, 
+                Collections.unmodifiableSet(this.emptyTags));
     }
     
     public HtmlFragment parseFragment(String html) throws Exception {

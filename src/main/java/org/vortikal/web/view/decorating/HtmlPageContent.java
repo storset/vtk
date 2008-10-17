@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,10 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.io.Reader;
+import org.vortikal.text.html.HtmlPage;
 
+public interface HtmlPageContent extends PageContent {
 
-public interface TemplateParser {
-
-    public ComponentInvocation[] parseTemplate(Reader reader) throws Exception;
-
+    public HtmlPage getHtmlContent();
+    
 }

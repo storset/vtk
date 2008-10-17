@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -74,8 +77,8 @@ public class ServiceAttributeDecorationResolver implements DecorationResolver {
                 return t != null;
             }
 
-            public Template getTemplate() {
-                return t;
+            public List<Template> getTemplates() {
+                return Collections.singletonList(t);
             }
 
             public boolean parse() {

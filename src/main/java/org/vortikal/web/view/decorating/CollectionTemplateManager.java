@@ -54,7 +54,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
  *   <li><code>repository</code> - the {@link Repository content repository}
  *   <li><code>collectionName</code> - the complete path to the
  *   templates collection, e.g. <code>/foo/bar/templates</code>.
- *   <li><code>templateParser</code> - a {@link TemplateParser template parser}
+ *   <li><code>templateParser</code> - a {@link TextualComponentParser template parser}
  *   <li><code>templateResourceType</code> - the {@link
  *   ResourceTypeDefinition resource type} identifying templates (all
  *   candidate templates must be of this resource type).
@@ -67,7 +67,7 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
 
     private Repository repository;
     private String collectionName;
-    private TemplateParser templateParser;
+    private TemplateFactory templateFactory;
     private ResourceTypeDefinition templateResourceType;
     private Map<String, Template> templatesMap;
     
@@ -82,8 +82,8 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
     }
 
 
-    public void setTemplateParser(TemplateParser templateParser) {
-        this.templateParser = templateParser;
+    public void setTemplateFactory(TemplateFactory templateFactory) {
+        this.templateFactory = templateFactory;
     }
     
 
@@ -101,9 +101,9 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
             throw new BeanInitializationException(
                 "JavaBean property 'collectionName' not specified");
         }
-        if (this.templateParser == null) {
+        if (this.templateFactory == null) {
             throw new BeanInitializationException(
-                "JavaBean property 'templateParser' not specified");
+                "JavaBean property 'templateFactory' not specified");
         }
         if (this.templateResourceType == null) {
             throw new BeanInitializationException(
@@ -160,7 +160,7 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
                 new RepositoryTemplateSource(resource.getURI(), this.repository, null);
 
             try {
-                Template template = new StandardDecoratorTemplate(this.templateParser, templateSource);
+                Template template = this.templateFactory.newTemplate(templateSource);
                 String identifier = resource.getURI().toString().substring(this.collectionName.length() + 1);
 
                 if (logger.isDebugEnabled()) {

@@ -36,15 +36,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.View;
-
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -221,13 +220,13 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
 
 
-        Content content = new ContentImpl(new String(contentBuffer, characterEncoding),
+        PageContent content = new ContentImpl(new String(contentBuffer, characterEncoding),
                                           characterEncoding);
 
         if (this.decorators != null) {
             for (Decorator decorator: decoratorList) {
 
-                decorator.decorate(model, request, bufferedResponse, content);
+                content = decorator.decorate(model, request, content);
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Invoked decorator: " + decorator);
                 }

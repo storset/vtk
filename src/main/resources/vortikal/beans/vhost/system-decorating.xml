@@ -53,7 +53,7 @@
     </bean>
 
     <bean id="system.decoratorTemplateParser"
-          class="org.vortikal.web.view.decorating.DefaultTemplateParser">
+          class="org.vortikal.web.view.decorating.DollarSyntaxComponentParser">
       <property name="componentResolver">
         <bean name="system.decoratorComponentResolver"
               class="org.vortikal.web.view.decorating.BeanContextComponentResolver">

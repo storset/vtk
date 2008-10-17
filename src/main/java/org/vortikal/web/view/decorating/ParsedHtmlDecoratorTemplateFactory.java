@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,30 @@
  */
 package org.vortikal.web.view.decorating;
 
-public class ContentImpl implements PageContent {
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.text.html.HtmlPageParser;
 
-    private String content;
-    private String originalCharacterEncoding;
+public class ParsedHtmlDecoratorTemplateFactory implements TemplateFactory {
+
+    private HtmlPageParser htmlParser;
+    private ComponentResolver componentResolver;
+    private TextualComponentParser componentParser;
     
-    public ContentImpl(String content, String originalCharacterEncoding) {
-        this.content = content;
-        this.originalCharacterEncoding = originalCharacterEncoding;
+    public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException {
+        return new ParsedHtmlDecoratorTemplate(
+                this.htmlParser, this.componentParser, this.componentResolver, templateSource);
     }
 
-    public String getContent() {
-        return this.content;
+    @Required public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
     }
 
-    public String getOriginalCharacterEncoding() {
-        return this.originalCharacterEncoding;
+    @Required public void setComponentParser(TextualComponentParser componentParser) {
+        this.componentParser = componentParser;
+    }
+
+    @Required public void setComponentResolver(ComponentResolver componentResolver) {
+        this.componentResolver = componentResolver;
     }
 
 }

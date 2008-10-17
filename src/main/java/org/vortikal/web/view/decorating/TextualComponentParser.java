@@ -30,22 +30,13 @@
  */
 package org.vortikal.web.view.decorating;
 
-public class ContentImpl implements PageContent {
+import java.io.Reader;
 
-    private String content;
-    private String originalCharacterEncoding;
-    
-    public ContentImpl(String content, String originalCharacterEncoding) {
-        this.content = content;
-        this.originalCharacterEncoding = originalCharacterEncoding;
-    }
+/**
+ * Component parser that splits its input into a sequence 
+ * of ComponentInvocations
+ */
+public interface TextualComponentParser {
 
-    public String getContent() {
-        return this.content;
-    }
-
-    public String getOriginalCharacterEncoding() {
-        return this.originalCharacterEncoding;
-    }
-
+    public ComponentInvocation[] parse(Reader reader) throws Exception;
 }

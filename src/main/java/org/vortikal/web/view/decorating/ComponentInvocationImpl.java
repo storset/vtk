@@ -30,14 +30,18 @@
  */
 package org.vortikal.web.view.decorating;
 
+import java.util.Collections;
 import java.util.Map;
 
 
+/**
+ * A "runtime" representation of a component (a component 
+ * instance and request).
+ */
 public class ComponentInvocationImpl implements ComponentInvocation {
-
     private DecoratorComponent component;
     private Map<String, Object> parameters;
-
+    
     public ComponentInvocationImpl(DecoratorComponent component, Map<String, Object> parameters) {
         if (component == null) {
             throw new IllegalArgumentException("Component argument is NULL");
@@ -45,26 +49,23 @@ public class ComponentInvocationImpl implements ComponentInvocation {
         if (parameters == null) {
             throw new IllegalArgumentException("Parameters argument is NULL");
         }
-
         this.component = component;
         this.parameters = parameters;
     }
     
-
     public DecoratorComponent getComponent() {
         return this.component;
     }
 
     public Map<String, Object> getParameters() {
-        return this.parameters;
+        return Collections.unmodifiableMap(this.parameters);
     }
-    
+
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(":");
         sb.append(this.component.toString()).append(" [");
         sb.append(this.parameters.toString()).append("]");
         return sb.toString();
     }
-    
 }

@@ -34,19 +34,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -66,13 +62,11 @@ import org.vortikal.web.service.URL;
 public class TagsController implements Controller {
 
     private Repository repository;
-    private ResourceWrapperManager resourceManager;
     private int defaultPageLimit = 20;
     private PropertyTypeDefinition pageLimitPropDef;
     private String viewName;
     private List<SearchComponent> searchComponents;
     private Map<String, Service> alternativeRepresentations;
-    private Log logger = LogFactory.getLog(this.getClass());
 
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -82,10 +76,7 @@ public class TagsController implements Controller {
         Principal principal = securityContext.getPrincipal();
         Resource collection = this.repository.retrieve(token, uri, true);
 
-        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("collection", this.resourceManager.createResourceWrapper(collection.getURI()));
 
         String tag = request.getParameter("tag");
 
@@ -93,36 +84,21 @@ public class TagsController implements Controller {
             model.put("error", "No tags specified");
             return new ModelAndView(this.viewName, model);
         }
+
         model.put("tag", tag);
 
-        // Setting the default pagelimit
+        // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
         Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
         if (pageLimitProp != null) {
             pageLimit = pageLimitProp.getIntValue();
         }
 
-        int page = 0;
-        if (request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-                if (page < 1) {
-                    page = 1;
-                }
-            } catch (Throwable t) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Error reading parameter page: " + t.getMessage(), t);
-                }
-            }
-        }
-
-        if (page == 0) {
-            page = 1;
-        }
-
-        int offset = (page - 1) * pageLimit;
-        int limit = pageLimit;
-
+        PageInfo pageInfo = new PageInfo(request, pageLimit);
+        int page = pageInfo.getPage();
+        int limit = pageInfo.getLimit();
+        int offset = pageInfo.getOffset();
+        
         List<Listing> listings = new ArrayList<Listing>();
 
         if (tag != null) {
@@ -237,12 +213,6 @@ public class TagsController implements Controller {
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-
-    @Required
-    public void setResourceManager(ResourceWrapperManager resourceManager) {
-        this.resourceManager = resourceManager;
     }
 
 

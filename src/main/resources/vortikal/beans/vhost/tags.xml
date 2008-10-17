@@ -36,15 +36,10 @@
   <bean id="tags.handler" 
         class="org.vortikal.web.controller.TagsController"
         parent="requestLocalRepositoryAware">
-    <property name="resourceManager" ref="resourceManager" />
     <property name="viewName" value="tags.tagsview" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
-    <property name="searchComponents">
-      <list>
-        <ref bean="tags.searchComponent" />
-      </list>
-    </property>
+    <property name="searchComponents" ref="tags.searchComponent" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="collectionListing.atomService" />

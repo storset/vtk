@@ -12,7 +12,6 @@
 
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/view-collectionlisting.ftl" as coll />
 
 
 <#-- XXX: remove this when properties 'introduction' and 'description'
@@ -59,13 +58,6 @@
   
 
      <#-- List resources: -->
-
-     <#--
-     <#list searchComponents as searchComponent>
-         <@coll.displayResources collectionListing=searchComponent />
-     </#list>
-     -->
-
      <div class="tagged-resources">
       <#assign searchComponent=searchComponents[0]>
       <#assign resources=searchComponent.getFiles() />

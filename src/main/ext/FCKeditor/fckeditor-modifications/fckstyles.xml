@@ -46,25 +46,66 @@
 
 	<!-- Inline Styles -->
 
-	<Style name="Left (big)" element="div">
-		<Attribute name="class" value="big box box-left" />
-	</Style>
-	<Style name="Left (medium)" element="div">
-		<Attribute name="class" value="medium box box-left" />
-	</Style>
-		<Style name="Left (small)" element="div">
-		<Attribute name="class" value="small box box-left" />
-	</Style>
-	
-	<Style name="Right (big)" element="div">
-		<Attribute name="class" value="big box box-right" />
-	</Style>
-	<Style name="Right (medium)" element="div">
-		<Attribute name="class" value="medium box box-right" />
-	</Style>
-		<Style name="Right (small)" element="div">
-		<Attribute name="class" value="small box box-right" />
-	</Style>
+        <Style name="Facts container left" element="div">
+                <Attribute name="class" value="facts container-size-s container container-left" />
+        </Style>
+        <Style name="Facts container right" element="div">
+                <Attribute name="class" value="facts container-size-s container-right" />
+        </Style>
+
+        <Style name="Image container left" element="div">
+                <Attribute name="class" value="container-left" />
+        </Style>
+        <Style name="Image container middle" element="div">
+                <Attribute name="class" value="container-middle" />
+        </Style>
+        <Style name="Image container right" element="div">
+                <Attribute name="class" value="container-right" />
+        </Style>
+
+       <Style name="Image and caption container left (400px)" element="div">
+                <Attribute name="class" value="container container-size-s container-left" />
+        </Style>
+        <Style name="Image and caption container left (300px)" element="div">
+                <Attribute name="class" value="container container-size-xs container-left" />
+        </Style>
+        <Style name="Image and caption container left (200px)" element="div">
+                <Attribute name="class" value="container container-size-xxs container-left" />
+        </Style>
+
+        <Style name="Image and caption container middle (800px)" element="div">
+                <Attribute name="class" value="container container-size-xxl container-middle" />
+        </Style>
+        <Style name="Image and caption container middle (700px)" element="div">
+                <Attribute name="class" value="container container-size-xl container-middle" />
+        </Style>
+        <Style name="Image and caption container middle (600px)" element="div">
+                <Attribute name="class" value="container container-size-l container-middle" />
+        </Style>
+       <Style name="Image and caption container middle (500px)" element="div">
+                <Attribute name="class" value="container container-size-m container-middle" />
+        </Style>
+        <Style name="Image and caption container middle (400px)" element="div">
+                <Attribute name="class" value="container container-size-s container-middle" />
+        </Style>
+        <Style name="Image and caption container middle (300px)" element="div">
+                <Attribute name="class" value="container container-size-xs container-middle" />
+        </Style>
+        <Style name="Image and caption container middle (200px)" element="div">
+                <Attribute name="class" value="container container-size-xxs container-middle" />
+        </Style>
+
+        <Style name="Image and caption container right (400px)" element="div">
+                <Attribute name="class" value="container container-size-s container-right" />
+        </Style>
+        <Style name="Image and caption container right (300px)" element="div">
+                <Attribute name="class" value="container container-size-xs container-right" />
+        </Style>
+                <Style name="Image and caption container right (200px)" element="div">
+                <Attribute name="class" value="container container-size-xxs container-right" />
+        </Style>
+
+
 
 	<!--
 	# These are core styles available as toolbar buttons.

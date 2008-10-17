@@ -1,52 +1,69 @@
 @charset "UTF-8";
 /* CSS Document */
 
-.big {
+.container-size-xxl {
+	width:800px;
+}
+.container-size-xl {
+	width:700px;
+}
+
+.container-size-l {
 	width:600px;
 }
-.medium {
+
+.container-size-m {
+	width:500px;
+}
+
+.container-size-s {
 	width:400px;
 }
 
-.small {
+.container-size-xs{
 	width:300px;
 }
 
-.box{
-	margin:0;
-	padding:0;
-	border-color:#aaa;
-	border-style:solid;
-	border-width:1px;
-	overflow:hidden;
+.container-size-xxs{
+	width:200px;
 }
 
-.box-left{
-	margin: 1em 1em 0em 0;
+.container{
+	border-color:#aaa;
+	border-style:solid;
+	border-width:2px;
+	overflow:hidden;
+	padding:1em;
+}
+
+.container-middle img{
+	display:block;
+	margin-right:auto;
+	margin-left:auto;
+}
+
+.container-left{
+	margin: 0 1em 1em 0;
 	float:left;
 }
-.box-right{
-	margin: 1em 0 0em 1em;
+.container-right{
+	margin: 0 0 1em 1em;
 	float:right;
 }
 
-.box p{
-	margin-left:auto;
-	margin-right:auto;
-	text-align:left;
-}
-
-.box img{
+.container img{
+ 	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	margin-top:0em;
+	margin-bottom:1em;
 	clear:both;
-	margin-top:-1em;
-	margin-left:-1em;
 	padding:0;
-	border-bottom:solid;
-	border-width:1px;
-	border-color:#aaa;
+	border:none;
 }
 
-.box p{
-	margin:0;
-	padding:1em;
+.container p{
+	margin-top:0;
+	margin-bottom:0;
+	overflow:hidden;
 }

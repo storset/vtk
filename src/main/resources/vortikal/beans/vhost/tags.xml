@@ -64,7 +64,7 @@
 
 
   <bean id="tags.searchComponent"
-        class="org.vortikal.web.controller.search.SearchComponent">
+        class="org.vortikal.web.search.SearchComponent">
     <property name="name" value="tags.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -91,11 +91,11 @@
     </property>
     <property name="listableProperties">
       <list>
-        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="lastModifiedPropDef" />
           <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
         </bean>
-        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionPropDef" />
           <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
         </bean>

@@ -70,7 +70,7 @@
   
 
   <bean id="articleListing.searchComponent" 
-        class="org.vortikal.web.controller.search.SearchComponent">
+        class="org.vortikal.web.search.SearchComponent">
     <property name="name" value="articleListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -102,15 +102,15 @@
 
     <property name="listableProperties">
       <list>
-        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionImagePropDef" />
           <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
         </bean>
-        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="publishedDatePropDef" />
           <property name="preventDisplayProperty" ref="articleListing.hidePublishedDatePropDef" />
         </bean>
-        <bean class="org.vortikal.web.controller.search.PropertyDisplayConfig">
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionPropDef" />
           <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
         </bean>

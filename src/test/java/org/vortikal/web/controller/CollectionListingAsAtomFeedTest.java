@@ -20,7 +20,7 @@ import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.web.controller.search.SearchComponent;
+import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 

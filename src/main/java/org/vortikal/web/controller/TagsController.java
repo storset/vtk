@@ -55,8 +55,8 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.search.SearchComponent;
-import org.vortikal.web.controller.search.SearchComponent.Listing;
+import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.search.SearchComponent.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 

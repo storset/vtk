@@ -43,6 +43,7 @@ import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
@@ -89,8 +90,7 @@ import org.vortikal.xml.TransformerManager;
  * </ul>
  *
  */
-public class DisplayXmlResourceController
-  implements Controller, LastModified, InitializingBean {
+public class DisplayXmlResourceController implements Controller, LastModified {
 
     private static Log logger = LogFactory.getLog(DisplayXmlResourceController.class);
 
@@ -107,10 +107,12 @@ public class DisplayXmlResourceController
         this.childName = childName;
     }
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+    @Required
     public void setTransformerManager(TransformerManager transformerManager) {
         this.transformerManager = transformerManager;
     }
@@ -130,18 +132,6 @@ public class DisplayXmlResourceController
     public void setLastModifiedEvaluator(LastModifiedEvaluator lastModifiedEvaluator) {
         this.lastModifiedEvaluator = lastModifiedEvaluator;
     }
-
-    public void afterPropertiesSet() throws Exception {
-        if (repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not set");
-        }
-        if (transformerManager == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'transformerManager' not set");
-        }
-    }
-
 
     public long getLastModified(HttpServletRequest request) {
         

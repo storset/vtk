@@ -243,34 +243,55 @@ div.picture {
   width: 520px;
 }
 
+#input-and-button-container {
+  width: 330px; 
+  height: 1%;
+  overflow: hidden; 
+  margin: 0;
+  padding: 0;
+  position: relative;
+  float: left;
+}
+
+* html #input-and-button-container {
+  width: 325px; 
+}
+
 div.picture input{
   float: left;
   position: relative;
+  margin: 0;
   margin-right: .25em;
   width: 200px;
+  padding: 1px 0;
 }
 
 * html div.picture input {
+  width:161px;
   margin-top: 0.2em;	
 }
 
 div.picture button{
   float: left;
   position: relative;
+  padding: 1px 5px;
+  margin: 0;
+  font-size: 12px;
+  font-familiy: Arial, sans-serif;
 }
 
 * html div.picture button {
   margin-top: 0.1em;	
 }
 
-/* Fix for wide images breaking */
+/* Fix for wide images not breaking */
 #resource\.picture\.preview {
   whitespace: nowrap;
-  margin: 0 0 0 308px;
+  margin: 0 0 0 347px;
 }
 
 * html #resource\.picture\.preview {
-  margin: 0 0 0 310px;
+  margin: 0 0 0 345px;
   margin-top: 0.1em;
 }
 
@@ -296,7 +317,7 @@ div.picture div {
 
 div.caption {
   float: left;
-  width: 288px;
+  width: 327px;
   position: relative;
   margin-top: -98px;
   overflow: hidden;
@@ -304,7 +325,7 @@ div.caption {
 
 /* IE6 fix */
 * html div.caption {
-   width: 294px; 
+   width: 327px; 
    margin-top: -96px;
 }
 

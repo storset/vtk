@@ -42,7 +42,6 @@ public class TagsTest extends BaseWebTest {
         assertLinkPresentWithText("title k1-in-subfolder");
         // TODO We should not show unpublished articles
         assertLinkPresentWithText("title unpublished article");
-
     }
 
 
@@ -84,11 +83,4 @@ public class TagsTest extends BaseWebTest {
         assertLinkPresentWithText("title k1-in-subfolder");
     }
 
-
-    public void testArticleIntroductionImagePresent() {
-        clickLink("k1");
-        assertImagePresent("/automatedtestresources/tagstest/article/omuios1.gif",
-                "IMG for 'title unpublished article'");
-
-    }
 }

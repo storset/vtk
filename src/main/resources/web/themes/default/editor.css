@@ -236,21 +236,21 @@ div.introduction textarea {
 /* ****** START: Picture (input, button, preview) and caption styling */
 
 div.picture {
+  width: 520px;
   float: left;
   position: relative;
   clear: right; /*IE7*/
   margin-bottom: 0;
-  width: 520px;
 }
 
 #input-and-button-container {
-  width: 330px; 
+  width: 330px;
+  float: left;
+  position: relative;
   height: 1%;
   overflow: hidden; 
   margin: 0;
   padding: 0;
-  position: relative;
-  float: left;
 }
 
 * html #input-and-button-container {
@@ -258,11 +258,11 @@ div.picture {
 }
 
 div.picture input{
+  width: 200px;
   float: left;
   position: relative;
   margin: 0;
   margin-right: .25em;
-  width: 200px;
   padding: 1px 0;
 }
 
@@ -274,10 +274,10 @@ div.picture input{
 div.picture button{
   float: left;
   position: relative;
-  padding: 1px 5px;
-  margin: 0;
   font-size: 12px;
   font-familiy: Arial, sans-serif;
+  margin: 0;
+  padding: 1px 5px;
 }
 
 * html div.picture button {
@@ -296,9 +296,10 @@ div.picture button{
 }
 
 div.picture img { 
+  height: 16.5ex;
   float: left;
   position: relative;
-  height: 16.5ex;
+  
 }
 * html div.picture img { 
   height: 15.5ex;
@@ -316,11 +317,11 @@ div.picture div {
 */
 
 div.caption {
-  float: left;
   width: 327px;
+  float: left;
   position: relative;
-  margin-top: -98px;
   overflow: hidden;
+  margin-top: -98px;
 }
 
 /* IE6 fix */

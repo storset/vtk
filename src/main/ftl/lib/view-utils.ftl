@@ -97,7 +97,9 @@
     </#if>
   </#if>
   <#t /><#if location != "">, <span class="location">${location}.</span></#if>
-  <span class="ical">
-    <a id="ical" href='${resource.URI}?ical'><@vrtx.msg code="event.add-to-calendar" /></a>
-  </span>
+  <#if start != "">
+    <span class="ical">
+      <a id="ical" href='${resource.URI}?ical'><@vrtx.msg code="event.add-to-calendar" /></a>
+    </span>
+  </#if>
 </#macro>

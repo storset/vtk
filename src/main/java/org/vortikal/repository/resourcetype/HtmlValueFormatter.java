@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.text.html.HtmlUtil;
 
 /**
@@ -46,12 +47,11 @@ public class HtmlValueFormatter implements ValueFormatter {
 
     private HtmlUtil htmlUtil;
     
-    public String valueToString(Value value, String format, Locale locale)
-            throws IllegalValueTypeException {
+    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
         String html = value.toString();
         if (ESCAPED_FORMAT.equals(format)) {
             return HtmlUtil.escapeHtmlString(html);
-        } else if (FLATTENED_FORMAT.equals(format) && this.htmlUtil != null) {
+        } else if (FLATTENED_FORMAT.equals(format)) {
             return this.htmlUtil.flatten(html).toString();
         }
         return html;
@@ -65,8 +65,7 @@ public class HtmlValueFormatter implements ValueFormatter {
         return new Value(string);
     }
 
-
-    
+    @Required
     public void setHtmlUtil(HtmlUtil htmlUtil) {
         this.htmlUtil = htmlUtil;
     }

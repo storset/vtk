@@ -15,6 +15,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -75,7 +76,8 @@ public class ICalController implements Controller {
 		
 		Property description = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.INTRODUCTION_PROP_NAME);
 		if (description != null && StringUtils.isNotBlank(description.getStringValue())) {
-			sb.append("DESCRIPTION:" + description.getStringValue() + "\n");
+			String flattenedDescription = description.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null);
+			sb.append("DESCRIPTION:" + flattenedDescription + "\n");
 		}
 
 		sb.append("SUMMARY:" + event.getTitle() + "\n");

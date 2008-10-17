@@ -85,7 +85,11 @@
   <property name="valueFormatters">
    <map>
     <entry key="STRING"><bean class="org.vortikal.repository.resourcetype.StringValueFormatter" /></entry>
-    <entry key="HTML"><bean class="org.vortikal.repository.resourcetype.HtmlValueFormatter" /></entry>
+    <entry key="HTML">
+      <bean class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
+        <property name="htmlUtil" ref="htmlUtil" />
+      </bean>
+    </entry>
     <entry key="IMAGE_REF"><bean class="org.vortikal.repository.resourcetype.StringValueFormatter" /></entry>
     <entry key="INT"><bean class="org.vortikal.repository.resourcetype.IntValueFormatter" /></entry>
     <entry key="LONG"><bean class="org.vortikal.repository.resourcetype.LongValueFormatter" /></entry>

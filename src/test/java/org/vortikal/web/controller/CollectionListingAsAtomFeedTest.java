@@ -1,13 +1,21 @@
 package org.vortikal.web.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.abdera.Abdera;
 import org.apache.commons.lang.StringUtils;
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jmock.Expectations;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Namespace;
@@ -20,6 +28,9 @@ import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
+import org.vortikal.repository.resourcetype.StringValueFormatter;
+import org.vortikal.repository.resourcetype.ValueFactoryImpl;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
@@ -33,6 +44,9 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 	private Path requestPath;
 	private final Service mockViewService = context.mock(Service.class);
 	
+	private String atomFeedRequestPath = "/atomfeedtest";
+	private String host = "localhost";
+	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -44,7 +58,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 	}
 	
 	public Path getRequestPath() {
-		requestPath = Path.fromString("/atomfeedtest");
+		requestPath = Path.fromString(atomFeedRequestPath);
 		return requestPath;
 	}
 	
@@ -54,7 +68,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 		context.checking(new Expectations() {{ one(mockRepository).retrieve(null, requestPath, true); will(returnValue(getCollection())); }});
 		
 		// Set main feed id
-		final URL url = new URL("http", "localhost", requestPath);
+		final URL url = new URL("http", host, requestPath);
 		context.checking(new Expectations() {{ one(mockViewService).constructURL(requestPath); will(returnValue(url)); }});
 		
 		final String link = requestPath.toString();
@@ -75,28 +89,68 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 		String feed = out.toString();
 		assertTrue("Feed is empty", StringUtils.isNotBlank(feed));
 		
-		// TODO validate feedxml
+		validateFeedXML(feed);
 		
 	}
 	
+	private void validateFeedXML(String feed) throws JDOMException, IOException {
+		SAXBuilder builder = new SAXBuilder();
+		
+		Document feedDocument = builder.build(new ByteArrayInputStream(feed.getBytes()));
+		assertNotNull(feedDocument);
+		
+		Element root = feedDocument.getRootElement();
+		assertNotNull("No root document (empty xml document)", root);
+		assertEquals("Wrong root element", "feed", root.getName());
+		
+		org.jdom.Namespace atomNamespace = org.jdom.Namespace.getNamespace("http://www.w3.org/2005/Atom");
+		
+		Element id = root.getChild("id", atomNamespace);
+		assertNotNull("No id set for feed", id);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dateFormat.format(Calendar.getInstance().getTime());
+		String expectedId = "tag:" + host + "," + today + ":" + atomFeedRequestPath;
+		assertEquals("Wrong id", expectedId, id.getText());
+		
+		Element title = root.getChild("title", atomNamespace);
+		assertNotNull("No title set for feed", title);
+		assertEquals("Wrong title", "feedtest", title.getText());
+		
+		Element link = root.getChild("link", atomNamespace);
+		assertNotNull("No link set for feed", link);
+		Attribute linkHref = link.getAttribute("href");
+		assertNotNull("No href set for link", linkHref);
+		assertEquals("Wrong href", atomFeedRequestPath, linkHref.getValue());
+	}
+
 	private Resource getCollection() {
 		ResourceImpl collection = new ResourceImpl();
+		collection.setResourceTypeTree(new ResourceTypeTreeImpl());
 		
-        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
-        propDef.setValueFormatter(new DateValueFormatter());
-        propDef.setType(Type.DATE);
-        propDef.setNamespace(Namespace.DEFAULT_NAMESPACE);
-        propDef.setName(PropertyType.CREATIONTIME_PROP_NAME);
+		PropertyTypeDefinitionImpl propDef = getPropDef(new StringValueFormatter(), Type.STRING,
+				Namespace.DEFAULT_NAMESPACE, PropertyType.TITLE_PROP_NAME);
+		Property title = propDef.createProperty("feedtest");
+		collection.addProperty(title);
+		
+		propDef = getPropDef(new DateValueFormatter(), Type.DATE,
+				Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME);
         Property publishedProp = propDef.createProperty(Calendar.getInstance().getTime());
-        
-        // TODO set other properties needed for proper testing of feed
-		
-        collection.setResourceTypeTree(new ResourceTypeTreeImpl());
         collection.addProperty(publishedProp);
         
 		return collection;
 	}
 	
+	private PropertyTypeDefinitionImpl getPropDef(ValueFormatter valueFormatter, Type type,
+			Namespace namespace, String propertyName) {
+		PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+		propDef.setValueFactory(new ValueFactoryImpl());
+        propDef.setValueFormatter(valueFormatter);
+        propDef.setType(type);
+        propDef.setNamespace(namespace);
+        propDef.setName(propertyName);
+		return propDef;
+	}
+
 	private class MockSearchComponent implements SearchComponent {
 		
 		public Listing execute(HttpServletRequest request, Resource collection,

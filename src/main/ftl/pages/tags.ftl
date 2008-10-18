@@ -74,7 +74,7 @@
           <div class="result">
              
                 <#if introImageProp != "">
-                  <a href="${resource.getURI()?html}">
+                  <a id="${resource.name}" href="${resource.getURI()?html}">
                     <#assign src = introImageProp.formattedValue />
                     <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
                       <#assign src = resource.URI.getParent().extendAndProcess(src) />
@@ -86,7 +86,7 @@
                 </#if>
 
                  <h2 class="title">
-                  <a href="${resource.getURI()?html}">
+                  <a id="${resource.name}" href="${resource.getURI()?html}">
                     ${resourceTitle?html}
                   </a>
                 </h2>

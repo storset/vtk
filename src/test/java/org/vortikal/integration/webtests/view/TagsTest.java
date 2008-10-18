@@ -35,52 +35,54 @@ import org.vortikal.integration.webtests.BaseWebTest;
 public class TagsTest extends BaseWebTest {
 
     public void testTagK1() {
-        clickLink("k1");
-        assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title document-with-keyword1");
-        assertLinkPresentWithText("title document-with-keyword1-and-keyword2");
-        assertLinkPresentWithText("title document-with-keyword1-in-subfolder");
-        // TODO We should not show unpublished articles
-        assertLinkPresentWithText("title unpublished-article-with-keyword1");
+        invokeTagsService("k1");
+        // TODO We should not show unpublished articles (unpublished-article-with-keyword1.html)
+        assertLinksPresent("document-with-keyword1.html", "document-with-keyword1-and-keyword2.html",
+        		"document-with-keyword1-in-subfolder.html", "unpublished-article-with-keyword1.html");
     }
-
 
     public void testTagK2() {
-        clickLink("k2");
-        assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title document-with-keyword2");
-        assertLinkPresentWithText("title document-with-keyword1-and-keyword2");
+        invokeTagsService("k2");
+        assertLinksPresent("document-with-keyword2.html", "document-with-keyword1-and-keyword2.html");
     }
 
-
     public void testList() {
-        clickLink("list");
-        assertElementPresent("vrtx-tagview");
+        invokeTagsService("list");
         assertTextPresent("No tags specified");
     }
 
-
     public void testTagK1InSubfolderScopeFolder() {
-        clickLink("k1-subfolder-scope-folder");
-        assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title document-with-keyword1-in-subfolder");
+        invokeTagsService("k1-subfolder-scope-folder");
+        assertLinkPresent("document-with-keyword1-in-subfolder.html");
     }
 
-
     public void testTagK2InSubfolderScopeFolder() {
-        clickLink("k2-subfolder-scope-folder");
-        assertElementPresent("vrtx-tagview");
-        assertLinkNotPresentWithText("title document-with-keyword1-in-subfolder");
+        invokeTagsService("k2-subfolder-scope-folder");
+        assertLinkNotPresent("document-with-keyword1-in-subfolder.html");
         assertTextNotPresent("No resources tagged with tagstest-k2.");
     }
 
-
     public void testTagK1InSubfolderNoScope() {
-        clickLink("k1-subfolder-no-scope");
+        invokeTagsService("k1-subfolder-no-scope");
+        assertLinksPresent("document-with-keyword1.html", "document-with-keyword1-and-keyword2.html",
+        		"document-with-keyword1-in-subfolder.html");
+    }
+    
+    public void testArticleIntroductionImagePresent() {
+        invokeTagsService("k1");
+        String imageSrc = "/" + rootCollection + "/" + this.getClass().getSimpleName().toLowerCase() + "/uio-logo.jpg";
+        assertImagePresent(imageSrc, "IMG for 'title unpublished-article-with-keyword1'");
+    }
+    
+    private void invokeTagsService(String tagsLink) {
+    	clickLink(tagsLink);
         assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title document-with-keyword1");
-        assertLinkPresentWithText("title document-with-keyword1-and-keyword2");
-        assertLinkPresentWithText("title document-with-keyword1-in-subfolder");
+    }
+    
+    private void assertLinksPresent(String... links) {
+    	for (int i = 0; i < links.length; i++) {
+			assertLinkPresent(links[i]);
+		}
     }
 
 }

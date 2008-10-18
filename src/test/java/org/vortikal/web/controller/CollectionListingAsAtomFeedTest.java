@@ -22,7 +22,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.QueryStringSearchComponent;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;

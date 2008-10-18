@@ -37,26 +37,33 @@ public class DisplayThumbnailController implements Controller {
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
         
         if (thumbnail == null) {
-        	log.warn("No thumbnail was found for resource: " + uri);
-        	return null;
+        	log.warn("No thumbnail was found for image: " + uri);
+        	response.sendRedirect(uri.toString());
         }
         
-        InputStream in = thumbnail.getBinaryStream();
-    	BufferedImage imageFromStream = ImageIO.read(in);
-    	in.close();
-                
-        String mimetype = contentType.getStringValue();
-        response.setContentType(mimetype);
-        
-    	String format = mimetype.substring(mimetype.indexOf("/") + 1);
-    	OutputStream out = response.getOutputStream();
-        ImageIO.write(imageFromStream, format, out);
-        out.flush();
-        out.close();
+        try {
+        	
+        	InputStream in = thumbnail.getBinaryStream();
+        	BufferedImage imageFromStream = ImageIO.read(in);
+        	in.close();
+        	
+        	String mimetype = contentType.getStringValue();
+            response.setContentType(mimetype);
+            
+        	String format = mimetype.substring(mimetype.indexOf("/") + 1);
+        	OutputStream out = response.getOutputStream();
+            ImageIO.write(imageFromStream, format, out);
+            out.flush();
+            out.close();
+            
+        } catch (Throwable t) {
+        	log.error("An error occured while regenerating thumbnail for image " + uri, t);
+        	response.sendRedirect(uri.toString());
+        }
         
 		return null;
 	}
-	
+
 	@Required
 	public void setRepository(Repository repository) {
 		this.repository = repository;

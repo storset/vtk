@@ -37,9 +37,8 @@
         class="org.vortikal.web.controller.TagsController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="tags.tagsview" />
-    <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
-    <property name="searchComponents" ref="tags.searchComponent" />
+    <property name="searchComponent" ref="tags.searchComponent" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
@@ -59,7 +58,7 @@
 
 
   <bean id="tags.searchComponent"
-        class="org.vortikal.web.search.SearchComponent">
+        class="org.vortikal.web.search.QueryPartsSearchComponent">
     <property name="name" value="tags.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -67,10 +66,6 @@
     <property name="defaultRecursive" value="false" />
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
-    <property name="query">
-      <value>uri = %1 AND content:keywords = %2</value>
-    </property>
-    <property name="queryParser" ref="searchParser" />
     <property name="defaultSortPropDef" ref="lastModifiedPropDef" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="sortPropertyMapping">
@@ -98,6 +93,15 @@
     </property>
     <property name="publishedDatePropDef" ref="creationTimePropDef" />
     <property name="authorPropDef" ref="createdByPropDef" />
+    <property name="queryBuilders">
+      <list>
+        <bean class="org.vortikal.web.search.ScopeQueryBuilder" />
+        <bean class="org.vortikal.web.search.PropertyTermQueryBuilder">
+          <property name="parameterName" value="tag" />
+          <property name="propertyTypeDefinition" ref="keywordsPropDef" />
+        </bean>
+      </list>
+    </property>
   </bean>
 
 

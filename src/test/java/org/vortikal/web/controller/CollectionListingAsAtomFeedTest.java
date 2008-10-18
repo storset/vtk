@@ -18,8 +18,11 @@ import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTreeImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.QueryStringSearchComponent;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -95,9 +98,8 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 		return collection;
 	}
 	
-	private class MockSearchComponent extends SearchComponent {
+	private class MockSearchComponent implements SearchComponent {
 		
-		@Override
 		public Listing execute(HttpServletRequest request, Resource collection,
 				int page, int pageLimit, int baseOffset) throws Exception {
 			
@@ -105,6 +107,23 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 			
 			return new Listing(null, null, null, 0);
 		}
+
+        public Listing execute(HttpServletRequest request, Resource collection,
+                int page, int pageLimit, int baseOffset, Boolean recursive) 
+        throws Exception {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public PropertyTypeDefinition getAuthorPropDef() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public PropertyTypeDefinition getPublishedDatePropDef() {
+            // TODO Auto-generated method stub
+            return null;
+        }
 		
 	}
 

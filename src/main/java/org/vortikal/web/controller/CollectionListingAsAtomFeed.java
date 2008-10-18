@@ -59,8 +59,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.search.SearchComponent.Listing;
 import org.vortikal.web.service.Service;
 
 public class CollectionListingAsAtomFeed implements Controller {

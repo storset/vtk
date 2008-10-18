@@ -70,7 +70,7 @@
   
 
   <bean id="articleListing.searchComponent" 
-        class="org.vortikal.web.search.SearchComponent">
+        class="org.vortikal.web.search.QueryStringSearchComponent">
     <property name="name" value="articleListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />

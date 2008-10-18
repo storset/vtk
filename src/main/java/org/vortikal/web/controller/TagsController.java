@@ -44,15 +44,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.search.SearchComponent.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -63,9 +61,8 @@ public class TagsController implements Controller {
 
     private Repository repository;
     private int defaultPageLimit = 20;
-    private PropertyTypeDefinition pageLimitPropDef;
     private String viewName;
-    private List<SearchComponent> searchComponents;
+    private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
 
 
@@ -75,7 +72,8 @@ public class TagsController implements Controller {
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         Resource collection = this.repository.retrieve(token, uri, true);
-
+        Resource scope = getScope(token, request);
+        
         Map<String, Object> model = new HashMap<String, Object>();
 
         String tag = request.getParameter("tag");
@@ -89,10 +87,6 @@ public class TagsController implements Controller {
 
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
-        Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
-        if (pageLimitProp != null) {
-            pageLimit = pageLimitProp.getIntValue();
-        }
 
         PageInfo pageInfo = new PageInfo(request, pageLimit);
         int page = pageInfo.getPage();
@@ -104,35 +98,26 @@ public class TagsController implements Controller {
         if (tag != null) {
             boolean recursive = true;
 
-            String scopeForSearchComponent = getScope(token, request);
-            String[] searchParameters = new String[] { scopeForSearchComponent, tag };
-            for (SearchComponent component : this.searchComponents) {
-                Listing listing = component.execute(request, collection, page, limit, 0, searchParameters, recursive);
-                // Add the listing to the results
-                if (listing.getFiles().size() > 0) {
-                    listings.add(listing);
-                }
+            Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, recursive);
+            // Add the listing to the results
+            if (listing.getFiles().size() > 0) {
+                listings.add(listing);
+            }
 
-                // Check previous result (by redoing the previous search),
-                // to see if we need to adjust the offset.
-                // XXX: is there a better way?
-                if (listing.getFiles().size() == 0 && offset > 0) {
-                    Listing prevListing = component.execute(request, collection, page - 1, limit, 0, searchParameters,
-                            recursive);
-                    if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
-                        offset -= prevListing.getFiles().size();
-                    }
+            // Check previous result (by redoing the previous search),
+            // to see if we need to adjust the offset.
+            // XXX: is there a better way?
+            if (listing.getFiles().size() == 0 && offset > 0) {
+                Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, recursive);
+                if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
+                    offset -= prevListing.getFiles().size();
                 }
+            }
 
-                // We have more results to display for this listing
-                if (listing.hasMoreResults()) {
-                    break;
-                }
-
-                // Only include enough results to fill the page:
-                if (listing.getFiles().size() > 0) {
-                    limit -= listing.getFiles().size();
-                }
+            // We have more results to display for this listing
+            // Only include enough results to fill the page:
+            if (!listing.hasMoreResults() && listing.getFiles().size() > 0) {
+                limit -= listing.getFiles().size();
             }
         } else {
 
@@ -187,38 +172,32 @@ public class TagsController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
-    protected String getScope(String token, HttpServletRequest request) throws Exception {
-        String scope;
+    protected Resource getScope(String token, HttpServletRequest request) throws Exception {
         String scopeFromRequest = request.getParameter("scope");
         if (scopeFromRequest == null || scopeFromRequest.equals("")) {
-            return "/*";
-        } else {
-            if (".".equals(scopeFromRequest)) {
-                return RequestContext.getRequestContext().getCurrentCollection().toString() + "/*";
-            } else if (scopeFromRequest.startsWith("/")) {
-                Resource scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
-                if (!scopedResource.isCollection()) {
-                    throw new IllegalArgumentException("scope must be a collection");
-                }
-                return scopedResource.getURI().toString() + "/*";
-            } else {
-                throw new IllegalArgumentException("scope must be '.' or start with a '/'");
+            return this.repository.retrieve(token, Path.ROOT, true);
+        } 
+        if (".".equals(scopeFromRequest)) {
+            Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+            return this.repository.retrieve(token, currentCollection, true);
+        } 
+        if (scopeFromRequest.startsWith("/")) {
+            Resource scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
+            if (!scopedResource.isCollection()) {
+                throw new IllegalArgumentException("scope must be a collection");
             }
+            return scopedResource;
+        } else {
+            throw new IllegalArgumentException("scope must be '.' or start with a '/'");
         }
 
     }
 
 
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-
-    @Required
-    public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
-        this.pageLimitPropDef = pageLimitPropDef;
     }
 
 
@@ -230,8 +209,8 @@ public class TagsController implements Controller {
 
 
     @Required
-    public void setSearchComponents(List<SearchComponent> searchComponents) {
-        this.searchComponents = searchComponents;
+    public void setSearchComponent(SearchComponent searchComponent) {
+        this.searchComponent = searchComponent;
     }
 
 

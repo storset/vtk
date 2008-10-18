@@ -37,19 +37,19 @@ public class TagsTest extends BaseWebTest {
     public void testTagK1() {
         clickLink("k1");
         assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title k1");
-        assertLinkPresentWithText("title k1k2");
-        assertLinkPresentWithText("title k1-in-subfolder");
+        assertLinkPresentWithText("title document-with-keyword1");
+        assertLinkPresentWithText("title document-with-keyword1-and-keyword2");
+        assertLinkPresentWithText("title document-with-keyword1-in-subfolder");
         // TODO We should not show unpublished articles
-        assertLinkPresentWithText("title unpublished article");
+        assertLinkPresentWithText("title unpublished-article-with-keyword1");
     }
 
 
     public void testTagK2() {
         clickLink("k2");
         assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title k2");
-        assertLinkPresentWithText("title k1k2");
+        assertLinkPresentWithText("title document-with-keyword2");
+        assertLinkPresentWithText("title document-with-keyword1-and-keyword2");
     }
 
 
@@ -63,14 +63,14 @@ public class TagsTest extends BaseWebTest {
     public void testTagK1InSubfolderScopeFolder() {
         clickLink("k1-subfolder-scope-folder");
         assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title k1-in-subfolder");
+        assertLinkPresentWithText("title document-with-keyword1-in-subfolder");
     }
 
 
     public void testTagK2InSubfolderScopeFolder() {
-        clickLink("k1-subfolder-scope-folder");
+        clickLink("k2-subfolder-scope-folder");
         assertElementPresent("vrtx-tagview");
-        assertLinkNotPresentWithText("title k2-in-subfolder ");
+        assertLinkNotPresentWithText("title document-with-keyword1-in-subfolder");
         assertTextNotPresent("No resources tagged with tagstest-k2.");
     }
 
@@ -78,9 +78,9 @@ public class TagsTest extends BaseWebTest {
     public void testTagK1InSubfolderNoScope() {
         clickLink("k1-subfolder-no-scope");
         assertElementPresent("vrtx-tagview");
-        assertLinkPresentWithText("title k1");
-        assertLinkPresentWithText("title k1k2");
-        assertLinkPresentWithText("title k1-in-subfolder");
+        assertLinkPresentWithText("title document-with-keyword1");
+        assertLinkPresentWithText("title document-with-keyword1-and-keyword2");
+        assertLinkPresentWithText("title document-with-keyword1-in-subfolder");
     }
 
 }

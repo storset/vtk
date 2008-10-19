@@ -97,6 +97,11 @@ public class Listing {
     }
 
 
+    public boolean hasContent() {
+        return getFiles() != null && getFiles().size() > 0;
+    }
+
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());

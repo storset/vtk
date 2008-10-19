@@ -54,15 +54,14 @@
 
   <#else>
 
-    <#if searchComponents?exists && searchComponents?has_content>
+    <#if listing?exists && listing.hasContent()>
   
 
      <#-- List resources: -->
      <div class="tagged-resources">
-      <#assign searchComponent=searchComponents[0]>
-      <#assign resources=searchComponent.getFiles() />
-      <#assign urls=searchComponent.urls />
-      <#assign displayPropDefs=searchComponent.displayPropDefs />
+      <#assign resources=listing.getFiles() />
+      <#assign urls=listing.urls />
+      <#assign displayPropDefs=listing.displayPropDefs />
       
       
       <#list resources as resource>
@@ -143,7 +142,7 @@
       
       
       
-    <#else>
+    <#else> <#!-- no resources found for tag -->
       <p>
         ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag}</span>.
       </p>

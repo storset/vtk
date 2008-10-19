@@ -30,10 +30,8 @@
  */
 package org.vortikal.web.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,7 +71,7 @@ public class TagsController implements Controller {
         Principal principal = securityContext.getPrincipal();
         Resource collection = this.repository.retrieve(token, uri, true);
         Resource scope = getScope(token, request);
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
 
         String tag = request.getParameter("tag");
@@ -92,45 +90,37 @@ public class TagsController implements Controller {
         int page = pageInfo.getPage();
         int limit = pageInfo.getLimit();
         int offset = pageInfo.getOffset();
-        
-        List<Listing> listings = new ArrayList<Listing>();
 
-        if (tag != null) {
-            boolean recursive = true;
-
-            Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, recursive);
-            // Add the listing to the results
-            if (listing.getFiles().size() > 0) {
-                listings.add(listing);
-            }
-
-            // Check previous result (by redoing the previous search),
-            // to see if we need to adjust the offset.
-            // XXX: is there a better way?
-            if (listing.getFiles().size() == 0 && offset > 0) {
-                Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, recursive);
-                if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
-                    offset -= prevListing.getFiles().size();
-                }
-            }
-
-            // We have more results to display for this listing
-            // Only include enough results to fill the page:
-            if (!listing.hasMoreResults() && listing.getFiles().size() > 0) {
-                limit -= listing.getFiles().size();
-            }
-        } else {
+        if (tag == null) {
 
         }
+        boolean recursive = true;
 
-        model.put("searchComponents", listings);
+        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, recursive);
+        model.put("listing", listing);
+
+        // Check previous result (by redoing the previous search),
+        // to see if we need to adjust the offset.
+        // XXX: is there a better way?
+        if (listing.getFiles().size() == 0 && offset > 0) {
+            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, recursive);
+            if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
+                offset -= prevListing.getFiles().size();
+            }
+        }
+
+        // We have more results to display for this listing
+        // Only include enough results to fill the page:
+        if (!listing.hasMoreResults() && listing.getFiles().size() > 0) {
+            limit -= listing.getFiles().size();
+        }
+
         model.put("page", page);
 
         URL nextURL = null;
         URL prevURL = null;
-        if (listings.size() > 0) {
-            Listing last = listings.get(listings.size() - 1);
-            if (last.hasMoreResults()) {
+        if (listing.hasContent()) {
+            if (listing.hasMoreResults()) {
                 nextURL = URL.create(request);
                 nextURL.setParameter("page", String.valueOf(page + 1));
             }
@@ -172,15 +162,16 @@ public class TagsController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
+
     protected Resource getScope(String token, HttpServletRequest request) throws Exception {
         String scopeFromRequest = request.getParameter("scope");
         if (scopeFromRequest == null || scopeFromRequest.equals("")) {
             return this.repository.retrieve(token, Path.ROOT, true);
-        } 
+        }
         if (".".equals(scopeFromRequest)) {
             Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
             return this.repository.retrieve(token, currentCollection, true);
-        } 
+        }
         if (scopeFromRequest.startsWith("/")) {
             Resource scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
             if (!scopedResource.isCollection()) {
@@ -192,7 +183,6 @@ public class TagsController implements Controller {
         }
 
     }
-
 
 
     @Required

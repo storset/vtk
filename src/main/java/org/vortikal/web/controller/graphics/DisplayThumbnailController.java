@@ -40,6 +40,7 @@ public class DisplayThumbnailController implements Controller {
         	String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
         	log.warn("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
         	response.sendRedirect(uri.toString());
+        	return null;
         }
         
         try {
@@ -60,6 +61,7 @@ public class DisplayThumbnailController implements Controller {
         } catch (Throwable t) {
         	log.error("An error occured while regenerating thumbnail for image " + uri, t);
         	response.sendRedirect(uri.toString());
+        	return null;
         }
         
 		return null;

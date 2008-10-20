@@ -1,2 +1,1 @@
-ALTER TABLE extra_prop_entry ADD binary_content BLOB;
-ALTER TABLE extra_prop_entry ADD binary_mimetype varchar2 (64);
+ALTER TABLE extra_prop_entry ADD (binary_content BLOB, binary_mimetype varchar2 (64));

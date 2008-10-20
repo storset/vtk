@@ -14,9 +14,10 @@ import org.apache.commons.lang.StringUtils;
 
 public class ImageServiceImplTestIntegration extends TestCase {
     
-    private final String pngImage = "originalImage.png";
-    private final String jpgImage = "originalImage.jpg";
-    private final String gifImage = "originalImage.gif";
+    private final String pngImage = "originalPNGImage.png";
+    private final String jpgImage = "originalJPGImage.jpg";
+    private final String gifImage = "originalGIFImage.gif";
+    private final String bmpImage = "originalBMPImage.bmp";
     private final String notScaledImage = "originalNotScaledImage.png";
     
     private ImageServiceImpl imageService;
@@ -37,6 +38,10 @@ public class ImageServiceImplTestIntegration extends TestCase {
     
     public void testScaleImageGIF() throws IOException {
         assertProperResize(gifImage, "  ", "300");
+    }
+    
+    public void testScaleImageTIF() throws IOException {
+        assertProperResize(bmpImage, "250", null);
     }
     
     public void testDontScaleImage() throws IOException {
@@ -65,7 +70,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
     	ScaledImage scaledImage = imageService.scaleImage(
     			"http://somstudenter.files.wordpress.com/2007/05/uio-logo.jpg", scaledWidth, "");
     	assertNotNull("No image was fetched", scaledImage);
-    	assertEquals("Wrong format", "jpg", scaledImage.getFormat());
+    	assertEquals("Wrong format", "jpg", scaledImage.getOriginalFormat());
     	assertEquals("Wrong width after resizing", scaledWidth, String.valueOf(scaledImage.getImage().getWidth()));
     }
     
@@ -74,7 +79,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
     	BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));
     	ScaledImage scaledImage = imageService.scaleImage(originalImage, "png", scaledWidth, null);
     	assertNotNull("No image returned", scaledImage);
-    	byte[] imageBytes = scaledImage.getImageBytes();
+    	byte[] imageBytes = scaledImage.getImageBytes("png");
     	assertTrue("No imagebytes returned", imageBytes != null && imageBytes.length > 0);
     	ByteArrayInputStream in = new ByteArrayInputStream(imageBytes);
     	BufferedImage imageFromBytes = ImageIO.read(in);
@@ -87,7 +92,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
         String format = imageName.substring(imageName.lastIndexOf(".") + 1);
         ScaledImage scaledImage = imageService.scaleImage(originalImage, format, width, height);
         assertNotNull("No image returned", scaledImage);
-        assertEquals("Wrong format", format, scaledImage.getFormat());
+        assertEquals("Wrong format", format, scaledImage.getOriginalFormat());
         
         if (StringUtils.isNotBlank(width)) {
         	String scaledWidth = String.valueOf(scaledImage.getImage().getWidth());
@@ -104,19 +109,28 @@ public class ImageServiceImplTestIntegration extends TestCase {
         	assertEquals("Scaling did not return height as expected", scaledHeight, originalHeight);
         }
         
-        // Use this to print the scaled image for review
-        //printImage(imageName, scaledImage);
+        // Use this method to print the scaled image for review
+        printImage(imageName, scaledImage, null); // print it in it's original format
+        if (!StringUtils.equalsIgnoreCase(format, "png")) { // print in in png if any other format
+        	printImage(imageName, scaledImage, "png");
+        }
     }
 
     /**
      * Print the scaled image to the tests build folder (target/test-classes/org/vortikal/graphics)
      * Rename it from "original*" to "scaled*"
+     * If 'desiredFormat' is set, print image to that format
      */
-    private void printImage(String testImageName, ScaledImage scaledImage) throws IOException {
+    private void printImage(String testImageName, ScaledImage scaledImage, String desiredFormat) throws IOException {
         URL url = this.getClass().getResource(testImageName);
         String path = url.toString();
         path = path.substring(path.indexOf("/")).replace("original", "scaled");
-        ImageIO.write(scaledImage.getImage(), scaledImage.getFormat(), new File(path));
+        String format = scaledImage.getOriginalFormat();
+        if (StringUtils.isNotBlank(desiredFormat)) {
+        	format = desiredFormat;
+        	path = path.substring(0, path.lastIndexOf(".") + 1) + desiredFormat;
+        }
+        ImageIO.write(scaledImage.getImage(), format, new File(path));
     }
 
 }

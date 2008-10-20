@@ -6,27 +6,30 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ScaledImage {
 	
 	private BufferedImage image;
-	private String format;
+	private String originalFormat;
 	
-	public ScaledImage(BufferedImage image, String format) {
+	public ScaledImage(BufferedImage image, String originalFormat) {
 		this.image = image;
-		this.format = format;
+		this.originalFormat = originalFormat;
 	}
 	
 	public BufferedImage getImage() {
 		return this.image;
 	}
 	
-	public String getFormat() {
-		return this.format;
+	public String getOriginalFormat() {
+		return this.originalFormat;
 	}
 	
-	public byte[] getImageBytes() throws IOException {
+	public byte[] getImageBytes(String format) throws IOException {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        ImageIO.write(this.image, this.format, byteStream);
+		String outFormat = StringUtils.isBlank(format) ? getOriginalFormat() : format;
+        ImageIO.write(this.image, outFormat, byteStream);
         byte[] imageBytes = byteStream.toByteArray();
         byteStream.close();
         return imageBytes;

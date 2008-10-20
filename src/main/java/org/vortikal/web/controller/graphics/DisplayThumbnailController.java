@@ -35,9 +35,8 @@ public class DisplayThumbnailController implements Controller {
 
         Resource image = this.repository.retrieve(token, uri, true);   
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
-        String mimetype = thumbnail.getBinaryMimeType();
         
-        if (thumbnail == null || StringUtils.isBlank(mimetype)) {
+        if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
         	String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
         	log.warn("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
         	response.sendRedirect(uri.toString());
@@ -49,7 +48,9 @@ public class DisplayThumbnailController implements Controller {
         	BufferedImage imageFromStream = ImageIO.read(in);
         	in.close();
         	
+        	String mimetype = thumbnail.getBinaryMimeType();
             response.setContentType(mimetype);
+            
         	String format = mimetype.substring(mimetype.indexOf("/") + 1);
         	OutputStream out = response.getOutputStream();
             ImageIO.write(imageFromStream, format, out);

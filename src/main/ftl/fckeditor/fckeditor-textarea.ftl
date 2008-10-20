@@ -87,8 +87,7 @@
           editor.Config.FlashUpload = ${enableFileBrowsers?string};
           editor.Config.BaseHref = '${fckeditorBase.documentURL?html}';
           editor.Config['SkinPath'] = editor.BasePath + '${fckSkin}';
-          editor.Config['EditorAreaCSS'] = '${fckEditorAreaCSSURL?html}';
-
+	  editor.Config['EditorAreaCSS'] = "<#list fckEditorAreaCSSURL as url>${url?html}<#if url_has_next>,</#if></#list>";
 
           editor.ReplaceTextarea();
 

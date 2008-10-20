@@ -47,20 +47,20 @@
 	<!-- Inline Styles -->
 
         <Style name="Facts container left" element="div">
-                <Attribute name="class" value="facts container-size-s container container-left" />
+                <Attribute name="class" value="facts-container container-size-s container-left" />
         </Style>
         <Style name="Facts container right" element="div">
-                <Attribute name="class" value="facts container-size-s container-right" />
+                <Attribute name="class" value="facts-container container-size-s container-right" />
         </Style>
 
         <Style name="Image container left" element="div">
-                <Attribute name="class" value="container-left" />
+                <Attribute name="class" value="img-container container-left" />
         </Style>
         <Style name="Image container middle" element="div">
-                <Attribute name="class" value="container-middle" />
+                <Attribute name="class" value="img-container container-middle" />
         </Style>
         <Style name="Image container right" element="div">
-                <Attribute name="class" value="container-right" />
+                <Attribute name="class" value="img-container container-right" />
         </Style>
 
        <Style name="Image and caption container left (400px)" element="div">

@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,9 +35,11 @@ public class DisplayThumbnailController implements Controller {
 
         Resource image = this.repository.retrieve(token, uri, true);   
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
+        String mimetype = thumbnail.getBinaryMimeType();
         
-        if (thumbnail == null) {
-        	log.warn("No thumbnail was found for image: " + uri);
+        if (thumbnail == null || StringUtils.isBlank(mimetype)) {
+        	String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
+        	log.warn("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
         	response.sendRedirect(uri.toString());
         }
         
@@ -46,9 +49,7 @@ public class DisplayThumbnailController implements Controller {
         	BufferedImage imageFromStream = ImageIO.read(in);
         	in.close();
         	
-        	String mimetype = thumbnail.getBinaryMimeType();
             response.setContentType(mimetype);
-            
         	String format = mimetype.substring(mimetype.indexOf("/") + 1);
         	OutputStream out = response.getOutputStream();
             ImageIO.write(imageFromStream, format, out);

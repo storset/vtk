@@ -92,21 +92,14 @@
         <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
 
-          <#local image = vrtx.propResource(r, 'picture') />
-          <#local thumbnail = vrtx.prop(image, 'thumbnail') />
-          <#local thumbnailResource = '' />
-          <#if thumbnail?has_content && thumbnail.getValue().getBinaryRef() != ''>
-            <#local thumbnailResource = '?vrtx=thumbnail' />
-          </#if>
-        
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
             <#local src = r.URI.getParent().extendAndProcess(src) />
           </#if>
           <#if caption != ''>
-            <img src="${src?html}${thumbnailResource}" alt="${captionFlattened}" />
+            <img src="${src?html}?vrtx=thumbnail" alt="${captionFlattened}" />
           <#else>
-            <img src="${src?html}${thumbnailResource}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+            <img src="${src?html}?vrtx=thumbnail" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
           </#if> 
         </#if>
         ${title?html}</a>

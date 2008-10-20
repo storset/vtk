@@ -304,6 +304,7 @@
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="subfolder-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
+    <property name="searchLimit" value="1000" />
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="titlePropDef" ref="titlePropDef" />

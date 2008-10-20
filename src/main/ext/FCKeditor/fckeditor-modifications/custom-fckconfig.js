@@ -5,7 +5,7 @@ FCKConfig.ToolbarCanCollapse = false;
 FCKConfig.FirefoxSpellChecker = true;
 
 FCKConfig.ToolbarSets['Complete'] = [
-            ['CreateDiv','Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','Flash','Table','Rule','SpecialChar'],
+            ['Source','PasteText','PasteWord','-','Undo','Redo','-','Replace','RemoveFormat','-','Link','Unlink','Anchor','Image','CreateDiv','Flash','Table','Rule','SpecialChar'],
             ['FontFormat','-','Bold','Italic','Underline','StrikeThrough','Subscript','Superscript','OrderedList','UnorderedList','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','TextColor','FitWindow']
 ] ;
 

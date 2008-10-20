@@ -32,11 +32,8 @@
 }
 
 .container{
-	border-color:#aaa;
-	border-style:solid;
-	border-width:2px;
+	border-style:none;
 	overflow:hidden;
-	padding:1em;
 }
 
 .container-middle img{

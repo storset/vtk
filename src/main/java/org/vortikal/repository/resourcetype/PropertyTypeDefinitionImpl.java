@@ -355,6 +355,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public InputStream getBinaryStream(String binaryRef) {
     	return this.valueFactory.getBinaryStream(this.getName(), binaryRef);
     }
+    
+    public String getBinaryMimeType(String binaryRef) {
+    	return this.valueFactory.getBinaryMimeType(this.getName(), binaryRef);
+    }
 
     public void setValueSeparators(Map<String, ValueSeparator> valueSeparators) {
         this.valueSeparators = valueSeparators;

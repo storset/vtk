@@ -62,8 +62,18 @@ public interface ValueFactory {
     /**
      * Get a stream for the binary content of a property
      * 
+     * @param binaryName The name of the binary content
      * @param binaryRef The reference to the binary content
      * @return Stream holding the binary content
      */
     public InputStream getBinaryStream(String binaryName, String binaryRef);
+    
+    /**
+     * Get the binary mimetype for the binary content of a property
+     * 
+     * @param binaryName The name of the binary content
+     * @param binaryRef The reference to the binary content
+     * @return Stream holding the binary content
+     */
+    public String getBinaryMimeType(String binaryName, String binaryRef);
 }

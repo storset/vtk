@@ -215,7 +215,8 @@ create table extra_prop_entry
     name_space varchar (128) null,
     name varchar (64) not null,
     value varchar (2048) not null,
-    binary_content oid
+    binary_content oid,
+    binary_mimetype varchar (64)
 );
 
 ALTER TABLE extra_prop_entry

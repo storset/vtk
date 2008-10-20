@@ -136,5 +136,7 @@ public interface PropertyTypeDefinition {
      * @return Stream holding the binary content
      */
     public InputStream getBinaryStream(String binaryRef);
+    
+    public String getBinaryMimeType(String binaryRef);
 
 }

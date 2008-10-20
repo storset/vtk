@@ -410,8 +410,8 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         return sb.toString();
     }
     
-    public void setBinaryValue(byte[] binaryValue, String binaryRef) {
-    	Value v = new Value(binaryValue, binaryRef);
+    public void setBinaryValue(byte[] binaryValue, String binaryRef, String binaryMimeType) {
+    	Value v = new Value(binaryValue, binaryRef, binaryMimeType);
         setValue(v);
     }
     
@@ -420,6 +420,13 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
     	return this.getDefinition().getBinaryStream(this.value.getBinaryRef());
+    }
+    
+    public String getBinaryMimeType() throws IllegalOperationException {
+    	if (this.value == null || getType() != PropertyType.Type.BINARY) {
+            throw new IllegalOperationException("Property " + this + " not of type BINARY");
+        }
+    	return this.getDefinition().getBinaryMimeType(this.value.getBinaryRef());
     }
 
 }

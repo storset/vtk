@@ -33,7 +33,6 @@ public class DisplayThumbnailController implements Controller {
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource image = this.repository.retrieve(token, uri, true);   
-        Property contentType = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
         
         if (thumbnail == null) {
@@ -47,7 +46,7 @@ public class DisplayThumbnailController implements Controller {
         	BufferedImage imageFromStream = ImageIO.read(in);
         	in.close();
         	
-        	String mimetype = contentType.getStringValue();
+        	String mimetype = thumbnail.getBinaryMimeType();
             response.setContentType(mimetype);
             
         	String format = mimetype.substring(mimetype.indexOf("/") + 1);

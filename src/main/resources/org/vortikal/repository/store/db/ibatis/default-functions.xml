@@ -56,12 +56,13 @@
     insert into extra_prop_entry
       (extra_prop_entry_id, resource_id, name_space, name, value
         <isNotEmpty property="binaryContent">
-          , binary_content
+          , binary_content, binary_mimetype
         </isNotEmpty>)
     values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
       #namespaceUri#, #name#, #value#
         <isNotEmpty property="binaryContent">
-          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#
+          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#,
+          #binaryMimeType#
         </isNotEmpty>)
   </insert>
   

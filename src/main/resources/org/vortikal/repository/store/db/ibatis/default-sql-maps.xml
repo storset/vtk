@@ -375,6 +375,10 @@
   <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryStream">
     select binary_content from extra_prop_entry where name = #binaryName# and value = #binaryRef#
   </select>
+  
+  <select id="selectBinaryMimeTypeEntry" parameterClass="java.util.Map" resultClass="string">
+    select binary_mimetype from extra_prop_entry where name = #binaryName# and value = #binaryRef#
+  </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">
     insert into extra_prop_entry
@@ -383,7 +387,8 @@
        name_space,
        name,
        value,
-       binary_content)
+       binary_content,
+       binary_mimetype)
     select
       <include refid="nextExtraPropEntryId" />, t.*
       from
@@ -392,7 +397,8 @@
           p.name_space,
           p.name,
           p.value,
-          p.binary_content
+          p.binary_content,
+          p.binary_mimetype
         from vortex_resource r inner join extra_prop_entry p 
              on r.prev_resource_id = p.resource_id
         where (r.uri = #destUri# or r.uri like #destUriWildcard# escape '@')

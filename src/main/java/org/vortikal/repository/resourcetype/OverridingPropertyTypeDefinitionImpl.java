@@ -218,5 +218,9 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     public InputStream getBinaryStream(String binaryRef) {
     	return this.overriddenPropDef.getBinaryStream(binaryRef);
     }
+    
+    public String getBinaryMimeType(String binaryRef) {
+    	return this.overriddenPropDef.getBinaryMimeType(binaryRef);
+    }
 
 }

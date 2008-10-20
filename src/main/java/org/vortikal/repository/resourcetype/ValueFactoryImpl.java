@@ -137,7 +137,7 @@ public class ValueFactoryImpl implements ValueFactory {
             }
         case BINARY:
         	// Don't fetch any of the binary content until it's specifically needed
-        	return new Value(new byte[0], stringValue);        	
+        	return new Value(new byte[0], stringValue, "");        	
         }
 
         throw new IllegalArgumentException("Cannot convert '" + stringValue 
@@ -147,6 +147,10 @@ public class ValueFactoryImpl implements ValueFactory {
     
     public InputStream getBinaryStream(String binaryName, String binaryRef) {
     	return this.binaryDao.getBinaryStream(binaryName, binaryRef);
+    }
+    
+    public String getBinaryMimeType(String binaryName, String binaryRef) {
+    	return this.binaryDao.getBinaryMimeType(binaryName, binaryRef);
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {

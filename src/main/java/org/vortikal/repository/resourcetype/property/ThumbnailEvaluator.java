@@ -34,9 +34,13 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
             Property contentType = ancestorPropertySet.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
             String mimetype = contentType.getStringValue();
             String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
-            ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
+            
+            // TODO lossy-compression -> jpeg
+            String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png" : imageFormat;
+            
+            ScaledImage thumbnail = imageService.scaleImage(image, thumbnailFormat, width, "");
             String binaryRef = ancestorPropertySet.getURI().toString();
-            property.setBinaryValue(thumbnail.getImageBytes(), binaryRef);
+            property.setBinaryValue(thumbnail.getImageBytes(), binaryRef, "image/" + thumbnailFormat);
             return true;
 
 

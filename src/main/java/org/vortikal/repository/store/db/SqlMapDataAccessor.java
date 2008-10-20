@@ -922,8 +922,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                             } else {
                                 Value value = property.getValue();
                                 if (PropertyType.Type.BINARY.equals(value.getType())) {
-                                	parameters.put("binaryContent", value.getBinaryValue());
                                 	parameters.put("value", value.getBinaryRef());
+                                	parameters.put("binaryContent", value.getBinaryValue());
+                                	parameters.put("binaryMimeType", value.getBinaryMimeType());
                                 } else {
                                 	parameters.put("value", value.getNativeStringRepresentation());
                                 }
@@ -1147,7 +1148,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 			while ((i = in.read()) != -1) {
 				out.write(i);
 			}
-			prop.setBinaryValue(out.toByteArray(), resourceUri);
+			prop.setBinaryValue(out.toByteArray(), resourceUri, prop.getBinaryMimeType());
 		} catch (Exception e) {
 			logger.error("Colud not read binary stream for property " + prop.getDefinition().getName(), e);
 		}

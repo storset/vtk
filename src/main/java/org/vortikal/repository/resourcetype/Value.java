@@ -52,6 +52,7 @@ public final class Value implements Cloneable, Comparable<Value> {
     // Oh no...
     private byte[] binaryValue;
     private String binaryRef;
+    private String binaryMimeType;
 
     public Value(String stringValue) {
         if (stringValue == null || stringValue.equals(""))
@@ -107,9 +108,10 @@ public final class Value implements Cloneable, Comparable<Value> {
         this.principalValue = principalValue;
     }
     
-    public Value(byte[] binaryValue, String binaryRef) {
+    public Value(byte[] binaryValue, String binaryRef, String binaryMimType) {
     	this.binaryValue = binaryValue;
     	this.binaryRef = binaryRef;
+    	this.binaryMimeType = binaryMimType;
     	this.type = PropertyType.Type.BINARY;
     }
 
@@ -143,6 +145,10 @@ public final class Value implements Cloneable, Comparable<Value> {
     
     public byte[] getBinaryValue() {
     	return this.binaryValue;
+    }
+    
+    public String getBinaryMimeType() {
+    	return this.binaryMimeType;
     }
     
     public String getBinaryRef() {
@@ -253,7 +259,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:
-        	return new Value(this.binaryValue, this.binaryRef);
+        	return new Value(this.binaryValue, this.binaryRef, this.binaryMimeType);
         default:
             return new Value(this.stringValue);
         }
@@ -308,7 +314,8 @@ public final class Value implements Cloneable, Comparable<Value> {
                 sb.append(this.principalValue);
                 break;
             case BINARY:
-            	sb.append(this.binaryRef + ", contentlength:" + this.binaryValue.length);
+            	sb.append(this.binaryRef + ", mimetype: " + this.binaryMimeType +
+            			", contentlength:" + this.binaryValue.length);
             	break;
             default:
                 sb.append(this.stringValue);

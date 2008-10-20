@@ -69,7 +69,7 @@ label.resource\.recursive-listing, label.resource\.hide-last-modified, label.res
 
 div.properties {
  clear:both;
- /* margin-bottom: 1em; */ 
+ margin-bottom: .25em;
  height: 1%; /* For IE */
 }
 

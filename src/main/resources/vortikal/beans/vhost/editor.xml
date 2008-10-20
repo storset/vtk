@@ -232,7 +232,7 @@
   <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
     <constructor-arg>
 	<list>
-              <value>${themeBaseURL}/box.css</value>
+              <value>${themeBaseURL}/editor-container.css</value>
               <value>${themeBaseURL}/fck_editorarea.css</value>
         </list>
     </constructor-arg>

@@ -69,7 +69,7 @@
     <constructor-arg>
       <list>
         <value>${themeBaseURL}/view-article.css</value>
-        <value>${themeBaseURL}/box.css</value>
+        <value>${themeBaseURL}/view-container.css</value>
       </list>
     </constructor-arg>
   </bean>

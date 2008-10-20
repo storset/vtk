@@ -1,0 +1,72 @@
+@charset "UTF-8";
+/* CSS Document */
+
+@charset "UTF-8";
+/* CSS Document */
+
+.container-size-xxl {
+	width:800px;
+}
+.container-size-xl {
+	width:700px;
+}
+
+.container-size-l {
+	width:600px;
+}
+
+.container-size-m {
+	width:500px;
+}
+
+.container-size-s {
+	width:400px;
+}
+
+.container-size-xs{
+	width:300px;
+}
+
+.container-size-xxs{
+	width:200px;
+}
+
+.container{
+	border-color:#aaa;
+	border-style:solid;
+	border-width:2px;
+	overflow:hidden;
+	padding:1em;
+}
+
+.container-middle img{
+	display:block;
+	margin-right:auto;
+	margin-left:auto;
+}
+
+.container-left{
+	margin: 0 1em 1em 0;
+	float:left;
+}
+.container-right{
+	margin: 0 0 1em 1em;
+	float:right;
+}
+
+.container img{
+ 	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	margin-top:0em;
+	margin-bottom:1em;
+	clear:both;
+	padding:0;
+	border:none;
+}
+
+.container p{
+	margin-top:0;
+	margin-bottom:0;
+	overflow:hidden;
+}

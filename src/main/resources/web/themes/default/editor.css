@@ -203,6 +203,10 @@ div.hide-introduction-image{
   width: 40%;	
 }
 
+#resource\.htmlTitle {
+  width: 40%;	
+}
+
 span.input-description{
     font-size: .8em;
 }

@@ -214,7 +214,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             while (type != null) {
                 String typeKey = prefix + "[" + type.getName() + "]";
                 String typeValue = this.decorationConfiguration.getProperty(typeKey);
-                System.out.println("__get: " + typeKey + ": " + typeValue);
                 if (typeValue != null) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Found match for URI prefix '" + prefix
@@ -226,7 +225,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                 type = type.getParentTypeDefinition();
             }
             String value = this.decorationConfiguration.getProperty(prefix);
-            System.out.println("__get: " + prefix + ": " + value);
             if (value != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for URI prefix '" + prefix

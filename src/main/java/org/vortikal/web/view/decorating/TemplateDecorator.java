@@ -186,7 +186,6 @@ public class TemplateDecorator implements Decorator {
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing document took " + duration + " ms");
         }
-        System.out.println("__Parsing document took " + duration + " ms");
         return new HtmlPageContentImpl(content.getOriginalCharacterEncoding(), html);
     }
     

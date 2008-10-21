@@ -14,14 +14,26 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	 * 
 	 * Systemtest Del 7 - Redigering av metadata - Test 01
 	 * 
-	 * TODO: Refactor and add more tests for metadata del 7
+	 * TODO: Refactor and add more tests for metadata del 7.
 	 * 
 	 */
 	public void testParentFolderLastModified() {
 		
 		String parentFolderName = "parentfolder";
 		String subFolderName = "subfolder";
-		int cropDateModifiedValue = 20; // TODO: need to be tweaked
+		int cropDateModifiedValue = 19;
+		
+		// Cropfactor = 19 gives ( [ ] = cropped away ):
+		
+		// Long date : November 21, 2008 3[ :25:12 PM CEST by root@localhost ]
+		// Short date: May 4, 2008 10:32:4[ 8 AM CEST by vortex@localhost ]
+		
+		// 19 seems to work for long and short dates.
+		
+		// The test will fail if single seconds is included in last-modified.
+		
+		// TODO: Test will fail from 1 - 9 May next year when 12hr clock :)
+		// |-> May 4, 2008 2:32:48[ PM CEST by root@localhost ]
 		
 		createFolder(parentFolderName);
 		
@@ -93,25 +105,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	}
 	
 	/**
-	 * Delete resource in listing and verify result
-	 * 
-	 * TODO: Refactor in own class/package webtests/admin/utils/ResourceManager.java(?)
-	 * 
-	 * @param folderName
-	 */
-	private void deleteResource(String resourceName) {
-		
-		assertLinkPresent(resourceName);
-		
-		// Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
-		setScriptingEnabled(false);
-		clickLink("delete-" + resourceName);
-		
-		assertLinkNotPresent(resourceName);
-	}
-	
-	/**
-	 * Delete resource in top-menu
+	 * Delete resource from top-menu
 	 * 
 	 * TODO: Refactor in own class/package webtests/admin/utils/ResourceManager.java(?)
 	 * 

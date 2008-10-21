@@ -1,6 +1,13 @@
 package org.vortikal.web.controller.graphics;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 
 import org.jmock.Expectations;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,7 +28,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 	private Path requestPath;
 	
 	protected final Property mockThumbnail = context.mock(Property.class);
-	private final String mimeType = "image/png";
+	private final String thumbnailMimeType = "image/png";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -58,8 +65,28 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 		prepareRequest(true, true);
 		
 		// No binarystream, so we should redirect
-		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryMimeType(); will(returnValue(mimeType)); }});
+		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryMimeType(); will(returnValue(thumbnailMimeType)); }});
 		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryStream(); will(returnValue(null)); }});
+
+		handleRequest();
+	}
+	
+	public void testDisplayThumbnail() throws Exception {
+		prepareRequest(true, false);
+		
+		BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("testImage.gif"));
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ImageIO.write(image, "png", out);
+		byte[] imageBytes = out.toByteArray();
+		out.close();
+		final InputStream in = new ByteArrayInputStream(imageBytes);
+		
+		context.checking(new Expectations() {{ atLeast(2).of(mockThumbnail).getBinaryMimeType(); will(returnValue(thumbnailMimeType)); }});
+		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryStream(); will(returnValue(in)); }});
+		context.checking(new Expectations() {{ one(mockResponse).setContentType(thumbnailMimeType); }});
+		
+		final ServletOutputStream responseOut = new MockServletOutputStream();
+		context.checking(new Expectations() {{ one(mockResponse).getOutputStream(); will(returnValue(responseOut)); }});
 
 		handleRequest();
 	}
@@ -94,6 +121,14 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 		}
         
 		return image;
+	}
+	
+	private class MockServletOutputStream extends ServletOutputStream {
+
+		@Override
+		public void write(int b) throws IOException {
+		}
+		
 	}
 
 }

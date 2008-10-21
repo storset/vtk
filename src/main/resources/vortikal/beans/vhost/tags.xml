@@ -36,7 +36,7 @@
   <bean id="tags.handler" 
         class="org.vortikal.web.controller.TagsController"
         parent="requestLocalRepositoryAware">
-    <property name="viewName" value="tags.tagsview" />
+    <property name="viewName" value="tags.tags" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="alternativeRepresentations">
@@ -108,7 +108,7 @@
   <bean id="tags.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="tags.tagsview"  value-ref="tags.tagsview" />
+        <entry key="tags.tags"  value-ref="tags.tagsview" />
       </map>
     </property>
   </bean>

@@ -60,4 +60,15 @@ public class ResourceDeletionEvent extends RepositoryEvent {
     public boolean isCollection() {
         return this.collection;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getName());
+        sb.append("[");
+        sb.append("source=").append(this.source);
+        sb.append(";uri=").append(this.uri);
+        sb.append(";resourceId=").append(this.resourceId);
+        sb.append(";collection=").append(this.collection);
+        sb.append("]");
+        return sb.toString();
+    }
 }

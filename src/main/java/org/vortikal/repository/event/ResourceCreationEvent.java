@@ -53,5 +53,15 @@ public class ResourceCreationEvent extends RepositoryEvent {
     public Path getURI() {
         return this.resource.getURI();
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getName());
+        sb.append("[");
+        sb.append("source=").append(this.source);
+        sb.append(";resource=").append(this.resource);
+        sb.append("]");
+        return sb.toString();
+    }
+
 
 }

@@ -73,4 +73,16 @@ public class ACLModificationEvent extends RepositoryEvent {
     public Acl getOriginalACL() {
         return this.originalACL;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getName());
+        sb.append("[");
+        sb.append("source=").append(this.source);
+        sb.append(";resource=").append(this.resource);
+        sb.append(";original=").append(this.original);
+        sb.append(";acl=").append(this.acl);
+        sb.append(";originalACL=").append(this.originalACL);
+        sb.append("]");
+        return sb.toString();
+    }
 }

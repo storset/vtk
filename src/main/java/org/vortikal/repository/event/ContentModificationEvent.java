@@ -60,4 +60,14 @@ public class ContentModificationEvent extends RepositoryEvent {
     public Resource getOriginal() {
         return this.original;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getName());
+        sb.append("[");
+        sb.append("source=").append(this.source);
+        sb.append(";resource=").append(this.resource);
+        sb.append(";original=").append(this.original);
+        sb.append("]");
+        return sb.toString();
+    }
 }

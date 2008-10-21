@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.cache.loaders;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -42,8 +41,8 @@ import org.vortikal.util.cache.ContentCacheLoader;
  * Clients have to implement the <code>handleContentStream()</code>
  * method in order to build a cacheable object.
  */
-public abstract class URLConnectionCacheLoader <O>
-  implements ContentCacheLoader<String, O>  {
+public abstract class URLConnectionCacheLoader <T>
+  implements ContentCacheLoader<String, T>  {
 
     private int readTimeout = -1;
     private int connectTimeout = -1;
@@ -73,15 +72,11 @@ public abstract class URLConnectionCacheLoader <O>
      *
      * @param url the URL to load
      */
-    public final O load(String url) throws Exception {
+    public final T load(String url) throws Exception {
         String address = url.toString();
         URLConnection connection = new URL(address).openConnection();
         setConnectionProperties(connection);
-        try {
-            return handleConnection(connection);
-        } catch (FileNotFoundException e) {
-            return null;
-        }
+        return handleConnection(connection);
     }
 
 
@@ -102,6 +97,6 @@ public abstract class URLConnectionCacheLoader <O>
     }
 
 
-    protected abstract O handleConnection(URLConnection connection) throws Exception;
+    protected abstract T handleConnection(URLConnection connection) throws Exception;
     
 }

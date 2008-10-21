@@ -90,7 +90,7 @@ public class ICalController implements Controller {
 		Date eventDate = date.getDateValue();
 		// Local time
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
 		return dateFormat.format(eventDate) + "T" + timeFormat.format(eventDate);
 	}
 

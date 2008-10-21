@@ -100,6 +100,11 @@
           <property name="parameterName" value="tag" />
           <property name="propertyTypeDefinition" ref="keywordsPropDef" />
         </bean>
+        <bean class="org.vortikal.web.search.ParsedQueryBuilder">
+          <property name="queryString" 
+                    value="(type IN article AND published-date &lt;= {$currentTime}) OR type NOT IN article" />
+          <property name="queryParser" ref="searchParser" />
+        </bean>
       </list>
     </property>
   </bean>

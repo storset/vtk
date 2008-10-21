@@ -23,7 +23,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		String parentFolderName = "parentfolder";
 		String subFolderName = "subfolder";
-		int cropDateModifiedValue = 19;
 		
 		// Problem: The test will fail if single seconds is included in last-modified.
 		// Solution: Cropfactor = 19 gives [ cropped away ] :
@@ -35,33 +34,31 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		// TODO: Test will fail from 1 - 9 May next year when 12hr clock :)
 		// ::::: |-> May 4, 2008 2:32:48[ PM CEST by root@localhost ]
 		
+		int cropDateModifiedValue = 19;
+		
+		// Create parent folder
 		createFolder(parentFolderName);
-		
-		// Goto parent folder
+		// Goto
 		clickLink(parentFolderName);
-		
-		// Get last-modified Parent
+		// Get last-modified
 		String parentFolderLastModified = getLastModifiedAbout().substring(0, cropDateModifiedValue);
-		
-		// Return to Contents-tab
+		// Go back to contents listing
 		clickLink("manageCollectionListingService");
 		
+		// Create subfolder
 		createFolder(subFolderName);
-		
-		// Goto subfolder
+		// Goto
 		clickLink(subFolderName);
-		
-		// Get last-modified Subfolder
+		// Get last-modified
 		String subFolderLastModified = getLastModifiedAbout().substring(0, cropDateModifiedValue);
 		
-		// Delete and delete
+		// Delete subfolder
 		deleteResourceFromMenu(subFolderName);
-		
+		// Delete parent folder
 		deleteResourceFromMenu(parentFolderName);
 		
 		// Checks if last-modified on parent is changed to subfolder creation time.
 		assertEquals(subFolderLastModified, parentFolderLastModified);
-		
 	}
 	
 	/**
@@ -80,7 +77,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		assertLinkPresent("aboutResourceService");
 		clickLink("aboutResourceService");
 		
-		// Click
+		// Click Web Address
 		assertLinkPresent("aboutWebAddress");
 		clickLink("aboutWebAddress");
 		
@@ -89,7 +86,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		// Go back
 		gotoPage(getBaseUrl() + "automatedtestresources/metadatatest/?vrtx=admin");
-		
 	}
 	
 	/**
@@ -110,7 +106,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		assertLinkPresent("aboutResourceService");
 		clickLink("aboutResourceService");
 		
-		// Click
+		// Click WebDAV link
 		assertLinkPresent("aboutWebdavAddress");
 		clickLink("aboutWebdavAddress");
 		
@@ -120,7 +116,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		// Go back
 		gotoPage(getBaseUrl() + "automatedtestresources/metadatatest/?vrtx=admin");
-		
 	}
 	
 	/**
@@ -129,9 +124,11 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	 */
 	public String getLastModifiedAbout() {
 		
+		// Goto About
 		assertLinkPresent("aboutResourceService"); // To much assertion(?)
 		clickLink("aboutResourceService");
 		
+		// Get last-modified from table
 		String lastModified = getTableValue("resourceInfoMain", 0, 1);
 		
 		return lastModified;
@@ -149,11 +146,12 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	 */
 	public String getTableValue(String table, int row, int cell) {
 		
+		// Checks if table exists
 		assertElementPresent(table);
+		
+		// Get the cell
 		Table resourceInfo = getTable(table);
-		
 		Row resourceTypeRow = (Row) resourceInfo.getRows().get(row);
-		
 		Cell resourceType = (Cell) resourceTypeRow.getCells().get(cell);
 		
 		return resourceType.getValue();
@@ -181,7 +179,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		// Check if resource was created
 		assertLinkPresent(folderName);
-		
 	}
 	
 	/**
@@ -189,13 +186,12 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	 * 
 	 * TODO: Refactor in own class/package webtests/admin/utils/ResourceManager.java(?)
 	 * 
-	 * @param folderName
+	 * @param resourceName
 	 */
 	private void deleteResourceFromMenu(String resourceName) {
 		
 		// Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
 		setScriptingEnabled(false);
 		clickLink("delete-resource");
-		
 	}
 }

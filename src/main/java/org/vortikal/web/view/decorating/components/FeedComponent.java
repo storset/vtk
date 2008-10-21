@@ -191,11 +191,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent implements Se
                 feed = this.localFeedFetcher.getFeed(url, request);
             }
         } catch (Exception e) {
-            String m = e.getMessage();
-            if (m == null) {
-                m = e.getClass().getName();
-            }
-            throw new RuntimeException("Could not read feed url " + url + " (" + m + ")");
+            throw new RuntimeException("Could not read feed url " + url, e);
         }
 
         model.put("feed", feed);

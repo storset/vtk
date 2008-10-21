@@ -36,7 +36,7 @@ public interface TemplateSource {
 
     public long getLastModified() throws Exception;
 
-    public String getCharacterEncoding();
+    public String getCharacterEncoding() throws Exception;
     
     public InputStream getInputStream() throws Exception;
     

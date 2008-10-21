@@ -41,29 +41,33 @@ public class RepositoryTemplateSource implements TemplateSource {
 
     private Repository repository;
     private String token;
-    private Resource resource;
-
+    private Path uri; 
+    
     public RepositoryTemplateSource(Path uri, Repository repository, String token) throws Exception {
         this.repository = repository;
         this.token = token;
-        this.resource = repository.retrieve(token, uri, true);
+        this.uri = uri;
     }
 
     public long getLastModified() throws Exception {
-        return this.resource.getLastModified().getTime();
+        Resource resource = this.repository.retrieve(
+                this.token, this.uri, true);
+        return resource.getLastModified().getTime();
     }
 
-    public String getCharacterEncoding() {
-        return this.resource.getCharacterEncoding();
+    public String getCharacterEncoding() throws Exception {
+        Resource resource = this.repository.retrieve(
+                this.token, this.uri, true);
+        return resource.getCharacterEncoding();
     }
 
     public InputStream getInputStream() throws Exception {
-        return this.repository.getInputStream(this.token, this.resource.getURI(), true);
+        return this.repository.getInputStream(this.token, this.uri, true);
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(":").append(this.resource);
+        sb.append(":").append(this.uri);
         return sb.toString();
     }
 

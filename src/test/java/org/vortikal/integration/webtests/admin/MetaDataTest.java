@@ -13,7 +13,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	// TODO: Add more tests + more refactoring.
 	
 	/**
-	 * 
 	 * Test if parentfolder->last-modified changes to subfolder->creation time.
 	 * 
 	 * "Systemtest Del 7 - Redigering av metadata" - Test 1
@@ -32,6 +31,8 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		// 19 seems to work for long and short dates.
 		
 		// TODO: Test will fail from 1 - 9 May next year when 12hr clock :)
+		// TODO: Check for whitespace and set substring based on length of month
+		
 		// ::::: |-> May 4, 2008 2:32:48[ PM CEST by root@localhost ]
 		
 		int cropDateModifiedValue = 19;
@@ -62,7 +63,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	}
 	
 	/**
-	 * 
 	 * Test Web Address.
 	 * 
 	 * "Systemtest Del 7 - Redigering av metadata" - Test 6
@@ -89,7 +89,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	}
 	
 	/**
-	 * 
 	 * Test WebDAV Address.
 	 * 
 	 * "Systemtest Del 7 - Redigering av metadata" - Test 7

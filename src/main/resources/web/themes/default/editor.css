@@ -69,12 +69,11 @@ label.resource\.recursive-listing, label.resource\.hide-last-modified, label.res
 
 div.properties {
  clear:both;
- margin-bottom: .25em;
  height: 1%; /* For IE */
 }
 
 div.save-cancel{
-	/* margin-top:1em; */
+  margin-top: 0.5em;
 }
 
 * html div.save-cancel{

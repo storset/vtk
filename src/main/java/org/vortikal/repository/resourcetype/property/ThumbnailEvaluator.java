@@ -23,6 +23,7 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
 	private ImageService imageService;
 	private String width;
 	private Set<String> supportedFormats;
+	private boolean scaleUp;
 
 	public boolean contentModification(Principal principal, Property property,
 			PropertySet ancestorPropertySet, Content content, Date time) throws PropertyEvaluationException {
@@ -40,6 +41,11 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
             
             if (!supportedFormats.contains(imageFormat.toLowerCase())) {
             	log.warn("Unable to get create thumbnail, unsupported format: " + imageFormat);
+            	return false;
+            }
+            
+            if (!scaleUp && image.getWidth() <= Integer.parseInt(width)) {
+            	log.warn("Will not create a thumbnail: configured NOT to scale up");
             	return false;
             }
             
@@ -73,6 +79,11 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
 	@Required
 	public void setSupportedFormats(Set<String> supportedFormats) {
 		this.supportedFormats = supportedFormats;
+	}
+	
+	@Required
+	public void setScaleUp(boolean scaleUp) {
+		this.scaleUp = scaleUp;
 	}
 
 }

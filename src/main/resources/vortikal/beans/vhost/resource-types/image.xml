@@ -65,6 +65,7 @@
         class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
     <property name="imageService" ref="imageService" />
     <property name="width" value="250" />
+    <property name="scaleUp" ref="scaleUp" />
     <property name="supportedFormats">
       <set>
         <value>jpeg</value>
@@ -74,6 +75,10 @@
         <value>bmp</value>
       </set>
     </property>
+  </bean>
+  
+  <bean id="scaleUp" class="java.lang.Boolean">
+    <constructor-arg type="boolean" value="false" />
   </bean>
   
   <bean id="displayThumbnailService" class="org.vortikal.web.service.ServiceImpl">

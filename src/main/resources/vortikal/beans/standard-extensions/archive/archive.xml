@@ -11,7 +11,7 @@
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">2000</value></entry>
+        <entry key="resourceMenuOrder"><value type="java.lang.Integer">999</value></entry>
       </map>
     </property>
     <property name="assertions">
@@ -64,7 +64,7 @@
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">2000</value></entry>
+        <entry key="resourceMenuOrder"><value type="java.lang.Integer">999</value></entry>
       </map>
     </property>
     <property name="assertions">

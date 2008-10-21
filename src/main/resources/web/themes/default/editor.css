@@ -73,7 +73,7 @@ div.properties {
 }
 
 div.save-cancel{
-  margin-top: 0.5em;
+  /* margin-top: 0.5em; */
 }
 
 * html div.save-cancel{
@@ -97,6 +97,10 @@ div.property-item {
 
 
 /* ****** START: collection- event and articlelisting parameters styling */
+
+div#allowedValues {
+   margin-bottom: 1em;	
+}
 
 div.page-limit {
 	clear:both;

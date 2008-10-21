@@ -170,6 +170,12 @@
       <div class="properties">
         <@propsForm resource.postContentProperties />
       </div>
+      
+      <#-- Margin-bottom before save- cancel button for collection, event- or articlelisting -->
+      <#if (resource.resourceType = 'event-listing' ||
+               resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+      	<div id="allowedValues"></div>
+      </#if>
 
       <div id="submit" class="save-cancel">
        <input type="submit" id="saveButton" onClick="cSave();" name="save" value="${vrtx.getMsg("editor.save")}">

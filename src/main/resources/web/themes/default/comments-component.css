@@ -12,7 +12,7 @@ div.vrtx-comments  div.comments-header {
   margin: 0 1em 1em 0;
 }
 
-div.vrtx-comments  div.comments-header a.header-href a {
+div.vrtx-comments  div.comments-header a.header-href {
   font-size: 1.2em;
   font-weight: bold;
   color: #000;

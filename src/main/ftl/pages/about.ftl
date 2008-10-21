@@ -115,13 +115,13 @@
              value = vrtx.resourceTypeName(resource) />
 
       <!-- Web address -->
-      <#assign url><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
+      <#assign url><a id="about-web-address" href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("resource.viewURL", "Web address")
              value = url />
 
       <!-- WebDAV address -->
-      <#assign url><a href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
+      <#assign url><a id="about-webdav-address" href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
              value = url />

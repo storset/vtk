@@ -8,12 +8,8 @@ import net.sourceforge.jwebunit.html.Table;
 import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
 public class MetaDataTest extends BaseAuthenticatedWebTest {
-	
-	// MetaDataTest for About-tab in Admin
-	// TODO: Add more tests + more refactoring (more classes in admin with general functions(?))
-	
+		
 	// About Table metadata position information { id, row, cell }
-	// TODO: Refactor in own class (?)
 	private static final String LASTMODIFIED[] = { "resourceInfoMain", "0", "1" };
 	private static final String CREATED[] = { "resourceInfoMain", "1", "1" };
 	private static final String OWNER[] = { "resourceInfoMain", "2", "1" };
@@ -35,12 +31,15 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	private static final String NAVIGATIONAL_IMPORTANCE[] = { "resourceInfoTechnical", "1", "1" };
 	private static final String FOLDER_TYPE[] = { "resourceInfoTechnical", "2", "1" };
 	
-	/**
-	 * Test if parentfolder->last-modified changes to subfolder->creation time.
-	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 1
-	 * 
-	 */
+	private String returnUrl;
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		returnUrl = getBaseUrl() + "/" + rootCollection + "/"
+				+ this.getClass().getSimpleName().toLowerCase()
+				+ "/?vrtx=admin";
+	}
+
 	public void testParentFolderLastModified() {
 		
 		String parentFolderName = "parentfolder";
@@ -53,26 +52,20 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		int cropDateModifiedValue = 19;
 		
 		createFolderAndGoto(parentFolderName);
-		String parentFolderLastModified = getAboutTableValue(true, LASTMODIFIED).substring(0, cropDateModifiedValue);
+		String parentFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
 		
 		createFolderAndGoto(subFolderName);
-		String subFolderLastModified = getAboutTableValue(true, LASTMODIFIED).substring(0, cropDateModifiedValue);
+		String subFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
 		
-		deleteResourceFromMenu(subFolderName);
-		deleteResourceFromMenu(parentFolderName);
+		// Delete subfolder -> will implicitly redirect to parentfolder
+		deleteCurrentResource();
+		
+		// Delete parent folder
+		deleteCurrentResource();
 		
 		assertEquals(subFolderLastModified, parentFolderLastModified);
 	}
 	
-	/**
-	 * Test Web Address.
-	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 6
-	 * 
-	 * @throws Exception
-	 * @throws TestingEngineResponseException
-	 * 
-	 */
 	public void testWebAddress() throws TestingEngineResponseException, Exception {
 		
 		gotoAboutTab();
@@ -82,20 +75,9 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		// Checks that we got to view for collection
 		assertLinkPresent("vrtx-feed-link");
 		
-		gotoRootTestFolder("metadatatest");
+		gotoPage(returnUrl);
 	}
 	
-	/**
-	 * Test WebDAV Address.
-	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 7
-	 * 
-	 * TODO: WebDAV test for document
-	 * 
-	 * @throws Exception
-	 * @throws TestingEngineResponseException
-	 * 
-	 */
 	public void testWebDAVAddress() throws TestingEngineResponseException, Exception {
 		
 		gotoAboutTab();
@@ -106,13 +88,12 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		assertElementPresent("webdavmessage");
 		assertElementPresent("directoryListing");
 		
-		gotoRootTestFolder("metadatatest");
+		gotoPage(returnUrl);
 	}
 	
 	// Navigation / functions in Admin
 	// TODO: Refactor in admin navigation class(?)
 	// ****************************************************************************************
-	
 	public void gotoAboutTab() {
 		checkAndGotoLink("aboutResourceService");
 	}
@@ -130,10 +111,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		checkAndGotoLink(folderName);
 	}
 	
-	public void gotoRootTestFolder(String folderName) throws TestingEngineResponseException, Exception {
-		gotoPage(getBaseUrl() + "automatedtestresources/" + folderName + "/?vrtx=admin");
-	}
-	
 	public void checkAndGotoLink(String linkId) {
 		assertLinkPresent(linkId);
 		clickLink(linkId);
@@ -142,17 +119,11 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	// Get values from About-tab
 	// TODO: Refactor in own class(?)
 	// ****************************************************************************************
-	
-	/**
-	 * Get Table value from About on a resource
-	 * 
-	 * @param returnToContents
-	 */
-	public String getAboutTableValue(boolean returnToContents, String[] valueToExtract) {
+	public String getLastModifiedAbout(boolean returnToContents) {
 		
 		gotoAboutTab();
 		
-		String lastModified = getTableValue(valueToExtract);
+		String lastModified = getTableValue(LASTMODIFIED);
 		
 		if (returnToContents) {
 			gotoContentsTab();
@@ -160,16 +131,21 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		return lastModified;
 	}
 	
+	public String getLanguageAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String language = getTableValue(LANGUAGE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return language;
+	}
+	
 	// General methods for creation, deletion of resources and getting values from table.
 	// TODO: Refactor in own bottom-layer core vortex webtesting function class(?)
 	// ****************************************************************************************
-	
-	/**
-	 * Get value from Table by valueToExtract.
-	 * 
-	 * @param valueToExtract
-	 * @return
-	 */
 	public String getTableValue(String[] valueToExtract) {
 		
 		// Checks if table exists
@@ -183,11 +159,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		return resourceType.getValue();
 	}
 	
-	/**
-	 * Create folder and verify result
-	 * 
-	 * @param folderName
-	 */
 	public void createFolder(String folderName) {
 		
 		// Check if not parentfolder is present, and form is closed
@@ -205,13 +176,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		assertLinkPresent(folderName);
 	}
 	
-	/**
-	 * Delete resource from top-menu
-	 * 
-	 * @param resourceName
-	 */
-	private void deleteResourceFromMenu(String resourceName) {
-		
+	private void deleteCurrentResource() {
 		// Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
 		setScriptingEnabled(false);
 		clickLink("delete-resource");

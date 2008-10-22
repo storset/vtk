@@ -36,9 +36,9 @@ public class TagsTest extends BaseWebTest {
 
     public void testTagK1() {
         invokeTagsService("k1");
-        // TODO We should not show unpublished articles (unpublished-article-with-keyword1.html)
         assertLinksPresent("document-with-keyword1.html", "document-with-keyword1-and-keyword2.html",
-        		"document-with-keyword1-in-subfolder.html", "unpublished-article-with-keyword1.html");
+        		"document-with-keyword1-in-subfolder.html");
+        assertLinkNotPresent("unpublished-article-with-keyword1.html");
     }
 
     public void testTagK2() {
@@ -67,13 +67,7 @@ public class TagsTest extends BaseWebTest {
         assertLinksPresent("document-with-keyword1.html", "document-with-keyword1-and-keyword2.html",
         		"document-with-keyword1-in-subfolder.html");
     }
-    
-    public void testArticleIntroductionImagePresent() {
-        invokeTagsService("k1");
-        String imageSrc = "/" + rootCollection + "/" + this.getClass().getSimpleName().toLowerCase() + "/uio-logo.jpg";
-        assertImagePresent(imageSrc, "IMG for 'title unpublished-article-with-keyword1'");
-    }
-    
+
     private void invokeTagsService(String tagsLink) {
     	clickLink(tagsLink);
         assertElementPresent("vrtx-tagview");

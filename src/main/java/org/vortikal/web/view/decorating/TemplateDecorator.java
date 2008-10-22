@@ -108,13 +108,15 @@ public class TemplateDecorator implements Decorator {
             return content;
         }
 
+        content = htmlContent;
+        
         for (Template template: templates) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Rendering request for " + request.getRequestURI()
                         + " using template '" + template + "'");
             }
-            htmlContent = parseHtml(htmlContent, filter);
-            content = template.render(htmlContent, request, model);
+            HtmlPageContent c = parseHtml(content, filter);
+            content = template.render(c, request, model);
             
             if (descriptor.tidy()) {
                 content = tidyContent(content);
@@ -123,34 +125,6 @@ public class TemplateDecorator implements Decorator {
         return content;
     }
 
-
-    protected PageContent tidyContent(PageContent content) throws Exception {
-        java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(
-            content.getContent().getBytes("utf-8"));
-
-        org.w3c.tidy.Tidy tidy = new org.w3c.tidy.Tidy();
-        tidy.setTidyMark(false);
-        tidy.setMakeClean(false);
-        tidy.setShowWarnings(false);
-        tidy.setQuiet(true);
-        tidy.setXHTML(tidyXhtml);
-        tidy.setDocType("transitional"); 
-        tidy.setCharEncoding(org.w3c.tidy.Configuration.UTF8);
-
-        org.w3c.dom.Document document = tidy.parseDOM(inStream, null);
-        java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
-        tidy.pprint(document, outputStream);
-            
-        content = new ContentImpl(new String(outputStream.toByteArray(), "utf-8"),
-                content.getOriginalCharacterEncoding());
-        return content;
-    }
-    
-    protected DecorationDescriptor resolveDecorationDescriptor(
-        HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return this.decorationResolver.resolve(request, response);
-    }
-    
 
     protected HtmlPageContent parseHtml(PageContent content, boolean filter) throws Exception {
         if (content instanceof HtmlPageContent) {
@@ -189,7 +163,33 @@ public class TemplateDecorator implements Decorator {
         return new HtmlPageContentImpl(content.getOriginalCharacterEncoding(), html);
     }
     
+    protected PageContent tidyContent(PageContent content) throws Exception {
+        java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(
+            content.getContent().getBytes("utf-8"));
 
+        org.w3c.tidy.Tidy tidy = new org.w3c.tidy.Tidy();
+        tidy.setTidyMark(false);
+        tidy.setMakeClean(false);
+        tidy.setShowWarnings(false);
+        tidy.setQuiet(true);
+        tidy.setXHTML(tidyXhtml);
+        tidy.setDocType("transitional"); 
+        tidy.setCharEncoding(org.w3c.tidy.Configuration.UTF8);
+
+        org.w3c.dom.Document document = tidy.parseDOM(inStream, null);
+        java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+        tidy.pprint(document, outputStream);
+            
+        content = new ContentImpl(new String(outputStream.toByteArray(), "utf-8"),
+                content.getOriginalCharacterEncoding());
+        return content;
+    }
+    
+    protected DecorationDescriptor resolveDecorationDescriptor(
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return this.decorationResolver.resolve(request, response);
+    }
+        
     public void setHtmlNodeFilters(List<HtmlNodeFilter> htmlNodeFilters) {
         this.htmlNodeFilters = htmlNodeFilters;
     }

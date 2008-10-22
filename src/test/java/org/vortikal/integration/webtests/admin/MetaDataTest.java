@@ -38,7 +38,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	/**
 	 * Test if parentfolder->last-modified changes to subfolder->creation time.
 	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 1
+	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 1
 	 * 
 	 */
 	public void testParentFolderLastModified() {
@@ -53,10 +53,10 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		int cropDateModifiedValue = 19;
 		
 		createFolderAndGoto(parentFolderName);
-		String parentFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
+		String parentFolderLastModified = getAboutTableValue(true, LASTMODIFIED).substring(0, cropDateModifiedValue);
 		
 		createFolderAndGoto(subFolderName);
-		String subFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
+		String subFolderLastModified = getAboutTableValue(true, LASTMODIFIED).substring(0, cropDateModifiedValue);
 		
 		deleteResourceFromMenu(subFolderName);
 		deleteResourceFromMenu(parentFolderName);
@@ -67,7 +67,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	/**
 	 * Test Web Address.
 	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 6
+	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 6
 	 * 
 	 * @throws Exception
 	 * @throws TestingEngineResponseException
@@ -88,7 +88,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	/**
 	 * Test WebDAV Address.
 	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 7
+	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 7
 	 * 
 	 * TODO: WebDAV test for document
 	 * 
@@ -144,37 +144,20 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	// ****************************************************************************************
 	
 	/**
-	 * Get last-modified from About on resource
+	 * Get Table value from About on a resource
 	 * 
 	 * @param returnToContents
 	 */
-	public String getLastModifiedAbout(boolean returnToContents) {
+	public String getAboutTableValue(boolean returnToContents, String[] valueToExtract) {
 		
 		gotoAboutTab();
 		
-		String lastModified = getTableValue(LASTMODIFIED);
+		String lastModified = getTableValue(valueToExtract);
 		
 		if (returnToContents) {
 			gotoContentsTab();
 		}
 		return lastModified;
-	}
-	
-	/**
-	 * Get language from About on resource
-	 * 
-	 * @param returnToContents
-	 */
-	public String getLanguageAbout(boolean returnToContents) {
-		
-		gotoAboutTab();
-		
-		String language = getTableValue(LANGUAGE);
-		
-		if (returnToContents) {
-			gotoContentsTab();
-		}
-		return language;
 	}
 	
 	// General methods for creation, deletion of resources and getting values from table.

@@ -473,7 +473,7 @@
     <#local formErrorWrapper = resolveMacro(formErrorWrapperMacro) />
 
     <@editWrapper>
-    <form action="${form.submitURL?html}" method="POST">
+    <form id="propertyForm" action="${form.submitURL?html}" method="POST">
       <@formWrapper item>
         <#-- Display radio buttons for a value set of 2: -->
 

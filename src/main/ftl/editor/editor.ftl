@@ -28,7 +28,7 @@
     <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
     <script language="Javascript" type="text/javascript"><!--
       function newEditor(name, completeEditor, withoutSubSuper) {
-      
+
         var completeEditor = completeEditor != null ? completeEditor : false;
         var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
         
@@ -40,11 +40,15 @@
         fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
 
          if (completeEditor) {
-            fck.ToolbarSet = 'Complete';
+            <#if resource.resourceType = 'article' >
+	    fck.ToolbarSet = 'Complete-article';
+            <#else>
+            fck.ToolbarSet = 'Complete'; 
+            </#if> 
          } else {
             fck.ToolbarSet = 'Inline';
          }
-         
+   	 
          if(withoutSubSuper) {
            fck.ToolbarSet = 'Inline-S';
          }
@@ -664,10 +668,9 @@
 <#macro fck content completeEditor=false withoutSubSuper=false>
     <script language="Javascript" type="text/javascript"><!--
       var needToConfirm = true;
-      
+
       newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string});
       
-
       function cSave() {
         document.getElementById("form").setAttribute("action", "#submit");
         performSave();

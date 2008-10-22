@@ -185,7 +185,9 @@ CREATE TABLE extra_prop_entry
     prop_type_id int DEFAULT 0 NOT NULL,
     name_space VARCHAR (128) NULL,
     name VARCHAR (64) NOT NULL,
-    value VARCHAR (2048) NOT NULL
+    value VARCHAR (2048) NOT NULL,
+    binary_content LONGVARBINARY,
+    binary_mimetype varchar (64)
 );
 
 ALTER TABLE extra_prop_entry

@@ -183,9 +183,12 @@ CREATE TABLE extra_prop_entry
 (
     extra_prop_entry_id int NOT NULL,
     resource_id int NOT NULL,
+    prop_type_id number default 0 not null,
     name_space VARCHAR (128) NOT NULL,
     name VARCHAR (64) NOT NULL,
-    value VARCHAR (2048) NOT NULL
+    value VARCHAR (2048) NOT NULL,
+    binary_content BLOB,
+    binary_mimetype varchar2 (64)
 );
 
 ALTER TABLE extra_prop_entry

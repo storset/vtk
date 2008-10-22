@@ -26,6 +26,7 @@
     <title>Editor</title>
     <@ping.ping url=pingURL['url'] interval=300 />
     <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
+    <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.2.6.js"></script>
     <script language="Javascript" type="text/javascript"><!--
       function newEditor(name, completeEditor, withoutSubSuper) {
 
@@ -416,7 +417,10 @@
                             '<img src="' + url + '" alt="preview">';
                         } else {
                             document.getElementById(previewobj).innerHTML = 
-                            '<img src=""  alt="no-image" style="visibility: hidden">';
+                            '<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">';
+			                 
+			                 var w = 390;
+                             $('div.picture').css ({ width : w + 'px'}); 
                         }
                      }
              } //-->
@@ -430,7 +434,10 @@
           <#if value != ''>
             document.write('<img src="${value}"  alt="preview">');
             <#else>
-            document.write('<img src=""  alt="no-image" style="visibility: hidden">');
+            document.write('<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">');
+  			
+			var w = 390;
+            $('div.picture').css ({ width : w + 'px'}); 
           </#if>
           
         document.write('</div>');  

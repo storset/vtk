@@ -8,7 +8,7 @@ import net.sourceforge.jwebunit.html.Table;
 import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
 public class MetaDataTest extends BaseAuthenticatedWebTest {
-		
+	
 	// About Table metadata position information { id, row, cell }
 	private static final String LASTMODIFIED[] = { "resourceInfoMain", "0", "1" };
 	private static final String CREATED[] = { "resourceInfoMain", "1", "1" };
@@ -32,14 +32,16 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	private static final String FOLDER_TYPE[] = { "resourceInfoTechnical", "2", "1" };
 	
 	private String returnUrl;
-
+	private String returnUrlView;
+	
 	protected void setUp() throws Exception {
 		super.setUp();
-		returnUrl = getBaseUrl() + "/" + rootCollection + "/"
-				+ this.getClass().getSimpleName().toLowerCase()
+		returnUrl = getBaseUrl() + "/" + rootCollection + "/" + this.getClass().getSimpleName().toLowerCase()
 				+ "/?vrtx=admin";
+		
+		returnUrlView = getBaseUrl() + "/" + rootCollection + "/" + this.getClass().getSimpleName().toLowerCase() + "/";
 	}
-
+	
 	public void testParentFolderLastModified() {
 		
 		String parentFolderName = "parentfolder";
@@ -91,6 +93,43 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		gotoPage(returnUrl);
 	}
 	
+	/**
+	 * Test Language edit property for Norwegian (bokmål), Norwegian (nynorsk) and English
+	 * 
+	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 8
+	 * 
+	 * TODO: WebDAV test for document
+	 * 
+	 * @throws Exception
+	 * @throws TestingEngineResponseException
+	 * 
+	 */
+	public void testLanguage() throws TestingEngineResponseException, Exception {
+		
+		String languageFolder = "testlanguage";
+		
+		String languagesToTest[][] = { { "Norwegian (bokmål)", "RSS-strøm fra denne siden" },
+				{ "Norwegian (nynorsk)", "RSS-strøm frå denne sida" }, { "English", "Feed from this page" } };
+		
+		createFolderAndGoto(languageFolder);
+		
+		for (int i = 0; i < languagesToTest.length; i++) {
+			
+			gotoAdminAboutEditLink(languageFolder, "contentLocale"); // TODO: id for specific (edit) to use clickLink()
+			setPropertyOption("propertyForm", "value", languagesToTest[i][0]);
+			
+			gotoViewNoIframe(languageFolder);
+			
+			// Check if we got the language selected
+			assertTextPresent(languagesToTest[i][1]);
+			
+		}
+		
+		gotoAdminOfSubFolder(languageFolder);
+		
+		deleteCurrentResource();
+	}
+	
 	// Navigation / functions in Admin
 	// TODO: Refactor in admin navigation class(?)
 	// ****************************************************************************************
@@ -114,6 +153,18 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	public void checkAndGotoLink(String linkId) {
 		assertLinkPresent(linkId);
 		clickLink(linkId);
+	}
+	
+	public void gotoAdminAboutEditLink(String folder, String linkName) throws TestingEngineResponseException, Exception {
+		gotoPage(returnUrlView + folder + "/?name=" + linkName + "&vrtx=admin&mode=about");
+	}
+	
+	public void gotoViewNoIframe(String folderName) throws TestingEngineResponseException, Exception {
+		gotoPage(returnUrlView + folderName + "/");
+	}
+	
+	public void gotoAdminOfSubFolder(String folderName) throws TestingEngineResponseException, Exception {
+		gotoPage(returnUrlView + folderName + "/?vrtx=admin");
 	}
 	
 	// Get values from About-tab
@@ -146,6 +197,14 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	// General methods for creation, deletion of resources and getting values from table.
 	// TODO: Refactor in own bottom-layer core vortex webtesting function class(?)
 	// ****************************************************************************************
+	private void setPropertyOption(String formName, String selectElementName, String selectedOptionValue) {
+		
+		assertFormPresent(formName);
+		setWorkingForm(formName);
+		selectOption(selectElementName, selectedOptionValue);
+		clickButtonWithText("save");
+	}
+	
 	public String getTableValue(String[] valueToExtract) {
 		
 		// Checks if table exists

@@ -9,8 +9,31 @@ import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
 public class MetaDataTest extends BaseAuthenticatedWebTest {
 	
-	// Under MetaDataTest for About-tab in Admin
-	// TODO: Add more tests + more refactoring.
+	// MetaDataTest for About-tab in Admin
+	// TODO: Add more tests + more refactoring (more classes in admin with general functions(?))
+	
+	// About Table metadata position information { id, row, cell }
+	// TODO: Refactor in own class (?)
+	private static final String LASTMODIFIED[] = { "resourceInfoMain", "0", "1" };
+	private static final String CREATED[] = { "resourceInfoMain", "1", "1" };
+	private static final String OWNER[] = { "resourceInfoMain", "2", "1" };
+	private static final String RESOURCETYPE[] = { "resourceInfoMain", "3", "1" };
+	private static final String WEB_ADDRESS[] = { "resourceInfoMain", "4", "1" };
+	private static final String WEBDAV_ADDRESS[] = { "resourceInfoMain", "5", "1" };
+	private static final String LANGUAGE[] = { "resourceInfoMain", "6", "1" };
+	
+	private static final String TITLE[] = { "resourceInfoContent", "0", "1" };
+	private static final String KEYWORDS[] = { "resourceInfoContent", "1", "1" };
+	private static final String DESCRIPTION[] = { "resourceInfoContent", "2", "1" };
+	private static final String VERIFIED_DATE[] = { "resourceInfoContent", "3", "1" };
+	private static final String AUTHOR[] = { "resourceInfoContent", "4", "1" };
+	private static final String AUTHOR_EMAIL[] = { "resourceInfoContent", "5", "1" };
+	private static final String AUTHOR_URL[] = { "resourceInfoContent", "6", "1" };
+	private static final String SCIENTIFIC_DICIPLINES[] = { "resourceInfoContent", "7", "1" };
+	
+	private static final String HIDE_FROM_NAVIGATION[] = { "resourceInfoTechnical", "0", "1" };
+	private static final String NAVIGATIONAL_IMPORTANCE[] = { "resourceInfoTechnical", "1", "1" };
+	private static final String FOLDER_TYPE[] = { "resourceInfoTechnical", "2", "1" };
 	
 	/**
 	 * Test if parentfolder->last-modified changes to subfolder->creation time.
@@ -23,42 +46,21 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		String parentFolderName = "parentfolder";
 		String subFolderName = "subfolder";
 		
-		// Problem: The test will fail if single seconds is included in last-modified.
-		// Solution: Cropfactor = 19 gives [ cropped away ] :
-		// Long date : November 21, 2008 3[ :25:12 PM CEST by root@localhost ]
-		// Short date: May 4, 2008 10:32:4[ 8 AM CEST by vortex@localhost ]
-		
-		// 19 seems to work for long and short dates.
-		
-		// TODO: Test will fail from 1 - 9 May next year when 12hr clock :)
-		// TODO: Check for whitespace and set substring based on length of month
-		
-		// ::::: |-> May 4, 2008 2:32:48[ PM CEST by root@localhost ]
+		// 19 seems to work for long and short dates except:
+		// Test will fail from 1 -> 9 May next year when 12hr clock :)
+		// TODO: Check for whitespace and set substring based on length of month.
 		
 		int cropDateModifiedValue = 19;
 		
-		// Create parent folder
-		createFolder(parentFolderName);
-		// Goto
-		clickLink(parentFolderName);
-		// Get last-modified
-		String parentFolderLastModified = getLastModifiedAbout().substring(0, cropDateModifiedValue);
-		// Go back to contents listing
-		clickLink("manageCollectionListingService");
+		createFolderAndGoto(parentFolderName);
+		String parentFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
 		
-		// Create subfolder
-		createFolder(subFolderName);
-		// Goto
-		clickLink(subFolderName);
-		// Get last-modified
-		String subFolderLastModified = getLastModifiedAbout().substring(0, cropDateModifiedValue);
+		createFolderAndGoto(subFolderName);
+		String subFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
 		
-		// Delete subfolder
 		deleteResourceFromMenu(subFolderName);
-		// Delete parent folder
 		deleteResourceFromMenu(parentFolderName);
 		
-		// Checks if last-modified on parent is changed to subfolder creation time.
 		assertEquals(subFolderLastModified, parentFolderLastModified);
 	}
 	
@@ -73,19 +75,14 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	 */
 	public void testWebAddress() throws TestingEngineResponseException, Exception {
 		
-		// Goto About
-		assertLinkPresent("aboutResourceService");
-		clickLink("aboutResourceService");
+		gotoAboutTab();
 		
-		// Click Web Address
-		assertLinkPresent("aboutWebAddress");
-		clickLink("aboutWebAddress");
+		checkAndGotoLink("aboutWebAddress");
 		
 		// Checks that we got to view for collection
 		assertLinkPresent("vrtx-feed-link");
 		
-		// Go back
-		gotoPage(getBaseUrl() + "automatedtestresources/metadatatest/?vrtx=admin");
+		gotoRootTestFolder("metadatatest");
 	}
 	
 	/**
@@ -101,65 +98,110 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	 */
 	public void testWebDAVAddress() throws TestingEngineResponseException, Exception {
 		
-		// Goto About
-		assertLinkPresent("aboutResourceService");
-		clickLink("aboutResourceService");
+		gotoAboutTab();
 		
-		// Click WebDAV link
-		assertLinkPresent("aboutWebdavAddress");
-		clickLink("aboutWebdavAddress");
+		checkAndGotoLink("aboutWebdavAddress");
 		
 		// Checks that we got to WebDAV listing
 		assertElementPresent("webdavmessage");
 		assertElementPresent("directoryListing");
 		
-		// Go back
-		gotoPage(getBaseUrl() + "automatedtestresources/metadatatest/?vrtx=admin");
+		gotoRootTestFolder("metadatatest");
 	}
 	
+	// Navigation / functions in Admin
+	// TODO: Refactor in admin navigation class(?)
+	// ****************************************************************************************
+	
+	public void gotoAboutTab() {
+		checkAndGotoLink("aboutResourceService");
+	}
+	
+	public void gotoContentsTab() {
+		checkAndGotoLink("manageCollectionListingService");
+	}
+	
+	public void gotoFolder(String folderName) {
+		checkAndGotoLink(folderName);
+	}
+	
+	public void createFolderAndGoto(String folderName) {
+		createFolder(folderName);
+		checkAndGotoLink(folderName);
+	}
+	
+	public void gotoRootTestFolder(String folderName) throws TestingEngineResponseException, Exception {
+		gotoPage(getBaseUrl() + "automatedtestresources/" + folderName + "/?vrtx=admin");
+	}
+	
+	public void checkAndGotoLink(String linkId) {
+		assertLinkPresent(linkId);
+		clickLink(linkId);
+	}
+	
+	// Get values from About-tab
+	// TODO: Refactor in own class(?)
+	// ****************************************************************************************
+	
 	/**
-	 * Get last-modified from about on resource
+	 * Get last-modified from About on resource
 	 * 
+	 * @param returnToContents
 	 */
-	public String getLastModifiedAbout() {
+	public String getLastModifiedAbout(boolean returnToContents) {
 		
-		// Goto About
-		assertLinkPresent("aboutResourceService"); // To much assertion(?)
-		clickLink("aboutResourceService");
+		gotoAboutTab();
 		
-		// Get last-modified from table
-		String lastModified = getTableValue("resourceInfoMain", 0, 1);
+		String lastModified = getTableValue(LASTMODIFIED);
 		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
 		return lastModified;
 	}
 	
 	/**
-	 * Get value from table by tablename, row and cell.
+	 * Get language from About on resource
 	 * 
-	 * Put in seperate java class for reuse(?)
+	 * @param returnToContents
+	 */
+	public String getLanguageAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String language = getTableValue(LANGUAGE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return language;
+	}
+	
+	// General methods for creation, deletion of resources and getting values from table.
+	// TODO: Refactor in own bottom-layer core vortex webtesting function class(?)
+	// ****************************************************************************************
+	
+	/**
+	 * Get value from Table by valueToExtract.
 	 * 
-	 * @param table
-	 * @param row
-	 * @param cell
+	 * @param valueToExtract
 	 * @return
 	 */
-	public String getTableValue(String table, int row, int cell) {
+	public String getTableValue(String[] valueToExtract) {
 		
 		// Checks if table exists
-		assertElementPresent(table);
+		assertElementPresent(valueToExtract[0]);
 		
 		// Get the cell
-		Table resourceInfo = getTable(table);
-		Row resourceTypeRow = (Row) resourceInfo.getRows().get(row);
-		Cell resourceType = (Cell) resourceTypeRow.getCells().get(cell);
+		Table resourceInfo = getTable(valueToExtract[0]);
+		Row resourceTypeRow = (Row) resourceInfo.getRows().get(Integer.parseInt(valueToExtract[1]));
+		Cell resourceType = (Cell) resourceTypeRow.getCells().get(Integer.parseInt(valueToExtract[2]));
 		
 		return resourceType.getValue();
 	}
 	
 	/**
 	 * Create folder and verify result
-	 * 
-	 * TODO: Refactor in own class/package webtests/admin/utils/ResourceManager.java(?)
 	 * 
 	 * @param folderName
 	 */
@@ -182,8 +224,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	
 	/**
 	 * Delete resource from top-menu
-	 * 
-	 * TODO: Refactor in own class/package webtests/admin/utils/ResourceManager.java(?)
 	 * 
 	 * @param resourceName
 	 */

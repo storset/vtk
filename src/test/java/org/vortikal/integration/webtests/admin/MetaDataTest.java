@@ -93,17 +93,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		gotoPage(returnUrl);
 	}
 	
-	/**
-	 * Test Language edit property for Norwegian (bokmål), Norwegian (nynorsk) and English
-	 * 
-	 * "Systemtest Del 7 - Redigering av metadata" - Test 1 - 8
-	 * 
-	 * TODO: WebDAV test for document
-	 * 
-	 * @throws Exception
-	 * @throws TestingEngineResponseException
-	 * 
-	 */
 	public void testLanguage() throws TestingEngineResponseException, Exception {
 		
 		String languageFolder = "testlanguage";

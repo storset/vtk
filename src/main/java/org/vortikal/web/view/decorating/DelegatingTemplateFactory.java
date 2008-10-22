@@ -50,12 +50,17 @@ public class DelegatingTemplateFactory implements TemplateFactory {
             Matcher m = p.matcher(templateSource.getID());
             if (m.find()) {
                 TemplateFactory tf = this.templateFactoryMap.get(p);
-                logger.info("Attempting to use template factory " + tf);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Attempting to use template factory " + tf);
+                }
                 return tf.newTemplate(templateSource);
             }
         }
-        throw new InvalidTemplateException("Unable to create template " 
-                + templateSource);
+        if (logger.isDebugEnabled()) {
+            logger.debug("No matching template factory found for ID " 
+                    + templateSource.getID());
+        }
+        return null;
     }
 
     @Required public void setTemplateFactoryMap(Map<String, TemplateFactory> templateFactoryMap) {

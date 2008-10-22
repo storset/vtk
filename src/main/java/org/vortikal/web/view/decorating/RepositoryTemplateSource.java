@@ -49,6 +49,10 @@ public class RepositoryTemplateSource implements TemplateSource {
         this.uri = uri;
     }
 
+    public String getID() {
+        return this.uri.toString();
+    }
+    
     public long getLastModified() throws Exception {
         Resource resource = this.repository.retrieve(
                 this.token, this.uri, true);

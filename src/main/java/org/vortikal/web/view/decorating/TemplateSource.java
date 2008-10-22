@@ -33,6 +33,8 @@ package org.vortikal.web.view.decorating;
 import java.io.InputStream;
 
 public interface TemplateSource {
+    
+    public String getID();
 
     public long getLastModified() throws Exception;
 

@@ -144,12 +144,25 @@
   <bean id="decorating.templateCollectionRefreshTrigger"
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
-    <property name="uri" value="${decorating.templatesCollection}" />
+    <property name="uriPattern" value="${decorating.templatesCollection}/.*\.(html|vrtx)$" />
     <property name="targetObject" ref="decorating.templateManager" />
     <property name="method" value="load" />
   </bean>
 
 
+  <!--
+  -->
+  <bean id="decorating.defaultTemplateFactory"
+            class="org.vortikal.web.view.decorating.DelegatingTemplateFactory">
+    <property name="templateFactoryMap">
+      <map>
+	<entry key="\.vrtx$" value-ref="decorating.htmlParserTemplateFactory" />
+	<entry key="\.html$" value-ref="decorating.dollarSyntaxTemplateFactory" />
+      </map>
+    </property>
+  </bean>
+
+  <!--
   <bean id="decorating.defaultTemplateFactory"
             class="org.vortikal.web.view.decorating.FallbackTemplateFactory">
     <property name="templateFactories">
@@ -159,6 +172,7 @@
       </list>
     </property>
   </bean>
+  -->
 
   <bean id="decorating.htmlParserTemplateFactory"
             class="org.vortikal.web.view.decorating.ParsedHtmlDecoratorTemplateFactory">

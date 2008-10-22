@@ -32,6 +32,7 @@ package org.vortikal.web.view.decorating;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,17 +50,24 @@ import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
 
+
 /**
  * XXX: unfinished code, needs componentization
  */
 public class ParsedHtmlDecoratorTemplate implements Template {
 
+    private HtmlPageParser htmlParser;
+    private TextualComponentParser componentParser;
+    private ComponentResolver componentResolver;
+    private TemplateSource templateSource;
+    
     private CompiledTemplate compiledTemplate;
-
+    private long lastModified = -1;
+    
     public ParsedHtmlDecoratorTemplate(HtmlPageParser htmlParser, 
             TextualComponentParser componentParser,
             ComponentResolver componentResolver,
-            TemplateSource templateSource) throws InvalidTemplateException {
+            TemplateSource templateSource) throws Exception {
 
         if (htmlParser == null) {
             throw new IllegalArgumentException("Argument 'htmlParser' is NULL");
@@ -73,17 +81,37 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         if (templateSource == null) {
             throw new IllegalArgumentException("Argument 'templateSource' is NULL");
         }
-        this.compiledTemplate = new CompiledTemplate(htmlParser, componentParser, componentResolver, templateSource);
+        this.htmlParser = htmlParser;
+        this.componentParser = componentParser;
+        this.componentResolver = componentResolver;
+        this.templateSource = templateSource;
+
+        compile();
     }
 
 
     public PageContent render(HtmlPageContent html, HttpServletRequest request,
             Map<Object, Object> model) throws Exception {
+
+        if (this.templateSource.getLastModified() > this.lastModified) {
+            compile();
+        }
         HtmlPage resultPage = 
             this.compiledTemplate.generate(html.getHtmlContent(), request, model);
         return new HtmlPageContentImpl(resultPage.getCharacterEncoding(), resultPage);
     }
 
+    private synchronized void compile() throws Exception {
+        if (this.compiledTemplate != null && 
+                this.lastModified == this.templateSource.getLastModified()) {
+            return;
+        }
+        this.compiledTemplate = new CompiledTemplate(
+                this.htmlParser, this.componentParser, 
+                this.componentResolver, this.templateSource);
+        this.lastModified = this.templateSource.getLastModified();
+    }
+    
     private class CompiledTemplate {
         private Node root;
 
@@ -203,14 +231,21 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 } else {
                     this.attributesMap = new LinkedHashMap<String, ComponentInvocation[]>();
                     for (HtmlAttribute attr: elem.getAttributes()) {
-                        String value = attr.getValue(); 
-
+                        String name = attr.getName();
+                        if (name == null || !name.matches("[a-zA-Z0-9]+")) {
+                            throw new InvalidTemplateException("Invalid attribute name: " + name);
+                        }
+                        String value = attr.getValue();
+                        if (value == null) {
+                            value = "";
+                        }
                         ComponentInvocation[] parsedValue;
                         try {
                             parsedValue = 
                                 componentParser.parse(new StringReader(value));
                         } catch (Exception e) {
-                            final DecoratorComponent staticText = new StaticTextComponent(new StringBuilder(value));
+                            final DecoratorComponent staticText = 
+                                new StaticTextComponent(new StringBuilder(value));
                             parsedValue = new ComponentInvocation[]{
                                     new ComponentInvocation() {
                                         public DecoratorComponent getComponent() {

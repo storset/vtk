@@ -30,42 +30,40 @@
  */
 package org.vortikal.web.view.decorating;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 
-public class FallbackTemplateFactory implements TemplateFactory {
-    private static Log logger = LogFactory.getLog(FallbackTemplateFactory.class);
-    
-    private List<TemplateFactory> templateFactories;
+public class DelegatingTemplateFactory implements TemplateFactory {
+    private static Log logger = LogFactory.getLog(DelegatingTemplateFactory.class);
+    private Map<Pattern, TemplateFactory> templateFactoryMap;
     
     public Template newTemplate(TemplateSource templateSource)
             throws InvalidTemplateException {
-        for (int i = 0; i < this.templateFactories.size(); i++) {
-            TemplateFactory tf = this.templateFactories.get(i);
-
-            logger.info("Trying template factory " + tf);
-
-            if (i == this.templateFactories.size() - 1) {
+        for (Pattern p: this.templateFactoryMap.keySet()) {
+            Matcher m = p.matcher(templateSource.getID());
+            if (m.find()) {
+                TemplateFactory tf = this.templateFactoryMap.get(p);
+                logger.info("Attempting to use template factory " + tf);
                 return tf.newTemplate(templateSource);
-            } else {
-                try {
-                    return tf.newTemplate(templateSource);
-                } catch (InvalidTemplateException e) {
-                    logger.info("Unable to create template using template factory " + tf, e);
-                    continue;
-                }
             }
         }
         throw new InvalidTemplateException("Unable to create template " 
                 + templateSource);
     }
 
-    @Required public void setTemplateFactories(List<TemplateFactory> templateFactories) {
-        this.templateFactories = Collections.unmodifiableList(templateFactories);
+    @Required public void setTemplateFactoryMap(Map<String, TemplateFactory> templateFactoryMap) {
+        this.templateFactoryMap = new HashMap<Pattern, TemplateFactory>();
+        for (String key: templateFactoryMap.keySet()) {
+            Pattern p = Pattern.compile(key);
+            this.templateFactoryMap.put(p, templateFactoryMap.get(key));
+        }
     }
 }
+

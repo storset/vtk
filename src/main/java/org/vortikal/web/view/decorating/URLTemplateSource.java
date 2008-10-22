@@ -49,6 +49,10 @@ public class URLTemplateSource implements TemplateSource {
         this.characterEncoding = characterEncoding;
     }
 
+    public String getID() {
+        return this.url;
+    }
+    
     public long getLastModified() throws Exception {
         if (this.url.startsWith("file://")) {
             URL fileURL = new URL(this.url);

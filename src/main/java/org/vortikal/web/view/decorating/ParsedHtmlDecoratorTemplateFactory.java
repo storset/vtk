@@ -40,8 +40,14 @@ public class ParsedHtmlDecoratorTemplateFactory implements TemplateFactory {
     private TextualComponentParser componentParser;
     
     public Template newTemplate(TemplateSource templateSource) throws InvalidTemplateException {
-        return new ParsedHtmlDecoratorTemplate(
-                this.htmlParser, this.componentParser, this.componentResolver, templateSource);
+        try {
+            return new ParsedHtmlDecoratorTemplate(
+                    this.htmlParser, this.componentParser, this.componentResolver, templateSource);
+        } catch (Exception e) {
+            throw new InvalidTemplateException(
+                    "Unable to instantiate template from source " 
+                    + templateSource, e);
+        }
     }
 
     @Required public void setHtmlParser(HtmlPageParser htmlParser) {

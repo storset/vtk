@@ -76,12 +76,12 @@ public class TextualDecoratorTemplate implements Template {
     public PageContent render(HtmlPageContent content, HttpServletRequest request,
                        Map<Object, Object> model) throws Exception {
 
-        HtmlPage html = content.getHtmlContent();
-        
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
-        
+
+        HtmlPage html = content.getHtmlContent();
+
         StringBuilder sb = new StringBuilder();
         for (ComponentInvocation fragment: this.fragments) {
             try {
@@ -133,8 +133,8 @@ public class TextualDecoratorTemplate implements Template {
     
 
     private synchronized void compile() throws Exception {
-        if (this.fragments != null 
-                && (this.lastModified == templateSource.getLastModified())) {
+       if (this.fragments != null 
+                && (this.lastModified == this.templateSource.getLastModified())) {
             return;
         }
         

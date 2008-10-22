@@ -63,7 +63,7 @@ import org.vortikal.repository.search.query.Query;
  * 
  * @see Query, ResultSet
  */
-public class Search {
+public final class Search {
 
     public final static int MAX_LIMIT = 40000; 
     
@@ -86,6 +86,9 @@ public class Search {
     public void setCursor(int cursor) {
         if (cursor < 0) {
             throw new IllegalArgumentException("Cursor cannot be negative");
+        }
+        if (cursor >= MAX_LIMIT) {
+            throw new IllegalArgumentException("Too big cursor value: " + cursor);
         }
         this.cursor = cursor;
     }

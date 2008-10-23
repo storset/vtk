@@ -122,7 +122,7 @@ public class RequestRemoteAddressAssertion implements Assertion {
     }
 
     public String toString() {
-        StringBuffer buffer = new StringBuffer("RequestRemoteAddressAssertion[");
+        StringBuilder buffer = new StringBuilder("RequestRemoteAddressAssertion[");
         if (this.invert) {
             buffer.append("(INVERTED) ");
         }

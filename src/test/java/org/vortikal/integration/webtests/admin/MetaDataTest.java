@@ -27,7 +27,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	private static final String AUTHOR[] = { "resourceInfoContent", "4", "1" };
 	private static final String AUTHOR_EMAIL[] = { "resourceInfoContent", "5", "1" };
 	private static final String AUTHOR_URL[] = { "resourceInfoContent", "6", "1" };
-	private static final String SCIENTIFIC_DICIPLINES[] = { "resourceInfoContent", "7", "1" };
+	private static final String SCIENTIFIC_DISCIPLINES[] = { "resourceInfoContent", "7", "1" };
 	// Folder
 	private static final String HIDE_FROM_NAVIGATION[] = { "resourceInfoTechnical", "0", "1" };
 	private static final String NAVIGATIONAL_IMPORTANCE[] = { "resourceInfoTechnical", "1", "1" };
@@ -110,8 +110,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		for (int i = 0; i < languagesToTest.length; i++) {
 			
-			gotoAdminAboutEditLinkFolder(languageFolder, "contentLocale"); // TODO: id for specific (edit) to use
-			// clickLink()
+			gotoAdminAboutEditLinkFolder(languageFolder, "contentLocale", "");
 			setPropertyOption("propertyForm", "value", languagesToTest[i][0]);
 			
 			gotoViewNoIframe(languageFolder);
@@ -141,7 +140,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		for (int i = 0; i < languagesToTestExtended.length; i++) {
 			
 			createFolderAndGoto(languagesToTestExtended[i][0]);
-			gotoAdminAboutEditLinkFolder(languagesToTestExtended[i][0], "contentLocale");
+			gotoAdminAboutEditLinkFolder(languagesToTestExtended[i][0], "contentLocale", "");
 			setPropertyOption("propertyForm", "value", languagesToTestExtended[i][2]);
 			gotoContentsTab();
 			
@@ -159,6 +158,92 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 			deleteCurrentResource();
 			deleteCurrentResource();
 		}
+	}
+	
+	public void testEditPropertiesOnFolder() {
+		
+		String testfolder = "testfolder";
+		String testString = "12.12.2008 12:12:12";
+		
+		// Special cases
+		String exptectedDateString = "December 12, 2008 12:12:12 PM CET ( edit )";
+		String scientificDiscipline = "011";
+		String exptectedScientificDiscipline = "General linguistics and phonetics ( edit )";
+		
+		// Need to treat textfields, optionelements and radiobuttons separate
+		String propertiesToTestTextFields[] = { "userTitle" };
+		String propertiesToTestTextFieldsContentNameSpace[] = { "keywords", "description", "verifiedDate",
+				"authorName", "authorEmail", "authorURL" };
+		String propertiesToTestTextFieldsScientificNameSpace[] = { "disciplines" };
+		String propertiesToTestOptionElement[] = { "importance", "collection-type" };
+		String propertiesToTestRadioButtons[] = { "hidden" };
+		
+		// Namespaces in links
+		String contentNameSpace = "&namespace=http://www.uio.no/content";
+		String navigationNameSpace = "&namespace=http://www.uio.no/navigation";
+		String scientificNameSpace = "&namespace=http://www.uio.no/scientific";
+		
+		createFolderAndGoto("testfolder");
+		
+		// Information describing the content
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestTextFields[0], "");
+		setPropertyTextField("propertyForm", "value", testString);
+		String value = getTitleAbout(true);
+		assertEquals("Set to " + testString + " ( edit )", value);
+		
+		for (int i = 0; i < propertiesToTestTextFieldsContentNameSpace.length; i++) {
+			
+			String propertyToSetAndGet = propertiesToTestTextFieldsContentNameSpace[i];
+			gotoAdminAboutEditLinkFolder(testfolder, propertyToSetAndGet, contentNameSpace);
+			setPropertyTextField("propertyForm", "value", testString);
+			
+			if (propertyToSetAndGet.equals("keywords")) {
+				value = getKeywordsAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("description")) {
+				value = getDescriptionAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("verifiedDate")) {
+				value = getVerifiedDateAbout(false);
+				assertEquals(exptectedDateString, value);
+			} else if (propertyToSetAndGet.equals("authorName")) {
+				value = getAuthorAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("authorEmail")) {
+				value = getAuthorEmailAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("authorURL")) {
+				value = getAuthorURLAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else {
+				
+			}
+		}
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestTextFieldsScientificNameSpace[0], scientificNameSpace);
+		setPropertyTextField("propertyForm", "value", scientificDiscipline);
+		value = getScientificDisciplinesAbout(true);
+		assertEquals(exptectedScientificDiscipline, value);
+		
+		// Technical Details
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestRadioButtons[0], navigationNameSpace);
+		setRadioOption("propertyForm", "true");
+		value = getHideFromNavigationAbout(false);
+		assertEquals("Yes" + " ( edit )", value);
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestOptionElement[0], navigationNameSpace);
+		setPropertyOption("propertyForm", "value", "15");
+		value = getNavigationImportanceAbout(false);
+		assertEquals("15" + " ( edit )", value);
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestOptionElement[1], "");
+		setPropertyOption("propertyForm", "value", "Article listing");
+		value = getFolderTypeAbout(false);
+		assertEquals("Article listing" + " ( edit )", value);
+		
+		deleteCurrentResource();
 	}
 	
 	// Navigation / functions in Admin
@@ -186,8 +271,8 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		clickLink(linkId);
 	}
 	
-	public void gotoAdminAboutEditLinkFolder(String folder, String linkName) {
-		gotoPage(returnUrlView + folder + "/?name=" + linkName + "&vrtx=admin&mode=about");
+	public void gotoAdminAboutEditLinkFolder(String folder, String linkName, String nameSpace) {
+		gotoPage(returnUrlView + folder + "/?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
 	}
 	
 	public void gotoAdminAboutEditLinkFile(String folder, String file, String linkName) {
@@ -213,24 +298,156 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		gotoAboutTab();
 		
-		String lastModified = getTableValue(LASTMODIFIED);
+		String p = getTableValue(LASTMODIFIED);
 		
 		if (returnToContents) {
 			gotoContentsTab();
 		}
-		return lastModified;
+		return p;
 	}
 	
 	public String getLanguageAbout(boolean returnToContents) {
 		
 		gotoAboutTab();
 		
-		String language = getTableValue(LANGUAGE);
+		String p = getTableValue(LANGUAGE);
 		
 		if (returnToContents) {
 			gotoContentsTab();
 		}
-		return language;
+		return p;
+	}
+	
+	public String getTitleAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(TITLE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getKeywordsAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(KEYWORDS);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getDescriptionAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(DESCRIPTION);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getVerifiedDateAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(VERIFIED_DATE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getAuthorAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(AUTHOR);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getAuthorEmailAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(AUTHOR_EMAIL);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getAuthorURLAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(AUTHOR_URL);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getScientificDisciplinesAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(SCIENTIFIC_DISCIPLINES);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getHideFromNavigationAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(HIDE_FROM_NAVIGATION);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getNavigationImportanceAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(NAVIGATIONAL_IMPORTANCE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getFolderTypeAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(FOLDER_TYPE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
 	}
 	
 	// General methods for creation, deletion of resources and getting values from table.
@@ -241,6 +458,14 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		assertFormPresent(formName);
 		setWorkingForm(formName);
 		selectOption(selectElementName, selectedOptionValue);
+		clickButtonWithText("save");
+	}
+	
+	private void setRadioOption(String formName, String selectedRadioOptionValue) {
+		
+		assertFormPresent(formName);
+		setWorkingForm(formName);
+		clickElementByXPath("//input[@type='radio' and @id='" + selectedRadioOptionValue + "']");
 		clickButtonWithText("save");
 	}
 	

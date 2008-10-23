@@ -227,6 +227,10 @@ public class PropfindController extends AbstractWebdavController {
                 "Expected one of `allprop', `propname' or `prop' elements");
         }
         
+        boolean wildcardPropRequest = 
+            ("allprop".equals(propTypeName) || "propname".equals(propTypeName)); 
+        model.put(WebdavConstants.WEBDAVMODEL_WILDCARD_PROP_REQUEST, wildcardPropRequest);
+        
         List<Element> requestedProps = getRequestedProperties(requestBody, resource);
         model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_PROPERTIES, requestedProps);
 

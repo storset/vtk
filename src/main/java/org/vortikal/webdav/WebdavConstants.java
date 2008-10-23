@@ -54,6 +54,8 @@ public class WebdavConstants {
     public static final String WEBDAVMODEL_REQUESTED_PROPERTIES_APPEND_VALUES = 
         "appendValuesToRequestedProperties";
 
+    public static final String WEBDAVMODEL_WILDCARD_PROP_REQUEST = "isWildcardPropRequest";
+
     public static final String WEBDAVMODEL_CREATED_RESOURCE = "createdResource";
 
     public static final String WEBDAVMODEL_RESOURCE_STREAM = "resourceStream";

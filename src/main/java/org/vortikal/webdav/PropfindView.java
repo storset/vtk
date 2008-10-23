@@ -125,12 +125,15 @@ public class PropfindView implements View, InitializingBean {
             logger.debug("Requested properties: " + properties);
         }
 
-        Boolean appendValues = (Boolean) model.get(
-            WebdavConstants.WEBDAVMODEL_REQUESTED_PROPERTIES_APPEND_VALUES);
+        Boolean appendValues = (Boolean) 
+            model.get(WebdavConstants.WEBDAVMODEL_REQUESTED_PROPERTIES_APPEND_VALUES);
         
-
+        Boolean isWildcardPropRequest = (Boolean) 
+            model.get(WebdavConstants.WEBDAVMODEL_WILDCARD_PROP_REQUEST);
+        
         Element e = buildMultistatusElement(resources, properties,
-                                            appendValues.booleanValue());
+                                            appendValues.booleanValue(),
+                                            isWildcardPropRequest);
 
         Document doc = new Document(e);
 
@@ -171,7 +174,7 @@ public class PropfindView implements View, InitializingBean {
 
 
     private Element buildMultistatusElement(List<Resource> resourceList, List<Element> requestedProps,
-                                            boolean appendPropertyValues) throws Exception {
+                                            boolean appendPropertyValues, boolean isWildcardPropRequest) throws Exception {
 
         Element multiStatus = new Element("multistatus", WebdavConstants.DAV_NAMESPACE);
 
@@ -191,7 +194,7 @@ public class PropfindView implements View, InitializingBean {
                         new Element("lockdiscovery", WebdavConstants.DAV_NAMESPACE))) {
                     Element responseElement = buildResponseElement(
                         currentResource, requestedProps, 
-                        appendPropertyValues);
+                        appendPropertyValues, isWildcardPropRequest);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Lock-Null resource " + currentResource.getURI());
                     }
@@ -202,7 +205,7 @@ public class PropfindView implements View, InitializingBean {
 
                 Element responseElement = buildResponseElement(
                     currentResource, requestedProps, 
-                    appendPropertyValues);
+                    appendPropertyValues, isWildcardPropRequest);
             
                 multiStatus.addContent(responseElement);
             }
@@ -231,7 +234,8 @@ public class PropfindView implements View, InitializingBean {
      */
     private Element buildResponseElement(Resource resource,
                                          List<Element> requestedProps,
-                                         boolean appendPropertyValues) throws Exception {
+                                         boolean appendPropertyValues,
+                                         boolean isWildcardPropRequest) throws Exception {
 
         Principal p = SecurityContext.getSecurityContext().getPrincipal();
 
@@ -275,7 +279,7 @@ public class PropfindView implements View, InitializingBean {
         }
         
 
-        if (unknownProperties.getChildren().size() > 0) {
+        if (unknownProperties.getChildren().size() > 0 && !isWildcardPropRequest) {
 
             Element status = new Element("status", WebdavConstants.DAV_NAMESPACE);
             Element propStatUnknown = new Element("propstat", WebdavConstants.DAV_NAMESPACE);

@@ -19,8 +19,7 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 
 #contents {
   background-color: #efefef;
-  /* Fix for wide images */
-  overflow: hidden;
+  overflow:visible; 
 }
 
 #contents h2 {
@@ -305,6 +304,7 @@ div.picture button{
 
 div.picture img { 
   height: 16.5ex;
+  max-width:200px;
   float: left;
   position: relative;
   

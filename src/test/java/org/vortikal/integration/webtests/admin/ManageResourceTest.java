@@ -9,14 +9,20 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
      * Create and delete a collection
      */
     public void testManageCollection() {
-        createAndDeleteResource("createCollectionService", "createcollection", "testcollection");
+        final String resourceName = "testcollection";
+    	createResource("createCollectionService", "createcollection", resourceName);
+        // Delete it
+        deleteResource(resourceName);
     }
 
     /**
      * Create and delete a document
      */
     public void testManageDocument() {
-        createAndDeleteResource("createDocumentService", "createDocumentForm", "testdocument.txt");
+    	final String resourceName = "testdocument.txt";
+        createResource("createDocumentService", "createDocumentForm", resourceName);
+        // Delete it
+        deleteResource(resourceName);
     }
 
     /**
@@ -33,7 +39,7 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
         copyResource("copyfolder");
     }
 
-    private void createAndDeleteResource(String serviceName, String formName, String resourceName) {
+    private void createResource(String serviceName, String formName, String resourceName) {
         // Start of fresh
         assertLinkNotPresent(resourceName);
         assertFormNotPresent(formName);
@@ -46,8 +52,6 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
         submit();
         // Verify it's there
         assertLinkPresent(resourceName);
-        // Delete it
-        deleteResource(resourceName);
     }
 
     private void copyResource(String folderToCopyTo) {

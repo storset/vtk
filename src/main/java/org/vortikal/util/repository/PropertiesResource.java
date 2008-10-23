@@ -91,6 +91,8 @@ public class PropertiesResource extends Properties implements InitializingBean {
                               boolean demandResourceAvailability, boolean lazyInit) 
         throws Exception {
         
+        super();
+        
         this.repository = repository;
         this.uri = uri;
         this.token = token;

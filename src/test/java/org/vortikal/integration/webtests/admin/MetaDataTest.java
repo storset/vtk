@@ -37,6 +37,11 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	private static final String CHARACTER_ENCODING[] = { "resourceInfoTechnical", "1", "1" };
 	private static final String EDIT_AS_PLAINTEXT[] = { "resourceInfoTechnical", "2", "1" };
 	
+	// Namespaces in links
+	private String contentNameSpace = "&namespace=http://www.uio.no/content";
+	private String navigationNameSpace = "&namespace=http://www.uio.no/navigation";
+	private String scientificNameSpace = "&namespace=http://www.uio.no/scientific";
+	
 	private String returnUrl;
 	private String returnUrlView;
 	
@@ -50,28 +55,24 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	
 	public void testParentFolderLastModified() {
 		
-		String parentFolderName = "parentfolder";
+		String parentFolderName = "parentfolder-last-modified";
 		String subFolderName = "subfolder";
 		
-		// 19 seems to work for long and short dates except:
-		// Test will fail from 1 -> 9 May next year when 12hr clock :)
-		// TODO: Check for whitespace and set substring based on length of month.
-		
-		int cropDateModifiedValue = 19;
-		
-		createFolderAndGoto(parentFolderName);
-		String parentFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
+		// Use old/existing folder
+		checkAndGotoLink(parentFolderName);
 		
 		createFolderAndGoto(subFolderName);
-		String subFolderLastModified = getLastModifiedAbout(true).substring(0, cropDateModifiedValue);
+		String subFolderLastModified = getLastModifiedAbout(true);
+		subFolderLastModified = cropAccordingToLengthOfMonth(subFolderLastModified);
 		
-		// Delete subfolder -> will implicitly redirect to parentfolder
 		deleteCurrentResource();
 		
-		// Delete parent folder
-		deleteCurrentResource();
+		String parentFolderLastModified = getLastModifiedAbout(true);
+		parentFolderLastModified = cropAccordingToLengthOfMonth(parentFolderLastModified);
 		
 		assertEquals(subFolderLastModified, parentFolderLastModified);
+		
+		gotoPage(returnUrl);
 	}
 	
 	public void testWebAddress() throws TestingEngineResponseException, Exception {
@@ -99,7 +100,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		gotoPage(returnUrl);
 	}
 	
-	public void testSettingLanguage() {
+	public void testSetLanguage() {
 		
 		String languageFolder = "testlanguage";
 		
@@ -113,7 +114,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 			gotoAdminAboutEditLinkFolder(languageFolder, "contentLocale", "");
 			setPropertyOption("propertyForm", "value", languagesToTest[i][0]);
 			
-			gotoViewNoIframe(languageFolder);
+			gotoViewNoIframe(languageFolder, "");
 			
 			// Check if we got the language selected
 			assertTextPresent(languagesToTest[i][1]);
@@ -131,11 +132,11 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		// { Parent folder name, subfolder name, parent language, exp. subfolder language, exp. text language on view }
 		String languagesToTestExtended[][] = {
-				{ "no-folder", "no-subfolder", "Norwegian (bokmål)", "Not set , inherits norwegian (bokmål) ( edit )",
+				{ "no-folder", "no-subfolder", "Norwegian (bokmål)", "Not set, inherits norwegian (bokmål) ( edit )",
 						"RSS-strøm fra denne siden" },
-				{ "nn-folder", "nn-subfolder", "Norwegian (nynorsk)",
-						"Not set , inherits norwegian (nynorsk) ( edit )", "RSS-strøm frå denne sida" },
-				{ "en-folder", "en-subfolder", "English", "Not set , inherits english ( edit )", "Feed from this page" } };
+				{ "nn-folder", "nn-subfolder", "Norwegian (nynorsk)", "Not set, inherits norwegian (nynorsk) ( edit )",
+						"RSS-strøm frå denne sida" },
+				{ "en-folder", "en-subfolder", "English", "Not set, inherits english ( edit )", "Feed from this page" } };
 		
 		for (int i = 0; i < languagesToTestExtended.length; i++) {
 			
@@ -151,7 +152,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 			assertEquals(languagesToTestExtended[i][3], inheritedLanguage);
 			
 			// Check if subfolder is actually viewed in correct language (to much testing(?))
-			gotoViewNoIframe(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1]);
+			gotoViewNoIframe(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1], "");
 			assertTextPresent(languagesToTestExtended[i][4]);
 			gotoAdminOfSubFolder(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1]);
 			
@@ -167,6 +168,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		// Special cases
 		String exptectedDateString = "December 12, 2008 12:12:12 PM CET ( edit )";
+		// TODO: Use browse application for scientific disciplines
 		String scientificDiscipline = "011";
 		String exptectedScientificDiscipline = "General linguistics and phonetics ( edit )";
 		
@@ -177,11 +179,6 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		String propertiesToTestTextFieldsScientificNameSpace[] = { "disciplines" };
 		String propertiesToTestOptionElement[] = { "importance", "collection-type" };
 		String propertiesToTestRadioButtons[] = { "hidden" };
-		
-		// Namespaces in links
-		String contentNameSpace = "&namespace=http://www.uio.no/content";
-		String navigationNameSpace = "&namespace=http://www.uio.no/navigation";
-		String scientificNameSpace = "&namespace=http://www.uio.no/scientific";
 		
 		createFolderAndGoto("testfolder");
 		
@@ -246,6 +243,77 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		deleteCurrentResource();
 	}
 	
+	public void testContentTypeChange() {
+		
+		checkAndGotoLink("xmlfile.xml");
+		gotoAboutTab();
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "contentType", "");
+		
+		assertLinkPresent("editService");
+		
+		setPropertyTextField("propertyForm", "value", "text/plain");
+		assertLinkNotPresent("editService");
+		assertLinkPresent("plaintextEditService");
+		
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "contentType", "");
+		
+		setPropertyTextField("propertyForm", "value", "text/xml");
+		assertLinkNotPresent("plaintextEditService");
+		assertLinkPresent("editService");
+	}
+	
+	public void testEditAsTextOnXMLFile() {
+		
+		checkAndGotoLink("xmlfile.xml");
+		
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "plaintext-edit", "");
+		setRadioOption("propertyForm", "true");
+		
+		// Checks if we can edit the XML-file as text
+		assertLinkPresent("plaintextXMLEditService");
+		
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "plaintext-edit", "");
+		setRadioOption("propertyForm", "unset");
+		
+		assertLinkNotPresent("plaintextXMLEditService");
+		
+		gotoPage(returnUrl);
+		
+	}
+	
+	// TODO: Check both breadcrumb and subfolder-menu on title-change and hiding folder.
+	public void testEditTitleAndHiddenOnFolder() {
+		
+		checkAndGotoLink("subfolder-title");
+		gotoViewNoIframe("subfolder-title", "subfolder-menu.html");
+		assertTextPresent("subfolder-title");
+		
+		// Change title
+		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
+		setPropertyTextField("propertyForm", "value", "subfolder-title-change");
+		
+		// Checks breadcrumb - standing folder
+		gotoViewNoIframe("subfolder-title", "subfolder-menu.html");
+		assertTextPresent("subfolder-title-change");
+		
+		// Checks subfolder-menu - from folder above
+		// gotoViewNoIframe("subfolder-menu.html");
+		// assertTextPresent("subfolder-title-change");
+		
+		gotoAdminAboutEditLinkFolder("subfolder-title", "hidden", navigationNameSpace);
+		setRadioOption("propertyForm", "true");
+		
+		// Test if the folder is hidden in subfolder-meny
+		gotoViewNoIframe("subfolder-menu.html");
+		assertTextNotPresent("subfolder-title-change");
+		
+		// Revert changes
+		gotoAdminAboutEditLinkFolder("subfolder-title", "hidden", navigationNameSpace);
+		setRadioOption("propertyForm", "unset");
+		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
+		setPropertyTextField("propertyForm", "value", "subfolder-title");
+	}
+	
 	// Navigation / functions in Admin
 	// TODO: Refactor in admin navigation class(?)
 	// ****************************************************************************************
@@ -275,16 +343,20 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		gotoPage(returnUrlView + folder + "/?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
 	}
 	
-	public void gotoAdminAboutEditLinkFile(String folder, String file, String linkName) {
+	public void gotoAdminAboutEditLinkFile(String folder, String file, String linkName, String nameSpace) {
 		if (folder.equals("")) {
-			gotoPage(returnUrlView + file + "?name=" + linkName + "&vrtx=admin&mode=about");
+			gotoPage(returnUrlView + file + "?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
 		} else {
-			gotoPage(returnUrlView + folder + file + "?name=" + linkName + "&vrtx=admin&mode=about");
+			gotoPage(returnUrlView + folder + file + "?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
 		}
 	}
 	
-	public void gotoViewNoIframe(String folderName) {
-		gotoPage(returnUrlView + folderName + "/");
+	public void gotoViewNoIframe(String folderName, String file) {
+		gotoPage(returnUrlView + folderName + "/" + file);
+	}
+	
+	public void gotoViewNoIframe(String file) {
+		gotoPage(returnUrlView + file);
 	}
 	
 	public void gotoAdminOfSubFolder(String folderName) {
@@ -512,4 +584,22 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		setScriptingEnabled(false);
 		clickLink("delete-resource");
 	}
+	
+	private String cropAccordingToLengthOfMonth(String string) {
+		
+		int cropLastModifiedValueAppended = 16;
+		int lengthOfMonth;
+		
+		for (lengthOfMonth = 0; lengthOfMonth < string.length(); lengthOfMonth++) {
+			String aChar = string.substring(lengthOfMonth, lengthOfMonth + 1);
+			if (aChar.equals(" ")) {
+				break;
+			}
+		}
+		
+		int cropLastModifiedValue = lengthOfMonth + cropLastModifiedValueAppended;
+		
+		return string.substring(0, cropLastModifiedValue);
+	}
+	
 }

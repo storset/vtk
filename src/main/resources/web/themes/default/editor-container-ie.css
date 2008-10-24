@@ -1,0 +1,45 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.container-size-xxl p{
+	width:768px;
+}
+
+.container-size-xl p{
+	width:668px;
+}
+
+.container-size-l p{
+	width:568px;
+}
+
+.container-size-m p{
+	width:468px;
+}
+
+.container-size-s p{
+	width:368px;
+	overflow:hidden;
+}
+
+.container-size-xs p{
+	width:268px;
+}
+
+.container-size-xxs p{
+	width:168px;
+}
+
+.img-container-middle-ie{
+	text-align:center!important;
+}
+
+
+.img-container-middle-ie p{
+	text-align:center!important;
+}
+
+.img-container-middle-ie img{
+	text-align:center!important;
+}
+

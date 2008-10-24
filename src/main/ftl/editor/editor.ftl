@@ -92,6 +92,13 @@
 	</#if>
 	"");
 
+	/* Fix for div contianer display in ie */
+	var browser = navigator.userAgent;
+	var ieversion=new Number(RegExp.$1)
+	if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
+	   cssFileList[cssFileList.length-1] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
+	}
+
         fck.Config['EditorAreaCSS'] = cssFileList;
 
          fck.ReplaceTextarea();
@@ -136,7 +143,7 @@
     <![endif]-->
 
     <!--[if IE 7]>
-      <style type="text/css">
+     <style type="text/css">
          div.properties div.start-date, div.properties div.end-date, div.properties div.location {
            clear: both;
          }
@@ -147,7 +154,6 @@
          }
         </style>
     <![endif]-->
-    
   </head>
   <body>
     <#assign header>

@@ -1,12 +1,10 @@
 @charset "UTF-8";
 /* CSS Document */
 
-@charset "UTF-8";
-/* CSS Document */
-
 .container-size-xxl {
 	width:800px;
 }
+
 .container-size-xl {
 	width:700px;
 }
@@ -18,6 +16,7 @@
 .container-size-m {
 	width:500px;
 }
+
 
 .container-size-s {
 	width:400px;
@@ -31,6 +30,7 @@
 	width:200px;
 }
 
+
 .container{
 	border-color:#aaa;
 	border-style:solid;
@@ -40,6 +40,12 @@
 }
 
 .container-middle img{
+	display:block;
+	margin-right:auto;
+	margin-left:auto;
+}
+
+.container-middle{
 	display:block;
 	margin-right:auto;
 	margin-left:auto;
@@ -60,18 +66,19 @@
     margin-right: auto;
 	margin-top:0em;
 	margin-bottom:1em;
-	clear:both;
 	padding:0;
 	border:none;
 }
 
 .container p{
+	display:block;
 	margin-top:0;
 	margin-bottom:0;
 	overflow:hidden;
 }
 
 .facts-container {
+	width:300px;
 	padding:1em;
 	border-color:#aaa;
 	border-style:solid;
@@ -82,6 +89,10 @@
 	margin-top:0;
 	margin-bottom:0;
 	overflow:hidden;
+}
+
+.facts-container ul {
+	padding-left:2em;
 }
 
 .img-container {

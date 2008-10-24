@@ -1,9 +1,6 @@
 @charset "UTF-8";
 /* CSS Document */
 
-@charset "UTF-8";
-/* CSS Document */
-
 .container-size-xxl {
 	width:800px;
 }
@@ -42,6 +39,15 @@
 	margin-left:auto;
 }
 
+.container-middle{
+	display:block;
+	margin-right:auto;
+	margin-left:auto;
+}
+
+* html .container-middle{
+}
+
 .container-left{
 	margin: 0 1em 1em 0;
 	float:left;
@@ -57,7 +63,6 @@
     margin-right: auto;
 	margin-top:0em;
 	margin-bottom:1em;
-	clear:both;
 	padding:0;
 	border:none;
 }
@@ -79,4 +84,8 @@
 	margin-top:0;
 	margin-bottom:0;
 	overflow:hidden;
+}
+
+.facts-container ul {
+	padding-left:2em;
 }

@@ -30,8 +30,12 @@
  */
 package org.vortikal.web.view.decorating;
 
-import org.vortikal.text.html.HtmlFragment;
+import java.util.List;
+
+import org.vortikal.text.html.HtmlContent;
 
 public interface HtmlDecoratorComponent extends DecoratorComponent {
-    public HtmlFragment render(DecoratorRequest request) throws Exception;
+
+    public List<HtmlContent> render(DecoratorRequest request) throws Exception;
+
 }

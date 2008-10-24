@@ -30,6 +30,11 @@
 	width:168px;
 }
 
+.container-middle{
+	width:100%;
+	text-align:center;
+}
+
 .img-container-middle-ie{
 	text-align:center!important;
 }

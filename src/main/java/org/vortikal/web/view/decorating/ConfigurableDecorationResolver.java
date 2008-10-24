@@ -67,6 +67,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private Properties decorationConfiguration;
     private PropertyTypeDefinition parseableContentPropDef;
     private Repository repository; 
+    private boolean supportMultipleTemplates = false;
     private Map<String, RegexpCacheItem> regexpCache = new HashMap<String, RegexpCacheItem>();
     
     private class RegexpCacheItem {
@@ -83,6 +84,9 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         this.decorationConfiguration = decorationConfiguration;
     }
 
+    public void setSupportMultipleTemplates(boolean supportMultipleTemplates) {
+        this.supportMultipleTemplates = supportMultipleTemplates;
+    }
 
     public void afterPropertiesSet() {
         if (this.templateManager == null) {
@@ -276,6 +280,9 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             } else {
                 Template t = resolveTemplateReferences(locale, param);
                 if (t != null) {
+                    if (!this.supportMultipleTemplates) {
+                        descriptor.templates.clear();
+                    }
                     descriptor.templates.add(t);
                 }
             }

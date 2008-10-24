@@ -114,6 +114,7 @@
   <bean id="decorating.decorationResolver"
         class="org.vortikal.web.view.decorating.ConfigurableDecorationResolver"
         parent="requestLocalRepositoryAware">
+    <property name="supportMultipleTemplates" value="${decorating.supportMultipleTemplates}" />
     <property name="templateManager" ref="decorating.templateManager" />
     <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />

@@ -66,7 +66,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
             Resource resource = this.repository.retrieve(
                 securityContext.getToken(), 
                 requestContext.getResourceURI(), true);
-                return resource.getLastModified().getTime();
+            return resource.getLastModified().getTime();
         } catch (Throwable t) {
             return -1;
         }

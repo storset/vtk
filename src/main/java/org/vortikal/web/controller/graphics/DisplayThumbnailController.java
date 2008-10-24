@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -22,13 +23,26 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
-public class DisplayThumbnailController implements Controller {
+public class DisplayThumbnailController implements Controller, LastModified {
 	
 	private static final Logger log = Logger.getLogger(DisplayThumbnailController.class);
 	
 	private Repository repository;
 
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public long getLastModified(HttpServletRequest request) {
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        try {
+            Resource resource = this.repository.retrieve(
+                securityContext.getToken(), 
+                requestContext.getResourceURI(), true);
+                return resource.getLastModified().getTime();
+        } catch (Throwable t) {
+            return -1;
+        }
+    }
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -63,7 +77,6 @@ public class DisplayThumbnailController implements Controller {
         	response.sendRedirect(uri.toString());
         	return null;
         }
-        
 		return null;
 	}
 
@@ -71,5 +84,4 @@ public class DisplayThumbnailController implements Controller {
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-
 }

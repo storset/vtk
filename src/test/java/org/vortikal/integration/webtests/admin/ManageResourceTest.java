@@ -8,9 +8,11 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
     /**
      * Create and delete a collection
      */
-    public void testManageCollection() {
+    public void testCreateCollection() {
         final String resourceName = "testcollection";
-    	createResource("createCollectionService", "createcollection", resourceName);
+    	createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, resourceName);
+    	// Verify it's there
+        assertLinkPresent(resourceName);
         // Delete it
         deleteResource(resourceName);
     }
@@ -18,9 +20,11 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
     /**
      * Create and delete a document
      */
-    public void testManageDocument() {
+    public void testCreateDocument() {
     	final String resourceName = "testdocument.txt";
-        createResource("createDocumentService", "createDocumentForm", resourceName);
+        createResource(CREATE_DOCUMENT_SERVICE, CREATE_DOCUMENT_FORM, resourceName);
+        // Verify it's there
+        assertLinkPresent(resourceName);
         // Delete it
         deleteResource(resourceName);
     }
@@ -28,30 +32,15 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
     /**
      * Copy a resource to same folder
      */
-    public void testCopyResourceToSameFolder() {
+    public void testCopyDocumentToSameFolder() {
         copyResource(null);
     }
 
     /**
      * Copy a resource to another folder
      */
-    public void testCopyResourceToOtherFolder() {
+    public void testCopyDocumentToOtherFolder() {
         copyResource("copyfolder");
-    }
-
-    private void createResource(String serviceName, String formName, String resourceName) {
-        // Start of fresh
-        assertLinkNotPresent(resourceName);
-        assertFormNotPresent(formName);
-
-        // Create resource
-        clickLink(serviceName);
-        assertFormPresent(formName);
-        setWorkingForm(formName);
-        setTextField("name", resourceName);
-        submit();
-        // Verify it's there
-        assertLinkPresent(resourceName);
     }
 
     private void copyResource(String folderToCopyTo) {
@@ -72,17 +61,6 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
         clickLink("copyToSelectedFolderService");
         assertLinkPresent(copiedResourceName);
         deleteResource(copiedResourceName);
-    }
-
-    /**
-     * Delete resource and verify result
-     */
-    private void deleteResource(String resourceName) {
-        // Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
-        setScriptingEnabled(false);
-        clickLink("delete-" + resourceName);
-        assertLinkNotPresent(resourceName);
-
     }
 
 }

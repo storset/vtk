@@ -37,51 +37,38 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.shell.AbstractConsole;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 /**
  */
-public class ShellExecutionResultProvider implements ReferenceDataProvider, InitializingBean {
+public class ShellExecutionResultProvider implements ReferenceDataProvider {
 
     private String modelName;
     private AbstractConsole shell;
     private Map<String, Map<String, String>> groups;
     
 
+    @Required
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 
 
+    @Required
     public void setShell(AbstractConsole shell) {
         this.shell = shell;
     }
 
+    @Required
     public void setGroups(Map<String, Map<String, String>> groups) {
         this.groups = groups;
     }
     
-
-    public void afterPropertiesSet() {
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'modelName' must be set");
-        }
-        if (this.shell == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'shell' must be set");
-        }
-        if (this.groups == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'groups' must be set");
-        }
-    }
-    
-
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)

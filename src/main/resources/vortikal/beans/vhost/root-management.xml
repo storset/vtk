@@ -180,6 +180,7 @@
     </constructor-arg>
   </bean>
   
+  
 
   <bean id="requestLoadListener"
         class="org.vortikal.web.context.RequestLoadListener">
@@ -196,14 +197,78 @@
     <property name="views">
       <map>
         <entry key="rootView" value-ref="rootView" />
+        <entry key="serviceTree" value-ref="serviceTreeView" />
         <entry key="repositoryReadOnly" value-ref="repositoryReadOnlyView" />
       </map>
     </property>
   </bean>
 
+  <!-- Service tree -->
 
+  <bean id="serviceTreeService"
+    class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="repositoryManageService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+          <property name="username" value="root@localhost"/>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="services" />
+        </bean>
+      </list>
+    </property>
+    <property name="categories">
+      <set>
+        <value>rootMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">-300</value></entry>
+      </map>
+    </property>
+    <property name="handler" ref="root2Handler" />
+  </bean>
+  
+  <bean id="root2Handler"
+    class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    <property name="viewName" value="serviceTree" />
+  </bean>
+  
+  <bean id="serviceTreeView" parent="freemarkerView">
+    <property name="url" value="pages/root1.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
+          <property name="shell" ref="beanShellEvaluator" />
+          <property name="modelName" value="managementStats" />
+          <property name="groups" ref="serviceTreeGroups" />
+        </bean>
+      </list>
+    </property>
+  </bean>
 
+  <bean id="serviceTreeGroups" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Services" value-ref="serviceTreeStatsGroup" />
+      </map>
+    </constructor-arg>
+  </bean>
 
+  <bean id="serviceTreeStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Service tree">
+          <value>"\n" + context.getBean("requestContextInitializer").printServiceTree()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+  
   <!-- repository read only -->
 
   <bean id="repositoryReadOnlyService"

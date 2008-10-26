@@ -146,6 +146,7 @@ public class RequestContextInitializer implements ContextInitializer {
         if (logger.isInfoEnabled()) {
             logger.info("Registered service tree root services in the following order: " 
                         + rootServices);
+            logger.info("Service tree:");
             logger.info(printServiceTree());
         }
     }
@@ -328,10 +329,9 @@ public class RequestContextInitializer implements ContextInitializer {
         return Path.fromString(uri);
     }
 
-    private StringBuffer printServiceTree() {
+    public StringBuffer printServiceTree() {
         StringBuffer buffer = new StringBuffer();
         String lineSeparator = System.getProperty("line.separator");
-        buffer.append(lineSeparator).append("Service tree:").append(lineSeparator);
         printServiceList(this.rootServices, buffer, "->", lineSeparator);
         return buffer;
     }

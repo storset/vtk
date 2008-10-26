@@ -60,9 +60,6 @@ import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-/**
- * 
- */
 public class CollectionListingController implements Controller {
 
     private Repository repository;
@@ -96,8 +93,7 @@ public class CollectionListingController implements Controller {
         Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, false, locale));
         
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("collection", this.resourceManager
-                .createResourceWrapper(collection.getURI()));
+        model.put("collection", this.resourceManager.createResourceWrapper(collection.getURI()));
         model.put("subCollections", subCollections);
 
         // Setting the default pagelimit
@@ -124,12 +120,12 @@ public class CollectionListingController implements Controller {
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
         
-        List<Listing> searchComponents = new ArrayList<Listing>();
+        List<Listing> results = new ArrayList<Listing>();
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
             // Add the listing to the results
             if (listing.getFiles().size() > 0) {
-                searchComponents.add(listing);
+                results.add(listing);
             }
 
             // Check previous result (by redoing the previous search),  
@@ -152,13 +148,13 @@ public class CollectionListingController implements Controller {
                limit -= listing.getFiles().size();
             }
         }
-        model.put("searchComponents", searchComponents);
+        model.put("searchComponents", results);
         model.put("page", page);
 
         URL nextURL = null;
         URL prevURL = null;
-        if (searchComponents.size() > 0) {
-            Listing last = searchComponents.get(searchComponents.size() - 1);
+        if (results.size() > 0) {
+            Listing last = results.get(results.size() - 1);
             if (last.hasMoreResults()) {
                 nextURL = URL.create(request);
                 nextURL.setParameter("page", String.valueOf(page + 1));

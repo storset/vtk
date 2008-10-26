@@ -84,9 +84,6 @@ public class QueryStringSearchComponent implements SearchComponent {
     private PropertyTypeDefinition recursivePropDef;
     private PropertyTypeDefinition sortPropDef;
 
-    private PropertyTypeDefinition authorDatePropDef;
-    private PropertyTypeDefinition publishedDatePropDef;
-
     private List<PropertyDisplayConfig> listableProperties;
 
     protected final Log logger = LogFactory.getLog(this.getClass());
@@ -94,19 +91,13 @@ public class QueryStringSearchComponent implements SearchComponent {
 
     public Listing execute(HttpServletRequest request, Resource collection, 
             int page, int pageLimit, int baseOffset) throws Exception {
-        return execute(request, collection, page, pageLimit, baseOffset, null);
+        return execute(request, collection, page, pageLimit, baseOffset, this.defaultRecursive);
     }
 
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, 
-            int pageLimit, int baseOffset, Boolean pRecursive) throws Exception {
+            int pageLimit, int baseOffset, boolean recursive) throws Exception {
 
-        boolean recursive;
-        if (pRecursive != null) {
-            recursive = pRecursive;
-        } else {
-            recursive = this.defaultRecursive;
-        }
         if (collection.getProperty(this.recursivePropDef) != null) {
             recursive = collection.getProperty(this.recursivePropDef).getBooleanValue();
         }
@@ -284,26 +275,6 @@ public class QueryStringSearchComponent implements SearchComponent {
 
     public void setDefaultRecursive(boolean defaultRecursive) {
         this.defaultRecursive = defaultRecursive;
-    }
-
-
-    public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
-        this.publishedDatePropDef = publishedDatePropDef;
-    }
-
-
-    public PropertyTypeDefinition getPublishedDatePropDef() {
-        return this.publishedDatePropDef;
-    }
-
-
-    public void setAuthorPropDef(PropertyTypeDefinition authorPropDef) {
-        this.authorDatePropDef = authorPropDef;
-    }
-
-
-    public PropertyTypeDefinition getAuthorPropDef() {
-        return this.authorDatePropDef;
     }
 
 }

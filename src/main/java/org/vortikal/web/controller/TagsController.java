@@ -57,6 +57,7 @@ import org.vortikal.web.service.URL;
  */
 public class TagsController implements Controller {
 
+    private boolean defaultRecursive = true;
     private Repository repository;
     private int defaultPageLimit = 20;
     private String viewName;
@@ -65,11 +66,9 @@ public class TagsController implements Controller {
 
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Path uri = RequestContext.getRequestContext().getResourceURI();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
-        Resource collection = this.repository.retrieve(token, uri, true);
         Resource scope = getScope(token, request);
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -94,16 +93,15 @@ public class TagsController implements Controller {
         if (tag == null) {
 
         }
-        boolean recursive = true;
 
-        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, recursive);
+        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, defaultRecursive);
         model.put("listing", listing);
 
         // Check previous result (by redoing the previous search),
         // to see if we need to adjust the offset.
         // XXX: is there a better way?
         if (listing.getFiles().size() == 0 && offset > 0) {
-            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, recursive);
+            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, defaultRecursive);
             if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
                 offset -= prevListing.getFiles().size();
             }
@@ -142,11 +140,13 @@ public class TagsController implements Controller {
             try {
                 Map<String, Object> m = new HashMap<String, Object>();
                 Service service = this.alternativeRepresentations.get(contentType);
-                URL url = service.constructURL(collection, principal);
+                Map<String, String> parameters = new HashMap<String, String>();
+                parameters.put("tag", tag);
+                URL url = service.constructURL(scope.getURI(), parameters);
                 String title = service.getName();
                 org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
                         request);
-                title = rc.getMessage(service.getName(), new Object[] { collection.getTitle() }, service.getName());
+                title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
 
                 m.put("title", title);
                 m.put("url", url);
@@ -154,11 +154,9 @@ public class TagsController implements Controller {
 
                 alt.add(m);
             } catch (Throwable t) {
-
             }
         }
         model.put("alternativeRepresentations", alt);
-
         return new ModelAndView(this.viewName, model);
     }
 
@@ -178,9 +176,10 @@ public class TagsController implements Controller {
                 throw new IllegalArgumentException("scope must be a collection");
             }
             return scopedResource;
-        } else {
-            throw new IllegalArgumentException("scope must be '.' or start with a '/'");
-        }
+        } 
+        
+        throw new IllegalArgumentException("Scope must be empty, '.' or be a valid collection");
+
 
     }
 

@@ -5,7 +5,7 @@
 
   <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
-    <property name="order" value="0" />
+    <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="tags.tagsParameterAssertion" />
@@ -19,20 +19,22 @@
     <property name="handler" ref="tags.handler" />
   </bean>
   
-<!-- 
-  <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="-1" />
+  <bean id="tags.atomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="tags.viewService" />
     <property name="assertions">
       <list>
-        <ref bean="resourceInCollection" />
-        <ref bean="feedParameterSetAssertion" />
+        <ref bean="feedViewParameterAssertion" />
       </list>
     </property>
-    <property name="handler" ref="collectionListing.atomHandler" />
+    <property name="handler" ref="tags.atomHandler" />
+  </bean>
+    
+  <bean id="feedViewParameterAssertion" 
+    class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="view" />
+    <property name="parameterValue" value="feed" />
   </bean>
   
--->
   <bean id="tags.handler" 
         class="org.vortikal.web.controller.TagsController"
         parent="requestLocalRepositoryAware">
@@ -41,20 +43,20 @@
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="alternativeRepresentations">
       <map>
-        <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
+        <entry key="application/atom+xml" value-ref="tags.atomService" />
       </map>
     </property>
   </bean>
 
-  <!-- 
-  <bean id="collectionListing.atomHandler" 
-    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+  <bean id="tags.atomHandler" 
+    class="org.vortikal.web.controller.TagsAsFeedController"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
-    <property name="searchComponent" ref="collectionListing.searchComponent" />
+    <property name="searchComponent" ref="tags.searchComponent" />
+    <!--property name="publishedDatePropDef" ref="creationTimePropDef" />-->
+    <property name="authorPropDef" ref="createdByPropDef" />
   </bean>
-  -->
 
 
   <bean id="tags.searchComponent"
@@ -63,9 +65,7 @@
     <property name="viewService" ref="webService" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="defaultRecursive" value="false" />
-    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
-    <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="defaultRecursive" value="true" />
     <property name="defaultSortPropDef" ref="lastModifiedPropDef" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="sortPropertyMapping">
@@ -91,8 +91,6 @@
         </bean>
       </list>
     </property>
-    <property name="publishedDatePropDef" ref="creationTimePropDef" />
-    <property name="authorPropDef" ref="createdByPropDef" />
     <property name="queryBuilders">
       <list>
         <bean class="org.vortikal.web.search.ScopeQueryBuilder" />
@@ -135,6 +133,7 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/tags.css</value>
+            <value>${themeBaseURL}/view-collectionlisting.css</value>
           </list>
         </entry>
         <entry key="searchComponents">

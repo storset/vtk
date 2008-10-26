@@ -61,6 +61,7 @@
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="searchComponent" ref="eventListing.upcomingEventsSearchComponent" />
+    <property name="publishedDatePropDef" ref="startDatePropDef" />
   </bean>
 
   <bean id="eventListing.upcomingEventsSearchComponent" 
@@ -82,7 +83,6 @@
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
 
     <property name="listableProperties" ref="eventListing.listableProperties" />
-    <property name="publishedDatePropDef" ref="startDatePropDef" />
 
   </bean>
 

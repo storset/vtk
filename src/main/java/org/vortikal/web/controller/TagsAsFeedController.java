@@ -28,18 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.search;
+package org.vortikal.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 
-public interface SearchComponent {
 
-    public Listing execute(HttpServletRequest request, Resource collection,
-            int page, int pageLimit, int baseOffset) throws Exception;
+public class TagsAsFeedController extends CollectionListingAsAtomFeed {
 
-    public Listing execute(HttpServletRequest request, Resource collection,
-            int page, int pageLimit, int baseOffset, boolean recursive) throws Exception;
+    
+    
+    @Override
+    protected String getFeedPrefix() {
+        return "tags:";
+    }
 
+    @Override
+    protected String getDescription(PropertySet resource) {
+        return null;
+    }
+
+    @Override
+    protected String getIntroduction(PropertySet resource) {
+        return null;
+    }
+
+    @Override
+    protected Date getLastModified(Resource collection) {
+        return new Date();
+    }
+
+    @Override
+    protected Property getPicture(Resource collection) {
+        return null;
+    }
+    
 }

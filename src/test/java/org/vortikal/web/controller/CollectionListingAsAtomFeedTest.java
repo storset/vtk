@@ -26,7 +26,6 @@ import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTreeImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
@@ -162,18 +161,8 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 		}
 
         public Listing execute(HttpServletRequest request, Resource collection,
-                int page, int pageLimit, int baseOffset, Boolean recursive) 
+                int page, int pageLimit, int baseOffset, boolean recursive) 
         throws Exception {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public PropertyTypeDefinition getAuthorPropDef() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public PropertyTypeDefinition getPublishedDatePropDef() {
             // TODO Auto-generated method stub
             return null;
         }

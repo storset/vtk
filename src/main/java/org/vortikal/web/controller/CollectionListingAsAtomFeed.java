@@ -30,8 +30,9 @@
  */
 package org.vortikal.web.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,6 +56,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.SecurityContext;
@@ -65,6 +67,8 @@ import org.vortikal.web.service.Service;
 
 public class CollectionListingAsAtomFeed implements Controller {
 
+    private static final String TAG_PREFIX = "tag:";
+
     private static Namespace NS = Namespace.DEFAULT_NAMESPACE;
 
     private Repository repository;
@@ -72,19 +76,37 @@ public class CollectionListingAsAtomFeed implements Controller {
     private Abdera abdera;
     private SearchComponent searchComponent;
 
+    private PropertyTypeDefinition authorPropDef;
+    private PropertyTypeDefinition publishedDatePropDef;
+
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        Feed feed = abdera.newFeed();
-
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-
         Resource collection = this.repository.retrieve(token, uri, true);
 
+        Feed feed = populateCollection(collection);
+        
+        Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
+
+        for (PropertySet result : searchResult.getFiles()) {
+            populateEntry(token, result, feed.addEntry());
+        }
+
+        response.setContentType("application/atom+xml;charset=utf-8");
+        feed.writeTo("prettyxml", response.getWriter());
+
+        return null;
+    }
+
+    private Feed populateCollection(Resource collection)
+            throws IOException, URIException, UnsupportedEncodingException {
+        Feed feed = abdera.newFeed();
         Property published = collection.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
-        feed.setId(getId(uri, published));
+        feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
         feed.setTitle(collection.getTitle());
+        feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
         
         String subTitle = getIntroduction(collection);
         if (subTitle != null) {
@@ -96,7 +118,7 @@ public class CollectionListingAsAtomFeed implements Controller {
             }
         }
         
-        Property picture = collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+        Property picture = getPicture(collection);
         if (picture != null) {
             String val = picture.getStringValue();
             if (isURL(val)) {
@@ -107,95 +129,108 @@ public class CollectionListingAsAtomFeed implements Controller {
             }
         }
         
-        feed.setUpdated(collection.getLastModified());
-        feed.addLink(viewService.constructLink(uri), "alternate");
-        
-        Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
-        List<PropertySet> files = searchResult.getFiles();
-        for (PropertySet child : files) {
-            Entry entry = feed.addEntry();
-            
-            entry.setId(getId(child.getURI(), child.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME)));
-            entry.addCategory(child.getResourceType());
-            
-            Property prop = child.getProperty(NS, PropertyType.TITLE_PROP_NAME);
-            entry.setTitle(prop.getFormattedValue());
-
-            Property type = child.getProperty(NS, PropertyType.XHTML_PROP_NAME);
-            // Add introduction and/or pic as xhtml if resource is event or article...
-            if (type != null && (StringUtils.equals(type.getStringValue(), "event")
-                ||StringUtils.equals(type.getStringValue(), "article"))) {
-
-                String summary = prepareSummary(child);
-                entry.setSummaryAsXhtml(summary);
-                
-            // ...add description as plain text else
-            } else {
-                String description = getDescription(child);
-                if (description != null) {
-                    entry.setSummary(description);
-                }
-            }
-
-            if (searchComponent.getPublishedDatePropDef() != null) {
-                prop = child.getProperty(searchComponent.getPublishedDatePropDef());
-                entry.setPublished(prop.getDateValue());
-            }
-
-            prop = child.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
-            entry.setUpdated(prop.getDateValue());
-
-            if (searchComponent.getAuthorPropDef() != null) {
-                prop = child.getProperty(searchComponent.getAuthorPropDef());
-                if (prop != null) {
-                    ValueFormatter vf = prop.getDefinition().getValueFormatter();
-                    if (prop.getDefinition().isMultiple()) {
-                        for (Value v: prop.getValues()) {
-                            entry.addAuthor(vf.valueToString(v, "name", null));
-                        }
-                    } else {
-                        entry.addAuthor(prop.getFormattedValue("name", null));
-                    }
-                }
-            }
-
-            Link link = abdera.getFactory().newLink();
-            prop = child.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
-            if (prop != null) {
-                try {
-                    Path propRef = getPropRef(child, prop.getStringValue());
-                    Resource mediaResource = repository.retrieve(token, propRef, true);
-                    link.setHref(viewService.constructLink(propRef));
-                    link.setRel("enclosure");
-                    link.setMimeType(mediaResource.getContentType());
-                    entry.addLink(link);
-                } catch (Throwable t) { }
-            }
-
-            try {
-                link = abdera.getFactory().newLink();
-                link.setHref(viewService.constructLink(child.getURI()));
-                link.setRel("alternate");
-                entry.addLink(link);
-            } catch (Throwable t) { }
+        Date lastModified = getLastModified(collection);
+        if (lastModified != null) {
+            feed.setUpdated(lastModified);
         }
-
-        response.setContentType("application/atom+xml;charset=utf-8");
-        feed.writeTo("prettyxml", response.getWriter());
-        return null;
+        return feed;
     }
 
-    private String getIntroduction(PropertySet resource) {
+    protected Date getLastModified(Resource collection) {
+        return collection.getLastModified();
+    }
+
+    protected Property getPicture(Resource collection) {
+        return collection.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
+    }
+
+    protected String getIntroduction(PropertySet resource) {
         Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
         return prop != null ? prop.getFormattedValue() : null;
     }
     
-    private String getDescription(PropertySet resource) {
+    protected String getDescription(PropertySet resource) {
         Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
         Property prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
         return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
     }
     
+    private void populateEntry(String token, PropertySet result, Entry entry)
+            throws URIException, UnsupportedEncodingException {
+
+        String id = getId(result.getURI(), result.getProperty(NS,
+                PropertyType.CREATIONTIME_PROP_NAME), null);
+        entry.setId(id);
+        entry.addCategory(result.getResourceType());
+
+        Property prop = result.getProperty(NS, PropertyType.TITLE_PROP_NAME);
+        entry.setTitle(prop.getFormattedValue());
+
+        Property type = result.getProperty(NS, PropertyType.XHTML_PROP_NAME);
+        // Add introduction and/or pic as xhtml if resource is event or
+        // article...
+        if (type != null
+                && (StringUtils.equals(type.getStringValue(), "event") || StringUtils
+                        .equals(type.getStringValue(), "article"))) {
+
+            String summary = prepareSummary(result);
+            entry.setSummaryAsXhtml(summary);
+
+            // ...add description as plain text else
+        } else {
+            String description = getDescription(result);
+            if (description != null) {
+                entry.setSummary(description);
+            }
+        }
+
+        if (this.publishedDatePropDef != null) {
+            prop = result.getProperty(this.publishedDatePropDef);
+            entry.setPublished(prop.getDateValue());
+        }
+
+        prop = result.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);
+        entry.setUpdated(prop.getDateValue());
+
+        if (this.authorPropDef != null) {
+            prop = result.getProperty(this.authorPropDef);
+            if (prop != null) {
+                ValueFormatter vf = prop.getDefinition().getValueFormatter();
+                if (prop.getDefinition().isMultiple()) {
+                    for (Value v : prop.getValues()) {
+                        entry.addAuthor(vf.valueToString(v, "name", null));
+                    }
+                } else {
+                    entry.addAuthor(prop.getFormattedValue("name", null));
+                }
+            }
+        }
+
+        prop = result.getProperty(NS, PropertyType.MEDIA_PROP_NAME);
+        if (prop != null) {
+            try {
+                Link link = abdera.getFactory().newLink();
+                Path propRef = getPropRef(result, prop.getStringValue());
+                link.setHref(viewService.constructLink(propRef));
+                link.setRel("enclosure");
+                Resource mediaResource = repository.retrieve(token, propRef,
+                        true);
+                link.setMimeType(mediaResource.getContentType());
+                entry.addLink(link);
+            } catch (Throwable t) {
+            }
+        }
+
+        try {
+            Link link = abdera.getFactory().newLink();
+            link.setHref(viewService.constructLink(result.getURI()));
+            link.setRel("alternate");
+            entry.addLink(link);
+        } catch (Throwable t) {
+        }
+    }
+
+
     private String prepareSummary(PropertySet resource) {
         StringBuilder sb = new StringBuilder();
         String summary = getIntroduction(resource);
@@ -237,12 +272,14 @@ public class CollectionListingAsAtomFeed implements Controller {
      * @throws UnsupportedEncodingException If the default (UTF-8) encoding used for 
      *         transformation from an URI to IRI is not supported
      */
-    private String getId(Path resourceUri, Property published) throws URIException, UnsupportedEncodingException {
+    private String getId(Path resourceUri, Property published, String prefix) throws URIException, UnsupportedEncodingException {
         String host = viewService.constructURL(resourceUri).getHost();
-        StringBuilder sb = new StringBuilder("tag:");
+        StringBuilder sb = new StringBuilder(TAG_PREFIX);
         sb.append(host + ",");
         sb.append(published.getFormattedValue("iso-8601-short", null) + ":");
-
+        if (prefix != null) {
+            sb.append(prefix);
+        }
         String uriString = resourceUri.toString();
         // Remove any invalid character before decoding
         uriString = removeInvalid(uriString);
@@ -253,6 +290,10 @@ public class CollectionListingAsAtomFeed implements Controller {
         String iriString = IRIUtils.URItoIRI(uriString);
         sb.append(iriString);
         return sb.toString();
+    }
+
+    protected String getFeedPrefix() {
+        return null;
     }
     
     private String removeInvalid(String s) {
@@ -278,5 +319,14 @@ public class CollectionListingAsAtomFeed implements Controller {
     public void setSearchComponent(SearchComponent searchComponent) {
         this.searchComponent = searchComponent;
     }
+
+    public void setAuthorPropDef(PropertyTypeDefinition authorPropDef) {
+        this.authorPropDef = authorPropDef;
+    }
+
+    public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
+        this.publishedDatePropDef = publishedDatePropDef;
+    }
+
 
 }

@@ -43,6 +43,9 @@
        <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if>
+  <#list alternativeRepresentations as alt>
+    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
+  </#list>
  
 </head>
 
@@ -80,7 +83,7 @@
                     </#if>
                     <img class="introduction-image" 
                          alt="IMG for '${resourceTitle?html}'"
-                         src="${src?html}" />
+                         src="${src?html}?vrtx=thumbnail" />
                   </a>
                 </#if>
 
@@ -127,7 +130,7 @@
      </#if>
 
     <#-- XXX: display first link with content type = atom: -->
-    <#--
+
     <#list alternativeRepresentations as alt>
       <#if alt.contentType = 'application/atom+xml'>
         <div class="vrtx-feed-link">
@@ -136,7 +139,6 @@
         <#break />
       </#if>
     </#list>
-    -->
 
 
       

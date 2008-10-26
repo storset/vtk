@@ -66,6 +66,8 @@
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="searchComponent" ref="articleListing.searchComponent" />
+    <property name="publishedDatePropDef" ref="publishedDatePropDef" />
+    <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
   
 
@@ -116,8 +118,6 @@
         </bean>
       </list>
     </property>
-    <property name="publishedDatePropDef" ref="publishedDatePropDef" />
-    <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
 
 

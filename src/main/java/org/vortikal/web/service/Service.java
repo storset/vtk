@@ -70,7 +70,14 @@ public interface Service extends Ordered, Categorizable {
      */
     public List<Assertion> getAssertions();
 
+    /**
+     * Gets this service's list of assertions, including ancestor assertions.
+     *
+     * @return a <code>List</code> of {@link Assertion} objects.
+     */
+    public List<Assertion> getAllAssertions();
 
+    
     /**
      * Gets this service's controller, if it has one.
      *

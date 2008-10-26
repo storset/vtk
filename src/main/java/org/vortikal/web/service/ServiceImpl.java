@@ -38,7 +38,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
@@ -68,9 +67,11 @@ import org.vortikal.util.net.NetUtils;
  * </ul>
  *
  */
-public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
+public class ServiceImpl implements Service, BeanNameAware {
 
-    List<Assertion> allAssertions = new ArrayList<Assertion>();
+    // FIXME: Cache for all assertions, don't use directly!
+    private List<Assertion> allAssertions;
+
     private AuthenticationChallenge authenticationChallenge;
     private Object handler;
     private List<Assertion> assertions = new ArrayList<Assertion>();
@@ -84,6 +85,23 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     private List<URLPostProcessor> accumulatedUrlPostProcessors = null;
     	
     
+    public List<Assertion> getAllAssertions() {
+        if (allAssertions == null) {
+            synchronized (this) {
+                if (allAssertions != null) {
+                    return allAssertions;
+                }
+                allAssertions = new ArrayList<Assertion>();
+                if (this.parent != null) {
+                    allAssertions.addAll(parent.getAllAssertions());
+                }
+                allAssertions.addAll(this.assertions);
+            }
+        }
+        
+        return allAssertions;
+    }
+
     public void setHandler(Object handler) {
         this.handler = handler;
     }
@@ -229,7 +247,7 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
     public URL constructURL(Resource resource, Principal principal,
                                 Map<String, String> parameters, boolean matchAssertions) {
         URL urlObject = 
-            constructInternal(resource, principal, parameters, this.allAssertions, 
+            constructInternal(resource, principal, parameters, getAllAssertions(), 
                     matchAssertions);
 
         postProcess(urlObject);
@@ -241,10 +259,10 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
         return constructURL(uri).toString();
     }
 
-    public URL constructURL(Path  uri) {
+    public URL constructURL(Path uri) {
         URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
 
-        for (Assertion assertion: this.allAssertions) {
+        for (Assertion assertion: getAllAssertions()) {
             assertion.processURL(urlObject);
         }
        
@@ -266,7 +284,7 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
             }
         }
 
-        for (Assertion assertion: this.allAssertions) {
+        for (Assertion assertion: getAllAssertions()) {
             assertion.processURL(urlObject);
         }
        
@@ -370,13 +388,5 @@ public class ServiceImpl implements Service, BeanNameAware, InitializingBean {
         return urlObject;
     }
 
-
-    public void afterPropertiesSet() throws Exception {
-        Service service = this;
-        do {
-            allAssertions.addAll(0, service.getAssertions());
-        } while ((service = service.getParent()) != null);
-    }
-        
 
 }

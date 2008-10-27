@@ -19,7 +19,7 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 
 #contents {
   background-color: #efefef;
-  overflow:visible; 
+  overflow:hidden; /*Must hide overflow for image */ 
 }
 
 #contents h2 {
@@ -246,7 +246,7 @@ div.introduction textarea {
 /* ****** START: Picture (input, button, preview) and caption styling */
 
 div.picture {
-  width: 520px;
+  width: 530px;
   float: left;
   position: relative;
   clear: right; /*IE7*/
@@ -304,10 +304,8 @@ div.picture button{
 
 div.picture img { 
   height: 16.5ex;
-  max-width:200px;
   float: left;
   position: relative;
-  
 }
 * html div.picture img { 
   height: 15.5ex;

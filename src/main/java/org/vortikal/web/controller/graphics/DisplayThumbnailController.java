@@ -81,8 +81,10 @@ public class DisplayThumbnailController implements Controller, LastModified {
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
         
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
-        	String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
-        	log.warn("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
+            if (log.isDebugEnabled()) {
+                String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
+                log.debug("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
+            }
         	response.sendRedirect(uri.toString());
         	return null;
         }

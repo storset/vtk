@@ -101,3 +101,8 @@
 	border-style:solid;
 	border-width:2px;
 }
+
+.img-container p {
+	margin:0;
+	padding:0;
+}

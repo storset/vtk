@@ -74,6 +74,7 @@
 }
 
 .facts-container {
+	width:200px;
 	padding:1em;
 	border-color:#aaa;
 	border-style:solid;
@@ -87,5 +88,6 @@
 }
 
 .facts-container ul {
-	padding-left:2em;
+	padding-left:0em;
+	margin-left:2em;
 }

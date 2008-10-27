@@ -46,55 +46,55 @@
 
 	<!-- Inline Styles -->
 
-        <Style name="Facts container L" element="div">
+        <Style name="Facts left" element="div">
                 <Attribute name="class" value="facts-container container-left" />
         </Style>
-        <Style name="Facts container R" element="div">
+        <Style name="Facts right" element="div">
                 <Attribute name="class" value="facts-container container-right" />
         </Style>
 
-        <Style name="Image container L" element="div">
+        <Style name="Image left" element="div">
                 <Attribute name="class" value="img-container container-left" />
         </Style>
-        <Style name="Image container C" element="div">
+        <Style name="Image center" element="div">
                 <Attribute name="class" value="img-container container-middle img-container-middle-ie" />
         </Style>
-        <Style name="Image container R" element="div">
+        <Style name="Image right" element="div">
                 <Attribute name="class" value="img-container container-right" />
         </Style>
 
-       <Style name="Img &amp; capt cont. L (400px)" element="div">
+       <Style name="Img &amp; capt left (400px)" element="div">
                 <Attribute name="class" value="container container-size-s container-left" />
         </Style>
-        <Style name="Img &amp; capt cont. L (300px)" element="div">
+        <Style name="Img &amp; capt left (300px)" element="div">
                 <Attribute name="class" value="container container-size-xs container-left" />
         </Style>
-        <Style name="Img &amp; capt cont. L (200px)" element="div">
+        <Style name="Img &amp; capt left (200px)" element="div">
                 <Attribute name="class" value="container container-size-xxs container-left" />
         </Style>
 
-        <Style name="Img &amp; capt cont. C (800px)" element="div">
+        <Style name="Img &amp; capt center (800px)" element="div">
                 <Attribute name="class" value="container container-size-xxl container-middle" />
         </Style>
-        <Style name="Img &amp; capt cont. C (700px)" element="div">
+        <Style name="Img &amp; capt center (700px)" element="div">
                 <Attribute name="class" value="container container-size-xl container-middle" />
         </Style>
-        <Style name="Img &amp; capt cont. C (600px)" element="div">
+        <Style name="Img &amp; capt center (600px)" element="div">
                 <Attribute name="class" value="container container-size-l container-middle" />
         </Style>
-       <Style name="Img &amp; capt cont. C (500px)" element="div">
+       <Style name="Img &amp; capt center (500px)" element="div">
                 <Attribute name="class" value="container container-size-m container-middle" />
         </Style>
-        <Style name="Img &amp; capt cont. C (400px)" element="div">
+        <Style name="Img &amp; capt center (400px)" element="div">
                 <Attribute name="class" value="container container-size-s container-middle" />
         </Style>
-        <Style name="Img &amp; capt cont. R (400px)" element="div">
+        <Style name="Img &amp; capt right (400px)" element="div">
                 <Attribute name="class" value="container container-size-s container-right" />
         </Style>
-        <Style name="Img &amp; capt cont. R (300px)" element="div">
+        <Style name="Img &amp; capt right (300px)" element="div">
                 <Attribute name="class" value="container container-size-xs container-right" />
         </Style>
-                <Style name="Img &amp; capt cont. R (200px)" element="div">
+        <Style name="Img &amp; capt right (200px)" element="div">
                 <Attribute name="class" value="container container-size-xxs container-right" />
         </Style>
 

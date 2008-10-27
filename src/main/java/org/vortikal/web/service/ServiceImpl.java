@@ -70,7 +70,7 @@ import org.vortikal.util.net.NetUtils;
 public class ServiceImpl implements Service, BeanNameAware {
 
     // FIXME: Cache for all assertions, don't use directly!
-    private List<Assertion> allAssertions;
+    private volatile List<Assertion> allAssertions;
 
     private AuthenticationChallenge authenticationChallenge;
     private Object handler;

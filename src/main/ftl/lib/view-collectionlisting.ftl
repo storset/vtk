@@ -33,9 +33,9 @@
     </#if>
     
     <#list resources as r>
-      <div id="${r.name}-vrtx-resource" class="vrtx-resource">
+      <div class="vrtx-resource">
 
-        <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
+        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
 
@@ -88,8 +88,8 @@
         <@vrtx.flattenHtml value=caption escape=true />
       </#local>
 
-      <div id="${r.name}-vrtx-resource" class="vrtx-resource">
-        <a id="${r.name}" class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
+      <div class="vrtx-resource">
+        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
 
           <#local src = introImg.formattedValue />
@@ -105,7 +105,7 @@
         ${title?html}</a>
 
         <#if publishedDate?has_content && collectionListing.displayPropDefs?seq_contains(publishedDate.definition)> 
-        <div id="${r.name}-published-date" class="published-date">
+        <div class="published-date">
           <@vrtx.msg code="viewCollectionListing.publishedDate"
                      args=[publishedDate.getFormattedValue('long', locale)] />
         </div>
@@ -150,9 +150,9 @@
         <@vrtx.flattenHtml value=caption escape=true />
       </#local>
 
-      <div id="${r.name}-vrtx-resource" class="vrtx-resource vevent">
+      <div class="vrtx-resource vevent">
         
-        <a id="${r.name}" class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
+        <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
           <#local src = introImg.formattedValue />
           <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
@@ -166,7 +166,7 @@
         </#if>
         ${title?html}</a>
 
-        <div id="${r.name}-time-and-place" class="time-and-place"> 
+        <div class="time-and-place"> 
           <@viewutils.displayTimeAndPlace r title/>
         </div>
 

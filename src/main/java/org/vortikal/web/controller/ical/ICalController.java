@@ -61,7 +61,7 @@ public class ICalController implements Controller {
 		}
 		
 		// Spec: http://www.ietf.org/rfc/rfc2445.txt
-		// PRODID (4.7.3) & UID (4.8.4.7) added as recomended by spec. DTEND is not required.
+		// PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
 		// If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
 		
 		StringBuilder sb = new StringBuilder();

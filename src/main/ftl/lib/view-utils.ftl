@@ -109,7 +109,7 @@
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
   <#if isValidStartDate?string == "true">
     <span class="ical">
-      <a href='${resource.URI}?ical'><@vrtx.msg code="event.add-to-calendar" /></a>
+      <a href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a>
     </span>
   </#if>
 

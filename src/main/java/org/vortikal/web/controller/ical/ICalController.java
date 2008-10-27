@@ -1,6 +1,7 @@
 package org.vortikal.web.controller.ical;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.ServletOutputStream;
@@ -18,6 +19,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
 
 public class ICalController implements Controller {
@@ -58,15 +60,21 @@ public class ICalController implements Controller {
 			return null;
 		}
 		
+		// Spec: http://www.ietf.org/rfc/rfc2445.txt
+		// PRODID (4.7.3) & UID (4.8.4.7) added as recomended by spec. DTEND is not required.
+		// If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("BEGIN:VCALENDAR\n");
+		sb.append("PRODID:-//UiO//Vortex//NONSGML v1.0//NO\n");
 		sb.append("VERSION:2.0\n");
 		sb.append("BEGIN:VEVENT\n");
-		sb.append("DTSTART:" + getICalDate(startDate) + "\n");
+		sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
+		sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");
 		
 		Property endDate = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.END_DATE_PROP_NAME);
 		if (endDate != null) {
-			sb.append("DTEND:" + getICalDate(endDate) + "\n");
+			sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "\n");
 		}
 		
 		Property location = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LOCATION_PROP_NAME);
@@ -86,12 +94,16 @@ public class ICalController implements Controller {
 		return sb.toString();
 	}
 
-	private String getICalDate(Property date) {
-		Date eventDate = date.getDateValue();
+	private String getUiD(Date currenttime) {
+		return getICalDate(currenttime) +
+				"-" + Calendar.getInstance().getTimeInMillis() +"@" + NetUtils.guessHostName();
+	}
+
+	private String getICalDate(Date date) {
 		// Local time
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
-		return dateFormat.format(eventDate) + "T" + timeFormat.format(eventDate);
+		return dateFormat.format(date) + "T" + timeFormat.format(date);
 	}
 
 	public void setRepository(Repository repository) {

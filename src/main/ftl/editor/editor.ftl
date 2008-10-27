@@ -418,15 +418,21 @@
                      var previewobj = urlobj + '.preview';
                      if (document.getElementById(previewobj)) {
                         var url = document.getElementById(urlobj).value;
+                        
+                        var withoutImage = 390;
+                        var withImage = 530;
+                        
                         if (url) {
                             document.getElementById(previewobj).innerHTML = 
                             '<img src="' + url + '" alt="preview">';
+                            
+                            $('div.picture').css ({ width : withImage + 'px'}); 
+                      
                         } else {
                             document.getElementById(previewobj).innerHTML = 
                             '<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">';
 			                 
-			                 var w = 390;
-                             $('div.picture').css ({ width : w + 'px'}); 
+                              $('div.picture').css ({ width : withoutImage + 'px'});  
                         }
                      }
              } //-->
@@ -437,13 +443,18 @@
         document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
         document.write('</div>');
         document.write('<div id="resource.${name}.preview">');
+        
+        var withoutImage = 390;
+        var withImage = 530;
+        
           <#if value != ''>
             document.write('<img src="${value}"  alt="preview">');
-            <#else>
+            
+            $('div.picture').css ({ width : withImage + 'px'}); 
+         <#else>
             document.write('<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">');
-  			
-			var w = 390;
-            $('div.picture').css ({ width : w + 'px'}); 
+ 			
+            $('div.picture').css ({ width : withoutImage + 'px'}); 
           </#if>
           
         document.write('</div>');  

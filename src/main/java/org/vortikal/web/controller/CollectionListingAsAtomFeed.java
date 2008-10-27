@@ -105,8 +105,10 @@ public class CollectionListingAsAtomFeed implements Controller {
         Feed feed = abdera.newFeed();
         Property published = collection.getProperty(NS, PropertyType.CREATIONTIME_PROP_NAME);
         feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
-        feed.setTitle(collection.getTitle());
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
+
+        feed.setTitle(getTitle(collection));
+
         
         String subTitle = getIntroduction(collection);
         if (subTitle != null) {
@@ -134,6 +136,10 @@ public class CollectionListingAsAtomFeed implements Controller {
             feed.setUpdated(lastModified);
         }
         return feed;
+    }
+
+    protected String getTitle(Resource collection) {
+        return collection.getTitle();
     }
 
     protected Date getLastModified(Resource collection) {

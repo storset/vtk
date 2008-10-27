@@ -44,7 +44,6 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
@@ -68,7 +67,7 @@ public class TagsController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
+
         Resource scope = getScope(token, request);
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -81,7 +80,8 @@ public class TagsController implements Controller {
         }
 
         model.put("tag", tag);
-
+        model.put("scope", scope);
+        
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
 
@@ -89,10 +89,6 @@ public class TagsController implements Controller {
         int page = pageInfo.getPage();
         int limit = pageInfo.getLimit();
         int offset = pageInfo.getOffset();
-
-        if (tag == null) {
-
-        }
 
         Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, defaultRecursive);
         model.put("listing", listing);

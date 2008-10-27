@@ -24,7 +24,11 @@ void execute(context, args, out) {
     out.println("props:");
     for (p: r.getProperties()) {
         out.print(p.getDefinition().getName() + ": " );
-        out.println(p.getFormattedValue());
+	if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
+	    out.println(" [binary]");
+	} else {
+	    out.println(p.getFormattedValue());
+	}
     }
 
     acl = r.getAcl();

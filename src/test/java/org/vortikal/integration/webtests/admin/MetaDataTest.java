@@ -587,7 +587,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	
 	private String cropAccordingToLengthOfMonth(String string) {
 		
-		int cropLastModifiedValueAppended = 16;
+		int cropLastModifiedValueAppended = 14;
 		int lengthOfMonth;
 		
 		for (lengthOfMonth = 0; lengthOfMonth < string.length(); lengthOfMonth++) {

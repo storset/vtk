@@ -47,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -118,6 +119,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         try {
             resource = this.repository.retrieve(token, uri, true);
         } catch (ResourceNotFoundException e) {
+        } catch (AuthorizationException e) {
         } catch (Throwable t) {
             throw new RuntimeException(
                     "Unrecoverable error when decorating '" + uri + "'", t);

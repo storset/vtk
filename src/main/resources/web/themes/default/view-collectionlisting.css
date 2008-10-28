@@ -36,6 +36,13 @@ div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle {
 	font-weight: bold;
 }
 
+div.vrtx-imagedescription {
+	
+  text-align: center;
+  align: center;	
+
+}
+
 /* collections */
 div.vrtx-collections {
 	clear: right;

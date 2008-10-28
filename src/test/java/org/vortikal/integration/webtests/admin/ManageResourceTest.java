@@ -12,7 +12,7 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
         final String resourceName = "testcollection";
     	createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, resourceName);
     	// Verify it's there
-        assertLinkPresent(resourceName);
+        assertLinkPresentWithExactText(resourceName);
         // Delete it
         deleteResource(resourceName);
     }
@@ -24,7 +24,7 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
     	final String resourceName = "testdocument.txt";
         createResource(CREATE_DOCUMENT_SERVICE, CREATE_DOCUMENT_FORM, resourceName);
         // Verify it's there
-        assertLinkPresent(resourceName);
+        assertLinkPresentWithExactText(resourceName);
         // Delete it
         deleteResource(resourceName);
     }
@@ -46,20 +46,20 @@ public class ManageResourceTest extends BaseAuthenticatedWebTest {
     private void copyResource(String folderToCopyTo) {
         String resourceName = "testcopy";
 
-        assertLinkPresent(resourceName + ".html");
+        assertLinkPresentWithExactText(resourceName + ".html");
         String className = this.getClass().getSimpleName().toLowerCase();
         checkCheckbox("/" + rootCollection + "/" + className + "/" + resourceName + ".html");
         clickLink("copyResourceService");
 
         String copiedResourceName = resourceName;
         if (StringUtils.isNotBlank(folderToCopyTo)) {
-            clickLink(folderToCopyTo);
+            clickLinkWithExactText(folderToCopyTo);
             copiedResourceName = copiedResourceName + ".html";
         } else {
             copiedResourceName = copiedResourceName + "(1).html";
         }
         clickLink("copyToSelectedFolderService");
-        assertLinkPresent(copiedResourceName);
+        assertLinkPresentWithExactText(copiedResourceName);
         deleteResource(copiedResourceName);
     }
 

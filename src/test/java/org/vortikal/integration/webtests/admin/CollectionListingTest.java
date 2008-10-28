@@ -7,7 +7,6 @@ import net.sourceforge.jwebunit.html.Cell;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
 
-import org.apache.commons.lang.StringUtils;
 import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 
 public class CollectionListingTest extends BaseAuthenticatedWebTest {
@@ -38,30 +37,9 @@ public class CollectionListingTest extends BaseAuthenticatedWebTest {
         assertSortCollectionListing("last-modified", 5);
     }
     
-    public void testContentLanguage() {
-        clickLink("aboutResourceService");
-        assertElementPresent("resourceInfoMain");
-        Table resourceInfo = getTable("resourceInfoMain");
-        Row languageRow = (Row)resourceInfo.getRows().get(6);
-        Cell language = (Cell)languageRow.getCells().get(1);
-        assertTrue("Language is blank", StringUtils.isNotBlank(language.getValue()));
-        // TODO test better compared to parent (inherits etc...)
-    }
-    
     public void testPreview() {
         clickLink("previewCollectionListingService");
         assertElementPresent("previewIframe");
-    }
-    
-    public void testAbout() {
-        clickLink("aboutResourceService");
-        assertElementPresent("resourceInfoTechnical");
-        Table resourceInfo = getTable("resourceInfoTechnical");
-        Row resourceTypeRow = (Row)resourceInfo.getRows().get(2);
-        Cell resourceType = (Cell)resourceTypeRow.getCells().get(1);
-        String type = resourceType.getValue();
-        assertTrue("Resourcetype is blank", StringUtils.isNotBlank(type));
-        // TODO test other fields/properties
     }
 
     private void assertSortCollectionListing(String sortOrderLinkId, int cellIndex) {

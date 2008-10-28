@@ -45,29 +45,25 @@ public abstract class AbstractWebTest extends WebTestCase {
         
         if (requiresAuthentication()) {
             getTestContext().setAuthorization(getProperty(PROP_ADMIN_USR), getProperty(PROP_ADMIN_PASSWORD));
-            beginAt("/?vrtx=admin&authenticate");
+            beginAt("/" + rootCollection + "/?vrtx=admin&authenticate");
         } else {
-            beginAt("/");
+            beginAt("/" + rootCollection);
         }
         
-        // Make sure the rootcollection containing testresources is available
-        assertLinkPresent(rootCollection);
-        clickLink(rootCollection);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
-        
         prepare();
     }
 
     private void prepare() {
         String testResourceName = this.getClass().getSimpleName().toLowerCase();
         try {
-            assertLinkPresent(testResourceName);
+            assertLinkPresentWithExactText(testResourceName);
         } catch (AssertionFailedError afe) {
             throw new MissingWebTestResourceException("A required resource for this test was not found. \n" +
             		"Make sure a collection with the same name and title as the testclass " +
             		"(" + testResourceName + ") exists under the rootcollection.");
         }
-        clickLink(testResourceName);
+        clickLinkWithExactText(testResourceName);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
     }
     

@@ -35,47 +35,47 @@ import org.vortikal.integration.webtests.BaseWebTest;
 public class TagsTest extends BaseWebTest {
 
     public void testTagK1() {
-        invokeTagsService("k1");
-        assertLinksPresent("document-with-keyword1.html", "document-with-keyword1-and-keyword2.html",
-        		"document-with-keyword1-in-subfolder.html");
-        assertLinkNotPresent("unpublished-article-with-keyword1.html");
+        invokeTagsService("resources with keyword1");
+        assertLinksPresentWithExactText("title document-with-keyword1", "title document-with-keyword1-and-keyword2",
+        		"title document-with-keyword1-in-subfolder");
+        assertLinkNotPresentWithExactText("title unpublished-article-with-keyword1");
     }
 
     public void testTagK2() {
-        invokeTagsService("k2");
-        assertLinksPresent("document-with-keyword2.html", "document-with-keyword1-and-keyword2.html");
+        invokeTagsService("resources with keyword2");
+        assertLinksPresentWithExactText("title document-with-keyword2", "title document-with-keyword1-and-keyword2");
     }
 
     public void testList() {
-        invokeTagsService("list");
+        invokeTagsService("list tags");
         assertTextPresent("No tags specified");
     }
 
     public void testTagK1InSubfolderScopeFolder() {
-        invokeTagsService("k1-subfolder-scope-folder");
-        assertLinkPresent("document-with-keyword1-in-subfolder.html");
+        invokeTagsService("resources in subfolder with keyword1 scope current folder");
+        assertLinkPresentWithExactText("title document-with-keyword1-in-subfolder");
     }
 
     public void testTagK2InSubfolderScopeFolder() {
-        invokeTagsService("k2-subfolder-scope-folder");
+        invokeTagsService("resources in subfolder with keyword2 scope current folder");
         assertLinkNotPresent("document-with-keyword1-in-subfolder.html");
         assertTextNotPresent("No resources tagged with tagstest-k2.");
     }
 
     public void testTagK1InSubfolderNoScope() {
-        invokeTagsService("k1-subfolder-no-scope");
-        assertLinksPresent("document-with-keyword1.html", "document-with-keyword1-and-keyword2.html",
-        		"document-with-keyword1-in-subfolder.html");
+        invokeTagsService("resources in subfolder with keyword1 no scope");
+        assertLinksPresentWithExactText("title document-with-keyword1", "title document-with-keyword1-and-keyword2",
+        		"title document-with-keyword1-in-subfolder");
     }
 
     private void invokeTagsService(String tagsLink) {
-    	clickLink(tagsLink);
+    	clickLinkWithExactText(tagsLink);
         assertElementPresent("vrtx-tagview");
     }
     
-    private void assertLinksPresent(String... links) {
+    private void assertLinksPresentWithExactText(String... links) {
     	for (int i = 0; i < links.length; i++) {
-			assertLinkPresent(links[i]);
+			assertLinkPresentWithExactText(links[i]);
 		}
     }
 

@@ -5,49 +5,34 @@ import java.util.List;
 
 public abstract class BaseWebTest extends AbstractWebTest {
     
-    private List<String> collectionListingElements;
-    private List<String> eventListingElements;
-    private List<String> articleListingElements;
+    private List<String> defaultFiles;
+    private List<String> events;
+    private List<String> articles;
     
     protected void setUp() throws Exception {
         super.setUp();
-        // Elements that we expect to find on a standard collectionview
-        collectionListingElements = new ArrayList<String>();
-        collectionListingElements.add("collectionListing.searchComponent");
-        collectionListingElements.add("collectionlisting-article.html-vrtx-resource");
-        collectionListingElements.add("collectionlisting-article.html");
-        collectionListingElements.add("collectionlisting-event.html-vrtx-resource");
-        collectionListingElements.add("collectionlisting-event.html");
-        collectionListingElements.add("standard.html-vrtx-resource");
-        collectionListingElements.add("standard.html");
-        // Elements we expect to find for eventlistings
-        eventListingElements = new ArrayList<String>();
-        eventListingElements.add("eventListing.previousEventsSearchComponent");
-        eventListingElements.add("previousevent.html-vrtx-resource");
-        eventListingElements.add("previousevent.html");
-        eventListingElements.add("previousevent.html-time-and-place");
-        eventListingElements.add("eventListing.upcomingEventsSearchComponent");
-        eventListingElements.add("upcomingevent.html");
-        eventListingElements.add("upcomingevent.html-vrtx-resource");
-        eventListingElements.add("upcomingevent.html-time-and-place");
-        // Elements we expect to find for articlelistings
-        articleListingElements = new ArrayList<String>();
-        articleListingElements.add("articleListing.searchComponent");
-        articleListingElements.add("article.html");
-        articleListingElements.add("article.html-vrtx-resource");
-        articleListingElements.add("article.html-published-date");
+        // Files we expect to find on a standard collectionview
+        defaultFiles = new ArrayList<String>();
+        defaultFiles.add("standard");
+        // Files we expect to find for eventlistings
+        events = new ArrayList<String>();
+        events.add("previousevent");
+        events.add("upcomingevent");
+        // FIles we expect to find for articlelistings
+        articles = new ArrayList<String>();
+        articles.add("article");
     }
     
-    protected List<String> getCollectionListingElements() {
-        return this.collectionListingElements;
+    protected List<String> getDefaultFiles() {
+        return this.defaultFiles;
     }
     
-    protected List<String> getEventListingElements() {
-        return this.eventListingElements;
+    protected List<String> getEvents() {
+        return this.events;
     }
     
-    protected List<String> getArticleListingElements() {
-        return this.articleListingElements;
+    protected List<String> getArticles() {
+        return this.articles;
     }
     
     protected String getBaseUrl() throws Exception {

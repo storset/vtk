@@ -5,14 +5,14 @@ import org.vortikal.integration.webtests.BaseWebTest;
 public class EventlistingTest extends BaseWebTest {
     
     public void testListing() {
-        for (String elementId : getEventListingElements()) {
-            assertElementPresent(elementId);
+        for (String elementId : getEvents()) {
+        	assertLinkPresentWithExactText(elementId);
         }
-        for (String elementId : getCollectionListingElements()) {
-            assertElementNotPresent(elementId);
+        for (String elementId : getDefaultFiles()) {
+        	assertLinkNotPresentWithExactText(elementId);
         }        
-        for (String elementId : getArticleListingElements()) {
-            assertElementNotPresent(elementId);
+        for (String elementId : getArticles()) {
+        	assertLinkNotPresentWithExactText(elementId);
         }
     }
 

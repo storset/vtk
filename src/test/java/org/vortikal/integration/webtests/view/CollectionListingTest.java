@@ -9,14 +9,14 @@ public class CollectionListingTest extends BaseWebTest {
     }
     
     public void testListing() {
-        for (String elementId : getCollectionListingElements()) {
-            assertElementPresent(elementId);
+        for (String elementId : getDefaultFiles()) {
+        	assertLinkPresentWithExactText(elementId);
         }
-        for (String elementId : getEventListingElements()) {
-            assertElementNotPresent(elementId);
+        for (String elementId : getEvents()) {
+        	assertLinkNotPresentWithExactText(elementId);
         }
-        for (String elementId : getArticleListingElements()) {
-            assertElementNotPresent(elementId);
+        for (String elementId : getArticles()) {
+        	assertLinkNotPresentWithExactText(elementId);
         }
     }
     

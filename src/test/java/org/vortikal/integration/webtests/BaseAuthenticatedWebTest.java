@@ -20,7 +20,7 @@ public abstract class BaseAuthenticatedWebTest extends AbstractWebTest {
     
     protected void createResource(String serviceName, String formName, String resourceName) {
         // Start of fresh
-        assertLinkNotPresent(resourceName);
+        assertLinkNotPresentWithExactText(resourceName);
         assertFormNotPresent(formName);
 
         // Create resource
@@ -35,12 +35,9 @@ public abstract class BaseAuthenticatedWebTest extends AbstractWebTest {
         // Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
         setScriptingEnabled(false);
         if (StringUtils.isNotBlank(resourceName)) {
-        	clickLink("delete-" + resourceName);
-        	assertLinkNotPresent(resourceName);
-        } else {
-        	clickLink("delete-resource");
+        	clickLinkWithExactText(resourceName);
         }
-
+        clickLink("delete-resource");
     }
 
 }

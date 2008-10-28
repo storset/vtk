@@ -12,8 +12,8 @@ public class ManageCollectionTest extends BaseAuthenticatedWebTest {
 		final String renamedTestfolder = "RENAMEDtestfolder";
 		
 		createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, testfolder);
-		assertLinkPresent(testfolder);
-		clickLink(testfolder);
+		assertLinkPresentWithExactText(testfolder);
+		clickLinkWithExactText(testfolder);
 		
 		clickLink("renameService");
 		assertFormPresent("rename");
@@ -22,12 +22,11 @@ public class ManageCollectionTest extends BaseAuthenticatedWebTest {
         submit();
         
         clickLink("navigateToParent");
-        assertLinkPresent(renamedTestfolder);
-        clickLink(renamedTestfolder);
+        clickLinkWithExactText(renamedTestfolder);
         
 		deleteResource(null);
 		
-		assertLinkNotPresent(renamedTestfolder);
+		assertLinkNotPresentWithExactText(renamedTestfolder);
 	}
 	
 	/**
@@ -42,7 +41,7 @@ public class ManageCollectionTest extends BaseAuthenticatedWebTest {
 
 	private void checkFolderName(String foldername, String expected) {
 		createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, foldername);
-		assertLinkPresent(expected);
+		assertLinkPresentWithExactText(expected);
 		deleteResource(expected);
 	}
 	

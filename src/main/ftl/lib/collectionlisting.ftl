@@ -114,7 +114,7 @@
 
           <#case "name">
             <#if collectionListing.browsingLinks[child_index]?exists>
-              <a id="${child.name}" href="${collectionListing.browsingLinks[child_index]?html}">
+              <a href="${collectionListing.browsingLinks[child_index]?html}">
                 <span class="authorizedListedResource">${child.name}</span>
               </a>
               <#if withForm>
@@ -178,7 +178,7 @@
                  vrtx.getMsg("collectionListing.confirmation." + item,
                              "Are you sure you want to " + item + " " + child.name + "?", 
                              [child.name]) />
-      	(&nbsp;<a id="${item}-${child.name}" href="${collectionListing.childLinks[child_index][item]?html}"
+      	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}"
       	   onclick="return confirm('${confirmation}')">${actionName}</a>&nbsp;)
 	</#if>
      </td>

@@ -85,6 +85,10 @@ div.vrtx-comments  div.add-comment {
   -webkit-border-radius: .75em; 
 }
 
+div.vrtx-comments div.comment-body p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
 
 div.vrtx-comments div.add-comment-header {
   margin-bottom: .9em;

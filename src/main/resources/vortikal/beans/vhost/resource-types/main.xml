@@ -90,7 +90,12 @@
         <property name="htmlUtil" ref="htmlUtil" />
       </bean>
     </entry>
-    <entry key="IMAGE_REF"><bean class="org.vortikal.repository.resourcetype.StringValueFormatter" /></entry>
+    <entry key="IMAGE_REF">
+      <bean class="org.vortikal.repository.resourcetype.ImageRefValueFormatter">
+	<property name="thumbnailServiceBeanName" value="displayThumbnailService" />
+	<property name="requireThumbnailService" value="true" />
+      </bean>
+    </entry>
     <entry key="INT"><bean class="org.vortikal.repository.resourcetype.IntValueFormatter" /></entry>
     <entry key="LONG"><bean class="org.vortikal.repository.resourcetype.LongValueFormatter" /></entry>
     <entry key="TIMESTAMP"><bean class="org.vortikal.repository.resourcetype.DateValueFormatter" /></entry>

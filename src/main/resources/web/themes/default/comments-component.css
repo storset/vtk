@@ -3,6 +3,7 @@ div.vrtx-comments {
   background-color: #fff;  
   padding: 1em 0 0 0;
   height: 1%;
+  clear: both;
   border-radius: .75em;  /* CSS3 */
   -moz-border-radius: .75em;
   -webkit-border-radius: .75em; 

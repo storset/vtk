@@ -69,7 +69,6 @@
       
       <#list resources as resource>
           <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
-          
           <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
           
           
@@ -77,13 +76,10 @@
              
                 <#if introImageProp != "">
                   <a href="${resource.getURI()?html}">
-                    <#assign src = introImageProp.formattedValue />
-                    <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
-                      <#assign src = resource.URI.getParent().extendAndProcess(src) />
-                    </#if>
+		    <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
                     <img class="introduction-image" 
                          alt="IMG for '${resourceTitle?html}'"
-                         src="${src?html}?vrtx=thumbnail" />
+                         src="${src?html}" />
                   </a>
                 </#if>
 
@@ -144,7 +140,7 @@
       
       
       
-    <#else> <#!-- no resources found for tag -->
+    <#else> <#-- no resources found for tag -->
       <p>
         ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag}</span>.
       </p>

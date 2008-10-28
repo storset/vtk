@@ -92,14 +92,11 @@
         <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
 
-          <#local src = introImg.formattedValue />
-          <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
-            <#local src = r.URI.getParent().extendAndProcess(src) />
-          </#if>
+	  <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
           <#if caption != ''>
-            <img src="${src?html}?vrtx=thumbnail" alt="${captionFlattened}" />
+            <img src="${src?html}" alt="${captionFlattened}" />
           <#else>
-            <img src="${src?html}?vrtx=thumbnail" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+            <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
           </#if> 
         </#if>
         ${title?html}</a>
@@ -154,14 +151,11 @@
         
         <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
         <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
-          <#local src = introImg.formattedValue />
-          <#if !src?starts_with("/") && !src?starts_with("http://") && !src?starts_with("https://")>
-            <#local src = r.URI.getParent().extendAndProcess(src) />
-          </#if>
+          <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
           <#if caption != ''>
-                <img src="${src?html}" alt="${captionFlattened}" />
+            <img src="${src?html}" alt="${captionFlattened}" />
            <#else>
-                <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+             <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
            </#if>
         </#if>
         ${title?html}</a>

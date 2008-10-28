@@ -33,6 +33,7 @@ package org.vortikal.web.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -122,13 +123,9 @@ public class CollectionListingAsAtomFeed implements Controller {
         
         Property picture = getPicture(collection);
         if (picture != null) {
-            String val = picture.getStringValue();
-            if (isURL(val)) {
-                feed.setLogo(val);
-            } else {
-                Path imageRef = getPropRef(collection, val);
-                feed.setLogo(viewService.constructLink(imageRef));
-            }
+            String val = 
+                picture.getFormattedValue("thumbnail", Locale.getDefault());
+            feed.setLogo(val);
         }
         
         Date lastModified = getLastModified(collection);
@@ -181,7 +178,6 @@ public class CollectionListingAsAtomFeed implements Controller {
 
             String summary = prepareSummary(result);
             entry.setSummaryAsXhtml(summary);
-
             // ...add description as plain text else
         } else {
             String description = getDescription(result);
@@ -242,13 +238,8 @@ public class CollectionListingAsAtomFeed implements Controller {
         String summary = getIntroduction(resource);
         Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
         if (pic != null) {
-            String val = pic.getStringValue();
-            String imgPath = "";
-            if (isURL(val)) {
-                imgPath = val;
-            } else {
-                imgPath = viewService.constructLink(getPropRef(resource, val));
-            }
+            String imgPath = 
+                pic.getFormattedValue("thumbnail", Locale.getDefault());
             String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.lastIndexOf("."));
             sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
         }
@@ -265,10 +256,6 @@ public class CollectionListingAsAtomFeed implements Controller {
         return resource.getURI().extend(val);
     }
     
-    private boolean isURL(String val) {
-        return val.matches("^(http(s?)\\:\\/\\/|www)\\S*");
-    }
-
     /**
      * @param resourceUri The uri of the resource
      * @param published The published date of the resource

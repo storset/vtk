@@ -72,7 +72,11 @@ public class RenameCommandValidator implements Validator, InitializingBean {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        Path uri = requestContext.getCurrentCollection();
+        Path uri = requestContext.getResourceURI();
+        Path parentCollection = requestContext.getCurrentCollection();
+        if (uri.equals(parentCollection)) {
+            parentCollection = parentCollection.getParent();
+        }
         String token = securityContext.getToken();
 
         RenameCommand renameCommand =
@@ -87,7 +91,7 @@ public class RenameCommandValidator implements Validator, InitializingBean {
                 renameCommand.setName("");
         }
 
-        Path newURI = uri.extend(name);
+        Path newURI = parentCollection.extend(name);
         
         try {
             boolean exists = this.repository.exists(token, newURI);

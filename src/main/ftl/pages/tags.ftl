@@ -43,10 +43,12 @@
        <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if>
+  
+  <#if alternativeRepresentations?exists>
   <#list alternativeRepresentations as alt>
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>
- 
+ </#if>
 </head>
 
 <body id="vrtx-tagview">
@@ -127,6 +129,7 @@
 
     <#-- XXX: display first link with content type = atom: -->
 
+  <#if alternativeRepresentations?exists>
     <#list alternativeRepresentations as alt>
       <#if alt.contentType = 'application/atom+xml'>
         <div class="vrtx-feed-link">
@@ -135,7 +138,7 @@
         <#break />
       </#if>
     </#list>
-
+</#if>
 
       
       

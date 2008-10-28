@@ -14,8 +14,8 @@ $(document).ready(function()
 			{
 				// Set inline style to equal the body height of the iframed content,
 				// when body content is at least 350px heigh
-				if((iFrames[i].contentWindow.document.body.offsetHeight + 35) > 350){
-					iFrames[i].style.height = (iFrames[i].contentWindow.document.body.offsetHeight + 35) + 'px';
+				if((iFrames[i].contentWindow.document.body.offsetHeight + 45) > 350){
+					iFrames[i].style.height = (iFrames[i].contentWindow.document.body.offsetHeight + 45) + 'px';
 				}else{
 					iFrames[i].style.height = "350px"; 
 				}
@@ -47,8 +47,8 @@ $(document).ready(function()
 				{
 					// Set inline style to equal the body height of the iframed content,
 					// when body content is at least 350px heigh
-					if((this.contentWindow.document.body.offsetHeight + 35) > 350){ 
-						this.style.height = (this.contentWindow.document.body.offsetHeight + 35) + 'px';
+					if((this.contentWindow.document.body.offsetHeight + 45) > 350){ 
+						this.style.height = (this.contentWindow.document.body.offsetHeight + 45) + 'px';
 					}else{
 						this.style.height = "350px";
 					}

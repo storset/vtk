@@ -73,7 +73,7 @@ public class CopyCommandValidator implements Validator, InitializingBean {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
-        Path uri = requestContext.getResourceURI();
+        Path parentCollection = requestContext.getCurrentCollection();
         String token = securityContext.getToken();
 
         CopyCommand copyCommand =
@@ -88,7 +88,8 @@ public class CopyCommandValidator implements Validator, InitializingBean {
                 copyCommand.setName("");
         }
 
-        Path newURI = uri.extend(name);
+        Path newURI = parentCollection.extend(name);
+
 
         try {
             boolean exists = repository.exists(token, newURI);

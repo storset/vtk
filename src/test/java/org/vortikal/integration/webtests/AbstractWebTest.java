@@ -30,8 +30,6 @@ public abstract class AbstractWebTest extends WebTestCase {
             props.load(this.getClass().getResourceAsStream( "/" + propFile));
         }
         
-        getTestContext().setLocale(new Locale("en"));
-        
         String baseUrl = getBaseUrl();
         if (!baseUrl.matches("^(http(s?)\\:\\/\\/|www)\\S*")) {
         	throw new WebTestPropertyException("Invalid url: '" + baseUrl + "'." +

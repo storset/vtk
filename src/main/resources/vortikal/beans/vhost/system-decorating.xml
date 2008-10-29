@@ -14,7 +14,7 @@
         class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
     <property name="staticHeaders">
       <map>
-        <entry key="Cache-Control" value="no-cache, no-store, must-revalidate" />
+        <entry key="Cache-Control" value="no-cache, must-revalidate" />
         <entry key="Expires" value="0" />
       </map>
     </property>

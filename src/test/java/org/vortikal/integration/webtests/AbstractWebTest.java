@@ -1,6 +1,5 @@
 package org.vortikal.integration.webtests;
 
-import java.util.Locale;
 import java.util.Properties;
 
 import junit.framework.AssertionFailedError;

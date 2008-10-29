@@ -628,7 +628,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             if (original == null) {
                 throw new ResourceNotFoundException(resource.getURI());
             }
-            this.authorizationManager.authorizeRead(resource.getURI(), principal);
+            this.authorizationManager.authorizeReadProcessed(resource.getURI(), principal);
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, deep, max);
             List<Comment> result = new ArrayList<Comment>();
             Set<Path> authCache = new HashSet<Path>();

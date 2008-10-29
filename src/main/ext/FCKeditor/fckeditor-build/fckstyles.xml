@@ -47,55 +47,55 @@
 	<!-- Inline Styles -->
 
         <Style name="Facts left" element="div">
-                <Attribute name="class" value="facts-container container-left" />
+                <Attribute name="class" value="vrtx-facts-container vrtx-container-left" />
         </Style>
         <Style name="Facts right" element="div">
-                <Attribute name="class" value="facts-container container-right" />
+                <Attribute name="class" value="vrtx-facts-container vrtx-container-right" />
         </Style>
 
         <Style name="Image left" element="div">
-                <Attribute name="class" value="img-container container-left" />
+                <Attribute name="class" value="vrtx-img-container vrtx-container-left" />
         </Style>
         <Style name="Image center" element="div">
-                <Attribute name="class" value="img-container container-middle img-container-middle-ie" />
+                <Attribute name="class" value="vrtx-img-container vrtx-container-middle vrtx-img-container-middle-ie" />
         </Style>
         <Style name="Image right" element="div">
-                <Attribute name="class" value="img-container container-right" />
+                <Attribute name="class" value="vrtx-img-container vrtx-container-right" />
         </Style>
 
        <Style name="Img &amp; capt left (400px)" element="div">
-                <Attribute name="class" value="container container-size-s container-left" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-s vrtx-container-left" />
         </Style>
         <Style name="Img &amp; capt left (300px)" element="div">
-                <Attribute name="class" value="container container-size-xs container-left" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xs vrtx-container-left" />
         </Style>
         <Style name="Img &amp; capt left (200px)" element="div">
-                <Attribute name="class" value="container container-size-xxs container-left" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xxs vrtx-container-left" />
         </Style>
 
         <Style name="Img &amp; capt center (800px)" element="div">
-                <Attribute name="class" value="container container-size-xxl container-middle" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xxl vrtx-container-middle" />
         </Style>
         <Style name="Img &amp; capt center (700px)" element="div">
-                <Attribute name="class" value="container container-size-xl container-middle" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xl vrtx-container-middle" />
         </Style>
         <Style name="Img &amp; capt center (600px)" element="div">
-                <Attribute name="class" value="container container-size-l container-middle" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-l vrtx-container-middle" />
         </Style>
        <Style name="Img &amp; capt center (500px)" element="div">
-                <Attribute name="class" value="container container-size-m container-middle" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-m vrtx-container-middle" />
         </Style>
         <Style name="Img &amp; capt center (400px)" element="div">
-                <Attribute name="class" value="container container-size-s container-middle" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-s vrtx-container-middle" />
         </Style>
         <Style name="Img &amp; capt right (400px)" element="div">
-                <Attribute name="class" value="container container-size-s container-right" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-s vrtx-container-right" />
         </Style>
         <Style name="Img &amp; capt right (300px)" element="div">
-                <Attribute name="class" value="container container-size-xs container-right" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xs vrtx-container-right" />
         </Style>
         <Style name="Img &amp; capt right (200px)" element="div">
-                <Attribute name="class" value="container container-size-xxs container-right" />
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xxs vrtx-container-right" />
         </Style>
 
 

@@ -1,37 +1,35 @@
 @charset "UTF-8";
 /* CSS Document */
 
-.container-size-xxl {
+.vrtx-container-size-xxl {
 	width:800px;
 }
-
-.container-size-xl {
+.vrtx-container-size-xl {
 	width:700px;
 }
 
-.container-size-l {
+.vrtx-container-size-l {
 	width:600px;
 }
 
-.container-size-m {
+.vrtx-container-size-m {
 	width:500px;
 }
 
-
-.container-size-s {
+.vrtx-container-size-s {
 	width:400px;
 }
 
-.container-size-xs{
+.vrtx-container-size-xs{
 	width:300px;
 }
 
-.container-size-xxs{
+.vrtx-container-size-xxs{
 	width:200px;
 }
 
 
-.container{
+.vrtx-container{
 	border-color:#aaa;
 	border-style:solid;
 	border-width:2px;
@@ -39,28 +37,28 @@
 	padding:1em;
 }
 
-.container-middle img{
+.vrtx-container-middle img{
 	display:block;
 	margin-right:auto;
 	margin-left:auto;
 }
 
-.container-middle{
+.vrtx-container-middle{
 	display:block;
 	margin-right:auto;
 	margin-left:auto;
 }
 
-.container-left{
+.vrtx-container-left{
 	margin: 0 1em 1em 0;
 	float:left;
 }
-.container-right{
+.vrtx-container-right{
 	margin: 0 0 1em 1em;
 	float:right;
 }
 
-.container img{
+.vrtx-container img{
  	display: block;
     margin-left: auto;
     margin-right: auto;
@@ -70,39 +68,51 @@
 	border:none;
 }
 
-.container p{
+.vrtx-container p{
 	display:block;
 	margin-top:0;
 	margin-bottom:0;
 	overflow:hidden;
 }
 
-.facts-container {
+
+.vrtx-facts-container h1,
+.vrtx-facts-container h2,
+.vrtx-facts-container h3,
+.vrtx-facts-container h4,
+.vrtx-facts-container h5,
+.vrtx-facts-container h6,
+.vrtx-facts-container p, 
+.vrtx-facts-container ul,
+.vrtx-facts-container ol,
+.vrtx-facts-container pre{
+	border:solid;
+	border-width:1px;
+	border-color:#fff;
+	margin-top:.5em;
+	margin-bottom:.5em;
+	
+}
+
+.vrtx-facts-container {
 	width:200px;
-	padding:1em;
+	padding:.5em 1em .5em 1em;
 	border-color:#aaa;
 	border-style:solid;
 	border-width:2px;
 }
 
-.facts-container p{
-	margin-top:0;
-	margin-bottom:0;
-	overflow:hidden;
-}
-
-.facts-container ul {
+.vrtx-facts-container ul,.vrtx-facts-container ol {
 	padding-left:0em;
 	margin-left:2em;
 }
-
-.img-container {
+.vrtx-img-container {
 	border-color:#aaa;
 	border-style:solid;
 	border-width:2px;
 }
 
-.img-container p {
+.vrtx-img-container p {
 	margin:0;
 	padding:0;
 }

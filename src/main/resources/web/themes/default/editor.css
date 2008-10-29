@@ -202,11 +202,11 @@ div.hide-introduction-image{
 /* ****** START: Introduction styling */
 
 #resource\.userTitle {
-  width: 40%;	
+  width: 500px;	
 }
 
 #resource\.htmlTitle {
-  width: 40%;	
+  width: 500px;	
 }
 
 span.input-description{
@@ -216,14 +216,14 @@ span.input-description{
 div.introduction {
   clear:left;
   float: left; 
-  width: 40%;  
+  width: 500px;  
   margin-right: 1.2em;
   margin-bottom: 1em;
 }
 
 div.introduction textarea {
   height: 22.5ex; /* Used when fck-editor is disabled */
-  width: 40%;  
+  width: 500px;  
 }
 
 /* div.introduction iframe {

@@ -19,7 +19,7 @@
 </#if>
 
 <#if crumbs?size &gt; 0>
-<div id="breadcrumb" class="breadcrumb">
+<div id="vrtx-breadcrumb" class="breadcrumb">
   <span class="breadcrumb-prefix"><@vrtx.msg code="breadcrumb.locationTitle" default="You are here"/>:</span>
   <#assign "counter" = 1>
   <#list crumbs as elem>

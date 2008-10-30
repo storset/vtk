@@ -5,11 +5,11 @@ import org.vortikal.integration.webtests.BaseWebdavWebTest;
 public class CollectionListingTest extends BaseWebdavWebTest {
 
     public void testBreadCrumb() {
-        assertElementPresent("breadcrumb");
+        assertElementPresent("vrtx-breadcrumb");
     }
     
     public void testWebdavMessage() {
-        assertElementPresent("webdavmessage");
+        assertElementPresent("vrtx-webdavmessage");
     }
 
 }

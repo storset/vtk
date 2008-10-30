@@ -66,7 +66,7 @@ from tmp_img_caption tmp, extra_prop_entry p
 -- case 1: where no userTitle exists:
 
 insert into extra_prop_entry
-select extra_prop_entry_seq_pk.nextval,
+select nextval('extra_prop_entry_seq_pk'),
        tmp.resource_id,
        0,
        null,

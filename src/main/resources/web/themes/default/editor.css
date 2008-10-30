@@ -1,6 +1,5 @@
 /* Vortex overriding section */
 
-
 /* ****** START: tab styling */
 
 div.activeTab { 
@@ -19,7 +18,7 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 
 #contents {
   background-color: #efefef;
-  overflow:hidden; /*Must hide overflow for image */ 
+  overflow:visible;
 }
 
 #contents h2 {
@@ -251,6 +250,7 @@ div.picture {
   position: relative;
   clear: right; /*IE7*/
   margin-bottom: 0;
+  overflow:hidden;
 }
 
 #input-and-button-container {
@@ -326,7 +326,6 @@ div.caption {
   width: 327px;
   float: left;
   position: relative;
-  overflow: hidden;
   margin-top: -100px;
 }
 

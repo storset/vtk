@@ -6,11 +6,50 @@
     </title>
   </properties>
 
-  <body version="0.5.2-SNAPSHOT">
+  <body version="0.5.3-SNAPSHOT">
 
-    <release date="In SVN" description="Release 0.5.2" version="0.5.2-SNAPSHOT">
+    <release date="In SVN" description="Release 0.5.3" version="0.5.3-SNAPSHOT">
       <!-- add 'action' entries here, newest on top: -->
       <!-- type: update|fix|add|remove -->
+    </release>
+
+    <release date="2008-10-30" description="Release 0.5.2" version="0.5.2">
+      <action type="update">
+        Upgraded FCKEditor to version 2.6.3.
+      </action>
+      <action type="update">
+        Upgraded Yahoo YUI to version 2.6.
+      </action>
+      <action type="add">
+        Editor: added support for inserting general-purpose div elements
+        in articles and events.
+      </action>
+      <action type="add">
+        View: added service for displaying and downloading events as in
+        the iCalendar representation.
+      </action>
+      <action type="add">
+        Decorating: added support for running multiple decoration
+        templates on a resource.
+      </action>
+      <action type="add">
+        Decorating: added support for running multiple decoration
+        templates on a resource.
+      </action>
+      <action type="add">
+        Repository: added new image caption field to articles, events
+        and collections.
+      </action>
+      <action type="add">
+        Repository: added new thumbnail property on image resources
+        which contains a scaled-down version of the image.
+      </action>
+      <action type="add">
+        Repository: added support for binary properties.
+      </action>
+      <action type="fix">
+        Various minor bugfixes.
+      </action>
     </release>
 
     <release date="2008-09-10" description="Release 0.5.1.1" version="0.5.1.1">

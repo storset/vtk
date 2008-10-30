@@ -41,7 +41,7 @@
         fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
 
          if (completeEditor) {
-            <#if resource.resourceType = 'article' >
+            <#if resource.resourceType = 'article' || resource.resourceType = 'event'  >
 	    fck.ToolbarSet = 'Complete-article';
             <#else>
             fck.ToolbarSet = 'Complete'; 

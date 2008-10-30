@@ -59,7 +59,9 @@ select nextval('extra_prop_entry_seq_pk'),
        0,
        null,
        'caption',
-       '<p><b>' || p.value || ':</b> ' || tmp.caption || '</p>'
+       '<p><b>' || p.value || ':</b> ' || tmp.caption || '</p>',
+       null,
+       null
 from tmp_img_caption tmp, extra_prop_entry p
        where tmp.resource_id = p.resource_id and p.name = 'userTitle' and p.name_space is null;
 
@@ -71,7 +73,9 @@ select nextval('extra_prop_entry_seq_pk'),
        0,
        null,
        'caption',
-       '<p>' || tmp.caption || '</p>'
+       '<p>' || tmp.caption || '</p>',
+       null,
+       null
 from tmp_img_caption tmp
        where tmp.resource_id not in (select resource_id from extra_prop_entry where name = 'userTitle' and name_space is null);
 

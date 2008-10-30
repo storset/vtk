@@ -55,6 +55,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -152,11 +153,14 @@ public class TagsAsFeedController implements Controller {
     }
 
     private String getDescription(PropertySet resource) {
-        return null;
+        Namespace NS_CONTENT = Namespace.getNamespace("http://www.uio.no/content");
+        Property prop = resource.getProperty(NS_CONTENT, PropertyType.DESCRIPTION_PROP_NAME);
+        return prop != null ? prop.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null) : null;
     }
 
     private String getIntroduction(PropertySet resource) {
-        return null;
+        Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
+        return prop != null ? prop.getFormattedValue() : null;
     }
 
     private Date getLastModified(Resource collection) {

@@ -377,7 +377,9 @@ select extra_prop_entry_seq_pk.nextval,
        0,
        null,
        'title',
-       '/'
+       '/',
+       null,
+       null
 from vortex_resource where uri = '/';
 
 

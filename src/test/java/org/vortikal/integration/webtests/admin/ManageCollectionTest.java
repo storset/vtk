@@ -33,7 +33,7 @@ public class ManageCollectionTest extends BaseAuthenticatedWebTest {
 	 * Test proper escaping of foldername
 	 */
 	public void testCheckFolderName() {
-//		checkFolderName("test folder", "test-folder");
+		checkFolderName("test folder", "test-folder");
 //		checkFolderName("testæfolder", "testaefolder");
 //		checkFolderName("teståfolder", "testaafolder");
 //		checkFolderName("testøfolder", "testoefolder");

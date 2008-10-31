@@ -35,7 +35,7 @@
   <form name="collectionListingForm" action="${action}" method="post">
 </#if>
 
-<table id="vrtx=directoryListing" class="directoryListing">
+<table id="vrtx-directoryListing" class="directoryListing">
   <tr class="directoryListingHeader">
    <#list collectionListing.childInfoItems as item>
       <#if collectionListing.sortedBy = item>

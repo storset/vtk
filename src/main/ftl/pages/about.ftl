@@ -46,7 +46,7 @@
   </h2>
 
 
-  <table id="resourceInfoMain" class="resourceInfo">
+  <table id="vrtx-resourceInfoMain" class="resourceInfo">
 
       <!-- Last modified -->
       <#assign modifiedByStr = resource.modifiedBy.name />
@@ -115,13 +115,13 @@
              value = vrtx.resourceTypeName(resource) />
 
       <!-- Web address -->
-      <#assign url><a id="aboutWebAddress" href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
+      <#assign url><a id="vrtx-aboutWebAddress" href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL}</a></#assign>
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("resource.viewURL", "Web address")
              value = url />
 
       <!-- WebDAV address -->
-      <#assign url><a id="aboutWebdavAddress" href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
+      <#assign url><a id="vrtx-aboutWebdavAddress" href="${resourceDetail.webdavURL?html}">${resourceDetail.webdavURL}</a></#assign>
       <@propList.defaultPropertyDisplay
              name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
              value = url />
@@ -171,7 +171,7 @@
                       'content:authorName', 'content:authorEmail', 
                       'content:authorURL' ] / -->
 
-  <table id="resourceInfoContent" class="resourceInfo">
+  <table id="vrtx-resourceInfoContent" class="resourceInfo">
     <!-- title -->
     <@propList.editOrDisplayPropertyItem item=aboutItems['userTitle'] defaultItem=aboutItems['title'] />
 
@@ -203,7 +203,7 @@
        code="resource.metadata.about.technical"
        default="Technical details"/>
   </h3>
-  <table id="resourceInfoTechnical" class="resourceInfo">
+  <table id="vrtx-resourceInfoTechnical" class="resourceInfo">
 
   <#if resource.collection>
     <!-- navigation:hidden -->

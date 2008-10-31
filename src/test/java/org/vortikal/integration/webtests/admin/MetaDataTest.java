@@ -10,13 +10,13 @@ import org.vortikal.integration.webtests.BaseAuthenticatedWebTest;
 public class MetaDataTest extends BaseAuthenticatedWebTest {
 	
 	// About Table metadata position information { id, row, cell }
-	private static final String LASTMODIFIED[] = { "resourceInfoMain", "0", "1" };
+	private static final String LASTMODIFIED[] = { "vrtx-resourceInfoMain", "0", "1" };
 	private static final String CREATED[] = { "resourceInfoMain", "1", "1" };
 	private static final String OWNER[] = { "resourceInfoMain", "2", "1" };
 	private static final String RESOURCETYPE[] = { "resourceInfoMain", "3", "1" };
 	private static final String WEB_ADDRESS[] = { "resourceInfoMain", "4", "1" };
 	private static final String WEBDAV_ADDRESS[] = { "resourceInfoMain", "5", "1" };
-	private static final String LANGUAGE[] = { "resourceInfoMain", "6", "1" };
+	private static final String LANGUAGE[] = { "vrtx-resourceInfoMain", "6", "1" };
 	// File
 	private static final String SIZE[] = { "resourceInfoMain", "7", "1" };
 	
@@ -54,112 +54,114 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	}
 	
 	public void testParentFolderLastModified() {
-//		
-//		String parentFolderName = "parentfolder-last-modified";
-//		String subFolderName = "subfolder";
-//		
-//		// Use old/existing folder
-//		checkAndGotoLink(parentFolderName);
-//		
-//		createFolderAndGoto(subFolderName);
-//		String subFolderLastModified = getLastModifiedAbout(true);
-//		subFolderLastModified = cropAccordingToLengthOfMonth(subFolderLastModified);
-//		
-//		deleteCurrentResource();
-//		
-//		String parentFolderLastModified = getLastModifiedAbout(true);
-//		parentFolderLastModified = cropAccordingToLengthOfMonth(parentFolderLastModified);
-//		
-//		assertEquals(subFolderLastModified, parentFolderLastModified);
-//		
-//		gotoPage(returnUrl);
+		
+		String parentFolderName = "parentfolder-last-modified";
+		String subFolderName = "subfolder";
+		
+		// Use old/existing folder
+		clickLinkWithText(parentFolderName);
+		
+		createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, subFolderName);
+		clickLinkWithText(subFolderName);
+		
+		String subFolderLastModified = getLastModifiedAbout(true);
+		subFolderLastModified = cropAccordingToLengthOfMonth(subFolderLastModified);
+		
+		deleteResource(null);
+		
+		String parentFolderLastModified = getLastModifiedAbout(true);
+		parentFolderLastModified = cropAccordingToLengthOfMonth(parentFolderLastModified);
+		
+		assertEquals(subFolderLastModified, parentFolderLastModified);
+		
+		gotoPage(returnUrl);
 	}
-//	
-//	public void testWebAddress() throws TestingEngineResponseException, Exception {
-//		
-//		gotoAboutTab();
-//		
-//		checkAndGotoLink("aboutWebAddress");
-//		
-//		// Checks that we got to view for collection
-//		assertLinkPresent("vrtx-feed-link");
-//		
-//		gotoPage(returnUrl);
-//	}
-//	
-//	public void testWebDAVAddress() throws TestingEngineResponseException, Exception {
-//		
-//		gotoAboutTab();
-//		
-//		checkAndGotoLink("aboutWebdavAddress");
-//		
-//		// Checks that we got to WebDAV listing
-//		assertElementPresent("vrtx-webdavmessage");
-//		assertElementPresent("vrtx-directoryListing");
-//		
-//		gotoPage(returnUrl);
-//	}
-//	
-//	public void testSetLanguage() {
-//		
-//		String languageFolder = "testlanguage";
-//		
-//		String languagesToTest[][] = { { "Norwegian (bokmål)", "RSS-strøm fra denne siden" },
-//				{ "Norwegian (nynorsk)", "RSS-strøm frå denne sida" }, { "English", "Feed from this page" } };
-//		
-//		createFolderAndGoto(languageFolder);
-//		
-//		for (int i = 0; i < languagesToTest.length; i++) {
-//			
-//			gotoAdminAboutEditLinkFolder(languageFolder, "contentLocale", "");
-//			setPropertyOption("propertyForm", "value", languagesToTest[i][0]);
-//			
-//			gotoViewNoIframe(languageFolder, "");
-//			
-//			// Check if we got the language selected
-//			assertTextPresent(languagesToTest[i][1]);
-//			
-//		}
-//		
-//		gotoAdminOfSubFolder(languageFolder);
-//		
-//		deleteCurrentResource();
-//	}
-//	
-//	public void testInheritLanguage() {
-//		
-//		// TODO: Sub-sub folder test(?)
-//		
-//		// { Parent folder name, subfolder name, parent language, exp. subfolder language, exp. text language on view }
-//		String languagesToTestExtended[][] = {
-//				{ "no-folder", "no-subfolder", "Norwegian (bokmål)", "Not set, inherits norwegian (bokmål) ( edit )",
-//						"RSS-strøm fra denne siden" },
-//				{ "nn-folder", "nn-subfolder", "Norwegian (nynorsk)", "Not set, inherits norwegian (nynorsk) ( edit )",
-//						"RSS-strøm frå denne sida" },
-//				{ "en-folder", "en-subfolder", "English", "Not set, inherits english ( edit )", "Feed from this page" } };
-//		
-//		for (int i = 0; i < languagesToTestExtended.length; i++) {
-//			
-//			createFolderAndGoto(languagesToTestExtended[i][0]);
-//			gotoAdminAboutEditLinkFolder(languagesToTestExtended[i][0], "contentLocale", "");
-//			setPropertyOption("propertyForm", "value", languagesToTestExtended[i][2]);
-//			gotoContentsTab();
-//			
-//			// Check if subfolder has inherited language from parent folder
-//			createFolderAndGoto(languagesToTestExtended[i][1]);
-//			gotoAboutTab();
-//			String inheritedLanguage = getLanguageAbout(true);
-//			assertEquals(languagesToTestExtended[i][3], inheritedLanguage);
-//			
-//			// Check if subfolder is actually viewed in correct language (to much testing(?))
-//			gotoViewNoIframe(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1], "");
-//			assertTextPresent(languagesToTestExtended[i][4]);
-//			gotoAdminOfSubFolder(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1]);
-//			
-//			deleteCurrentResource();
-//			deleteCurrentResource();
-//		}
-//	}
+	
+	public void testWebAddress() throws Exception {
+		
+		gotoAboutTab();
+		clickLink("vrtx-aboutWebAddress");
+		
+		// Checks that we got to view for collection
+		assertLinkPresent("vrtx-feed-link");
+		
+		gotoPage(returnUrl);
+	}
+	
+	public void testWebDAVAddress() throws Exception {
+		
+		gotoAboutTab();
+		clickLink("vrtx-aboutWebdavAddress");
+		
+		// Checks that we got to WebDAV listing
+		assertElementPresent("vrtx-webdavmessage");
+		assertElementPresent("vrtx-directoryListing");
+		
+		gotoPage(returnUrl);
+	}
+
+	public void testSetLanguage() {
+		
+		String languageFolder = "testlanguage";
+		
+		String languagesToTest[][] = { { "Norwegian (bokmål)", "RSS-strøm fra denne siden" },
+				{ "Norwegian (nynorsk)", "RSS-strøm frå denne sida" }, { "English", "Feed from this page" } };
+		
+		createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languageFolder);
+		
+		for (int i = 0; i < languagesToTest.length; i++) {
+			
+			gotoAdminAboutEditLinkFolder(languageFolder, "contentLocale", "");
+			setPropertyOption("propertyForm", "value", languagesToTest[i][0]);
+			
+			gotoViewNoIframe(languageFolder, "");
+			
+			// Check if we got the language selected
+			assertTextPresent(languagesToTest[i][1]);
+			
+		}
+	
+		gotoAdminOfSubFolder(languageFolder);
+		
+		deleteResource(null);
+	}
+	
+	public void testInheritLanguage() {
+		
+		// TODO: Sub-sub folder test(?)
+		
+		// { Parent folder name, subfolder name, parent language, exp. subfolder language, exp. text language on view }
+		String languagesToTestExtended[][] = {
+				{ "no-folder", "no-subfolder", "Norwegian (bokmål)", "Not set, inherits norwegian (bokmål) ( edit )",
+						"RSS-strøm fra denne siden" },
+				{ "nn-folder", "nn-subfolder", "Norwegian (nynorsk)", "Not set, inherits norwegian (nynorsk) ( edit )",
+						"RSS-strøm frå denne sida" },
+				{ "en-folder", "en-subfolder", "English", "Not set, inherits english ( edit )", "Feed from this page" } };
+		
+		for (int i = 0; i < languagesToTestExtended.length; i++) {
+			
+			createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languagesToTestExtended[i][0]);
+			clickLinkWithExactText(languagesToTestExtended[i][0]);
+			gotoAdminAboutEditLinkFolder(languagesToTestExtended[i][0], "contentLocale", "");
+			setPropertyOption("propertyForm", "value", languagesToTestExtended[i][2]);
+			gotoContentsTab();
+			
+			// Check if subfolder has inherited language from parent folder
+			createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languagesToTestExtended[i][1]);
+			clickLinkWithExactText(languagesToTestExtended[i][1]);
+			gotoAboutTab();
+			String inheritedLanguage = getLanguageAbout(true);
+			assertEquals(languagesToTestExtended[i][3], inheritedLanguage);
+			
+			// Check if subfolder is actually viewed in correct language (to much testing(?))
+			gotoViewNoIframe(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1], "");
+			assertTextPresent(languagesToTestExtended[i][4]);
+			gotoAdminOfSubFolder(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1]);
+			
+			deleteResource(null);
+			deleteResource(null);
+		}
+	}
 //	
 //	public void testEditPropertiesOnFolder() {
 //		
@@ -313,293 +315,261 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 //		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
 //		setPropertyTextField("propertyForm", "value", "subfolder-title");
 //	}
-//	
-//	// Navigation / functions in Admin
-//	// TODO: Refactor in admin navigation class(?)
-//	// ****************************************************************************************
-//	public void gotoAboutTab() {
-//		checkAndGotoLink("aboutResourceService");
-//	}
-//	
-//	public void gotoContentsTab() {
-//		checkAndGotoLink("manageCollectionListingService");
-//	}
-//	
-//	public void gotoFolder(String folderName) {
-//		checkAndGotoLink(folderName);
-//	}
-//	
-//	public void createFolderAndGoto(String folderName) {
-//		createFolder(folderName);
-//		checkAndGotoLink(folderName);
-//	}
-//	
-//	public void checkAndGotoLink(String linkId) {
-//		assertLinkPresent(linkId);
-//		clickLink(linkId);
-//	}
-//	
-//	public void gotoAdminAboutEditLinkFolder(String folder, String linkName, String nameSpace) {
-//		gotoPage(returnUrlView + folder + "/?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
-//	}
-//	
-//	public void gotoAdminAboutEditLinkFile(String folder, String file, String linkName, String nameSpace) {
-//		if (folder.equals("")) {
-//			gotoPage(returnUrlView + file + "?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
-//		} else {
-//			gotoPage(returnUrlView + folder + file + "?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
-//		}
-//	}
-//	
-//	public void gotoViewNoIframe(String folderName, String file) {
-//		gotoPage(returnUrlView + folderName + "/" + file);
-//	}
-//	
-//	public void gotoViewNoIframe(String file) {
-//		gotoPage(returnUrlView + file);
-//	}
-//	
-//	public void gotoAdminOfSubFolder(String folderName) {
-//		gotoPage(returnUrlView + folderName + "/?vrtx=admin");
-//	}
-//	
-//	// Get values from About-tab
-//	// TODO: Refactor in own class(?)
-//	// ****************************************************************************************
-//	public String getLastModifiedAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(LASTMODIFIED);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getLanguageAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(LANGUAGE);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getTitleAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(TITLE);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getKeywordsAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(KEYWORDS);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getDescriptionAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(DESCRIPTION);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getVerifiedDateAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(VERIFIED_DATE);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getAuthorAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(AUTHOR);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getAuthorEmailAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(AUTHOR_EMAIL);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getAuthorURLAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(AUTHOR_URL);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getScientificDisciplinesAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(SCIENTIFIC_DISCIPLINES);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getHideFromNavigationAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(HIDE_FROM_NAVIGATION);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getNavigationImportanceAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(NAVIGATIONAL_IMPORTANCE);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	public String getFolderTypeAbout(boolean returnToContents) {
-//		
-//		gotoAboutTab();
-//		
-//		String p = getTableValue(FOLDER_TYPE);
-//		
-//		if (returnToContents) {
-//			gotoContentsTab();
-//		}
-//		return p;
-//	}
-//	
-//	// General methods for creation, deletion of resources and getting values from table.
-//	// TODO: Refactor in own bottom-layer core vortex webtesting function class(?)
-//	// ****************************************************************************************
-//	private void setPropertyOption(String formName, String selectElementName, String selectedOptionValue) {
-//		
-//		assertFormPresent(formName);
-//		setWorkingForm(formName);
-//		selectOption(selectElementName, selectedOptionValue);
-//		clickButtonWithText("save");
-//	}
-//	
-//	private void setRadioOption(String formName, String selectedRadioOptionValue) {
-//		
-//		assertFormPresent(formName);
-//		setWorkingForm(formName);
-//		clickElementByXPath("//input[@type='radio' and @id='" + selectedRadioOptionValue + "']");
-//		clickButtonWithText("save");
-//	}
-//	
-//	private void setPropertyTextField(String formName, String textfieldName, String value) {
-//		
-//		assertFormPresent(formName);
-//		setWorkingForm(formName);
-//		setTextField(textfieldName, value);
-//		clickButtonWithText("save");
-//	}
-//	
-//	public String getTableValue(String[] valueToExtract) {
-//		
-//		// Checks if table exists
-//		assertElementPresent(valueToExtract[0]);
-//		
-//		// Get the cell
-//		Table resourceInfo = getTable(valueToExtract[0]);
-//		Row resourceTypeRow = (Row) resourceInfo.getRows().get(Integer.parseInt(valueToExtract[1]));
-//		Cell resourceType = (Cell) resourceTypeRow.getCells().get(Integer.parseInt(valueToExtract[2]));
-//		
-//		return resourceType.getValue();
-//	}
-//	
-//	public void createFolder(String folderName) {
-//		
-//		// Check if not parentfolder is present, and form is closed
-//		assertLinkNotPresent(folderName);
-//		assertFormNotPresent("createcollection");
-//		
-//		// Create resource
-//		clickLink("createCollectionService");
-//		assertFormPresent("createcollection");
-//		setWorkingForm("createcollection");
-//		setTextField("name", folderName);
-//		submit();
-//		
-//		// Check if resource was created
-//		assertLinkPresent(folderName);
-//	}
-//	
-//	private void deleteCurrentResource() {
-//		// Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
-//		setScriptingEnabled(false);
-//		clickLink("delete-resource");
-//	}
-//	
-//	private String cropAccordingToLengthOfMonth(String string) {
-//		
-//		int cropLastModifiedValueAppended = 14;
-//		int lengthOfMonth;
-//		
-//		for (lengthOfMonth = 0; lengthOfMonth < string.length(); lengthOfMonth++) {
-//			String aChar = string.substring(lengthOfMonth, lengthOfMonth + 1);
-//			if (aChar.equals(" ")) {
-//				break;
-//			}
-//		}
-//		
-//		int cropLastModifiedValue = lengthOfMonth + cropLastModifiedValueAppended;
-//		
-//		return string.substring(0, cropLastModifiedValue);
-//	}
+	
+	// Navigation / functions in Admin
+	// TODO: Refactor in admin navigation class(?)
+	// ****************************************************************************************
+	private void gotoAboutTab() {
+		clickLink("aboutResourceService");
+	}
+	
+	private void gotoContentsTab() {
+		checkAndGotoLink("manageCollectionListingService");
+	}
+	
+	private void checkAndGotoLink(String linkId) {
+		assertLinkPresent(linkId);
+		clickLink(linkId);
+	}
+	
+	public void gotoAdminAboutEditLinkFolder(String folder, String linkName, String nameSpace) {
+		gotoPage(returnUrlView + folder + "/?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
+	}
+	
+	public void gotoAdminAboutEditLinkFile(String folder, String file, String linkName, String nameSpace) {
+		if (folder.equals("")) {
+			gotoPage(returnUrlView + file + "?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
+		} else {
+			gotoPage(returnUrlView + folder + file + "?name=" + linkName + nameSpace + "&vrtx=admin&mode=about");
+		}
+	}
+	
+	private void gotoViewNoIframe(String folderName, String file) {
+		gotoPage(returnUrlView + folderName + "/" + file);
+	}
+	
+	private void gotoViewNoIframe(String file) {
+		gotoPage(returnUrlView + file);
+	}
+	
+	private void gotoAdminOfSubFolder(String folderName) {
+		gotoPage(returnUrlView + folderName + "/?vrtx=admin");
+	}
+	
+	// Get values from About-tab
+	// TODO: Refactor in own class(?)
+	// ****************************************************************************************
+	public String getLastModifiedAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(LASTMODIFIED);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getLanguageAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(LANGUAGE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getTitleAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(TITLE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getKeywordsAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(KEYWORDS);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getDescriptionAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(DESCRIPTION);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getVerifiedDateAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(VERIFIED_DATE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getAuthorAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(AUTHOR);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getAuthorEmailAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(AUTHOR_EMAIL);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getAuthorURLAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(AUTHOR_URL);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getScientificDisciplinesAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(SCIENTIFIC_DISCIPLINES);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getHideFromNavigationAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(HIDE_FROM_NAVIGATION);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getNavigationImportanceAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(NAVIGATIONAL_IMPORTANCE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	public String getFolderTypeAbout(boolean returnToContents) {
+		
+		gotoAboutTab();
+		
+		String p = getTableValue(FOLDER_TYPE);
+		
+		if (returnToContents) {
+			gotoContentsTab();
+		}
+		return p;
+	}
+	
+	// General methods for creation, deletion of resources and getting values from table.
+	// TODO: Refactor in own bottom-layer core vortex webtesting function class(?)
+	// ****************************************************************************************
+	private void setPropertyOption(String formName, String selectElementName, String selectedOptionValue) {
+		
+		assertFormPresent(formName);
+		setWorkingForm(formName);
+		selectOption(selectElementName, selectedOptionValue);
+		clickButtonWithText("save");
+	}
+	
+	private void setRadioOption(String formName, String selectedRadioOptionValue) {
+		
+		assertFormPresent(formName);
+		setWorkingForm(formName);
+		clickElementByXPath("//input[@type='radio' and @id='" + selectedRadioOptionValue + "']");
+		clickButtonWithText("save");
+	}
+	
+	private void setPropertyTextField(String formName, String textfieldName, String value) {
+		
+		assertFormPresent(formName);
+		setWorkingForm(formName);
+		setTextField(textfieldName, value);
+		clickButtonWithText("save");
+	}
+	
+	public String getTableValue(String[] valueToExtract) {
+		
+		// Checks if table exists
+		assertElementPresent(valueToExtract[0]);
+		
+		// Get the cell
+		Table resourceInfo = getTable(valueToExtract[0]);
+		Row resourceTypeRow = (Row) resourceInfo.getRows().get(Integer.parseInt(valueToExtract[1]));
+		Cell resourceType = (Cell) resourceTypeRow.getCells().get(Integer.parseInt(valueToExtract[2]));
+		
+		return resourceType.getValue();
+	}
+	
+	private String cropAccordingToLengthOfMonth(String string) {
+		
+		int cropLastModifiedValueAppended = 14;
+		int lengthOfMonth;
+		
+		for (lengthOfMonth = 0; lengthOfMonth < string.length(); lengthOfMonth++) {
+			String aChar = string.substring(lengthOfMonth, lengthOfMonth + 1);
+			if (aChar.equals(" ")) {
+				break;
+			}
+		}
+		
+		int cropLastModifiedValue = lengthOfMonth + cropLastModifiedValueAppended;
+		
+		return string.substring(0, cropLastModifiedValue);
+	}
 	
 }

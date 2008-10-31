@@ -94,8 +94,8 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 //		checkAndGotoLink("aboutWebdavAddress");
 //		
 //		// Checks that we got to WebDAV listing
-//		assertElementPresent("webdavmessage");
-//		assertElementPresent("directoryListing");
+//		assertElementPresent("vrtx-webdavmessage");
+//		assertElementPresent("vrtx-directoryListing");
 //		
 //		gotoPage(returnUrl);
 //	}

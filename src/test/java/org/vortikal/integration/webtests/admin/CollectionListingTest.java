@@ -15,12 +15,12 @@ public class CollectionListingTest extends BaseAuthenticatedWebTest {
         ASC,
         DESC
     }
+    
+    private final String directoryListingTableId = "vrtx-directoryListing";
 
     public void testSortCollections() {
-        
-        assertElementPresent("directoryListing");
-        
-        Table directoryListing = getTable("directoryListing");
+                
+        Table directoryListing = getTable(directoryListingTableId);
         assertNotNull(directoryListing);
         
         // Listing is by default sorted asc on name, click it once to sort it desc 
@@ -44,9 +44,9 @@ public class CollectionListingTest extends BaseAuthenticatedWebTest {
 
     private void assertSortCollectionListing(String sortOrderLinkId, int cellIndex) {
         clickLink(sortOrderLinkId);
-        assertSortOrder(getTable("directoryListing"), cellIndex, SORT_ORDER.ASC);
+        assertSortOrder(getTable(directoryListingTableId), cellIndex, SORT_ORDER.ASC);
         clickLink(sortOrderLinkId);
-        assertSortOrder(getTable("directoryListing"), cellIndex, SORT_ORDER.DESC);
+        assertSortOrder(getTable(directoryListingTableId), cellIndex, SORT_ORDER.DESC);
     }
 
     private void assertSortOrder(Table directoryListing, int cellIndex, SORT_ORDER sortOrder) {

@@ -24,109 +24,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Editor</title>
-    <@ping.ping url=pingURL['url'] interval=300 />
+    <@ping.ping url=pingURL['url'] interval=300 />    
+    
+    <!-- Main fck-editor js -->
     <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
-    <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.2.6.js"></script>
-    <script language="Javascript" type="text/javascript"><!--
-      function newEditor(name, completeEditor, withoutSubSuper) {
-
-        var completeEditor = completeEditor != null ? completeEditor : false;
-        var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
-        
-        var fck = new FCKeditor( name ) ;
-        fck.BasePath = "${fckeditorBase.url?html}/";
-
-        fck.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
-
-        fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
-
-         if (completeEditor) {
-            <#if resource.resourceType = 'article' || resource.resourceType = 'event'  >
-	    fck.ToolbarSet = 'Complete-article';
-            <#else>
-            fck.ToolbarSet = 'Complete'; 
-            </#if> 
-         } else {
-            fck.ToolbarSet = 'Inline';
-         }
-   	 
-         if(withoutSubSuper) {
-           fck.ToolbarSet = 'Inline-S';
-         }
-
-         // File browser
-         <#if resourceContext.parentURI?exists>
-         var baseFolder = "${resourceContext.parentURI?html}";
-         <#else>
-         var baseFolder = "/";
-         </#if>
-         fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
-         fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
-
-         fck.Config.LinkUpload = false;
-         fck.Config.ImageUpload = false;
-         fck.Config.FlashUpload = false;
-
-         // Misc setup
-         fck.Config['FullPage'] = false;
-         fck.Config['ToolbarCanCollapse'] = false;
-         fck.Config['TabSpaces'] = 4;
-         <#if resource.resourceTypeDefinition.name == 'xhtml10trans'>
-           fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
-         <#else>
-           fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
-         </#if>
-
-         fck.Config.DisableFFTableHandles = false;
-	     fck.Config.ForcePasteAsPlainText = false;
-
-         fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
-         fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';
-
-	var cssFileList = new Array(
-	<#if fckEditorAreaCSSURL?exists>
-		<#list fckEditorAreaCSSURL as cssURL>
-  			"${cssURL?html}",
-		</#list>
-	</#if>
-	"");
-
-	/* Fix for div contianer display in ie */
-	var browser = navigator.userAgent;
-	var ieversion=new Number(RegExp.$1)
-	if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
-	   cssFileList[cssFileList.length-1] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
-	}
-
-        fck.Config['EditorAreaCSS'] = cssFileList;
-
-         fck.ReplaceTextarea();
-      }
-
-      function FCKeditor_OnComplete(editorInstance) {
-          // Get around bug: http://dev.fckeditor.net/ticket/1482
-          editorInstance.ResetIsDirty();
-          if ('resource.content' == editorInstance.Name) {
-             enableSubmit();
-          }
-      }
-
-      function disableSubmit() {
-         // XXX: 
-          document.getElementById("saveButton").disabled = true;
-          document.getElementById("saveAndQuitButton").disabled = true;
-          return true;
-      }
-
-      function enableSubmit() {
-           document.getElementById("saveButton").disabled = false;
-           document.getElementById("saveAndQuitButton").disabled = false;
-           return true;
-      }
-
-      // -->
-    </script>
+    <@setupFckEditor resource.resourceType />
 
     <!-- Yahoo YUI library: -->
     <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
@@ -195,19 +97,123 @@
       </div>
 
       <#if (resource.content)?exists>
-      <script language="Javascript" type="text/javascript"><!--
-         disableSubmit();
+      <script language="Javascript" type="text/javascript">
+        <!--
+          disableSubmit();
         // -->
       </script>
       <#else>
-      <script language="Javascript" type="text/javascript"><!--
-         enableSubmit();
+      <script language="Javascript" type="text/javascript">
+        <!--
+          enableSubmit();
         // -->
       </script>
       </#if>
      </form>
     </body>
 </html>
+
+<#macro setupFckEditor resourceType>
+    <script language="Javascript" type="text/javascript">
+      <!--
+      function newEditor(name, completeEditor, withoutSubSuper) {
+
+        var completeEditor = completeEditor != null ? completeEditor : false;
+        var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
+        
+        var fck = new FCKeditor( name ) ;
+        fck.BasePath = "${fckeditorBase.url?html}/";
+
+        fck.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';
+
+        fck.Config['CustomConfigurationsPath'] = '${fckeditorBase.url?html}/custom-fckconfig.js';
+
+         if (completeEditor) {
+            <#if resourceType = 'article' || resourceType = 'event'  >
+              fck.ToolbarSet = 'Complete-article';
+            <#else>
+              fck.ToolbarSet = 'Complete'; 
+            </#if> 
+         } else {
+            fck.ToolbarSet = 'Inline';
+         }
+     
+         if(withoutSubSuper) {
+           fck.ToolbarSet = 'Inline-S';
+         }
+
+         // File browser
+         <#if resourceContext.parentURI?exists>
+         var baseFolder = "${resourceContext.parentURI?html}";
+         <#else>
+         var baseFolder = "/";
+         </#if>
+         fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
+         fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
+         fck.Config['FlashBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=${fckBrowse.url.pathRepresentation}';
+
+         fck.Config.LinkUpload = false;
+         fck.Config.ImageUpload = false;
+         fck.Config.FlashUpload = false;
+
+         // Misc setup
+         fck.Config['FullPage'] = false;
+         fck.Config['ToolbarCanCollapse'] = false;
+         fck.Config['TabSpaces'] = 4;
+         <#if resource.resourceTypeDefinition.name == 'xhtml10trans'>
+           fck.Config['FontFormats'] = 'p;h1;h2;h3;h4;h5;h6;pre';
+         <#else>
+           fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
+         </#if>
+
+         fck.Config.DisableFFTableHandles = false;
+         fck.Config.ForcePasteAsPlainText = false;
+
+         fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
+         fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';
+
+         var cssFileList = new Array(
+         <#if fckEditorAreaCSSURL?exists>
+           <#list fckEditorAreaCSSURL as cssURL>
+             "${cssURL?html}",
+           </#list>
+         </#if>
+         "");
+
+         /* Fix for div contianer display in ie */
+         var browser = navigator.userAgent;
+         var ieversion = new Number(RegExp.$1)
+         if(browser.indexOf("MSIE") > -1 && ieversion <= 7){
+           cssFileList[cssFileList.length-1] = "/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css";
+         }
+
+         fck.Config['EditorAreaCSS'] = cssFileList;
+         fck.ReplaceTextarea();
+      }
+
+      function FCKeditor_OnComplete(editorInstance) {
+        // Get around bug: http://dev.fckeditor.net/ticket/1482
+        editorInstance.ResetIsDirty();
+        if ('resource.content' == editorInstance.Name) {
+          enableSubmit();
+        }
+      }
+
+      function disableSubmit() {
+        document.getElementById("saveButton").disabled = true;
+        document.getElementById("saveAndQuitButton").disabled = true;
+        return true;
+      }
+
+      function enableSubmit() {
+         document.getElementById("saveButton").disabled = false;
+         document.getElementById("saveAndQuitButton").disabled = false;
+         return true;
+      }
+
+      // -->
+  </script>
+</#macro>
 
 <#macro propChangeTests propDefs>
   <#list propDefs as propDef>
@@ -344,10 +350,15 @@
       
       <div class="${name} property-item">
       <#if displayLabel>
-      <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
+        <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
       </#if>
+      
+      <#-- Featured articles are only valid for articlelistings -->
+      <#if resource.resourceType = 'article-listing' && name == 'featured-articles'>
+      
+        <#-- TODO setup featured articles -->
 
-      <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
+      <#elseif type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' false false />
         
@@ -483,115 +494,116 @@
 
         <#local uniqueName = 'cal_' + propDef_index />
 
-        <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        <script language="Javascript" type="text/javascript"><!--
-        document.write('<a class="calendar" id="${uniqueName}.calendar.href"><span>cal</span></a>');
-        document.write('<div id="resource.${name}.calendar" class="yui-skin-sam"></div>');
-        // -->
-        </script>
-        <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+        <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
+            value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
+        
+        <a class="calendar" id="${uniqueName}.calendar.href"><span>cal</span></a>
+        <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
+        
+        <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours"
+            value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes"
+            id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
-        <script language="Javascript" type="text/javascript"><!--
+        <script language="Javascript" type="text/javascript">
+        <!--
 
           YAHOO.namespace("resource.${uniqueName}.calendar");
           var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
           if (!cal1) {
-             cal1 = YAHOO.resource.${uniqueName}.calendar.cal1 = 
-             new YAHOO.widget.Calendar("cal1", "resource.${name}.calendar");
+            cal1 = YAHOO.resource.${uniqueName}.calendar.cal1 = 
+            new YAHOO.widget.Calendar("cal1", "resource.${name}.calendar");
           }
 
-         cal1.cfg.setProperty("iframe", true);
-         <#if value != "">
-           cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
-           cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
-         </#if>
-         cal1.render();
+          cal1.cfg.setProperty("iframe", true);
+          <#if value != "">
+            cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
+            cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
+          </#if>
+          cal1.render();
 
           cal1.selectEvent.subscribe(function(type, dates) {
-             var date = this._toDate(dates[0][0]);
-             var year = date.getFullYear();
-             var monthNumber = date.getMonth() + 1;
-             var month = monthNumber < 10 ? '0' + monthNumber  : '' + monthNumber;
-             var day = date.getDate(); if (day < 10 ) day = '0' + day;
-             var dateStr =  year + '-' + month + '-' + day;
+            var date = this._toDate(dates[0][0]);
+            var year = date.getFullYear();
+            var monthNumber = date.getMonth() + 1;
+            var month = monthNumber < 10 ? '0' + monthNumber  : '' + monthNumber;
+            var day = date.getDate(); if (day < 10 ) day = '0' + day;
+            var dateStr =  year + '-' + month + '-' + day;
 
-             document.getElementById('resource.${name}').value = dateStr;
-             ${uniqueName}_hide();
+            document.getElementById('resource.${name}').value = dateStr;
+            ${uniqueName}_hide();
           }, cal1, true);
 
 
           cal1.syncDates = function() {
-             var input = document.getElementById('resource.${name}').value;
-             var regexp = /(\d+)\-(\d\d)-(\d\d)/;
-             var match = regexp.exec(input);
+            var input = document.getElementById('resource.${name}').value;
+            var regexp = /(\d+)\-(\d\d)-(\d\d)/;
+            var match = regexp.exec(input);
              
-             if (match) {
-                var d = new Date();
-                d.setFullYear(match[1]);
-                d.setMonth(match[2]);
-                d.setDate(match[3]);
+            if (match) {
+              var d = new Date();
+              d.setFullYear(match[1]);
+              d.setMonth(match[2]);
+              d.setDate(match[3]);
 
-                this.cfg.setProperty("selected", d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear(), false);
-                this.cfg.setProperty("pagedate", d.getMonth() + "/" + d.getFullYear(), false);
-                this.render();
-             }
+              this.cfg.setProperty("selected", d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear(), false);
+              this.cfg.setProperty("pagedate", d.getMonth() + "/" + d.getFullYear(), false);
+              this.render();
+            }
           }
 
           var ${uniqueName}_hidden = true;
 
           function ${uniqueName}_show() {
-             var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
-             cal1.show();
-             ${uniqueName}_hidden = false;
+            var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
+            cal1.show();
+            ${uniqueName}_hidden = false;
           }
 
           function ${uniqueName}_hide() {
-             var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
-             cal1.hide();
-             ${uniqueName}_hidden = true;
+            var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
+            cal1.hide();
+            ${uniqueName}_hidden = true;
           }
 
           function ${uniqueName}_toggle() {
-             if (${uniqueName}_hidden) {
-                ${uniqueName}_show();
-             } else {
-                ${uniqueName}_hide();
-             }
+            if (${uniqueName}_hidden) {
+              ${uniqueName}_show();
+            } else {
+              ${uniqueName}_hide();
+            }
           }
 
           function ${uniqueName}_click(e) {
-              if (!e) var e = window.event;
-              var target;
-              if (e.target) {
-                 target = e.target;
-              } else if (e.srcElement) {
-                 target = e.srcElement;
-              }
-              var inCalendarRef = "${uniqueName}.calendar.href" == target.id;
-
-              var inCalendar = false;
+            if (!e) var e = window.event;
+            var target;
+            if (e.target) {
+              target = e.target;
+            } else if (e.srcElement) {
+              target = e.srcElement;
+            }
+            var inCalendarRef = "${uniqueName}.calendar.href" == target.id;
+            var inCalendar = false;
               
-              for (t = target; t; t = t.parentNode) {
-                if ("resource.${name}.calendar" == t.id) {
-                  inCalendar = true;
+            for (t = target; t; t = t.parentNode) {
+              if ("resource.${name}.calendar" == t.id) {
+                inCalendar = true;
                   break;
-                }
               }
+            }
 
-              if (inCalendarRef) {
-                 ${uniqueName}_toggle();
-              } else if (!${uniqueName}_hidden && !inCalendarRef && !inCalendar) {
-                 ${uniqueName}_hide();
-              } else 
-              return true;
+            if (inCalendarRef) {
+              ${uniqueName}_toggle();
+            } else if (!${uniqueName}_hidden && !inCalendarRef && !inCalendar) {
+              ${uniqueName}_hide();
+            } else return true;
           }
 
           if (window.addEventListener) {
-             window.addEventListener("click", ${uniqueName}_click, false);
+            window.addEventListener("click", ${uniqueName}_click, false);
           } else if (window.attachEvent) {
-             document.attachEvent('onclick', ${uniqueName}_click);
+            document.attachEvent('onclick', ${uniqueName}_click);
           }
-          //-->
+        //-->
         </script>
       <#else>
 

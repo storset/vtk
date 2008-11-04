@@ -42,6 +42,9 @@
     <#else>
       <#if caption != "">
         <#local pixelWidth = imageRes.getValueByName("pixelWidth")?default("") />
+        <!-- <#local photographer = imageRes.getValueByName("photographer")?default("") /> -->
+        <#local authorName = imageRes.getValueByName("authorName")?default("") />
+        
         <#local style="" />
         <#if pixelWidth != "">
           <#local style = "width:" + pixelWidth+ "px;" />
@@ -50,6 +53,7 @@
 	         <img src="${introductionImage}" alt="${captionFlattened}" />
             <div class="vrtx-imagetext">
                  <div class="vrtx-imagedescription">${caption}</div>
+                 <span class="vrtx-photo"><span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}</span>
            </div> 
        </div>
       <#else>

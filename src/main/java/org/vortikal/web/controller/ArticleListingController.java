@@ -42,13 +42,14 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
 
-public class CollectionListingController extends AbstractCollectionListingController {
-
-    private List<SearchComponent> searchComponents;
-
+public class ArticleListingController extends AbstractCollectionListingController {
+	
+    private SearchComponent featuredArticlesSearch;
+    private SearchComponent defaultSearch;
+        	
     protected void runSearch(HttpServletRequest request, Resource collection,
     		Map<String, Object> model) throws Exception {
-
+    	
         int page = 0;
         if (request.getParameter("page") != null) {
             try {
@@ -64,37 +65,16 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
 
         int pageLimit = getPageLimit(collection);
-        int offset = (page - 1) * pageLimit;
-        int limit = pageLimit;
+        
+        // TODO execute featuredArticleSearch
+        // NB! paging will be different once other searches are performed
         
         List<Listing> results = new ArrayList<Listing>();
-        for (SearchComponent component : this.searchComponents) {
-            Listing listing = component.execute(request, collection, page, limit, 0);
-            // Add the listing to the results
-            if (listing.getFiles().size() > 0) {
-                results.add(listing);
-            }
-
-            // Check previous result (by redoing the previous search),  
-            // to see if we need to adjust the offset.
-            // XXX: is there a better way?
-            if (listing.getFiles().size() == 0 && offset > 0) {
-                Listing prevListing = component.execute(request, collection, page - 1, limit, 0);
-                if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
-                   offset -= prevListing.getFiles().size();
-                }
-             }
-
-            // We have more results to display for this listing 
-            if (listing.hasMoreResults()) {
-                break;
-            }
-
-            // Only include enough results to fill the page:
-            if (listing.getFiles().size() > 0) {
-               limit -= listing.getFiles().size();
-            }
+        Listing listing = defaultSearch.execute(request, collection, page, pageLimit, 0);
+        if (listing.getFiles().size() > 0) {
+            results.add(listing);
         }
+        
         model.put("searchComponents", results);
         model.put("page", page);
 
@@ -118,12 +98,17 @@ public class CollectionListingController extends AbstractCollectionListingContro
         
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
-        
+    	
+    }
+    
+    @Required
+    public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
+        this.featuredArticlesSearch = featuredArticlesSearch;
     }
 
     @Required
-    public void setSearchComponents(List<SearchComponent> searchComponents) {
-        this.searchComponents = searchComponents;
+    public void setDefaultSearch(SearchComponent defaultSearch) {
+        this.defaultSearch = defaultSearch;
     }
 
 }

@@ -32,33 +32,15 @@ package org.vortikal.web.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.edit.editor.ResourceWrapperManager;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.ResourcePropertyComparator;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 /**
@@ -70,58 +52,21 @@ import org.vortikal.web.service.URL;
  * and a separate paging mode for each category. The way it 
  * is done now (a single paging mode) is just painful.
  */
-public class EventListingController implements Controller {
+public class EventListingController extends AbstractCollectionListingController {
 
-    private Repository repository;
-    private ResourceWrapperManager resourceManager;    
-    private PropertyTypeDefinition hiddenPropDef;
-    private int defaultPageLimit = 20;
-    private PropertyTypeDefinition pageLimitPropDef;
-    private List<PropertyTypeDefinition> sortPropDefs;
-
-    private String viewName;
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
-    private Map<String, Service> alternativeRepresentations;
-
 
     private static final String UPCOMING_PAGE_PARAM = "page";
     private static final String PREVIOUS_PAGE_PARAM = "p-page";
     private static final String PREV_BASE_OFFSET_PARAM = "p-offset";
     
-    
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        Path uri = RequestContext.getRequestContext().getResourceURI();
-        SecurityContext securityContext = SecurityContext.getSecurityContext(); 
-        String token = securityContext.getToken();
-        Principal principal = securityContext.getPrincipal();
-        Resource collection = this.repository.retrieve(token, uri, true);
+    protected void runSearch(HttpServletRequest request, Resource collection,
+    		Map<String, Object> model) throws Exception {
 
-        Resource[] children = this.repository.listChildren(token, uri, true);
-        List<Resource> subCollections = new ArrayList<Resource>();
-        for (Resource r : children) {
-            if (r.isCollection() && r.getProperty(this.hiddenPropDef) == null) {
-                subCollections.add(r);
-            }
-        }
-
-        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, false, locale));
-        
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("collection", this.resourceManager
-                .createResourceWrapper(collection.getURI()));
-        model.put("subCollections", subCollections);
-
-        // Setting the default pagelimit
-        int pageLimit = this.defaultPageLimit;
-        Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
-        if (pageLimitProp != null) {
-            pageLimit = pageLimitProp.getIntValue();
-        }
-
-        int upcomingEventPage = getPage(request, UPCOMING_PAGE_PARAM);
+        int pageLimit = getPageLimit(collection);
+    	
+    	int upcomingEventPage = getPage(request, UPCOMING_PAGE_PARAM);
         int prevEventPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
         int userDisplayPage = upcomingEventPage;
@@ -129,17 +74,16 @@ public class EventListingController implements Controller {
         URL nextURL = null;
         URL prevURL = null;
 
-        boolean atLeastOneUpcoming = 
-            this.upcomingEventsSearch.execute(request, collection, 1, 1, 0).size() > 0;
+        boolean atLeastOneUpcoming = this.upcomingEventsSearch.execute(request, collection, 1, 1, 0).size() > 0;
 
-        List<Listing> searchComponents = new ArrayList<Listing>();
+        List<Listing> results = new ArrayList<Listing>();
         Listing upcoming = null;
         if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
             // Search upcoming events
             upcoming = this.upcomingEventsSearch.execute(
                     request, collection, upcomingEventPage, pageLimit, 0);
             if (upcoming.size() > 0) {
-                searchComponents.add(upcoming);
+            	results.add(upcoming);
                 if (upcomingEventPage > 1) {
                     prevURL = URL.create(request);
                     prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
@@ -163,7 +107,7 @@ public class EventListingController implements Controller {
             Listing previous = this.previousEventsSearch.execute(
                     request, collection, prevEventPage, pageLimit, upcomingOffset);
             if (previous.size() > 0) {
-                searchComponents.add(previous);
+            	results.add(previous);
             }
             
             if (prevEventPage > 1) {
@@ -195,7 +139,7 @@ public class EventListingController implements Controller {
             Listing previous = this.previousEventsSearch.execute(
                     request, collection, 1, upcomingOffset, 0);
             if (previous.size() > 0) {
-                searchComponents.add(previous);
+            	results.add(previous);
             }
             
             if (upcomingEventPage > 1) {
@@ -213,7 +157,7 @@ public class EventListingController implements Controller {
             }
         }
         
-        model.put("searchComponents", searchComponents);
+        model.put("searchComponents", results);
         model.put("page", userDisplayPage);
 
         cleanURL(nextURL);
@@ -221,64 +165,10 @@ public class EventListingController implements Controller {
 
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
-
-        Set<Object> alt = new HashSet<Object>();
-        for (String contentType: this.alternativeRepresentations.keySet()) {
-            try {
-                Map<String, Object> m = new HashMap<String, Object>();
-                Service service = this.alternativeRepresentations.get(contentType);
-                URL url = service.constructURL(collection, principal);
-                String title = service.getName();
-                org.springframework.web.servlet.support.RequestContext rc = 
-                new org.springframework.web.servlet.support.RequestContext(request);
-                title = rc.getMessage(service.getName(), new Object[]{collection.getTitle()}, service.getName());
-                
-                m.put("title", title);
-                m.put("url", url);
-                m.put("contentType", contentType);
-                
-                alt.add(m);
-            } catch (Throwable t) { }
-        }
-        model.put("alternativeRepresentations", alt);
         model.put("currentDate", Calendar.getInstance().getTime());
         
-        return new ModelAndView(this.viewName, model);
-    }
-
-    
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    @Required
-    public void setResourceManager(ResourceWrapperManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
-
-    @Required
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) { 
-        this.hiddenPropDef = hiddenPropDef;
     }
     
-    @Required 
-    public void setSortPropDefs(List<PropertyTypeDefinition> sortPropDefs) {
-        this.sortPropDefs = sortPropDefs;
-    }
-
-    @Required
-    public void setPageLimitPropDef(PropertyTypeDefinition pageLimitPropDef) {
-        this.pageLimitPropDef = pageLimitPropDef;
-    }
-
-    public void setDefaultPageLimit(int defaultPageLimit) {
-        if (defaultPageLimit <= 0)
-            throw new IllegalArgumentException("Argument must be a positive integer");
-        this.defaultPageLimit = defaultPageLimit;
-    }
-
-
     @Required
     public void setUpcomingEventsSearch(SearchComponent upcomingEventsSearch) {
         this.upcomingEventsSearch = upcomingEventsSearch;
@@ -287,15 +177,6 @@ public class EventListingController implements Controller {
     @Required
     public void setPreviousEventsSearch(SearchComponent previousEventsSearch) {
         this.previousEventsSearch = previousEventsSearch;
-    }
-
-    @Required
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-    
-    public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
-        this.alternativeRepresentations = alternativeRepresentations;
     }
 
     private int getPage(HttpServletRequest request, String parameter) {

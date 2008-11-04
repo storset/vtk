@@ -18,8 +18,7 @@
     </property>
     <property name="handler" ref="articleListing.handler" />
   </bean>
-  
-  
+
 
   <bean id="articleListing.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.atomService" />
@@ -33,9 +32,8 @@
   </bean>
   
 
-
   <bean id="articleListing.handler" 
-        class="org.vortikal.web.controller.CollectionListingController"
+        class="org.vortikal.web.controller.ArticleListingController"
         parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="resourceManager" />
     <property name="sortPropDefs">
@@ -48,11 +46,8 @@
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="viewName" value="articleListing.view" />
-    <property name="searchComponents">
-      <list>
-        <ref bean="articleListing.searchComponent" />
-      </list>
-    </property>
+    <property name="defaultSearch" ref="articleListing.searchComponent" />
+    <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="articleListing.atomService" />
@@ -69,7 +64,58 @@
     <property name="publishedDatePropDef" ref="publishedDatePropDef" />
     <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
-  
+
+  <bean id="articleListing.featuredArticlesSearchComponent" 
+        class="org.vortikal.web.search.QueryStringSearchComponent">
+    <property name="name" value="articleListing.featuredArticlesSearchComponent" />
+    <property name="viewService" ref="webService" />
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="defaultRecursive" value="true" />
+    <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
+    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
+
+    <property name="query">
+      
+      <!-- TODO finish query for search: uri IN ({$featuredArticles}) AND ... -->
+      
+      <value></value>
+    </property>
+    <property name="queryParser" ref="searchParser" />
+
+    <property name="defaultSortPropDef" ref="publishedDatePropDef" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+
+    <property name="sortPropertyMapping">
+      <map>
+        <entry key="title" value-ref="titlePropDef" />
+      </map>
+    </property>
+
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="publishedDate" value-ref="SORT_ORDER.DESC" />
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
+
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionImagePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="publishedDatePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hidePublishedDatePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+  </bean>
 
   <bean id="articleListing.searchComponent" 
         class="org.vortikal.web.search.QueryStringSearchComponent">

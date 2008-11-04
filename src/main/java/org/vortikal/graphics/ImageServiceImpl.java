@@ -3,7 +3,6 @@ package org.vortikal.graphics;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -85,8 +84,6 @@ public class ImageServiceImpl implements ImageService {
         Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
         BufferedImage newScaledImage = new BufferedImage(width, height, type);
         Graphics2D g = newScaledImage.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g.drawImage(scaledImage, 0, 0, width, height, null);
         g.dispose();
 

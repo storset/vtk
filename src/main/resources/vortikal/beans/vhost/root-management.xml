@@ -120,6 +120,7 @@
     <constructor-arg>
       <map>
         <entry key="Principals" value-ref="principalStatsGroup" />
+        <entry key="Java VM" value-ref="jvmStatsGroup" />
         <entry key="Servlet" value-ref="servletStatsGroup" />       
         <entry key="Repository" value-ref="repositoryStatsGroup" />
         <entry key="Resource types" value-ref="resourceTypesStatsGroup" />
@@ -132,6 +133,25 @@
       <map>
         <entry key="Principal manager tokens">
           <value>context.getBean("tokenManagerCache").getSize()</value>
+        </entry>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <bean id="jvmStatsGroup" class="java.util.HashMap">
+    <constructor-arg>
+      <map>
+        <entry key="Available processors">
+          <value>Runtime.getRuntime().availableProcessors()</value>
+        </entry>
+        <entry key="Total memory">
+          <value>Runtime.getRuntime().totalMemory()</value>
+        </entry>
+        <entry key="Maximum memory">
+          <value>Runtime.getRuntime().maxMemory()</value>
+        </entry>
+        <entry key="Free memory">
+          <value>Runtime.getRuntime().freeMemory()</value>
         </entry>
       </map>
     </constructor-arg>

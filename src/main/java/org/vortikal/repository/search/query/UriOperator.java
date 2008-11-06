@@ -38,6 +38,7 @@ public class UriOperator {
 
     public static final UriOperator EQ = new UriOperator("EQ");
     public static final UriOperator NE = new UriOperator("NE");
+    public static final UriOperator IN = new UriOperator("IN");
     
     private String id;
 

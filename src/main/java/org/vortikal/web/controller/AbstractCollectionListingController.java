@@ -42,6 +42,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -68,6 +69,10 @@ public abstract class AbstractCollectionListingController implements Controller 
     protected List<PropertyTypeDefinition> sortPropDefs;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
+    
+    protected static final String UPCOMING_PAGE_PARAM = "page";
+    protected static final String PREVIOUS_PAGE_PARAM = "p-page";
+    protected static final String PREV_BASE_OFFSET_PARAM = "p-offset";
     
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -133,6 +138,50 @@ public abstract class AbstractCollectionListingController implements Controller 
         }
         return pageLimit;
 	}
+	
+    protected int getPage(HttpServletRequest request, String parameter) {
+        int page = 0;
+        String pageParam = request.getParameter(parameter);
+        if (StringUtils.isNotBlank(pageParam)) {
+            try {
+                page = Integer.parseInt(pageParam);
+                if (page < 1) {
+                    page = 1;
+                }
+            } catch (Throwable t) { }
+        }
+
+        if (page == 0) {
+            page = 1;
+        }
+        return page;
+    }
+    
+    protected int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
+        String param = request.getParameter(name);
+        if (param == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(param);
+        } catch (Throwable t) { 
+            return defaultValue;
+        }
+    }
+
+    protected void cleanURL(URL url) {
+        if (url != null) {
+            url.setCollection(true);
+            String param = url.getParameter(UPCOMING_PAGE_PARAM);
+            if ("1".equals(param)) {
+                url.removeParameter(UPCOMING_PAGE_PARAM);
+            }
+            param = url.getParameter(PREV_BASE_OFFSET_PARAM);
+            if ("0".equals(param)) {
+                url.removeParameter(PREV_BASE_OFFSET_PARAM);
+            }
+        }
+    }
 	
     @Required
     public void setRepository(Repository repository) {

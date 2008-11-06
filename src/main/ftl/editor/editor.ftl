@@ -357,6 +357,7 @@
       <#if resource.resourceType = 'article-listing' && name == 'featured-articles'>
       
         <#-- TODO setup featured articles -->
+        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
 
       <#elseif type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>

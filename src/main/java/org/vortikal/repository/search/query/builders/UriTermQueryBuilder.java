@@ -31,6 +31,8 @@
 package org.vortikal.repository.search.query.builders;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.QueryFilter;
 import org.apache.lucene.search.TermQuery;
@@ -68,8 +70,17 @@ public class UriTermQueryBuilder implements QueryBuilder {
             TermQuery tq = 
                 new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
             return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
-            //            throw new QueryBuilderException("Term operator 'NE' not yet supported.");
-        } 
+        }
+        
+        if (operator == UriOperator.IN) {
+        	String[] values = query.getUri().split(",");
+    		BooleanQuery bq = new BooleanQuery();
+    		for (String value : values) {
+    			Term term = new Term(FieldNameMapping.URI_FIELD_NAME, value);
+    			bq.add(new TermQuery(term), BooleanClause.Occur.SHOULD);
+    		}
+    		return bq;
+        }
 
         throw new QueryBuilderException("Operator '" + operator + "' not legal for uri queries.");
     }

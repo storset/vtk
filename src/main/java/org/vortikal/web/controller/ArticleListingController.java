@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
@@ -50,58 +51,127 @@ public class ArticleListingController extends AbstractCollectionListingControlle
     protected void runSearch(HttpServletRequest request, Resource collection,
     		Map<String, Object> model) throws Exception {
     	
-        int page = 0;
-        if (request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-                if (page < 1) {
-                    page = 1;
-                }
-            } catch (Throwable t) { }
-        }
-
-        if (page == 0) {
-            page = 1;
-        }
-
         int pageLimit = getPageLimit(collection);
         
-        // TODO execute featuredArticleSearch
-        // NB! paging will be different once other searches are performed
-        
-        List<Listing> results = new ArrayList<Listing>();
-        Listing listing = defaultSearch.execute(request, collection, page, pageLimit, 0);
-        if (listing.getFiles().size() > 0) {
-            results.add(listing);
-        }
-        
-        model.put("searchComponents", results);
-        model.put("page", page);
+        int featuredArticlesPage = getPage(request, UPCOMING_PAGE_PARAM);
+        int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
+
+        int userDisplayPage = defaultArticlesPage;
 
         URL nextURL = null;
         URL prevURL = null;
-        if (results.size() > 0) {
-            Listing last = results.get(results.size() - 1);
-            if (last.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.setParameter("page", String.valueOf(page + 1));
-            }
-            if (page > 1) {
-                prevURL = URL.create(request);
-                if (page == 1) {
-                    prevURL.removeParameter("page");
-                } else {
-                    prevURL.setParameter("page", String.valueOf(page - 1));
+
+        boolean atLeastOneFeaturedArticle = this.featuredArticlesSearch.execute(request, collection, 1, 1, 0).size() > 0;
+
+        List<Listing> results = new ArrayList<Listing>();
+        Listing featuredArticles = null;
+        if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
+            // Search featured articles
+        	featuredArticles = this.featuredArticlesSearch.execute(request, collection, featuredArticlesPage, pageLimit, 0);
+            if (featuredArticles.size() > 0) {
+            	results.add(featuredArticles);
+                if (featuredArticlesPage > 1) {
+                    prevURL = URL.create(request);
+                    prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
+                    prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                    prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage - 1));
                 }
+            }
+            if (featuredArticles.hasMoreResults()) {
+                nextURL = URL.create(request);
+                nextURL.removeParameter(PREVIOUS_PAGE_PARAM);
+                nextURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage + 1));
+            }
+        }
+
+        
+        if (featuredArticles == null || featuredArticles.size() == 0) {
+            // Searching only in default articles
+            int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
+            if (upcomingOffset > pageLimit) upcomingOffset = 0;
+            Listing defaultArticles = this.defaultSearch.execute(request, collection, defaultArticlesPage, pageLimit, upcomingOffset);
+            if (defaultArticles.size() > 0) {
+            	if (atLeastOneFeaturedArticle) {
+            		Listing fa = this.featuredArticlesSearch.execute(request, collection, 1, pageLimit, 0);
+            		removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
+            	}
+            	results.add(defaultArticles);
+            }
+            
+            if (defaultArticlesPage > 1) {
+                prevURL = URL.create(request);
+                prevURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
+                prevURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage - 1));
+
+            } else if (defaultArticlesPage == 1 && atLeastOneFeaturedArticle) {
+                prevURL = URL.create(request);
+                prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
+                prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+            }
+
+            if (defaultArticles.hasMoreResults()) {
+                nextURL = URL.create(request);
+                nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
+                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage + 1));
+            }
+
+            if (atLeastOneFeaturedArticle) {
+                userDisplayPage += defaultArticlesPage;
+            } else {
+                userDisplayPage = defaultArticlesPage;
+            }
+
+        } else if (featuredArticles.size() < pageLimit) {
+            // Fill up the rest of the page with default articles
+            int upcomingOffset = pageLimit - featuredArticles.size();
+            Listing defaultArticles = this.defaultSearch.execute(request, collection, 1, upcomingOffset, 0);
+            if (defaultArticles.size() > 0) {
+            	if (atLeastOneFeaturedArticle) {
+            		Listing fa = this.featuredArticlesSearch.execute(request, collection, 1, pageLimit, 0);
+            		removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
+            	}
+            	results.add(defaultArticles);
+            }
+            
+            if (featuredArticlesPage > 1) {
+                prevURL = URL.create(request);
+                prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
+                prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage - 1));
+            }
+            
+            if (defaultArticles.hasMoreResults()) {
+                nextURL = URL.create(request);
+                nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
+                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage));
             }
         }
         
+        model.put("searchComponents", results);
+        model.put("page", userDisplayPage);
+        
+        cleanURL(nextURL);
+        cleanURL(prevURL);
+
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
     	
     }
-    
-    @Required
+
+	private void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles, List<PropertySet> defaultArticles) {
+		List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
+		for (PropertySet featuredArticle : featuredArticles) {
+			for (PropertySet defaultArticle : defaultArticles) {
+				if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
+					duplicateArticles.add(defaultArticle);
+				}
+			}
+		}
+		defaultArticles.removeAll(duplicateArticles);
+	}
+
+	@Required
     public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
         this.featuredArticlesSearch = featuredArticlesSearch;
     }

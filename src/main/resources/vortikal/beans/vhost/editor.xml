@@ -333,8 +333,8 @@
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
-            <ref bean="articleListing.featuredArticlesPropDef"/>
             <ref bean="collection.pageLimitPropDef" />
+            <ref bean="articleListing.featuredArticlesPropDef"/>
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.sortingPropDef" />
             <ref bean="articleListing.hidePublishedDatePropDef" />

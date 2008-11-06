@@ -115,16 +115,17 @@
 
      <#-- List resources: -->
 
-     <#list searchComponents as searchComponent>
-       <#if collection.resourceType = 'article-listing'>
-         <@coll.displayArticles collectionListing=searchComponent displayMoreURLs=true />
-       <#elseif collection.resourceType = 'event-listing'>
-         <@coll.displayEvents collectionListing=searchComponent displayMoreURLs=true />
-       <#else>
-         <@coll.displayResources collectionListing=searchComponent />
-       </#if>
-     </#list>
-     
+     <#if collection.resourceType = 'article-listing'>
+       <@coll.displayArticles collectionListings=searchComponents displayMoreURLs=true />
+     <#else>
+       <#list searchComponents as searchComponent>
+         <#if collection.resourceType = 'event-listing'>
+           <@coll.displayEvents collectionListing=searchComponent displayMoreURLs=true />
+         <#else>
+           <@coll.displayResources collectionListing=searchComponent />
+         </#if>
+       </#list>
+     </#if>
 
      <#-- Previous/next URLs: -->
 

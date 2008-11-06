@@ -56,10 +56,6 @@ public class EventListingController extends AbstractCollectionListingController 
 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
-
-    private static final String UPCOMING_PAGE_PARAM = "page";
-    private static final String PREVIOUS_PAGE_PARAM = "p-page";
-    private static final String PREV_BASE_OFFSET_PARAM = "p-offset";
     
     protected void runSearch(HttpServletRequest request, Resource collection,
     		Map<String, Object> model) throws Exception {
@@ -151,7 +147,6 @@ public class EventListingController extends AbstractCollectionListingController 
             
             if (previous.hasMoreResults()) {
                 nextURL = URL.create(request);
-                //nextURL.removeParameter(UPCOMING_PAGE_PARAM);
                 nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage));
             }
@@ -177,49 +172,6 @@ public class EventListingController extends AbstractCollectionListingController 
     @Required
     public void setPreviousEventsSearch(SearchComponent previousEventsSearch) {
         this.previousEventsSearch = previousEventsSearch;
-    }
-
-    private int getPage(HttpServletRequest request, String parameter) {
-        int page = 0;
-        if (request.getParameter(parameter) != null) {
-            try {
-                page = Integer.parseInt(request.getParameter(parameter));
-                if (page < 1) {
-                    page = 1;
-                }
-            } catch (Throwable t) { }
-        }
-
-        if (page == 0) {
-            page = 1;
-        }
-        return page;
-    }
-    
-    private int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
-        String param = request.getParameter(name);
-        if (param == null) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(param);
-        } catch (Throwable t) { 
-            return defaultValue;
-        }
-    }
-
-    private void cleanURL(URL url) {
-        if (url != null) {
-            url.setCollection(true);
-            String param = url.getParameter(UPCOMING_PAGE_PARAM);
-            if ("1".equals(param)) {
-                url.removeParameter(UPCOMING_PAGE_PARAM);
-            }
-            param = url.getParameter(PREV_BASE_OFFSET_PARAM);
-            if ("0".equals(param)) {
-                url.removeParameter(PREV_BASE_OFFSET_PARAM);
-            }
-        }
     }
 
 }

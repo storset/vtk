@@ -66,63 +66,62 @@
   
 </#macro>
 
-<#macro displayArticles collectionListing displayMoreURLs=false>
+<#macro displayArticles collectionListings displayMoreURLs=false>
 
-  <#local resources=collectionListing.files />
-  <#if resources?size &gt; 0>
-    <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
-    <#if collectionListing.title?exists && collectionListing.offset == 0>
-      <h2>${collectionListing.title?html}</h2>
-    </#if>
+  <#if collectionListings?size &gt; 0>
+    <div id="articleListing.articles" class="vrtx-resources articleListing.articles">
+    <#list collectionListings as articles>
+      <#local resources=articles.files />
+      <#assign i = 0 />
+      <#if resources?size &gt; 0>
+        <#local locale = springMacroRequestContext.getLocale() />
+        <#list resources as r>
+        
+          <#local title = vrtx.propValue(r, 'title') />
+          <#local introImg  = vrtx.prop(r, 'picture')  />
+          <#local publishedDate  = vrtx.prop(r, 'published-date')  />
+          <#local intro  = vrtx.prop(r, 'introduction')  />
+          <#local caption = vrtx.propValue(r, 'caption')  />
+          
+          <#-- Flattened caption for alt-tag in image -->
+          <#local captionFlattened>
+            <@vrtx.flattenHtml value=caption escape=true />
+          </#local>
+          
+          <div id="${articles.name}-article_${i}" class="vrtx-resource">
+            <a class="vrtx-title" href="${articles.urls[r.URI]?html}">
+            <#if introImg?has_content && articles.displayPropDefs?seq_contains(introImg.definition)>
+              <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
+              <#if caption != ''>
+                <img src="${src?html}" alt="${captionFlattened}" />
+              <#else>
+                <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+              </#if>
+            </#if>
+            ${title?html}</a>
+            
+            <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
+              <div class="published-date">
+                <@vrtx.msg code="viewCollectionListing.publishedDate" args=[publishedDate.getFormattedValue('long', locale)] />
+              </div>
+            </#if>
 
-    <#local locale = springMacroRequestContext.getLocale() />
-    <#list resources as r>
-      <#local title = vrtx.propValue(r, 'title') />
-      <#local introImg  = vrtx.prop(r, 'picture')  />
-      <#local publishedDate  = vrtx.prop(r, 'published-date')  />
-      <#local intro  = vrtx.prop(r, 'introduction')  />
-      <#local caption = vrtx.propValue(r, 'caption')  />
-      
-      <#-- Flattened caption for alt-tag in image -->
-      <#local captionFlattened>
-        <@vrtx.flattenHtml value=caption escape=true />
-      </#local>
+            <#if intro?has_content && articles.displayPropDefs?seq_contains(intro.definition)>
+              <div class="description introduction">${intro.value}</div>
+            </#if>
 
-      <div class="vrtx-resource">
-        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">
-        <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
-
-	  <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-          <#if caption != ''>
-            <img src="${src?html}" alt="${captionFlattened}" />
-          <#else>
-            <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-          </#if> 
-        </#if>
-        ${title?html}</a>
-
-        <#if publishedDate?has_content && collectionListing.displayPropDefs?seq_contains(publishedDate.definition)> 
-        <div class="published-date">
-          <@vrtx.msg code="viewCollectionListing.publishedDate"
-                     args=[publishedDate.getFormattedValue('long', locale)] />
-        </div>
-
-	</#if>
-
-        <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>
-        <div class="description introduction">${intro.value}</div>
-        </#if>
-
-        <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
-
-        <#if displayMoreURLs && hasBody>
-          <a href="${collectionListing.urls[r.URI]?html}" class="more">
-            <@vrtx.msg code="viewCollectionListing.readMore" />
-          </a>
-        </#if>
-      </div>
+            <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
+            <#if displayMoreURLs && hasBody>
+              <a href="${articles.urls[r.URI]?html}" class="more">
+                <@vrtx.msg code="viewCollectionListing.readMore" />
+              </a>
+            </#if>
+          </div>
+          <#assign i = i + 1 />
+        </#list>
+        
+      </#if>
     </#list>
-   </div>
   </#if>
 
 </#macro>

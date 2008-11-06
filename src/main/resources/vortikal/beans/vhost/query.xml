@@ -37,6 +37,10 @@
               parent="requestLocalRepositoryAware" />
           </property>
         </bean>
+        
+        <!-- TODO: Wrap FeaturedArticlesExpressionEvaluator, like CurrentFolderExpressionEvaluator??? -->
+        <bean class="org.vortikal.repository.search.preprocessor.FeaturedArticlesExpressionEvaluator"
+              parent="requestLocalRepositoryAware" />
 
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">

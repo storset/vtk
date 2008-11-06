@@ -49,19 +49,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
     protected void runSearch(HttpServletRequest request, Resource collection,
     		Map<String, Object> model) throws Exception {
 
-        int page = 0;
-        if (request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-                if (page < 1) {
-                    page = 1;
-                }
-            } catch (Throwable t) { }
-        }
-
-        if (page == 0) {
-            page = 1;
-        }
+        int page = getPage(request, UPCOMING_PAGE_PARAM);
 
         int pageLimit = getPageLimit(collection);
         int offset = (page - 1) * pageLimit;
@@ -104,14 +92,14 @@ public class CollectionListingController extends AbstractCollectionListingContro
             Listing last = results.get(results.size() - 1);
             if (last.hasMoreResults()) {
                 nextURL = URL.create(request);
-                nextURL.setParameter("page", String.valueOf(page + 1));
+                nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page + 1));
             }
             if (page > 1) {
                 prevURL = URL.create(request);
                 if (page == 1) {
-                    prevURL.removeParameter("page");
+                    prevURL.removeParameter(UPCOMING_PAGE_PARAM);
                 } else {
-                    prevURL.setParameter("page", String.valueOf(page - 1));
+                    prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page - 1));
                 }
             }
         }

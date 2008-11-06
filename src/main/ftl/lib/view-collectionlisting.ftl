@@ -69,10 +69,19 @@
 <#macro displayArticles collectionListings displayMoreURLs=false>
 
   <#if collectionListings?size &gt; 0>
-    <div id="articleListing.articles" class="vrtx-resources articleListing.articles">
+    <#assign i = 1 />
+    
+    <#--
+      First of all, there is more than one searchcomponent, hence the list.
+      Second, the searchcomponents aren't necessarily named "articleListing.searchComponent",
+        but we wanna show the contents of them all in one common div.
+      Thirdly, we don't know if there's any styling "out there" that uses this particular
+        id. So we keep it...
+    -->
+    
+    <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent">
     <#list collectionListings as articles>
       <#local resources=articles.files />
-      <#assign i = 0 />
       <#if resources?size &gt; 0>
         <#local locale = springMacroRequestContext.getLocale() />
         <#list resources as r>
@@ -88,7 +97,12 @@
             <@vrtx.flattenHtml value=caption escape=true />
           </#local>
           
-          <div id="${articles.name}-article_${i}" class="vrtx-resource">
+          <#local articleType = "vrtx-default-article" />
+          <#if articles.name == "articleListing.featuredArticles">
+            <#local articleType = "vrtx-featured-article" />
+          </#if>
+          
+          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}">
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">
             <#if introImg?has_content && articles.displayPropDefs?seq_contains(introImg.definition)>
               <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />

@@ -66,10 +66,15 @@
   
 </#macro>
 
-<#macro displayArticles collectionListings displayMoreURLs=false>
+<#macro displayArticles page collectionListings displayMoreURLs=false>
 
   <#if collectionListings?size &gt; 0>
     <#assign i = 1 />
+    
+    <#local frontpageClass = "" />
+    <#if page = 1>
+      <#local frontpageClass = "vrtx-resources-frontpage" />
+    </#if>
     
     <#--
       First of all, there is more than one searchcomponent, hence the list.
@@ -79,7 +84,7 @@
         id. So we keep it...
     -->
     
-    <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent">
+    <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
     <#list collectionListings as articles>
       <#local resources=articles.files />
       <#if resources?size &gt; 0>
@@ -136,8 +141,7 @@
         
       </#if>
     </#list>
-
-   </div>
+    </div>
 
   </#if>
 

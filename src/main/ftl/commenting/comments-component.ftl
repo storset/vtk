@@ -89,18 +89,18 @@
       </div>
       <div class="comment-info">
         <#if comment.author.URL?exists>
-          <a href="${comment.author.URL?html}">${comment.author.description?html}</a> -
+         <span class="comment-author"><a href="${comment.author.URL?html}">${comment.author.description?html}</a> -</span>
         <#else>
-          ${comment.author.description?html} -
+         <span class="comment-author">${comment.author.description?html} -</span>
         </#if>
-        <@vrtx.date value=comment.time format='long' />
+         <span class="comment-date"><@vrtx.date value=comment.time format='long' /></span>
         <#if deleteCommentURLs[comment.ID?html]?exists>
           <#assign message><@vrtx.msg code="commenting.delete" default="delete" /></#assign>
           <#assign confirmation>
             <@vrtx.msg code="commenting.delete.confirmation" 
                        default="Are you sure you want to delete this comment?" />
           </#assign>
-          (&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID]?html}">${message}</a>&nbsp;)
+          <span class="comment-delete">(&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID]?html}">${message}</a>&nbsp;)</span>
         </#if>
       </div>
     </div>
@@ -188,7 +188,7 @@
         <input type="submit" id="submit-comment-button" name="save"
           value="<@vrtx.msg code='commenting.form.submit'
           default='Submit' />" />
-        (<@vrtx.rawMsg code="commenting.post.comment-as" default="as ${principal.description}" args=[principalStr] />)
+          (<@vrtx.rawMsg code="commenting.post.comment-as" default="as ${principal.description}" args=[principalStr] />)
         </div> 
       </form>
 

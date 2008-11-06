@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search.preprocessor;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Namespace;
@@ -86,7 +87,7 @@ public class FeaturedArticlesExpressionEvaluator implements ExpressionEvaluator 
                 Value[] featuredArticleValues = featuredArticlesProp.getValues();
                 StringBuilder featuredArticleList = new StringBuilder();
                 for (Value featuredArticle: featuredArticleValues) {
-                	if (!featuredArticleList.toString().isEmpty()) {
+                	if (StringUtils.isNotBlank(featuredArticleList.toString())) {
                 		featuredArticleList.append(",");
                 	}
 					featuredArticleList.append(featuredArticle.getStringValue());

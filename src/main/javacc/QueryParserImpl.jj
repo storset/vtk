@@ -274,16 +274,18 @@ Query UriPrefixQuery() :
 
 Query UriTermQuery() : 
 {
-    Token t, eq = null;
+    Token t, eq = null, ne = null, in = null;
     UriOperator o;
 }
 {
-    <URI> (eq=<EQ> | <NE>) t=<VALUE>
+    <URI> (eq=<EQ> | ne=<NE> | in=<IN>) t=<VALUE>
         {  
             if (eq != null) 
                 o = UriOperator.EQ;
-            else
+            else if (ne != null) 
                 o = UriOperator.NE;
+            else 
+                o = UriOperator.IN;
                 
             String value = unescape(t.image);
             return new UriTermQuery(value, o);
@@ -300,7 +302,6 @@ Query TypeQuery() :
 {
     (<TYPE> (eq=<EQ> | ne=<NE> | in=<IN> | ni=<NI>) v=<VALUE>)
         { 
-            TermOperator operator = null;
             if (eq != null)
                 o = TermOperator.EQ;
             else if (ne != null)

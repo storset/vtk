@@ -27,15 +27,12 @@
 <#assign resource = collection />
 
 <#assign title = vrtx.propValue(resource, "title", "flattened") />
-
-
-<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}">
+      <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
   <#list alternativeRepresentations as alt>

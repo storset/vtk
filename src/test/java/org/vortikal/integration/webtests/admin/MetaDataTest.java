@@ -1,6 +1,5 @@
 package org.vortikal.integration.webtests.admin;
 
-import net.sourceforge.jwebunit.exception.TestingEngineResponseException;
 import net.sourceforge.jwebunit.html.Cell;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
@@ -11,31 +10,31 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 	
 	// About Table metadata position information { id, row, cell }
 	private static final String LASTMODIFIED[] = { "vrtx-resourceInfoMain", "0", "1" };
-	private static final String CREATED[] = { "resourceInfoMain", "1", "1" };
-	private static final String OWNER[] = { "resourceInfoMain", "2", "1" };
-	private static final String RESOURCETYPE[] = { "resourceInfoMain", "3", "1" };
-	private static final String WEB_ADDRESS[] = { "resourceInfoMain", "4", "1" };
-	private static final String WEBDAV_ADDRESS[] = { "resourceInfoMain", "5", "1" };
+	private static final String CREATED[] = { "vrtx-resourceInfoMain", "1", "1" };
+	private static final String OWNER[] = { "vrtx-resourceInfoMain", "2", "1" };
+	private static final String RESOURCETYPE[] = { "vrtx-resourceInfoMain", "3", "1" };
+	private static final String WEB_ADDRESS[] = { "vrtx-resourceInfoMain", "4", "1" };
+	private static final String WEBDAV_ADDRESS[] = { "vrtx-resourceInfoMain", "5", "1" };
 	private static final String LANGUAGE[] = { "vrtx-resourceInfoMain", "6", "1" };
 	// File
-	private static final String SIZE[] = { "resourceInfoMain", "7", "1" };
+	private static final String SIZE[] = { "vrtx-resourceInfoMain", "7", "1" };
 	
-	private static final String TITLE[] = { "resourceInfoContent", "0", "1" };
-	private static final String KEYWORDS[] = { "resourceInfoContent", "1", "1" };
-	private static final String DESCRIPTION[] = { "resourceInfoContent", "2", "1" };
-	private static final String VERIFIED_DATE[] = { "resourceInfoContent", "3", "1" };
-	private static final String AUTHOR[] = { "resourceInfoContent", "4", "1" };
-	private static final String AUTHOR_EMAIL[] = { "resourceInfoContent", "5", "1" };
-	private static final String AUTHOR_URL[] = { "resourceInfoContent", "6", "1" };
-	private static final String SCIENTIFIC_DISCIPLINES[] = { "resourceInfoContent", "7", "1" };
+	private static final String TITLE[] = { "vrtx-resourceInfoContent", "0", "1" };
+	private static final String KEYWORDS[] = { "vrtx-resourceInfoContent", "1", "1" };
+	private static final String DESCRIPTION[] = { "vrtx-resourceInfoContent", "2", "1" };
+	private static final String VERIFIED_DATE[] = { "vrtx-resourceInfoContent", "3", "1" };
+	private static final String AUTHOR[] = { "vrtx-resourceInfoContent", "4", "1" };
+	private static final String AUTHOR_EMAIL[] = { "vrtx-resourceInfoContent", "5", "1" };
+	private static final String AUTHOR_URL[] = { "vrtx-resourceInfoContent", "6", "1" };
+	private static final String SCIENTIFIC_DISCIPLINES[] = { "vrtx-resourceInfoContent", "7", "1" };
 	// Folder
-	private static final String HIDE_FROM_NAVIGATION[] = { "resourceInfoTechnical", "0", "1" };
-	private static final String NAVIGATIONAL_IMPORTANCE[] = { "resourceInfoTechnical", "1", "1" };
-	private static final String FOLDER_TYPE[] = { "resourceInfoTechnical", "2", "1" };
+	private static final String HIDE_FROM_NAVIGATION[] = { "vrtx-resourceInfoTechnical", "0", "1" };
+	private static final String NAVIGATIONAL_IMPORTANCE[] = { "vrtx-resourceInfoTechnical", "1", "1" };
+	private static final String FOLDER_TYPE[] = { "vrtx-resourceInfoTechnical", "2", "1" };
 	// File
-	private static final String CONTENT_TYPE[] = { "resourceInfoTechnical", "0", "1" };
-	private static final String CHARACTER_ENCODING[] = { "resourceInfoTechnical", "1", "1" };
-	private static final String EDIT_AS_PLAINTEXT[] = { "resourceInfoTechnical", "2", "1" };
+	private static final String CONTENT_TYPE[] = { "vrtx-resourceInfoTechnical", "0", "1" };
+	private static final String CHARACTER_ENCODING[] = { "vrtx-resourceInfoTechnical", "1", "1" };
+	private static final String EDIT_AS_PLAINTEXT[] = { "vrtx-resourceInfoTechnical", "2", "1" };
 	
 	// Namespaces in links
 	private String contentNameSpace = "&namespace=http://www.uio.no/content";
@@ -99,7 +98,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		gotoPage(returnUrl);
 	}
-
+	
 	public void testSetLanguage() {
 		
 		String languageFolder = "testlanguage";
@@ -120,7 +119,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 			assertTextPresent(languagesToTest[i][1]);
 			
 		}
-	
+		
 		gotoAdminOfSubFolder(languageFolder);
 		
 		deleteResource(null);
@@ -162,159 +161,160 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 			deleteResource(null);
 		}
 	}
-//	
-//	public void testEditPropertiesOnFolder() {
-//		
-//		String testfolder = "testfolder";
-//		String testString = "12.12.2008 12:12:12";
-//		
-//		// Special cases
-//		String exptectedDateString = "December 12, 2008 12:12:12 PM CET ( edit )";
-//		// TODO: Use browse application for scientific disciplines
-//		String scientificDiscipline = "011";
-//		String exptectedScientificDiscipline = "General linguistics and phonetics ( edit )";
-//		
-//		// Need to treat textfields, optionelements and radiobuttons separate
-//		String propertiesToTestTextFields[] = { "userTitle" };
-//		String propertiesToTestTextFieldsContentNameSpace[] = { "keywords", "description", "verifiedDate",
-//				"authorName", "authorEmail", "authorURL" };
-//		String propertiesToTestTextFieldsScientificNameSpace[] = { "disciplines" };
-//		String propertiesToTestOptionElement[] = { "importance", "collection-type" };
-//		String propertiesToTestRadioButtons[] = { "hidden" };
-//		
-//		createFolderAndGoto("testfolder");
-//		
-//		// Information describing the content
-//		
-//		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestTextFields[0], "");
-//		setPropertyTextField("propertyForm", "value", testString);
-//		String value = getTitleAbout(true);
-//		assertEquals("Set to " + testString + " ( edit )", value);
-//		
-//		for (int i = 0; i < propertiesToTestTextFieldsContentNameSpace.length; i++) {
-//			
-//			String propertyToSetAndGet = propertiesToTestTextFieldsContentNameSpace[i];
-//			gotoAdminAboutEditLinkFolder(testfolder, propertyToSetAndGet, contentNameSpace);
-//			setPropertyTextField("propertyForm", "value", testString);
-//			
-//			if (propertyToSetAndGet.equals("keywords")) {
-//				value = getKeywordsAbout(false);
-//				assertEquals(testString + " ( edit )", value);
-//			} else if (propertyToSetAndGet.equals("description")) {
-//				value = getDescriptionAbout(false);
-//				assertEquals(testString + " ( edit )", value);
-//			} else if (propertyToSetAndGet.equals("verifiedDate")) {
-//				value = getVerifiedDateAbout(false);
-//				assertEquals(exptectedDateString, value);
-//			} else if (propertyToSetAndGet.equals("authorName")) {
-//				value = getAuthorAbout(false);
-//				assertEquals(testString + " ( edit )", value);
-//			} else if (propertyToSetAndGet.equals("authorEmail")) {
-//				value = getAuthorEmailAbout(false);
-//				assertEquals(testString + " ( edit )", value);
-//			} else if (propertyToSetAndGet.equals("authorURL")) {
-//				value = getAuthorURLAbout(false);
-//				assertEquals(testString + " ( edit )", value);
-//			} else {
-//				
-//			}
-//		}
-//		
-//		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestTextFieldsScientificNameSpace[0], scientificNameSpace);
-//		setPropertyTextField("propertyForm", "value", scientificDiscipline);
-//		value = getScientificDisciplinesAbout(true);
-//		assertEquals(exptectedScientificDiscipline, value);
-//		
-//		// Technical Details
-//		
-//		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestRadioButtons[0], navigationNameSpace);
-//		setRadioOption("propertyForm", "true");
-//		value = getHideFromNavigationAbout(false);
-//		assertEquals("Yes" + " ( edit )", value);
-//		
-//		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestOptionElement[0], navigationNameSpace);
-//		setPropertyOption("propertyForm", "value", "15");
-//		value = getNavigationImportanceAbout(false);
-//		assertEquals("15" + " ( edit )", value);
-//		
-//		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestOptionElement[1], "");
-//		setPropertyOption("propertyForm", "value", "Article listing");
-//		value = getFolderTypeAbout(false);
-//		assertEquals("Article listing" + " ( edit )", value);
-//		
-//		deleteCurrentResource();
-//	}
-//	
-//	public void testContentTypeChange() {
-//		
-//		checkAndGotoLink("xmlfile.xml");
-//		gotoAboutTab();
-//		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "contentType", "");
-//		
-//		assertLinkPresent("editService");
-//		
-//		setPropertyTextField("propertyForm", "value", "text/plain");
-//		assertLinkNotPresent("editService");
-//		assertLinkPresent("plaintextEditService");
-//		
-//		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "contentType", "");
-//		
-//		setPropertyTextField("propertyForm", "value", "text/xml");
-//		assertLinkNotPresent("plaintextEditService");
-//		assertLinkPresent("editService");
-//	}
-//	
-//	public void testEditAsTextOnXMLFile() {
-//		
-//		checkAndGotoLink("xmlfile.xml");
-//		
-//		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "plaintext-edit", "");
-//		setRadioOption("propertyForm", "true");
-//		
-//		// Checks if we can edit the XML-file as text
-//		assertLinkPresent("plaintextXMLEditService");
-//		
-//		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "plaintext-edit", "");
-//		setRadioOption("propertyForm", "unset");
-//		
-//		assertLinkNotPresent("plaintextXMLEditService");
-//		
-//		gotoPage(returnUrl);
-//		
-//	}
-//	
-//	// TODO: Check both breadcrumb and subfolder-menu on title-change and hiding folder.
-//	public void testEditTitleAndHiddenOnFolder() {
-//		
-//		checkAndGotoLink("subfolder-title");
-//		gotoViewNoIframe("subfolder-title", "subfolder-menu.html");
-//		assertTextPresent("subfolder-title");
-//		
-//		// Change title
-//		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
-//		setPropertyTextField("propertyForm", "value", "subfolder-title-change");
-//		
-//		// Checks breadcrumb - standing folder
-//		gotoViewNoIframe("subfolder-title", "subfolder-menu.html");
-//		assertTextPresent("subfolder-title-change");
-//		
-//		// Checks subfolder-menu - from folder above
-//		// gotoViewNoIframe("subfolder-menu.html");
-//		// assertTextPresent("subfolder-title-change");
-//		
-//		gotoAdminAboutEditLinkFolder("subfolder-title", "hidden", navigationNameSpace);
-//		setRadioOption("propertyForm", "true");
-//		
-//		// Test if the folder is hidden in subfolder-meny
-//		gotoViewNoIframe("subfolder-menu.html");
-//		assertTextNotPresent("subfolder-title-change");
-//		
-//		// Revert changes
-//		gotoAdminAboutEditLinkFolder("subfolder-title", "hidden", navigationNameSpace);
-//		setRadioOption("propertyForm", "unset");
-//		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
-//		setPropertyTextField("propertyForm", "value", "subfolder-title");
-//	}
+	
+	public void testEditPropertiesOnFolder() {
+		
+		String testfolder = "testfolder";
+		String testString = "12.12.2008 12:12:12";
+		
+		// Special cases
+		String exptectedDateString = "December 12, 2008 12:12:12 PM CET ( edit )";
+		// TODO: Use browse application for scientific disciplines
+		String scientificDiscipline = "011";
+		String exptectedScientificDiscipline = "General linguistics and phonetics ( edit )";
+		
+		// Need to treat textfields, optionelements and radiobuttons separate
+		String propertiesToTestTextFields[] = { "userTitle" };
+		String propertiesToTestTextFieldsContentNameSpace[] = { "keywords", "description", "verifiedDate",
+				"authorName", "authorEmail", "authorURL" };
+		String propertiesToTestTextFieldsScientificNameSpace[] = { "disciplines" };
+		String propertiesToTestOptionElement[] = { "importance", "collection-type" };
+		String propertiesToTestRadioButtons[] = { "hidden" };
+		
+		createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, testfolder);
+		clickLinkWithText(testfolder);
+		
+		// Information describing the content
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestTextFields[0], "");
+		setPropertyTextField("propertyForm", "value", testString);
+		String value = getTitleAbout(true);
+		assertEquals("Set to " + testString + " ( edit )", value);
+		
+		for (int i = 0; i < propertiesToTestTextFieldsContentNameSpace.length; i++) {
+			
+			String propertyToSetAndGet = propertiesToTestTextFieldsContentNameSpace[i];
+			gotoAdminAboutEditLinkFolder(testfolder, propertyToSetAndGet, contentNameSpace);
+			setPropertyTextField("propertyForm", "value", testString);
+			
+			if (propertyToSetAndGet.equals("keywords")) {
+				value = getKeywordsAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("description")) {
+				value = getDescriptionAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("verifiedDate")) {
+				value = getVerifiedDateAbout(false);
+				assertEquals(exptectedDateString, value);
+			} else if (propertyToSetAndGet.equals("authorName")) {
+				value = getAuthorAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("authorEmail")) {
+				value = getAuthorEmailAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else if (propertyToSetAndGet.equals("authorURL")) {
+				value = getAuthorURLAbout(false);
+				assertEquals(testString + " ( edit )", value);
+			} else {
+				
+			}
+		}
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestTextFieldsScientificNameSpace[0], scientificNameSpace);
+		setPropertyTextField("propertyForm", "value", scientificDiscipline);
+		value = getScientificDisciplinesAbout(true);
+		assertEquals(exptectedScientificDiscipline, value);
+		
+		// Technical Details
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestRadioButtons[0], navigationNameSpace);
+		setRadioOption("propertyForm", "true");
+		value = getHideFromNavigationAbout(false);
+		assertEquals("Yes" + " ( edit )", value);
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestOptionElement[0], navigationNameSpace);
+		setPropertyOption("propertyForm", "value", "15");
+		value = getNavigationImportanceAbout(false);
+		assertEquals("15" + " ( edit )", value);
+		
+		gotoAdminAboutEditLinkFolder(testfolder, propertiesToTestOptionElement[1], "");
+		setPropertyOption("propertyForm", "value", "Article listing");
+		value = getFolderTypeAbout(false);
+		assertEquals("Article listing" + " ( edit )", value);
+		
+		deleteResource(null);
+	}
+	
+	public void testContentTypeChange() {
+		
+		clickLinkWithExactText("xmlfile.xml");
+		gotoAboutTab();
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "contentType", "");
+		
+		assertLinkPresent("editService");
+		
+		setPropertyTextField("propertyForm", "value", "text/plain");
+		assertLinkNotPresent("editService");
+		assertLinkPresent("plaintextEditService");
+		
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "contentType", "");
+		
+		setPropertyTextField("propertyForm", "value", "text/xml");
+		assertLinkNotPresent("plaintextEditService");
+		assertLinkPresent("editService");
+	}
+	
+	public void testEditAsTextOnXMLFile() {
+		
+		clickLinkWithExactText("xmlfile.xml");
+		
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "plaintext-edit", "");
+		setRadioOption("propertyForm", "true");
+		
+		// Checks if we can edit the XML-file as text
+		assertLinkPresent("plaintextXMLEditService");
+		
+		gotoAdminAboutEditLinkFile("", "xmlfile.xml", "plaintext-edit", "");
+		setRadioOption("propertyForm", "unset");
+		
+		assertLinkNotPresent("plaintextXMLEditService");
+		
+		gotoPage(returnUrl);
+		
+	}
+	
+	// TODO: Check both breadcrumb and subfolder-menu on title-change and hiding folder.
+	public void testEditTitleAndHiddenOnFolder() {
+		
+		clickLinkWithExactText("subfolder-title");
+		gotoViewNoIframe("subfolder-title", "subfolder-menu.html");
+		assertTextPresent("subfolder-title");
+		
+		// Change title
+		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
+		setPropertyTextField("propertyForm", "value", "subfolder-title-change");
+		
+		// Checks breadcrumb - standing folder
+		gotoViewNoIframe("subfolder-title", "subfolder-menu.html");
+		assertTextPresent("subfolder-title-change");
+		
+		// Checks subfolder-menu - from folder above
+		// gotoViewNoIframe("subfolder-menu.html");
+		// assertTextPresent("subfolder-title-change");
+		
+		gotoAdminAboutEditLinkFolder("subfolder-title", "hidden", navigationNameSpace);
+		setRadioOption("propertyForm", "true");
+		
+		// Test if the folder is hidden in subfolder-meny
+		gotoViewNoIframe("subfolder-menu.html");
+		assertTextNotPresent("subfolder-title-change");
+		
+		// Revert changes
+		gotoAdminAboutEditLinkFolder("subfolder-title", "hidden", navigationNameSpace);
+		setRadioOption("propertyForm", "unset");
+		gotoAdminAboutEditLinkFolder("subfolder-title", "userTitle", "");
+		setPropertyTextField("propertyForm", "value", "subfolder-title");
+	}
 	
 	// Navigation / functions in Admin
 	// TODO: Refactor in admin navigation class(?)

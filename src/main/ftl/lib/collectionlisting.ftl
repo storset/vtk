@@ -114,7 +114,9 @@
 
           <#case "name">
             <#if collectionListing.browsingLinks[child_index]?exists>
-              <a href="${collectionListing.browsingLinks[child_index]?html}">
+              <#local resourceTypeName = child.resourceTypeDefinition.getLocalizedName(
+                                                 springMacroRequestContext.getLocale()) />
+              <a href="${collectionListing.browsingLinks[child_index]?html}" title="${resourceTypeName}">
                 <span class="authorizedListedResource">${child.name}</span>
               </a>
               <#if withForm>

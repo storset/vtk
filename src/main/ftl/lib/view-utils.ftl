@@ -53,7 +53,11 @@
 	         <img src="${introductionImage}" alt="${captionFlattened}" />
             <div class="vrtx-imagetext">
                  <div class="vrtx-imagedescription">${caption}</div>
-                 <span class="vrtx-photo"><span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}</span>
+                 <span class="vrtx-photo">
+                    <#if authorName != "">
+                      <span class="vrtx-photo-prefix"><@vrtx.msg code="article.photoprefix" />: </span>${authorName}
+                    </#if>
+                 </span>
            </div> 
        </div>
       <#else>

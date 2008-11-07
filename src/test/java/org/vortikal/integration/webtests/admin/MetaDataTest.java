@@ -106,7 +106,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		String languagesToTest[][] = { { "Norwegian (bokmål)", "RSS-strøm fra denne siden" },
 				{ "Norwegian (nynorsk)", "RSS-strøm frå denne sida" }, { "English", "Feed from this page" } };
 		
-		createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languageFolder);
+		// createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languageFolder);
 		
 		for (int i = 0; i < languagesToTest.length; i++) {
 			
@@ -122,7 +122,7 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		gotoAdminOfSubFolder(languageFolder);
 		
-		deleteResource(null);
+		// deleteResource(null);
 	}
 	
 	public void testInheritLanguage() {
@@ -139,11 +139,11 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 		
 		for (int i = 0; i < languagesToTestExtended.length; i++) {
 			
-			createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languagesToTestExtended[i][0]);
+			// createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languagesToTestExtended[i][0]);
 			clickLinkWithExactText(languagesToTestExtended[i][0]);
-			gotoAdminAboutEditLinkFolder(languagesToTestExtended[i][0], "contentLocale", "");
-			setPropertyOption("propertyForm", "value", languagesToTestExtended[i][2]);
-			gotoContentsTab();
+			// gotoAdminAboutEditLinkFolder(languagesToTestExtended[i][0], "contentLocale", "");
+			// setPropertyOption("propertyForm", "value", languagesToTestExtended[i][2]);
+			// gotoContentsTab();
 			
 			// Check if subfolder has inherited language from parent folder
 			createResource(CREATE_COLLECTION_SERVICE, CREATE_COLLECTION_FORM, languagesToTestExtended[i][1]);
@@ -158,7 +158,8 @@ public class MetaDataTest extends BaseAuthenticatedWebTest {
 			gotoAdminOfSubFolder(languagesToTestExtended[i][0] + "/" + languagesToTestExtended[i][1]);
 			
 			deleteResource(null);
-			deleteResource(null);
+			gotoPage(returnUrl);
+			// deleteResource(null);
 		}
 	}
 	

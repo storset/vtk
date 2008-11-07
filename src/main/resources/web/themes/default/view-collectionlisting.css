@@ -135,6 +135,10 @@ div.vrtx-resource a.more {
 	margin: .5em 0 0 0;
 	display: block;
 	white-space: nowrap;
+	width: 100%;
+}
+
+* html div.vrtx-resource a.more {
 	width: 1%;
 }
 

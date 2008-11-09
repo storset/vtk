@@ -55,7 +55,6 @@ public class ArticleListingAsFeedController extends AtomFeedController {
         Feed feed = populateFeed(collection, collection.getTitle());
         
         // TODO fetch featured articles, remove duplicates and handle number of articles to show
-        Listing featuredArticles = featuredArticlesSearch.execute(request, collection, 1, 25, 0);
         
         Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
 

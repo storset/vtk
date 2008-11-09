@@ -693,6 +693,10 @@ table.directoryListing th.locked {
 	text-align: center;
 }
 
+table.directoryListing tr:hover {
+    background-color: #cccccc;
+}
+
 table.directoryListing td.activeLock span.lockOwner {
 	
 }

@@ -28,26 +28,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.preprocessor;
+package org.vortikal.web.controller.feed;
 
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.abdera.model.Feed;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
-public class FeaturedArticlesExpressionEvaluator extends MultiValuePropertyInExpressionEvaluator {
+public class ArticleListingAsFeedController extends AtomFeedController {
 	
-    private final String variableName = "featuredArticles";
-    private final Namespace namespace_al = Namespace.getNamespace("http://www.uio.no/resource-types/article-listing");
+	private SearchComponent featuredArticlesSearch;
 
 	@Override
-	protected Property getMultiValueProperty(Resource resource) {
-		return resource.getProperty(namespace_al, PropertyType.FEATUREDARTICLES_PROP_NAME);
+	protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
+    	
+		Path uri = RequestContext.getRequestContext().getResourceURI();
+        Resource collection = this.repository.retrieve(token, uri, true);
+        
+        Feed feed = populateFeed(collection, collection.getTitle());
+        
+        // TODO fetch featured articles, remove duplicates and handle number of articles to show
+        Listing featuredArticles = featuredArticlesSearch.execute(request, collection, 1, 25, 0);
+        
+        Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
+
+        for (PropertySet result : searchResult.getFiles()) {
+            populateEntry(token, result, feed.addEntry());
+        }
+
+    	return feed;
 	}
 
-	@Override
-	protected String getVariableName() {
-		return this.variableName;
+	@Required
+	public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
+		this.featuredArticlesSearch = featuredArticlesSearch;
 	}
 
 }

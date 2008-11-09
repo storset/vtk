@@ -124,6 +124,7 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
 	private Resource getCollection() {
 		ResourceImpl collection = new ResourceImpl();
+		collection.setUri(requestPath);
 		collection.setResourceTypeTree(new ResourceTypeTreeImpl());
 		
 		PropertyTypeDefinitionImpl propDef = getPropDef(new StringValueFormatter(), Type.STRING,

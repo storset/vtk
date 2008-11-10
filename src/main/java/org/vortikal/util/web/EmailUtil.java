@@ -70,4 +70,17 @@ public class EmailUtil {
 		return VALID_EMAIL_RFC.matcher(emailAddress).matches();
 		
 	}
+	
+	public static boolean isValidMultipleEmails(String[] emailAddresses) {
+		
+		for (int i = 0; i < emailAddresses.length; i++) {
+			boolean valid = VALID_EMAIL_RFC.matcher(emailAddresses[i]).matches();
+			if (!valid) {
+				return false;
+			}
+		}
+		
+		return true;
+		
+	}
 }

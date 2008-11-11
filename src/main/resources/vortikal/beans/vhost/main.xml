@@ -38,6 +38,7 @@
   <import resource="browse.xml" />
   <import resource="webdav.xml" />
   <import resource="windows-webdav-explorer.xml" />
+  <import resource="editor.xml" />
   <import resource="plaintextedit.xml" />
   <import resource="copy-move.xml" />
   <import resource="errorhandlers.xml" />

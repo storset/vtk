@@ -91,12 +91,11 @@ public class TipAFriendController implements Controller {
 					JavaMailSenderImpl sender = new JavaMailSenderImpl();
 					
 					sender.setHost("smtp.uio.no"); // SMTP mail pusher
-					sender.setProtocol("smtp");
-					sender.setPort(25);
-					
+					// sender.setProtocol("smtp");
+					// sender.setPort(25);
 					// SSL
-					// sender.setProtocol("smtps");
-					// sender.setPort(465)
+					sender.setProtocol("smtps");
+					sender.setPort(465);
 					
 					sender.setDefaultEncoding("utf-8");
 					

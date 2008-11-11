@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="tipafriendService" class="org.vortikal.web.service.ServiceImpl">
+  <property name="parent" ref="webService" />
+    <property name="order" value="-999" />
+    <property name="handler" ref="tipafriendHandler" />
+    <property name="assertions">
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="tip-a-friend" />
+        </bean>
+    </property>
+    
+  </bean>
+
+  <bean id="tipafriend.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="tipafriend.view"  value-ref="displayArticleView" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="tipafriend.view" parent="displayArticleView">
+  </bean>
+
+  <bean id="tipafriendHandler" class="org.vortikal.web.controller.tipafriend.TipAFriendController">
+    <property name="repository" ref="repository" />
+    <property name="viewName" value="tipafriend.view" />
+    <property name="resourceManager" ref="resourceManager"/>
+  </bean> 
+  <!--  
+  <bean id="tip.redirectToDefaultView" 
+    class="org.vortikal.web.view.RedirectView">
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="tip.redirectToDefaultProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="tip.redirectToDefaultProvider" 
+        class="org.vortikal.web.referencedata.provider.RedirectProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="redirectToService" ref="displayResourceService" />
+    <property name="urlAnchor" value="tip" />
+  </bean>-->
+
+</beans>

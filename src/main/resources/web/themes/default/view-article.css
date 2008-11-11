@@ -73,3 +73,11 @@ a.vrtx-media {
 div.vrtx-bodytext {
 	clear: left;
 }
+
+/* Tip-a-friend - seperate CSS(?) */
+vrtx-tip-a-friend {
+	border: 1px solid #ddd; 
+	margin: 1em 0px; 
+	padding: 1em; 
+	color: #333;
+}

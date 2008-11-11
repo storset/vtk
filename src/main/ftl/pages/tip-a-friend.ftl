@@ -12,7 +12,7 @@
 
 <div class="vrtx-tip-a-friend">
 
-     <form action="?vrtx=tip-a-friend" method="post" style="border: 1px solid rgb(221, 221, 221); margin: 1em 0pt; padding: 1em; color: rgb(51, 51, 51);">
+     <form action="?vrtx=tip-a-friend" method="post">
       <table border="0">
         <tbody>
             <tr>

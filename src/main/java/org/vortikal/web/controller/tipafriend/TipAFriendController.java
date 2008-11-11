@@ -45,6 +45,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -56,6 +57,7 @@ public class TipAFriendController implements Controller {
 	
 	private Repository repository;
 	protected String viewName;
+	private ResourceWrapperManager resourceManager;
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
@@ -70,7 +72,8 @@ public class TipAFriendController implements Controller {
 		}
 		
 		// Checks for userinput
-		if (request.getParameter("emailto") == null || request.getParameter("emailfrom") == null) {
+		if (request.getParameter("emailto") == null || request.getParameter("emailfrom") == null
+				|| request.getParameter("emailto").equals("") || request.getParameter("emailfrom").equals("")) {
 			
 			m.put("tipResponse", "FAILURE-NULL-FORM");
 			
@@ -83,7 +86,7 @@ public class TipAFriendController implements Controller {
 				String[] emailAddresses = { emailTo, emailFrom };
 				
 				// Checks for valid userinput
-				if (EmailUtil.isValidMultipleEmails(emailAddresses)) {
+				if (EmailUtil.isValidMultipleEmails(emailAddresses, false)) {
 					
 					JavaMailSenderImpl sender = new JavaMailSenderImpl();
 					
@@ -101,6 +104,7 @@ public class TipAFriendController implements Controller {
 					
 					sender.send(msg);
 					
+					m.put("emailSentTo", emailTo);
 					m.put("tipResponse", "OK");
 					
 				} else {
@@ -108,11 +112,12 @@ public class TipAFriendController implements Controller {
 					m.put("tipResponse", "FAILURE-INVALID-EMAIL");
 					
 				}
-			} catch (Exception mex) { // Catch mail exceptions and
+			} catch (Exception mex) {
 				m.put("tipResponse", "FAILURE");
 			}
 		}
 		
+		m.put("resource", this.resourceManager.createResourceWrapper());
 		return new ModelAndView(this.viewName, m);
 	}
 	
@@ -172,6 +177,11 @@ public class TipAFriendController implements Controller {
 	@Required
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
+	}
+	
+	@Required
+	public void setResourceManager(ResourceWrapperManager resourceManager) {
+		this.resourceManager = resourceManager;
 	}
 	
 }

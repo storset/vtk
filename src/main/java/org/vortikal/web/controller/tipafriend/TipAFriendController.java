@@ -64,6 +64,9 @@ public class TipAFriendController implements Controller {
 		String token = SecurityContext.getSecurityContext().getToken();
 		Path uri = RequestContext.getRequestContext().getResourceURI();
 		
+		String serverHostname = request.getServerName();
+		int serverPort = request.getServerPort();
+		
 		Resource document = this.repository.retrieve(token, uri, true);
 		Map<String, Object> m = new HashMap<String, Object>();
 		
@@ -99,7 +102,8 @@ public class TipAFriendController implements Controller {
 					
 					sender.setDefaultEncoding("utf-8");
 					
-					MimeMessage msg = createSimpleMailMessage(sender, document, emailTo, emailFrom);
+					MimeMessage msg = createSimpleMailMessage(sender, document, emailTo, emailFrom, serverHostname,
+							serverPort);
 					
 					sender.send(msg);
 					
@@ -121,14 +125,13 @@ public class TipAFriendController implements Controller {
 	}
 	
 	private MimeMessage createSimpleMailMessage(JavaMailSenderImpl sender, Resource document, String emailTo,
-			String emailFrom) throws MessagingException {
+			String emailFrom, String serverHostname, int serverPort) throws MessagingException {
 		
 		// TODO: get hostname from Path object
-		String hostname = "http://localhost:9322";
-		String hostnameShort = StringUtils.capitalize("localhost");
+		String serverHostnameShort = StringUtils.capitalize(serverHostname);
 		
 		String mailBody = generateMailBody(document.getTitle(), document.getURI().toString(), emailTo, emailFrom,
-				hostname, hostnameShort);
+				serverHostname, serverHostnameShort, serverPort);
 		
 		MimeMessage mimeMessage = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
@@ -142,29 +145,33 @@ public class TipAFriendController implements Controller {
 	}
 	
 	// TODO: localization and refactor in ex. tipafriend.TipAFriendMailTemplateProvider.java
-	private String generateMailBody(String title, String articleURI, String mailTo, String mailFrom, String hostname,
-			String hostnameShort) {
+	private String generateMailBody(String title, String articleURI, String mailTo, String mailFrom,
+			String serverHostname, String serverHostnameShort, int serverPort) {
 		
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append("Hei!\n\n");
 		
-		sb.append(hostnameShort + " har en artikkel jeg tror kan være interessant for deg:\n");
+		sb.append(serverHostnameShort + " har en artikkel jeg tror kan være interessant for deg:\n");
 		
 		sb.append(title + "\n\n");
 		
 		sb.append("Les hele artikkelen her: \n");
-		sb.append(hostname + articleURI + " \n\n");
+		if (serverPort != 80) {
+			sb.append("http://" + serverHostname + ":" + serverPort + articleURI + " \n\n");
+		} else {
+			sb.append("http://" + serverHostname + articleURI + " \n\n");
+		}
 		
 		sb.append("Med vennlig hilsen,\n");
 		
 		sb.append(mailFrom + "\n\n\n\n");
 		
-		sb.append("Denne meldingen er sendt på oppfordring fra " + mailFrom + "\n\n");
 		sb.append("--------------------------------------------\n");
+		sb.append("Denne meldingen er sendt på oppfordring fra " + mailFrom + "\n\n");
 		sb.append("Din e-post adresse blir ikke lagret.\n");
 		sb.append("Du vil ikke motta flere meldinger av denne typen,\n");
-		sb.append("med mindre noen tipser deg om andre nyheter på " + hostname + "/");
+		sb.append("med mindre noen tipser deg om andre nyheter på " + serverHostname + "/");
 		
 		return sb.toString();
 	}

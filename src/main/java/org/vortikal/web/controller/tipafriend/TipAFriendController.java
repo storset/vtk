@@ -84,18 +84,21 @@ public class TipAFriendController implements Controller {
 		} else {
 			
 			try {
+				
 				String emailTo = (String) request.getParameter("emailto");
 				String emailFrom = (String) request.getParameter("emailfrom");
 				
-				String[] emailAddresses = { emailTo, emailFrom };
+				String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailFrom);
 				
-				// Checks for valid userinput
-				if (EmailUtil.isValidMultipleEmails(emailAddresses, false)) {
+				// Checks for valid email addresses
+				if (EmailUtil.isValidMultipleEmails(emailMultipleTo, false) && EmailUtil.isValidEmail(emailFrom, false)) {
 					
-					MimeMessage msg = createSimpleMailMessage(javaMailSenderImpl, document, emailTo, emailFrom,
-							serverHostname, serverPort);
+					MimeMessage[] mimeMessages = createMimeMessages(javaMailSenderImpl, document, emailMultipleTo,
+							emailFrom, serverHostname, serverPort);
 					
-					javaMailSenderImpl.send(msg);
+					// TODO: Use Thread. problem is throwing exception from Thread.run()
+					// or check if thread isAlive() because of postback about failure.
+					javaMailSenderImpl.send(mimeMessages);
 					
 					m.put("emailSentTo", emailTo);
 					m.put("tipResponse", "OK");
@@ -105,7 +108,7 @@ public class TipAFriendController implements Controller {
 					m.put("tipResponse", "FAILURE-INVALID-EMAIL");
 					
 				}
-			} catch (Exception mex) {
+			} catch (Exception mtex) {
 				m.put("tipResponse", "FAILURE");
 			}
 		}
@@ -114,28 +117,35 @@ public class TipAFriendController implements Controller {
 		return new ModelAndView(this.viewName, m);
 	}
 	
-	private MimeMessage createSimpleMailMessage(JavaMailSenderImpl sender, Resource document, String emailTo,
+	private MimeMessage[] createMimeMessages(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
 			String emailFrom, String serverHostname, int serverPort) throws MessagingException {
 		
 		String serverHostnameShort = StringUtils.capitalize(serverHostname);
 		
-		String mailBody = generateMailBody(document.getTitle(), document.getURI().toString(), emailTo, emailFrom,
-				serverHostname, serverHostnameShort, serverPort);
+		MimeMessage[] mimeMessages = new MimeMessage[mailMultipleTo.length];
 		
-		MimeMessage mimeMessage = sender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+		for (int i = 0; i < mailMultipleTo.length; i++) {
+			
+			String mailBody = generateMailBody(document.getTitle(), document.getURI().toString(), emailFrom,
+					serverHostname, serverHostnameShort, serverPort);
+			
+			MimeMessage mimeMessage = sender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+			
+			helper.setSubject(document.getTitle());
+			helper.setFrom(emailFrom);
+			helper.setTo(mailMultipleTo[i]);
+			helper.setText(mailBody);
+			
+			mimeMessages[i] = mimeMessage;
+		}
 		
-		helper.setSubject(document.getTitle());
-		helper.setFrom(emailFrom);
-		helper.setTo(emailTo);
-		helper.setText(mailBody);
-		
-		return mimeMessage;
+		return mimeMessages;
 	}
 	
 	// TODO: localization and refactor in ex. tipafriend.TipAFriendMailTemplateProvider.java
-	private String generateMailBody(String title, String articleURI, String mailTo, String mailFrom,
-			String serverHostname, String serverHostnameShort, int serverPort) {
+	private String generateMailBody(String title, String articleURI, String mailFrom, String serverHostname,
+			String serverHostnameShort, int serverPort) {
 		
 		StringBuilder sb = new StringBuilder();
 		

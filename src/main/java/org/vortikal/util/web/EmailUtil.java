@@ -96,4 +96,10 @@ public class EmailUtil {
 		
 	}
 	
+	public static String[] checkForMultipleEmails(String emailTo) {
+		
+		return emailTo.split(",");
+		
+	}
+	
 }

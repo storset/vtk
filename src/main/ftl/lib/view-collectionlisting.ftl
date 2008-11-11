@@ -131,8 +131,14 @@
 
             <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
             <#if displayMoreURLs && hasBody>
+              <#local readMore = "" />
+              <#if r.contentLanguage?has_content>
+                <#local readMore = vrtx.getMsg("viewCollectionListing.readMore." + r.contentLanguage, "Read more...") />
+              <#else>
+                <#local readMore = vrtx.getMsg("viewCollectionListing.readMore") />
+              </#if>
               <a href="${articles.urls[r.URI]?html}" class="more">
-                <@vrtx.msg code="viewCollectionListing.readMore" />
+                ${readMore}
               </a>
             </#if>
           </div>

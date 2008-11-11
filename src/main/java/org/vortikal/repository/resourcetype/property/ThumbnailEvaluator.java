@@ -45,8 +45,10 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
             }
             
             if (!scaleUp && image.getWidth() <= Integer.parseInt(width)) {
-            	log.warn("Will not create a thumbnail: configured NOT to scale up");
-            	return false;
+                if (log.isDebugEnabled()) {
+                    log.debug("Will not create a thumbnail: configured NOT to scale up");
+                }
+                return false;
             }
             
             ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");

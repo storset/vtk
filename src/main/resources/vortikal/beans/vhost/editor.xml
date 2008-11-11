@@ -336,6 +336,7 @@
             <ref bean="collection.pageLimitPropDef" />
             <ref bean="articleListing.featuredArticlesPropDef"/>
             <ref bean="articleListing.recursiveListingPropDef" />
+            <ref bean="articleListing.recursiveListingSubfoldersPropDef"/>
             <ref bean="articleListing.sortingPropDef" />
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />

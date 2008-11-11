@@ -22,6 +22,7 @@
       <list>
         <ref bean="articleListing.featuredArticlesPropDef"/>
         <ref bean="articleListing.recursiveListingPropDef" />
+        <ref bean="articleListing.recursiveListingSubfoldersPropDef"/>
         <ref bean="articleListing.sortingPropDef" />
         <ref bean="articleListing.hidePublishedDatePropDef" />
         <ref bean="articleListing.hideIntroductionPropDef" />
@@ -64,6 +65,23 @@
         <entry key="editingHints">
           <map>
             <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="articleListing.recursiveListingSubfoldersPropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="recursive-listing-subfolders" /> 
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
           </map>
         </entry>
       </map>

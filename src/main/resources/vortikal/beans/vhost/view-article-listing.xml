@@ -125,7 +125,7 @@
     <property name="sortPropDef" ref="articleListing.sortingPropDef" />
 
     <property name="query">
-      <value>uri = {$currentFolder}/* AND type IN article AND published-date &lt;= {$currentTime}</value>
+      <value>(uri = {$currentFolder}/* OR uri IN {$subfolders}*) AND type IN article AND published-date &lt;= {$currentTime}</value>
     </property>
     <property name="queryParser" ref="searchParser" />
 

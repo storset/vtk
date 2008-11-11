@@ -75,25 +75,25 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
                     return token;
                 }
                 
-                Property featuredArticlesProp = getMultiValueProperty(resource);
+                Property multiValueProp = getMultiValueProperty(resource);
                 
-                if (featuredArticlesProp == null) {
+                 if (multiValueProp == null) {
                 	if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Collection " + uri.toString() + " has no featured articles");
+                        this.logger.debug("Collection " + uri.toString() + " has no values for " + getVariableName());
                     }
                 	return token;
                 }
                 
-                Value[] featuredArticleValues = featuredArticlesProp.getValues();
-                StringBuilder featuredArticleList = new StringBuilder();
+                Value[] featuredArticleValues = multiValueProp.getValues();
+                StringBuilder multiValueList = new StringBuilder();
                 for (Value featuredArticle: featuredArticleValues) {
-                	if (StringUtils.isNotBlank(featuredArticleList.toString())) {
-                		featuredArticleList.append(",");
+                	if (StringUtils.isNotBlank(multiValueList.toString())) {
+                		multiValueList.append(",");
                 	}
-					featuredArticleList.append(featuredArticle.getStringValue());
+                	multiValueList.append(featuredArticle.getStringValue());
 				}
  
-                return featuredArticleList.toString();
+                return multiValueList.toString();
             } catch (Throwable t) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Unable to get featured arrticles for collection " + uri.toString(), t);

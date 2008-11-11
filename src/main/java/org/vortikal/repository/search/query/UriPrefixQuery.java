@@ -35,31 +35,33 @@ public class UriPrefixQuery implements UriQuery {
 
     private String uri;
     private boolean inverted = false;
-
+    private TermOperator operator;
+    
     public UriPrefixQuery(String uri) {
         this.uri = uri;
     }
-    
+
     public UriPrefixQuery(String uri, boolean inverted) {
         this.uri = uri;
         this.inverted = inverted;
+    }
+    
+    public UriPrefixQuery(String uri, TermOperator operator, boolean inverted) {
+        this.uri = uri;
+        this.inverted = inverted;
+        this.operator = operator;
     }
 
     public String getUri() {
         return this.uri;
     }
 
-//    public String dump(String prefix) {
-//        StringBuilder buf = new StringBuilder().append(prefix);
-//        buf.append(this.getClass().getName()).append("\n");
-//        
-//        buf.append(prefix).append("Uri = ").append(this.uri).append("\n");
-//
-//        return buf.toString();
-//    }
-
     public boolean isInverted() {
         return inverted;
+    }
+    
+    public TermOperator getOperator() {
+    	return this.operator;
     }
 
     public Object accept(QueryTreeVisitor visitor, Object data) {

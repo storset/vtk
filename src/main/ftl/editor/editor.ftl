@@ -348,18 +348,12 @@
         <#local displayLabel = false />
       </#if>
       
-      <div class="${name} property-item">
+      <div id="vrtx-resource.${name}" class="${name} property-item">
       <#if displayLabel>
         <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
       </#if>
       
-      <#-- Featured articles are only valid for articlelistings -->
-      <#if resource.resourceType = 'article-listing' && name == 'featured-articles'>
-      
-        <#-- TODO setup featured articles -->
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
-
-      <#elseif type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
+      <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' false false />
         
@@ -630,37 +624,16 @@
             </#if>
 
           <#elseif useRadioButtons>
-
-            <#if !propDef.mandatory>
-              <#attempt>
-                <#local nullValue = propDef.valueFormatter.valueToString(nullArg, "localized", springMacroRequestContext.getLocale()) />
-              <#recover>
-                <#local nullValue = 'unspecified' />
-              </#recover>
-              
-              <#if !(resource.getProperty(propDef))?exists>
-                <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
-                <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
-              <#else>
-                <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
-                <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
-              </#if>
+          
+            <#-- Special case for recursive listing... Jesus Christ... -->            
+            <#if name == 'recursive-listing'>
+              <@displayAllowedValuesAsRadioButtons propDef name allowedValues value />
+              <@displayDefaultSelectedValueAsRadioButton propDef name />
+            <#else>
+              <@displayDefaultSelectedValueAsRadioButton propDef name />
+              <@displayAllowedValuesAsRadioButtons propDef name allowedValues value />
             </#if>
-
-            <#list allowedValues as v>
-              <#local localized = v />
-              <#if (propDef.valueFormatter)?exists>
-                <#local localized = propDef.valueFormatter.valueToString(v, "localized", springMacroRequestContext.getLocale()) />
-              </#if>
-
-              <#if v == value>
-                <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="checked" />
-                <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
-              <#else>
-                <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
-                <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
-              </#if>
-            </#list>
+            
           <#else>
             <select name="resource.${name}" id="resource.${name}">
               <#if !propDef.mandatory>
@@ -685,7 +658,7 @@
         <#else>
 
           <#-- AutoComplete only for the tags inputfield -->
-          <#if "${name}" = 'keywords'>
+          <#if name = 'keywords'>
             <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" fieldName="${name}" 
                     description="${description}" value="${value?html}" width="18" schema=["keyword"]/>
           <#else>
@@ -726,4 +699,37 @@
       // -->
     </script>
 
+</#macro>
+
+<#macro displayDefaultSelectedValueAsRadioButton propDef name >
+  <#if !propDef.mandatory>
+    <#attempt>
+      <#local nullValue = propDef.valueFormatter.valueToString(nullArg, "localized", springMacroRequestContext.getLocale()) />
+    <#recover>
+      <#local nullValue = 'unspecified' />
+    </#recover>
+    <#if !(resource.getProperty(propDef))?exists>
+      <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
+      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
+    <#else>
+      <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
+      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
+    </#if>
+  </#if>
+</#macro>
+
+<#macro displayAllowedValuesAsRadioButtons propDef name allowedValues value >
+  <#list allowedValues as v>
+    <#local localized = v />
+    <#if (propDef.valueFormatter)?exists>
+      <#local localized = propDef.valueFormatter.valueToString(v, "localized", springMacroRequestContext.getLocale()) />
+    </#if>
+    <#if v == value>
+      <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="checked" />
+      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
+    <#else>
+      <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
+      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
+    </#if>
+  </#list>
 </#macro>

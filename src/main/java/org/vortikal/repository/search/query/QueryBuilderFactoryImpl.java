@@ -35,6 +35,8 @@ import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,10 +106,19 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         }
        
         else if (query instanceof UriPrefixQuery) {
-            String uri = ((UriPrefixQuery)query).getUri();
-            boolean inverted = ((UriPrefixQuery)query).isInverted();
-            Term idTerm = getPropertySetIdTermFromIndex(uri);
-            builder =  new UriPrefixQueryBuilder(uri, idTerm, inverted);
+        	UriPrefixQuery uriPrefixQuery = (UriPrefixQuery) query;
+            String uri = uriPrefixQuery.getUri();
+            TermOperator operator = uriPrefixQuery.getOperator();
+            List<Term> idTerms = new ArrayList<Term>();
+            if (TermOperator.IN.equals(operator)) {
+            	String[] uris = uri.split(",");
+            	for (String inUri : uris) {
+            		idTerms.add(getPropertySetIdTermFromIndex(inUri));
+            	}
+            } else {
+                idTerms.add(getPropertySetIdTermFromIndex(uri));
+            }
+            builder =  new UriPrefixQueryBuilder(uri, operator, idTerms, uriPrefixQuery.isInverted());
         }
         
         else if (query instanceof UriDepthQuery) {

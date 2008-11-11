@@ -96,6 +96,8 @@ public final class PropertyType {
     public static final String END_DATE_PROP_NAME = "end-date";
     public static final String LOCATION_PROP_NAME = "location";
     public static final String FEATUREDARTICLES_PROP_NAME = "featured-articles";
+    public static final String RECURSIVE_LISTING_PROP_NAME = "recursive-listing";
+    public static final String SUBFOLDERS_PROP_NAME = "recursive-listing-subfolders";
     
     /*
      * Special properties

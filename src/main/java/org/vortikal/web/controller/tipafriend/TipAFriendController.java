@@ -58,6 +58,7 @@ public class TipAFriendController implements Controller {
 	private Repository repository;
 	protected String viewName;
 	private ResourceWrapperManager resourceManager;
+	private JavaMailSenderImpl javaMailSenderImpl;
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
@@ -91,21 +92,10 @@ public class TipAFriendController implements Controller {
 				// Checks for valid userinput
 				if (EmailUtil.isValidMultipleEmails(emailAddresses, false)) {
 					
-					JavaMailSenderImpl sender = new JavaMailSenderImpl();
+					MimeMessage msg = createSimpleMailMessage(javaMailSenderImpl, document, emailTo, emailFrom,
+							serverHostname, serverPort);
 					
-					sender.setHost("smtp.uio.no"); // SMTP mail pusher
-					// sender.setProtocol("smtp");
-					// sender.setPort(25);
-					// SSL
-					sender.setProtocol("smtps");
-					sender.setPort(465);
-					
-					sender.setDefaultEncoding("utf-8");
-					
-					MimeMessage msg = createSimpleMailMessage(sender, document, emailTo, emailFrom, serverHostname,
-							serverPort);
-					
-					sender.send(msg);
+					javaMailSenderImpl.send(msg);
 					
 					m.put("emailSentTo", emailTo);
 					m.put("tipResponse", "OK");
@@ -127,7 +117,6 @@ public class TipAFriendController implements Controller {
 	private MimeMessage createSimpleMailMessage(JavaMailSenderImpl sender, Resource document, String emailTo,
 			String emailFrom, String serverHostname, int serverPort) throws MessagingException {
 		
-		// TODO: get hostname from Path object
 		String serverHostnameShort = StringUtils.capitalize(serverHostname);
 		
 		String mailBody = generateMailBody(document.getTitle(), document.getURI().toString(), emailTo, emailFrom,
@@ -188,6 +177,11 @@ public class TipAFriendController implements Controller {
 	@Required
 	public void setResourceManager(ResourceWrapperManager resourceManager) {
 		this.resourceManager = resourceManager;
+	}
+	
+	@Required
+	public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
+		this.javaMailSenderImpl = javaMailSenderImpl;
 	}
 	
 }

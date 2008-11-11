@@ -27,12 +27,21 @@
   
   <bean id="tipafriend.view" parent="displayArticleView">
   </bean>
+  
+  <bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.uio.no" />
+    <property name="port" value="465" />
+    <property name="protocol" value="smtps" />
+    <property name="defaultEncoding" value="utf-8"/>
+  </bean>
 
   <bean id="tipafriendHandler" class="org.vortikal.web.controller.tipafriend.TipAFriendController">
     <property name="repository" ref="repository" />
     <property name="viewName" value="tipafriend.view" />
     <property name="resourceManager" ref="resourceManager"/>
+    <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
   </bean> 
+
   <!--  
   <bean id="tip.redirectToDefaultView" 
     class="org.vortikal.web.view.RedirectView">

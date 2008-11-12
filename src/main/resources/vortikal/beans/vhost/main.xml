@@ -46,7 +46,7 @@
   <import resource="autocomplete.xml" />
   <import resource="ical.xml" />
   <import resource="tags.xml" />
-  <import resource="tip-a-friend.xml" />
+  <import resource="email-a-friend.xml" />
   
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml"/>

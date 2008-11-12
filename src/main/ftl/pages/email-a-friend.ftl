@@ -10,9 +10,9 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<div class="vrtx-tip-a-friend">
+<div class="vrtx-email-a-friend-form">
 
-     <form action="?vrtx=tip-a-friend" method="post">
+     <form action="?vrtx=email-a-friend" method="post">
       <table border="0">
         <tbody>
             <tr>

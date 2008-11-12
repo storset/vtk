@@ -14,13 +14,6 @@
           <property name="parameterValue" value="email-a-friend" />
         </bean>
     </property>
-    <!-- 
-    <property name="attributes">
-      <map>
-        <entry key="localeResolver" value-ref="manageLocaleResolver" />
-        <entry key-ref="system.decoratorTemplateAttribute" value="email-a-friend.html" />
-      </map>
-    </property>-->
   </bean>
 
   <bean id="emailafriend.viewResolver" parent="decoratorViewResolver">
@@ -48,22 +41,5 @@
     <property name="resourceManager" ref="resourceManager"/>
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
   </bean> 
-
-  <!--  
-  <bean id="tip.redirectToDefaultView" 
-    class="org.vortikal.web.view.RedirectView">
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="tip.redirectToDefaultProvider" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="tip.redirectToDefaultProvider" 
-        class="org.vortikal.web.referencedata.provider.RedirectProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="redirectToService" ref="displayResourceService" />
-    <property name="urlAnchor" value="tip" />
-  </bean>-->
 
 </beans>

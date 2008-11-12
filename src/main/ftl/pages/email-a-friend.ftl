@@ -1,8 +1,8 @@
 <#ftl strip_whitespace=true>
 <#--
-  - File: tip-a-friend.ftl
+  - File: email-a-friend.ftl
   - 
-  - Description: Displays a tip-a-friend form.
+  - Description: Displays a email-a-friend form.
   -
   - Optional model data:
   -   form
@@ -18,7 +18,9 @@
             <tr>
                 <td><label for="emailto"><@vrtx.msg code="tip.form.emailto" default="To: " /></label></td>
                 <td><input type="text" name="emailto" id="emailto" /></td>
-                <td><@vrtx.msg code="tip.form.emailtomessage" default="(use comma as a seperator if more than one e-mail recipient)" /></td>
+            </tr>
+            <tr>
+              <td><@vrtx.msg code="tip.form.emailtomessage" default="(use comma as a seperator if more than one e-mail recipient)" /></td> 
             </tr>
             <tr>
                 <td><label for="emailfrom"><@vrtx.msg code="tip.form.emailfrom" default="From: " /></label></td>

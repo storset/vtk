@@ -35,11 +35,23 @@
     <property name="defaultEncoding" value="utf-8"/>
   </bean>
 
-  <bean id="emailafriendHandler" class="org.vortikal.web.controller.tipafriend.TipAFriendController">
+  <bean id="emailafriendHandler" class="org.vortikal.web.controller.emailafriend.EmailAFriendController">
     <property name="repository" ref="repository" />
     <property name="viewName" value="emailafriend.view" />
     <property name="resourceManager" ref="resourceManager"/>
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
+    <property name="mailExecutor" ref="mailExecutor"/>
   </bean> 
+
+  <bean id="mailExecutor" class="org.vortikal.web.controller.emailafriend.MailExecutor">
+    <constructor-arg ref="taskExecutor" />
+  </bean>
+  
+  <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <property name="corePoolSize" value="5" />
+    <property name="maxPoolSize" value="10" />
+    <property name="queueCapacity" value="25" />
+  </bean>
+  
 
 </beans>

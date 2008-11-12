@@ -14,10 +14,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title><@vrtx.msg code="tip.emailtitle" default="To: " />: ${resource.title}</title>
+    <title><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" />: ${resource.title}</title>
  </head>
   <body>
-    <h1><@vrtx.msg code="tip.emailtitle" default="To: " />: ${resource.title}</h1>   
+    <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" />: ${resource.title}</h1>   
 
     <#-- E-mail a friend form -->
     <div class="vrtx-email-a-friend-form">
@@ -62,7 +62,7 @@
       </div>
       
       </#if>  
-      <#-- If exeception show it to user -->
+      <#-- If mail and thread exception -> show it to user -->
       <#if tipResponseMsg?exists && tipResponseMsg?has_content>
              <div><strong>${tipResponseMsg}</strong></div>
        </#if>

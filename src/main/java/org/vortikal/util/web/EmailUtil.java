@@ -70,9 +70,9 @@ public class EmailUtil {
 	
 	public static boolean isValidEmail(String emailAddress, boolean rfcStandard) {
 		if (rfcStandard) {
-			return VALID_EMAIL_RFC.matcher(emailAddress).matches();
+			return VALID_EMAIL_RFC.matcher(emailAddress.trim()).matches();
 		} else {
-			return VALID_EMAIL.matcher(emailAddress).matches();
+			return VALID_EMAIL.matcher(emailAddress.trim()).matches();
 		}
 	}
 	
@@ -83,9 +83,9 @@ public class EmailUtil {
 			boolean valid = false;
 			
 			if (rfcStandard) {
-				valid = VALID_EMAIL_RFC.matcher(emailAddresses[i]).matches();
+				valid = VALID_EMAIL_RFC.matcher(emailAddresses[i].trim()).matches();
 			} else {
-				valid = VALID_EMAIL.matcher(emailAddresses[i]).matches();
+				valid = VALID_EMAIL.matcher(emailAddresses[i].trim()).matches();
 			}
 			if (!valid) {
 				return false;

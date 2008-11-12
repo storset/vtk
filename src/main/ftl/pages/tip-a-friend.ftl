@@ -18,11 +18,15 @@
             <tr>
                 <td><label for="emailto"><@vrtx.msg code="tip.form.emailto" default="To: " /></label></td>
                 <td><input type="text" name="emailto" id="emailto" /></td>
+                <td><@vrtx.msg code="tip.form.emailtomessage" default="(use comma as a seperator if more than one e-mail recipient)" /></td>
             </tr>
             <tr>
                 <td><label for="emailfrom"><@vrtx.msg code="tip.form.emailfrom" default="From: " /></label></td>
                 <td><input type="text" name="emailfrom" id="emailfrom" /></td>
             </tr>
+            <tr>
+              <td><label for="yourComment"><@vrtx.msg code="tip.form.yourcomment" default="Your comment: " /></label></td> 
+              <td><textarea name="yourComment" id="yourComment"></textarea></td>
             <tr>
                 <td><input type="submit" name="submit-tip" name="save" value="<@vrtx.msg code='tip.form.submit'
           default='Submit' />" /></td>
@@ -40,9 +44,12 @@
        <#elseif tipResponse = "FAILURE">
                <@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" />.
        <#elseif tipResponse = "OK">
-               <@vrtx.msg code="tip.form.success" default="Tip is sent to " /> ${emailSentTo}.
+               <@vrtx.msg code="tip.form.success" default="Tip is sent to " /><#if emailSentTo?exists && emailSentTo?has_content> ${emailSentTo}</#if>.
         </#if> 
       </div>
     </#if>  
+          <#if tipResponseMsg?exists && tipResponseMsg?has_content>
+               <div><strong>${tipResponseMsg}</strong></div>
+          </#if>
 
 </div>

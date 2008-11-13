@@ -162,7 +162,7 @@
     <bean id="decorating.emailAFriendURLComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="name" value="email-a-friend" />
+    <property name="name" value="email-friend" />
     <property name="description" value="Inserts a URL to email-a-friend service" />
     <property name="view" ref="decorating.emailAFriendURLComponent.view" />
   </bean>

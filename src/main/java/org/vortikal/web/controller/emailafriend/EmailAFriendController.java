@@ -98,8 +98,8 @@ public class EmailAFriendController implements Controller {
 					MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
 							emailFrom, comment, serverHostname, serverPort);
 					
-					javaMailSenderImpl.send(mimeMessage);
-					// mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
+					// javaMailSenderImpl.send(mimeMessage);
+					mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 					
 					m.put("emailSentTo", emailTo);
 					m.put("senderIP", request.getRemoteAddr().toString());

@@ -64,11 +64,11 @@
   <logger name="org.vortikal.security.web"><level value="info" /></logger>
   <logger name="org.vortikal.web"><level value="info" /></logger>
   <logger name="org.vortikal.web.referencedataprovider"><level value="info" /></logger>
-  <logger name="org.vortikal.web.view"><level value="info" /></logger>
-  <logger name="org.vortikal.web.view.wrapper"><level value="info" /></logger>
-  <logger name="org.vortikal.web.view.xslt.ResourceXsltView"><level value="info" /></logger>
-  <logger name="org.vortikal.web.view.components.menu"><level value="info" /></logger>
-  <logger name="org.vortikal.web.view.decorating"><level value="info" /></logger>
+  <logger name="org.vortikal.web.wrapper"><level value="info" /></logger>
+  <logger name="org.vortikal.web.xslt.ResourceXsltView"><level value="info" /></logger>
+  <logger name="org.vortikal.web.components.menu"><level value="info" /></logger>
+  <logger name="org.vortikal.web.decorating"><level value="info" 
+/></logger>
   <logger name="org.vortikal.web.controller"><level value="info" /></logger>
   <logger name="org.vortikal.web.service"><level value="info" /></logger>
   <logger name="org.vortikal.web.RequestContextInitializer"><level value="info" /></logger>

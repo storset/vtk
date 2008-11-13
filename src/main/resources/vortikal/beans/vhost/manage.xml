@@ -1143,6 +1143,7 @@
             <value>${jsBaseURL}/browser-sniffer.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/../jquery/jquery-1.2.6.js</value>
+            <value>${jsBaseURL}/featured-articles-multiple-properties.js</value>
           </list>
         </entry>
       </map>

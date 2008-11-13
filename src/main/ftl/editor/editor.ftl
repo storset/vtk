@@ -57,7 +57,7 @@
         </style>
     <![endif]-->
   </head>
-  <body>
+  <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}');">
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[resource.resourceTypeDefinition.getLocalizedName(springMacroRequestContext.getLocale())?lower_case] />
     </#assign>
@@ -91,8 +91,8 @@
       </#if>
 
       <div id="submit" class="save-cancel">
-       <input type="submit" id="saveButton" onClick="cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
-       <input type="submit" id="saveAndQuitButton" onClick="performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
+       <input type="submit" id="saveButton" onClick="formatFeturedArticlesData();cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+       <input type="submit" id="saveAndQuitButton" onClick="formatFeturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
        <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
 

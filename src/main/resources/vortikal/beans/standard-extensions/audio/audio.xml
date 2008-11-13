@@ -38,7 +38,7 @@
     <property name="viewName" value="displayAudioResource"/>
   </bean> 
 
-  <bean id="audioViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="audioViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="displayAudioResource" value-ref="displayAudioResourceView" />

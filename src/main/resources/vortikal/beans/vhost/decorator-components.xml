@@ -30,7 +30,7 @@
 
   <!--
   <bean id="decorating.tocComponent"
-        class="org.vortikal.web.view.decorating.components.HtmlTocComponent">
+        class="org.vortikal.web.decorating.components.HtmlTocComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="toc" />
     <property name="description" value="Inserts a table of contents box" />
@@ -43,7 +43,7 @@
   -->
 
   <bean id="decorating.bodyComponent"
-        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
+        class="org.vortikal.web.decorating.components.HtmlElementComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="body" />
     <property name="select" value="html.body" />
@@ -53,7 +53,7 @@
   </bean>
 
   <bean id="decorating.headComponent"
-        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
+        class="org.vortikal.web.decorating.components.HtmlElementComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="head" />
     <property name="select" value="html.head" />
@@ -63,7 +63,7 @@
   </bean>
 
   <bean id="decorating.titleComponent"
-        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
+        class="org.vortikal.web.decorating.components.HtmlElementComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="title" />
     <property name="select" value="html.head.title" />
@@ -73,14 +73,14 @@
   </bean>
 
   <bean id="decorating.elementContentComponent"
-        class="org.vortikal.web.view.decorating.components.HtmlElementComponent">
+        class="org.vortikal.web.decorating.components.HtmlElementComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="element" />
     <property name="description" value="Outputs the contents of a specified element" />
   </bean>
 
   <bean id="decorating.elementAttributesComponent"
-        class="org.vortikal.web.view.decorating.components.HtmlAttributesComponent">
+        class="org.vortikal.web.decorating.components.HtmlAttributesComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="element-attributes" />
     <property name="description" value="Outputs the attributes of a specified element" />
@@ -88,7 +88,7 @@
 
 
   <bean id="decorating.manageURLComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="manage-url" />
     <property name="description" value="Inserts the admin URL of the current document" />
@@ -126,7 +126,7 @@
 
 
   <bean id="decorating.defaultCssComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.cssNamespace" />
     <property name="name" value="default" />
     <property name="description" value="Inserts a &lt;link rel=&quot;stylesheet&quot;...&gt; reference to the default CSS template" />
@@ -143,7 +143,7 @@
   </bean>
 
   <bean id="decorating.tableOfContentsComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" value="resource" />
     <property name="name" value="toc" />
     <property name="description" value="Inserts a table of contents based on h2/h3 in the document" />
@@ -168,7 +168,7 @@
   
   
   <bean id="decorating.keywordsComponent" parent="requestLocalRepositoryAware"
-        class="org.vortikal.web.view.decorating.components.PropertyLinkedValueDecoratorComponent">
+        class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="keywordsPropDef" />
@@ -178,7 +178,7 @@
   </bean>
 
   <bean id="decorating.tagCloudComponent" 
-        class="org.vortikal.web.view.decorating.components.TagCloudComponent">
+        class="org.vortikal.web.decorating.components.TagCloudComponent">
     <property name="dataReportManager" ref="dataReportManager"/>
     <property name="keywordsPropDef" ref="keywordsPropDef"/>
     <property name="namespace" ref="decorating.includeNamespace" />
@@ -188,21 +188,21 @@
   </bean>
 
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
-        class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="property" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="decorating.includeResourcePropertyComponent" parent="requestLocalRepositoryAware"
-        class="org.vortikal.web.view.decorating.components.ResourcePropertiesDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="property" />
     <property name="relative" value="true" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="decorating.breadcrumbComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+  <bean id="decorating.breadcrumbComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="breadcrumb" />
     <property name="view" ref="decorating.breadcrumbComponent.view" />
@@ -242,7 +242,7 @@
   </bean>
 
   <bean id="decorating.feedComponent"
-        class="org.vortikal.web.view.decorating.components.FeedComponent">
+        class="org.vortikal.web.decorating.components.FeedComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feed" />
     <property name="view" ref="decorating.feedComponent.view" />
@@ -251,7 +251,7 @@
   </bean>
 
   <bean id="decorating.aggregatedFeedComponent"
-        class="org.vortikal.web.view.decorating.components.AggregatedFeedsComponent">
+        class="org.vortikal.web.decorating.components.AggregatedFeedsComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feeds" />
     <property name="view" ref="decorating.feedComponent.view" />
@@ -273,7 +273,7 @@
   </bean>
 
   <bean id="decorating.feedComponent.contentCache.loader"
-        class="org.vortikal.web.view.decorating.components.SyndFeedLoader">
+        class="org.vortikal.web.decorating.components.SyndFeedLoader">
     <property name="connectTimeoutSeconds" value="${decorating.feedComponent.connectTimeoutSeconds}" />
     <property name="readTimeoutSeconds" value="${decorating.feedComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.feedComponent.identifier}" />
@@ -281,7 +281,7 @@
   
   
   <bean id="decorating.listMenuComponent"
-        class="org.vortikal.web.view.decorating.components.ListMenuComponent">
+        class="org.vortikal.web.decorating.components.ListMenuComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="uri-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -300,7 +300,7 @@
   
   
   <bean id="decorating.subFolderMenuComponent"
-        class="org.vortikal.web.view.decorating.components.SubFolderMenuComponent">
+        class="org.vortikal.web.decorating.components.SubFolderMenuComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="subfolder-menu" />
     <property name="searcher" ref="systemIndexSearcher" />
@@ -322,7 +322,7 @@
 
 
   <bean id="decorating.authenticationComponent"
-        class="org.vortikal.web.view.decorating.components.AuthenticationComponent">
+        class="org.vortikal.web.decorating.components.AuthenticationComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login" />
     <property name="view" ref="decorating.authenticationComponent.view" />
@@ -337,7 +337,7 @@
 
 
   <bean id="decorating.includeComponent"
-        class="org.vortikal.web.view.decorating.components.IncludeComponent"
+        class="org.vortikal.web.decorating.components.IncludeComponent"
         parent="requestLocalRepositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="file" />
@@ -369,7 +369,7 @@
   </bean>
 
   <bean id="decorating.includeComponent.httpIncludeCache.loader"
-        class="org.vortikal.web.view.decorating.components.URLToStringLoader">
+        class="org.vortikal.web.decorating.components.URLToStringLoader">
     <property name="connectTimeoutSeconds" value="${decorating.includeComponent.connectTimeoutSeconds}" />
     <property name="readTimeoutSeconds" value="${decorating.includeComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.includeComponent.identifier}" />

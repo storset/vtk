@@ -1,0 +1,231 @@
+/* Copyright (c) 2007, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.web.decorating.components;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletContext;
+
+import org.springframework.web.context.ServletContextAware;
+import org.vortikal.util.cache.ContentCache;
+import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.decorating.DecoratorResponse;
+
+import com.sun.syndication.feed.synd.SyndFeed;
+
+/**
+ * XXX: this class currently depends on the thread safety of the SyndFeed implementation: if it turns out that it is not
+ * thread safe, its data has to be extracted to a custom bean after fetching a feed.
+ */
+public class FeedComponent extends ViewRenderingDecoratorComponent implements ServletContextAware {
+
+    private static final String PARAMETER_FEED_DESCRIPTION = "feed-description";
+    private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
+
+    private static final String PARAMETER_URL = "url";
+    private static final String PARAMETER_URL_DESC = "The feed url. For host "
+            + "local feeds, you get authenticated retrieval of the resource if you skip the protocol/host part";
+
+    private static final String PARAMETER_FEED_TITLE = "feed-title";
+    private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
+
+    private static final String PARAMETER_ALL_MESSAGES_LINK = "all-messages-link";
+    private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
+
+    private static final String PARAMETER_SORT = "sort";
+    private static final String PARAMETER_SORT_DESC = "Default sorted by published date. Set to 'item-title' to sort by this instead. "
+            + "You can control the direction of the sorting by using the keywords 'asc' or 'desc'. "
+            + "Usage examples: sort=[asc], sort=[item-title desc], sort=[published-date asc], etc. "
+            + "The default is descending direction (newest first) for published date and ascending when sorting by 'item-title'.";
+
+    private static final String PARAMETER_PUBLISHED_DATE = "published-date";
+    private static final String PARAMETER_PUBLISHED_DATE_DESC = "How to display published date, defaults to date and time. Set to 'date' to only display the date, or 'none' to not show the date";
+
+    private static final String PARAMETER_MAX_MESSAGES = "max-messages";
+    private static final String PARAMETER_MAX_MESSAGES_DESC = "The max number of messages to display, defaults to 10";
+
+    private static final String PARAMETER_ITEM_DESCRIPTION = "item-description";
+    private static final String PARAMETER_ITEM_DESCRIPTION_DESC = "Must be set to 'true' to show item descriptions";
+
+    private static final String PARAMETER_INCLUDE_IF_EMPTY = "include-if-empty";
+    private static final String PARAMETER_INCLUDE_IF_EMPTY_DESC = "Set to 'false' if you don't want to display empty feeds. Default is 'true'.";
+
+    private static final String PARAMETER_DISPLAY_CATEGORIES = "display-catgories";
+    private static final String PARAMETER_DISPLAY_CATEGORIES_DESC = "Set to 'true' if feed elements should display contents of category field.";
+
+    private ContentCache<String, SyndFeed> cache;
+
+    private LocalFeedFetcher localFeedFetcher;
+
+
+    @Override
+    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
+        super.processModel(model, request, response);
+
+        Map<String, Object> conf = new HashMap<String, Object>();
+
+        String url = request.getStringParameter(PARAMETER_URL);
+        if (url == null) {
+            throw new DecoratorComponentException("Component parameter 'url' is required");
+        }
+
+        String feedTitleString = request.getStringParameter(PARAMETER_FEED_TITLE);
+        if (feedTitleString == null || !"false".equals(feedTitleString)) {
+            conf.put("feedTitle", true);
+        }
+
+        String feedDescriptionString = request.getStringParameter(PARAMETER_FEED_DESCRIPTION);
+        if (feedDescriptionString != null && "true".equals(feedDescriptionString)) {
+            conf.put("feedDescription", true);
+        }
+
+        String itemDescriptionString = request.getStringParameter(PARAMETER_ITEM_DESCRIPTION);
+        if (itemDescriptionString != null && "true".equals(itemDescriptionString)) {
+            conf.put("itemDescription", true);
+        }
+
+        conf.put("maxMsgs", 10);
+        String maxMsgsString = request.getStringParameter(PARAMETER_MAX_MESSAGES);
+        if (maxMsgsString != null) {
+            try {
+                int tmpInt = Integer.parseInt(maxMsgsString);
+                if (tmpInt > 0) {
+                    conf.put("maxMsgs", tmpInt);
+                }
+            } catch (Exception e) {
+            }
+        }
+
+        String publishedDateString = request.getStringParameter(PARAMETER_PUBLISHED_DATE);
+        if ("none".equals(publishedDateString)) {
+            conf.put("publishedDate", null);
+        } else if ("date".equals(publishedDateString)) {
+            conf.put("publishedDate", "short");
+        } else {
+            conf.put("publishedDate", "long");
+        }
+
+        String bottomLinkToAllMessagesString = request.getStringParameter(PARAMETER_ALL_MESSAGES_LINK);
+        if (!"false".equals(bottomLinkToAllMessagesString)) {
+            conf.put("bottomLinkToAllMessages", true);
+        }
+
+        // Typical sort strings we handle:
+        // asc
+        // item-title
+        // item-title desc
+        // desc item-title
+        // etc..
+        String sortString = request.getStringParameter(PARAMETER_SORT);
+        boolean directionSpecified = false; // Indicates explicitly set sort direction
+        if (sortString != null) {
+            StringTokenizer tokenizer = new StringTokenizer(sortString);
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken();
+                if ("item-title".equals(token)) {
+                    conf.put("sortByTitle", true);
+                    if (!directionSpecified) {
+                        // Set to default for title, if not already specified.
+                        conf.put("sortAscending", true);
+                    }
+                } else if ("asc".equalsIgnoreCase(token)) {
+                    conf.put("sortAscending", true);
+                    directionSpecified = true;
+                } else if ("desc".equalsIgnoreCase(token)) {
+                    conf.remove("sortAscending");
+                    directionSpecified = true;
+                }
+            }
+        }
+
+        boolean includeIfEmpty = true;
+        String includeIfEmptyParam = request.getStringParameter(PARAMETER_INCLUDE_IF_EMPTY);
+        if ("false".equalsIgnoreCase(includeIfEmptyParam)) {
+            includeIfEmpty = false;
+        }
+        conf.put("includeIfEmpty", includeIfEmpty);
+
+        String displayCategoriesParam = request.getStringParameter(PARAMETER_DISPLAY_CATEGORIES);
+        if (displayCategoriesParam != null && "true".equalsIgnoreCase(displayCategoriesParam)) {
+            conf.put("displayCategories", true);
+        }
+
+        SyndFeed feed = null;
+
+        try {
+            if (!url.startsWith("/")) {
+                feed = this.cache.get(url);
+            } else {
+                feed = this.localFeedFetcher.getFeed(url, request);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not read feed url " + url, e);
+        }
+
+        model.put("feed", feed);
+        model.put("conf", conf);
+    }
+
+
+    protected String getDescriptionInternal() {
+        return "Inserts a feed (RSS, Atom) component on the page";
+    }
+
+
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PARAMETER_URL, PARAMETER_URL_DESC);
+        map.put(PARAMETER_MAX_MESSAGES, PARAMETER_MAX_MESSAGES_DESC);
+        map.put(PARAMETER_FEED_TITLE, PARAMETER_FEED_TITLE_DESC);
+        map.put(PARAMETER_FEED_DESCRIPTION, PARAMETER_FEED_DESCRIPTION_DESC);
+        map.put(PARAMETER_ITEM_DESCRIPTION, PARAMETER_ITEM_DESCRIPTION_DESC);
+        map.put(PARAMETER_ALL_MESSAGES_LINK, PARAMETER_ALL_MESSAGES_LINK_DESC);
+        map.put(PARAMETER_PUBLISHED_DATE, PARAMETER_PUBLISHED_DATE_DESC);
+        map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
+        map.put(PARAMETER_INCLUDE_IF_EMPTY, PARAMETER_INCLUDE_IF_EMPTY_DESC);
+        map.put(PARAMETER_DISPLAY_CATEGORIES, PARAMETER_DISPLAY_CATEGORIES_DESC);
+        return map;
+    }
+
+
+    public void setServletContext(ServletContext servletContext) {
+        this.localFeedFetcher = new LocalFeedFetcher(servletContext);
+    }
+
+
+    public void setContentCache(ContentCache<String, SyndFeed> cache) {
+        this.cache = cache;
+    }
+}

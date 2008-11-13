@@ -72,7 +72,7 @@
 
 
   <bean id="browse.titleComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
     <property name="name" value="title" />
     <property name="description" value="Inserts the browse title" />
@@ -96,7 +96,7 @@
 
 
   <bean id="browse.breadcrumbComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
     <property name="name" value="breadcrumb" />
     <property name="description" value="Displays the browse breadcrumb trail" />
@@ -119,7 +119,7 @@
 
 
   <bean id="browse.globalMenuComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
     <property name="name" value="global-menu" />
     <property name="description" value="Displays the browse global menu" />
@@ -132,7 +132,7 @@
   </bean>
 
   <bean id="browse.cssComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
     <property name="name" value="css" />
     <property name="description" value="Inserts the default browse CSS stylesheets" />
@@ -156,7 +156,7 @@
 
 
   <bean id="browse.javascriptComponent" 
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
     <property name="name" value="javascript" />
     <property name="description" value="Inserts the default browse javascript references" />

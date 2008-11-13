@@ -28,7 +28,7 @@
   </bean>
 
   
-  <bean id="debugRequestViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="debugRequestViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="debugRequest" value-ref="debugRequestView" />

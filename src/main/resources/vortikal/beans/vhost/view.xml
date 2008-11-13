@@ -4,7 +4,7 @@
 
 <beans>
 
-  <bean id="viewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="httpOptions" value-ref="httpOptionsView" />
@@ -19,7 +19,7 @@
     </property>
   </bean>
 
-  <bean id="decoratorViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="decoratorViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="displayHTMLResource"  value-ref="displayResourceView" />

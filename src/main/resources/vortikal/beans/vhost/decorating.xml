@@ -3,7 +3,7 @@
 <beans>
 
   <bean id="decoratingViewWrapper"
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+        class="org.vortikal.web.decorating.DecoratingViewWrapper">
     <property name="decorators">
       <list>
         <ref bean="decorating.templateDecorator" />
@@ -18,7 +18,7 @@
   </bean>
 
   <bean id="decorating.templateDecorator"
-        class="org.vortikal.web.view.decorating.TemplateDecorator">
+        class="org.vortikal.web.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="decorationResolver" ref="decorating.decorationResolver" />
     <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
@@ -94,7 +94,7 @@
   </bean>
 
 
-  <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.view.decorating.ComponentHandlingNodeFilter">
+  <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentHandlingNodeFilter">
     <property name="ssiDirectiveComponentMap">
       <map>
         <entry key="include" value-ref="decorating.includeComponent" />
@@ -112,7 +112,7 @@
   </bean>
 
   <bean id="decorating.decorationResolver"
-        class="org.vortikal.web.view.decorating.ConfigurableDecorationResolver"
+        class="org.vortikal.web.decorating.ConfigurableDecorationResolver"
         parent="requestLocalRepositoryAware">
     <property name="supportMultipleTemplates" value="${decorating.supportMultipleTemplates}" />
     <property name="templateManager" ref="decorating.templateManager" />
@@ -135,7 +135,7 @@
     <property name="method" value="load" />
   </bean>
 
-  <bean id="decorating.templateManager" class="org.vortikal.web.view.decorating.CollectionTemplateManager">
+  <bean id="decorating.templateManager" class="org.vortikal.web.decorating.CollectionTemplateManager">
     <property name="repository" ref="repository" />
     <property name="collectionName" value="${decorating.templatesCollection}" />
     <property name="templateFactory" ref="decorating.defaultTemplateFactory" />
@@ -154,7 +154,7 @@
   <!--
   -->
   <bean id="decorating.defaultTemplateFactory"
-            class="org.vortikal.web.view.decorating.DelegatingTemplateFactory">
+            class="org.vortikal.web.decorating.DelegatingTemplateFactory">
     <property name="templateFactoryMap">
       <map>
 	<entry key="\.vrtx$" value-ref="decorating.htmlParserTemplateFactory" />
@@ -165,7 +165,7 @@
 
   <!--
   <bean id="decorating.defaultTemplateFactory"
-            class="org.vortikal.web.view.decorating.FallbackTemplateFactory">
+            class="org.vortikal.web.decorating.FallbackTemplateFactory">
     <property name="templateFactories">
       <list>
 	<ref bean="decorating.htmlParserTemplateFactory" />
@@ -176,24 +176,24 @@
   -->
 
   <bean id="decorating.htmlParserTemplateFactory"
-            class="org.vortikal.web.view.decorating.ParsedHtmlDecoratorTemplateFactory">
+            class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
   </bean>
   
   <bean id="decorating.dollarSyntaxTemplateFactory"
-            class="org.vortikal.web.view.decorating.TextualDecoratorTemplateFactory">
+            class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
     <property name="parser" ref="decorating.dollarSyntaxTemplateParser" />
   </bean>
 
-  <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.view.decorating.DollarSyntaxComponentParser">
+  <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
 
   <bean name="decorating.defaultComponentResolver"
-        class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+        class="org.vortikal.web.decorating.BeanContextComponentResolver">
     <property name="availableComponentNamespaces">
       <set>
         <ref bean="decorating.documentNamespace" />
@@ -205,7 +205,7 @@
   </bean>
 
   <bean name="decorating.documentComponentResolver"
-        class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+        class="org.vortikal.web.decorating.BeanContextComponentResolver">
     <property name="availableComponentNamespaces">
       <set>
         <ref bean="decorating.resourceNamespace" />
@@ -283,7 +283,7 @@
   </bean>
   
   <bean id="listDecoratorComponentsViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+        class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="listDecoratorComponents" value-ref="listDecoratorComponentsView" />        

@@ -136,7 +136,7 @@
     </property>
   </bean>
 
-  <bean id="editor.plainViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="editor.plainViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="editor.browseView" value-ref="editor.browseView" />

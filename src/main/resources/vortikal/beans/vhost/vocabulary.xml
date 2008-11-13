@@ -24,7 +24,7 @@
    
       
    <bean id="vocabularyViewResolver" 
-      class="org.vortikal.web.view.decorating.MappingViewResolver">
+      class="org.vortikal.web.decorating.MappingViewResolver">
       <property name="views">
          <map>
             <entry key="vocabulary" value-ref="vocabularyView" />

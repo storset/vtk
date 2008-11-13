@@ -298,7 +298,7 @@
   </bean>
 
 
-  <bean name="commenting.listCommentsComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+  <bean name="commenting.listCommentsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="comments" />
     <property name="description" value="Lists comments on a resource" />
@@ -306,7 +306,7 @@
   </bean>
 
 
-  <bean name="commenting.recentCommentsComponent" class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+  <bean name="commenting.recentCommentsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="recent-comments" />
     <property name="description" value="Lists recent comments under the current collection" />

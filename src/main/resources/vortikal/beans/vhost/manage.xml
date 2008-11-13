@@ -1048,7 +1048,7 @@
   </bean>
 
   <bean id="manage.plainViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+        class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="manage.refreshLockView"
@@ -1078,7 +1078,7 @@
   </bean>
 
   <bean id="manage.titleComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="title" />
     <property name="description" value="Inserts the admin title" />
@@ -1101,7 +1101,7 @@
   </bean>
 
   <bean id="manage.cssComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="css" />
     <property name="description" value="Inserts the default admin CSS stylesheets" />
@@ -1126,7 +1126,7 @@
   </bean>
 
   <bean id="manage.javascriptComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="javascript" />
     <property name="description" value="Inserts the default admin javascript references" />
@@ -1150,7 +1150,7 @@
   </bean>
 
   <bean id="manage.breadcrumbComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="breadcrumb" />
     <property name="description" value="Displays the admin breadcrumb trail" />
@@ -1174,7 +1174,7 @@
   </bean>
 
   <bean id="manage.leaveAdminComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="leave-admin" />
     <property name="description" value="Displays a link to get out of the admin service" />
@@ -1191,7 +1191,7 @@
   </bean>
 
   <bean id="manage.principalInfoComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="principal-info" />
     <property name="description" value="Displays prinncipal information and logout URL" />
@@ -1216,14 +1216,14 @@
     <property name="matchAssertions" value="true" />
   </bean>
 
-  <bean id="manage.repositoryIdComponent" class="org.vortikal.web.view.decorating.components.StaticTextComponent">
+  <bean id="manage.repositoryIdComponent" class="org.vortikal.web.decorating.components.StaticTextComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="repository-id" />
     <property name="text" value="${repositoryID}" />
   </bean>
 
   <bean id="manage.helpComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="help" />
     <property name="description" value="Displays a help link for the admin service" />
@@ -1240,13 +1240,13 @@
   </bean>
 
   <bean id="manage.localizedTextComponent"
-        class="org.vortikal.web.view.decorating.components.LocalizedTextComponent">
+        class="org.vortikal.web.decorating.components.LocalizedTextComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="localized-text" />
   </bean>
 
   <bean id="manage.lockInfoComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="lock-info" />
     <property name="description" value="Displays lock information" />
@@ -1264,7 +1264,7 @@
   </bean>
 
   <bean id="manage.messagesComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="messages" />
     <property name="description" value="Displays the admin messages" />
@@ -1283,7 +1283,7 @@
 
   
   <bean id="manage.infoMessageComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="info-message" />
     <property name="description" value="Displays an info message (if found in its specified location)" />
@@ -1305,7 +1305,7 @@
 
 
   <bean id="manage.resourceHeaderComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="resource-header" />
     <property name="description" value="Displays the resource name or repository ID for root" />
@@ -1326,7 +1326,7 @@
   </bean>
 
   <bean id="manage.globalMenuComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="global-menu" />
     <property name="description" value="Displays the admin global menu" />
@@ -1345,7 +1345,7 @@
   </bean>
 
   <bean id="manage.tabsComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="tabs" />
     <property name="description" value="Displays the default admin tabs" />
@@ -1362,7 +1362,7 @@
   </bean>
 
   <bean id="manage.tabMenuComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="tab-menu" />
     <property name="description" value="Displays the admin tab menu" />
@@ -1375,7 +1375,7 @@
   </bean>
 
   <bean id="manage.tabMessageComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="tab-message" />
     <property name="description" value="Displays the admin tab message" />
@@ -1388,7 +1388,7 @@
   </bean>
 
   <bean id="manage.parentNavigationComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="parent-navigation" />
     <property name="description" value="Displays the parent collection URL" />
@@ -1401,7 +1401,7 @@
   </bean>
 
   <bean id="manage.tabHelpComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="tab-help" />
     <property name="description" value="Displays a tab help message" />
@@ -1414,7 +1414,7 @@
   </bean>
 
   <bean id="manage.versionInfoComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="version-info" />
     <property name="description" value="Displays version information" />
@@ -1431,7 +1431,7 @@
   </bean>
   
   <bean id="manage.languageSelectComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="language-select" />
     <property name="description" value="Displays the admin language" />
@@ -1804,7 +1804,7 @@
   </bean>
 
   <bean id="manageErrorViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+        class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="defaultManageError" value-ref="defaultManageErrorView" />

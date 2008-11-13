@@ -462,7 +462,7 @@
 
   <!-- View resolver -->
   
-  <bean id="webdavViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="webdavViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="webdav.davMount" value-ref="webdav.davMountView" />
@@ -504,7 +504,7 @@
   </bean>
 
   <bean id="webdav.cssComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.webdavNamespace" />
     <property name="name" value="css" />
     <property name="description" value="Inserts the default WebDAV collection listing CSS stylesheets" />
@@ -527,7 +527,7 @@
   </bean>
 
   <bean id="webdav.breadcrumbComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.webdavNamespace" />
     <property name="name" value="breadcrumb" />
     <property name="description" value="Displays the WebDAV breadcrumb trail" />
@@ -548,7 +548,7 @@
   </bean>
 
   <bean id="webdav.infoMessageComponent"
-        class="org.vortikal.web.view.decorating.components.ViewRenderingDecoratorComponent">
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.webdavNamespace" />
     <property name="name" value="info-message" />
     <property name="description" value="Displays the WebDAV info message" />

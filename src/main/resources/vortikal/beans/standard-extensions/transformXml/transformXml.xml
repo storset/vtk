@@ -55,7 +55,7 @@
   </bean>
 
 
-  <bean id="transformXmlToHtmlViewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="transformXmlToHtmlViewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="transformXmlResource" value-ref="transformXmlView" />
@@ -66,7 +66,7 @@
 
 
   <bean id="transformXmlToRssViewResolver"
-        class="org.vortikal.web.view.decorating.MappingViewResolver">
+        class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="transformRssResource" value-ref="transformRssView" />

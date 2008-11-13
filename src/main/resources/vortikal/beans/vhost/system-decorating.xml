@@ -5,13 +5,13 @@
 
 
   <bean id="system.decoratingViewResolver" 
-        class="org.vortikal.web.view.decorating.MappingViewResolver"
+        class="org.vortikal.web.decorating.MappingViewResolver"
         abstract="true">
     <property name="viewWrapper" ref="system.viewWrapper" />
   </bean>
 
   <bean id="system.viewWrapper" 
-        class="org.vortikal.web.view.decorating.DecoratingViewWrapper">
+        class="org.vortikal.web.decorating.DecoratingViewWrapper">
     <property name="staticHeaders">
       <map>
         <entry key="Cache-Control" value="no-cache, must-revalidate" />
@@ -27,7 +27,7 @@
 
 
     <bean id="system.templateDecorator"
-          class="org.vortikal.web.view.decorating.TemplateDecorator">
+          class="org.vortikal.web.decorating.TemplateDecorator">
       <property name="htmlParser" ref="decorating.htmlParser" />
       <property name="decorationResolver" ref="system.decorationResolver" />
       <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
@@ -35,7 +35,7 @@
     </bean>
 
     <bean id="system.decorationResolver"
-          class="org.vortikal.web.view.decorating.ServiceAttributeDecorationResolver">
+          class="org.vortikal.web.decorating.ServiceAttributeDecorationResolver">
       <property name="attributeName" ref="system.decoratorTemplateAttribute" />
       <property name="templateManager" ref="system.decoratorTemplateManager" />
     </bean>
@@ -46,17 +46,17 @@
 
 
     <bean id="system.decoratorTemplateManager"
-          class="org.vortikal.web.view.decorating.StaticTemplateManager">
+          class="org.vortikal.web.decorating.StaticTemplateManager">
       <property name="templateParser" ref="system.decoratorTemplateParser" />
       <property name="uriPrefix" value="${manage.decoratorTemplatesLocation}" />
       <property name="characterEncoding" value="utf-8" />
     </bean>
 
     <bean id="system.decoratorTemplateParser"
-          class="org.vortikal.web.view.decorating.DollarSyntaxComponentParser">
+          class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
       <property name="componentResolver">
         <bean name="system.decoratorComponentResolver"
-              class="org.vortikal.web.view.decorating.BeanContextComponentResolver">
+              class="org.vortikal.web.decorating.BeanContextComponentResolver">
           <property name="availableComponentNamespaces">
             <set>
               <value>*</value>

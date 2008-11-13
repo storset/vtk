@@ -49,7 +49,7 @@
     <property name="viewName" value="openid.authenticationForm" />
   </bean>
   
-  <bean id="openid.viewResolver" class="org.vortikal.web.view.decorating.MappingViewResolver">
+  <bean id="openid.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>
         <entry key="openid.authenticationForm" value-ref="openid.authenticationFormView" />

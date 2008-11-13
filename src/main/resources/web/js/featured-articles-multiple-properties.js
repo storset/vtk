@@ -29,7 +29,7 @@ function addFormField(value,removeName,browsName) {
 	}
 	
 	var browseServer = "<button type='button'  onclick='browseServer(\"" + idstr + id + "\", \"File\");'>" + browsName + "</button>";
-	var style = " style='margin: 6px 2px 0 6px;' ";
+	var style = " style='margin: 6px 0' ";
 
 	$("<p " + style + " id='"+ idstr + "-row-" + id + "'><input value='" + value +  "'type='text' size='20′ name='txt[]' id='" + idstr + id + "'> " + browseServer + deleteRow + "</p>").insertBefore("#vrtx-featured-article-add");
 

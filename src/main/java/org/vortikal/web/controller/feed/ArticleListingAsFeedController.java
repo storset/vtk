@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.controller.feed;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,15 +57,39 @@ public class ArticleListingAsFeedController extends AtomFeedController {
         
         Feed feed = populateFeed(collection, collection.getTitle());
         
-        // TODO fetch featured articles, remove duplicates and handle number of articles to show
+        List<Listing> results = new ArrayList<Listing>();
+        Listing featuredArticles = featuredArticlesSearch.execute(request, collection, 1, 25, 0);
+        if (featuredArticles.size() > 0) {
+        	results.add(featuredArticles);
+        }
         
-        Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
+        Listing defaultArticles = searchComponent.execute(request, collection, 1, 25, 0);
+        if (defaultArticles.size() > 0) {
+        	if (featuredArticles.size() > 0) {
+        		removeFeaturedArticlesFromDefault(featuredArticles.getFiles(), defaultArticles.getFiles());
+        	}
+        	results.add(defaultArticles);
+        }
 
-        for (PropertySet result : searchResult.getFiles()) {
-            populateEntry(token, result, feed.addEntry());
+        for (Listing searchResult : results) {
+        	for (PropertySet result : searchResult.getFiles()) {
+                populateEntry(token, result, feed.addEntry());
+            }
         }
 
     	return feed;
+	}
+	
+	private void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles, List<PropertySet> defaultArticles) {
+		List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
+		for (PropertySet featuredArticle : featuredArticles) {
+			for (PropertySet defaultArticle : defaultArticles) {
+				if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
+					duplicateArticles.add(defaultArticle);
+				}
+			}
+		}
+		defaultArticles.removeAll(duplicateArticles);
 	}
 
 	@Required

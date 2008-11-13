@@ -15,8 +15,7 @@
         </bean>
     </property>
   </bean>
-
-  <bean id="emailafriend.viewResolver" parent="decoratorViewResolver">
+  <bean id="emailafriend.viewResolver" parent="viewResolver">
     <property name="views">
       <map>
         <entry key="emailafriend.view"  value-ref="emailafriend.view" />

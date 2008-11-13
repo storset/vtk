@@ -440,6 +440,15 @@ a.vrtx-manage-url {
 
 /* END resource:manage-url */
 
+/* START resource:email-friend */
+
+a.vrtx-email-friend {
+  font-size: .8em; 
+}
+
+/* END resource:email-friend */
+
+/* END resource:manage-url */
 
 /* START resource:toc */
 

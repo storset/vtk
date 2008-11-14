@@ -26,14 +26,14 @@ div.vrtx-introduction-image img {
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext {
-   border-color: #ccc;
-   border-style: none solid solid;
-   border-width: medium 1px 1px;
+   /* border-color: #ccc; */
+   /* border-style: none solid solid; */
+   /* border-width: medium 1px 1px; */
    font-size: 0.8em;
    line-height: 1.4em;
    padding:0.1em 0.5em 0.5em;
    /* overflow: hidden; */
-   background: #eee;
+   /* background: #eee; */
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo {

@@ -22,8 +22,8 @@ $(document).ready(function()
 			}
 		}
 
-		// Check if browser is Safari or Opera.
-		if ($.browser.safari || $.browser.opera)
+		// Check if browser is Safari or Opera 9.5x or less.
+		if ($.browser.safari || ($.browser.opera && $.browser.version < 9.6))
 		{
 			// Start timer when loaded.
 			$('iframe').load(function()

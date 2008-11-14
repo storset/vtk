@@ -56,8 +56,8 @@ span.error{
 label {
   display: block; 
   margin-bottom: .2em;
-  white-space: nowrap;
-  width:1%;
+  /*white-space: nowrap;
+  width:1%;*/
   font-size: .9em;
 }
 
@@ -121,8 +121,7 @@ div.page-limit {
 div.sorting,
 div.recursive-listing{
 	clear:both;
-	margin:0 0;
-	padding-bottom:.3em;
+	/*height:80px;*/
 } 
 
 * html div.sorting,
@@ -153,7 +152,7 @@ div.recursive-listing{
 	margin:0;
 	padding:0;
 	display:block;
-	float:inherit;
+	/*float:left;*/
 	clear:right;
 	margin-top:2px;
 	height:20px;

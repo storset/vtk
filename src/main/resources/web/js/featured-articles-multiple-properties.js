@@ -1,9 +1,9 @@
 // JavaScript Document
 
 function loadFeaturedArticles(addName,removeName,browseName){
+	$("#resource\\.featured-articles").hide();
 	$("#vrtx-resource\\.featured-articles").append("<div id='vrtx-featured-article-add'><button  onClick='addFormField(null,\""+ removeName + "\",\"" + browseName + "\"); return false;'>" + addName + "</button></div>");
 	$("#vrtx-resource\\.featured-articles").append("<input type='hidden' id='id' name='id' value='1' />");
-	$("#resource\\.featured-articles").hide();
 	
 	var listOfFiles = document.getElementById("resource\.featured-articles").value.split(",");
 	for (i in listOfFiles){
@@ -25,13 +25,13 @@ function addFormField(value,removeName,browsName) {
 	if(removeName == null){
 		deleteRow = "";
 	}else{
-		deleteRow = "<button type='button'  onClick='removeFormField(\"#" + idstr + "-row-" + id + "\"); return false;'>" + removeName + "</button>";
+		deleteRow = "<button type='button' id='" + idstr + "remove' onClick='removeFormField(\"#" + idstr + "row-" + id + "\"); return false;'>" + removeName + "</button>";
 	}
 	
-	var browseServer = "<button type='button'  onclick='browseServer(\"" + idstr + id + "\", \"File\");'>" + browsName + "</button>";
-	var style = " style='margin: 6px 0' ";
+	var browseServer = "<button type='button' id='" + idstr + "browse' onclick='browseServer(\"" + idstr + id + "\", \"File\");'>" + browsName + "</button>";
+	var classStr = " class='"  + idstr + "style' ";
 
-	$("<p " + style + " id='"+ idstr + "-row-" + id + "'><input value='" + value +  "'type='text' size='20′ name='txt[]' id='" + idstr + id + "'> " + browseServer + deleteRow + "</p>").insertBefore("#vrtx-featured-article-add");
+	$("<p " + classStr + " id='"+ idstr + "row-" + id + "'><input value='" + value +  "'type='text' size='20′ name='txt[]' id='" + idstr + id + "'> " + browseServer + deleteRow + "</p>").insertBefore("#vrtx-featured-article-add");
 
 	id++;
 	document.getElementById("id").value = id;

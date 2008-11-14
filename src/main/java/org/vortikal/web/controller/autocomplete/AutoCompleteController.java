@@ -47,13 +47,15 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.tags.Tag;
+import org.vortikal.web.tags.VocabularyDataProvider;
 
 public class AutoCompleteController implements Controller {
     
     private final Log logger = LogFactory.getLog(getClass());
     private final String callback = "callback";
     
-    private AutoCompleteDataProvider dataProvider;
+    private VocabularyDataProvider<Tag> dataProvider;
     private String fieldName;
 
     public ModelAndView handleRequest(HttpServletRequest request,
@@ -71,7 +73,7 @@ public class AutoCompleteController implements Controller {
         // XXX: Further input data validation of some sorts necessary ?
         
         Map<String, Object> resultSet = new HashMap<String, Object>();
-        List<Object> completions = 
+        List<Tag> completions = 
                      this.dataProvider.getPrefixCompletions(query, null, token);
         
         resultSet.put(this.fieldName, completions);
@@ -108,7 +110,7 @@ public class AutoCompleteController implements Controller {
     }
     
     @Required
-    public void setDataProvider(AutoCompleteDataProvider dataProvider) {
+    public void setDataProvider(VocabularyDataProvider<Tag> dataProvider) {
         this.dataProvider = dataProvider;
     }
     

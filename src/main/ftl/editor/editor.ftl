@@ -660,7 +660,7 @@
           <#-- AutoComplete only for the tags inputfield -->
           <#if name = 'keywords'>
             <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" fieldName="${name}" 
-                    description="${description}" value="${value?html}" width="18" schema=["keyword"]/>
+                    description="${description}" value="${value?html}" width="18" schema=["text"]/>
           <#else>
             <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
             <#if description != "">

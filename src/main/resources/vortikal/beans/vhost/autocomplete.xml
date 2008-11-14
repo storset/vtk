@@ -42,7 +42,7 @@
   </bean>
   
   <bean id="tagsAutoCompleteDataProvider"
-    class="org.vortikal.web.controller.autocomplete.RepositoryTagsAutoCompleteDataProvider">
+    class="org.vortikal.web.tags.RepositoryTagsDataProvider">
     <property name="tagsReporter" ref="tagsReporter" />
   </bean>
   

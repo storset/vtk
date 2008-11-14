@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.controller.autocomplete;
+package org.vortikal.web.tags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,34 +48,30 @@ import org.vortikal.web.reporting.TagsReportingComponent;
  * Provide keywords completion data from repository.
  *
  */
-public class RepositoryTagsAutoCompleteDataProvider implements
-        AutoCompleteDataProvider {
+public class RepositoryTagsDataProvider implements
+        VocabularyDataProvider<Tag> {
     
     private final Log logger = LogFactory.getLog(getClass());
     
     private TagsReportingComponent tagsReporter;
 
-    private boolean filterByPrefix = true;
-
     /**
-     * @see AutoCompleteDataProvider#getPrefixCompletions(String, String)
+     * @see VocabularyDataProvider#getPrefixCompletions(String, String)
      */
-    public List<Object> getPrefixCompletions(String prefix, 
+    public List<Tag> getPrefixCompletions(String prefix, 
                                              Path contextUri, 
                                              String token) {
         
-        List<Object> repositoryKeywords = getRepositoryKeywords(contextUri, token);
+        List<Tag> repositoryKeywords = getCompletions(contextUri, token);
         
-        if (this.filterByPrefix) {
-            filterByPrefix(prefix, repositoryKeywords);
-        }
+        filterByPrefix(prefix, repositoryKeywords);
 
         return repositoryKeywords;
     }
     
     // Fetch list of all existing unique repository keywords, sorted
     // by frequency, with most frequent on top.
-    private List<Object> getRepositoryKeywords(Path scopeUri, String token) {
+    public List<Tag> getCompletions(Path scopeUri, String token) {
      
         // TODO might consider adding limit on number of unique keywords that are 
         //  fetched.
@@ -85,7 +81,7 @@ public class RepositoryTagsAutoCompleteDataProvider implements
                 
             List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
 
-            List<Object> result = new ArrayList<Object>(pfqList.size());
+            List<Tag> result = new ArrayList<Tag>(pfqList.size());
             
             for (Pair<Value, Integer> pair: pfqList) {
                 result.add(new Tag(pair.first().getStringValue()));
@@ -96,39 +92,21 @@ public class RepositoryTagsAutoCompleteDataProvider implements
             logger.warn("Failed to execute data report query", de);
             
             // Return empty list when failed, for now.
-            return new ArrayList<Object>(0);
+            return new ArrayList<Tag>(0);
         }
     }
     
     // Filter *case-insensitively* by prefix
-    private void filterByPrefix(String prefix, List<Object> list) {
-        List<Object> filteredKeywords = new ArrayList<Object>();
-        for (Object obj : list) {
-            String keyword = ((Tag) obj).getKeyword();
+    private void filterByPrefix(String prefix, List<Tag> list) {
+        List<Tag> filteredKeywords = new ArrayList<Tag>();
+        for (Tag tag : list) {
+            String keyword = tag.getText();
             if (!(prefix.length() <= keyword.length()
                     && keyword.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
-                filteredKeywords.add(obj);
+                filteredKeywords.add(tag);
             }
         }
         list.removeAll(filteredKeywords);
-    }
-
-    public void setFilterByPrefix(boolean filterByPrefix) {
-        this.filterByPrefix = filterByPrefix;
-    }
-    
-    public class Tag {
-        
-        private String keyword;
-        
-        public Tag(String keyword) {
-            this.keyword = keyword;
-        }
-        
-        public String getKeyword() {
-            return this.keyword;
-        }
-        
     }
 
     @Required

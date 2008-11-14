@@ -30,29 +30,21 @@
  */
 package org.vortikal.web.decorating.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
-import org.vortikal.repository.reporting.Pair;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
-import org.vortikal.web.decorating.components.DecoratorComponentException;
-import org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent;
-import org.vortikal.web.reporting.TagsReportingComponent;
+import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
+import org.vortikal.web.tags.TagElement;
 
 /**
  * Decorator component for tag cloud.
@@ -106,11 +98,9 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
             + "The string '%v' will be replaced with the actual tag value for each tag "
             + "when the link is generated.";
 
-    private static final Pattern URL_REPLACEMENT_VALUE_PATTERN = Pattern.compile("%v");
+    private String defaultURLPattern;
 
-    private String defaultURLPattern = null;
-    
-    private TagsReportingComponent tagsReporter;
+    private RepositoryTagElementsDataProvider tagElementsProvider;
     
     protected String getDescriptionInternal() {
         return DESCRIPTION;
@@ -148,6 +138,11 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
         int tagOccurenceMin = PARAMETER_TAG_OCCURENCE_MIN_DEFAULT_VALUE;
         String serviceUrl = request.getStringParameter(PARAMETER_SERVICE_URL);
+        
+        if (serviceUrl == null) {
+            serviceUrl = this.defaultURLPattern;
+        }
+        
         try {
             if (request.getStringParameter(PARAMETER_MAGNITUDE_MIN) != null) {
                 magnitudeMin = Integer.parseInt(request.getStringParameter(PARAMETER_MAGNITUDE_MIN));
@@ -186,28 +181,25 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
                     + nfe.getMessage());
         }
 
-        // Do data report query
-
-        PropertyValueFrequencyQueryResult result = null;
-
+       
         // Legacy exception handling, should be refactored.
         try {
-            result = 
-                this.tagsReporter.getTags(scopeUri, limit, tagOccurenceMin, token);
+            List<TagElement> tagElements = 
+                tagElementsProvider.getTagElements(scopeUri, token, magnitudeMin,
+                        magnitudeMax, limit, tagOccurenceMin, serviceUrl);
+
+            // Populate model
+            model.put("tagElements", tagElements);
         } catch (DataReportException d) {
             throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());
         } catch (IllegalArgumentException e) {
             throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SCOPE
                     + "', must be a valid URI.");
         }
-        
-        
-        // Generate list of tag elements
-        List<TagElement> tagElements = generateTagElementList(result, magnitudeMax, magnitudeMin, serviceUrl);
 
-        // Populate model
-        model.put("tagElements", tagElements);
-    }
+        }
+
+
 
 
     // XXX: this is typical util shit, done a lot of places..
@@ -227,112 +219,18 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
     }
 
 
-    private List<TagElement> generateTagElementList(PropertyValueFrequencyQueryResult result, int magnitudeMax,
-            int magnitudeMin, String serviceUrl) {
 
-        List<Pair<Value, Integer>> freqList = result.getValueFrequencyList();
-
-        // Makes a list with tagelements.
-        List<TagElement> tagElements = new ArrayList<TagElement>(freqList.size());
-
-        if (!freqList.isEmpty()) {
-
-            int minFreq = freqList.get(freqList.size() - 1).second().intValue();
-            int maxFreq = freqList.get(0).second().intValue();
-
-            for (Pair<Value, Integer> pair : freqList) {
-                String text = pair.first().getStringValue();
-                String link = getUrl(text, serviceUrl);
-
-                int magnitude = getNormalizedMagnitude(pair.second().intValue(), maxFreq, minFreq, magnitudeMin,
-                        magnitudeMax);
-
-                tagElements.add(new TagElement(magnitude, link, text));
-            }
-
-            // Sort alphabetically
-            // XXX: locale-dependent sorting ?
-            Collections.sort(tagElements);
-        }
-
-        return tagElements;
-    }
-
-
-    private int getNormalizedMagnitude(int frequency, int maxFreq, int minFreq, int magnitudeMin, int magnitudeMax) {
-        if (maxFreq == minFreq || magnitudeMin == magnitudeMax) {
-            return (magnitudeMin + magnitudeMax) / 2;
-        }
-
-        int maxLeveled = maxFreq - minFreq;
-        int frequencyLeveled = frequency - minFreq;
-        float magnitude = (float) frequencyLeveled / (float) maxLeveled;
-
-        return (int) Math.round(magnitude * (magnitudeMax - magnitudeMin) + magnitudeMin);
-    }
-
-
-    private String getUrl(String text, String serviceUrl) {
-        if (serviceUrl == null) {
-            if (this.defaultURLPattern == null) {
-                return null;
-            } 
-            serviceUrl = this.defaultURLPattern;
-        } 
-        
-        Matcher matcher = URL_REPLACEMENT_VALUE_PATTERN.matcher(serviceUrl);
-        return matcher.replaceAll(text);
-    }
-
-    /**
-     * Represents a tag element for view rendering.
-     * 
-     */
-    public static final class TagElement implements Comparable<TagElement> {
-        private int magnitude;
-        private String linkUrl;
-        private String text;
-
-
-        public TagElement(int magnitude, String linkUrl, String text) {
-            this.magnitude = magnitude;
-            this.linkUrl = linkUrl;
-            this.text = text;
-        }
-
-
-        public int getMagnitude() {
-            return magnitude;
-        }
-
-
-        public String getLinkUrl() {
-            return linkUrl;
-        }
-
-
-        public String getText() {
-            return text;
-        }
-
-
-        // VTK-1107: Sets the text to compare to lowercase,
-        // thus avoiding problem with sorting.
-        public int compareTo(TagElement other) {
-            return this.text.toLowerCase().compareTo(other.text.toLowerCase());
-        }
-
-    }
-
-
+    @Required
     public void setDefaultURLPattern(String defaultURLPattern) {
         this.defaultURLPattern = defaultURLPattern;
     }
 
 
     @Required
-    public void setTagsReporter(TagsReportingComponent tagsReporter) {
-        this.tagsReporter = tagsReporter;
+    public void setTagElementsProvider(
+            RepositoryTagElementsDataProvider tagElementsProvider) {
+        this.tagElementsProvider = tagElementsProvider;
     }
+
 
 }

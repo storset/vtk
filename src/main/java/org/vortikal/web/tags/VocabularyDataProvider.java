@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.controller.autocomplete;
+package org.vortikal.web.tags;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ import org.vortikal.repository.Path;
  * Generic auto-complete data provider/query interface of sorts. 
  *
  */
-public interface AutoCompleteDataProvider {
+public interface VocabularyDataProvider<T> {
     
     /**
      * Get list of prefix completions (complete words starting with prefix)
@@ -49,8 +49,17 @@ public interface AutoCompleteDataProvider {
      * @param token
      * @return
      */
-    public List<Object> getPrefixCompletions(String prefix, 
+    public List<T> getPrefixCompletions(String prefix, 
                                              Path contextUri,
                                              String token);
     
+    /**
+     * Get list of all words
+     * 
+     * @param scopeUri
+     * @param token
+     * @return
+     */
+    public List<T> getCompletions(Path scopeUri, String token);
+
 }

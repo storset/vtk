@@ -208,6 +208,10 @@
     <property name="name" value="tag-cloud" />
     <property name="defaultURLPattern" ref="decorating.tagServiceExpression" />
     <property name="view" ref="decorating.tagCloudComponent.view" />
+    <property name="tagElementsProvider" ref="decorating.tagElementsProvider" />
+  </bean>
+
+  <bean id="decorating.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
     <property name="tagsReporter" ref="tagsReporter" />
   </bean>
 

@@ -183,11 +183,13 @@ public class XmlEditController implements Controller {
             return null;
         }
 
-        /* Check that session map isn't stale (the lock has been released) */
-        /* a user can access the same (locked) resource from different clients */
+        /* Check that session map isn't stale (the lock has been released).
+           A user can access the same (locked) resource from different clients */
         String token = SecurityContext.getSecurityContext().getToken();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        Lock lock = this.repository.retrieve(token, uri, false).getLock();
+        Resource resource = this.repository.retrieve(token, uri, false);
+        
+        Lock lock = resource.getLock();
 
         if (lock == null) {
             if (logger.isDebugEnabled())
@@ -203,6 +205,13 @@ public class XmlEditController implements Controller {
             sessionMap = null;
         }
 
+        EditDocument document = 
+            (EditDocument) sessionMap.get(EditDocument.class.getName());
+
+        if (document.getResource().getLastModified().before(resource.getLastModified())) {
+            return null;
+        }
+        
         return sessionMap;
     }
     

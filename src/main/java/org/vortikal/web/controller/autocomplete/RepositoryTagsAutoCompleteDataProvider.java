@@ -38,27 +38,23 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
-import org.vortikal.repository.reporting.DataReportManager;
 import org.vortikal.repository.reporting.Pair;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
-import org.vortikal.repository.reporting.UriScope;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQuery.Ordering;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.web.reporting.TagsReportingComponent;
 
 
 /**
  * Provide keywords completion data from repository.
  *
  */
-public class RepositoryKeywordsAutoCompleteDataProvider implements
+public class RepositoryTagsAutoCompleteDataProvider implements
         AutoCompleteDataProvider {
     
     private final Log logger = LogFactory.getLog(getClass());
     
-    private DataReportManager dataReportManager;
-    private PropertyTypeDefinition keywordsPropDef;
+    private TagsReportingComponent tagsReporter;
+
     private boolean filterByPrefix = true;
 
     /**
@@ -79,32 +75,20 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
     
     // Fetch list of all existing unique repository keywords, sorted
     // by frequency, with most frequent on top.
-    private List<Object> getRepositoryKeywords(Path contextUri, String token) {
+    private List<Object> getRepositoryKeywords(Path scopeUri, String token) {
      
-        // TODO might consider implementing limit on number of unique keywords that are 
-        //  fetched (set limit on property value frequency query).
-        PropertyValueFrequencyQuery pfq = 
-            new PropertyValueFrequencyQuery();
-        pfq.setPropertyTypeDefinition(this.keywordsPropDef);
-
-        // Sort by highest frequency first.
-        pfq.setOrdering(Ordering.DESCENDING_BY_FREQUENCY);
-        
-        if (contextUri != null && !"/".equals(contextUri)) {
-            pfq.setUriScope(new UriScope(contextUri));
-        }
-        
+        // TODO might consider adding limit on number of unique keywords that are 
+        //  fetched.
         try {
             PropertyValueFrequencyQueryResult pfqResult =
-                (PropertyValueFrequencyQueryResult) 
-                       this.dataReportManager.executeReportQuery(pfq, token);
-            
+                tagsReporter.getTags(scopeUri, -1, -1, token);
+                
             List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
 
             List<Object> result = new ArrayList<Object>(pfqList.size());
             
             for (Pair<Value, Integer> pair: pfqList) {
-                result.add(new Keyword(pair.first().getStringValue()));
+                result.add(new Tag(pair.first().getStringValue()));
             }
             
             return result;
@@ -120,7 +104,7 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
     private void filterByPrefix(String prefix, List<Object> list) {
         List<Object> filteredKeywords = new ArrayList<Object>();
         for (Object obj : list) {
-            String keyword = ((Keyword) obj).getKeyword();
+            String keyword = ((Tag) obj).getKeyword();
             if (!(prefix.length() <= keyword.length()
                     && keyword.substring(0, prefix.length()).equalsIgnoreCase(prefix))) {
                 filteredKeywords.add(obj);
@@ -129,25 +113,15 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
         list.removeAll(filteredKeywords);
     }
 
-    @Required
-    public void setDataReportManager(DataReportManager dataReportManager) {
-        this.dataReportManager = dataReportManager;
-    }
-
-    @Required
-    public void setKeywordsPropDef(PropertyTypeDefinition keywordsPropDef) {
-        this.keywordsPropDef = keywordsPropDef;
-    }
-
     public void setFilterByPrefix(boolean filterByPrefix) {
         this.filterByPrefix = filterByPrefix;
     }
     
-    public class Keyword {
+    public class Tag {
         
         private String keyword;
         
-        public Keyword(String keyword) {
+        public Tag(String keyword) {
             this.keyword = keyword;
         }
         
@@ -155,6 +129,11 @@ public class RepositoryKeywordsAutoCompleteDataProvider implements
             return this.keyword;
         }
         
+    }
+
+    @Required
+    public void setTagsReporter(TagsReportingComponent tagsReporter) {
+        this.tagsReporter = tagsReporter;
     }
 
 }

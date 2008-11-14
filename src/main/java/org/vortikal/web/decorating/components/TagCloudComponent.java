@@ -42,23 +42,21 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
-import org.vortikal.repository.reporting.DataReportManager;
 import org.vortikal.repository.reporting.Pair;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQuery;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
-import org.vortikal.repository.reporting.UriScope;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.decorating.components.DecoratorComponentException;
+import org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent;
+import org.vortikal.web.reporting.TagsReportingComponent;
 
 /**
  * Decorator component for tag cloud.
  * 
- * @author oyviste
  */
 public class TagCloudComponent extends ViewRenderingDecoratorComponent implements InitializingBean {
 
@@ -110,11 +108,10 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
 
     private static final Pattern URL_REPLACEMENT_VALUE_PATTERN = Pattern.compile("%v");
 
-    private DataReportManager dataReportManager;
-    private PropertyTypeDefinition keywordsPropDef = null;
     private String defaultURLPattern = null;
-
-
+    
+    private TagsReportingComponent tagsReporter;
+    
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
@@ -143,18 +140,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         String token = SecurityContext.getSecurityContext().getToken();
 
         if (request.getStringParameter(PARAMETER_SCOPE) != null) {
-            String scopeUriParam = request.getStringParameter(PARAMETER_SCOPE);
-
-            // Current collection is the default scope
-            if (!(".".equals(scopeUriParam) || "./".equals(scopeUriParam))) {
-                if (!scopeUriParam.startsWith("/")) {
-                    Path requestURI = RequestContext.getRequestContext().getResourceURI();
-                    scopeUriParam = requestURI.toString().substring(0, requestURI.toString().lastIndexOf("/") + 1)
-                            + scopeUriParam;
-                    scopeUriParam = URIUtil.expandPath(scopeUriParam);
-                }
-                scopeUri = Path.fromString(scopeUriParam);
-            }
+            scopeUri = buildScopePath(scopeUri, request.getStringParameter(PARAMETER_SCOPE));
         }
 
         int magnitudeMin = PARAMETER_MAGNITUDE_MIN_DEFAULT_VALUE;
@@ -201,8 +187,21 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         }
 
         // Do data report query
-        PropertyValueFrequencyQueryResult result = executeDataReportQuery(limit, tagOccurenceMin, scopeUri, token);
 
+        PropertyValueFrequencyQueryResult result = null;
+
+        // Legacy exception handling, should be refactored.
+        try {
+            result = 
+                this.tagsReporter.getTags(scopeUri, limit, tagOccurenceMin, token);
+        } catch (DataReportException d) {
+            throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SCOPE
+                    + "', must be a valid URI.");
+        }
+        
+        
         // Generate list of tag elements
         List<TagElement> tagElements = generateTagElementList(result, magnitudeMax, magnitudeMin, serviceUrl);
 
@@ -211,27 +210,20 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
     }
 
 
-    private PropertyValueFrequencyQueryResult executeDataReportQuery(int limit, int tagOccurenceMin, Path scopeUri,
-            String token) throws DecoratorComponentException {
-
-        PropertyValueFrequencyQuery query = new PropertyValueFrequencyQuery();
-        query.setPropertyTypeDefinition(this.keywordsPropDef);
-        query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_FREQUENCY);
-        query.setLimit(limit);
-        query.setMinValueFrequency(tagOccurenceMin);
-
-        try {
-            query.setUriScope(new UriScope(scopeUri));
-        } catch (IllegalArgumentException e) {
-            throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SCOPE
-                    + "', must be a valid URI.");
+    // XXX: this is typical util shit, done a lot of places..
+    Path buildScopePath(Path base, String href) {
+        if (".".equals(href) || "./".equals(href)) {
+            return base;
         }
-
-        try {
-            return (PropertyValueFrequencyQueryResult) this.dataReportManager.executeReportQuery(query, token);
-        } catch (DataReportException d) {
-            throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());
+        
+        if (!href.startsWith("/")) {
+            Path requestURI = RequestContext.getRequestContext().getResourceURI();
+            href = requestURI.toString().substring(0, requestURI.toString().lastIndexOf("/") + 1)
+                    + href;
+            href = URIUtil.expandPath(href);
         }
+        
+        return Path.fromString(href);
     }
 
 
@@ -339,14 +331,8 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
 
 
     @Required
-    public void setKeywordsPropDef(PropertyTypeDefinition keywordsPropDef) {
-        this.keywordsPropDef = keywordsPropDef;
-    }
-
-
-    @Required
-    public void setDataReportManager(DataReportManager manager) {
-        this.dataReportManager = manager;
+    public void setTagsReporter(TagsReportingComponent tagsReporter) {
+        this.tagsReporter = tagsReporter;
     }
 
 }

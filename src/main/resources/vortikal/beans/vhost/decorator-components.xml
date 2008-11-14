@@ -204,12 +204,11 @@
 
   <bean id="decorating.tagCloudComponent" 
         class="org.vortikal.web.decorating.components.TagCloudComponent">
-    <property name="dataReportManager" ref="dataReportManager"/>
-    <property name="keywordsPropDef" ref="keywordsPropDef"/>
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="tag-cloud" />
     <property name="defaultURLPattern" ref="decorating.tagServiceExpression" />
     <property name="view" ref="decorating.tagCloudComponent.view" />
+    <property name="tagsReporter" ref="tagsReporter" />
   </bean>
 
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"

@@ -12,7 +12,7 @@
 <#--
  * addAutoCompleteScripts
  *
- * Adds the neccesary scripts for autocomplete.
+ * Adds the necessary scripts for autocomplete.
  *
  * @param srcBase Base src path for scripts
  *

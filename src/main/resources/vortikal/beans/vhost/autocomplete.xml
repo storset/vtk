@@ -34,17 +34,16 @@
   <bean id="tagsAutoCompleteHandler"
     class="org.vortikal.web.controller.autocomplete.AutoCompleteController">
     <property name="fieldName" ref="tagAutoCompleteFieldName" />
-    <property name="dataProvider" ref="keywordsAutoCompleteDataProvider" />
+    <property name="dataProvider" ref="tagsAutoCompleteDataProvider" />
   </bean>
   
   <bean id="tagAutoCompleteFieldName" class="java.lang.String">
     <constructor-arg value="keywords" />
   </bean>
   
-  <bean id="keywordsAutoCompleteDataProvider"
-    class="org.vortikal.web.controller.autocomplete.RepositoryKeywordsAutoCompleteDataProvider">
-    <property name="dataReportManager" ref="dataReportManager" />
-    <property name="keywordsPropDef" ref="keywordsPropDef" />
+  <bean id="tagsAutoCompleteDataProvider"
+    class="org.vortikal.web.controller.autocomplete.RepositoryTagsAutoCompleteDataProvider">
+    <property name="tagsReporter" ref="tagsReporter" />
   </bean>
   
   <bean id="autoComplete.appResourceAssertion"

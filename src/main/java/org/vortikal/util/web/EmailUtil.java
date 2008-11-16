@@ -63,7 +63,7 @@ public class EmailUtil {
 	// ex. surname.lastname@usit.uio.no
 	private static final String addrSpec = "^" + localPart + "@" + domain + "$";
 	
-	private static final String addrNormal = "^[\\_]*([a-z0-9]+(\\.|\\_*)?)+@([a-z][a-z0-9\\-]+(\\.|\\-*\\.))+[a-z]{2,6}$";
+	private static final String addrNormal = "^[\\_]*([a-z0-9]+(\\.|\\_|\\-*)?)+@([a-z][a-z0-9\\-]+(\\.|\\-*\\.))+[a-z]{2,6}$";
 	
 	private static final String addrLight = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)";
 	

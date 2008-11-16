@@ -93,7 +93,8 @@ public class EmailAFriendController implements Controller {
 				String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
 				
 				// Checks for valid email addresses
-				if (EmailUtil.isValidMultipleEmails(emailMultipleTo, false) && EmailUtil.isValidEmail(emailFrom, false)) {
+				if (EmailUtil.isValidMultipleEmails(emailMultipleTo, EmailUtil.VALID_EMAIL)
+						&& EmailUtil.isValidEmail(emailFrom, EmailUtil.VALID_EMAIL)) {
 					
 					MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
 							emailFrom, comment, serverHostname, serverPort);

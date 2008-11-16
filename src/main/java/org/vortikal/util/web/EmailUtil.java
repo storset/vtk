@@ -63,30 +63,26 @@ public class EmailUtil {
 	// ex. surname.lastname@usit.uio.no
 	private static final String addrSpec = "^" + localPart + "@" + domain + "$";
 	
-	private static final String addrNormal = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)";
+	private static final String addrNormal = "^[\\_]*([a-z0-9]+(\\.|\\_*)?)+@([a-z][a-z0-9\\-]+(\\.|\\-*\\.))+[a-z]{2,6}$";
 	
-	private static final Pattern VALID_EMAIL_RFC = Pattern.compile(addrSpec);
-	private static final Pattern VALID_EMAIL = Pattern.compile(addrNormal);
+	private static final String addrLight = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)";
 	
-	public static boolean isValidEmail(String emailAddress, boolean rfcStandard) {
-		if (rfcStandard) {
-			return VALID_EMAIL_RFC.matcher(emailAddress.trim()).matches();
-		} else {
-			return VALID_EMAIL.matcher(emailAddress.trim()).matches();
-		}
+	public static final Pattern VALID_EMAIL_RFC = Pattern.compile(addrSpec);
+	public static final Pattern VALID_EMAIL = Pattern.compile(addrNormal);
+	public static final Pattern VALID_EMAIL_LIGHT = Pattern.compile(addrLight);
+	
+	public static boolean isValidEmail(String emailAddress, Pattern regExPattern) {
+		return regExPattern.matcher(emailAddress.trim()).matches();
 	}
 	
-	public static boolean isValidMultipleEmails(String[] emailAddresses, boolean rfcStandard) {
+	public static boolean isValidMultipleEmails(String[] emailAddresses, Pattern regExPattern) {
 		
 		for (int i = 0; i < emailAddresses.length; i++) {
 			
 			boolean valid = false;
 			
-			if (rfcStandard) {
-				valid = VALID_EMAIL_RFC.matcher(emailAddresses[i].trim()).matches();
-			} else {
-				valid = VALID_EMAIL.matcher(emailAddresses[i].trim()).matches();
-			}
+			valid = regExPattern.matcher(emailAddresses[i].trim()).matches();
+			
 			if (!valid) {
 				return false;
 			}

@@ -694,7 +694,7 @@ table.directoryListing th.locked {
 }
 
 table.directoryListing tr:hover {
-    background-color: #cccccc;
+    background-color: #d5d5f5;
 }
 
 table.directoryListing td.activeLock span.lockOwner {

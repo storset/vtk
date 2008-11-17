@@ -316,7 +316,7 @@ div.picture button{
 }
 
 div.picture img { 
-  height: 16.5ex;
+  height: 135px;
   float: left;
   position: relative;
 }
@@ -339,7 +339,7 @@ div.caption {
   width: 327px;
   float: left;
   position: relative;
-  margin-top: -100px;
+  margin-top: -105px;
 }
 
 /* IE6 fix */
@@ -349,10 +349,10 @@ div.caption {
 }
 
 div.caption textarea{
-	height: 10ex;
+	height: 83px;
 }
 #resource\.caption___Frame {
-	height: 10ex;
+	height: 83px;
 }
 
 /* ****** END Picture: (input, button, preview) and caption styling */

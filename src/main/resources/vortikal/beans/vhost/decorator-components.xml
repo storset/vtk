@@ -165,17 +165,6 @@
     <property name="name" value="email-friend" />
     <property name="description" value="Inserts a URL to email-a-friend service" />
     <property name="view" ref="decorating.emailAFriendURLComponent.view" />
-    <property name="exposedParameters">
-      <set>
-        <value>use-lightbox</value>
-      </set>
-    </property>
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="use-lightbox"
-               value="If set to 'true', the form will use Lightbox effect for popup." />
-      </map>
-    </property>
   </bean>
 
   <bean name="decorating.emailAFriendURLComponent.view" parent="freemarkerView">
@@ -185,13 +174,6 @@
         <ref bean="decorating.emailAFriendURLComponent.urlProvider" />
         <ref bean="resourceContextProvider" />
       </list>
-    </property>
-    <property name="attributes">
-      <map>
-	      <entry key="urlPrototype" value="${jsBaseURL}/lightbox/prototype.js" /> 
-	      <entry key="urlScriptaculous" value="${jsBaseURL}/lightbox/scriptaculous.js?load=effects,builder" /> 
-	      <entry key="urlLightbox" value="${jsBaseURL}/lightbox/lightbox.js" /> 
-      </map>
     </property>
   </bean>
 

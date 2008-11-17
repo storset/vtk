@@ -29,16 +29,14 @@ div.vrtx-introduction-image div.vrtx-imagetext {
    /* border-color: #ccc; */
    /* border-style: none solid solid; */
    /* border-width: medium 1px 1px; */
-   font-size: 0.8em;
-   line-height: 1.4em;
-   padding:0.1em 0.5em 0.5em;
+   margin: 0em 0em 0.5em 0.75em;
    /* overflow: hidden; */
    /* background: #eee; */
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo {
    display: block; /* Make it same as vrtx-imagedescription */
-   font-style: italic;
+   /* font-style: italic; */
 }
 
 * html div.vrtx-introduction-image div.vrtx-imagetext {
@@ -82,12 +80,4 @@ a.vrtx-media {
 /* Body */
 div.vrtx-bodytext {
 	clear: left;
-}
-
-/* Tip-a-friend - seperate CSS(?) */
-div.vrtx-tip-a-friend {
-	border: 1px solid #ddd; 
-	margin: 1em 0px; 
-	padding: 1em; 
-	color: #333;
 }

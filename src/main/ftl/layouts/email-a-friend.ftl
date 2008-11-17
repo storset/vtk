@@ -23,10 +23,10 @@
             //half the screen height minus half the new window height (plus title and status bars).
             iMyHeight = (window.screen.height/2) - (100 + 50);
  
-            //Open the window.
+            //Open the window
             var win2 = window.open(url,"Window2","status=no,height=450,width=340,resizable=no,left=" + iMyWidth + ",top=" + iMyHeight + ",screenX=" + iMyWidth + ",screenY=" + iMyHeight + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
             win2.focus();
           }
 </script>
 
-<a class="vrtx-email-friend" href="javascript:popup('${emailLink.url?html}');"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>
+<a class="vrtx-email-friend" href="javascript:popup('${emailLink.url?html}&firstRun=true');"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>

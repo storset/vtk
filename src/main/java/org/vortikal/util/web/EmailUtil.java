@@ -31,7 +31,9 @@
 
 package org.vortikal.util.web;
 
-import java.util.regex.Pattern;
+import javax.mail.Address;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 /* Credits
  *  http://www.leshazlewood.com/?p=23
@@ -41,53 +43,62 @@ import java.util.regex.Pattern;
 public class EmailUtil {
 	
 	// ex. surname.lastname
-	private static final String sp = "!#$%&\'*+-/=?^_`{|}~";
-	private static final String ftext = "[a-zA-Z0-9]";
-	private static final String atext = "[a-zA-Z0-9" + sp + "]";
-	private static final String atom = atext + "+";
-	private static final String fatom = ftext + "+";
-	private static final String dotAtom = "(\\\\.|-|_)" + atom;
-	private static final String localPart = fatom + "(" + dotAtom + ")*";
-	
-	// RFC 1035
-	// ex. usit, uio, no
-	private static final String letter = "[a-zA-Z]";
-	private static final String letDig = "[a-zA-Z0-9]";
-	private static final String letDigHyp = "[a-zA-Z0-9-]";
-	private static final String rfcLabel = letDig + letDigHyp + "{0,61}" + letDig;
-	
-	// ex. usit.uio.no
-	private static final String domain = rfcLabel + "((\\\\.|-)" + rfcLabel + ")*\\\\." + letter + "{2,6}";
-	
-	// RFC 2822
-	// ex. surname.lastname@usit.uio.no
-	private static final String addrSpec = "^" + localPart + "@" + domain + "$";
-	
-	private static final String addrNormal = "^[\\_]*([a-z0-9]+(\\.|\\_|\\-*)?)+@([a-z][a-z0-9\\-]+(\\.|\\-*\\.))+[a-z]{2,6}$";
-	
-	private static final String addrLight = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)";
-	
-	public static final Pattern VALID_EMAIL_RFC = Pattern.compile(addrSpec);
-	public static final Pattern VALID_EMAIL = Pattern.compile(addrNormal);
-	public static final Pattern VALID_EMAIL_LIGHT = Pattern.compile(addrLight);
-	
-	public static boolean isValidEmail(String emailAddress, Pattern regExPattern) {
-		return regExPattern.matcher(emailAddress.trim()).matches();
+	// private static final String sp = "!#$%&\'*+-/=?^_`{|}~";
+	// private static final String ftext = "[a-zA-Z0-9]";
+	// private static final String atext = "[a-zA-Z0-9" + sp + "]";
+	// private static final String atom = atext + "+";
+	// private static final String fatom = ftext + "+";
+	// private static final String dotAtom = "(\\.|-|_)" + atom;
+	// private static final String localPart = fatom + "(" + dotAtom + ")*";
+	//	
+	// // RFC 1035
+	// // ex. usit, uio, no
+	// private static final String letter = "[a-zA-Z]";
+	// private static final String letDig = "[a-zA-Z0-9]";
+	// private static final String letDigHyp = "[a-zA-Z0-9-]";
+	// private static final String rfcLabel = letDig + letDigHyp + "{0,61}" + letDig;
+	//	
+	// // ex. usit.uio.no
+	// private static final String domain = rfcLabel + "((\\.|-)" + rfcLabel + ")*\\." + letter + "{2,6}";
+	//	
+	// // RFC 2822
+	// // ex. surname.lastname@usit.uio.no
+	// private static final String addrSpec = "^" + localPart + "@" + domain + "$";
+	//	
+	// private static final String addrNormal =
+	// "^[\\_]*([a-z0-9]+(\\.|\\_|\\-*)?)+@([a-z][a-z0-9\\-]+(\\.|\\-*\\.))+[a-z]{2,6}$";
+	//	
+	// private static final String addrLight =
+	// "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)";
+	//	
+	// public static final Pattern VALID_EMAIL_RFC = Pattern.compile(addrSpec);
+	// public static final Pattern VALID_EMAIL = Pattern.compile(addrNormal);
+	// public static final Pattern VALID_EMAIL_LIGHT = Pattern.compile(addrLight);
+	//	
+	public static boolean isValidEmail(String emailAddress) {
+		// return regExPattern.matcher(emailAddress.trim()).matches();
+		try {
+			Address addr = new InternetAddress(emailAddress);
+			return true;
+		} catch (AddressException e) {
+			return false;
+		}
 	}
 	
-	public static boolean isValidMultipleEmails(String[] emailAddresses, Pattern regExPattern) {
+	public static boolean isValidMultipleEmails(String[] emailAddresses) {
 		
 		for (int i = 0; i < emailAddresses.length; i++) {
-			
-			boolean valid = false;
-			
-			valid = regExPattern.matcher(emailAddresses[i].trim()).matches();
-			
-			if (!valid) {
+			// boolean valid = false;
+			try {
+				Address addr = new InternetAddress(emailAddresses[i]);
+				// valid = regExPattern.matcher(emailAddresses[i].trim()).matches();
+			} catch (AddressException e) {
 				return false;
 			}
+			// if (!valid) {
+			// return false;
+			// }
 		}
-		
 		return true;
 		
 	}

@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.cache;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,7 +40,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -277,8 +275,8 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
         }
     }
 
-    public synchronized void clear() {
-        throw new IllegalStateException("clear() not implemented");
+    public void clear() {
+        this.cache.clear();
     }
     
 

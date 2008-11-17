@@ -36,6 +36,11 @@
        <#list entries[0..maxMsgs-1] as entry>
          <li>
           <a class="item-title" href="${entry.link?html}">${entry.title?html}</a>
+          <#if conf.publishedDate?exists && entry.publishedDate?exists>
+          <span class="published-date">
+            <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
+          </span>
+          </#if>
 	      <#-- description -->
 	      <#if conf.itemDescription?exists && (entry.description.value)?exists>
             <div class="item-description">
@@ -48,11 +53,6 @@
                 <li>${category.name}</li>
               </#list>
             </ul>
-          </#if>
-          <#if conf.publishedDate?exists && entry.publishedDate?exists>
-          <span class="published-date">
-            <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
-          </span>
           </#if>
           <#if conf.displayChannel?exists>
             <#if conf.publishedDate?exists && entry.publishedDate?exists> - </#if><a href="${feedMapping.getUrl(entry)}" class="channel">${feedMapping.getTitle(entry)?html}</a> 

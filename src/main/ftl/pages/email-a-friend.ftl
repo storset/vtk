@@ -10,8 +10,6 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
-
-
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -74,22 +72,46 @@
     </style>
 
  </head>
-  <body>
+ <body>
     <a id="tip-close-link" href="javascript:window.close();"><@vrtx.msg code="tip.form.close" default="Close" /></a>
     <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>
+
        <#-- E-mail a friend form -->
         <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
+          
+          <#-- Email to -->
           <label for="emailTo"><@vrtx.msg code="tip.form.emailto" default="Send e-mail to" /></label> 
-          <input type="text" id="emailTo" name="emailTo"/><div class="email-help"><@vrtx.msg code="tip.form.emailtomessage" default="Use comma as a seperator if more than one e-mail recipient" /></div> 
-          <label for="emailFrom"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mailadress" /></label> 
-          <input type="text" id="emailFrom" name="emailFrom"/>
+          
+          <#if emailSavedTo?exists && emailSavedTo?has_content>
+            <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo}"/>      
+          <#else>
+            <input type="text" id="emailTo" name="emailTo" value=""/>         
+          </#if>
+          <div class="email-help"><@vrtx.msg code="tip.form.emailtomessage" default="Use comma as a seperator if more than one e-mail recipient" /></div> 
+          
+          <#-- Email from -->
+          <label for="emailFrom"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mailadress" /></label>  
+            
+          <#if emailSavedFrom?exists && emailSavedFrom?has_content>
+            <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom}"/>
+          <#else>
+            <input type="text" id="emailFrom" name="emailFrom" value=""/>
+          </#if>
+          
+          <#-- Your comment -->
           <label for="yourComment"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
-          <textarea rows="3" cols="10" id="yourComment" name="yourComment"></textarea>
+          
+          <#if yourSavedComment?exists && yourSavedComment?has_content>
+            <textarea rows="3" cols="10" id="yourComment" name="yourComment">${yourSavedComment}</textarea>
+          <#else>
+            <textarea rows="3" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
+          </#if>
+          
           <input type="submit" class="submit-email-form" value="Send" name="submit"/>
        </form>
        
-            <#-- Postback from Controller -->
+      <#-- Postback from Controller -->
       <div id="tip-response"> 
          <#if tipResponse?exists && tipResponse?has_content>
            <#if tipResponse = "FAILURE-NULL-FORM">
@@ -99,7 +121,7 @@
            <#elseif tipResponse = "FAILURE">
                <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" />.</span>
            <#elseif tipResponse = "OK">
-               <@vrtx.msg code="tip.form.success" default="Tip is sent to " /><#if emailSentTo?exists && emailSentTo?has_content> ${emailSentTo}</#if>
+               <@vrtx.msg code="tip.form.success" default="Tip is sent to " />&nbsp;<#if emailSentTo?exists && emailSentTo?has_content>${emailSentTo}</#if>
            </#if> 
         </#if>  
       </div>

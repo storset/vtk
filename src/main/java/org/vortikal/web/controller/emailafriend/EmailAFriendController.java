@@ -60,13 +60,12 @@ public class EmailAFriendController implements Controller {
 	private ResourceWrapperManager resourceManager;
 	private JavaMailSenderImpl javaMailSenderImpl;
 	private MailExecutor mailExecutor;
+	private MailTemplateProvider mailTemplateProvider;
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		String token = SecurityContext.getSecurityContext().getToken();
 		Path uri = RequestContext.getRequestContext().getResourceURI();
-		
-		String method = request.getMethod();
 		
 		String serverHostname = request.getServerName();
 		int serverPort = request.getServerPort();
@@ -74,17 +73,39 @@ public class EmailAFriendController implements Controller {
 		Resource document = this.repository.retrieve(token, uri, true);
 		Map<String, Object> m = new HashMap<String, Object>();
 		
+		// Use mail template language based on document language
+		String language = document.getContentLanguage();
+		
+		// If none use english
+		if (language == null) {
+			language = "en";
+		}
+		
+		// Check for resource
 		if (document == null) {
 			return null;
 		}
 		
-		if (method.equals("GET")) {
-			
-		} else {
+		// Check for POST
+		String method = request.getMethod();
+		
+		if (method.equals("POST")) {
 			
 			// Checks for userinput
 			if (request.getParameter("emailTo") == null || request.getParameter("emailFrom") == null
 					|| request.getParameter("emailTo").equals("") || request.getParameter("emailFrom").equals("")) {
+				
+				// Save data from form and return it
+				if (request.getParameter("emailTo") != null && (!request.getParameter("emailTo").equals(""))) {
+					m.put("emailSavedTo", request.getParameter("emailTo"));
+				}
+				if (request.getParameter("emailFrom") != null && (!request.getParameter("emailFrom").equals(""))) {
+					m.put("emailSavedFrom", request.getParameter("emailFrom"));
+				}
+				if (request.getParameter("yourComment") != null && (!request.getParameter("yourComment").equals(""))) {
+					m.put("yourSavedComment", request.getParameter("yourComment"));
+				}
+				// ---------------------------------------------------------------------
 				
 				m.put("tipResponse", "FAILURE-NULL-FORM");
 				
@@ -94,7 +115,14 @@ public class EmailAFriendController implements Controller {
 					
 					String emailTo = (String) request.getParameter("emailTo");
 					String emailFrom = (String) request.getParameter("emailFrom");
-					String comment = (String) request.getParameter("yourComment");
+					
+					// Optional input from user
+					String comment = "";
+					
+					if (request.getParameter("yourComment") != null
+							&& (!request.getParameter("yourComment").equals(""))) {
+						comment = (String) request.getParameter("yourComment");
+					}
 					
 					String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
 					
@@ -102,24 +130,38 @@ public class EmailAFriendController implements Controller {
 					if (EmailUtil.isValidMultipleEmails(emailMultipleTo) && EmailUtil.isValidEmail(emailFrom)) {
 						
 						MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
-								emailFrom, comment, serverHostname, serverPort);
+								emailFrom, comment, serverHostname, serverPort, language);
 						
 						// javaMailSenderImpl.send(mimeMessage);
 						mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 						
 						m.put("emailSentTo", emailTo);
-						m.put("senderIP", request.getRemoteAddr().toString());
+						// m.put("senderIP", request.getRemoteAddr().toString());
 						m.put("tipResponse", "OK");
 						
 					} else {
+						
+						// Save data from form and return it
+						m.put("emailSavedTo", request.getParameter("emailTo"));
+						
+						m.put("emailSavedFrom", request.getParameter("emailFrom"));
+						
+						if (request.getParameter("yourComment") != null
+								&& (!request.getParameter("yourComment").equals(""))) {
+							m.put("yourSavedComment", request.getParameter("yourComment"));
+						}
+						// ------------------------------------------------------
+						
 						m.put("tipResponse", "FAILURE-INVALID-EMAIL");
 					}
+					// Unreachable because of thread
 				} catch (Exception mtex) {
-					// Unreachable because of threads
 					// m.put("tipResponse", "FAILURE");
 					// m.put("tipResponseMsg", mtex.getMessage());
 				}
 			}
+		} else {
+			// do nothing
 		}
 		
 		m.put("resource", this.resourceManager.createResourceWrapper());
@@ -127,12 +169,13 @@ public class EmailAFriendController implements Controller {
 	}
 	
 	private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
-			String emailFrom, String comment, String serverHostname, int serverPort) throws MessagingException {
+			String emailFrom, String comment, String serverHostname, int serverPort, String language)
+			throws MessagingException {
 		
 		String serverHostnameShort = StringUtils.capitalize(serverHostname);
 		
-		String mailBody = generateMailBody(document.getTitle(), document.getURI().toString(), emailFrom, comment,
-				serverHostname, serverHostnameShort, serverPort);
+		String mailBody = mailTemplateProvider.generateMailBody(document.getTitle(), document.getURI().toString(),
+				emailFrom, comment, serverHostname, serverHostnameShort, serverPort, language);
 		
 		MimeMessage mimeMessage = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
@@ -143,40 +186,6 @@ public class EmailAFriendController implements Controller {
 		helper.setText(mailBody);
 		
 		return mimeMessage;
-	}
-	
-	// TODO: localization and refactor in ex. tipafriend.TipAFriendMailTemplateProvider.java
-	private String generateMailBody(String title, String articleURI, String mailFrom, String comment,
-			String serverHostname, String serverHostnameShort, int serverPort) {
-		
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append("Hei!\n\n");
-		
-		sb.append(serverHostnameShort + " har en artikkel jeg tror kan være interessant for deg:\n");
-		
-		sb.append(title + "\n\n");
-		
-		sb.append(comment + "\n\n");
-		
-		sb.append("Les hele artikkelen her: \n");
-		if (serverPort != 80) {
-			sb.append("http://" + serverHostname + ":" + serverPort + articleURI + " \n\n");
-		} else {
-			sb.append("http://" + serverHostname + articleURI + " \n\n");
-		}
-		
-		sb.append("Med vennlig hilsen,\n");
-		
-		sb.append(mailFrom + "\n\n\n\n");
-		
-		sb.append("--------------------------------------------\n");
-		sb.append("Denne meldingen er sendt på oppfordring fra " + mailFrom + "\n\n");
-		sb.append("Din e-post adresse blir ikke lagret.\n");
-		sb.append("Du vil ikke motta flere meldinger av denne typen,\n");
-		sb.append("med mindre noen tipser deg om andre nyheter på " + serverHostname + "/");
-		
-		return sb.toString();
 	}
 	
 	public void setRepository(Repository repository) {
@@ -201,6 +210,11 @@ public class EmailAFriendController implements Controller {
 	@Required
 	public void setMailExecutor(MailExecutor mailExecutor) {
 		this.mailExecutor = mailExecutor;
+	}
+	
+	@Required
+	public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
+		this.mailTemplateProvider = mailTemplateProvider;
 	}
 	
 }

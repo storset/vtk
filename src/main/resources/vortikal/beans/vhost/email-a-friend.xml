@@ -33,7 +33,6 @@
      </property>   
   </bean>
   
-  
   <bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     <property name="host" value="smtp.uio.no" />
     <property name="port" value="465" />
@@ -47,16 +46,20 @@
     <property name="resourceManager" ref="resourceManager"/>
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
     <property name="mailExecutor" ref="mailExecutor"/>
+    <property name="mailTemplateProvider" ref="mailTemplateProvider"/>
   </bean> 
 
   <bean id="mailExecutor" class="org.vortikal.web.controller.emailafriend.MailExecutor">
     <constructor-arg ref="taskExecutor" />
   </bean>
-  
+    
   <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
     <property name="corePoolSize" value="10" />
     <property name="maxPoolSize" value="25" />
     <property name="queueCapacity" value="50" />
   </bean>
+  
+   <bean id="mailTemplateProvider" class="org.vortikal.web.controller.emailafriend.MailTemplateProvider">
+   </bean>
   
 </beans>

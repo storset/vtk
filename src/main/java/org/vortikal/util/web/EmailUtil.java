@@ -35,6 +35,8 @@ import javax.mail.Address;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.springframework.util.StringUtils;
+
 /* Credits
  *  http://www.leshazlewood.com/?p=23
  *  http://www.tunagami.com/articles/2007/11/04/regexp-java-email-rfc-2822-you
@@ -79,10 +81,14 @@ public class EmailUtil {
 		// return regExPattern.matcher(emailAddress.trim()).matches();
 		try {
 			Address addr = new InternetAddress(emailAddress);
-			return true;
+			
+			if (StringUtils.countOccurrencesOf(emailAddress, "@") == 0) {
+				return false;
+			}
 		} catch (AddressException e) {
 			return false;
 		}
+		return true;
 	}
 	
 	public static boolean isValidMultipleEmails(String[] emailAddresses) {
@@ -91,6 +97,11 @@ public class EmailUtil {
 			// boolean valid = false;
 			try {
 				Address addr = new InternetAddress(emailAddresses[i]);
+				
+				if (StringUtils.countOccurrencesOf(emailAddresses[i], "@") == 0) {
+					return false;
+				}
+				
 				// valid = regExPattern.matcher(emailAddresses[i].trim()).matches();
 			} catch (AddressException e) {
 				return false;

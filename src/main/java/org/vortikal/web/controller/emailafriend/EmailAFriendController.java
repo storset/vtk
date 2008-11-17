@@ -76,41 +76,47 @@ public class EmailAFriendController implements Controller {
 			return null;
 		}
 		
-		// Checks for userinput
-		if (request.getParameter("emailTo") == null || request.getParameter("emailFrom") == null
-				|| request.getParameter("emailTo").equals("") || request.getParameter("emailFrom").equals("")) {
-			
-			m.put("tipResponse", "FAILURE-NULL-FORM");
+		if (request.getParameter("firstRun").equals("true")) {
 			
 		} else {
 			
-			try {
+			// Checks for userinput
+			if (request.getParameter("emailTo") == null || request.getParameter("emailFrom") == null
+					|| request.getParameter("emailTo").equals("") || request.getParameter("emailFrom").equals("")) {
 				
-				String emailTo = (String) request.getParameter("emailTo");
-				String emailFrom = (String) request.getParameter("emailFrom");
-				String comment = (String) request.getParameter("yourComment");
+				m.put("tipResponse", "FAILURE-NULL-FORM");
 				
-				String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
+			} else {
 				
-				// Checks for valid email addresses
-				if (EmailUtil.isValidMultipleEmails(emailMultipleTo) && EmailUtil.isValidEmail(emailFrom)) {
+				try {
 					
-					MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
-							emailFrom, comment, serverHostname, serverPort);
+					String emailTo = (String) request.getParameter("emailTo");
+					String emailFrom = (String) request.getParameter("emailFrom");
+					String comment = (String) request.getParameter("yourComment");
 					
-					// javaMailSenderImpl.send(mimeMessage);
-					mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
+					String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
 					
-					m.put("emailSentTo", emailTo);
-					m.put("senderIP", request.getRemoteAddr().toString());
-					m.put("tipResponse", "OK");
-					
-				} else {
-					m.put("tipResponse", "FAILURE-INVALID-EMAIL");
+					// Checks for valid email addresses
+					if (EmailUtil.isValidMultipleEmails(emailMultipleTo) && EmailUtil.isValidEmail(emailFrom)) {
+						
+						MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
+								emailFrom, comment, serverHostname, serverPort);
+						
+						// javaMailSenderImpl.send(mimeMessage);
+						mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
+						
+						m.put("emailSentTo", emailTo);
+						m.put("senderIP", request.getRemoteAddr().toString());
+						m.put("tipResponse", "OK");
+						
+					} else {
+						m.put("tipResponse", "FAILURE-INVALID-EMAIL");
+					}
+				} catch (Exception mtex) {
+					// Unreachable because of threads
+					// m.put("tipResponse", "FAILURE");
+					// m.put("tipResponseMsg", mtex.getMessage());
 				}
-			} catch (Exception mtex) {
-				m.put("tipResponse", "FAILURE");
-				m.put("tipResponseMsg", mtex.getMessage());
 			}
 		}
 		

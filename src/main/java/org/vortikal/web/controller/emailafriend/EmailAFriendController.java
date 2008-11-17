@@ -66,6 +66,8 @@ public class EmailAFriendController implements Controller {
 		String token = SecurityContext.getSecurityContext().getToken();
 		Path uri = RequestContext.getRequestContext().getResourceURI();
 		
+		String method = request.getMethod();
+		
 		String serverHostname = request.getServerName();
 		int serverPort = request.getServerPort();
 		
@@ -76,7 +78,7 @@ public class EmailAFriendController implements Controller {
 			return null;
 		}
 		
-		if (request.getParameter("firstRun").equals("true")) {
+		if (method.equals("GET")) {
 			
 		} else {
 			

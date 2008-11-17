@@ -10,6 +10,8 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 
+
+
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -77,7 +79,7 @@
     <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>
        <#-- E-mail a friend form -->
-        <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend&firstRun=false">
+        <form id="email-a-friend-form" method="post" action="?vrtx=email-a-friend">
           <label for="emailTo"><@vrtx.msg code="tip.form.emailto" default="Send e-mail to" /></label> 
           <input type="text" id="emailTo" name="emailTo"/><div class="email-help"><@vrtx.msg code="tip.form.emailtomessage" default="Use comma as a seperator if more than one e-mail recipient" /></div> 
           <label for="emailFrom"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mailadress" /></label> 

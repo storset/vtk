@@ -32,96 +32,92 @@
 package org.vortikal.web.controller.emailafriend;
 
 public class MailTemplateProvider {
-	
-	public String generateMailBody(String title, String articleURI, String mailFrom, String comment,
-			String serverHostname, String serverHostnameShort, int serverPort, String language) {
-		
-		StringBuilder sb = new StringBuilder();
-		
-		if (language.equals("no_NO")) {
-			
-			sb.append("Hei!\n\n");
-			
-			sb.append(serverHostnameShort + " har en artikkel jeg tror kan være interessant for deg:\n");
-			
-			sb.append(title + "\n\n");
-			
-			sb.append(comment + "\n\n");
-			
-			sb.append("Les hele artikkelen her: \n");
-			if (serverPort != 80) {
-				sb.append("http://" + serverHostname + ":" + serverPort + articleURI + " \n\n");
-			} else {
-				sb.append("http://" + serverHostname + articleURI + " \n\n");
-			}
-			
-			sb.append("Med vennlig hilsen,\n");
-			
-			sb.append(mailFrom + "\n\n\n\n");
-			
-			sb.append("--------------------------------------------\n");
-			sb.append("Denne meldingen er sendt på oppfordring fra " + mailFrom + "\n\n");
-			sb.append("Din e-post adresse blir ikke lagret.\n");
-			sb.append("Du vil ikke motta flere meldinger av denne typen,\n");
-			sb.append("med mindre noen tipser deg om andre artikler på " + serverHostname + "/");
-			
-		} else if (language.equals("no_NO_NY")) {
-			
-			sb.append("Hei!\n\n");
-			
-			sb.append(serverHostnameShort + " har en artikkel eg trur kan væra interessant for deg:\n");
-			
-			sb.append(title + "\n\n");
-			
-			sb.append(comment + "\n\n");
-			
-			sb.append("Les heile artikkelen her: \n");
-			if (serverPort != 80) {
-				sb.append("http://" + serverHostname + ":" + serverPort + articleURI + " \n\n");
-			} else {
-				sb.append("http://" + serverHostname + articleURI + " \n\n");
-			}
-			
-			sb.append("Med vennleg helsing,\n");
-			
-			sb.append(mailFrom + "\n\n\n\n");
-			
-			sb.append("--------------------------------------------\n");
-			sb.append("Denne meldinga er sendt på oppfordring frå " + mailFrom + "\n\n");
-			sb.append("Din e-post adresse blir ikkje lagra.\n");
-			sb.append("Du vil ikkje motta fleire meldingar som dette,\n");
-			sb.append("med mindre nokon tipsar deg om andre artiklar på " + serverHostname + "/");
-			
-			// language=en or default
-		} else {
-			
-			sb.append("Hi!\n\n");
-			
-			sb.append(serverHostnameShort + " have an article I think you will find interesting:\n");
-			
-			sb.append(title + "\n\n");
-			
-			sb.append(comment + "\n\n");
-			
-			sb.append("Read the entire article here: \n");
-			if (serverPort != 80) {
-				sb.append("http://" + serverHostname + ":" + serverPort + articleURI + " \n\n");
-			} else {
-				sb.append("http://" + serverHostname + articleURI + " \n\n");
-			}
-			
-			sb.append("Best regards,\n");
-			
-			sb.append(mailFrom + "\n\n\n\n");
-			
-			sb.append("--------------------------------------------\n");
-			sb.append("This message is sent on  from " + mailFrom + "\n\n");
-			sb.append("Your emailaddress will not be saved.\n");
-			sb.append("You will not recieve more messages of this type,\n");
-			sb.append("unless someone tip you of other articles " + serverHostname + "/");
-			
-		}
-		
-		return sb.toString();
-	}
+
+    public String generateMailBody(String title, String articleURI, String mailFrom, String comment,
+            String serverHostname, String serverHostnameShort, int serverPort, String language) {
+
+        StringBuilder sb = new StringBuilder();
+
+        String articleFullUri = "";
+
+        if (serverPort != 80) {
+            articleFullUri = "http://" + serverHostname + ":" + serverPort + articleURI + " \n\n";
+        } else {
+            articleFullUri = "http://" + serverHostname + articleURI + " \n\n";
+        }
+
+        if (language.equals("no_NO")) {
+
+            sb.append("Hei!\n\n");
+
+            sb.append(serverHostnameShort + " har en artikkel jeg tror kan være interessant for deg:\n");
+
+            sb.append(title + "\n\n");
+
+            sb.append(comment + "\n\n");
+
+            sb.append("Les hele artikkelen her: \n");
+            sb.append(articleFullUri);
+
+            sb.append("Med vennlig hilsen,\n");
+
+            sb.append(mailFrom + "\n\n\n\n");
+
+            sb.append("--------------------------------------------\n");
+            sb.append("Denne meldingen er sendt på oppfordring fra " + mailFrom + "\n\n");
+            sb.append("Din e-post adresse blir ikke lagret.\n");
+            sb.append("Du vil ikke motta flere meldinger av denne typen,\n");
+            sb.append("med mindre noen tipser deg om andre artikler på " + serverHostname + "/");
+
+        } else if (language.equals("no_NO_NY")) {
+
+            sb.append("Hei!\n\n");
+
+            sb.append(serverHostnameShort + " har en artikkel eg trur kan væra interessant for deg:\n");
+
+            sb.append(title + "\n\n");
+
+            sb.append(comment + "\n\n");
+
+            sb.append("Les heile artikkelen her: \n");
+            sb.append(articleFullUri);
+
+            sb.append("Med vennleg helsing,\n");
+
+            sb.append(mailFrom + "\n\n\n\n");
+
+            sb.append("--------------------------------------------\n");
+            sb.append("Denne meldinga er sendt på oppfordring frå " + mailFrom + "\n\n");
+            sb.append("Din e-post adresse blir ikkje lagra.\n");
+            sb.append("Du vil ikkje motta fleire meldingar som dette,\n");
+            sb.append("med mindre nokon tipsar deg om andre artiklar på " + serverHostname + "/");
+
+            // language=en or default
+        } else {
+
+            sb.append("Hi!\n\n");
+
+            sb.append(serverHostnameShort + " have an article I think you will find interesting:\n");
+
+            sb.append(title + "\n\n");
+
+            sb.append(comment + "\n\n");
+
+            sb.append("Read the entire article here:\n");
+            sb.append(articleFullUri);
+
+            sb.append("Best regards,\n");
+
+            sb.append(mailFrom + "\n\n\n\n");
+
+            sb.append("--------------------------------------------\n");
+            sb.append("This message is sent on behalf of " + mailFrom + "\n\n");
+            sb.append("Your emailaddress will not be saved.\n");
+            sb.append("You will not receive more messages of this type,\n");
+            sb.append("unless someone tip you of other articles on " + serverHostname + "/");
+
+        }
+
+        return sb.toString();
+    }
 }

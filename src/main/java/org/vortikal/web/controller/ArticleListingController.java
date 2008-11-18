@@ -37,16 +37,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.controller.article.ArticleListingSearcher;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.URL;
 
 public class ArticleListingController extends AbstractCollectionListingController {
 	
-    private SearchComponent featuredArticlesSearch;
-    private SearchComponent defaultSearch;
+	private ArticleListingSearcher searcher;
         	
     protected void runSearch(HttpServletRequest request, Resource collection,
     		Map<String, Object> model) throws Exception {
@@ -61,13 +59,13 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         URL nextURL = null;
         URL prevURL = null;
 
-        boolean atLeastOneFeaturedArticle = this.featuredArticlesSearch.execute(request, collection, 1, 1, 0).size() > 0;
+        boolean atLeastOneFeaturedArticle = this.searcher.getFeaturedArticles(request, collection, 1, 1, 0).size() > 0;
 
         List<Listing> results = new ArrayList<Listing>();
         Listing featuredArticles = null;
         if (request.getParameter(PREVIOUS_PAGE_PARAM) == null) {
             // Search featured articles
-        	featuredArticles = this.featuredArticlesSearch.execute(request, collection, featuredArticlesPage, pageLimit, 0);
+        	featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit, 0);
             if (featuredArticles.size() > 0) {
             	results.add(featuredArticles);
                 if (featuredArticlesPage > 1) {
@@ -90,11 +88,11 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             // Searching only in default articles
             int upcomingOffset = getIntParameter(request, PREV_BASE_OFFSET_PARAM, 0);
             if (upcomingOffset > pageLimit) upcomingOffset = 0;
-            Listing defaultArticles = this.defaultSearch.execute(request, collection, defaultArticlesPage, pageLimit, upcomingOffset);
+            Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit, upcomingOffset);
             if (defaultArticles.size() > 0) {
             	if (atLeastOneFeaturedArticle) {
-            		Listing fa = this.featuredArticlesSearch.execute(request, collection, 1, pageLimit, 0);
-            		removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
+            		Listing fa = this.searcher.getFeaturedArticles(request, collection, 1, pageLimit, 0);
+            		this.searcher.removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
             	}
             	results.add(defaultArticles);
             }
@@ -125,11 +123,11 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         } else if (featuredArticles.size() < pageLimit) {
             // Fill up the rest of the page with default articles
             int upcomingOffset = pageLimit - featuredArticles.size();
-            Listing defaultArticles = this.defaultSearch.execute(request, collection, 1, upcomingOffset, 0);
+            Listing defaultArticles = this.searcher.getArticles(request, collection, 1, upcomingOffset, 0);
             if (defaultArticles.size() > 0) {
             	if (atLeastOneFeaturedArticle) {
-            		Listing fa = this.featuredArticlesSearch.execute(request, collection, 1, pageLimit, 0);
-            		removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
+            		Listing fa = this.searcher.getFeaturedArticles(request, collection, 1, pageLimit, 0);
+            		this.searcher.removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
             	}
             	results.add(defaultArticles);
             }
@@ -158,27 +156,10 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         model.put("prevURL", prevURL);
     	
     }
-
-	private void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles, List<PropertySet> defaultArticles) {
-		List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
-		for (PropertySet featuredArticle : featuredArticles) {
-			for (PropertySet defaultArticle : defaultArticles) {
-				if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
-					duplicateArticles.add(defaultArticle);
-				}
-			}
-		}
-		defaultArticles.removeAll(duplicateArticles);
-	}
-
+	
 	@Required
-    public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
-        this.featuredArticlesSearch = featuredArticlesSearch;
-    }
-
-    @Required
-    public void setDefaultSearch(SearchComponent defaultSearch) {
-        this.defaultSearch = defaultSearch;
-    }
+	public void setSearcher(ArticleListingSearcher searcher) {
+		this.searcher = searcher;
+	}
 
 }

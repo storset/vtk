@@ -72,7 +72,6 @@ public abstract class AtomFeedController implements Controller {
 	protected Repository repository;
 	protected Service viewService;
 	protected Abdera abdera;
-	protected SearchComponent searchComponent;
 
 	protected PropertyTypeDefinition authorPropDef;
 	protected PropertyTypeDefinition publishedDatePropDef;
@@ -283,11 +282,6 @@ public abstract class AtomFeedController implements Controller {
 	@Required
 	public void setAbdera(Abdera abdera) {
 		this.abdera = abdera;
-	}
-
-	@Required
-	public void setSearchComponent(SearchComponent searchComponent) {
-		this.searchComponent = searchComponent;
 	}
 
 	public void setAuthorPropDef(PropertyTypeDefinition authorPropDef) {

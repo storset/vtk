@@ -42,12 +42,12 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.controller.article.ArticleListingSearcher;
 import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
 
 public class ArticleListingAsFeedController extends AtomFeedController {
 	
-	private SearchComponent featuredArticlesSearch;
+    private ArticleListingSearcher searcher;
 
 	@Override
 	protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
@@ -58,17 +58,17 @@ public class ArticleListingAsFeedController extends AtomFeedController {
         Feed feed = populateFeed(collection, collection.getTitle());
         
         List<Listing> results = new ArrayList<Listing>();
-        Listing featuredArticles = featuredArticlesSearch.execute(request, collection, 1, 25, 0);
+        Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, 25, 0);
         if (featuredArticles.size() > 0) {
         	results.add(featuredArticles);
         }
         
-        Listing defaultArticles = searchComponent.execute(request, collection, 1, 25, 0);
-        if (defaultArticles.size() > 0) {
+        Listing articles = this.searcher.getArticles(request, collection, 1, 25, 0);
+        if (articles.size() > 0) {
         	if (featuredArticles.size() > 0) {
-        		removeFeaturedArticlesFromDefault(featuredArticles.getFiles(), defaultArticles.getFiles());
+        		this.searcher.removeFeaturedArticlesFromDefault(featuredArticles.getFiles(), articles.getFiles());
         	}
-        	results.add(defaultArticles);
+        	results.add(articles);
         }
 
         for (Listing searchResult : results) {
@@ -79,22 +79,10 @@ public class ArticleListingAsFeedController extends AtomFeedController {
 
     	return feed;
 	}
-	
-	private void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles, List<PropertySet> defaultArticles) {
-		List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
-		for (PropertySet featuredArticle : featuredArticles) {
-			for (PropertySet defaultArticle : defaultArticles) {
-				if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
-					duplicateArticles.add(defaultArticle);
-				}
-			}
-		}
-		defaultArticles.removeAll(duplicateArticles);
-	}
 
 	@Required
-	public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
-		this.featuredArticlesSearch = featuredArticlesSearch;
+	public void setSearcher(ArticleListingSearcher searcher) {
+		this.searcher = searcher;
 	}
 
 }

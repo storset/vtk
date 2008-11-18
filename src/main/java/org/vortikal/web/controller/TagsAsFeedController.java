@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.model.Feed;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -44,8 +45,11 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.feed.AtomFeedController;
 import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
 public class TagsAsFeedController extends AtomFeedController {
+	
+	private SearchComponent searchComponent;
 
     @Override
 	protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
@@ -111,5 +115,10 @@ public class TagsAsFeedController extends AtomFeedController {
                 request);
         return rc.getMessage("tags.scopedTitle", new Object[]{scope.getTitle(),tag});
     }
+    
+	@Required
+	public void setSearchComponent(SearchComponent searchComponent) {
+		this.searchComponent = searchComponent;
+	}
 
 }

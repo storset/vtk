@@ -41,17 +41,17 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class MailExecutor {
 
     private static Log logger = LogFactory.getLog(MailExecutor.class);
-    
+
     private class SendMailTask implements Runnable {
-		
+
         private MimeMessage msg;
         private JavaMailSenderImpl javaMailSenderImpl;
-		
+
         public SendMailTask(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) {
             this.msg = msg;
             this.javaMailSenderImpl = javaMailSenderImpl;
         }
-		
+
         public void run() {
             try {
                 if (logger.isDebugEnabled()) {
@@ -63,15 +63,14 @@ public class MailExecutor {
             }
         }
     }
-	
+
     private TaskExecutor taskExecutor;
-	
+
     public MailExecutor(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
     }
-	
+
     public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
         taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
     }
-	
 }

@@ -54,6 +54,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
+
 public class EmailAFriendController implements Controller {
 
     private Repository repository;
@@ -106,7 +107,8 @@ public class EmailAFriendController implements Controller {
                 if (request.getParameter("yourComment") != null && (!request.getParameter("yourComment").equals(""))) {
                     m.put("yourSavedComment", request.getParameter("yourComment"));
                 }
-                // ---------------------------------------------------------------------
+                //--------------------------------------------------------------
+                // -------
 
                 m.put("tipResponse", "FAILURE-NULL-FORM");
 
@@ -133,11 +135,11 @@ public class EmailAFriendController implements Controller {
                         MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
                                 emailFrom, comment, serverHostname, serverPort, language);
 
-                        // javaMailSenderImpl.send(mimeMessage);
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
                         m.put("emailSentTo", emailTo);
-                        // m.put("senderIP", request.getRemoteAddr().toString());
+                        // m.put("senderIP",
+                        // request.getRemoteAddr().toString());
                         m.put("tipResponse", "OK");
 
                     } else {
@@ -151,14 +153,14 @@ public class EmailAFriendController implements Controller {
                                 && (!request.getParameter("yourComment").equals(""))) {
                             m.put("yourSavedComment", request.getParameter("yourComment"));
                         }
-                        // ------------------------------------------------------
+                        //------------------------------------------------------
 
                         m.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
                     // Unreachable because of thread
                 } catch (Exception mtex) {
-                    // m.put("tipResponse", "FAILURE");
-                    // m.put("tipResponseMsg", mtex.getMessage());
+                    m.put("tipResponse", "FAILURE");
+                    m.put("tipResponseMsg", mtex.getMessage());
                 }
             }
         } else {
@@ -171,7 +173,7 @@ public class EmailAFriendController implements Controller {
 
     private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
             String emailFrom, String comment, String serverHostname, int serverPort, String language)
-    throws MessagingException {
+            throws MessagingException, Exception {
 
         String serverHostnameShort = StringUtils.capitalize(serverHostname);
 
@@ -184,7 +186,8 @@ public class EmailAFriendController implements Controller {
         helper.setSubject(document.getTitle());
         helper.setFrom(emailFrom);
         helper.setTo(mailMultipleTo);
-        helper.setText(mailBody);
+        // HTML TRUE | FALSE
+        helper.setText(mailBody, true);
 
         return mimeMessage;
     }
@@ -219,14 +222,14 @@ public class EmailAFriendController implements Controller {
     }
 
     private static boolean isValidEmail(String[] addrs) {
-        for (String addr: addrs) {
+        for (String addr : addrs) {
             if (!isValidEmail(addr)) {
                 return false;
             }
         }
         return true;
     }
-    
+
     private static boolean isValidEmail(String addr) {
         if (StringUtils.countOccurrencesOf(addr, "@") == 0) {
             return false;
@@ -238,5 +241,5 @@ public class EmailAFriendController implements Controller {
             return false;
         }
     }
-    
+
 }

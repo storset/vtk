@@ -119,7 +119,7 @@
            <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
                <span class="failure"><@vrtx.msg code="tip.form.fail.invalidate" default="One of the e-mailaddresses is invalid" />.</span>
            <#elseif tipResponse = "FAILURE">
-               <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" />.</span>
+               <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
            <#elseif tipResponse = "OK">
                <@vrtx.msg code="tip.form.success" default="Tip is sent to " />&nbsp;<#if emailSentTo?exists && emailSentTo?has_content>${emailSentTo}</#if>
            </#if> 

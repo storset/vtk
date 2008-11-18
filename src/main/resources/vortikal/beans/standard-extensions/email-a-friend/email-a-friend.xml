@@ -90,6 +90,13 @@
     <property name="service" ref="emailafriendService" />
   </bean>
 
-   <bean id="mailTemplateProvider" class="org.vortikal.web.controller.emailafriend.MailTemplateProvider" />
+   <bean id="mailTemplateProvider" class="org.vortikal.web.controller.emailafriend.MailTemplateProvider">
+     <property name="freemarkerTemplate" value="system/mail-template.ftl"></property>
+     <property name="configuration" ref="configuration"></property>
+   </bean>
+   
+   <bean id="configuration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+     <property name="templateLoaderPath" value="${templateLoaderPath}"></property>
+   </bean>
   
 </beans>

@@ -31,10 +31,22 @@
 
 package org.vortikal.web.controller.emailafriend;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import freemarker.template.Configuration;
+
+
 public class MailTemplateProvider {
 
+    private Configuration configuration;
+    private String freemarkerTemplate;
+
     public String generateMailBody(String title, String articleURI, String mailFrom, String comment,
-            String serverHostname, String serverHostnameShort, int serverPort, String language) {
+            String serverHostname, String serverHostnameShort, int serverPort, String language) throws Exception {
 
         StringBuilder sb = new StringBuilder();
 
@@ -46,78 +58,39 @@ public class MailTemplateProvider {
             articleFullUri = "http://" + serverHostname + articleURI + " \n\n";
         }
 
-        if (language.equals("no_NO")) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("title", title);
+        model.put("mailFrom", mailFrom);
+        model.put("comment", comment);
+        model.put("serverHostname", serverHostname);
+        model.put("serverHostnameShort", serverHostnameShort);
+        model.put("articleFullUri", articleFullUri);
+        model.put("language", language);
 
-            sb.append("Hei!\n\n");
+        // Mail-template from freemarker file.
+        // TODO: Localization in freemarker file with vrtx.msg() from
+        // messages.properties instead(?) Importing vortikal.ftl gives error..
+        // TODO: Put ${choosenTemplate} in vortikal.properties to let sites use
+        // different templates.
+        String mailMessage = "";
 
-            sb.append(serverHostnameShort + " har en artikkel jeg tror kan være interessant for deg:\n");
-
-            sb.append(title + "\n\n");
-
-            sb.append(comment + "\n\n");
-
-            sb.append("Les hele artikkelen her: \n");
-            sb.append(articleFullUri);
-
-            sb.append("Med vennlig hilsen,\n");
-
-            sb.append(mailFrom + "\n\n\n\n");
-
-            sb.append("--------------------------------------------\n");
-            sb.append("Denne meldingen er sendt på oppfordring fra " + mailFrom + "\n\n");
-            sb.append("Din e-post adresse blir ikke lagret.\n");
-            sb.append("Du vil ikke motta flere meldinger av denne typen,\n");
-            sb.append("med mindre noen tipser deg om andre artikler på " + serverHostname + "/");
-
-        } else if (language.equals("no_NO_NY")) {
-
-            sb.append("Hei!\n\n");
-
-            sb.append(serverHostnameShort + " har en artikkel eg trur kan væra interessant for deg:\n");
-
-            sb.append(title + "\n\n");
-
-            sb.append(comment + "\n\n");
-
-            sb.append("Les heile artikkelen her: \n");
-            sb.append(articleFullUri);
-
-            sb.append("Med vennleg helsing,\n");
-
-            sb.append(mailFrom + "\n\n\n\n");
-
-            sb.append("--------------------------------------------\n");
-            sb.append("Denne meldinga er sendt på oppfordring frå " + mailFrom + "\n\n");
-            sb.append("Din e-post adresse blir ikkje lagra.\n");
-            sb.append("Du vil ikkje motta fleire meldingar som dette,\n");
-            sb.append("med mindre nokon tipsar deg om andre artiklar på " + serverHostname + "/");
-
-            // language=en or default
-        } else {
-
-            sb.append("Hi!\n\n");
-
-            sb.append(serverHostnameShort + " have an article I think you will find interesting:\n");
-
-            sb.append(title + "\n\n");
-
-            sb.append(comment + "\n\n");
-
-            sb.append("Read the entire article here:\n");
-            sb.append(articleFullUri);
-
-            sb.append("Best regards,\n");
-
-            sb.append(mailFrom + "\n\n\n\n");
-
-            sb.append("--------------------------------------------\n");
-            sb.append("This message is sent on behalf of " + mailFrom + "\n\n");
-            sb.append("Your emailaddress will not be saved.\n");
-            sb.append("You will not receive more messages of this type,\n");
-            sb.append("unless someone tip you of other articles on " + serverHostname + "/");
-
+        try {
+            mailMessage = FreeMarkerTemplateUtils.processTemplateIntoString(configuration
+                    .getTemplate(freemarkerTemplate), model);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
 
-        return sb.toString();
+        return mailMessage;
+    }
+
+    @Required
+    public void setFreemarkerTemplate(String freemarkerTemplate) {
+        this.freemarkerTemplate = freemarkerTemplate;
+    }
+
+    @Required
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

@@ -24,7 +24,7 @@
             iMyHeight = (window.screen.height/2) - (100 + 50);
  
             //Open the window
-            var win2 = window.open(url,"Window2","status=no,height=450,width=340,resizable=no,left=" + iMyWidth + ",top=" + iMyHeight + ",screenX=" + iMyWidth + ",screenY=" + iMyHeight + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
+            var win2 = window.open(url,"Window2","status=no,height=450,width=320,resizable=no,left=" + iMyWidth + ",top=" + iMyHeight + ",screenX=" + iMyWidth + ",screenY=" + iMyHeight + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
             win2.focus();
           }
 </script>

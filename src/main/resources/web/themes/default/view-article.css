@@ -9,7 +9,7 @@ div.vrtx-introduction {
 /* Bilde uten bildetekst */
 img.vrtx-introduction-image {
 	float: right;
-	margin: 0 0 0.5em 0.75em;
+	margin: 0em 0em 1em 1em;
 	/*border: 1px solid #ddd;
 	  max-width: 300px; 
   	  width: expression(this.width > 300 ? 300: true); */
@@ -19,7 +19,7 @@ img.vrtx-introduction-image {
 div.vrtx-introduction-image {
 	/*border: 1px solid #ddd;*/
 	float: right;
-	margin: 0em 0em 0.5em 0.75em;
+	margin: 0em 0em 1em 1em;
 }
 
 div.vrtx-introduction-image img {
@@ -32,20 +32,23 @@ div.vrtx-introduction-image div.vrtx-imagetext {
    /* margin: 0 0 1em 0; */
    /* overflow: hidden; */
    /* background: #eee; */
-   margin: 1em 0;
 }
 
-div.vrtx-introduction-image div.vrtx-imagedescription p {
+div.vrtx-introduction-image div.vrtx-imagetext div.vrtx-imagedescription {
    margin: 1em 0;
+   padding: 0;	
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo {
    display: block; /* Make it same as vrtx-imagedescription */
+   margin: 1em 0;
+   padding: 0;
    /* font-style: italic; */
 }
 
-* html div.vrtx-introduction-image div.vrtx-imagetext {
-	margin-top: -0.3em;
+div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo span.vrtx-photo-prefix {
+   margin: 0;
+   padding: 0;	
 }
 
 div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-imagetitle {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2008 University of Oslo, Norway
+/* Copyright (c) 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -54,167 +54,167 @@ import org.vortikal.util.web.EmailUtil;
 import org.vortikal.web.RequestContext;
 
 public class EmailAFriendController implements Controller {
-	
-	private Repository repository;
-	protected String viewName;
-	private ResourceWrapperManager resourceManager;
-	private JavaMailSenderImpl javaMailSenderImpl;
-	private MailExecutor mailExecutor;
-	private MailTemplateProvider mailTemplateProvider;
-	
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		String token = SecurityContext.getSecurityContext().getToken();
-		Path uri = RequestContext.getRequestContext().getResourceURI();
-		
-		String serverHostname = request.getServerName();
-		int serverPort = request.getServerPort();
-		
-		Resource document = this.repository.retrieve(token, uri, true);
-		Map<String, Object> m = new HashMap<String, Object>();
-		
-		// Use mail template language based on document language
-		String language = document.getContentLanguage();
-		
-		// If none use english
-		if (language == null) {
-			language = "en";
-		}
-		
-		// Check for resource
-		if (document == null) {
-			return null;
-		}
-		
-		// Check for POST
-		String method = request.getMethod();
-		
-		if (method.equals("POST")) {
-			
-			// Checks for userinput
-			if (request.getParameter("emailTo") == null || request.getParameter("emailFrom") == null
-					|| request.getParameter("emailTo").equals("") || request.getParameter("emailFrom").equals("")) {
-				
-				// Save data from form and return it
-				if (request.getParameter("emailTo") != null && (!request.getParameter("emailTo").equals(""))) {
-					m.put("emailSavedTo", request.getParameter("emailTo"));
-				}
-				if (request.getParameter("emailFrom") != null && (!request.getParameter("emailFrom").equals(""))) {
-					m.put("emailSavedFrom", request.getParameter("emailFrom"));
-				}
-				if (request.getParameter("yourComment") != null && (!request.getParameter("yourComment").equals(""))) {
-					m.put("yourSavedComment", request.getParameter("yourComment"));
-				}
-				// ---------------------------------------------------------------------
-				
-				m.put("tipResponse", "FAILURE-NULL-FORM");
-				
-			} else {
-				
-				try {
-					
-					String emailTo = (String) request.getParameter("emailTo");
-					String emailFrom = (String) request.getParameter("emailFrom");
-					
-					// Optional input from user
-					String comment = "";
-					
-					if (request.getParameter("yourComment") != null
-							&& (!request.getParameter("yourComment").equals(""))) {
-						comment = (String) request.getParameter("yourComment");
-					}
-					
-					String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
-					
-					// Checks for valid email addresses
-					if (EmailUtil.isValidMultipleEmails(emailMultipleTo) && EmailUtil.isValidEmail(emailFrom)) {
-						
-						MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
-								emailFrom, comment, serverHostname, serverPort, language);
-						
-						// javaMailSenderImpl.send(mimeMessage);
-						mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
-						
-						m.put("emailSentTo", emailTo);
-						// m.put("senderIP", request.getRemoteAddr().toString());
-						m.put("tipResponse", "OK");
-						
-					} else {
-						
-						// Save data from form and return it
-						m.put("emailSavedTo", request.getParameter("emailTo"));
-						
-						m.put("emailSavedFrom", request.getParameter("emailFrom"));
-						
-						if (request.getParameter("yourComment") != null
-								&& (!request.getParameter("yourComment").equals(""))) {
-							m.put("yourSavedComment", request.getParameter("yourComment"));
-						}
-						// ------------------------------------------------------
-						
-						m.put("tipResponse", "FAILURE-INVALID-EMAIL");
-					}
-					// Unreachable because of thread
-				} catch (Exception mtex) {
-					// m.put("tipResponse", "FAILURE");
-					// m.put("tipResponseMsg", mtex.getMessage());
-				}
-			}
-		} else {
-			// do nothing
-		}
-		
-		m.put("resource", this.resourceManager.createResourceWrapper());
-		return new ModelAndView(this.viewName, m);
-	}
-	
-	private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
-			String emailFrom, String comment, String serverHostname, int serverPort, String language)
-			throws MessagingException {
-		
-		String serverHostnameShort = StringUtils.capitalize(serverHostname);
-		
-		String mailBody = mailTemplateProvider.generateMailBody(document.getTitle(), document.getURI().toString(),
-				emailFrom, comment, serverHostname, serverHostnameShort, serverPort, language);
-		
-		MimeMessage mimeMessage = sender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-		
-		helper.setSubject(document.getTitle());
-		helper.setFrom(emailFrom);
-		helper.setTo(mailMultipleTo);
-		helper.setText(mailBody);
-		
-		return mimeMessage;
-	}
-	
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-	
-	@Required
-	public void setViewName(String viewName) {
-		this.viewName = viewName;
-	}
-	
-	@Required
-	public void setResourceManager(ResourceWrapperManager resourceManager) {
-		this.resourceManager = resourceManager;
-	}
-	
-	@Required
-	public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
-		this.javaMailSenderImpl = javaMailSenderImpl;
-	}
-	
-	@Required
-	public void setMailExecutor(MailExecutor mailExecutor) {
-		this.mailExecutor = mailExecutor;
-	}
-	
-	@Required
-	public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
-		this.mailTemplateProvider = mailTemplateProvider;
-	}
-	
+
+    private Repository repository;
+    protected String viewName;
+    private ResourceWrapperManager resourceManager;
+    private JavaMailSenderImpl javaMailSenderImpl;
+    private MailExecutor mailExecutor;
+    private MailTemplateProvider mailTemplateProvider;
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+
+        String serverHostname = request.getServerName();
+        int serverPort = request.getServerPort();
+
+        Resource document = this.repository.retrieve(token, uri, true);
+        Map<String, Object> m = new HashMap<String, Object>();
+
+        // Use mail template language based on document language
+        String language = document.getContentLanguage();
+
+        // If none use english
+        if (language == null) {
+            language = "en";
+        }
+
+        // Check for resource
+        if (document == null) {
+            return null;
+        }
+
+        // Check for POST
+        String method = request.getMethod();
+
+        if (method.equals("POST")) {
+
+            // Checks for userinput
+            if (request.getParameter("emailTo") == null || request.getParameter("emailFrom") == null
+                    || request.getParameter("emailTo").equals("") || request.getParameter("emailFrom").equals("")) {
+
+                // Save data from form and return it
+                if (request.getParameter("emailTo") != null && (!request.getParameter("emailTo").equals(""))) {
+                    m.put("emailSavedTo", request.getParameter("emailTo"));
+                }
+                if (request.getParameter("emailFrom") != null && (!request.getParameter("emailFrom").equals(""))) {
+                    m.put("emailSavedFrom", request.getParameter("emailFrom"));
+                }
+                if (request.getParameter("yourComment") != null && (!request.getParameter("yourComment").equals(""))) {
+                    m.put("yourSavedComment", request.getParameter("yourComment"));
+                }
+                // ---------------------------------------------------------------------
+
+                m.put("tipResponse", "FAILURE-NULL-FORM");
+
+            } else {
+
+                try {
+
+                    String emailTo = (String) request.getParameter("emailTo");
+                    String emailFrom = (String) request.getParameter("emailFrom");
+
+                    // Optional input from user
+                    String comment = "";
+
+                    if (request.getParameter("yourComment") != null
+                            && (!request.getParameter("yourComment").equals(""))) {
+                        comment = (String) request.getParameter("yourComment");
+                    }
+
+                    String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
+
+                    // Checks for valid email addresses
+                    if (EmailUtil.isValidMultipleEmails(emailMultipleTo) && EmailUtil.isValidEmail(emailFrom)) {
+
+                        MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
+                                emailFrom, comment, serverHostname, serverPort, language);
+
+                        // javaMailSenderImpl.send(mimeMessage);
+                        mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
+
+                        m.put("emailSentTo", emailTo);
+                        // m.put("senderIP", request.getRemoteAddr().toString());
+                        m.put("tipResponse", "OK");
+
+                    } else {
+
+                        // Save data from form and return it
+                        m.put("emailSavedTo", request.getParameter("emailTo"));
+
+                        m.put("emailSavedFrom", request.getParameter("emailFrom"));
+
+                        if (request.getParameter("yourComment") != null
+                                && (!request.getParameter("yourComment").equals(""))) {
+                            m.put("yourSavedComment", request.getParameter("yourComment"));
+                        }
+                        // ------------------------------------------------------
+
+                        m.put("tipResponse", "FAILURE-INVALID-EMAIL");
+                    }
+                    // Unreachable because of thread
+                } catch (Exception mtex) {
+                    // m.put("tipResponse", "FAILURE");
+                    // m.put("tipResponseMsg", mtex.getMessage());
+                }
+            }
+        } else {
+            // do nothing
+        }
+
+        m.put("resource", this.resourceManager.createResourceWrapper());
+        return new ModelAndView(this.viewName, m);
+    }
+
+    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
+            String emailFrom, String comment, String serverHostname, int serverPort, String language)
+    throws MessagingException {
+
+        String serverHostnameShort = StringUtils.capitalize(serverHostname);
+
+        String mailBody = mailTemplateProvider.generateMailBody(document.getTitle(), document.getURI().toString(),
+                emailFrom, comment, serverHostname, serverHostnameShort, serverPort, language);
+
+        MimeMessage mimeMessage = sender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+
+        helper.setSubject(document.getTitle());
+        helper.setFrom(emailFrom);
+        helper.setTo(mailMultipleTo);
+        helper.setText(mailBody);
+
+        return mimeMessage;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    @Required
+    public void setResourceManager(ResourceWrapperManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
+
+    @Required
+    public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
+        this.javaMailSenderImpl = javaMailSenderImpl;
+    }
+
+    @Required
+    public void setMailExecutor(MailExecutor mailExecutor) {
+        this.mailExecutor = mailExecutor;
+    }
+
+    @Required
+    public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
+        this.mailTemplateProvider = mailTemplateProvider;
+    }
+
 }

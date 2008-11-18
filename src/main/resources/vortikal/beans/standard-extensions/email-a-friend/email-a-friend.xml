@@ -34,9 +34,9 @@
   </bean>
   
   <bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="${emailFriend.mailServer}" />
-    <property name="port" value="${emailFriend.mailServerPort}" />
-    <property name="protocol" value="${emailFriend.mailServerProtocol}" />
+    <property name="host" value="${emailAFriend.mailServer}" />
+    <property name="port" value="${emailAFriend.mailServerPort}" />
+    <property name="protocol" value="${emailAFriend.mailServerProtocol}" />
     <property name="defaultEncoding" value="utf-8"/>
   </bean>
 
@@ -54,7 +54,7 @@
   </bean>
     
   <bean id="emailafriend.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
-    <property name="concurrencyLimit" value="${emailFriend.concurrencyLimit}" />
+    <property name="concurrencyLimit" value="${emailAFriend.concurrencyLimit}" />
   </bean>
   
   <!--

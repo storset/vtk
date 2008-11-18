@@ -84,13 +84,13 @@ public abstract class MultiValuePropertyInExpressionEvaluator implements Express
                 	return token;
                 }
                 
-                Value[] featuredArticleValues = multiValueProp.getValues();
+                Value[] values = multiValueProp.getValues();
                 StringBuilder multiValueList = new StringBuilder();
-                for (Value featuredArticle: featuredArticleValues) {
+                for (Value value: values) {
                 	if (StringUtils.isNotBlank(multiValueList.toString())) {
                 		multiValueList.append(",");
                 	}
-                	multiValueList.append(featuredArticle.getStringValue());
+                	multiValueList.append(value.getStringValue());
 				}
  
                 return multiValueList.toString();

@@ -159,33 +159,6 @@
     </property>
   </bean>
   
-   <bean id="decorating.emailAFriendURLComponent"
-        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="name" value="email-friend" />
-    <property name="description" value="Inserts a URL to email-a-friend service" />
-    <property name="view" ref="decorating.emailAFriendURLComponent.view" />
-  </bean>
-
-  <bean name="decorating.emailAFriendURLComponent.view" parent="freemarkerView">
-    <property name="url" value="layouts/email-a-friend.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="decorating.emailAFriendURLComponent.urlProvider" />
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="decorating.emailAFriendURLComponent.urlProvider"
-        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
-        parent="requestLocalRepositoryAware">
-    <property name="modelName" value="emailLink" />
-    <property name="urlName" value="url" />
-    <property name="service" ref="emailafriendService" />
-  </bean>
-
-
   <bean id="decorating.tagServiceExpression" class="java.lang.String">
     <description>The url expression used to generate links to tag listings</description>
     <constructor-arg value="${tagService.defaultExpression}" />

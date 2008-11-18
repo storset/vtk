@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +52,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.web.EmailUtil;
 import org.vortikal.web.RequestContext;
 
 public class EmailAFriendController implements Controller {
@@ -124,10 +125,10 @@ public class EmailAFriendController implements Controller {
                         comment = (String) request.getParameter("yourComment");
                     }
 
-                    String[] emailMultipleTo = EmailUtil.checkForMultipleEmails(emailTo);
+                    String[] emailMultipleTo = emailTo.split(",");
 
                     // Checks for valid email addresses
-                    if (EmailUtil.isValidMultipleEmails(emailMultipleTo) && EmailUtil.isValidEmail(emailFrom)) {
+                    if (isValidEmail(emailMultipleTo) && isValidEmail(emailFrom)) {
 
                         MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, document, emailMultipleTo,
                                 emailFrom, comment, serverHostname, serverPort, language);
@@ -217,4 +218,25 @@ public class EmailAFriendController implements Controller {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
+    private static boolean isValidEmail(String[] addrs) {
+        for (String addr: addrs) {
+            if (!isValidEmail(addr)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isValidEmail(String addr) {
+        if (StringUtils.countOccurrencesOf(addr, "@") == 0) {
+            return false;
+        }
+        try {
+            new InternetAddress(addr);
+            return true;
+        } catch (AddressException e) {
+            return false;
+        }
+    }
+    
 }

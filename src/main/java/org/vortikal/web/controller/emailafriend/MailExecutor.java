@@ -1,5 +1,3 @@
-package org.vortikal.web.controller.emailafriend;
-
 /* Copyright (c) 2005, 2008 University of Oslo, Norway
  * All rights reserved.
  * 
@@ -30,39 +28,50 @@ package org.vortikal.web.controller.emailafriend;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.vortikal.web.controller.emailafriend;
 
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-//Asynchronous mail sending from a thread pool
 
 public class MailExecutor {
-	
-	private class SendMailTask implements Runnable {
+
+    private static Log logger = LogFactory.getLog(MailExecutor.class);
+    
+    private class SendMailTask implements Runnable {
 		
-		private MimeMessage msg;
-		private JavaMailSenderImpl javaMailSenderImpl;
+        private MimeMessage msg;
+        private JavaMailSenderImpl javaMailSenderImpl;
 		
-		public SendMailTask(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) {
-			this.msg = msg;
-			this.javaMailSenderImpl = javaMailSenderImpl;
-		}
+        public SendMailTask(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) {
+            this.msg = msg;
+            this.javaMailSenderImpl = javaMailSenderImpl;
+        }
 		
-		public void run() {
-			javaMailSenderImpl.send(msg);
-		}
-	}
+        public void run() {
+            try {
+                if (logger.isDebugEnabled()) {
+                    logger.info("Attempting to send message " + this.msg);
+                }
+                javaMailSenderImpl.send(msg);
+            } catch (Throwable t) {
+                logger.warn("Sending message " + this.msg + " failed", t);
+            }
+        }
+    }
 	
-	private TaskExecutor taskExecutor;
+    private TaskExecutor taskExecutor;
 	
-	public MailExecutor(TaskExecutor taskExecutor) {
-		this.taskExecutor = taskExecutor;
-	}
+    public MailExecutor(TaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
 	
-	public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
-		taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
-	}
+    public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
+        taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
+    }
 	
 }

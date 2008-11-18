@@ -1,6 +1,9 @@
 // JavaScript Document
 
 function loadFeaturedArticles(addName,removeName,browseName){
+	if($( "#resource\\.featured-articles" ).val() == null)
+		return;
+		
 	$("#resource\\.featured-articles").hide();
 	$("#vrtx-resource\\.featured-articles").append("<div id='vrtx-featured-article-add'><button  onClick='addFormField(null,\""+ removeName + "\",\"" + browseName + "\"); return false;'>" + addName + "</button></div>");
 	$("#vrtx-resource\\.featured-articles").append("<input type='hidden' id='id' name='id' value='1' />");
@@ -42,6 +45,9 @@ function removeFormField(id) {
 }
 
 function formatFeturedArticlesData(){
+	if($( "#resource\\.featured-articles" ).val() == null)
+		return;
+		
 	var test = $.find("input[id^='vrtx-featured-articles-']"); 
 	var result = "";
 	for(i in test){

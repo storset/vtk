@@ -60,7 +60,7 @@ public class RepositoryTagElementsDataProvider {
                 int magnitude = getNormalizedMagnitude(pair.second().intValue(), maxFreq, minFreq, magnitudeMin,
                         magnitudeMax);
 
-                tagElements.add(new TagElement(magnitude, link, text));
+                tagElements.add(new TagElement(magnitude, link, text, pair.second().intValue()));
             }
 
             // Sort alphabetically

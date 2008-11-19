@@ -4,16 +4,17 @@ public class TagElement extends Tag implements Comparable<TagElement> {
 
     private int magnitude;
     private String linkUrl;
+    private int occurences;
 
 
-    public TagElement(int magnitude, String linkUrl, String text) {
+    public TagElement(int magnitude, String linkUrl, String text,int occurences) {
         super(text);
         this.magnitude = magnitude;
         this.linkUrl = linkUrl;
+        this.occurences = occurences;
     }
 
-
-    public int getMagnitude() {
+	public int getMagnitude() {
         return magnitude;
     }
 
@@ -29,5 +30,8 @@ public class TagElement extends Tag implements Comparable<TagElement> {
         return this.getText().toLowerCase().compareTo(other.getText().toLowerCase());
     }
 
+	public int getOccurences() {
+		return occurences;
+	}
 
 }

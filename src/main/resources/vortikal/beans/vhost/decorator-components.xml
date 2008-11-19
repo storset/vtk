@@ -184,6 +184,15 @@
     <property name="tagElementsProvider" ref="decorating.tagElementsProvider" />
   </bean>
 
+  <bean id="decorating.tagsComponent"
+        class="org.vortikal.web.decorating.components.TagsComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="tags" />
+    <property name="defaultURLPattern" ref="decorating.tagServiceExpression" />
+    <property name="view" ref="decorating.tagsComponent.view" />
+    <property name="tagElementsProvider" ref="decorating.tagElementsProvider" />
+  </bean>
+
   <bean id="decorating.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
     <property name="tagsReporter" ref="tagsReporter" />
   </bean>
@@ -241,6 +250,11 @@
   <bean id="decorating.tagCloudComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/tag-cloud.ftl" />
   </bean>
+
+ <bean id="decorating.tagsComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/tags.ftl" />
+  </bean>
+
 
   <bean id="decorating.feedComponent"
         class="org.vortikal.web.decorating.components.FeedComponent">

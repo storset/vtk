@@ -109,10 +109,11 @@ div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomin
 	color: #999;
 }
 
-div.vrtx-resource img {
+div.vrtx-resource a.vrtx-image {
 	float: left;
 	padding: 0.25em 0.75em 0.5em 0;
 	border: none;
+	display: block;
 }
 
 div.vrtx-resource div.lastModified,div.vrtx-resource div.published-date,div.vrtx-resource div.time-and-place

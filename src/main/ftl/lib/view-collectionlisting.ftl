@@ -107,17 +107,18 @@
             <#local articleType = "vrtx-featured-article" />
           </#if>
           
-          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}">
-            <a class="vrtx-title" href="${articles.urls[r.URI]?html}">
+          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}"> 
+            <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
             <#if introImg?has_content && articles.displayPropDefs?seq_contains(introImg.definition)>
-              <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-              <#if caption != ''>
-                <img src="${src?html}" alt="${captionFlattened}" />
-              <#else>
-                <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-              </#if>
+               <a class="vrtx-image" href="${articles.urls[r.URI]?html}">        
+                 <#if caption != ''>
+                    <img src="${src?html}" alt="${captionFlattened}" />
+                  <#else>
+                    <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+                  </#if>
+               </a>
             </#if>
-            ${title?html}</a>
+            <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a>
             
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
               <div class="published-date">
@@ -174,17 +175,18 @@
       </#local>
 
       <div class="vrtx-resource vevent">
-        
-        <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">
-        <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
-          <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-          <#if caption != ''>
-            <img src="${src?html}" alt="${captionFlattened}" />
-           <#else>
-             <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-           </#if>
-        </#if>
-        ${title?html}</a>
+         
+            <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
+               <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
+               <a class="vrtx-image" href="${collectionListing.urls[r.URI]?html}">        
+                 <#if caption != ''>
+                    <img src="${src?html}" alt="${captionFlattened}" />
+                  <#else>
+                    <img src="${src?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+                  </#if>
+               </a>
+            </#if>
+            <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
 
         <div class="time-and-place"> 
           <@viewutils.displayTimeAndPlace r title/>

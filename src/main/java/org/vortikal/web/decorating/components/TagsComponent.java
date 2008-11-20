@@ -164,9 +164,18 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             	numberOfTagsOnEachRow =  tagElements.size()/resultSet;
             	remainder = tagElements.size() % resultSet;
             }
+            
+            // If we have an reminder then we need to round up
         	if(remainder != 0)
         		numberOfTagsOnEachRow++;
         	
+        	// For cleaner formating we add another element to each row.
+        	// We do this when we have enough elements on each row so that we can
+        	// subtract any possible remainder from the last row without  
+        	// worry of loosing the row. 
+        	if(remainder != 0 && resultSet<numberOfTagsOnEachRow)
+        		numberOfTagsOnEachRow++;
+
             model.put("completeRows",remainder-1);
             model.put("showOccurence", showOccurence);
             model.put("numberOfTagsOnEachRow",numberOfTagsOnEachRow);

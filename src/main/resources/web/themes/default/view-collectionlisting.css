@@ -149,9 +149,28 @@ abbr {
 }
 
 span.time-and-place {
-	background: url(cal-view.gif) no-repeat;
-	background-position: 0 50%;
-        padding-left: 20px;
+        font-weight: bold;
+}
+
+span.vrtx-add-event {
+       font-size: 70%;
+       white-space: nowrap;
+       vertical-align: 15%;
+       margin-left: 0.4em;
+}
+
+span.vrtx-add-event a.vrtx-ical {
+       padding-left: 0.65em;
+       border-left: 1px solid #aaa;
+       color: #555;
+       position: relative; 
+}
+
+span.vrtx-add-event a.vrtx-ical-help {
+       background: url(icon-info.gif) no-repeat;
+       background-position: 87% 50%;
+       padding: 0px 10px 0px 10px;
+       zoom: 1; /* IE hack to get background image to display. To be fixed. */
 }
 
 /* END vrtx-resource (standard, article, events) */

@@ -35,8 +35,8 @@
         <link rel="stylesheet" type="text/css" href="${cssURL?html}" />
       </#list>
     </#if>
-    
-</head>
+
+  </head>
   <body>
     <h1>${h1}</h1>
 

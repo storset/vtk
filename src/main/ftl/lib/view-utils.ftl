@@ -102,9 +102,8 @@
     <#local isoendhour = endiso8601?substring(11, 16) />
   </#if>
   
-  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />: </span>
+  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   <span class="summary" style="display:none;">${title}</span>
-
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
   </#if>
@@ -122,15 +121,16 @@
       <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
     </#if>
   </#if>
-  <#t /><#if location != "">, <span class="location">${location}.</span></#if>
-  
+  <#t /><#if location != "">, <span class="location">${location}</span></#if>
+
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
   <#if isValidStartDate?string == "true">
-    <span class="ical">
-      <a href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a>
+    <span class="vrtx-add-event">
+      <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
   </#if>
 
+  
 </#macro>
 
 <#--

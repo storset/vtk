@@ -155,30 +155,29 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
                         1, limit, 1, serviceUrl); //TODO: not so neat hack??
 
             // Populate model
-            int numberOfTagsOnEachRow;
+            int numberOfTagsInEachColumn;
             int remainder;
             if(limit < PARAMETER_TAG_LIMIT_DEFAULT_VALUE && limit < tagElements.size()){
-            	numberOfTagsOnEachRow = limit/resultSet;
+            	numberOfTagsInEachColumn = limit/resultSet;
             	remainder = limit % resultSet;
             }else{
-            	numberOfTagsOnEachRow =  tagElements.size()/resultSet;
+            	numberOfTagsInEachColumn =  tagElements.size()/resultSet;
             	remainder = tagElements.size() % resultSet;
             }
-            
             // If we have an reminder then we need to round up
-        	if(remainder != 0)
-        		numberOfTagsOnEachRow++;
-        	
-        	// For cleaner formating we add another element to each row.
-        	// We do this when we have enough elements on each row so that we can
-        	// subtract any possible remainder from the last row without  
-        	// worry of loosing the row. 
-        	if(remainder != 0 && resultSet<numberOfTagsOnEachRow)
-        		numberOfTagsOnEachRow++;
+            if(remainder != 0)
+            	numberOfTagsInEachColumn++;
 
-            model.put("completeRows",remainder-1);
+            // For cleaner formating we add another element to each column.
+            // We do this when we have enough elements in each column so that we can
+            // subtract any possible number of elements (remainder) from the last column 
+            // without worry of loosing the column. 
+            if(remainder != 0 && resultSet < numberOfTagsInEachColumn)
+            	numberOfTagsInEachColumn++;
+
+            model.put("completeColumn",remainder-1);
             model.put("showOccurence", showOccurence);
-            model.put("numberOfTagsOnEachRow",numberOfTagsOnEachRow);
+            model.put("numberOfTagsInEachColumn",numberOfTagsInEachColumn);
             model.put("tagElements", tagElements);
         } catch (DataReportException d) {
             throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());

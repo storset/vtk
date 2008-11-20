@@ -14,30 +14,26 @@
     <ul class="vrtx-tags-${i?html}">
      <#assign counter=0 >
      <#assign i = i +1>
-     <#list tagElements as element>
-     
-     <#if counter == numberOfTagsOnEachRow>
-	     </ul>
-	     <ul  class="vrtx-tags-${i?html}">
-	     <#if completeRows == 0 >
-	     	<#assign numberOfTagsOnEachRow = numberOfTagsOnEachRow - 1>
+     <#list tagElements as element>     
+	     <#if counter == numberOfTagsInEachColumn>
+		     </ul>
+		     <ul  class="vrtx-tags-${i?html}">
+		     <#if completeColumn == 0 >
+		     	<#assign numberOfTagsInEachColumn = numberOfTagsInEachColumn - 1>
+		     </#if>
+		     <#assign counter=0 >
+		     <#assign i = i +1>
+		     <#if completeColumn &gt; -1 >
+		     	<#assign completeColumn = completeColumn - 1>
+		     </#if>
 	     </#if>
-	     <#assign counter=0 >
-	     <#assign i = i +1>
-	     <#if completeRows &gt; -1 >
-	     	<#assign completeRows = completeRows - 1>
-	     </#if>
-     </#if>
-     
-       <li class="tag-element">
-         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
-         <#if showOccurence >
-         	(${element.occurences?html})
-         </#if>
-       </li>
-      
-   
-     <#assign counter=counter + 1 >
+	       <li class="tag-element">
+	         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
+	         <#if showOccurence >
+	         	(${element.occurences?html})
+	         </#if>
+	       </li>
+	     <#assign counter=counter + 1 >
      </#list>
     </ul>
 </div>

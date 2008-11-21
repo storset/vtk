@@ -37,10 +37,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -69,6 +71,8 @@ import org.vortikal.web.service.Service;
  *   <code>resource</code>.
  *   <li><code>modelName</code> - the name to use for the submodel
  *   (default is <code>resourceContext</code>).
+ *   <li><code>resourceWrapperManager</code> - optional resource wrapper
+ *   manager. If set, the resource will be wrapped in a {@ref ResourceWrapper}
  * </ul>
  * 
  * <p>Model data provided:
@@ -91,7 +95,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     private boolean getResourceFromModel = false;
     private String resourceFromModelKey = "resource";
     private String modelName = "resourceContext";
-    
+    private ResourceWrapperManager resourceWrapperManager;
     
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -117,6 +121,11 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         this.modelName = modelName;
     }
     
+
+    public void setResourceWrapperManager(ResourceWrapperManager resourceWrapperManager) {
+        this.resourceWrapperManager = resourceWrapperManager;
+    }
+
 
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
@@ -165,7 +174,12 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         if (resource != null) {
             parent = resource.getURI().getParent();
         }
-
+        
+        if (this.resourceWrapperManager != null && resource != null) {
+            if (!(resource instanceof ResourceWrapper)) {
+                resource = this.resourceWrapperManager.createResourceWrapper(resource);
+            }
+        }
         	   
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);

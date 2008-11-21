@@ -88,9 +88,13 @@
     <#list collectionListings as articles>
       <#local resources=articles.files />
       <#if resources?size &gt; 0>
-        <#local locale = springMacroRequestContext.getLocale() />
         <#list resources as r>
         
+          <#local locale = springMacroRequestContext.getLocale() />
+          <#if r.contentLocale?has_content>
+            <#local locale = r.contentLocale />
+          </#if>
+          
           <#local title = vrtx.propValue(r, 'title') />
           <#local introImg  = vrtx.prop(r, 'picture')  />
           <#local publishedDate  = vrtx.prop(r, 'published-date')  />
@@ -122,7 +126,7 @@
             
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
               <div class="published-date">
-                <@vrtx.msg code="viewCollectionListing.publishedDate" args=[publishedDate.getFormattedValue('long', locale)] />
+                <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[publishedDate.getFormattedValue('long', locale)] locale=locale />
               </div>
             </#if>
 
@@ -132,14 +136,8 @@
 
             <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
             <#if displayMoreURLs && hasBody>
-              <#local readMore = "" />
-              <#if r.contentLanguage?has_content>
-                <#local readMore = vrtx.getMsg("viewCollectionListing.readMore." + r.contentLanguage, "Read more...") />
-              <#else>
-                <#local readMore = vrtx.getMsg("viewCollectionListing.readMore") />
-              </#if>
               <a href="${articles.urls[r.URI]?html}" class="more">
-                ${readMore}
+                <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
               </a>
             </#if>
           </div>

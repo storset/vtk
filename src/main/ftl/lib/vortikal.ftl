@@ -16,6 +16,24 @@
          configuration." />
 </#if>
 
+<#macro localizeMessage code default args=nullArg locale=springMacroRequestContext.getLocale() >
+  
+  <#--
+    VRTX_MESSAGE_SOURCE is a springframework.*.ResourceBundleMessageSource. It requires
+    resourcebundles to be postfixed with the locale used to fetch messages. Therefore, 
+    our current solution won't work for nynorsk because we add the contentlocale "*_NY" 
+    to these resources and we have no resourcebundle with the postfix "_ny". Hence we 
+    hack a fix like so:
+  -->
+  <#if locale?string?contains('NY')>
+    <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+    <#local locale = constructor("java.util.Locale", "nn") />
+  </#if>
+  
+  <#local localizedMessage = VRTX_MESSAGE_SOURCE.getMessage(code, args, default, locale) />
+  ${localizedMessage?replace("[", "")?replace("]", "")}
+</#macro>
+
 <#--
  * msg
  *

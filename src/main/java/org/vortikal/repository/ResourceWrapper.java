@@ -33,6 +33,7 @@ package org.vortikal.repository;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.httpclient.util.URIUtil;
 import org.vortikal.edit.editor.ResourceWrapperManager;
@@ -41,6 +42,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
+import org.vortikal.util.repository.LocaleHelper;
 
 public class ResourceWrapper implements Resource {
 
@@ -103,6 +105,9 @@ public class ResourceWrapper implements Resource {
         return null; 
     }
     
+    public Locale getContentLocale() {
+        return LocaleHelper.getLocale(this.resource.getContentLanguage());
+    }
     
     /** Delegation of resource implementation: **/
     

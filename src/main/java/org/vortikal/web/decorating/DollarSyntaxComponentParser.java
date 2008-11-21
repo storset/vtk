@@ -198,7 +198,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         if (name != null) {
             name = name.trim();
         }
-        if (!name.matches("[a-zA-Z]+(-[a-zA-Z]+)?")) {
+        if (!name.matches("[a-zA-Z]+(-[a-zA-Z]+)*")) {
             return null;
         }
         return name;

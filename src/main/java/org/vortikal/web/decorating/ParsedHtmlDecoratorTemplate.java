@@ -159,12 +159,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
         if (c instanceof HtmlElement) {
             HtmlElement e = (HtmlElement) c;
-            if ("v:element-content".equals(e.getName())) {
-                return new VrtxElementContentNode(e);
-            } 
-            if ("v:component".equals(e.getName())) {
+            if (e.getName().matches("[a-z-]+:[a-z-]+")) {
                 return new VrtxComponentNode(e);
-            } 
+            }
             List<Node> children = new ArrayList<Node>();
             for (HtmlContent child: e.getChildNodes()) {
                 children.add(createNode(child, componentParser, componentResolver));
@@ -237,56 +234,16 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         
     }
     
-    /**
-     * v:element-content 
-     */
-    private class VrtxElementContentNode extends Node {
-        private Throwable error;
-        private String copyElementExpression;
-        
-        public VrtxElementContentNode(HtmlElement elem) {
-            HtmlAttribute from = elem.getAttribute("from");
-            if (from == null) {
-                this.error = 
-                    new InvalidTemplateException(
-                            "Required attribute 'from' missing in element: " 
-                            + elem.getEnclosedContent());
-            } else {
-                this.copyElementExpression = from.getValue();
-            }
-        }
-        
-        public List<HtmlContent> generate(HtmlPage userPage, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception {
-            List<HtmlContent> result = new ArrayList<HtmlContent>();
-            if (this.error != null) {
-                result.add(userPage.createTextNode(this.error.getMessage()));
-            } else {
-                HtmlElement copyElement = userPage.selectSingleElement(this.copyElementExpression);
-                if (copyElement != null) {
-                    result.addAll(java.util.Arrays.asList(copyElement.getChildNodes()));
-                }
-            }
-            return result;
-        }
-    }
     
     /**
-     * v:component 
+     * Component node
      */
     private class VrtxComponentNode extends Node {
         private Throwable error;
         private ComponentInvocation elementComponent;
         
         public VrtxComponentNode(HtmlElement elem) {
-            if (elem.getAttribute("name") == null) {
-                this.error = new InvalidTemplateException(
-                        "Missing 'name' attribute on element: " 
-                        + elem.getEnclosedContent());
-                return;
-            } 
-
-            String componentRef = elem.getAttribute("name").getValue();
+            String componentRef = elem.getName();
             int separatorIdx = componentRef.indexOf(":");
             if (separatorIdx == -1 || separatorIdx == 0 
                     || separatorIdx == componentRef.length() - 1) {
@@ -297,23 +254,15 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
             String namespace = componentRef.substring(0, separatorIdx);
             String name = componentRef.substring(separatorIdx + 1);
+            
+            
             Map<String, Object> parameters = new HashMap<String, Object>();
-            HtmlElement[] paramElems = elem.getChildElements("v:parameter");
-
-            for (HtmlElement paramElem: paramElems) {
-                HtmlAttribute paramName = paramElem.getAttribute("name");
-                HtmlAttribute paramValue = paramElem.getAttribute("value");
-                if (paramName == null || paramValue == null) {
-                    this.error = new InvalidTemplateException(
-                            "Component parameters must have 'name' and 'value' attributes: " 
-                            + elem.getEnclosedContent());
-                    return;
-                }
-                parameters.put(paramName.getValue(), paramValue.getValue());
+            for (HtmlAttribute attr: elem.getAttributes()) {
+                parameters.put(attr.getName(), attr.getValue());    
             }
+            
             DecoratorComponent component = 
                 componentResolver.resolveComponent(namespace, name);
-            
             if (component == null) {
                 this.error = new Throwable("Unknown component: " + namespace + ":" + name);
                 return;

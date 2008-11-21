@@ -47,9 +47,14 @@
 
     <bean id="system.decoratorTemplateManager"
           class="org.vortikal.web.decorating.StaticTemplateManager">
-      <property name="templateParser" ref="system.decoratorTemplateParser" />
+      <property name="templateFactory" ref="system.decoratorTemplateFactory" />
       <property name="uriPrefix" value="${manage.decoratorTemplatesLocation}" />
       <property name="characterEncoding" value="utf-8" />
+    </bean>
+
+    <bean id="system.decoratorTemplateFactory"
+          class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
+      <property name="parser" ref="system.decoratorTemplateParser" />
     </bean>
 
     <bean id="system.decoratorTemplateParser"

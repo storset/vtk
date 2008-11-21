@@ -388,25 +388,6 @@
   </bean>
 
 
-  <bean id="displayDocumentService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="displayHTMLResourceService" />
-    <property name="assertions">
-      <list>
-        <!--ref bean="resourceTypeInXhtmlTrans" /-->
-        <ref bean="resourceTypeIsDocument" />
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheViewHandlerInterceptor" />
-      </list>
-    </property>
-    <property name="handler" ref="displayArticleHandler" />
-  </bean>
-  
-  <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
-    <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
-  </bean>
 
   <!-- **************** -->
   <!-- ASSERTIONS       -->

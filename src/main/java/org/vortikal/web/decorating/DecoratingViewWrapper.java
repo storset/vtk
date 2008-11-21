@@ -161,19 +161,24 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
         requestWrapper.setMethod("GET");
         BufferedResponseWrapper responseWrapper = new BufferedResponseWrapper(response);
-        
-        view.render(model, requestWrapper, responseWrapper);
+ 
+        if (view instanceof HtmlRenderer) {
+            HtmlPageContent page = ((HtmlRenderer) view).render(model, requestWrapper);
+            decorate(model, request, decoratorList, page, responseWrapper);
             
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("About to post process buffered content, content type: "
-                    + responseWrapper.getContentType()
-                    + ", character encoding: "
-                    + responseWrapper.getCharacterEncoding());
+        } else {
+            view.render(model, requestWrapper, responseWrapper);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("About to post process buffered content, content type: "
+                        + responseWrapper.getContentType()
+                        + ", character encoding: "
+                        + responseWrapper.getCharacterEncoding());
+            }
+            decorate(model, request, decoratorList, responseWrapper);
         }
-        decorate(model, request, decoratorList, responseWrapper);
     }
 
-
+    
     @SuppressWarnings("unchecked")
     private void decorate(Map model, HttpServletRequest request,
                            List<Decorator> decoratorList, BufferedResponseWrapper bufferedResponse)
@@ -247,6 +252,39 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                 contentType);
     }
 
+    @SuppressWarnings("unchecked")
+    private void decorate(Map model, HttpServletRequest request,
+                          List<Decorator> decoratorList, HtmlPageContent page,
+                          BufferedResponseWrapper bufferedResponse)
+        throws Exception {
+
+        PageContent content = page;
+        String characterEncoding = page.getHtmlContent().getCharacterEncoding();
+        String contentType = "text/html";
+        if (this.decorators != null) {
+            for (Decorator decorator: decoratorList) {
+
+                content = decorator.decorate(model, request, content);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Invoked decorator: " + decorator);
+                }
+            }
+        }
+
+        if (this.forcedOutputEncoding != null) {
+            characterEncoding = this.forcedOutputEncoding;
+        }
+
+        if (this.appendCharacterEncodingToContentType
+                && ContentTypeHelper.isTextContentType(contentType)) {
+
+            contentType = contentType + ";charset=" + characterEncoding;
+        }
+
+        writeResponse(content.getContent().getBytes(characterEncoding), bufferedResponse,
+                contentType);
+
+    }
 
     /**
      * Writes the buffer from the wrapped response to the actual

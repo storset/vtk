@@ -45,6 +45,11 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 
 
 public class BeanContextComponentResolver
@@ -57,6 +62,8 @@ public class BeanContextComponentResolver
     private Map<String, DecoratorComponent> components = new HashMap<String, DecoratorComponent>();
     private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
+    private ResourceTypeDefinition resourceType;
+    private Repository repository;
     
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -68,6 +75,14 @@ public class BeanContextComponentResolver
 
     public void setInhibitedComponentNamespaces(Set<String> prohibitedComponentNamespaces) {
     	this.prohibitedComponentNamespaces = prohibitedComponentNamespaces;
+    }
+
+    public void setResourceType(ResourceTypeDefinition resourceType) {
+        this.resourceType = resourceType;
+    }
+    
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
     
     public void afterPropertiesSet() {
@@ -83,6 +98,10 @@ public class BeanContextComponentResolver
             throw new BeanInitializationException(
                 "JavaBean property 'prohibitedComponentNamespaces' not specified");
         }
+        if (this.resourceType != null && this.repository == null) {
+            throw new BeanInitializationException(
+                 "JavaBean property 'repository' required when 'resourceType' is specified");
+        }
     }
     
     public DecoratorComponent resolveComponent(String namespace, String name) {
@@ -90,6 +109,15 @@ public class BeanContextComponentResolver
             init();
         }
         DecoratorComponent component = this.components.get(namespace + ":" + name);
+        if (this.resourceType != null) {
+            Resource resource = getCurrentResource();
+            if (resource == null) {
+                component = null;
+            }
+            if (!resource.isOfType(this.resourceType)) {
+                component = null;
+            }
+        }
         if (logger.isDebugEnabled()) {
             logger.debug("Resolved namespace: '" + namespace + "', name: '" + name
                          + "' to component:  " + component);
@@ -162,5 +190,14 @@ public class BeanContextComponentResolver
         
         this.initialized = true;
     }
-}
 
+    private Resource getCurrentResource() {
+        try {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            return this.repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(), true); 
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+}

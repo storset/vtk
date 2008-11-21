@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="displayDocumentService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="displayHTMLResourceService" />
+    <property name="assertions">
+      <list>
+        <!--ref bean="resourceTypeInXhtmlTrans" /-->
+        <ref bean="resourceTypeIsDocument" />
+      </list>
+    </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
+    <property name="handler" ref="displayArticleHandler" />
+  </bean>
+  
+  <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
+  </bean>
+
+<!--
+  <bean id="displayArticleHandler" 
+    class="org.vortikal.edit.editor.ResourceViewController">
+    <property name="viewName" value="displayArticle" />
+    <property name="resourceManager" ref="resourceManager"/>
+  </bean>
+  -->
+  <bean id="displayArticleHandler"  class="org.vortikal.web.decorating.HtmlController"
+        parent="requestLocalRepositoryAware">
+    <property name="parser" ref="decorating.htmlParser" />
+    <property name="viewName" value="displayArticle" />
+    <!--property name="resourceManager" ref="resourceManager"/-->
+  </bean>
+
+  <bean id="resourceManager"
+        class="org.vortikal.edit.editor.ResourceWrapperManager"
+        parent="requestLocalRepositoryAware">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+  </bean>
+
+
+  <bean id="resourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="keepComments" value="false" />
+    <property name="illegalElements" ref="resourceManager.htmlPropsFilter.illegalHtmlElementSet" />
+    <property name="validElements" ref="resourceManager.htmlPropsFilter.validHtmlElementSet" />
+  </bean>
+
+  <bean id="resourceManager.htmlPropsFilter.illegalHtmlElementSet"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <value>script</value>
+        <value>style</value>
+        <value>form</value>
+        <value>input</value>
+        <value>frameset</value>
+        <value>frame</value>
+        <value>iframe</value>
+        <value>object</value>
+        <value>embed</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="resourceManager.htmlPropsFilter.validHtmlElementSet"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+              <value>rel</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sub" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="sup" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+        <!--
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+        </bean>
+        -->
+      </set>
+    </property>
+  </bean>
+
+  <bean id="article.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="displayArticle"  value-ref="displayArticleView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="displayArticleView" class="org.vortikal.web.decorating.TemplateView">
+    <property name="templateManager" ref="article.templateManager" />
+    <property name="templateRef"  value="article.template" />
+  </bean>
+
+
+  <bean id="article.templateManager"
+        class="org.vortikal.web.decorating.StaticTemplateManager">
+    <property name="templateFactory" ref="article.decoratorTemplateFactory" />
+    <property name="uriPrefix" value="${article.decoratorTemplatesLocation}" />
+    <property name="characterEncoding" value="utf-8" />
+  </bean>
+
+
+  <bean id="article.decoratorTemplateFactory"
+        class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
+  </bean>
+
+  <bean id="article.componentResolver"
+        class="org.vortikal.web.decorating.BeanContextComponentResolver">
+    <property name="availableComponentNamespaces"
+              ref="article.decoratorComponentNamespaces" />
+
+
+  </bean>
+
+  <bean id="article.decoratorComponentNamespaces"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <ref bean="decorating.documentNamespace" />
+        <ref bean="decorating.resourceNamespace" />
+        <ref bean="decorating.includeNamespace" />
+        <ref bean="decorating.cssNamespace" />
+        <ref bean="article.componentNamespace" />
+      </set>
+    </property>
+  </bean>
+
+  <bean id="article.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="article" />
+  </bean>
+
+  <bean id="article.titleComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="title" />
+    <property name="description" value="Inserts the article title" />
+    <property name="view" ref="article.titleView" />
+    <property name="exposedParameters">
+      <set>
+        <value>flatten</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="flatten"
+               value="If set to 'true', flatten any HTML in the title " />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="article.titleView" parent="freemarkerView">
+    <property name="url" value="article/title.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="article.introductionImageComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="introduction-image" />
+    <property name="description" value="Inserts the article introduction image" />
+    <property name="view" ref="article.introductionImageView" />
+  </bean>
+
+  <bean id="article.introductionImageView" parent="freemarkerView">
+    <property name="url" value="article/introduction-image.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="article.introductionComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="introduction" />
+    <property name="description" value="Inserts the article introduction" />
+    <property name="view" ref="article.introductionView" />
+  </bean>
+
+  <bean id="article.introductionView" parent="freemarkerView">
+    <property name="url" value="article/introduction.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="article.mediaRefsComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="media-refs" />
+    <property name="description" value="Inserts the article media references" />
+    <property name="view" ref="article.mediaRefsView" />
+  </bean>
+
+  <bean id="article.mediaRefsView" parent="freemarkerView">
+    <property name="url" value="article/media-refs.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="article.authorsRefsComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="authors" />
+    <property name="description" value="Inserts the article authors" />
+    <property name="view" ref="article.authorsView" />
+  </bean>
+
+  <bean id="article.authorsView" parent="freemarkerView">
+    <property name="url" value="article/authors.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="article.publishedDateComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="published-date" />
+    <property name="description" value="Inserts the article published date" />
+    <property name="view" ref="article.publishedDateView" />
+  </bean>
+
+  <bean id="article.publishedDateView" parent="freemarkerView">
+    <property name="url" value="article/published-date.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+
+  <!--
+  <bean id="displayArticleView" parent="freemarkerView">
+    <property name="url" value="pages/article.ftl" />
+    <property name="referenceDataProviderList">
+      <list>
+      <ref bean="commenting.commentsView.referenceDataProviders" />
+      <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+        <property name="repository" ref="repository" />
+        <property name="uri" value="/" />
+        <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
+        <property name="service" ref="viewService" />
+        <property name="modelName" value="flashPlayer" />
+        <property name="urlName" value="flashURL" />
+      </bean>
+      <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+        <property name="repository" ref="repository" />
+        <property name="uri" value="/" />
+        <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
+        <property name="service" ref="viewService" />
+        <property name="modelName" value="flashPlayer" />
+        <property name="urlName" value="jsURL" />
+      </bean>
+      </list>
+    </property>    
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs" value-ref="displayArticleCSSURLs" />
+        <entry key="tagServiceDefaultExpression" value="${tagService.defaultExpression}" />
+      </map>
+    </property>
+  </bean>
+  -->
+  
+  <bean id="displayArticleCSSURLs" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>${themeBaseURL}/view-article.css</value>
+        <value>${themeBaseURL}/view-container.css</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+
+</beans>

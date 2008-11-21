@@ -11,7 +11,7 @@
     </property>
     <property name="staticHeaders">
       <map>
-        <entry key="Cache-Control" value="no-cache, no-store, must-revalidate, max-age=0" />
+        <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
         <entry key="Pragma" value="no-cache" />
       </map>
     </property>
@@ -191,10 +191,15 @@
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
-
   <bean name="decorating.defaultComponentResolver"
         class="org.vortikal.web.decorating.BeanContextComponentResolver">
-    <property name="availableComponentNamespaces">
+    <property name="availableComponentNamespaces"
+              ref="decorating.defaultComponentNamespaces" />
+  </bean>
+
+  <bean id="decorating.defaultComponentNamespaces"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
       <set>
         <ref bean="decorating.documentNamespace" />
         <ref bean="decorating.resourceNamespace" />
@@ -204,9 +209,17 @@
     </property>
   </bean>
 
+
+
   <bean name="decorating.documentComponentResolver"
         class="org.vortikal.web.decorating.BeanContextComponentResolver">
-    <property name="availableComponentNamespaces">
+    <property name="availableComponentNamespaces"
+              ref="decorating.documentComponentNamespaces" />
+  </bean>
+
+  <bean id="decorating.documentComponentNamespaces"
+        class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
       <set>
         <ref bean="decorating.resourceNamespace" />
         <ref bean="decorating.includeNamespace" />
@@ -214,6 +227,7 @@
       </set>
     </property>
   </bean>
+
 
 
   <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">

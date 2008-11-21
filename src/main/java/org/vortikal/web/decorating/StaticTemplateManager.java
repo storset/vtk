@@ -37,14 +37,14 @@ import org.springframework.beans.factory.annotation.Required;
 
 public class StaticTemplateManager implements TemplateManager {
 
-    private TextualComponentParser templateParser;
+    private TemplateFactory templateFactory;
     private String uriPrefix;
     private String characterEncoding = "utf-8";
     
     private Map<String, Template> templatesMap = new ConcurrentHashMap<String, Template>();
     
-    @Required public void setTemplateParser(TextualComponentParser templateParser) {
-        this.templateParser = templateParser;
+    @Required public void setTemplateFactory(TemplateFactory templateFactory) {
+        this.templateFactory = templateFactory;
     }
 
     @Required public void setUriPrefix(String uriPrefix) {
@@ -63,7 +63,7 @@ public class StaticTemplateManager implements TemplateManager {
         }
         String uri = this.uriPrefix + "/" + name;
         TemplateSource templateSource = new URLTemplateSource(uri, this.characterEncoding);
-        Template template = new TextualDecoratorTemplate(this.templateParser, templateSource);
+        Template template = this.templateFactory.newTemplate(templateSource);
         this.templatesMap.put(name, template);
         return template;
     }

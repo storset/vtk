@@ -23,7 +23,6 @@
     <property name="views">
       <map>
         <entry key="displayHTMLResource"  value-ref="displayResourceView" />
-        <entry key="displayArticle"  value-ref="displayArticleView" />
       </map>
     </property>
     <property name="viewWrapper" ref="decoratingViewWrapper" />
@@ -31,48 +30,7 @@
 
 
 
-
   <!-- View definitions -->
-
-  <bean id="displayArticleView" parent="freemarkerView">
-    <property name="url" value="pages/article.ftl" />
-    <property name="referenceDataProviderList">
-      <list>
-      <ref bean="commenting.commentsView.referenceDataProviders" />
-      <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-        <property name="repository" ref="repository" />
-        <property name="uri" value="/" />
-        <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
-        <property name="service" ref="viewService" />
-        <property name="modelName" value="flashPlayer" />
-        <property name="urlName" value="flashURL" />
-      </bean>
-      <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
-        <property name="repository" ref="repository" />
-        <property name="uri" value="/" />
-        <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
-        <property name="service" ref="viewService" />
-        <property name="modelName" value="flashPlayer" />
-        <property name="urlName" value="jsURL" />
-      </bean>
-      </list>
-    </property>    
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs" value-ref="displayArticleCSSURLs" />
-        <entry key="tagServiceDefaultExpression" value="${tagService.defaultExpression}" />
-      </map>
-    </property>
-  </bean>
-  
-  <bean id="displayArticleCSSURLs" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <value>${themeBaseURL}/view-article.css</value>
-        <value>${themeBaseURL}/view-container.css</value>
-      </list>
-    </constructor-arg>
-  </bean>
 
   <bean id="displayResourceView"
         class="org.vortikal.web.view.DisplayResourceView">
@@ -233,6 +191,7 @@
         class="org.vortikal.web.referencedata.provider.ResourceContextProvider" 
         parent="requestLocalRepositoryAware">
     <property name="retrieveForProcessing" value="true" />
+    <property name="resourceWrapperManager" ref="resourceManager" />
   </bean>
 
   <bean id="switchLocaleActionsProvider" 

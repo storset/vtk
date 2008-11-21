@@ -171,9 +171,9 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
 
             // Ensure that we get the number of columns that we ask for in
             // the parameter 'result-sets', given that we have enough elements. 
-            if(remainder != 0 && resultSet < numberOfTagsInEachColumn)
+            if((remainder != 0 && resultSet < numberOfTagsInEachColumn && resultSet > remainder) || (remainder == 0))
             	model.put("completeColumn",resultSet);
-            else
+            else 
             	model.put("completeColumn",remainder-1);
             
             model.put("showOccurence", showOccurence);

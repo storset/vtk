@@ -164,18 +164,18 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             	numberOfTagsInEachColumn =  tagElements.size()/resultSet;
             	remainder = tagElements.size() % resultSet;
             }
+            
             // If we have an reminder then we need to round up
             if(remainder != 0)
             	numberOfTagsInEachColumn++;
 
-            // For cleaner formating we add another element to each column.
-            // We do this when we have enough elements in each column so that we can
-            // subtract any possible number of elements (remainder) from the last column 
-            // without worry of loosing the column. 
+            // Ensure that we get the number of columns that we ask for in
+            // the parameter 'result-sets', given that we have enough elements. 
             if(remainder != 0 && resultSet < numberOfTagsInEachColumn)
-            	numberOfTagsInEachColumn++;
-
-            model.put("completeColumn",remainder-1);
+            	model.put("completeColumn",resultSet);
+            else
+            	model.put("completeColumn",remainder-1);
+            
             model.put("showOccurence", showOccurence);
             model.put("numberOfTagsInEachColumn",numberOfTagsInEachColumn);
             model.put("tagElements", tagElements);

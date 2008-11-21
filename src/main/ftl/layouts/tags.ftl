@@ -27,8 +27,8 @@
 		     	<#assign completeColumn = completeColumn - 1>
 		     </#if>
 	     </#if>
-	       <li class="tag-element">
-	         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
+	       <li class="vrtx-tags-element">
+	         <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
 	         <#if showOccurence >
 	         	(${element.occurences?html})
 	         </#if>

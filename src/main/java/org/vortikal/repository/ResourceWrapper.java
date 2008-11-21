@@ -28,36 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.edit.editor;
+package org.vortikal.repository;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.httpclient.util.URIUtil;
-import org.vortikal.repository.Acl;
-import org.vortikal.repository.Lock;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.RepositoryAction;
-import org.vortikal.repository.Resource;
+import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlPage;
 
 public class ResourceWrapper implements Resource {
 
     private ResourceWrapperManager resourceManager;
     
-    private HtmlPage content;
     private Resource resource;
-    private List<PropertyTypeDefinition> preContentProperties;
-    private List<PropertyTypeDefinition> postContentProperties;
 
 
     public ResourceWrapper(ResourceWrapperManager resourceManager) {
@@ -71,39 +60,6 @@ public class ResourceWrapper implements Resource {
 
     public void setResource(Resource resource) {
         this.resource = resource;
-    }
-
-    public List<PropertyTypeDefinition> getPreContentProperties() {
-        return this.preContentProperties;
-    }
-
-    public void setPreContentProperties(List<PropertyTypeDefinition> contentProperties) {
-        this.preContentProperties = contentProperties;
-    }
-
-    public List<PropertyTypeDefinition> getPostContentProperties() {
-        return this.postContentProperties;
-    }
-
-    public void setPostContentProperties(List<PropertyTypeDefinition> extraContentProperties) {
-        this.postContentProperties = extraContentProperties;
-    }
-
-
-    public HtmlPage getContent() {
-        return this.content;
-    }
-
-    public void setContent(HtmlPage content) {
-        this.content = content;
-    }
-
-    public String getBodyAsString() {
-        List<HtmlElement> elements = this.content.select("html.body");
-        if (elements == null || elements.isEmpty()) {
-            return "";
-        } 
-        return elements.get(0).getContent(); 
     }
 
     public Property getPropertyByName(String name) {

@@ -31,11 +31,20 @@
 package org.vortikal.edit.editor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
 
 public class ResourceEditWrapper extends ResourceWrapper {
+    private HtmlPage content;
+    private List<PropertyTypeDefinition> preContentProperties;
+    private List<PropertyTypeDefinition> postContentProperties;
+    private Map<PropertyTypeDefinition, String> errors = new HashMap<PropertyTypeDefinition, String>();
+
 
     public ResourceEditWrapper(ResourceWrapperManager resourceManager) {
         super(resourceManager);
@@ -61,10 +70,39 @@ public class ResourceEditWrapper extends ResourceWrapper {
         this.propChange = propChange;
     }
 
+    public List<PropertyTypeDefinition> getPreContentProperties() {
+        return this.preContentProperties;
+    }
 
-    /* Errors */
+    public void setPreContentProperties(List<PropertyTypeDefinition> contentProperties) {
+        this.preContentProperties = contentProperties;
+    }
 
-    private Map<PropertyTypeDefinition, String> errors = new HashMap<PropertyTypeDefinition, String>();
+    public List<PropertyTypeDefinition> getPostContentProperties() {
+        return this.postContentProperties;
+    }
+
+    public void setPostContentProperties(List<PropertyTypeDefinition> extraContentProperties) {
+        this.postContentProperties = extraContentProperties;
+    }
+
+
+    public HtmlPage getContent() {
+        return this.content;
+    }
+
+    public void setContent(HtmlPage content) {
+        this.content = content;
+    }
+
+    public String getBodyAsString() {
+        List<HtmlElement> elements = this.content.select("html.body");
+        if (elements == null || elements.isEmpty()) {
+            return "";
+        } 
+        return elements.get(0).getContent(); 
+    }
+
 
     public void reject(PropertyTypeDefinition propDef, String code) {
         this.errors.put(propDef, code);

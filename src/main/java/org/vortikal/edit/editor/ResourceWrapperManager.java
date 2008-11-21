@@ -45,6 +45,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.AuthenticationException;
@@ -101,25 +102,28 @@ public class ResourceWrapperManager {
 
         Resource resource = this.repository.retrieve(token, uri, forProcessing);
 
-        if (resource.isOfType(this.contentResourceType)) {
-            InputStream is = this.repository.getInputStream(token, uri, forProcessing);
-            HtmlPage content = null;
+        if (wrapper instanceof ResourceEditWrapper) {
+            ResourceEditWrapper editWrapper = (ResourceEditWrapper) wrapper;
+            if (resource.isOfType(this.contentResourceType)) {
+                InputStream is = this.repository.getInputStream(token, uri, forProcessing);
+                HtmlPage content = null;
 
-            if (resource.getCharacterEncoding() != null) {
-                // Read as default encoding (utf-8) if unsupported encoding.
-                if (Charset.isSupported(resource.getCharacterEncoding())) {
-                    content = this.htmlParser.parse(is, resource.getCharacterEncoding());
+                if (resource.getCharacterEncoding() != null) {
+                    // Read as default encoding (utf-8) if unsupported encoding.
+                    if (Charset.isSupported(resource.getCharacterEncoding())) {
+                        content = this.htmlParser.parse(is, resource.getCharacterEncoding());
+                    } else {
+                        content = this.htmlParser.parse(is, defaultCharacterEncoding);
+                    }
                 } else {
                     content = this.htmlParser.parse(is, defaultCharacterEncoding);
                 }
-            } else {
-                content = this.htmlParser.parse(is, defaultCharacterEncoding);
+                editWrapper.setContent(content);
             }
-            wrapper.setContent(content);
+            editWrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource));
+            editWrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource));
+            editWrapper.setResource(resource);
         }
-        wrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource));
-        wrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource));
-        wrapper.setResource(resource);
     }
 
     public void store(ResourceEditWrapper wrapper) throws IOException {

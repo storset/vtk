@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.edit.editor.ResourceWrapper;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.service.URL;
 

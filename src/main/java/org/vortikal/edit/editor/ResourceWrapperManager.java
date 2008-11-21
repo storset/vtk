@@ -73,40 +73,48 @@ public class ResourceWrapperManager {
         return htmlPropsFilter;
     }
 
-    public ResourceWrapper createResourceWrapper(Path uri) throws IOException, Exception {
+    public ResourceWrapper createResourceWrapper(Resource resource) throws Exception {
         ResourceWrapper wrapper = new ResourceWrapper(this);
-
-        populateWrapper(wrapper, uri, true);
-
+        populateWrapper(wrapper, resource, true);
         return wrapper;
-
+    }
+    
+    public ResourceWrapper createResourceWrapper(Path uri) throws Exception {
+        ResourceWrapper wrapper = new ResourceWrapper(this);
+        populateWrapper(wrapper, uri, true);
+        return wrapper;
     }
 
-    public ResourceWrapper createResourceWrapper() throws IOException, Exception {
+    public ResourceWrapper createResourceWrapper() throws Exception {
         Path uri = RequestContext.getRequestContext().getResourceURI();
         return createResourceWrapper(uri);
     }
 
-    public ResourceEditWrapper createResourceEditWrapper() throws IOException, Exception {
+    public ResourceEditWrapper createResourceEditWrapper() throws Exception {
         ResourceEditWrapper wrapper = new ResourceEditWrapper(this);
         Path uri = RequestContext.getRequestContext().getResourceURI();
-
         populateWrapper(wrapper, uri, false);
-
         return wrapper;
     }
 
-    private void populateWrapper(ResourceWrapper wrapper, Path uri, boolean forProcessing) throws IOException,
-            Exception {
+    private void populateWrapper(ResourceWrapper wrapper, Path uri, boolean forProcessing) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
-
         Resource resource = this.repository.retrieve(token, uri, forProcessing);
+        populateWrapper(wrapper, resource, forProcessing);
+    }
+
+
+    private void populateWrapper(ResourceWrapper wrapper, Resource resource, boolean forProcessing) throws Exception {
+        if (resource == null) {
+            throw new IllegalArgumentException("Resource cannot be NULL");
+        }
+        String token = SecurityContext.getSecurityContext().getToken();
         wrapper.setResource(resource);
 
         if (wrapper instanceof ResourceEditWrapper) {
             ResourceEditWrapper editWrapper = (ResourceEditWrapper) wrapper;
             if (resource.isOfType(this.contentResourceType)) {
-                InputStream is = this.repository.getInputStream(token, uri, forProcessing);
+                InputStream is = this.repository.getInputStream(token, resource.getURI(), forProcessing);
                 HtmlPage content = null;
 
                 if (resource.getCharacterEncoding() != null) {
@@ -121,10 +129,12 @@ public class ResourceWrapperManager {
                 }
                 editWrapper.setContent(content);
             }
-            editWrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource));
-            editWrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource));
+            editWrapper.setPreContentProperties(
+                    this.editPropertyProvider.getPreContentProperties(resource));
+            editWrapper.setPostContentProperties(
+                    this.editPropertyProvider.getPostContentProperties(resource));
         }
-    }
+    }    
 
     public void store(ResourceEditWrapper wrapper) throws IOException {
         String token = SecurityContext.getSecurityContext().getToken();

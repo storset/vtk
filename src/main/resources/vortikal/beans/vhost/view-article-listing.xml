@@ -67,7 +67,6 @@
     <property name="defaultSearch" ref="articleListing.searchComponent" />
     <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
     <property name="subfoldersSearch" ref="articleListing.subfoldersSearchComponent" />
-    <property name="currentFolderSearch" ref="articleListing.currentFolderSearchComponent" />
   </bean>
 
   <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">
@@ -128,12 +127,6 @@
     <property name="query">
       <value>uri IN {$subfolders}* AND type IN article AND published-date &lt;= {$currentTime}</value>
     </property>
-  </bean>
-  
-  <!-- Fetch articles in the current folder only, not in any sub/childfolders -->
-  <bean id="articleListing.currentFolderSearchComponent" parent="articleListing.searchComponent">
-    <property name="name" value="articleListing.currentFolderArticles" />
-    <property name="defaultRecursive" value="false" />
   </bean>
 
   <bean id="articleListing.viewResolver" parent="decoratorViewResolver">

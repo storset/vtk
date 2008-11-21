@@ -244,12 +244,12 @@ div.introduction textarea {
 
 
 #resource\.introduction___Frame {
-  height: 16.75ex;
+  height: 133px;
 }
 
 
 * html #resource\.introduction___Frame {
-  height: 15.75ex;
+  height: 133px;
 }
 
 /* ****** END: Introduction styling */
@@ -321,7 +321,7 @@ div.picture img {
   position: relative;
 }
 * html div.picture img { 
-  height: 15.5ex;
+  height: 135px;
 }
 
 /*
@@ -344,8 +344,7 @@ div.caption {
 
 /* IE6 fix */
 * html div.caption {
-   width: 327px; 
-   margin-top: -98px;
+   margin-top: -104px;
 }
 
 div.caption textarea{

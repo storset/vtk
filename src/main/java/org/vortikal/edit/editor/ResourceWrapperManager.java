@@ -101,6 +101,7 @@ public class ResourceWrapperManager {
         String token = SecurityContext.getSecurityContext().getToken();
 
         Resource resource = this.repository.retrieve(token, uri, forProcessing);
+        wrapper.setResource(resource);
 
         if (wrapper instanceof ResourceEditWrapper) {
             ResourceEditWrapper editWrapper = (ResourceEditWrapper) wrapper;
@@ -122,7 +123,6 @@ public class ResourceWrapperManager {
             }
             editWrapper.setPreContentProperties(this.editPropertyProvider.getPreContentProperties(resource));
             editWrapper.setPostContentProperties(this.editPropertyProvider.getPostContentProperties(resource));
-            editWrapper.setResource(resource);
         }
     }
 

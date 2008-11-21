@@ -204,6 +204,15 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         String name = service.getName();
         
         String messageCode = this.label + "." + name;
+
+        if (!resource.isCollection()) {
+            if (messageCode.equals("tabs.plaintextEditService")) {
+                if (!resource.getContentType().equals(("text/plain"))) {
+                    messageCode += "Source";
+                }
+            }
+        }
+
         String title = springContext.getMessage(messageCode, name);
 
 

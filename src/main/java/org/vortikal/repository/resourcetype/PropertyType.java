@@ -36,8 +36,6 @@ import java.util.Set;
 
 import org.vortikal.repository.RepositoryAction;
 
-
-
 public final class PropertyType {
 
     /**
@@ -98,6 +96,8 @@ public final class PropertyType {
     public static final String FEATUREDARTICLES_PROP_NAME = "featured-articles";
     public static final String RECURSIVE_LISTING_PROP_NAME = "recursive-listing";
     public static final String SUBFOLDERS_PROP_NAME = "recursive-listing-subfolders";
+    public static final String SORTING_PROP_NAME = "sorting";
+    public static final String PUBLISHED_DATE_PROP_NAME = "published-date";
     
     /*
      * Special properties

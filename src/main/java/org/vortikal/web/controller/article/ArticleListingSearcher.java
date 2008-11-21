@@ -31,6 +31,8 @@
 package org.vortikal.web.controller.article;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,13 +84,28 @@ public class ArticleListingSearcher {
 			return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
 		}
 		
-		// Hm... This ain't good + must be sorted...
-		Listing result = this.currentFolderSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-		Listing articlesInSubfolders = this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-		result.getFiles().addAll(articlesInSubfolders.getFiles());
-		result.getUrls().putAll(articlesInSubfolders.getUrls());
+		/* Hm... This ain't good:
+		 * 
+		 * Should rather refactor searchcomponent to handle multiple queries returning one
+		 * listing.
+		 * 
+		 */
+		Listing mainResult = this.currentFolderSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+		Listing additionalArticlesFromSubfolders = this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+		mainResult.getFiles().addAll(additionalArticlesFromSubfolders.getFiles());
+		mainResult.getUrls().putAll(additionalArticlesFromSubfolders.getUrls());
 		
-		return result;
+		/* This is even worse:
+		 * 
+		 * Sorting is already done in the searchcomponent, but it doesn't work when search is
+		 * comprised of two separate queries. Has to be handled in the searchcomponent, but
+		 * TIME oh TIME...
+		 * 
+		 */
+		Property sortPropDef = collection.getProperty(namespace_al, PropertyType.SORTING_PROP_NAME);
+		Collections.sort(mainResult.getFiles(), new ResultListingComparator(sortPropDef));
+		
+		return mainResult;
 	}
 
 	public void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles, List<PropertySet> defaultArticles) {
@@ -121,6 +138,32 @@ public class ArticleListingSearcher {
     @Required
     public void setCurrentFolderSearch(SearchComponent currentFolderSearch) {
         this.currentFolderSearch = currentFolderSearch;
+    }
+    
+    private class ResultListingComparator implements Comparator<PropertySet> {
+    	
+    	private Property sortPropDef;
+    	
+    	public ResultListingComparator(Property sortPropDef) {
+    		this.sortPropDef = sortPropDef;
+    	}
+
+		public int compare(PropertySet p1, PropertySet p2) {
+			
+			Property sp1;
+			Property sp2;
+			if (this.sortPropDef != null) {
+				sp1 = p1.getProperty(Namespace.DEFAULT_NAMESPACE, sortPropDef.getStringValue());
+				sp2 = p2.getProperty(Namespace.DEFAULT_NAMESPACE, sortPropDef.getStringValue());
+				return sp1.getStringValue().compareTo(sp2.getStringValue());
+			}
+			
+			sp1 = p1.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PUBLISHED_DATE_PROP_NAME);
+			sp2 = p2.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PUBLISHED_DATE_PROP_NAME);
+			
+			return sp2.getDateValue().compareTo(sp1.getDateValue());
+		}
+    	
     }
 
 }

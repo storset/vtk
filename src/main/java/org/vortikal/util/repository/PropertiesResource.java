@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
@@ -102,11 +103,13 @@ public class PropertiesResource extends Properties implements InitializingBean {
     }
     
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
 
+    @Required
     public void setUri(String uri) {
         this.uri = Path.fromString(uri);
     }
@@ -127,14 +130,6 @@ public class PropertiesResource extends Properties implements InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'repository' not specified");
-        }
-        if (this.uri == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'uri' not specified");
-        }
         if (!this.lazyInit) {
             this.load();
         }

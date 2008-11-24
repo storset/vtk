@@ -66,21 +66,21 @@ public class AutoCompleteController implements Controller {
 //      RequestContext requestContext = RequestContext.getRequestContext();
 //      String contextUri = requestContext.getCurrentCollection();
         
-        String query = request.getParameter(this.fieldName);
-        if (query == null) {
+        String prefix = request.getParameter(this.fieldName);
+        if (prefix == null) {
             return null;
         }
         // XXX: Further input data validation of some sorts necessary ?
         
         Map<String, Object> resultSet = new HashMap<String, Object>();
         List<Tag> completions = 
-                     this.dataProvider.getPrefixCompletions(query, null, token);
+                     this.dataProvider.getPrefixCompletions(prefix, null, token);
         
         resultSet.put(this.fieldName, completions);
         
         if (logger.isDebugEnabled()) {
             logger.debug("Completion items for query: '" 
-                    + query + "' on field '" + this.fieldName + "':");
+                    + prefix + "' on field '" + this.fieldName + "':");
             for (Object item: completions) {
                 logger.debug(item);
             }

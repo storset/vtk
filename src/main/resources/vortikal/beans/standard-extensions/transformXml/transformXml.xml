@@ -167,13 +167,7 @@
 
   <bean id="transformRssView" class="org.vortikal.web.view.xslt.ResourceXsltView">
     <property name="transformerManager" ref="rssTransformerManager" />
-    <property name="staticAttributes">
-      <map>
-        <entry key="Searcher" value-ref="xmlSearcher" />
-        <entry key="LinkConstructor" value-ref="linkConstructor" />
-        <entry key="PropertyAccessor" value-ref="propertyAccessor" />
-      </map>
-    </property>
+    <property name="staticAttributes" ref="xslTransformerParameterMap" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="xslBeanProvider" />

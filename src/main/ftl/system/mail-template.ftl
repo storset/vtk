@@ -1,7 +1,7 @@
 <#if language == "no_NO">
 Hei!
 
-${serverHostnameShort} har en artikkel jeg tror kan være interessant for deg:
+${serverHostnameShort} har en artikkel jeg tror kan v&aelig;re interessant for deg:
 <h2>${title}</h2>
         
 ${comment}
@@ -17,12 +17,12 @@ ${mailFrom}
 Denne meldingen er sendt på oppfordring fra ${mailFrom}
 Din e-post adresse blir ikke lagret.
 Du vil ikke motta flere meldinger av denne typen,
-med mindre noen tipser deg om andre artikler på ${serverHostname}
+med mindre noen tipser deg om andre artikler p&aring; ${serverHostname}
     </em>
 <#elseif language == "no_NO_NY">
 Hei!
 
-${serverHostnameShort} har en artikkel eg trur kan væra interessant for deg::
+${serverHostnameShort} har en artikkel eg trur kan v&aelig;ra interessant for deg::
 <h2>${title}</h2>
         
 ${comment}
@@ -35,10 +35,10 @@ ${mailFrom}
 
 <em>
 --------------------------------------------
-Denne meldinga er sendt på oppfordring frå  ${mailFrom}
+Denne meldinga er sendt på oppfordring fr&aring;  ${mailFrom}
 Di e-post adresse blir ikkje lagra.
 Du vil ikkje motta fleire meldingar som dette,
-med mindre nokon tipsar deg om andre artiklar på ${serverHostname}
+med mindre nokon tipsar deg om andre artiklar p&aring; ${serverHostname}
 </em>
 <#else>
 Hi!

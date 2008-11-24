@@ -30,7 +30,7 @@
 <head>
   <#if error?exists>
     <#assign title = vrtx.getMsg("tags.noTagTitle") />
-  <#elseif scope?exists>
+  <#elseif scope?exists && !scope.URI.root>
     <#assign title><@vrtx.msg code="tags.scopedTitle" args=[scope.title,tag] /></#assign>
   <#else>
     <#assign title><@vrtx.msg code="tags.title" args=[tag] /></#assign>

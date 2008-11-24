@@ -36,7 +36,11 @@
     <#assign title><@vrtx.msg code="tags.title" args=[tag] /></#assign>
   </#if>
 
-  <title>${title}</title>
+  <title>${title?html}
+    <#if page?has_content>
+      <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
+    </#if>
+  </title>
 
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
@@ -52,7 +56,11 @@
 </head>
 
 <body id="vrtx-tagview">
-  <h1>${title}</h1>
+  <h1>${title}
+    <#if page?has_content>
+      <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
+    </#if>
+  </h1>  
 
   <#if error?exists>
     <p>${error}</p>
@@ -67,65 +75,75 @@
       <#assign resources=listing.getFiles() />
       <#assign urls=listing.urls />
       <#assign displayPropDefs=listing.displayPropDefs />
-      
-      
-      <#list resources as resource>
-          <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
-          <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
-          
-          
-          <div class="result">
-             
-                <#if introImageProp != "">
-                  <a href="${resource.getURI()?html}">
-		    <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
-                    <img class="introduction-image" 
-                         alt="IMG for '${resourceTitle?html}'"
-                         src="${src?html}" />
-                  </a>
-                </#if>
+      <#assign i = 0 />
+     <#-- <#assign displayMoreURLs = true /> -->
 
-                 <h2 class="title">
-                  <a href="${resource.getURI()?html}">
-                    ${resourceTitle?html}
-                  </a>
-                </h2>
-               
-                <#list displayPropDefs as displayPropDef>
-                  <#if displayPropDef.name = 'introduction'>
-                    <#assign val = getIntroduction(resource) />
-                  <#elseif displayPropDef.type = 'IMAGE_REF'>
-                    <#assign val><img src="${vrtx.propValue(resource, displayPropDef.name, "")}" /></#assign>
-                  <#elseif displayPropDef.name = 'lastModified'>
-                    <#assign val>
-                      <@vrtx.msg code="viewCollectionListing.lastModified"
-                                 args=[vrtx.propValue(resource, displayPropDef.name, "long")] />
-                    </#assign>
-                  <#else>
-                    <#assign val = vrtx.propValue(resource, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
-                  </#if>
+              <#list resources as resource>
+                  <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
+                  <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
+                  
+                  
+                  <div class="result" id="vrtx-result-${i}">
+                     
+                        <#if introImageProp != "">
+                          <a href="${resource.getURI()?html}">
+        		          <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
+                            <img class="introduction-image" 
+                                 alt="IMG for '${resourceTitle?html}'"
+                                 src="${src?html}" />
+                          </a>
+                        </#if>
         
-                  <#if val?has_content>
-                    <div class="${displayPropDef.name}">
-                      ${val}
-                    </div>
-                  </#if>
-                </#list>
+                         <h2 class="title">
+                          <a href="${resource.getURI()?html}">
+                            ${resourceTitle?html}
+                          </a>
+                        </h2>
+                       
+                        <#list displayPropDefs as displayPropDef>
+                          <#if displayPropDef.name = 'introduction'>
+                            <#assign val = getIntroduction(resource) />
+                          <#elseif displayPropDef.type = 'IMAGE_REF'>
+                            <#assign val><img src="${vrtx.propValue(resource, displayPropDef.name, "")}" /></#assign>
+                          <#elseif displayPropDef.name = 'lastModified'>
+                            <#assign val>
+                              <@vrtx.msg code="viewCollectionListing.lastModified"
+                                         args=[vrtx.propValue(resource, displayPropDef.name, "long")] />
+                            </#assign>
+                          <#else>
+                            <#assign val = vrtx.propValue(resource, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
+                          </#if>
                 
-    
-           </div> <!-- end class result -->
+                          <#if val?has_content>
+                            <div class="${displayPropDef.name}">
+                              ${val}<#-- 
+                              <#if displayPropDef.name = 'introduction'>
+                                  <#assign hasBody = vrtx.propValue(resource, 'hasBodyContent') == 'true' />
+                                  <#if displayMoreURLs && hasBody>
+                                      <a href="${listing.urls[resource.URI]?html}" class="more">
+                                      <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
+                                      </a>
+                                  </#if>
+                              </#if>-->
+                              </div>
+                          </#if> 
+                        </#list>
 
-        </#list>
-      </div> <!-- end class tagged-resources -->
-      
-     <#-- Previous/next URLs: -->
-
-     <#if prevURL?exists>
-       <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-     </#if>
-     <#if nextURL?exists>
-       <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-     </#if>
+                   </div> <!-- end class result -->
+                  <#assign i = i + 1 />
+                </#list>
+              </div> <!-- end class tagged-resources -->
+              
+              
+              
+             <#-- Previous/next URLs: -->
+        
+             <#if prevURL?exists>
+               <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
+             </#if>
+             <#if nextURL?exists>
+               <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+             </#if>
 
     <#-- XXX: display first link with content type = atom: -->
 

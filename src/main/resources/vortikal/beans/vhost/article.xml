@@ -149,7 +149,7 @@
   <bean id="article.decoratorTemplateFactory"
         class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="componentResolver" ref="article.componentResolver" />
     <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
   </bean>
 

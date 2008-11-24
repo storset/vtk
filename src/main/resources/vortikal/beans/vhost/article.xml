@@ -294,6 +294,23 @@
     </property>
   </bean>
 
+  <bean id="article.eventInfoComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="event-info" />
+    <property name="description" value="Inserts event info (time and place)" />
+    <property name="view" ref="article.eventInfoView" />
+  </bean>
+
+  <bean id="article.eventInfoView" parent="freemarkerView">
+    <property name="url" value="article/event-info.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
 
   <!--
   <bean id="displayArticleView" parent="freemarkerView">

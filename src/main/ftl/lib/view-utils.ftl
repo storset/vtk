@@ -123,9 +123,11 @@
   </#if>
   <#t /><#if location != "">, <span class="location">${location}</span></#if>
 
+  <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+  <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
   <#if isValidStartDate?string == "true">
-    <span class="vrtx-add-event">
+    <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
   </#if>

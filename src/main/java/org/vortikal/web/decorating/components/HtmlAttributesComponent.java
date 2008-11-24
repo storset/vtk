@@ -33,36 +33,60 @@ package org.vortikal.web.decorating.components;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.web.decorating.DecoratorRequest;
-import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.decorating.DecoratorResponse;
 
-public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
+public class HtmlAttributesComponent extends AbstractDecoratorComponent {
 
+    protected static final String PARAMETER_SELECT = "select";
     private static final String PARAMETER_EXCLUDE = "exclude";
     private static final String PARAMETER_EXCLUDE_DESC = "Comma-separated list of attribute names to exclude";
     private static final String PARAMETER_SELECT_DESC = "The element for which to select attributes";
     
+    private String elementPath;
     private String exclude;
+    
+    public void setSelect(String select) {
+        this.elementPath = select;
+    }
     
     public void setExclude(String exclude) {
         this.exclude = exclude;
     }
-    
-    protected void processElements(List<HtmlElement> elements, DecoratorRequest request,
-                                DecoratorResponse response) throws Exception {
-        if (elements.isEmpty()) {
-            return;
+
+    protected String getDescriptionInternal() {
+        return "Outputs the attributes of a specified element";
+    }
+
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
+        map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
+        return map;
+    }
+
+    public void render(DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
+        String expression = (this.elementPath != null) ?
+                this.elementPath : request.getStringParameter(PARAMETER_SELECT);
+        if (expression == null) {
+            throw new DecoratorComponentException("Missing parameter 'select'");
         }
-        HtmlElement element = elements.get(0);
-        
+
+        HtmlPage page = request.getHtmlPage();
+        HtmlElement element = page.selectSingleElement(expression);
+        if (element == null) {
+            throw new DecoratorComponentException(
+                "Unable to resolve element from expression: '" + expression + "'");
+        }
         String exclude = (this.exclude != null) ?
-            this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
+                this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set<String> excludedAttributes = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
@@ -80,22 +104,8 @@ public class HtmlAttributesComponent extends AbstractHtmlSelectComponent {
             sb.append(" ").append(htmlAttribute.getName()).append("=\"");
             sb.append(htmlAttribute.getValue()).append("\"");
         }
-
         out.write(sb.toString());
         out.flush();
         out.close();
     }
-
-    protected String getDescriptionInternal() {
-        return "Outputs the attributes of a specified element";
-    }
-
-    protected Map<String, String> getParameterDescriptionsInternal() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(PARAMETER_SELECT, PARAMETER_SELECT_DESC);
-        map.put(PARAMETER_EXCLUDE, PARAMETER_EXCLUDE_DESC);
-        return map;
-    }
-
 }
-

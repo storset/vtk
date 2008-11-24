@@ -31,17 +31,18 @@
 package org.vortikal.web.decorating.components;
 
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.web.decorating.DecoratorRequest;
-import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.text.html.EnclosingHtmlContent;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlNodeFilter;
+import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.decorating.DecoratorResponse;
 
 
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
@@ -71,17 +72,30 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         this.enclosed = Boolean.valueOf(enclosed);
     }
     
-    
-    protected void processElements(List<HtmlElement> elements, DecoratorRequest request,
-                                DecoratorResponse response) throws Exception {
+    @Override
+    protected void outputContent(List<HtmlContent> content, DecoratorRequest request,
+                                 DecoratorResponse response) throws Exception {
 
         boolean enclosed = (this.enclosed != null) ?
-                this.enclosed.booleanValue() : "true".equals(
-                    request.getStringParameter(PARAMETER_ENCLOSED));
+                this.enclosed.booleanValue() : 
+                    "true".equals(request.getStringParameter(PARAMETER_ENCLOSED));
+     
+        Writer out = response.getWriter();
+        for (HtmlContent c: content) {
+            if (c instanceof EnclosingHtmlContent && enclosed) {
+                out.write(((EnclosingHtmlContent) c).getEnclosedContent());
+            } else {
+                out.write(c.getContent());
+            }
+        }
+        out.flush();
+        out.close();
+    }
 
 
+    protected List<HtmlContent> filterElements(List<HtmlElement> elements, DecoratorRequest request) {
         String exclude = (this.exclude != null) ?
-            this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
+                this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set<String> excludedElements = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
@@ -90,43 +104,20 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                 excludedElements.add(splitValues[i]);
             }
         }
-
-        Writer out = response.getWriter();
-        ExcludeFilter excludeFilter = new ExcludeFilter(excludedElements);
-
+        List<HtmlContent> result = new ArrayList<HtmlContent>();
         for (HtmlElement element: elements) {
-            if (enclosed) {
-                out.write(element.getEnclosedContent(excludeFilter));
-            } else {
-                out.write(element.getContent(excludeFilter));
+            if (!excludedElements.contains(element.getName())) {
+                result.add(element);
             }
         }
-        out.flush();
-        out.close();
+        return result;
     }
-
-    private class ExcludeFilter implements HtmlNodeFilter {
-
-        private Set<String> excluded;
-
-        public ExcludeFilter(Set<String> excluded) {
-            this.excluded = excluded;
-        }
-
-        public HtmlContent filterNode(HtmlContent node) {
-            if (node instanceof HtmlElement) {
-                HtmlElement element = (HtmlElement) node;
-                if (excluded.contains(element.getName())) {
-                    return null;
-                }
-            }
-            return node;
-        }
-    }
+    
     
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
+
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new HashMap<String, String>();
@@ -138,6 +129,4 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
             map.put(PARAMETER_ENCLOSED, PARAMETER_ENCLOSED_DESC);
         return map;
     }
-
 }
-

@@ -30,22 +30,23 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.vortikal.text.html.EnclosingHtmlContent;
+import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.decorating.HtmlDecoratorComponent;
 
 
-public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorComponent {
+public abstract class AbstractHtmlSelectComponent 
+    extends AbstractDecoratorComponent implements HtmlDecoratorComponent {
 
     protected static final String PARAMETER_SELECT = "select";
-
-    private static Log logger = LogFactory.getLog(AbstractDecoratorComponent.class);
-
     protected String elementPath;
 
     public void setSelect(String select) {
@@ -53,28 +54,40 @@ public abstract class AbstractHtmlSelectComponent extends AbstractDecoratorCompo
     }
     
     public void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
-
+        List<HtmlContent> result = render(request);
+        outputContent(result, request, response);
+    } 
+    
+    public List<HtmlContent> render(DecoratorRequest request) throws Exception {
         String expression = (this.elementPath != null) ?
-            this.elementPath : request.getStringParameter(PARAMETER_SELECT);
+                this.elementPath : request.getStringParameter(PARAMETER_SELECT);
         if (expression == null) {
             throw new DecoratorComponentException("Missing parameter 'select'");
         }
 
         HtmlPage page = request.getHtmlPage();
         List<HtmlElement> elements = page.select(expression);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Processing elements: " + elements);
+        List<HtmlContent> filtered = filterElements(elements, request);
+        return filtered;
+    }
+    
+    protected void outputContent(List<HtmlContent> content,
+            DecoratorRequest request, DecoratorResponse response) throws Exception {
+        Writer out = response.getWriter();
+        for (HtmlContent c: content) {
+            if (c instanceof EnclosingHtmlContent) {
+                out.write(((EnclosingHtmlContent) c).getEnclosedContent());
+            } else {
+                out.write(c.getContent());
+            }
         }
-
-        processElements(elements, request, response);
+        out.flush();
+        out.close();
     }
 
-    
-
-    protected abstract void processElements(List<HtmlElement> elements,
-                                            DecoratorRequest request,
-                                            DecoratorResponse response) throws Exception;
-
+    protected List<HtmlContent> filterElements(List<HtmlElement> elements, DecoratorRequest request) {
+        List<HtmlContent> result = new ArrayList<HtmlContent>();
+        result.addAll(elements);
+        return result;
+    }
 }
-

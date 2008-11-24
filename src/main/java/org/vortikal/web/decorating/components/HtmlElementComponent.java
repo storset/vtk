@@ -30,19 +30,18 @@
  */
 package org.vortikal.web.decorating.components;
 
-import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vortikal.text.html.EnclosingHtmlContent;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.web.decorating.DecoratorRequest;
-import org.vortikal.web.decorating.DecoratorResponse;
+
 
 
 public class HtmlElementComponent extends AbstractHtmlSelectComponent {
@@ -72,30 +71,14 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         this.enclosed = Boolean.valueOf(enclosed);
     }
     
-    @Override
-    protected void outputContent(List<HtmlContent> content, DecoratorRequest request,
-                                 DecoratorResponse response) throws Exception {
+    protected List<HtmlContent> filterElements(List<HtmlElement> elements, DecoratorRequest request) {
+        String exclude = (this.exclude != null) ?
+                this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         boolean enclosed = (this.enclosed != null) ?
                 this.enclosed.booleanValue() : 
                     "true".equals(request.getStringParameter(PARAMETER_ENCLOSED));
      
-        Writer out = response.getWriter();
-        for (HtmlContent c: content) {
-            if (c instanceof EnclosingHtmlContent && enclosed) {
-                out.write(((EnclosingHtmlContent) c).getEnclosedContent());
-            } else {
-                out.write(c.getContent());
-            }
-        }
-        out.flush();
-        out.close();
-    }
-
-
-    protected List<HtmlContent> filterElements(List<HtmlElement> elements, DecoratorRequest request) {
-        String exclude = (this.exclude != null) ?
-                this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
 
         Set<String> excludedElements = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
@@ -107,7 +90,11 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         for (HtmlElement element: elements) {
             if (!excludedElements.contains(element.getName())) {
-                result.add(element);
+                if (enclosed) {
+                    result.add(element);
+                } else {
+                    result.addAll(Arrays.asList(element.getChildNodes()));
+                }
             }
         }
         return result;

@@ -116,6 +116,10 @@ div.vrtx-resource a.vrtx-image {
 	display: block;
 }
 
+div.vrtx-resource a.vrtx-image img {
+  border: none;	
+}
+
 div.vrtx-resource div.lastModified,div.vrtx-resource div.published-date,div.vrtx-resource div.time-and-place
 	{
 	padding: 0;

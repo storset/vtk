@@ -76,7 +76,7 @@
       <#assign urls=listing.urls />
       <#assign displayPropDefs=listing.displayPropDefs />
       <#assign i = 0 />
-     <#-- <#assign displayMoreURLs = true /> -->
+      <#assign displayMoreURLs = true />
 
               <#list resources as resource>
                   <#assign resourceTitle = resource.getPropertyByPrefix("","title").getFormattedValue() />
@@ -116,7 +116,7 @@
                 
                           <#if val?has_content>
                             <div class="${displayPropDef.name}">
-                              ${val}<#-- 
+                              ${val} 
                               <#if displayPropDef.name = 'introduction'>
                                   <#assign hasBody = vrtx.propValue(resource, 'hasBodyContent') == 'true' />
                                   <#if displayMoreURLs && hasBody>
@@ -124,7 +124,7 @@
                                       <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
                                       </a>
                                   </#if>
-                              </#if>-->
+                              </#if>
                               </div>
                           </#if> 
                         </#list>

@@ -39,6 +39,11 @@ div.vrtx-introduction-image div.vrtx-imagetext div.vrtx-imagedescription {
    padding: 0;	
 }
 
+/* IE6 / IE7 margin tweak */
+div.vrtx-introduction-image div.vrtx-imagetext div.vrtx-imagedescription p {
+   margin: 0;
+}
+
 div.vrtx-introduction-image div.vrtx-imagetext span.vrtx-photo {
    display: block; /* Make it same as vrtx-imagedescription */
    margin: 1em 0;

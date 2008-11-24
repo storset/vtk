@@ -311,6 +311,28 @@
     </property>
   </bean>
 
+  <bean id="article.cssComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts CSS references for articles" />
+    <property name="view" ref="article.cssView" />
+  </bean>
+
+  <bean id="article.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-article.css</value>
+            <value>${themeBaseURL}/view-container.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
 
   <!--
   <bean id="displayArticleView" parent="freemarkerView">
@@ -344,7 +366,9 @@
     </property>
   </bean>
   -->
-  
+
+
+  <!--  
   <bean id="displayArticleCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
@@ -353,6 +377,6 @@
       </list>
     </constructor-arg>
   </bean>
-
+  -->
 
 </beans>

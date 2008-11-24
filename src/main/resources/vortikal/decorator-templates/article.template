@@ -3,6 +3,7 @@
   <head>
     <!--document:comments-feed-link />
     <css:article /-->
+    <article:css />
     <title><article:title flatten="true" /></title>
   </head>
   <body>

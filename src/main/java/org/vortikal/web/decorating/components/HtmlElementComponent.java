@@ -71,6 +71,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         this.enclosed = Boolean.valueOf(enclosed);
     }
     
+    @Override
     protected List<HtmlContent> filterElements(List<HtmlElement> elements, DecoratorRequest request) {
         String exclude = (this.exclude != null) ?
                 this.exclude : request.getStringParameter(PARAMETER_EXCLUDE);
@@ -79,22 +80,34 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                 this.enclosed.booleanValue() : 
                     "true".equals(request.getStringParameter(PARAMETER_ENCLOSED));
      
-
         Set<String> excludedElements = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
-            String[] splitValues = exclude.split(",");
-            for (int i = 0; i < splitValues.length; i++) {
-                excludedElements.add(splitValues[i]);
+            for (String str: exclude.split(",")) {
+                excludedElements.add(str);
             }
         }
+
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         for (HtmlElement element: elements) {
-            if (!excludedElements.contains(element.getName())) {
-                if (enclosed) {
-                    result.add(element);
+            // Check for excluded child nodes:
+            List<HtmlContent> resultingContent = new ArrayList<HtmlContent>();
+            for (HtmlContent childNode: element.getChildNodes()) {
+                if (childNode instanceof HtmlElement) {
+                    HtmlElement childElement = (HtmlElement) childNode;
+                    if (!excludedElements.contains(childElement.getName())) {
+                        resultingContent.add(childElement);
+                    }
                 } else {
-                    result.addAll(Arrays.asList(element.getChildNodes()));
+                    resultingContent.add(childNode);
                 }
+                element.setChildNodes(resultingContent.toArray(
+                        new HtmlContent[resultingContent.size()]));
+            }
+            
+            if (enclosed) {
+                result.add(element);
+            } else {
+                result.addAll(Arrays.asList(element.getChildNodes()));
             }
         }
         return result;

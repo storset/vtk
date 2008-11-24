@@ -7,7 +7,7 @@
     <title><article:title flatten="true" /></title>
   </head>
   <body>
-    <h1><article:title /></h1>
+    <article:title />
     <article:introduction />
     <article:introduction-image />
     <article:media-refs />

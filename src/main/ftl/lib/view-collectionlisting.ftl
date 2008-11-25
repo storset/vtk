@@ -140,6 +140,9 @@
                 <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
               </a>
             </#if>
+            
+            <@viewutils.displayNumberOfComments r locale />
+            
           </div>
           <#assign i = i + 1 />
         </#list>
@@ -201,6 +204,8 @@
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>
         </#if>
+        
+        <@viewutils.displayNumberOfComments r locale />
 
       </div>
     </#list>

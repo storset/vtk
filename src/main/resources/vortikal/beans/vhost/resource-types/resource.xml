@@ -30,9 +30,20 @@
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
         <ref bean="contentLocalePropDef" />
+        <ref bean="numberOfCommentsPropDef" />
       </list>
     </property>
   </bean>
+  
+  <bean id="numberOfCommentsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="numberOfComments"/>
+    <property name="type" value="INT"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE"/>
+    <property name="propertiesModificationEvaluator" ref="numberOfCommentsModifiedEvaluator" />
+  </bean>
+  
+  <bean id="numberOfCommentsModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.NumberOfCommentsModifiedEvaluator" />
   
   <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="title" />

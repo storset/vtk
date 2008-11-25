@@ -150,3 +150,11 @@
   <#return "false"/>
 </#function>
 
+<#macro displayNumberOfComments resource locale >
+  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
+  <#if numberOfComments?has_content>
+    <div id="vrtx-number-of-comments">
+      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+    </div>
+  </#if>
+</#macro>

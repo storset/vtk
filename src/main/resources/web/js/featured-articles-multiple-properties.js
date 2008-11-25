@@ -10,11 +10,7 @@ function loadFeaturedArticles(addName,removeName,browseName){
 	
 	var listOfFiles = document.getElementById("resource\.featured-articles").value.split(",");
 	for (i in listOfFiles){
-		if(i == 0){
-			addFormField(listOfFiles[i],null,browseName);
-		}else{
-			addFormField(listOfFiles[i],removeName,browseName);
-		}
+		addFormField(listOfFiles[i],removeName,browseName);	
 	}
 }
 	

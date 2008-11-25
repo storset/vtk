@@ -19,8 +19,6 @@
     <property name="handler" ref="icalHandler" />
   </bean>
   
-  <bean id="icalHandler" class="org.vortikal.web.controller.ical.ICalController">
-    <property name="repository" ref="repository" />
-  </bean>
+  <bean id="icalHandler" class="org.vortikal.web.controller.ical.ICalController" parent="requestLocalRepositoryAware" />
 
 </beans>

@@ -488,7 +488,6 @@
         </#if>
 
         <#local uniqueName = 'cal_' + propDef_index />
-
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
             value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         
@@ -662,7 +661,13 @@
             <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" fieldName="${name}" 
                     description="${description}" value="${value?html}" width="18" schema=["text"]/>
           <#else>
+            <#if name = 'recursive-listing-subfolders'>
+            	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
+            </#if>
             <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+            <#if name = 'recursive-listing-subfolders'>
+            	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
+            </#if>
             <#if description != "">
               <span class="input-description">(${description})</span>
             </#if>

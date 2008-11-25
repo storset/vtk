@@ -51,7 +51,8 @@ public class DelegatingTemplateFactory implements TemplateFactory {
             if (m.find()) {
                 TemplateFactory tf = this.templateFactoryMap.get(p);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Attempting to use template factory " + tf);
+                    logger.debug("Creating template for source " 
+                            + templateSource + ", using template factory " + tf);
                 }
                 return tf.newTemplate(templateSource);
             }

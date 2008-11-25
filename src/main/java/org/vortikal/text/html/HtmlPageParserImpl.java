@@ -69,7 +69,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         this.defaultDoctype = defaultDoctype;
     }
 
-
     public void setCompositeTags(Set<String> compositeTags) {
         this.compositeTags = compositeTags;
     }
@@ -82,7 +81,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return parse(in, encoding, new ArrayList<HtmlNodeFilter>());
     }
     
-
     public HtmlPage parse(InputStream in, String encoding, HtmlNodeFilter filter)
         throws Exception {
         List<HtmlNodeFilter> filters = new ArrayList<HtmlNodeFilter>();
@@ -90,8 +88,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return parse(in, encoding, filters);
     }
     
-    
-
     public HtmlPage parse(InputStream in, String encoding, List<HtmlNodeFilter> filters)
         throws Exception {
 
@@ -119,7 +115,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
             doctype = this.defaultDoctype;
         }
         boolean xhtml = isXhtml(doctype);
-
         HtmlContent html = buildHtml(root, filters, xhtml);
         if (html == null) {
             throw new HtmlPageParserException("Unable to parse HTML: invalid document");
@@ -156,14 +151,12 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return new HtmlFragmentImpl(content);
     }
 
-
     private boolean isXhtml(String doctype) {
         boolean xhtml = doctype.toUpperCase().startsWith(
             "HTML PUBLIC \"-//W3C//DTD XHTML");
         return xhtml;
     }
     
-
     private Node findRootNode(NodeList nodeList) {
         Node root = null;
         for (int i = 0; i < nodeList.size(); i++) {
@@ -180,7 +173,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return root;
     }
     
-
     private String findDoctype(NodeList nodeList) {
         for (int i = 0; i < nodeList.size(); i++) {
             Node node = nodeList.elementAt(i);
@@ -195,9 +187,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         }
         return null;
     }
-
-
-    
 
     private HtmlContent buildHtml(Node node, List<HtmlNodeFilter> filters, boolean xhtml) {
 
@@ -272,7 +261,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return content;
     }
 
-
     private void addAttributes(HtmlElementImpl element, Tag tag) {
         String name = tag.getRawTagName();
         Vector<?> attrs = tag.getAttributesEx();
@@ -288,8 +276,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         }
     }
     
-
-
     private boolean isFlattenedNode(NodeList nodeList, int index) {
         Node childNode = nodeList.elementAt(index);
         if (index <= nodeList.size() - 3) {
@@ -309,7 +295,6 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         return false;
     }
     
-
     private Node unflattenSiblings(NodeList nodeList, int index) {
         Tag node = (Tag) nodeList.elementAt(index);
         Text child = (Text) nodeList.elementAt(index + 1);
@@ -321,5 +306,4 @@ public class HtmlPageParserImpl implements HtmlPageParser {
         node.setEndTag(end);
         return node;
     }
-
 }

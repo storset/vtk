@@ -8,8 +8,8 @@
   </head>
   <body>
     <article:title />
-    <article:introduction />
     <article:introduction-image />
+    <article:introduction />
     <article:media-refs />
     <div class="vrtx-byline">
       <article:authors />

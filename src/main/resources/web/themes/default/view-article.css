@@ -102,6 +102,10 @@ span.vrtx-add-event a.vrtx-ical-help {
        zoom: 1; /* IE hack to get background image to display. Too be fixed. */
 }
 
+span.vrtx-authors {
+ display:block;
+} 
+
 /* Media-ref */
 a.vrtx-media {
 	white-space: nowrap;
@@ -109,6 +113,8 @@ a.vrtx-media {
 	margin-bottom: 1em;
 	display: block;
 }
+
+
 
 /* Body */
 div.vrtx-bodytext {

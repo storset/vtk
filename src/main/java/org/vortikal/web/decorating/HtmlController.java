@@ -44,6 +44,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.web.RequestContext;
@@ -53,7 +54,7 @@ public class HtmlController implements Controller {
     private Repository repository;
     private HtmlPageParser parser;
     private String viewName;
-    
+    private Map<String, String> exposedModelElements;
     
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -71,6 +72,13 @@ public class HtmlController implements Controller {
         model.put("resource", resource);
         model.put("page", page);
 
+        if (this.exposedModelElements != null) {
+            for (String id : this.exposedModelElements.keySet()) {
+                String select = this.exposedModelElements.get(id);
+                HtmlElement elem = page.selectSingleElement(select);
+                model.put(id, elem);
+            }
+        }
         return new ModelAndView(this.viewName, model);
     }
 
@@ -84,5 +92,9 @@ public class HtmlController implements Controller {
 
     @Required public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+
+    public void setExposedModelElements(Map<String, String> exposedModelElements) {
+        this.exposedModelElements = exposedModelElements;
     }
 }

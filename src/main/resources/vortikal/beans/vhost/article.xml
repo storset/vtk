@@ -34,7 +34,11 @@
         parent="requestLocalRepositoryAware">
     <property name="parser" ref="decorating.htmlParser" />
     <property name="viewName" value="displayArticle" />
-    <!--property name="resourceManager" ref="resourceManager"/-->
+    <property name="exposedModelElements">
+      <map>
+        <entry key="article.content" value="html.body" />
+      </map>
+    </property>
   </bean>
 
   <bean id="resourceManager"
@@ -149,16 +153,18 @@
   <bean id="article.decoratorTemplateFactory"
         class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
     <property name="htmlParser" ref="decorating.htmlParser" />
+    <!--
     <property name="componentResolver" ref="article.componentResolver" />
+    -->
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
   </bean>
 
+  <!--
   <bean id="article.componentResolver"
         class="org.vortikal.web.decorating.BeanContextComponentResolver">
     <property name="availableComponentNamespaces"
               ref="article.decoratorComponentNamespaces" />
-
-
   </bean>
 
   <bean id="article.decoratorComponentNamespaces"
@@ -173,9 +179,19 @@
       </set>
     </property>
   </bean>
+  -->
 
   <bean id="article.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="article" />
+  </bean>
+
+  <bean id="article.contentComponent"
+        class="org.vortikal.web.decorating.components.ElementInModelDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="content" />
+
+    <property name="description" value="Inserts the article content" />
+    <property name="modelKey"  value="article.content" />
   </bean>
 
   <bean id="article.titleComponent"
@@ -255,6 +271,22 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="flashURL" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="jsURL" />
+        </bean>
       </list>
     </property>
   </bean>

@@ -16,7 +16,7 @@
       <article:published-date />
     </div>
     <article:event-info />
-    <document:body />
+    <article:content />
     <resource:tags />
     <document:comments />
   </body>

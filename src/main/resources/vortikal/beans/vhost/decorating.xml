@@ -151,29 +151,15 @@
   </bean>
 
 
-  <!--
-  -->
   <bean id="decorating.defaultTemplateFactory"
             class="org.vortikal.web.decorating.DelegatingTemplateFactory">
     <property name="templateFactoryMap">
       <map>
-	<entry key="\.vrtx$" value-ref="decorating.htmlParserTemplateFactory" />
+	<entry key="\.template$" value-ref="decorating.htmlParserTemplateFactory" />
 	<entry key="\.html$" value-ref="decorating.dollarSyntaxTemplateFactory" />
       </map>
     </property>
   </bean>
-
-  <!--
-  <bean id="decorating.defaultTemplateFactory"
-            class="org.vortikal.web.decorating.FallbackTemplateFactory">
-    <property name="templateFactories">
-      <list>
-	<ref bean="decorating.htmlParserTemplateFactory" />
-	<ref bean="decorating.dollarSyntaxTemplateFactory" />
-      </list>
-    </property>
-  </bean>
-  -->
 
   <bean id="decorating.htmlParserTemplateFactory"
             class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
@@ -205,6 +191,7 @@
         <ref bean="decorating.resourceNamespace" />
         <ref bean="decorating.includeNamespace" />
         <ref bean="decorating.cssNamespace" />
+        <ref bean="article.componentNamespace" />
       </set>
     </property>
   </bean>

@@ -11,5 +11,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#assign published = vrtx.propValue(resourceContext.currentResource, "published-date") />
 <#if published != "">
-  ${published}
+  <span class="vrtx-published-date">${published}</span>
 </#if>

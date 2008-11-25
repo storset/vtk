@@ -11,5 +11,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#assign authors = vrtx.propValue(resourceContext.currentResource, "authors", "enumerated") />
 <#if authors != "">
-  <@vrtx.msg code="article.by" /> ${authors?html}
+  <span class="vrtx-authors"><span class="vrtx-authors-prefix"><@vrtx.msg code="article.by" /></span> ${authors?html}</span>
 </#if>

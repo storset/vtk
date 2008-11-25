@@ -41,11 +41,22 @@
     <property name="viewName" value="tags.tags" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponent" ref="tags.searchComponent" />
+    <property name="defaultURLPattern" ref="tags.tagServiceExpression" />
+    <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="tags.atomService" />
       </map>
     </property>
+  </bean>
+
+  <bean id="tags.tagServiceExpression" class="java.lang.String">
+    <description>The url expression used to generate links to tag listings</description>
+    <constructor-arg value="${tagService.defaultExpression}" />
+  </bean>  
+
+  <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
+    <property name="tagsReporter" ref="tagsReporter" />
   </bean>
 
   <bean id="tags.atomHandler" 

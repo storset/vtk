@@ -157,13 +157,7 @@
         <!-- entry key="url" value="${decorating.tableOfContentsComponent.javascript}" / -->
       </map>
     </property>
-  </bean>
-  
-  <bean id="decorating.tagServiceExpression" class="java.lang.String">
-    <description>The url expression used to generate links to tag listings</description>
-    <constructor-arg value="${tagService.defaultExpression}" />
   </bean>  
-  
   
   <bean id="decorating.keywordsComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
@@ -171,7 +165,7 @@
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="keywordsPropDef" />
     <property name="description" value="Inserts the resource keywords, linked to the tags view" />
-    <property name="defaultURLpattern" ref="decorating.tagServiceExpression" />
+    <property name="defaultURLpattern" ref="tags.tagServiceExpression" />
     <property name="view" ref="decorating.keywordsComponent.view" />
   </bean>
 
@@ -179,23 +173,20 @@
         class="org.vortikal.web.decorating.components.TagCloudComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="tag-cloud" />
-    <property name="defaultURLPattern" ref="decorating.tagServiceExpression" />
+    <property name="defaultURLPattern" ref="tags.tagServiceExpression" />
     <property name="view" ref="decorating.tagCloudComponent.view" />
-    <property name="tagElementsProvider" ref="decorating.tagElementsProvider" />
+    <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
   </bean>
 
   <bean id="decorating.tagsComponent"
         class="org.vortikal.web.decorating.components.TagsComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="tags" />
-    <property name="defaultURLPattern" ref="decorating.tagServiceExpression" />
+    <property name="defaultURLPattern" ref="tags.tagServiceExpression" />
     <property name="view" ref="decorating.tagsComponent.view" />
-    <property name="tagElementsProvider" ref="decorating.tagElementsProvider" />
+    <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
   </bean>
 
-  <bean id="decorating.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
-    <property name="tagsReporter" ref="tagsReporter" />
-  </bean>
 
   <bean id="decorating.resourcePropertyComponent" parent="requestLocalRepositoryAware"
         class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">

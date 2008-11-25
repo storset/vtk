@@ -32,6 +32,7 @@ package org.vortikal.web.controller;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,12 +45,16 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.components.DecoratorComponentException;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
+import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
+import org.vortikal.web.tags.TagElement;
 
 /**
  * 
@@ -63,24 +68,33 @@ public class TagsController implements Controller {
     private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
 
+    private RepositoryTagElementsDataProvider tagElementsProvider;
+	private String defaultURLPattern;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
         Resource scope = getScope(token, request);
-
         Map<String, Object> model = new HashMap<String, Object>();
-
         String tag = request.getParameter("tag");
 
+        
+        
+        /* List all known tags for the current collection */
         if (tag == null || tag.trim().equals("")) {
-            model.put("error", "No tags specified");
+        	 Path scopeUri = RequestContext.getRequestContext().getCurrentCollection();
+        	 
+        	 List<TagElement> tagElements = 
+        		 tagElementsProvider.getTagElements(scopeUri, token, 1,
+        				 1, Integer.MAX_VALUE, 1, defaultURLPattern); 
+                 model.put("tagElements", tagElements);
+                 model.put("uriName", scopeUri.getName());
             return new ModelAndView(this.viewName, model);
         }
-
-        model.put("tag", tag);
         model.put("scope", scope);
+        model.put("tag", tag);
+        
         
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
@@ -208,5 +222,14 @@ public class TagsController implements Controller {
     public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
         this.alternativeRepresentations = alternativeRepresentations;
     }
+    
+    public void setTagElementsProvider(
+			RepositoryTagElementsDataProvider tagElementsProvider) {
+		this.tagElementsProvider = tagElementsProvider;
+	}
+
+	public void setDefaultURLPattern(String defaultURLPattern) {
+		this.defaultURLPattern = defaultURLPattern;
+	}
 
 }

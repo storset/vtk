@@ -28,8 +28,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <#if error?exists>
-    <#assign title = vrtx.getMsg("tags.noTagTitle") />
+  <#if tagElements?exists>
+     <#assign title><@vrtx.msg code="tags.serviceTitle" args=[uriName] /></#assign>
   <#elseif scope?exists && !scope.URI.root>
     <#assign title><@vrtx.msg code="tags.scopedTitle" args=[scope.title,tag] /></#assign>
   <#else>
@@ -62,8 +62,20 @@
     </#if>
   </h1>  
 
-  <#if error?exists>
-    <p>${error}</p>
+  <#if tagElements?exists>
+    
+	<div id="vrtx-tags-service">
+	    <ul class="vrtx-tag">
+	     <#assign i = 0>
+	     <#list tagElements as element>     
+		       <li class="vrtx-tags-element-${i}">
+		         <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
+		         	(${element.occurences?html})
+		       </li>
+		       <#assign i = i+1>
+	     </#list>
+	    </ul>
+	</div>
 
   <#else>
 

@@ -41,10 +41,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -57,7 +55,6 @@ import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
@@ -275,8 +272,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
-            this.commentDAO.updateNumberOfComments(dest.getID(), 0);
-            
+
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to clone()");
         }
@@ -356,6 +352,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("clone() operation failed");
         }
     }
+
+
+    
 
 
     public void delete(String token, Path uri)
@@ -684,8 +683,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setApproved(true);
 
             comment = this.commentDAO.createComment(original, comment);
-            this.commentDAO.updateNumberOfComments(original.getID(), comments.size() + 1);
-                        
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -693,7 +690,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
     
 
-	public void deleteComment(String token, Resource resource, Comment comment) {
+    public void deleteComment(String token, Resource resource, Comment comment) {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         if (resource == null) {
@@ -712,12 +709,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteComment(comment);
-            
-            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
-            this.commentDAO.updateNumberOfComments(original.getID(), comments.size());
-            
-        } catch (Exception e) {
-            throw new RuntimeException("Unhandled exception", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Unhandled IO exception", e);
         }
     }
     
@@ -741,13 +734,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
-            
-            this.commentDAO.updateNumberOfComments(original.getID(), 0);
-            
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
+    
 
 
     public Comment updateComment(String token, Resource resource, Comment comment) {
@@ -787,20 +778,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-    
-    
-    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments, 
-    		Principal principal, ResourceImpl resource) {
-        Map<String, Object> propertyValueMap = new HashMap<String, Object>();
-        propertyValueMap.put(PropertyType.NUMBER_OF_COMMENTS_PROP_NAME, numberOfComments);
-        try  {
-        	ResourceImpl newResource = this.resourceHelper.propertiesChange(original, principal, 
-        			propertyValueMap, resource);
-        	this.dao.store(newResource);
-        } catch (Exception e) {
-        	throw new RuntimeException("Could not update number of comments", e);
-        }
-	}
     
 
     private Resource create(String token, Path uri, boolean collection)

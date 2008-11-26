@@ -58,7 +58,7 @@ label {
   margin-bottom: .2em;
   /*white-space: nowrap;
   width:1%;*/
-  font-size: 14px;
+  font-size: .9em;
 }
 
 .recursive-listing-subfolders label{
@@ -156,8 +156,8 @@ div.recursive-listing{
 	float:none;
 }
 
-.properties div {
-	font-size:14px;
+.property-label{
+	font-size:.9em;
 }
 
 .sorting input,

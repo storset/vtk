@@ -614,7 +614,7 @@
               </#if>
               <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
             <#else>
-              <label class="resource.${name}">${allowedValues[0]?html}</label>asdasd
+              <label class="resource.${name}">${allowedValues[0]?html}</label>
               <#if value == allowedValues[0]>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
               <#else>

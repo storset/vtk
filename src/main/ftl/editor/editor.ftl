@@ -657,7 +657,7 @@
         <#else>
 
           <#-- AutoComplete only for the tags inputfield -->
-          <#if name = 'keywords'>
+          <#if name = 'tags'>
             <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" fieldName="${name}" 
                     description="${description}" value="${value?html}" width="18" schema=["text"]/>
           <#else>

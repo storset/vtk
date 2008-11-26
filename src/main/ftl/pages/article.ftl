@@ -109,12 +109,12 @@
       ${resource.bodyAsString}
     </div>
 
-    <#-- Keywords -->
+    <#-- Tags -->
 
-    <#assign keywords = resource.getValueByName("keywords")?default("") />
-    <#assign tagsProp = resource.getPropertyByName("keywords")?default("") />
-    <#if keywords != "">
-      <div class="vrtx-keywords">
+    <#assign tags = resource.getValueByName("tags")?default("") />
+    <#assign tagsProp = resource.getPropertyByName("tags")?default("") />
+    <#if tags != "">
+      <div class="vrtx-tags">
         ${tagsProp.definition.getLocalizedName(springMacroRequestContext.locale)}:
 	<#list tagsProp.values as tag>
           <a href="${tagServiceDefaultExpression?replace("%v", tag.stringValue?html)}">${tag.stringValue?html}</a><#if tag_has_next>,</#if> 

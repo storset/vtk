@@ -53,7 +53,7 @@
   <bean id="tags.tagServiceExpression" class="java.lang.String">
     <description>The url expression used to generate links to tag listings</description>
     <constructor-arg value="${tagService.defaultExpression}" />
-  </bean>  
+  </bean>
 
   <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
     <property name="tagsReporter" ref="tagsReporter" />
@@ -107,7 +107,7 @@
         <bean class="org.vortikal.web.search.ScopeQueryBuilder" />
         <bean class="org.vortikal.web.search.PropertyTermQueryBuilder">
           <property name="parameterName" value="tag" />
-          <property name="propertyTypeDefinition" ref="keywordsPropDef" />
+          <property name="propertyTypeDefinition" ref="tagsPropDef" />
         </bean>
         <bean class="org.vortikal.web.search.ParsedQueryBuilder">
           <property name="queryString" 

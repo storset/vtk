@@ -62,18 +62,18 @@ public class RepositoryTagsDataProvider implements
                                              Path contextUri, 
                                              String token) {
         
-        List<Tag> repositoryKeywords = getCompletions(contextUri, token);
+        List<Tag> repositoryTags = getCompletions(contextUri, token);
         
-        filterByPrefix(prefix, repositoryKeywords);
+        filterByPrefix(prefix, repositoryTags);
 
-        return repositoryKeywords;
+        return repositoryTags;
     }
     
-    // Fetch list of all existing unique repository keywords, sorted
+    // Fetch list of all existing unique repository tagss, sorted
     // by frequency, with most frequent on top.
     public List<Tag> getCompletions(Path scopeUri, String token) {
      
-        // TODO might consider adding limit on number of unique keywords that are 
+        // TODO might consider adding limit on number of unique tags that are 
         //  fetched.
         try {
             PropertyValueFrequencyQueryResult pfqResult =

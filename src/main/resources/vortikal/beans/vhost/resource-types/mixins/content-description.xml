@@ -69,7 +69,6 @@
   </bean>
 
   <bean id="keywordsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="contentRelation" value="POST_CONTENT" />
     <property name="name" value="keywords" /> 
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />

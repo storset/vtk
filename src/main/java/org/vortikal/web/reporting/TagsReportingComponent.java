@@ -42,14 +42,14 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class TagsReportingComponent {
 
     private DataReportManager dataReportManager;
-    private PropertyTypeDefinition keywordsPropDef = null;
+    private PropertyTypeDefinition tagsPropDef = null;
     
     public PropertyValueFrequencyQueryResult getTags(Path scopeUri, int limit, int tagOccurenceMin,
             String token) throws DataReportException, IllegalArgumentException {
 
         PropertyValueFrequencyQuery query = new PropertyValueFrequencyQuery();
 
-        query.setPropertyTypeDefinition(this.keywordsPropDef);
+        query.setPropertyTypeDefinition(this.tagsPropDef);
 
         // Sort by highest frequency first.
         query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_FREQUENCY);
@@ -68,8 +68,8 @@ public class TagsReportingComponent {
     }
 
     @Required
-    public void setKeywordsPropDef(PropertyTypeDefinition keywordsPropDef) {
-        this.keywordsPropDef = keywordsPropDef;
+    public void setTagsPropDef(PropertyTypeDefinition tagsPropDef) {
+        this.tagsPropDef = tagsPropDef;
     }
 
 

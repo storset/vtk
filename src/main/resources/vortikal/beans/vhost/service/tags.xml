@@ -6,7 +6,7 @@
   <bean id="tagsReporter" class="org.vortikal.web.reporting.TagsReportingComponent">
     <description>Reporting usage of tags</description>
     <property name="dataReportManager" ref="dataReportManager"/>
-    <property name="keywordsPropDef" ref="keywordsPropDef"/>
+    <property name="tagsPropDef" ref="tagsPropDef"/>
   </bean>
 
 </beans>

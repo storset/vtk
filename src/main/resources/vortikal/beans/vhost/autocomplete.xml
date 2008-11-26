@@ -38,7 +38,7 @@
   </bean>
   
   <bean id="tagAutoCompleteFieldName" class="java.lang.String">
-    <constructor-arg value="keywords" />
+    <constructor-arg value="tags" />
   </bean>
   
   <bean id="tagsAutoCompleteDataProvider"

@@ -80,13 +80,21 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         this.templateManager = templateManager;
     }
     
-    
     public void setDecorationConfiguration(Properties decorationConfiguration) {
         this.decorationConfiguration = decorationConfiguration;
     }
 
     public void setSupportMultipleTemplates(boolean supportMultipleTemplates) {
         this.supportMultipleTemplates = supportMultipleTemplates;
+    }
+
+    public void setParseableContentPropDef(
+            PropertyTypeDefinition parseableContentPropDef) {
+        this.parseableContentPropDef = parseableContentPropDef;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     public void afterPropertiesSet() {
@@ -240,18 +248,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             }
             uri = uri.getParent();
         }
-//        while (uri != null) {
-//            String prefix = uri.toString();
-//            String value = this.decorationConfiguration.getProperty(prefix);
-//            if (value != null) {
-//                if (logger.isDebugEnabled()) {
-//                    logger.debug("Found match for URI prefix '" + prefix
-//                                 + "': descriptor: '" + value + "'");
-//                }
-//                return value.trim();
-//            }
-//            uri = uri.getParent();
-//        }
         return null;
     }
     
@@ -281,6 +277,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                 descriptor.parse = false;
             } else {
                 Template t = resolveTemplateReferences(locale, param);
+
                 if (t != null) {
                     if (!this.supportMultipleTemplates) {
                         descriptor.templates.clear();
@@ -366,16 +363,4 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
         return references.toArray(new String[references.size()]);
     }
-
-
-    public void setParseableContentPropDef(
-            PropertyTypeDefinition parseableContentPropDef) {
-        this.parseableContentPropDef = parseableContentPropDef;
-    }
-
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
 }

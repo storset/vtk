@@ -456,4 +456,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
     }
 
+    public String toString() {
+        return this.getClass().getName() + ": " + this.templateSource;
+    }
 }

@@ -350,7 +350,7 @@
       
       <div id="vrtx-resource.${name}" class="${name} property-item">
       <#if displayLabel>
-        <label class="resource.${name}" for="resource.${name}">${localizedName}</label> 
+        <div class="resource.${name} property-label">${localizedName}</div> 
       </#if>
       
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
@@ -614,7 +614,7 @@
               </#if>
               <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
             <#else>
-              <label class="resource.${name}">${allowedValues[0]?html}</label>
+              <label class="resource.${name}">${allowedValues[0]?html}</label>asdasd
               <#if value == allowedValues[0]>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
               <#else>
@@ -715,10 +715,10 @@
     </#recover>
     <#if !(resource.getProperty(propDef))?exists>
       <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
-      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
+      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label><br />
     <#else>
       <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
-      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
+      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label><br />
     </#if>
   </#if>
 </#macro>
@@ -731,10 +731,10 @@
     </#if>
     <#if v == value>
       <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="checked" />
-      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
+      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label><br />
     <#else>
       <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
-      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
+      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label><br />
     </#if>
   </#list>
 </#macro>

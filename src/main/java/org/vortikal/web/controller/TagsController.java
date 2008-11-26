@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.controller;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,10 +47,8 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.decorating.components.DecoratorComponentException;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -80,7 +80,6 @@ public class TagsController implements Controller {
         String tag = request.getParameter("tag");
 
         
-        
         /* List all known tags for the current collection */
         if (tag == null || tag.trim().equals("")) {
         	 Path scopeUri = RequestContext.getRequestContext().getCurrentCollection();
@@ -88,8 +87,11 @@ public class TagsController implements Controller {
         	 List<TagElement> tagElements = 
         		 tagElementsProvider.getTagElements(scopeUri, token, 1,
         				 1, Integer.MAX_VALUE, 1, defaultURLPattern); 
-                 model.put("tagElements", tagElements);
-                 model.put("uriName", scopeUri.getName());
+        	 model.put("isRoot", scopeUri.isRoot()); 
+        	 model.put("tagElements", tagElements);
+        	 model.put("uriName", scopeUri.getName());
+                 
+                 
             return new ModelAndView(this.viewName, model);
         }
         model.put("scope", scope);

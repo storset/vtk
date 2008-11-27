@@ -484,12 +484,38 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 created.addProperty(fixedProp);
             }
         }
+        
         storeProperties(created);
+        
+        // Remove uncopyable properties
+        // @see PropertyType.UNCOPYABLE_PROPERTIES
+        removeUncopyableProperties(created);
 
     }
 
 
-    public void move(ResourceImpl resource, ResourceImpl newResource) {
+    private void removeUncopyableProperties(ResourceImpl r) {
+    	final String destUri = r.getURI().toString();
+    	final String uriWildcard = SqlDaoUtils.getUriSqlWildcard(r.getURI(), SQL_ESCAPE_CHAR);
+        final String batchSqlMap = getSqlMap("deleteUncopyableProperties");
+        getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
+            public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
+                executor.startBatch();
+                for (String propertyName : PropertyType.UNCOPYABLE_PROPERTIES) {
+                	Map<String, Object> params = new HashMap<String, Object>();
+                	params.put("destUri", destUri);
+                	params.put("uriWildcard", uriWildcard);
+                	params.put("name", propertyName);
+                	executor.delete(batchSqlMap, params);
+                }
+                executor.executeBatch();
+                return null;
+            }
+        });
+	}
+
+
+	public void move(ResourceImpl resource, ResourceImpl newResource) {
         Path destURI = newResource.getURI();
         int depthDiff = destURI.getDepth() - resource.getURI().getDepth();
 

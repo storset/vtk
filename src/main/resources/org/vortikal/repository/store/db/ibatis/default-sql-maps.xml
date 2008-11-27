@@ -406,6 +406,11 @@
           order by p.extra_prop_entry_id) t
   </insert>
   
+  <delete id="deleteUncopyableProperties" parameterClass="java.util.HashMap">
+    delete from extra_prop_entry
+      where name = #name# and resource_id in
+        (select resource_id from vortex_resource where uri = #destUri# or uri like #uriWildcard#)
+  </delete>
   
   <update id="updateBinaryRefsForCopy">
     update extra_prop_entry set value = <include refid="binaryDestinationDescendantUriMove" />

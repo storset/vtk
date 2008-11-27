@@ -96,6 +96,7 @@ public final class PropertyType {
     public static final String FEATUREDARTICLES_PROP_NAME = "featured-articles";
     public static final String RECURSIVE_LISTING_PROP_NAME = "recursive-listing";
     public static final String SUBFOLDERS_PROP_NAME = "recursive-listing-subfolders";
+    public static final String NUMBER_OF_COMMENTS_PROP_NAME = "numberOfComments";
     
     /*
      * Special properties
@@ -146,5 +147,9 @@ public final class PropertyType {
 
     public static final Set<String> NOT_REPRODUCABLE_CONTENT_PROPERTIES_SET = 
         new HashSet<String>(Arrays.asList(NOT_REPRODUCABLE_CONTENT_PROPERTIES));
+    
+    public static final String[] UNCOPYABLE_PROPERTIES = {
+        NUMBER_OF_COMMENTS_PROP_NAME
+    };
 
 }

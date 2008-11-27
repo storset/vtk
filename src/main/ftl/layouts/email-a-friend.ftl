@@ -29,4 +29,4 @@
           }
 </script>
 
-<a class="vrtx-email-friend" href="javascript:popup('${emailLink.url?html}');"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>
+<a class="vrtx-email-friend" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>

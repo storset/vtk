@@ -52,17 +52,10 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
 
-//Spec: http://www.ietf.org/rfc/rfc2445.txt
+
 public class ICalController implements Controller {
 
     private Repository repository;
-
-    // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
-    // If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
-    // Lines of text (i.e. DESCRIPTION) SHOULD NOT be longer than 75 octets, as specified by spec (4.1)
-    // SHOLUD NOT be longer, we have to go for alot more...
-    private int maxLineOfTextLength = 250;
-
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
@@ -95,6 +88,10 @@ public class ICalController implements Controller {
 
 
     private String createICal(Resource event) {
+        
+        //Spec: http://www.ietf.org/rfc/rfc2445.txt
+        // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
+        // If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
         
         Property startDate = event.getProperty(Namespace.DEFAULT_NAMESPACE,PropertyType.START_DATE_PROP_NAME);
         // We don't create anything unless we have the startdate
@@ -151,10 +148,6 @@ public class ICalController implements Controller {
         flattenedDescription = flattenedDescription.replaceAll("(\r\n|\r|\n|\n\r|\t)", " ");
         // Remove multiple whitespaces between words
         flattenedDescription = flattenedDescription.replaceAll("\\b\\s{2,}\\b", " ");
-        // Check max length
-        if (flattenedDescription.length() > maxLineOfTextLength) {
-            flattenedDescription = flattenedDescription.substring(0, maxLineOfTextLength - 3) + "...";
-        }
         return flattenedDescription;
     }
 

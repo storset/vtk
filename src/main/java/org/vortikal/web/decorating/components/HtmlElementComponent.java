@@ -90,6 +90,8 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         for (HtmlElement element: elements) {
             // Check for excluded child nodes:
+            HtmlElement resultingElement = 
+                request.getHtmlPage().createElement(element.getName());
             List<HtmlContent> resultingContent = new ArrayList<HtmlContent>();
             for (HtmlContent childNode: element.getChildNodes()) {
                 if (childNode instanceof HtmlElement) {
@@ -100,14 +102,13 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
                 } else {
                     resultingContent.add(childNode);
                 }
-                element.setChildNodes(resultingContent.toArray(
+                resultingElement.setChildNodes(resultingContent.toArray(
                         new HtmlContent[resultingContent.size()]));
             }
-            
             if (enclosed) {
-                result.add(element);
+                result.add(resultingElement);
             } else {
-                result.addAll(Arrays.asList(element.getChildNodes()));
+                result.addAll(Arrays.asList(resultingElement.getChildNodes()));
             }
         }
         return result;

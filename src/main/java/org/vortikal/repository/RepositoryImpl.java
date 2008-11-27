@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,8 +40,10 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +56,7 @@ import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
@@ -62,24 +64,19 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.token.TokenManager;
 
-
-
 /**
  * A (still non-transactional) implementation of the
  * <code>org.vortikal.repository.Repository</code> interface.
  * 
- * XXX: implement locking of depth 'infinity'
- * XXX: namespace locking/concurrency
- * XXX: Evaluate exception practice, handling and propagation
- * XXX: transaction demarcation
- * XXX: externalize caching
- * XXX: duplication of owner and inherited between resource and acl.
+ * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
+ * XXX: Evaluate exception practice, handling and propagation XXX: transaction
+ * demarcation XXX: externalize caching XXX: duplication of owner and inherited
+ * between resource and acl.
  * 
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     private ApplicationContext context;
-    
     private DataAccessor dao;
     private CommentDAO commentDAO;
     private ContentStore contentStore;
@@ -88,64 +85,63 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
     private URIValidator uriValidator = new URIValidator();
-        
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    
     private String id;
-
     private int maxComments = 1000;
-
     private PeriodicThread periodicThread;
-    
+
+
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
     }
-    
+
+
     public String getId() {
         return this.id;
     }
 
+
     public boolean exists(String token, Path uri) throws IOException {
 
-        if (this.dao.load(uri) != null) 
+        if (this.dao.load(uri) != null)
             return true;
 
         return false;
     }
 
+
     public Resource retrieve(String token, Path uri, boolean forProcessing)
-        throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IOException {
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
+            IOException {
         Principal principal = this.tokenManager.getPrincipal(token);
 
         ResourceImpl resource = null;
         resource = this.dao.load(uri);
 
-        if (resource == null) 
+        if (resource == null)
             throw new ResourceNotFoundException(uri);
 
         if (forProcessing)
             this.authorizationManager.authorizeReadProcessed(uri, principal);
         else
             this.authorizationManager.authorizeRead(uri, principal);
-        
+
         try {
             return (Resource) resource.clone();
 
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                                  "clone() resource: " + resource);
+            throw new IOException("An internal error occurred: unable to " + "clone() resource: "
+                    + resource);
         }
 
     }
 
-    public InputStream getInputStream(String token, Path uri,
-            boolean forProcessing) throws ResourceNotFoundException,
-            AuthorizationException, AuthenticationException,
+
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing)
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
             ResourceLockedException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
         ResourceImpl r = this.dao.load(uri);
 
         if (r == null) {
@@ -164,20 +160,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
 
-
-    public Resource[] listChildren(String token, Path uri, 
-            boolean forProcessing) throws ResourceNotFoundException,
-            AuthorizationException, AuthenticationException, IOException {
+    public Resource[] listChildren(String token, Path uri, boolean forProcessing)
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
+            IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
         ResourceImpl collection = this.dao.load(uri);
 
         if (collection == null) {
             throw new ResourceNotFoundException(uri);
         } else if (!collection.isCollection()) {
-            throw new IllegalOperationException(
-                "Can't list children for non-collection resources");
+            throw new IllegalOperationException("Can't list children for non-collection resources");
         }
 
         if (forProcessing)
@@ -190,11 +183,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         for (int i = 0; i < list.length; i++) {
             try {
-                children[i] = (Resource)list[i].clone();
+                children[i] = (Resource) list[i].clone();
 
             } catch (CloneNotSupportedException e) {
-                throw new IOException("An internal error occurred: unable to " +
-                                      "clone() resource: " + list[i]);
+                throw new IOException("An internal error occurred: unable to "
+                        + "clone() resource: " + list[i]);
             }
 
         }
@@ -202,72 +195,69 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return children;
     }
 
-    public Resource createDocument(String token, Path uri) 
-    throws IllegalOperationException, AuthorizationException, 
-    AuthenticationException, ResourceLockedException, ReadOnlyException, 
-    IOException {
+
+    public Resource createDocument(String token, Path uri) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException, ResourceLockedException,
+            ReadOnlyException, IOException {
 
         return create(token, uri, false);
     }
 
-    public Resource createCollection(String token, Path uri) 
-    throws IllegalOperationException, AuthorizationException, 
-    AuthenticationException, ResourceLockedException, ReadOnlyException, 
-    IOException {
+
+    public Resource createCollection(String token, Path uri) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException, ResourceLockedException,
+            ReadOnlyException, IOException {
 
         return create(token, uri, true);
     }
 
+
     public void copy(String token, Path srcUri, Path destUri, Repository.Depth depth,
-        boolean overwrite, boolean preserveACL)
-        throws IllegalOperationException, AuthorizationException, 
-            AuthenticationException, FailedDependencyException, 
-            ResourceOverwriteException, ResourceLockedException, 
-            ResourceNotFoundException, ReadOnlyException, IOException {
+            boolean overwrite, boolean preserveACL) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException, FailedDependencyException,
+            ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
+            ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
-        this.uriValidator.validateCopyURIs(srcUri, destUri);        
+        this.uriValidator.validateCopyURIs(srcUri, destUri);
 
         ResourceImpl src = this.dao.load(srcUri);
         if (src == null) {
             throw new ResourceNotFoundException(srcUri);
         }
-        
+
         ResourceImpl dest = this.dao.load(destUri);
 
         if (dest == null) {
             overwrite = false;
         } else if (!overwrite) {
-            throw new ResourceOverwriteException(
-                "Copy: cannot overwrite resource " + destUri);
-        } 
-            
+            throw new ResourceOverwriteException("Copy: cannot overwrite resource " + destUri);
+        }
+
         Path destParentUri = destUri.getParent();
         ResourceImpl destParent = this.dao.load(destParentUri);
         if ((destParent == null) || !destParent.isCollection()) {
             throw new IllegalOperationException(
-                "destination is either a document or does not exist");
+                    "destination is either a document or does not exist");
         }
 
-        this.authorizationManager.authorizeCopy(srcUri, destUri,
-                                                principal, overwrite);
-            
+        this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
+
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), 
-                                                                dest.getID(), dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(),
+                    dest.isCollection()));
         }
 
         try {
-            PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(
-                src, principal, destUri);
+            PropertySet fixedProps = this.resourceHelper.getFixedCopyProperties(src, principal,
+                    destUri);
 
             ResourceImpl newResource = src.createCopy(destUri);
             newResource = this.resourceHelper.nameChange(newResource, principal);
             destParent = this.resourceHelper.contentModification(destParent, principal);
-            
+
             this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
@@ -281,18 +271,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
 
-
-    public void move(String token, Path srcUri, Path destUri,
-        boolean overwrite)
-        throws IllegalOperationException, AuthorizationException, 
-            AuthenticationException, FailedDependencyException, 
-            ResourceOverwriteException, ResourceLockedException, 
+    public void move(String token, Path srcUri, Path destUri, boolean overwrite)
+            throws IllegalOperationException, AuthorizationException, AuthenticationException,
+            FailedDependencyException, ResourceOverwriteException, ResourceLockedException,
             ResourceNotFoundException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-
         this.uriValidator.validateCopyURIs(srcUri, destUri);
-        
+
         // Loading and checking source resource
         ResourceImpl src = this.dao.load(srcUri);
 
@@ -302,16 +288,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // Checking dest
         ResourceImpl dest = this.dao.load(destUri);
-
         if (dest == null) {
             overwrite = false;
         } else if (!overwrite) {
             throw new ResourceOverwriteException();
-        } 
-            
+        }
+
         // checking destParent
         ResourceImpl destParent = this.dao.load(destUri.getParent());
-
         if ((destParent == null) || !destParent.isCollection()) {
             throw new IllegalOperationException("Invalid destination resource");
         }
@@ -323,51 +307,43 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
 
-            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), 
-                                                                dest.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(),
+                    dest.isCollection()));
         }
-            
+
         try {
             destParent = this.resourceHelper.contentModification(destParent, principal);
 
             ResourceImpl newResource = src.createCopy(destUri);
-
             newResource.setAcl(src.getAcl());
             newResource.setInheritedAcl(src.isInheritedAcl());
             newResource.setAclInheritedFrom(src.getAclInheritedFrom());
-
             newResource = this.resourceHelper.nameChange(newResource, principal);
 
             this.dao.move(src, newResource);
+
             newResource = this.dao.load(newResource.getURI());
             this.contentStore.move(src.getURI(), newResource.getURI());
-            
             this.context.publishEvent(new ResourceCreationEvent(this, newResource));
-
-            this.context.publishEvent(new ResourceDeletionEvent(
-                                          this, srcUri, src.getID(), src.isCollection()));
+            this.context.publishEvent(new ResourceDeletionEvent(this, srcUri, src.getID(), src
+                    .isCollection()));
 
             dest = (ResourceImpl) this.dao.load(destUri).clone();
+
         } catch (CloneNotSupportedException e) {
             throw new IOException("clone() operation failed");
         }
     }
 
 
-    
-
-
-    public void delete(String token, Path uri)
-        throws IllegalOperationException, AuthorizationException, 
-            AuthenticationException, ResourceNotFoundException, 
-            ResourceLockedException, FailedDependencyException, 
-            ReadOnlyException, IOException {
+    public void delete(String token, Path uri) throws IllegalOperationException,
+            AuthorizationException, AuthenticationException, ResourceNotFoundException,
+            ResourceLockedException, FailedDependencyException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
         if (uri.isRoot()) {
-            throw new IllegalOperationException(
-            "Cannot delete the root resource ('/')");
+            throw new IllegalOperationException("Cannot delete the root resource ('/')");
         }
 
         ResourceImpl r = this.dao.load(uri);
@@ -377,33 +353,28 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         this.authorizationManager.authorizeDelete(uri, principal);
-            
+
         this.dao.delete(r);
         this.contentStore.deleteResource(r.getURI());
-        
-        ResourceImpl parentCollection = this.dao.load(uri.getParent());
 
-        parentCollection = this.resourceHelper.contentModification(
-            parentCollection, principal);
+        ResourceImpl parentCollection = this.dao.load(uri.getParent());
+        parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        ResourceDeletionEvent event = 
-            new ResourceDeletionEvent(this, uri, r.getID(), r.isCollection());
-
+        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r
+                .isCollection());
         this.context.publishEvent(event);
     }
 
 
     public Resource lock(String token, Path uri, String ownerInfo, Repository.Depth depth,
-                         int requestedTimeoutSeconds, 
-            String lockToken) throws ResourceNotFoundException, 
-            AuthorizationException, AuthenticationException, 
-            FailedDependencyException, ResourceLockedException, 
-            IllegalOperationException, ReadOnlyException, IOException {
-        
+            int requestedTimeoutSeconds, String lockToken) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, FailedDependencyException,
+            ResourceLockedException, IllegalOperationException, ReadOnlyException, IOException {
+
         Principal principal = this.tokenManager.getPrincipal(token);
         if (depth == Depth.ONE || depth == Depth.INF) {
-          throw new IllegalOperationException("Unsupported depth parameter: " + depth);
+            throw new IllegalOperationException("Unsupported depth parameter: " + depth);
         }
         ResourceImpl r = this.dao.load(uri);
         if (r == null) {
@@ -412,30 +383,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         if (lockToken != null) {
             if (r.getLock() == null) {
-                throw new IllegalOperationException(
-                    "Invalid lock refresh request: lock token '" + lockToken
-                    + "' does not exists on resource " + r.getURI());
+                throw new IllegalOperationException("Invalid lock refresh request: lock token '"
+                        + lockToken + "' does not exists on resource " + r.getURI());
             }
             if (!r.getLock().getLockToken().equals(lockToken)) {
-                throw new IllegalOperationException(
-                    "Invalid lock refresh request: lock token '" + lockToken
-                    + "' does not match existing lock token on resource " + uri);
+                throw new IllegalOperationException("Invalid lock refresh request: lock token '"
+                        + lockToken + "' does not match existing lock token on resource " + uri);
             }
         }
 
         this.authorizationManager.authorizeWrite(uri, principal);
-            
-        this.lockManager.lockResource(
-            r, principal, ownerInfo, depth, requestedTimeoutSeconds,
-            (lockToken != null));
+
+        this.lockManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds,
+                (lockToken != null));
 
         return r;
     }
 
-    public void unlock(String token, Path uri, String lockToken)
-        throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, ResourceLockedException, ReadOnlyException, 
-            IOException {
+
+    public void unlock(String token, Path uri, String lockToken) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, ResourceLockedException,
+            ReadOnlyException, IOException {
         Principal principal = this.tokenManager.getPrincipal(token);
         ResourceImpl r = this.dao.load(uri);
         if (r == null) {
@@ -443,16 +411,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         this.authorizationManager.authorizeUnlock(uri, principal);
-            
+
         if (r.getLock() != null) {
             r.setLock(null);
             this.dao.store(r);
         }
     }
 
-    public Resource store(String token, Resource resource)
-        throws ResourceNotFoundException, AuthorizationException, 
-            ResourceLockedException, AuthenticationException, 
+
+    public Resource store(String token, Resource resource) throws ResourceNotFoundException,
+            AuthorizationException, ResourceLockedException, AuthenticationException,
             IllegalOperationException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -472,25 +440,25 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         this.authorizationManager.authorizeWrite(uri, principal);
-            
+
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
 
-            ResourceImpl newResource = 
-                this.resourceHelper.propertiesChange(original, principal, (ResourceImpl)resource);
+            ResourceImpl newResource = this.resourceHelper.propertiesChange(original, principal,
+                    (ResourceImpl) resource);
             this.dao.store(newResource);
 
-            newResource = (ResourceImpl)this.dao.load(uri).clone();
+            newResource = (ResourceImpl) this.dao.load(uri).clone();
 
-            ResourceModificationEvent event = new ResourceModificationEvent(
-                this, newResource, originalClone);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource,
+                    originalClone);
 
             this.context.publishEvent(event);
 
             return newResource;
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                                  "clone() resource: " + original);
+            throw new IOException("An internal error occurred: unable to " + "clone() resource: "
+                    + original);
         }
     }
 
@@ -499,9 +467,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
      * Requests that an InputStream be written to a resource.
      */
     public Resource storeContent(String token, Path uri, InputStream byteStream)
-        throws AuthorizationException, AuthenticationException, 
-            ResourceNotFoundException, ResourceLockedException, 
-            IllegalOperationException, ReadOnlyException, IOException {
+            throws AuthorizationException, AuthenticationException, ResourceNotFoundException,
+            ResourceLockedException, IllegalOperationException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
@@ -521,31 +488,31 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             Resource original = (ResourceImpl) r.clone();
 
             this.contentStore.storeContent(uri, new java.io.BufferedInputStream(
-                                      new java.io.FileInputStream(tempFile)));
+                    new java.io.FileInputStream(tempFile)));
             r = this.resourceHelper.contentModification(r, principal);
-                
+
             this.dao.store(r);
 
-            ContentModificationEvent event = new ContentModificationEvent(
-                this, (Resource) r.clone(), original);
+            ContentModificationEvent event = new ContentModificationEvent(this, (Resource) r
+                    .clone(), original);
 
             this.context.publishEvent(event);
 
             return r;
 
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                                  "clone() resource: " + r);
+            throw new IOException("An internal error occurred: unable to " + "clone() resource: "
+                    + r);
         } finally {
-                
-            if (tempFile != null) tempFile.delete();
+
+            if (tempFile != null)
+                tempFile.delete();
         }
     }
 
 
-    public void storeACL(String token, Resource resource)
-        throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IllegalOperationException,
+    public void storeACL(String token, Resource resource) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, IllegalOperationException,
             ReadOnlyException, IOException {
 
         if (resource == null) {
@@ -559,7 +526,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(resource.getURI());
         }
         this.authorizationManager.authorizeAll(resource.getURI(), principal);
-            
+
         try {
             Resource original = (Resource) r.clone();
 
@@ -573,36 +540,37 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             if ("/".equals(resource.getURI()) && resource.isInheritedAcl()) {
-                throw new IllegalOperationException("The root resource cannot have an inherited ACL");
+                throw new IllegalOperationException(
+                        "The root resource cannot have an inherited ACL");
             }
-            
+
             if (original.isInheritedAcl() && !resource.isInheritedAcl()) {
-                /* Switching from inheritance. Make the new ACL a copy
-                 * of the parent's ACL, since the supplied one may
-                 * contain other ACEs than the one we now inherit
-                 * from. */
+                /*
+                 * Switching from inheritance. Make the new ACL a copy of the
+                 * parent's ACL, since the supplied one may contain other ACEs
+                 * than the one we now inherit from.
+                 */
                 AclImpl newAcl = (AclImpl) parent.getAcl().clone();
                 r.setAcl(newAcl);
                 r.setInheritedAcl(false);
                 r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
-            
+
             } else if (!original.isInheritedAcl() && resource.isInheritedAcl()) {
                 /* Switching to inheritance. */
                 r.setAclInheritedFrom(parent.getID());
                 r.setInheritedAcl(true);
-                
+
             } else {
                 /* Updating the entries */
                 AclImpl newAcl = (AclImpl) resource.getAcl().clone();
                 r.setInheritedAcl(false);
                 r.setAcl(newAcl);
             }
-                
+
             this.dao.storeACL(r);
 
-            ACLModificationEvent event = new ACLModificationEvent(
-                this, (Resource) r.clone(),
-                original, r.getAcl(), original.getAcl());
+            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(),
+                    original, r.getAcl(), original.getAcl());
 
             this.context.publishEvent(event);
 
@@ -611,11 +579,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    
+
     public List<Comment> getComments(String token, Resource resource) {
         return getComments(token, resource, false, 500);
     }
-    
+
+
     public List<Comment> getComments(String token, Resource resource, boolean deep, int max) {
         Principal principal = this.tokenManager.getPrincipal(token);
 
@@ -633,22 +602,23 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             List<Comment> result = new ArrayList<Comment>();
             Set<Path> authCache = new HashSet<Path>();
             // Fetch N comments, authorize on the result set:
-            for (Comment c: comments) {
+            for (Comment c : comments) {
                 try {
-                    if (!authCache.contains(c.getURI())) { 
+                    if (!authCache.contains(c.getURI())) {
                         this.authorizationManager.authorizeReadProcessed(c.getURI(), principal);
                         authCache.add(c.getURI());
                     }
                     result.add(c);
-                } catch (Throwable t) { }
+                } catch (Throwable t) {
+                }
             }
             return Collections.unmodifiableList(result);
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-    
-    
+
+
     public Comment addComment(String token, Resource resource, String title, String text) {
         Principal principal = this.tokenManager.getPrincipal(token);
 
@@ -668,10 +638,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeAddComment(resource.getURI(), principal);
 
-            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
+                    this.maxComments);
             if (comments.size() > this.maxComments) {
-                throw new IllegalOperationException(
-                    "Too many comments on resource " + resource.getURI());
+                throw new IllegalOperationException("Too many comments on resource "
+                        + resource.getURI());
             }
 
             Comment comment = new Comment();
@@ -683,12 +654,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setApproved(true);
 
             comment = this.commentDAO.createComment(original, comment);
+            updateNumberOfComments(original, new Integer(comments.size() + 1), principal,
+                    (ResourceImpl) resource);
+
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-    
+
 
     public void deleteComment(String token, Resource resource, Comment comment) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -709,11 +683,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteComment(comment);
-        } catch (IOException e) {
-            throw new RuntimeException("Unhandled IO exception", e);
+
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
+                    this.maxComments);
+            updateNumberOfComments(original, new Integer(comments.size()), principal,
+                    (ResourceImpl) resource);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unhandled exception", e);
         }
     }
-    
+
 
     public void deleteAllComments(String token, Resource resource) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -734,11 +714,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
+
+            updateNumberOfComments(original, null, principal, (ResourceImpl) resource);
+
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-    
 
 
     public Comment updateComment(String token, Resource resource, Comment comment) {
@@ -759,8 +741,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
 
             Comment old = null;
-            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false, this.maxComments);
-            for (Comment c: comments) {
+            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
+                    this.maxComments);
+            for (Comment c : comments) {
                 if (c.getID() == comment.getID() && c.getURI().equals(comment.getURI())) {
                     old = c;
                     break;
@@ -778,35 +761,47 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
-    
+
+
+    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments,
+            Principal principal, ResourceImpl resource) {
+        Map<String, Object> propertyValueMap = new HashMap<String, Object>();
+        propertyValueMap.put(PropertyType.NUMBER_OF_COMMENTS_PROP_NAME, numberOfComments);
+        try {
+            ResourceImpl newResource = this.resourceHelper.explicitValuePropertiesChange(original,
+                    principal, propertyValueMap, resource);
+            this.dao.store(newResource);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not update number of comments", e);
+        }
+    }
+
 
     private Resource create(String token, Path uri, boolean collection)
-        throws AuthorizationException, AuthenticationException, 
-        IllegalOperationException, ResourceLockedException, 
-        ReadOnlyException, IOException {
+            throws AuthorizationException, AuthenticationException, IllegalOperationException,
+            ResourceLockedException, ReadOnlyException, IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
         ResourceImpl resource = this.dao.load(uri);
-        if (resource != null) { 
+        if (resource != null) {
             throw new ResourceOverwriteException("Resource already exists");
         }
         ResourceImpl parent = this.dao.load(uri.getParent());
         if ((parent == null) || !parent.isCollection()) {
-            throw new IllegalOperationException("Either parent doesn't exist " +
-                                                "or parent is document");
+            throw new IllegalOperationException("Either parent doesn't exist "
+                    + "or parent is document");
         }
 
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
-            
-        ResourceImpl newResource = 
-            this.resourceHelper.create(principal, uri, collection);
+
+        ResourceImpl newResource = this.resourceHelper.create(principal, uri, collection);
 
         try {
             Acl newAcl = (Acl) parent.getAcl().clone();
             newResource.setAcl(newAcl);
             newResource.setInheritedAcl(true);
-            int aclIneritedFrom = parent.isInheritedAcl()
-                ? parent.getAclInheritedFrom() : parent.getID();
+            int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent
+                    .getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
             this.dao.store(newResource);
             this.contentStore.createResource(newResource.getURI(), collection);
@@ -815,23 +810,24 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             parent.addChildURI(uri);
             parent = this.resourceHelper.contentModification(parent, principal);
-                
+
             this.dao.store(parent);
 
             newResource = (ResourceImpl) newResource.clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " +
-                                  "clone() resource: " + uri);
+            throw new IOException("An internal error occurred: unable to " + "clone() resource: "
+                    + uri);
         }
 
         this.context.publishEvent(new ResourceCreationEvent(this, newResource));
         return newResource;
     }
 
+
     /**
-     * Writes to a temporary file (used to avoid lengthy blocking on
-     * file uploads).
-     *
+     * Writes to a temporary file (used to avoid lengthy blocking on file
+     * uploads).
+     * 
      * XXX: should be handled on the client side?
      */
     private File writeTempFile(String name, InputStream byteStream) throws IOException {
@@ -851,117 +847,128 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         dest.close();
         return tempFile;
     }
-    
 
 
-    public void setReadOnly(String token, boolean readOnly) 
-        throws AuthorizationException {
+    public void setReadOnly(String token, boolean readOnly) throws AuthorizationException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
         this.authorizationManager.authorizeRootRoleAction(principal);
         this.authorizationManager.setReadOnly(readOnly);
     }
 
-    
+
     private void periodicJob() {
         if (!this.isReadOnly()) {
             this.dao.deleteExpiredLocks(new Date());
         }
     }
 
+
     @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
+
 
     @Required
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
 
+
     @Required
     public void setCommentDAO(CommentDAO commentDAO) {
         this.commentDAO = commentDAO;
     }
+
 
     @Required
     public void setContentStore(ContentStore contentStore) {
         this.contentStore = contentStore;
     }
 
+
     @Required
     public void setId(String id) {
         this.id = id;
     }
 
+
     @Required
     public void setLockManager(LockManager lockManager) {
         this.lockManager = lockManager;
     }
-    
+
+
     @Required
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 
+
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
     }
+
 
     @Required
     public void setRepositoryResourceHelper(RepositoryResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
     }
 
+
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
         if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " does not exist");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp
+                    + " does not exist");
         }
         if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " is not a directory");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp
+                    + " is not a directory");
         }
         this.tempDir = tmp;
     }
-    
+
+
     public void setMaxComments(int maxComments) {
         if (maxComments < 0) {
-            throw new IllegalArgumentException(
-                "Argument must be an integer >= 0");
+            throw new IllegalArgumentException("Argument must be an integer >= 0");
         }
 
         this.maxComments = maxComments;
     }
-    
+
+
     public void init() {
         this.periodicThread = new PeriodicThread(600);
         this.periodicThread.start();
     }
 
+
     public void destroy() {
         this.periodicThread.kill();
-    }    
+    }
 
     private static Log periodicLogger = LogFactory.getLog(PeriodicThread.class);
 
-
-    
     private class PeriodicThread extends Thread {
 
         private long sleepSeconds;
         private boolean alive = true;
-    
+
+
         public PeriodicThread(long sleepSeconds) {
             this.sleepSeconds = sleepSeconds;
         }
+
 
         public void kill() {
             this.alive = false;
             this.interrupt();
         }
-        
+
+
         public void run() {
             while (this.alive) {
                 try {

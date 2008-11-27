@@ -28,44 +28,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype.property;
+package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.PropertiesModificationExplicitValueEvaluator;
+import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.security.Principal;
 
-public class NumberOfCommentsModifiedEvaluator implements
-        PropertiesModificationExplicitValueEvaluator {
+public interface PropertiesModificationExplicitValueEvaluator extends
+        PropertiesModificationPropertyEvaluator {
 
     public boolean propertiesModification(Principal principal, Object value, Property property,
-            PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
-
-        if (value == null) {
-            return false;
-        }
-
-        if (!(value instanceof Integer)) {
-            throw new PropertyEvaluationException("Value must be of type INTEGER, "
-                    + "was instead " + value.getClass());
-        }
-
-        Integer numberOfComments = (Integer) value;
-
-        if (numberOfComments < 1) {
-            return false;
-        }
-
-        property.setIntValue(numberOfComments.intValue());
-        return true;
-    }
-
-
-    public boolean propertiesModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
-        return false;
-    }
+            PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException;
 
 }

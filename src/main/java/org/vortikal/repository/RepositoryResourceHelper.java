@@ -31,34 +31,48 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
 public interface RepositoryResourceHelper {
 
-    public ResourceImpl create(Principal principal, Path uri,
-            boolean collection) throws IOException;
+    public ResourceImpl create(Principal principal, Path uri, boolean collection)
+            throws IOException;
+
 
     /**
-     * Evaluates and validates properties on a resource before
-     * storing.
-     *
+     * Evaluates and validates properties on a resource before storing.
+     * 
      * @param resource a the original resource
      * @param principal the principal performing the store operation
      * @param dto the user-supplied resource
      * @return the resulting resource after property evaluation
      */
-    public ResourceImpl propertiesChange(ResourceImpl resource,
-            Principal principal, ResourceImpl dto) throws AuthenticationException,
-            AuthorizationException, CloneNotSupportedException, IOException;
+    public ResourceImpl propertiesChange(ResourceImpl resource, Principal principal,
+            ResourceImpl dto) throws AuthenticationException, AuthorizationException,
+            CloneNotSupportedException, IOException;
 
-    public ResourceImpl contentModification(ResourceImpl resource,
-            Principal principal) throws IOException;
+
+    /**
+     * propertiesChange, but evaluates specific properties to explicit values,
+     * given as property/value-pairs in propertyValueMap.
+     */
+    public ResourceImpl explicitValuePropertiesChange(ResourceImpl resource, Principal principal,
+            Map<String, Object> propertyValueMap, ResourceImpl suppliedResource)
+            throws AuthenticationException, AuthorizationException, CloneNotSupportedException,
+            IOException;
+
+
+    public ResourceImpl contentModification(ResourceImpl resource, Principal principal)
+            throws IOException;
+
 
     public ResourceImpl nameChange(ResourceImpl resource, Principal principal) throws IOException;
 
-    public PropertySet getFixedCopyProperties(Resource resource,
-           Principal principal, Path destUri) throws CloneNotSupportedException;
-           
+
+    public PropertySet getFixedCopyProperties(Resource resource, Principal principal, Path destUri)
+            throws CloneNotSupportedException;
+
 }

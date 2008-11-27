@@ -314,11 +314,13 @@
     <property name="parameterDescriptions">
       <map>
         <entry key="max-comments" value="Maximum number of comments to display. The default value is 10." />
+        <entry key="include-if-empty" value="Set to 'false' if you don't want to display empty comments. Default is 'true'." />
       </map>
     </property>
     <property name="exposedParameters">
       <set>
         <value>max-comments</value>
+        <value>include-if-empty</value>
       </set>
     </property>
   </bean>

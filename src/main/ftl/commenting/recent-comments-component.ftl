@@ -1,13 +1,19 @@
 <#ftl strip_whitespace=true />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#assign number = comments?size />
+
+<#assign includeIfEmpty = true />
+ <#if .vars['include-if-empty']?exists && .vars['include-if-empty'] = 'false'>
+  <#assign includeIfEmpty = false />
+ </#if>
+
+<#if number &gt; 0 || includeIfEmpty>
 <div class="vrtx-recent-comments">
 
   <a class="comments-title" href="${recentCommentsURL?html}"><@vrtx.msg code='commenting.comments.recent'
                    args=[resource.title] default='Recent comments' /></a>
-
-  <#assign number = comments?size />
-
+  
   <#-- XXX: -->
   <#if .vars['max-comments']?exists>
     <#attempt>
@@ -16,16 +22,20 @@
       <#stop "'max-comments' is not a number: " + .vars['max-comments'] />
     </#attempt>
   </#if>
-
+    
   <#if number &lt; 0>
     <#stop "Number must be a positive integer" />
   </#if>
-
+  
   <#if number &gt; comments?size>
     <#assign number = comments?size />
   </#if>
-
-
+ 
+ <#assign includeIfEmpty = true />
+ <#if .vars['include-if-empty']?exists && .vars['include-if-empty'] = 'false'>
+  <#assign includeIfEmpty = false />
+ </#if>
+ 
   <ul class="items">
 
   <#list comments as comment>
@@ -47,8 +57,8 @@
     </li>
   </#list>
   </ul>
-
+  
   <a class="all-comments" href="${recentCommentsURL?html}"><@vrtx.msg code="commenting.comments.more" default="More..." /></a>
   
 </div>
-
+</#if>

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.web.decorating.DecoratorRequest;
@@ -92,6 +93,13 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
             // Check for excluded child nodes:
             HtmlElement resultingElement = 
                 request.getHtmlPage().createElement(element.getName());
+            List<HtmlAttribute> newAttrs = new ArrayList<HtmlAttribute>();
+            for (HtmlAttribute attr: element.getAttributes()) {
+                HtmlAttribute copy = 
+                    request.getHtmlPage().createAttribute(attr.getName(), attr.getValue()); 
+                newAttrs.add(copy);
+            }
+            resultingElement.setAttributes(newAttrs.toArray(new HtmlAttribute[newAttrs.size()]));
             List<HtmlContent> resultingContent = new ArrayList<HtmlContent>();
             for (HtmlContent childNode: element.getChildNodes()) {
                 if (childNode instanceof HtmlElement) {

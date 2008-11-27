@@ -52,92 +52,115 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
 
+//Spec: http://www.ietf.org/rfc/rfc2445.txt
 public class ICalController implements Controller {
-	
-	private Repository repository;
 
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		String token = SecurityContext.getSecurityContext().getToken();
+    private Repository repository;
+
+    // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
+    // If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
+    // Lines of text (i.e. DESCRIPTION) SHOULD NOT be longer than 75 octets, as specified by spec (4.1)
+    // SHOLUD NOT be longer, we have to go for alot more...
+    private int maxLineOfTextLength = 250;
+
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+
+        String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
         Resource event = this.repository.retrieve(token, uri, true);
 
         String iCal = createICal(event);
         if (iCal == null) {
-        	return null;
+            return null;
         }
+
+        response.setContentType("text/calendar;charset=utf-8");
+        String iCalfileName = getICalFileName(event);
+        response.setHeader("Content-Disposition", "filename=" + iCalfileName + ".ics");
+        ServletOutputStream out = response.getOutputStream();
+        out.print(iCal);
+        out.close();
+
+        return null;
+    }
+
+
+    private String getICalFileName(Resource event) {
+        String resourceUri = event.getURI().toString();
+        return resourceUri.substring(resourceUri.lastIndexOf("/") + 1, resourceUri.lastIndexOf("."));
+    }
+
+
+    private String createICal(Resource event) {
         
-		response.setContentType("text/calendar;charset=utf-8");
-		String iCalfileName = getICalFileName(event);
-		response.setHeader("Content-Disposition","filename=" + iCalfileName + ".ics");
-		ServletOutputStream out = response.getOutputStream();
-		out.print(iCal);
-		out.close();
-		
-		return null;
-	}
+        Property startDate = event.getProperty(Namespace.DEFAULT_NAMESPACE,PropertyType.START_DATE_PROP_NAME);
+        // We don't create anything unless we have the startdate
+        if (startDate == null) {
+            return null;
+        }
 
-	private String getICalFileName(Resource event) {
-		String resourceUri = event.getURI().toString();
-		return resourceUri.substring(resourceUri.lastIndexOf("/") + 1, resourceUri.lastIndexOf("."));
-	}
+        StringBuilder sb = new StringBuilder();
+        sb.append("BEGIN:VCALENDAR\n");
+        sb.append("PRODID:-//UiO//Vortex//NONSGML v1.0//NO\n");
+        sb.append("VERSION:2.0\n");
+        sb.append("BEGIN:VEVENT\n");
+        sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
+        sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");
 
-	private String createICal(Resource event) {
-		Property startDate = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.START_DATE_PROP_NAME);
-		// We don't create anything unless we have the startdate
-		if (startDate == null) {
-			return null;
-		}
-		
-		// Spec: http://www.ietf.org/rfc/rfc2445.txt
-		// PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
-		// If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("BEGIN:VCALENDAR\n");
-		sb.append("PRODID:-//UiO//Vortex//NONSGML v1.0//NO\n");
-		sb.append("VERSION:2.0\n");
-		sb.append("BEGIN:VEVENT\n");
-		sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
-		sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");
-		
-		Property endDate = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.END_DATE_PROP_NAME);
-		if (endDate != null) {
-			sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "\n");
-		}
-		
-		Property location = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LOCATION_PROP_NAME);
-		if (location != null) {
-			sb.append("LOCATION:" + location.getStringValue() + "\n");
-		}
-		
-		Property description = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.INTRODUCTION_PROP_NAME);
-		if (description != null && StringUtils.isNotBlank(description.getStringValue())) {
-			String flattenedDescription = description.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null);
-			sb.append("DESCRIPTION:" + flattenedDescription + "\n");
-		}
+        Property endDate = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.END_DATE_PROP_NAME);
+        if (endDate != null) {
+            sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "\n");
+        }
 
-		sb.append("SUMMARY:" + event.getTitle() + "\n");
-		sb.append("END:VEVENT\n");
-		sb.append("END:VCALENDAR");
-		return sb.toString();
-	}
+        Property location = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LOCATION_PROP_NAME);
+        if (location != null) {
+            sb.append("LOCATION:" + location.getStringValue() + "\n");
+        }
 
-	private String getUiD(Date currenttime) {
-		return getICalDate(currenttime) +
-				"-" + Calendar.getInstance().getTimeInMillis() +"@" + NetUtils.guessHostName();
-	}
+        Property description = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.INTRODUCTION_PROP_NAME);
+        if (description != null && StringUtils.isNotBlank(description.getStringValue())) {
+            sb.append("DESCRIPTION:" + getDescription(description) + "\n");
+        }
 
-	private String getICalDate(Date date) {
-		// Local time
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
-		return dateFormat.format(date) + "T" + timeFormat.format(date);
-	}
+        sb.append("SUMMARY:" + event.getTitle() + "\n");
+        sb.append("END:VEVENT\n");
+        sb.append("END:VCALENDAR");
+        return sb.toString();
+    }
 
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
+
+    private String getUiD(Date currenttime) {
+        return getICalDate(currenttime) + "-" + Calendar.getInstance().getTimeInMillis() + "@" + NetUtils.guessHostName();
+    }
+
+
+    private String getICalDate(Date date) {
+        // Local time
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
+        return dateFormat.format(date) + "T" + timeFormat.format(date);
+    }
+
+
+    private String getDescription(Property description) {
+        String flattenedDescription = description.getFormattedValue(HtmlValueFormatter.FLATTENED_FORMAT, null);
+        // Remove linebreaks and the like...
+        flattenedDescription = flattenedDescription.replaceAll("(\r\n|\r|\n|\n\r|\t)", " ");
+        // Remove multiple whitespaces between words
+        flattenedDescription = flattenedDescription.replaceAll("\\b\\s{2,}\\b", " ");
+        // Check max length
+        if (flattenedDescription.length() > maxLineOfTextLength) {
+            flattenedDescription = flattenedDescription.substring(0, maxLineOfTextLength - 3) + "...";
+        }
+        return flattenedDescription;
+    }
+
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
 }

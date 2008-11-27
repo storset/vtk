@@ -32,6 +32,7 @@ package org.vortikal.web.decorating.components;
 
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ public class ElementInModelDecoratorComponent extends
         AbstractDecoratorComponent implements HtmlDecoratorComponent {
 
     private String modelKey;
+    private boolean useEnclosedContent = false;
     
     @Override
     protected String getDescriptionInternal() {
@@ -75,13 +77,27 @@ public class ElementInModelDecoratorComponent extends
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         Object o = model.get(this.modelKey);
         if (o != null && o instanceof HtmlContent) {
-            result.add((HtmlContent) o);
+            HtmlContent c = (HtmlContent) o;
+            if (this.useEnclosedContent) {
+                result.add(c);
+            } else {
+                if (c instanceof EnclosingHtmlContent) {
+                    EnclosingHtmlContent e = (EnclosingHtmlContent) c;
+                    result.addAll(Arrays.asList(e.getChildNodes()));
+                } else {
+                    result.add(c);
+                }
+            }
         }
         return result;
     }
 
     @Required public void setModelKey(String modelKey) {
         this.modelKey = modelKey;
+    }
+    
+    public void setUseEnclosedContent(boolean useEnclosedContent) {
+        this.useEnclosedContent = useEnclosedContent;
     }
 
 }

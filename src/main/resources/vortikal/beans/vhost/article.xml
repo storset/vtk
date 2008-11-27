@@ -33,6 +33,8 @@
   <bean id="displayArticleHandler"  class="org.vortikal.web.decorating.HtmlController"
         parent="requestLocalRepositoryAware">
     <property name="parser" ref="decorating.htmlParser" />
+    <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
+    <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
     <property name="viewName" value="displayArticle" />
     <property name="exposedModelElements">
       <map>
@@ -153,33 +155,9 @@
   <bean id="article.decoratorTemplateFactory"
         class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <!--
-    <property name="componentResolver" ref="article.componentResolver" />
-    -->
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
   </bean>
-
-  <!--
-  <bean id="article.componentResolver"
-        class="org.vortikal.web.decorating.BeanContextComponentResolver">
-    <property name="availableComponentNamespaces"
-              ref="article.decoratorComponentNamespaces" />
-  </bean>
-
-  <bean id="article.decoratorComponentNamespaces"
-        class="org.springframework.beans.factory.config.SetFactoryBean">
-    <property name="sourceSet">
-      <set>
-        <ref bean="decorating.documentNamespace" />
-        <ref bean="decorating.resourceNamespace" />
-        <ref bean="decorating.includeNamespace" />
-        <ref bean="decorating.cssNamespace" />
-        <ref bean="article.componentNamespace" />
-      </set>
-    </property>
-  </bean>
-  -->
 
   <bean id="article.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="article" />
@@ -365,6 +343,32 @@
     </property>
   </bean>
 
+  <bean id="article.commentsFeedLinkComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.documentNamespace" />
+    <property name="name" value="comments-feed-link" />
+    <property name="description" value="Inserts a link reference to the feed of comments for articles" />
+    <property name="view" ref="article.commentsFeedCssView" />
+  </bean>
+
+  <bean id="article.commentsFeedCssView" parent="freemarkerView">
+    <property name="url" value="commenting/comments-feed-url.ftl" />
+    <property name="referenceDataProviderList">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="modelName" value="commentsFeed" />
+          <property name="urlName" value="url" />
+          <property name="service" ref="commenting.feedService" />
+        </bean>
+
+    <!--
+      <ref bean="commenting.commentsView.referenceDataProviders" />
+    -->
+      </list>
+    </property>
+  </bean>
 
   <!--
   <bean id="displayArticleView" parent="freemarkerView">

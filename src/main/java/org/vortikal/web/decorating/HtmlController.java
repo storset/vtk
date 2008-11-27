@@ -32,6 +32,7 @@ package org.vortikal.web.decorating;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +44,10 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlElement;
+import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.web.RequestContext;
@@ -53,6 +56,8 @@ public class HtmlController implements Controller {
 
     private Repository repository;
     private HtmlPageParser parser;
+    private List<HtmlNodeFilter> htmlNodeFilters;
+    private PropertyTypeDefinition parseableContentPropDef;
     private String viewName;
     private Map<String, String> exposedModelElements;
     
@@ -67,7 +72,19 @@ public class HtmlController implements Controller {
         Resource resource = this.repository.retrieve(token, uri, true);
         InputStream is = this.repository.getInputStream(token, uri, true);
 
-        HtmlPage page = this.parser.parse(is, resource.getCharacterEncoding());
+        boolean filter =
+            this.htmlNodeFilters != null
+            && this.parseableContentPropDef != null 
+            && resource.getProperty(this.parseableContentPropDef) != null;
+        
+        HtmlPage page = null;
+        if (filter) {
+            page = this.parser.parse(is, resource.getCharacterEncoding(), 
+                    this.htmlNodeFilters);
+        } else {
+            page = this.parser.parse(is, resource.getCharacterEncoding());
+        }
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);
         model.put("page", page);
@@ -96,5 +113,13 @@ public class HtmlController implements Controller {
 
     public void setExposedModelElements(Map<String, String> exposedModelElements) {
         this.exposedModelElements = exposedModelElements;
+    }
+
+    public void setHtmlNodeFilters(List<HtmlNodeFilter> htmlNodeFilters) {
+        this.htmlNodeFilters = htmlNodeFilters;
+    }
+
+    public void setParseableContentPropDef(PropertyTypeDefinition parseableContentPropDef) {
+        this.parseableContentPropDef = parseableContentPropDef;
     }
 }

@@ -63,7 +63,7 @@ public class TemplateDecorator implements Decorator {
     private DecorationResolver decorationResolver;
     boolean tidyXhtml = true;
     
-    private List<HtmlNodeFilter> htmlNodeFilters;    
+    private List<HtmlNodeFilter> htmlNodeFilters;
 
     private static final String DECORATION_DESCRIPTOR_REQ_ATTR = 
         TemplateDecorator.class.getName() + ".DecorationDescriptor";

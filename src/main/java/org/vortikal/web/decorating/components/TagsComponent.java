@@ -76,11 +76,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             + "Default value is: " + PARAMETER_SHOW_OCCURENCE_VALUE;
 
     private static final String PARAMETER_SERVICE_URL = "service-url";
-    private static final String PARAMETER_SERVICE_URL_DESC = "Sets the service URL template to use when generating a link for a tag."
-            + "The string '%v' will be replaced with the actual tag value for each tag "
-            + "when the link is generated.";
-
-    private String defaultURLPattern;
+    private static final String PARAMETER_SERVICE_URL_DESC = "Deprecated: NO LONGER USED. Kept to avoid breaking existing component references.";
 
     private RepositoryTagElementsDataProvider tagElementsProvider;
     
@@ -96,7 +92,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         map.put(PARAMETER_TAG_LIMIT, PARAMETER_TAG_LIMIT_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_PARAMETER_RESULT_DESC);
         map.put(PARAMETER_SHOW_OCCURENCE, PARAMETER_SHOW_OCCURENCE_DESC);
-        map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC + " Default value is: " + this.defaultURLPattern);
+        map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC);
 
         return map;
     }
@@ -115,12 +111,6 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         }
 
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
-        String serviceUrl = request.getStringParameter(PARAMETER_SERVICE_URL);
-        
-        if (serviceUrl == null) {
-            serviceUrl = this.defaultURLPattern;
-        }
-        
         int resultSet = PARAMETER_RESULT_DEFAULT_VALUE;
         boolean showOccurence = PARAMETER_SHOW_OCCURENCE_VALUE;
         
@@ -151,8 +141,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         // Legacy exception handling, should be refactored.
         try {
             List<TagElement> tagElements = 
-                tagElementsProvider.getTagElements(scopeUri, token, 1,
-                        1, limit, 1, serviceUrl); //TODO: not so neat hack??
+                tagElementsProvider.getTagElements(scopeUri, token, 1, 1, limit, 1); //TODO: not so neat hack??
 
             // Populate model
             int numberOfTagsInEachColumn;
@@ -207,12 +196,6 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         return Path.fromString(href);
     }
 
-
-
-    @Required
-    public void setDefaultURLPattern(String defaultURLPattern) {
-        this.defaultURLPattern = defaultURLPattern;
-    }
 
 
     @Required

@@ -3,8 +3,6 @@ package org.vortikal.web.tags;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -12,22 +10,27 @@ import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.reporting.TagsReportingComponent;
 
 public class RepositoryTagElementsDataProvider {
 
-    private static final Pattern URL_REPLACEMENT_VALUE_PATTERN = Pattern.compile("%v");
-
     private TagsReportingComponent tagsReporter;
+    
+    private boolean servesRoot = true;
     
     @Required
     public void setTagsReporter(TagsReportingComponent tagsReporter) {
         this.tagsReporter = tagsReporter;
     }
 
+    @Required // to be removed..
+    public void setServesRoot(boolean servesRoot) {
+        this.servesRoot = servesRoot;
+    }
+
     public List<TagElement> getTagElements(Path scopeUri, String token,
-            int magnitudeMin, int magnitudeMax, int limit, int tagOccurenceMin,
-            String serviceUrl) throws DataReportException, IllegalArgumentException {
+            int magnitudeMin, int magnitudeMax, int limit, int tagOccurenceMin) throws DataReportException, IllegalArgumentException {
         // Do data report query
 
         PropertyValueFrequencyQueryResult result = null;
@@ -36,12 +39,12 @@ public class RepositoryTagElementsDataProvider {
         
         
         // Generate list of tag elements
-        List<TagElement> tagElements = generateTagElementList(result, magnitudeMax, magnitudeMin, serviceUrl);
+        List<TagElement> tagElements = generateTagElementList(scopeUri, result, magnitudeMax, magnitudeMin);
         return tagElements;
     }
 
-    private List<TagElement> generateTagElementList(PropertyValueFrequencyQueryResult result, int magnitudeMax,
-            int magnitudeMin, String serviceUrl) {
+    private List<TagElement> generateTagElementList(Path scopeUri, 
+            PropertyValueFrequencyQueryResult result, int magnitudeMax, int magnitudeMin) {
 
         List<Pair<Value, Integer>> freqList = result.getValueFrequencyList();
 
@@ -54,13 +57,13 @@ public class RepositoryTagElementsDataProvider {
             int maxFreq = freqList.get(0).second().intValue();
 
             for (Pair<Value, Integer> pair : freqList) {
-                String text = pair.first().getStringValue();
-                String link = getUrl(text, serviceUrl);
+                String tagName = pair.first().getStringValue();
+                String link = getUrl(tagName, scopeUri);
 
                 int magnitude = getNormalizedMagnitude(pair.second().intValue(), maxFreq, minFreq, magnitudeMin,
                         magnitudeMax);
 
-                tagElements.add(new TagElement(magnitude, link, text, pair.second().intValue()));
+                tagElements.add(new TagElement(magnitude, link, tagName, pair.second().intValue()));
             }
 
             // Sort alphabetically
@@ -84,14 +87,15 @@ public class RepositoryTagElementsDataProvider {
     }
 
 
-    private String getUrl(String text, String serviceUrl) {
-        if (serviceUrl == null) {
-            return null;
-        } 
+    private String getUrl(String tagName, Path scopeUri) {
+        if (scopeUri.isRoot()) {
+            if (!this.servesRoot) {
+                return RequestContext.getRequestContext().getCurrentCollection() + "/?vrtx=tags&tag=" + tagName + "&scope=" + Path.ROOT;
+            } 
+            return "/?vrtx=tags&tag=" + tagName;
+        }
         
-        Matcher matcher = URL_REPLACEMENT_VALUE_PATTERN.matcher(serviceUrl);
-
-        return matcher.replaceAll(text);
+        return scopeUri + "/?vrtx=tags&tag=" + tagName; 
     }
 
 

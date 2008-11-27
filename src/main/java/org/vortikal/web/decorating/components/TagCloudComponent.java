@@ -94,11 +94,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
             + PARAMETER_TAG_LIMIT + "'. " + "Default value is: " + PARAMETER_MAGNITUDE_MIN_DEFAULT_VALUE;
 
     private static final String PARAMETER_SERVICE_URL = "service-url";
-    private static final String PARAMETER_SERVICE_URL_DESC = "Sets the service URL template to use when generating a link for a tag."
-            + "The string '%v' will be replaced with the actual tag value for each tag "
-            + "when the link is generated.";
-
-    private String defaultURLPattern;
+    private static final String PARAMETER_SERVICE_URL_DESC = "Deprecated: NO LONGER USED. Kept to avoid breaking existing component references.";
 
     private RepositoryTagElementsDataProvider tagElementsProvider;
     
@@ -115,7 +111,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         map.put(PARAMETER_TAG_OCCURENCE_MIN, PARAMETER_TAG_OCCURENCE_MIN_DESC);
         map.put(PARAMETER_MAGNITUDE_MAX, PARAMETER_MAGNITUDE_MAX_DESC);
         map.put(PARAMETER_MAGNITUDE_MIN, PARAMETER_MAGNITUDE_MIN_DESC);
-        map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC + " Default value is: " + this.defaultURLPattern);
+        map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC);
 
         return map;
     }
@@ -137,11 +133,6 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         int magnitudeMax = PARAMETER_MAGNITUDE_MAX_DEFAULT_VALUE;
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
         int tagOccurenceMin = PARAMETER_TAG_OCCURENCE_MIN_DEFAULT_VALUE;
-        String serviceUrl = request.getStringParameter(PARAMETER_SERVICE_URL);
-        
-        if (serviceUrl == null) {
-            serviceUrl = this.defaultURLPattern;
-        }
         
         try {
             if (request.getStringParameter(PARAMETER_MAGNITUDE_MIN) != null) {
@@ -186,7 +177,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         try {
             List<TagElement> tagElements = 
                 tagElementsProvider.getTagElements(scopeUri, token, magnitudeMin,
-                        magnitudeMax, limit, tagOccurenceMin, serviceUrl);
+                        magnitudeMax, limit, tagOccurenceMin);
 
             // Populate model
             model.put("tagElements", tagElements);
@@ -218,12 +209,6 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         return Path.fromString(href);
     }
 
-
-
-    @Required
-    public void setDefaultURLPattern(String defaultURLPattern) {
-        this.defaultURLPattern = defaultURLPattern;
-    }
 
 
     @Required

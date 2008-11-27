@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.controller;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,9 +54,6 @@ import org.vortikal.web.service.URL;
 import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
 import org.vortikal.web.tags.TagElement;
 
-/**
- * 
- */
 public class TagsController implements Controller {
 
     private boolean defaultRecursive = true;
@@ -69,31 +64,28 @@ public class TagsController implements Controller {
     private Map<String, Service> alternativeRepresentations;
 
     private RepositoryTagElementsDataProvider tagElementsProvider;
-	private String defaultURLPattern;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
-        Resource scope = getScope(token, request);
-        Map<String, Object> model = new HashMap<String, Object>();
         String tag = request.getParameter("tag");
 
+        Resource scope = getScope(token, request);
         
         /* List all known tags for the current collection */
         if (tag == null || tag.trim().equals("")) {
-        	 Path scopeUri = RequestContext.getRequestContext().getCurrentCollection();
-        	 
-        	 List<TagElement> tagElements = 
-        		 tagElementsProvider.getTagElements(scopeUri, token, 1,
-        				 1, Integer.MAX_VALUE, 1, defaultURLPattern); 
-        	 model.put("isRoot", scopeUri.isRoot()); 
-        	 model.put("tagElements", tagElements);
-        	 model.put("uriName", scopeUri.getName());
-                 
-                 
-            return new ModelAndView(this.viewName, model);
+        	 return handleAllTags(token, scope);
         }
+
+        return handleSingleTag(request, tag, scope);
+    }
+
+
+    private ModelAndView handleSingleTag(HttpServletRequest request,
+            String tag, Resource scope) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
         model.put("scope", scope);
         model.put("tag", tag);
         
@@ -173,24 +165,46 @@ public class TagsController implements Controller {
     }
 
 
+    private ModelAndView handleAllTags(String token, Resource scope) {
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("scope", scope);
+
+        Path scopeUri = scope.getURI();
+         
+        List<TagElement> tagElements = 
+        	 tagElementsProvider.getTagElements(
+        	         scopeUri, token, 1, 1, Integer.MAX_VALUE, 1); 
+
+        model.put("tagElements", tagElements);
+             
+        return new ModelAndView(this.viewName, model);
+    }
+
+
     protected Resource getScope(String token, HttpServletRequest request) throws Exception {
         String scopeFromRequest = request.getParameter("scope");
-        if (scopeFromRequest == null || scopeFromRequest.equals("")) {
-            return this.repository.retrieve(token, Path.ROOT, true);
-        }
-        if (".".equals(scopeFromRequest)) {
+
+        if (scopeFromRequest == null || "".equals(scopeFromRequest) || ".".equals(scopeFromRequest)) {
             Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
             return this.repository.retrieve(token, currentCollection, true);
         }
+        
         if (scopeFromRequest.startsWith("/")) {
-            Resource scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
+            Resource scopedResource = null;
+            try {
+                scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Scope resource doesn't exist.");
+            }
+
             if (!scopedResource.isCollection()) {
-                throw new IllegalArgumentException("scope must be a collection");
+                throw new IllegalArgumentException("Scope resource isn't a collection");
             }
             return scopedResource;
         } 
         
-        throw new IllegalArgumentException("Scope must be empty, '.' or be a valid collection");
+        throw new IllegalArgumentException("Scope parameter must be empty, '.' or be a valid collection");
 
 
     }
@@ -228,10 +242,6 @@ public class TagsController implements Controller {
     public void setTagElementsProvider(
 			RepositoryTagElementsDataProvider tagElementsProvider) {
 		this.tagElementsProvider = tagElementsProvider;
-	}
-
-	public void setDefaultURLPattern(String defaultURLPattern) {
-		this.defaultURLPattern = defaultURLPattern;
 	}
 
 }

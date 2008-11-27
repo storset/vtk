@@ -28,8 +28,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <#if tagElements?exists && !isRoot>
-     <#assign title><@vrtx.msg code="tags.serviceTitle" args=[uriName] /></#assign>
+  <#if tagElements?exists && !scope.URI.root>
+     <#assign title><@vrtx.msg code="tags.serviceTitle" args=[scope.title] /></#assign>
   <#elseif tagElements?exists>
   	<#assign title>${vrtx.getMsg("tags.noTagTitle")}</#assign>
   <#elseif scope?exists && !scope.URI.root>

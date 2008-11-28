@@ -88,7 +88,7 @@
       <#assign resources=listing.getFiles() />
       <#assign urls=listing.urls />
       <#assign displayPropDefs=listing.displayPropDefs />
-      <#assign i = 0 />
+      <#assign i = 1 />
       <#assign displayMoreURLs = true />
 
               <#list resources as resource>
@@ -96,23 +96,17 @@
                   <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
                   
                   
-                  <div class="result" id="vrtx-result-${i}">
+                  <div class="result" id="vrtx-resource-${i}">
                      
                         <#if introImageProp != "">
-                          <a href="${resource.getURI()?html}">
+                          <a href="${resource.getURI()?html}" class="vrtx-image">
         		          <#assign src = vrtx.propValue(resource, 'picture', 'thumbnail') />
-                            <img class="introduction-image" 
-                                 alt="IMG for '${resourceTitle?html}'"
-                                 src="${src?html}" />
+                            <img src="${src?html}" />
                           </a>
                         </#if>
-        
-                         <h2 class="title">
-                          <a href="${resource.getURI()?html}">
-                            ${resourceTitle?html}
-                          </a>
-                        </h2>
-                       
+                        
+                        <a href="${resource.getURI()?html}" class="vrtx-title"> ${resourceTitle?html}</a>
+                        
                         <#list displayPropDefs as displayPropDef>
                           <#if displayPropDef.name = 'introduction'>
                             <#assign val = getIntroduction(resource) />

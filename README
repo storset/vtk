@@ -9,7 +9,7 @@ are necessary:
    supported, but HSQLDB has also been known to work in the past). The
    current PostgreSQL usage requires the language 'plpgsql' to be
    installed in the database which can be installed with the following
-   command '/sw/bin/createlang plpgsql <database>'.
+   command 'createlang plpgsql <database>'.
 
 3. Set up the configuration. Configuration should be placed in the
    file ~/vrtx.properties:

@@ -64,7 +64,7 @@
   <bean id="thumbnailEvaluator" 
         class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
     <property name="imageService" ref="imageService" />
-    <property name="width" value="250" />
+    <property name="width" value="${resourcetype.image.thumbnail.width}" />
     <property name="scaleUp" ref="scaleUp" />
     <property name="supportedFormats">
       <set>

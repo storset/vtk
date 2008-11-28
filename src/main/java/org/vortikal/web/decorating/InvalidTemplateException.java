@@ -32,6 +32,8 @@ package org.vortikal.web.decorating;
 
 public class InvalidTemplateException extends RuntimeException {
 
+    private static final long serialVersionUID = 8024089831093069052L;
+
     public InvalidTemplateException(String message) {
         super(message);
     }

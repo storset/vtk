@@ -48,8 +48,6 @@ public class MailTemplateProvider {
     public String generateMailBody(String title, String articleURI, String mailFrom, String comment,
             String serverHostname, String serverHostnameShort, int serverPort, String language) throws Exception {
 
-        StringBuilder sb = new StringBuilder();
-
         String articleFullUri = "";
 
         if (serverPort != 80) {

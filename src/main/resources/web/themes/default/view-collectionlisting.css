@@ -123,7 +123,7 @@ div.vrtx-resource a.vrtx-image img {
 div.vrtx-resource div.lastModified,div.vrtx-resource div.published-date,div.vrtx-resource div.time-and-place
 	{
 	padding: 0;
-	margin: .5em 0 0 0;
+
 }
 
 div.vrtx-resource div.introduction {
@@ -161,12 +161,9 @@ span.vrtx-add-event {
        font-size: 70%;
        white-space: nowrap;
        vertical-align: 15%;
-       margin-left: 0.4em;
 }
 
 span.vrtx-add-event a.vrtx-ical {
-       padding-left: 0.65em;
-       border-left: 1px solid #aaa;
        color: #555;
        position: relative; 
 }
@@ -206,3 +203,26 @@ div.vrtx-feed-link a {
 	clear: both;
 }
 
+#vrtx-number-of-comments {
+	display:inline;
+	font-size:.9em;
+	margin-right:.5em;
+}
+
+.published-date {
+	padding-right:.2em;
+	margin-right:.5em;
+	display:inline;
+}
+
+#start-and-end-container {
+	display:inline;
+	padding-right:.2em;
+	margin-right:.5em;
+}
+
+#vrtx-number-of-comments-sep {
+	margin:0 .5em 0 -.3em;
+	display:inline;
+	border-right:1px solid #AAAAAA;
+}

@@ -113,11 +113,11 @@
      <#-- List resources: -->
 
      <#if collection.resourceType = 'article-listing'>
-       <@coll.displayArticles page=page collectionListings=searchComponents displayMoreURLs=true />
+       <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
      <#else>
        <#list searchComponents as searchComponent>
          <#if collection.resourceType = 'event-listing'>
-           <@coll.displayEvents collectionListing=searchComponent displayMoreURLs=true />
+           <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
          <#else>
            <@coll.displayResources collectionListing=searchComponent />
          </#if>

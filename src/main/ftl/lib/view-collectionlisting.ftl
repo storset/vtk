@@ -66,7 +66,7 @@
   
 </#macro>
 
-<#macro displayArticles page collectionListings displayMoreURLs=false>
+<#macro displayArticles page collectionListings hideNumberOfComments displayMoreURLs=false >
 
   <#if collectionListings?size &gt; 0>
     <#assign i = 1 />
@@ -124,16 +124,24 @@
             </#if>
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a>
             
+            <div id="blah">
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
+          	
               <div class="published-date">
                 <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[publishedDate.getFormattedValue('long', locale)] locale=locale />
               </div>
             </#if>
-
+            <#if !hideNumberOfComments >
+              	<#local numberOfComments = vrtx.prop(r, "numberOfComments") />
+          		   <@viewutils.displayNumberOfComments r locale />
+          	  </#if>
+             
+             
+			</div>
             <#if intro?has_content && articles.displayPropDefs?seq_contains(intro.definition)>
               <div class="description introduction">${intro.value}</div>
             </#if>
-
+			
             <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
             <#if displayMoreURLs && hasBody>
               <a href="${articles.urls[r.URI]?html}" class="more">
@@ -141,7 +149,7 @@
               </a>
             </#if>
             
-            <@viewutils.displayNumberOfComments r locale />
+            
             
           </div>
           <#assign i = i + 1 />
@@ -155,9 +163,10 @@
 
 </#macro>
 
-<#macro displayEvents collectionListing displayMoreURLs=false>
+<#macro displayEvents collectionListing hideNumberOfComments displayMoreURLs=false>
   <#local resources=collectionListing.files />
   <#if resources?size &gt; 0>
+
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2> 
@@ -190,7 +199,7 @@
             <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
 
         <div class="time-and-place"> 
-          <@viewutils.displayTimeAndPlace r title/>
+          <@viewutils.displayTimeAndPlaceAndNumberOfComments r title hideNumberOfComments />
         </div>
 
         <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>
@@ -204,8 +213,8 @@
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>
         </#if>
+
         
-        <@viewutils.displayNumberOfComments r locale />
 
       </div>
     </#list>

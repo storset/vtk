@@ -104,6 +104,7 @@
   
   <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   <span class="summary" style="display:none;">${title}</span>
+  <div id="start-and-end-container">
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
   </#if>
@@ -122,18 +123,77 @@
     </#if>
   </#if>
   <#t /><#if location != "">, <span class="location">${location}</span></#if>
-
+  </div>
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
+  
   <#if isValidStartDate?string == "true">
     <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
   </#if>
-
-  
+	
 </#macro>
+
+<#macro displayTimeAndPlaceAndNumberOfComments resource title hideNumberOfComments>
+
+  <#local start = vrtx.propValue(resource, "start-date") />
+  <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
+  <#local startshort = vrtx.propValue(resource, "start-date", "short") />
+  <#local end = vrtx.propValue(resource, "end-date") />
+  <#local endiso8601 = vrtx.propValue(resource, "end-date", "iso-8601") />
+  <#local endshort = vrtx.propValue(resource, "end-date", "short") />
+  <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
+  <#local location = vrtx.propValue(resource, "location") />
+  
+  <#local isoendhour = "" />
+  <#if endiso8601 != "" >
+    <#local isoendhour = endiso8601?substring(11, 16) />
+  </#if>
+  
+  <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
+  <span class="summary" style="display:none;">${title}</span>
+  <div id="start-and-end-container">
+  <#if start != "">
+    <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
+  </#if>
+  <#if end != "">
+    <#if startshort == endshort>
+      <#if isoendhour != "00:00">
+        <#t /> - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#rt />
+      </#if>
+    <#else>
+      <#if start == "">
+        (<@vrtx.msg code="event.ends" />) 
+      <#else>
+        - 
+      </#if>
+      <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
+    </#if>
+  </#if>
+  <#t /><#if location != "">, <span class="location">${location}</span></#if>
+  </div>
+  <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+  <#local currentDate = constructor("java.util.Date") />
+  <#local isValidStartDate = validateStartDate(resource, currentDate) />
+  
+  <#if !hideNumberOfComments >
+ 	 <#local locale = springMacroRequestContext.getLocale() />
+  	<@displayNumberOfComments resource locale />
+  </#if>
+  <#if isValidStartDate?string == "true">
+  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
+  <#if !numberOfComments?has_content >	
+  		<div id="vrtx-number-of-comments-sep"></div>
+  </#if>
+    <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
+      <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
+    </span>
+  </#if>
+	
+</#macro>
+
 
 <#--
  * Check the start date of an event to see if it's greater than the current date
@@ -151,10 +211,11 @@
 </#function>
 
 <#macro displayNumberOfComments resource locale >
-  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
-  <#if numberOfComments?has_content>
+ <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
+  <#if numberOfComments?has_content >	
+  	<div id="vrtx-number-of-comments-sep"></div>
     <div id="vrtx-number-of-comments">
-      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+        <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
     </div>
   </#if>
 </#macro>

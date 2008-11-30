@@ -87,7 +87,14 @@ div.recursive-listing-subfolders{
 	margin: 6px 0;
 }
 
-label.resource\.recursive-listing, label.resource\.hide-last-modified, label.resource\.hide-published-date, label.resource\.hide-introduction, label.resource\.hide-introduction-image, label.resource\.hide-end-date, label.resource\.hide-location {
+label.resource\.hide-number-of-comments,
+label.resource\.recursive-listing, 
+label.resource\.hide-last-modified, 
+label.resource\.hide-published-date,
+label.resource\.hide-introduction, 
+label.resource\.hide-introduction-image, 
+label.resource\.hide-end-date, 
+label.resource\.hide-location {
 	display: inline;
 }
 
@@ -208,6 +215,7 @@ div.hide-introduction-image{
 	clear:both;
 }
 
+.hide-number-of-comments label,
 .hide-location label,
 .hide-end-date label,
 .hide-published-date label,
@@ -217,6 +225,7 @@ div.hide-introduction-image{
 	margin:0;
 	margin-top:.3em;
 }
+.hide-number-of-comments input,
 .hide-location input,
 .hide-end-date input,
 .hide-published-date input,

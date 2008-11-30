@@ -148,6 +148,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
+        model.put("hideNumberOfComments",getHideNumberOfComments(collection));
         
         cleanURL(nextURL);
         cleanURL(prevURL);

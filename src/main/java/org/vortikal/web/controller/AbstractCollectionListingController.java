@@ -52,6 +52,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
@@ -66,6 +67,7 @@ public abstract class AbstractCollectionListingController implements Controller 
     protected PropertyTypeDefinition hiddenPropDef;
     protected int defaultPageLimit = 20;
     protected PropertyTypeDefinition pageLimitPropDef;
+    protected PropertyTypeDefinition hideNumberOfComments;
     protected List<PropertyTypeDefinition> sortPropDefs;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
@@ -115,6 +117,7 @@ public abstract class AbstractCollectionListingController implements Controller 
                 m.put("title", title);
                 m.put("url", url);
                 m.put("contentType", contentType);
+  
                 
                 alt.add(m);
             } catch (Throwable t) { }
@@ -130,13 +133,20 @@ public abstract class AbstractCollectionListingController implements Controller 
 	
 	
 	protected int getPageLimit(Resource collection) {
-        // Setting the default pagelimit
         int pageLimit = this.defaultPageLimit;
         Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
         if (pageLimitProp != null) {
             pageLimit = pageLimitProp.getIntValue();
         }
         return pageLimit;
+	}
+	
+	protected boolean getHideNumberOfComments(Resource collection) {
+		Property p = collection.getProperty(this.hideNumberOfComments);
+		if(p == null){
+			return false;
+		}
+		return p.getBooleanValue();
 	}
 	
     protected int getPage(HttpServletRequest request, String parameter) {
@@ -223,4 +233,7 @@ public abstract class AbstractCollectionListingController implements Controller 
         this.alternativeRepresentations = alternativeRepresentations;
     }
 
+	public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
+		this.hideNumberOfComments = hideNumberOfComments;
+	}
 }

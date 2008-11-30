@@ -56,6 +56,8 @@ public class EventListingController extends AbstractCollectionListingController 
 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
+
+    
     
     protected void runSearch(HttpServletRequest request, Resource collection,
     		Map<String, Object> model) throws Exception {
@@ -155,6 +157,8 @@ public class EventListingController extends AbstractCollectionListingController 
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
 
+        model.put("hideNumberOfComments",getHideNumberOfComments(collection));
+
         cleanURL(nextURL);
         cleanURL(prevURL);
 
@@ -173,5 +177,7 @@ public class EventListingController extends AbstractCollectionListingController 
     public void setPreviousEventsSearch(SearchComponent previousEventsSearch) {
         this.previousEventsSearch = previousEventsSearch;
     }
+
+
 
 }

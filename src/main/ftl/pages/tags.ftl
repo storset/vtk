@@ -84,7 +84,7 @@
   
 
      <#-- List resources: -->
-     <div class="tagged-resources">
+     <div class="tagged-resources vrtx-resources">
       <#assign resources=listing.getFiles() />
       <#assign urls=listing.urls />
       <#assign displayPropDefs=listing.displayPropDefs />
@@ -96,7 +96,7 @@
                   <#assign introImageProp = resource.getPropertyByPrefix("","picture")?default("") />
                   
                   
-                  <div class="result" id="vrtx-resource-${i}">
+                  <div class="vrtx-resource" id="vrtx-result-${i}">
                      
                         <#if introImageProp != "">
                           <a href="${resource.getURI()?html}" class="vrtx-image">
@@ -153,21 +153,18 @@
              </#if>
 
     <#-- XXX: display first link with content type = atom: -->
+	
+	  <#if alternativeRepresentations?exists>
+	    <#list alternativeRepresentations as alt>
+	      <#if alt.contentType = 'application/atom+xml'>
+	        <div class="vrtx-feed-link">
+	          <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+	        </div>
+	        <#break />
+	      </#if>
+	    </#list>
+	</#if>
 
-  <#if alternativeRepresentations?exists>
-    <#list alternativeRepresentations as alt>
-      <#if alt.contentType = 'application/atom+xml'>
-        <div class="vrtx-feed-link">
-          <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
-        </div>
-        <#break />
-      </#if>
-    </#list>
-</#if>
-
-      
-      
-      
     <#else> <#-- no resources found for tag -->
       <p>
         ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag}</span>.

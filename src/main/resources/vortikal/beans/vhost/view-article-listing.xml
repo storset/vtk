@@ -115,7 +115,20 @@
   <!-- Fetch specifically specified articles, aka 'featured articles' -->
   <bean id="articleListing.featuredArticlesSearchComponent" parent="articleListing.searchComponent">
     <property name="name" value="articleListing.featuredArticles" />
-    <property name="defaultRecursive" value="false" />
+    <property name="recursivePropDef">
+      <bean class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+            parent="articleListing.recursiveListingPropDef">
+        <property name="vocabulary">
+          <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+            <property name="values">
+              <list>
+                <ref bean="VALUE_TRUE" />
+              </list>
+            </property>
+          </bean>
+        </property>
+      </bean>
+    </property>
     <property name="query">
       <value>uri IN {$featuredArticles} AND type IN article AND published-date &lt;= {$currentTime}</value>
     </property>

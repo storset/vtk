@@ -18,8 +18,10 @@
   <#else>
     <span class="title">Tags:</span>
   </#if>
-  <#list values as v>
-    <a href="${urls[v_index]?html}">${v?html}</a><#if v_index &lt; values?size - 1>,<#t/></#if>
-  </#list>
+  <span class="vrtx-tags-links">
+     <#list values as v>
+       <a href="${urls[v_index]?html}">${v?html}</a><#if v_index &lt; values?size - 1>,<#t/></#if>
+     </#list>
+  </span>
 </span>
 </#if>

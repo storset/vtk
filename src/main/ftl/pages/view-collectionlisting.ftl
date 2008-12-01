@@ -117,7 +117,7 @@
      <#else>
        <#list searchComponents as searchComponent>
          <#if collection.resourceType = 'event-listing'>
-           <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+           <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true  />
          <#else>
            <@coll.displayResources collectionListing=searchComponent />
          </#if>

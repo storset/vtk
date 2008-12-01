@@ -134,7 +134,7 @@
 	
 </#macro>
 
-<#macro displayTimeAndPlaceAndNumberOfComments resource title hideNumberOfComments>
+<#macro displayTimeAndPlaceAndNumberOfComments resource title hideNumberOfComments >
 
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
@@ -211,17 +211,17 @@
   <#return "false"/>
 </#function>
 
-<#macro displayNumberOfComments resource locale >
+<#macro displayNumberOfComments resource locale  >
  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content >	
-  	<div class="vrtx-number-of-comments-add-event-seperator">
-    	<div id="vrtx-number-of-comments">
+  	<div class="vrtx-number-of-comments-add-event-seperator vrtx-number-of-comments">
+    		<a href="${resource.URI}#comments">
     	    <#if numberOfComments.intValue?number &gt; 1>
 		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
 		    <#else>
 		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfCommentsSingle" default="" args=[] locale=locale />
 		    </#if>
-   		 </div>
+			</a>
     </div>
   </#if>
 </#macro>

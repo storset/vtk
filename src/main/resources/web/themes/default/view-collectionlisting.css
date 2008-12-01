@@ -203,16 +203,22 @@ div.vrtx-feed-link a {
 	clear: both;
 }
 
-#vrtx-number-of-comments {
+.vrtx-number-of-comments {
 	display:inline;
-	font-size:.9em;
-	margin-right:.5em;
+	font-size:11px;
+	padding-right:.6em;
+	white-space:nowrap;
+	vertical-align:15%;
 }
 
+.published-date-container{
+		margin:0.5em 0 0;
+}
 .published-date {
 	padding-right:.2em;
 	margin-right:.5em;
 	display:inline;
+
 }
 
 .start-and-end-container {

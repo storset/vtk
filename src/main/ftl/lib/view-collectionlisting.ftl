@@ -124,7 +124,7 @@
             </#if>
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a>
             
-            <div id="published-date-container">
+            <div class="published-date-container">
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
           	
               <div class="published-date">

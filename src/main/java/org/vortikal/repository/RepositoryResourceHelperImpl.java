@@ -105,9 +105,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             throws AuthenticationException, AuthorizationException, InternalRepositoryException,
             IOException {
 
-        // Uses the same type of evaluationContext as propertiesChange
-        EvaluationContext ctx = getPropertiesChangeEvaluationContext(originalResource,
-                suppliedResource, principal);
+        EvaluationContext ctx = new EvaluationContext(originalResource, principal,
+                EvaluationType.ExplicitValuePropertiesChange);
+        ctx.suppliedResource = suppliedResource;
         ctx.propertyValueMap = propertyValueMap;
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         checkForDeadAndZombieProperties(ctx);
@@ -279,6 +279,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             evaluatedProp = evaluateContentChange(ctx, propDef);
             break;
         case PropertiesChange:
+            evaluatedProp = evaluatePropertiesChange(ctx, propDef);
+            break;
+        case ExplicitValuePropertiesChange:
             evaluatedProp = evaluatePropertiesChange(ctx, propDef);
             break;
         default:
@@ -460,16 +463,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                 property = propDef.createProperty();
             }
 
-            boolean evaluated = false;
-
-            if (evaluator instanceof PropertiesModificationExplicitValueEvaluator) {
-                PropertiesModificationExplicitValueEvaluator explicitValueEvaluator = (PropertiesModificationExplicitValueEvaluator) evaluator;
-                evaluated = explicitValueEvaluator.propertiesModification(ctx.getPrincipal(), ctx
-                        .getPropertyValue(propDef.getName()), property, newResource, ctx.getTime());
-            } else {
-                evaluated = evaluator.propertiesModification(ctx.getPrincipal(), property,
-                        newResource, ctx.getTime());
-            }
+            boolean evaluated = evaluateProperty(evaluator, property, propDef, newResource, ctx);
 
             if (!evaluated) {
                 return null;
@@ -487,6 +481,31 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
 
         return property;
+    }
+
+
+    private boolean evaluateProperty(PropertiesModificationPropertyEvaluator evaluator,
+            Property property, PropertyTypeDefinition propDef, Resource newResource, EvaluationContext ctx) {
+        
+        if (evaluator instanceof PropertiesModificationExplicitValueEvaluator) {
+            // Don't do anything to properties that have explicit value evaluators 
+            // unless the proper evaluation type is set on the evaluationcontext
+            Object value = null;
+            if (!EvaluationType.ExplicitValuePropertiesChange.equals(ctx.evaluationType)) {
+                Value val = property.getValue();
+                value = val != null ? val.getObjectValue() : null;
+            } else {
+                value = ctx.getPropertyValue(propDef.getName());
+            }
+            PropertiesModificationExplicitValueEvaluator explicitValueEvaluator = 
+                (PropertiesModificationExplicitValueEvaluator) evaluator;
+            return explicitValueEvaluator.propertiesModification(ctx.getPrincipal(), value, 
+                    property, newResource, ctx.getTime());
+        } else {
+            return evaluator.propertiesModification(ctx.getPrincipal(), property,
+                    newResource, ctx.getTime());
+        }
+        
     }
 
 
@@ -587,7 +606,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     private enum EvaluationType {
-        Create, ContentChange, PropertiesChange, NameChange
+        Create, ContentChange, PropertiesChange, ExplicitValuePropertiesChange, NameChange
     }
 
 

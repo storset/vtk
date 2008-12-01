@@ -114,6 +114,7 @@
   <bean id="decorating.decorationResolver"
         class="org.vortikal.web.decorating.ConfigurableDecorationResolver"
         parent="requestLocalRepositoryAware">
+    <property name="config" value="${decorating.templateConfigFile}" />
     <property name="supportMultipleTemplates" value="${decorating.supportMultipleTemplates}" />
     <property name="templateManager" ref="decorating.templateManager" />
     <property name="decorationConfiguration" ref="decorating.configurationPropertiesFile" />
@@ -127,12 +128,20 @@
     <property name="lazyInit" value="false" />
   </bean>
 
-  <bean id="decorating.templateConfigRefreshTrigger"
+  <bean id="decorating.templateConfigPropsRefreshTrigger"
         class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
     <property name="uri" value="${decorating.templateConfigFile}" />
     <property name="targetObject" ref="decorating.configurationPropertiesFile" />
     <property name="method" value="load" />
+  </bean>
+
+  <bean id="decorating.templateConfigRefreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.templateConfigFile}" />
+    <property name="targetObject" ref="decorating.decorationResolver" />
+    <property name="method" value="loadConfig" />
   </bean>
 
   <bean id="decorating.templateManager" class="org.vortikal.web.decorating.CollectionTemplateManager">

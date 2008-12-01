@@ -247,6 +247,7 @@
     <property name="attributes">
       <map>
         <entry key="localeResolver" value-ref="viewServiceResourceAwareLocaleResolver" />
+        <entry key="decorating.servicePredicateName" value="view" />
       </map>
     </property>
   </bean>

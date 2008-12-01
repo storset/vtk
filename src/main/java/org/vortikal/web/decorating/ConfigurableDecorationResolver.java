@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.decorating;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +47,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -56,20 +61,29 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.PathMappingConfig.ConfigEntry;
+import org.vortikal.web.decorating.PathMappingConfig.Predicate;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
 
 
-public class ConfigurableDecorationResolver implements DecorationResolver, InitializingBean {
+
+public class ConfigurableDecorationResolver implements DecorationResolver, InitializingBean, ApplicationContextAware {
 
     private static Log logger = LogFactory.getLog(
         ConfigurableDecorationResolver.class);
 
     private TemplateManager templateManager;
+    private PathMappingConfig config;
+    private Path configPath;
     private Properties decorationConfiguration;
     private PropertyTypeDefinition parseableContentPropDef;
     private Repository repository; 
     private boolean supportMultipleTemplates = false;
     private Map<String, RegexpCacheItem> regexpCache = new HashMap<String, RegexpCacheItem>();
+    private Map<String, Service> serviceMap = new HashMap<String, Service>();
+
+    private ApplicationContext applicationContext;
     
     private class RegexpCacheItem {
         String string;
@@ -96,25 +110,59 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+    
+    public void setConfig(String config) {
+        this.configPath = Path.fromString(config);
+    }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     public void afterPropertiesSet() {
+        if (this.configPath == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'config' not set");
+        }
         if (this.templateManager == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'templateManager' not set");
         }
-
         if (this.decorationConfiguration == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'decorationConfiguration' not set");
         }
-        
         if (this.parseableContentPropDef != null && this.repository == null) {
             throw new BeanInitializationException(
             "JavaBean property 'repository' must be set when property " +
             "'parseableContentPropDef' is set");
         }
+        loadConfig();
+        loadServicesMap();
+    }
+    
+    public void loadConfig() {
+        try {
+            InputStream inputStream = this.repository.getInputStream(null, this.configPath, true);
+            this.config = new PathMappingConfig(inputStream);
+        } catch(Throwable t) {
+            logger.warn("Unable to load decoration configuration file: " 
+                    + this.configPath + ": " + t.getMessage(), t);
+        }
     }
 
+    private void loadServicesMap() {
+        @SuppressWarnings("unchecked") Map<String, Service> beans =
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, Service.class, false, true);
+        for (Service service: beans.values()) {
+            Object servicePredicate = service.getAttribute("decorating.servicePredicateName");
+            if (servicePredicate != null && servicePredicate instanceof String) {
+                this.serviceMap.put((String) servicePredicate, service); 
+            }
+        }
+    
+    }
+    
     public DecorationDescriptor resolve(HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
@@ -212,44 +260,79 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
 
     
+    
+
     private String checkPathMatch(Path uri, Resource resource) {
+        List<Path> list = new ArrayList<Path>(uri.getPaths());
+        Collections.reverse(list);
+        for (Path path: list) {
 
-        // XXX: what about this:
-        String collectionExactMatch = this.decorationConfiguration.getProperty(uri + "/");
-        if (collectionExactMatch != null) {
-            return collectionExactMatch.trim();
-        }
-
-        while (uri != null) {
-
-            PrimaryResourceTypeDefinition type = resource.getResourceTypeDefinition();
-            String prefix = uri.toString();
+            List<ConfigEntry> entries = this.config.get(path);
+            Map<ConfigEntry, Integer> score = new HashMap<ConfigEntry, Integer>();
             
-            while (type != null) {
-                String typeKey = prefix + "[" + type.getName() + "]";
-                String typeValue = this.decorationConfiguration.getProperty(typeKey);
-                if (typeValue != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Found match for URI prefix '" + prefix
-                                     + ", type: " + type + 
-                                     "': descriptor: '" + typeValue + "'");
+            if (entries != null) {
+                for (ConfigEntry entry: entries) {
+                    if (entry.isExact() && !uri.equals(path)) {
+                        score.put(entry, -1);
+                        break;
                     }
-                    return typeValue.trim();
+                    List<Predicate> predicates = entry.getPredicates();
+                    if (predicates.size() == 0) {
+                        score.put(entry, 0);
+                    }
+                    for (Predicate predicate: predicates) {
+                        if (!matchPredicate(predicate, resource)) {
+                            score.put(entry, -1);
+                            break;
+                        } else {
+                            if (!score.containsKey(entry)) {
+                                score.put(entry, 0);
+                            }
+                            score.put(entry, score.get(entry) + 1);
+                        }
+                    }
                 }
-                type = type.getParentTypeDefinition();
-            }
-            String value = this.decorationConfiguration.getProperty(prefix);
-            if (value != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found match for URI prefix '" + prefix
-                                 + "': descriptor: '" + value + "'");
+
+                int highest = 0;
+                ConfigEntry topEntry = null;
+                for (ConfigEntry entry: score.keySet()) {
+                    if (score.get(entry) >= highest) {
+                        highest = score.get(entry);
+                        topEntry = entry;
+                    }
                 }
-                return value.trim();
+
+                if (topEntry != null) {
+                    return topEntry.getValue();
+                }
             }
-            uri = uri.getParent();
         }
         return null;
     }
+    
+
+    private boolean matchPredicate(Predicate predicate, Resource resource) {
+        if ("type".equals(predicate.getName())) {
+            PrimaryResourceTypeDefinition type = resource.getResourceTypeDefinition();
+            while (type != null) {
+                if (type.getName().equals(predicate.getValue())) {
+                    return true;
+                }
+                type = type.getParentTypeDefinition();
+            }
+            return false;
+        } else if ("service".equals(predicate.getName())) {
+            if (this.serviceMap != null && this.serviceMap.containsKey(predicate.getValue())) {
+                Service service = this.serviceMap.get(predicate.getValue());
+                Service currentService = RequestContext.getRequestContext().getService();
+                if (service == currentService || currentService.isDescendantOf(service)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     
     // Example: regexp[/foo/bar/.*\.html]
     private Pattern parseRegexpParam(String s) {

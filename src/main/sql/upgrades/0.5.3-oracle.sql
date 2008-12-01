@@ -34,3 +34,4 @@ update extra_prop_entry
         resource_type in ('article', 'event'));
 
 commit;
+exit;

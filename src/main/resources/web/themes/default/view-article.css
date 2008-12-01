@@ -113,19 +113,3 @@ a.vrtx-media {
 	margin-bottom: 1em;
 	display: block;
 }
-
-
-#start-and-end-container {
-	display:inline;
-}
-
-#vrtx-number-of-comments-sep {
-	margin:0 .2em 0 -.3em;
-	display:inline;
-	border-right:1px solid #AAAAAA;
-}
-
-/* Body */
-div.vrtx-bodytext {
-	clear: left;
-}

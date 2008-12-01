@@ -185,11 +185,14 @@
   <#if isValidStartDate?string == "true">
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if !numberOfComments?has_content >	
-  		<div id="vrtx-number-of-comments-sep"></div>
+  		<div id="vrtx-number-of-comments-add-event-seperator">
   </#if>
     <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
+  </#if>
+  <#if !numberOfComments?has_content>	
+  		</div>
   </#if>
 	
 </#macro>
@@ -213,9 +216,10 @@
 <#macro displayNumberOfComments resource locale >
  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content >	
-  	<div id="vrtx-number-of-comments-sep"></div>
-    <div id="vrtx-number-of-comments">
-        <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+  	<div id="vrtx-number-of-comments-add-event-seperator">
+    	<div id="vrtx-number-of-comments">
+		    <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+   		 </div>
     </div>
   </#if>
 </#macro>

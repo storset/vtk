@@ -218,11 +218,13 @@ div.vrtx-feed-link a {
 #start-and-end-container {
 	display:inline;
 	padding-right:.2em;
-	margin-right:.5em;
+	margin-right:0;
 }
 
-#vrtx-number-of-comments-sep {
-	margin:0 .5em 0 -.3em;
+#vrtx-number-of-comments-add-event-seperator{
+	margin:0 0 0 0;
 	display:inline;
-	border-right:1px solid #AAAAAA;
+	border-left:1px solid #AAAAAA;
+	padding-left:.5em;
+	overflow:hidden;
 }

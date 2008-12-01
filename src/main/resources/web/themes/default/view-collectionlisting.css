@@ -215,13 +215,17 @@ div.vrtx-feed-link a {
 	display:inline;
 }
 
-#start-and-end-container {
+.start-and-end-container {
 	display:inline;
 	padding-right:.2em;
 	margin-right:0;
 }
 
-#vrtx-number-of-comments-add-event-seperator{
+.time-and-place{
+	margin:0.5em 0 0;
+}
+
+.vrtx-number-of-comments-add-event-seperator{
 	margin:0 0 0 0;
 	display:inline;
 	border-left:1px solid #AAAAAA;

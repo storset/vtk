@@ -444,6 +444,7 @@ a.vrtx-manage-url {
 
 a.vrtx-email-friend {
   font-size: .8em; 
+  float: right;
 }
 
 /* END resource:email-friend */

@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -48,7 +49,7 @@ import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 
 /**
- * 
+ *  
  */
 public class MethodInvokingRepositoryEventTrigger 
   implements ApplicationListener, InitializingBean {
@@ -72,6 +73,10 @@ public class MethodInvokingRepositoryEventTrigger
         this.targetObject = targetObject;
     }
 
+    /**
+     * Only methods which take no arguments are supported for resolving ! 
+     * @param method
+     */
     @Required
     public void setMethod(String method) {
         this.method = method;
@@ -92,11 +97,15 @@ public class MethodInvokingRepositoryEventTrigger
                 "One of JavaBean properties 'uri' or 'uriPattern' must be specified.");
         }
 
-        Method[] methods = this.targetObject.getClass().getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            if (this.method.equals(methods[i].getName())) {
-                this.targetMethod = methods[i];
-            }
+        // Resolving only methods that take no arguments.
+        this.targetMethod = 
+            BeanUtils.findMethod(this.targetObject.getClass(), 
+                    this.method, new Class[0]);
+        
+        if (this.targetMethod == null) {
+            throw new BeanInitializationException("Unable to resolve method with name '"
+                    + this.method + "' for class " + this.targetObject.getClass() 
+                    + ". Only methods that take no arguments are supported.");
         }
     }
 
@@ -105,6 +114,7 @@ public class MethodInvokingRepositoryEventTrigger
         if (! (event instanceof RepositoryEvent)) {
             return;
         }
+        
         Repository rep = ((RepositoryEvent) event).getRepository();
         if (! rep.getId().equals(this.repository.getId())) {
             return;

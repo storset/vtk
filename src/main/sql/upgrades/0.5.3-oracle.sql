@@ -1,8 +1,4 @@
--- 1. Add the 'numberOfComments' property for resources that have been commentd
-
-select distinct(resource_id), count(*) from vortex_comment group by resource_id;
-
-select resource_id, value from extra_prop_entry where name = 'numberOfComments' order by resource_id;
+-- 1. Add the 'numberOfComments' property for resources that have been commented
 
 create table tmp_number_of_comments
 (

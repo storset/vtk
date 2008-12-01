@@ -1,4 +1,4 @@
--- 1. Add the 'numberOfComments' property for resources that have been commentd
+-- 1. Add the 'numberOfComments' property for resources that have been commented
 
 create table tmp_number_of_comments
 (
@@ -20,15 +20,6 @@ insert into extra_prop_entry
     null
   from tmp_number_of_comments tmp, vortex_resource r
     where tmp.resource_id = r.resource_id;
-
-drop table tmp_number_of_comments;
-
-insert into extra_prop_entry (extra_prop_entry_id, resource_id, value, name)
-  values (nextval('extra_prop_entry_seq_pk'), 
-  (select t.resource_id, t.number_of_comments
-    from tmp_number_of_comments t, vortex_resource r
-      where t.resource_id = r.resource_id),
-  'numberOfComments');
 
 drop table tmp_number_of_comments;
 

@@ -218,7 +218,11 @@
   <#if numberOfComments?has_content >	
   	<div id="vrtx-number-of-comments-add-event-seperator">
     	<div id="vrtx-number-of-comments">
-		    <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+    	    <#if numberOfComments.intValue?number &gt; 1>
+		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
+		    <#else>
+		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfCommentsSingle" default="" args=[] locale=locale />
+		    </#if>
    		 </div>
     </div>
   </#if>

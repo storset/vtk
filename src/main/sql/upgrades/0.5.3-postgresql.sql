@@ -9,7 +9,6 @@ create table tmp_number_of_comments
 insert into tmp_number_of_comments
   select distinct(resource_id), count(*) from vortex_comment group by resource_id;
 
-
 insert into extra_prop_entry
   select nextval('extra_prop_entry_seq_pk'),
     tmp.resource_id,

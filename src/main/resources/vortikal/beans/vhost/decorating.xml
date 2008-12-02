@@ -201,6 +201,7 @@
         <ref bean="decorating.includeNamespace" />
         <ref bean="decorating.cssNamespace" />
         <ref bean="article.componentNamespace" />
+        <ref bean="event.componentNamespace" />
       </set>
     </property>
   </bean>

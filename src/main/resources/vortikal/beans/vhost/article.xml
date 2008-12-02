@@ -7,7 +7,6 @@
     <property name="parent" ref="displayHTMLResourceService" />
     <property name="assertions">
       <list>
-        <!--ref bean="resourceTypeInXhtmlTrans" /-->
         <ref bean="resourceTypeIsDocument" />
       </list>
     </property>
@@ -23,13 +22,6 @@
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
   </bean>
 
-<!--
-  <bean id="displayArticleHandler" 
-    class="org.vortikal.edit.editor.ResourceViewController">
-    <property name="viewName" value="displayArticle" />
-    <property name="resourceManager" ref="resourceManager"/>
-  </bean>
-  -->
   <bean id="displayArticleHandler"  class="org.vortikal.web.decorating.HtmlController"
         parent="requestLocalRepositoryAware">
     <property name="parser" ref="decorating.htmlParser" />

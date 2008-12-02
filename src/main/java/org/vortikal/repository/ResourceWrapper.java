@@ -98,9 +98,7 @@ public class ResourceWrapper implements Resource {
                 ref = URIUtil.decode(ref);
                 Path uri = Path.fromString(ref);
                 return this.resourceManager.createResourceWrapper(uri);
-            } catch (Exception e) {
-                // XXX: whatever
-            }
+            } catch (Exception e) { }
         }
         return null; 
     }

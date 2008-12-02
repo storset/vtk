@@ -297,11 +297,16 @@ div.picture {
 #input-and-button-container {
   width: 330px;
   float: left;
-  position: relative;
-  height: 1%;
+  position: absolute;
+  left: 0;
+  top:18px;
   overflow: hidden; 
   margin: 0;
   padding: 0;
+}
+
+* html #input-and-button-container {
+  top:0.9em;
 }
 
 * html #input-and-button-container {
@@ -336,6 +341,7 @@ div.picture button{
 #resource\.picture\.preview {
   whitespace: nowrap;
   margin: 0 0 0 347px;
+  position: relative;
 }
 
 * html #resource\.picture\.preview {
@@ -372,14 +378,14 @@ div.caption {
 
 /* IE6 fix */
 * html div.caption {
-   margin-top: -104px;
+   margin-top: -106px;
 }
 
 div.caption textarea{
-	height: 83px;
+	height: 86px;
 }
 #resource\.caption___Frame {
-	height: 83px;
+	height: 86px;
 }
 
 /* ****** END Picture: (input, button, preview) and caption styling */

@@ -3,7 +3,7 @@
 
 <beans>
 
-  <bean id="displayDocumentService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="article.displayService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="displayHTMLResourceService" />
     <property name="assertions">
       <list>
@@ -15,14 +15,29 @@
         <ref bean="noCacheViewHandlerInterceptor" />
       </list>
     </property>
-    <property name="handler" ref="displayArticleHandler" />
+    <property name="handler" ref="article.displayHandler" />
   </bean>
   
+  <bean id="event.displayService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="article.displayService" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsEvent" />
+      </list>
+    </property>
+    <property name="handler" ref="event.displayHandler" />
+  </bean>
+
+
   <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
   </bean>
 
-  <bean id="displayArticleHandler"  class="org.vortikal.web.decorating.HtmlController"
+  <bean id="resourceTypeIsEvent" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="eventResourceTypeDefinition" />
+  </bean>
+
+  <bean id="article.displayHandler"  class="org.vortikal.web.decorating.HtmlController"
         parent="requestLocalRepositoryAware">
     <property name="parser" ref="decorating.htmlParser" />
     <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
@@ -34,6 +49,11 @@
       </map>
     </property>
   </bean>
+
+  <bean id="event.displayHandler"  parent="article.displayHandler">
+    <property name="viewName" value="displayEvent" />
+  </bean>
+
 
   <bean id="resourceManager"
         class="org.vortikal.edit.editor.ResourceWrapperManager"
@@ -126,6 +146,7 @@
     <property name="views">
       <map>
         <entry key="displayArticle"  value-ref="displayArticleView" />
+        <entry key="displayEvent"  value-ref="displayEventView" />
       </map>
     </property>
   </bean>
@@ -135,6 +156,10 @@
     <property name="templateRef"  value="article.template" />
   </bean>
 
+  <bean id="displayEventView" class="org.vortikal.web.decorating.TemplateView">
+    <property name="templateManager" ref="article.templateManager" />
+    <property name="templateRef"  value="event.template" />
+  </bean>
 
   <bean id="article.templateManager"
         class="org.vortikal.web.decorating.StaticTemplateManager">

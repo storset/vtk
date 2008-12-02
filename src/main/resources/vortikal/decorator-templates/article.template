@@ -1,21 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <document:comments-feed-link />
+    <resource:comments-feed-link />
     <article:css />
     <title><article:title flatten="true" /></title>
   </head>
   <body>
     <article:title />
-    <article:introduction-image />
-    <article:introduction />
-    <article:media-refs />
+    <resource:introduction-image />
+    <resource:introduction />
+    <resource:media-refs />
     <div class="vrtx-byline">
-      <article:authors />
-      <article:published-date />
+      <resource:authors />
+      <resource:published-date />
     </div>
     <article:content />
     <resource:tags />
-    <document:comments />
+    <resource:comments />
   </body>
 </html>

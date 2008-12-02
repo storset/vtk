@@ -180,6 +180,10 @@
     <constructor-arg type="java.lang.String" value="article" />
   </bean>
 
+  <bean id="event.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="event" />
+  </bean>
+
   <bean id="article.contentComponent"
         class="org.vortikal.web.decorating.components.ElementInModelDecoratorComponent">
     <property name="namespace" ref="article.componentNamespace" />
@@ -188,6 +192,12 @@
     <property name="description" value="Inserts the article content" />
     <property name="modelKey"  value="article.content" />
   </bean>
+
+  <bean id="event.contentComponent" parent="article.contentComponent">
+    <property name="namespace" ref="event.componentNamespace" />
+    <property name="name" value="content" />
+  </bean>
+
 
   <bean id="article.titleComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
@@ -208,6 +218,11 @@
     </property>
   </bean>
 
+  <bean id="event.titleComponent" parent="article.titleComponent">
+    <property name="namespace" ref="event.componentNamespace" />
+    <property name="description" value="Inserts the event title" />
+  </bean>
+
   <bean id="article.titleView" parent="freemarkerView">
     <property name="url" value="article/title.ftl" />
     <property name="referenceDataProviders">
@@ -220,7 +235,7 @@
 
   <bean id="article.introductionImageComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="article.componentNamespace" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="introduction-image" />
     <property name="description" value="Inserts the article introduction image" />
     <property name="view" ref="article.introductionImageView" />
@@ -238,7 +253,7 @@
 
   <bean id="article.introductionComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="article.componentNamespace" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="introduction" />
     <property name="description" value="Inserts the article introduction" />
     <property name="view" ref="article.introductionView" />
@@ -255,7 +270,7 @@
 
   <bean id="article.mediaRefsComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="article.componentNamespace" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="media-refs" />
     <property name="description" value="Inserts the article media references" />
     <property name="view" ref="article.mediaRefsView" />
@@ -289,7 +304,7 @@
 
   <bean id="article.authorsRefsComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="article.componentNamespace" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="authors" />
     <property name="description" value="Inserts the article authors" />
     <property name="view" ref="article.authorsView" />
@@ -306,7 +321,7 @@
 
   <bean id="article.publishedDateComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="article.componentNamespace" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="published-date" />
     <property name="description" value="Inserts the article published date" />
     <property name="view" ref="article.publishedDateView" />
@@ -323,7 +338,7 @@
 
   <bean id="article.eventInfoComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="article.componentNamespace" />
+    <property name="namespace" ref="event.componentNamespace" />
     <property name="name" value="event-info" />
     <property name="description" value="Inserts event info (time and place)" />
     <property name="view" ref="article.eventInfoView" />
@@ -360,9 +375,17 @@
     </property>
   </bean>
 
+  <bean name="article.commentsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="comments" />
+    <property name="description" value="Lists comments on a resource" />
+    <property name="view" ref="commenting.commentsView" />
+  </bean>
+
+
   <bean id="article.commentsFeedLinkComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.documentNamespace" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="comments-feed-link" />
     <property name="description" value="Inserts a link reference to the feed of comments for articles" />
     <property name="view" ref="article.commentsFeedCssView" />

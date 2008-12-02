@@ -296,6 +296,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         private Throwable error;
         private HtmlElement element;
         private String copyAttributesExpression;
+        private String copyAttributesList;
         private Map<String, ComponentInvocation[]> attributesMap;
         private List<Node> children;
 
@@ -307,13 +308,17 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             }
             this.children = children;
             this.element = elem;
-            if (elem.getAttribute("v:attrs-from") != null) {
-                this.copyAttributesExpression = 
-                    elem.getAttribute("v:attrs-from").getValue();
-            } else {
-                this.attributesMap = new LinkedHashMap<String, ComponentInvocation[]>();
-                for (HtmlAttribute attr: elem.getAttributes()) {
-                    String name = attr.getName();
+            this.attributesMap = new LinkedHashMap<String, ComponentInvocation[]>();
+            for (HtmlAttribute attr: elem.getAttributes()) {
+                String name = attr.getName();
+
+                if ("vrtx:attrs-from".equals(name)) {
+                    this.copyAttributesExpression = attr.getValue();
+
+                } else if ("vrtx:attrs".equals(name)) {
+                    this.copyAttributesList = attr.getValue();
+
+                } else {
                     if (name == null || !name.matches("[a-zA-Z0-9]+")) {
                         this.error = new InvalidTemplateException("Invalid attribute name: " + name);
                         return;
@@ -344,11 +349,23 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 HtmlElement newElem = userPage.createElement(this.element.getName());
 
                 if (this.copyAttributesExpression != null) {
-                    HtmlAttribute[] attrs = this.element.getAttributes();
-                    if (attrs != null && attrs.length > 0) {
+                    HtmlElement userElem = userPage.selectSingleElement(this.copyAttributesExpression);
+                    if (userElem != null) {
+
                         List<HtmlAttribute> newAttrs = new ArrayList<HtmlAttribute>();
-                        for (HtmlAttribute attr: attrs) {
-                            newAttrs.add(attr);
+
+                        if (this.copyAttributesList != null) {
+                            String[] names = this.copyAttributesList.split(",");
+                            for (String name: names) {
+                                if (userElem.getAttribute(name) != null) {
+                                    HtmlAttribute attr = userElem.getAttribute(name);
+                                    newAttrs.add(userPage.createAttribute(attr.getName(), attr.getValue()));
+                                }
+                            }
+                        } else {
+                            for (HtmlAttribute attr: userElem.getAttributes()) {
+                                newAttrs.add(userPage.createAttribute(attr.getName(), attr.getValue()));
+                            }
                         }
                         newElem.setAttributes(newAttrs.toArray(new HtmlAttribute[newAttrs.size()]));
                     }
@@ -456,6 +473,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
     }
 
+    
     public String toString() {
         return this.getClass().getName() + ": " + this.templateSource;
     }

@@ -205,13 +205,14 @@ public class XmlEditController implements Controller {
             sessionMap = null;
         }
 
-        EditDocument document = 
-            (EditDocument) sessionMap.get(EditDocument.class.getName());
+        if (sessionMap != null) {
+            EditDocument document = 
+                (EditDocument) sessionMap.get(EditDocument.class.getName());
 
-        if (document.getResource().getLastModified().before(resource.getLastModified())) {
-            return null;
+            if (document.getResource().getLastModified().before(resource.getLastModified())) {
+                return null;
+            }
         }
-        
         return sessionMap;
     }
     

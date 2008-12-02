@@ -259,9 +259,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         return null;
     }
 
-    
-    
-
     private String checkPathMatch(Path uri, Resource resource) {
         List<Path> list = new ArrayList<Path>(uri.getPaths());
         Collections.reverse(list);
@@ -301,7 +298,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                         topEntry = entry;
                     }
                 }
-
                 if (topEntry != null) {
                     return topEntry.getValue();
                 }

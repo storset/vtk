@@ -362,13 +362,14 @@ div.vrtx-recent-comments ul.items li a.item-title {
   margin-bottom: .2em;
 }
 
-div.vrtx-recent-comments ul.items li div.item-description {
-   margin-bottom: .2em;
-}
-
 div.vrtx-recent-comments ul.items li span.published-date {
+  display:block;
   font-size: .9em;
   white-space: nowrap;
+}
+
+div.vrtx-recent-comments ul.items li div.item-description {
+   margin-top: .2em;
 }
 
 /* END include:recent-comments */

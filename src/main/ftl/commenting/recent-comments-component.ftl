@@ -45,15 +45,15 @@
       ${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" />
         ${resourceMap[comment.URI].title?html}
       </a>
+      <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
       <div class="item-description">
       <#assign description>
-      <@vrtx.limit nchars=30 elide=true>
+      <@vrtx.limit nchars=50 elide=true>
         <@vrtx.flattenHtml value=comment.content escape=false />
       </@vrtx.limit>
       </#assign>
       ${description?html}
       </div>
-      <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
     </li>
   </#list>
   </ul>

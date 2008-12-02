@@ -139,6 +139,7 @@ public class PathMappingConfig {
         if (qualifierStr != null) {
             String[] splitQualifiers = qualifierStr.split(",");
             for (String qualifier: splitQualifiers) {
+                qualifier = qualifier.trim();
                 int colonIdx = qualifier.indexOf(":");
                 if (colonIdx == 0 || colonIdx == -1 
                         || colonIdx == qualifier.length() - 1) {

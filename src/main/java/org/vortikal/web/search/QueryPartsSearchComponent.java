@@ -151,7 +151,8 @@ public class QueryPartsSearchComponent implements SearchComponent {
         List<PropertySet> files = new ArrayList<PropertySet>();
         for (int i = 0; i < num; i++) {
             PropertySet res = result.getResult(i);
-            files.add(resourceManager.createResourceWrapper(res.getURI()));
+            //files.add(resourceManager.createResourceWrapper(res.getURI()));
+            files.add(res);
             URL url = this.viewService.constructURL(res.getURI());
             urls.put(res.getURI().toString(), url);
         }
@@ -174,7 +175,8 @@ public class QueryPartsSearchComponent implements SearchComponent {
             title = springRequestContext.getMessage(this.titleLocalizationKey, (String) null);
         }
 
-        ResourceWrapper resourceWrapper = this.resourceManager.createResourceWrapper(scope.getURI());
+        ResourceWrapper resourceWrapper = 
+            this.resourceManager.createResourceWrapper(scope);
 
         Listing listing = new Listing(resourceWrapper, title, name, offset);
         listing.setMore(more);

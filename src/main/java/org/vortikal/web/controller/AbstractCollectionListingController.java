@@ -52,7 +52,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
@@ -97,7 +96,7 @@ public abstract class AbstractCollectionListingController implements Controller 
         Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, false, locale));
         
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("collection", this.resourceManager.createResourceWrapper(collection.getURI()));
+        model.put("collection", this.resourceManager.createResourceWrapper(collection));
         model.put("subCollections", subCollections);
         
         /* Run the actual search (done in subclasses) */

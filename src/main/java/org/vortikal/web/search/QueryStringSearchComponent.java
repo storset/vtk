@@ -148,7 +148,8 @@ public class QueryStringSearchComponent implements SearchComponent {
         List<PropertySet> files = new ArrayList<PropertySet>();
         for (int i = 0; i < num; i++) {
             PropertySet res = result.getResult(i);
-            files.add(resourceManager.createResourceWrapper(res.getURI()));
+            //files.add(resourceManager.createResourceWrapper(res.getURI()));
+            files.add(res);
             URL url = this.viewService.constructURL(res.getURI());
             urls.put(res.getURI().toString(), url);
         }
@@ -166,12 +167,13 @@ public class QueryStringSearchComponent implements SearchComponent {
 
         String title = null;
         if (this.titleLocalizationKey != null) {
-            org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
-                    request);
+            org.springframework.web.servlet.support.RequestContext springRequestContext = 
+                new org.springframework.web.servlet.support.RequestContext(request);
             title = springRequestContext.getMessage(this.titleLocalizationKey, (String) null);
         }
 
-        ResourceWrapper resourceWrapper = this.resourceManager.createResourceWrapper(collection.getURI());
+        ResourceWrapper resourceWrapper = 
+            this.resourceManager.createResourceWrapper(collection);
 
         Listing listing = new Listing(resourceWrapper, title, name, offset);
         listing.setMore(more);

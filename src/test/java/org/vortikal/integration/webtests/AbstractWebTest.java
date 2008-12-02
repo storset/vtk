@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractWebTest extends WebTestCase {
     
-    protected static final String rootCollection = "automatedtestresources";
+    protected static final String PROP_ROOT_COLLECTION= "webtests.rootcollection";
     protected static final String PROP_ADMIN_URL = "admin.url";
     protected static final String PROP_ADMIN_USR = "admin.user";
     protected static final String PROP_ADMIN_PASSWORD = "admin.password";
@@ -17,6 +17,7 @@ public abstract class AbstractWebTest extends WebTestCase {
     protected static final String PROP_WEBDAV_URL = "webdav.url";
     
     protected static final String URL_REGEX = "^(http(s?)\\:\\/\\/|www)\\S*";
+    protected String rootCollection;
     
     private static Properties props;
     private static final String propFile = "integration/webtests/webtests.properties";
@@ -28,6 +29,8 @@ public abstract class AbstractWebTest extends WebTestCase {
             props = new Properties();
             props.load(this.getClass().getResourceAsStream( "/" + propFile));
         }
+        
+        rootCollection = getProperty(PROP_ROOT_COLLECTION);
         
         String baseUrl = getBaseUrl();
         if (!baseUrl.matches("^(http(s?)\\:\\/\\/|www)\\S*")) {

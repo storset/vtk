@@ -56,6 +56,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
+
 public class EmailAFriendController implements Controller {
 
     private Repository repository;
@@ -66,9 +67,7 @@ public class EmailAFriendController implements Controller {
     private MailTemplateProvider mailTemplateProvider;
     private ResourceAwareLocaleResolver resourceAwareLocaleResolver;
 
-
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -84,7 +83,7 @@ public class EmailAFriendController implements Controller {
         String language = resource.getContentLanguage();
         if (language == null) {
             Locale locale = resourceAwareLocaleResolver.resolveLocale(request);
-            language = locale.getLanguage();
+            language = locale.toString();
         }
 
         Map<String, Object> m = new HashMap<String, Object>();
@@ -122,9 +121,8 @@ public class EmailAFriendController implements Controller {
                     String[] emailMultipleTo = emailTo.split(",");
                     if (isValidEmail(emailMultipleTo) && isValidEmail(emailFrom)) {
 
-                        MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, resource,
-                                emailMultipleTo, emailFrom, comment, serverHostname, serverPort,
-                                language);
+                        MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, resource, emailMultipleTo,
+                                emailFrom, comment, serverHostname, serverPort, language);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -155,16 +153,14 @@ public class EmailAFriendController implements Controller {
         return new ModelAndView(this.viewName, m);
     }
 
-
-    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document,
-            String[] mailMultipleTo, String emailFrom, String comment, String serverHostname,
-            int serverPort, String language) throws MessagingException, Exception {
+    private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
+            String emailFrom, String comment, String serverHostname, int serverPort, String language)
+            throws MessagingException, Exception {
 
         String serverHostnameShort = StringUtils.capitalize(serverHostname);
 
-        String mailBody = mailTemplateProvider.generateMailBody(document.getTitle(), document
-                .getURI().toString(), emailFrom, comment, serverHostname, serverHostnameShort,
-                serverPort, language);
+        String mailBody = mailTemplateProvider.generateMailBody(document.getTitle(), document.getURI().toString(),
+                emailFrom, comment, serverHostname, serverHostnameShort, serverPort, language);
 
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
@@ -178,47 +174,39 @@ public class EmailAFriendController implements Controller {
         return mimeMessage;
     }
 
-
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
-
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
-
 
     @Required
     public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
         this.javaMailSenderImpl = javaMailSenderImpl;
     }
 
-
     @Required
     public void setMailExecutor(MailExecutor mailExecutor) {
         this.mailExecutor = mailExecutor;
     }
-
 
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
-
     @Required
     public void setResourceAwareLocaleResolver(ResourceAwareLocaleResolver resourceAwareLocaleResolver) {
         this.resourceAwareLocaleResolver = resourceAwareLocaleResolver;
     }
-
 
     private static boolean isValidEmail(String[] addrs) {
         for (String addr : addrs) {
@@ -228,7 +216,6 @@ public class EmailAFriendController implements Controller {
         }
         return true;
     }
-
 
     private static boolean isValidEmail(String addr) {
         if (org.springframework.util.StringUtils.countOccurrencesOf(addr, "@") == 0) {

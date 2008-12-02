@@ -18,13 +18,13 @@
           function popup(url) {
 
             //half the screen width minus half the new window width (plus 5 pixel borders).
-            iMyWidth = (window.screen.width/2) - (75 + 10);
+            iMyWidth = (window.screen.width/2) - (165 + 10);
 
             //half the screen height minus half the new window height (plus title and status bars).
-            iMyHeight = (window.screen.height/2) - (100 + 50);
+            iMyHeight = (window.screen.height/2) - (235 + 50);
  
             //Open the window
-            var win2 = window.open(url,"Window2","status=no,height=470,width=320,resizable=no,left=" + iMyWidth + ",top=" + iMyHeight + ",screenX=" + iMyWidth + ",screenY=" + iMyHeight + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
+            var win2 = window.open(url,"Window2","status=no,height=470,width=330,resizable=no,left=" + iMyWidth + ",top=" + iMyHeight + ",screenX=" + iMyWidth + ",screenY=" + iMyHeight + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
             win2.focus();
           }
 </script>

@@ -20,7 +20,7 @@
     /* Email-a-friend */
 
     form#email-a-friend-form {
-      width: 300px; 
+      width: 310px; 
       text-align: left;
     }
 

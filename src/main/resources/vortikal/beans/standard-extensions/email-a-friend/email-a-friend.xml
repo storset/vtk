@@ -5,7 +5,7 @@
 <beans>
 
   <bean id="emailafriendService" class="org.vortikal.web.service.ServiceImpl">
-  <property name="parent" ref="viewService" />
+    <property name="parent" ref="viewService" />
     <property name="order" value="-999" />
     <property name="handler" ref="emailafriendHandler" />
     <property name="assertions">
@@ -47,6 +47,7 @@
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
     <property name="mailExecutor" ref="emailafriend.mailExecutor"/>
     <property name="mailTemplateProvider" ref="mailTemplateProvider"/>
+    <property name="resourceAwareLocaleResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean> 
 
   <bean id="emailafriend.mailExecutor" class="org.vortikal.web.controller.emailafriend.MailExecutor">

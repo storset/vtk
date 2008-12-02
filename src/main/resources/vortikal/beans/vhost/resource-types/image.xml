@@ -73,6 +73,7 @@
         <value>gif</value>
         <value>png</value>
         <value>bmp</value>
+        <value>pjpeg</value><!-- Microsoft -->
       </set>
     </property>
   </bean>

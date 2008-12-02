@@ -115,6 +115,12 @@ public class PathMappingConfig {
     }
     
     private void buildNode(String lhs, String rhs, Node root) {
+        boolean exact = false;
+        if (lhs.endsWith("/") && !lhs.equals("/")) {
+            lhs = lhs.substring(0, lhs.length() - 1);
+            exact = true;
+        }
+
         int pathEndPos = lhs.length();
         int leftBracketPos = lhs.indexOf("[");
         int rightBracketPos = -1;
@@ -126,11 +132,6 @@ public class PathMappingConfig {
             pathEndPos = leftBracketPos;
         }
         String pathStr = lhs.substring(0, pathEndPos);
-        boolean exact = false;
-        if (pathStr.endsWith("/") && !pathStr.equals("/")) {
-            pathStr = pathStr.substring(0, pathStr.length() - 1);
-            exact = true;
-        }
         pathStr = pathStr.replaceAll("/+", "/");
         
         String qualifierStr = leftBracketPos == -1 ? null :

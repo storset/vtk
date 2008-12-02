@@ -42,7 +42,6 @@ import org.vortikal.web.decorating.PathMappingConfig.ConfigEntry;
 public class PathMappingConfigTest extends TestCase {
 
     private static final String TEST_CONFIG = 
- 
         "/ = root\n"
         + "/a = value-a\n"
         + "/a[d:e,f:g] = value-a2\n"
@@ -51,9 +50,10 @@ public class PathMappingConfigTest extends TestCase {
         + "/b = value-b # comment\n"
         + "/c = value-c\n"
         + "/c/d# = value d\n"
-        + "/c/d/e/f/g/ = foo\n"
-        + "/c/d/e/f/g/h = bar\n";
-       
+        + "/c/d/e/f/g/ = exact\n"
+        + "/c/d/e/f/g/h = bar\n"
+        + "/x/y/z = xxx\n"
+        + "/x/y/z[a:b,c:d]/ = exact\n";
     
     public void testConfig() throws Exception {
         InputStream is = new ByteArrayInputStream(TEST_CONFIG.getBytes("utf-8"));
@@ -85,6 +85,8 @@ public class PathMappingConfigTest extends TestCase {
 
         assertNull(config.get(Path.fromString("/c/d/e/f/g/h/i")));
         
+        assertNotNull(config.get(Path.fromString("/x/y/z")));
+        assertTrue(config.get(Path.fromString("/x/y/z")).get(1).isExact());
     }
 
 }

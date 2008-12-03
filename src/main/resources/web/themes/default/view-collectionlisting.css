@@ -109,6 +109,19 @@ div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomin
 	color: #999;
 }
 
+div.tagged-resources  a.vrtx-title {
+    text-decoration: none;
+    color: black;
+}
+
+div.tagged-resources a.vrtx-title:hover {
+    color: #999;
+}
+
+div.tagged-resources div.lastModified {
+  padding-top: 0.5em !important;
+}
+
 div.vrtx-resource a.vrtx-image {
 	float: left;
 	padding: 0.25em 0.75em 0.5em 0;
@@ -237,4 +250,8 @@ div.vrtx-feed-link a {
 	border-left:1px solid #AAAAAA;
 	padding-left:.5em;
 	overflow:hidden;
+	height: 1em;
+}
+.vrtx-number-of-comments-add-event-seperator a {
+   color: #555;
 }

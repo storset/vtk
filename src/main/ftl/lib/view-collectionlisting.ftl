@@ -133,7 +133,13 @@
             </#if>
             <#if !hideNumberOfComments >
               	<#local numberOfComments = vrtx.prop(r, "numberOfComments") />
+              	 <#if numberOfComments?has_content >	
+              	<div class="vrtx-number-of-comments-add-event-seperator">
+              	</#if>
           		   <@viewutils.displayNumberOfComments r locale />
+          		 <#if numberOfComments?has_content >	
+          		</div>
+          		</#if>
           	  </#if>
              
              

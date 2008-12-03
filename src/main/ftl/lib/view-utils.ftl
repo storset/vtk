@@ -175,21 +175,19 @@
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
+<div class="vrtx-number-of-comments-add-event-seperator">
   <#if !hideNumberOfComments >
  	 <#local locale = springMacroRequestContext.getLocale() />
   	<@displayNumberOfComments resource locale />
   </#if>
   <#if isValidStartDate?string == "true">
-  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
-  <#if !numberOfComments?has_content >	
-  		<div class="vrtx-number-of-comments-add-event-seperator">
-  </#if>
+  
     <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
-      <#if !numberOfComments?has_content>	
+
   		</div>
-  	  </#if>
+
   </#if>
 
 	
@@ -214,14 +212,12 @@
 <#macro displayNumberOfComments resource locale  >
  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content >	
-  	<div class="vrtx-number-of-comments-add-event-seperator vrtx-number-of-comments">
-    		<a href="${resource.URI}#comments">
+    		<a href="${resource.URI}#comments" class="vrtx-number-of-comments">
     	    <#if numberOfComments.intValue?number &gt; 1>
 		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
 		    <#else>
 		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfCommentsSingle" default="" args=[] locale=locale />
 		    </#if>
 			</a>
-    </div>
   </#if>
 </#macro>

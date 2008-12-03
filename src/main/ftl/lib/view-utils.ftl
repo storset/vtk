@@ -186,10 +186,10 @@
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
 
-  		</div>
+  	
 
   </#if>
-
+	</div>
 	
 </#macro>
 

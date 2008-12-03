@@ -47,11 +47,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -68,7 +65,7 @@ import org.vortikal.web.servlet.StatusAwareHttpServletResponse;
 
 
 
-public class ConfigurableDecorationResolver implements DecorationResolver, InitializingBean, ApplicationContextAware {
+public class ConfigurableDecorationResolver implements DecorationResolver, InitializingBean {
 
     private static Log logger = LogFactory.getLog(
         ConfigurableDecorationResolver.class);
@@ -81,10 +78,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private Repository repository; 
     private boolean supportMultipleTemplates = false;
     private Map<String, RegexpCacheItem> regexpCache = new HashMap<String, RegexpCacheItem>();
-    private Map<String, Service> serviceMap = new HashMap<String, Service>();
 
-    private ApplicationContext applicationContext;
-    
     private class RegexpCacheItem {
         String string;
         Pattern compiled;
@@ -115,10 +109,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         this.configPath = Path.fromString(config);
     }
     
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
     public void afterPropertiesSet() {
         if (this.configPath == null) {
             throw new BeanInitializationException(
@@ -138,7 +128,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             "'parseableContentPropDef' is set");
         }
         loadConfig();
-        loadServicesMap();
     }
     
     public void loadConfig() {
@@ -151,18 +140,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         }
     }
 
-    private void loadServicesMap() {
-        @SuppressWarnings("unchecked") Map<String, Service> beans =
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, Service.class, false, true);
-        for (Service service: beans.values()) {
-            Object servicePredicate = service.getAttribute("decorating.servicePredicateName");
-            if (servicePredicate != null && servicePredicate instanceof String) {
-                this.serviceMap.put((String) servicePredicate, service); 
-            }
-        }
-    
-    }
-    
     public DecorationDescriptor resolve(HttpServletRequest request,
                                         HttpServletResponse response) throws Exception {
 
@@ -262,19 +239,31 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private String checkPathMatch(Path uri, Resource resource) {
         List<Path> list = new ArrayList<Path>(uri.getPaths());
         Collections.reverse(list);
-        for (Path path: list) {
 
+        // TODO: Algorithm: sort entries into "score groups".
+        // If several entries exist in the top group, 
+        // first look for one that has "exact = true". 
+        // Otherwise, just pick first one in top group.
+        for (Path path: list) {
             List<ConfigEntry> entries = this.config.get(path);
             Map<ConfigEntry, Integer> score = new HashMap<ConfigEntry, Integer>();
             
             if (entries != null) {
                 for (ConfigEntry entry: entries) {
-                    if (entry.isExact() && !uri.equals(path)) {
-                        score.put(entry, -1);
-                        break;
+                    if (entry.isExact()) {
+                        if (!uri.equals(path)) {
+                            score.put(entry, -1);
+                            break;
+                        } 
+                        if (score.get(entry) == null) {
+                            score.put(entry, 0);
+                        }
+                        // XXX: boost score for exact entries by 10 (temporarily).
+                        // See TODO above.
+                        score.put(entry, score.get(entry) + 10);
                     }
                     List<Predicate> predicates = entry.getPredicates();
-                    if (predicates.size() == 0) {
+                    if (score.get(entry) == null) {
                         score.put(entry, 0);
                     }
                     for (Predicate predicate: predicates) {
@@ -289,7 +278,6 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
                         }
                     }
                 }
-
                 int highest = 0;
                 ConfigEntry topEntry = null;
                 for (ConfigEntry entry: score.keySet()) {
@@ -318,12 +306,18 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
             }
             return false;
         } else if ("service".equals(predicate.getName())) {
-            if (this.serviceMap != null && this.serviceMap.containsKey(predicate.getValue())) {
-                Service service = this.serviceMap.get(predicate.getValue());
-                Service currentService = RequestContext.getRequestContext().getService();
-                if (service == currentService || currentService.isDescendantOf(service)) {
-                    return true;
+
+            Service currentService = RequestContext.getRequestContext().getService();
+            while (currentService != null) {
+                Object attr = currentService.getAttribute("decorating.servicePredicateName");
+                if (attr != null && attr instanceof String) {
+                    String servicePredicate = (String) attr;
+                    if (servicePredicate.equals(predicate.getValue())) {
+                        return true;
+                    }
+                    return false;
                 }
+                currentService = currentService.getParent();
             }
         }
         return false;

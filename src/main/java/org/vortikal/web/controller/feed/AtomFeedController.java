@@ -204,7 +204,7 @@ public abstract class AtomFeedController implements Controller {
 		Property pic = resource.getProperty(NS, PropertyType.PICTURE_PROP_NAME);
 		if (pic != null) {
 			String imgPath = pic.getFormattedValue("thumbnail", Locale.getDefault());
-			String imgAlt = imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.lastIndexOf("."));
+			String imgAlt = getImageAlt(imgPath);
 			sb.append("<img src=\"" + imgPath + "\" alt=\"" + imgAlt + "\"/>");
 		}
 		if (summary != null) {
@@ -213,7 +213,7 @@ public abstract class AtomFeedController implements Controller {
 		return sb.toString();
 	}
 
-	protected String getIntroduction(PropertySet resource) {
+    protected String getIntroduction(PropertySet resource) {
 		Property prop = resource.getProperty(NS, PropertyType.INTRODUCTION_PROP_NAME);
 		return prop != null ? prop.getFormattedValue() : null;
 	}
@@ -267,6 +267,15 @@ public abstract class AtomFeedController implements Controller {
 	private String removeInvalid(String s) {
 		return s.replaceAll("[#%?\\[\\] ]", "");
 	}
+	
+    private String getImageAlt(String imgPath) {
+        try {
+            return imgPath.substring(imgPath.lastIndexOf("/") + 1, imgPath.lastIndexOf("."));
+        } catch (Throwable t) {
+            // Don't do anything special, imgAlt isn't all that important
+            return "feed_image";
+        }
+    }
 
 	@Required
 	public void setRepository(Repository repository) {

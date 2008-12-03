@@ -156,6 +156,12 @@ div.vrtx-resource a.more {
 	width: 100%;
 }
 
+/* IE7 fix */
+*:first-child+html div.vrtx-resource a.more {
+    width: 10%;
+    }
+
+/* IE6 */
 * html div.vrtx-resource a.more {
 	width: 1%;
 }

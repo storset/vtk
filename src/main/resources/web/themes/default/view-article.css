@@ -85,11 +85,11 @@ span.vrtx-add-event {
 	border-left: 1px solid #aaa;
     white-space: nowrap;
     height: .8em;
-	margin:.1em 0 .1em .5em;
+	margin:.1em 0 .1em .2em;
 }
 
 span.vrtx-add-event a.vrtx-ical {
-	padding-left: 0.65em;
+	padding-left: 0.7em;
 	font-size: 11px;
 	color: #555;
 	position: relative; 

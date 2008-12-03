@@ -250,7 +250,8 @@ div.vrtx-feed-link a {
 	border-left:1px solid #AAAAAA;
 	padding-left:.5em;
 	overflow:hidden;
-	height: 1em;
+	height: .8em;
+	margin:.1em 0 .1em 0;
 }
 .vrtx-number-of-comments-add-event-seperator a {
    color: #555;

@@ -163,13 +163,13 @@ div.vrtx-resource div.introduction p {
 div.vrtx-resource div.vrtx-read-more {
 	margin: .5em 0 0 0;
 	white-space: nowrap;
-	width: 100%;
 }
 
 /* IE7 fix */
 *:first-child+html div.vrtx-resource a.more {
     width: 10%;
 }
+
 
 /* IE6 */
 * html div.vrtx-resource a.more {

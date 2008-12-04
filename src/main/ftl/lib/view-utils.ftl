@@ -152,7 +152,7 @@
   
   <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   <span class="summary" style="display:none;">${title}</span>
-  <div class="start-and-end-container">
+  <!-- <div class="start-and-end-container"> -->
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
   </#if>
@@ -171,14 +171,14 @@
     </#if>
   </#if>
   <#t /><#if location != "">, <span class="location">${location}</span></#if>
-  </div>	
+  <!-- </div>	-->
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
   
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content || isValidStartDate?string == "true" >	
-  <div class="vrtx-number-of-comments-add-event-seperator">
+  <div class="vrtx-number-of-comments-add-event-container">
   </#if>
   <#if !hideNumberOfComments >
  	 <#local locale = springMacroRequestContext.getLocale() />
@@ -213,7 +213,7 @@
 
 <#macro displayNumberOfComments resource locale  >
  <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
-  <#if numberOfComments?has_content >	
+  <#if numberOfComments?has_content >		
     		<a href="${resource.URI}#comments" class="vrtx-number-of-comments">
     	    <#if numberOfComments.intValue?number &gt; 1>
 		      <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />

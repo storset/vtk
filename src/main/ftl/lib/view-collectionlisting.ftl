@@ -124,7 +124,7 @@
             </#if>
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a>
             
-            <div class="published-date-container">
+            <!-- <div class="published-date-container"> -->
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
           	
               <div class="published-date">
@@ -134,7 +134,7 @@
             <#if !hideNumberOfComments >
               	<#local numberOfComments = vrtx.prop(r, "numberOfComments") />
               	 <#if numberOfComments?has_content >	
-              	<div class="vrtx-number-of-comments-add-event-seperator">
+              	<div class="vrtx-number-of-comments-add-event-container">
               	</#if>
           		   <@viewutils.displayNumberOfComments r locale />
           		 <#if numberOfComments?has_content >	
@@ -143,7 +143,7 @@
           	  </#if>
              
              
-			</div>
+			<!-- </div> -->
             <#if intro?has_content && articles.displayPropDefs?seq_contains(intro.definition)>
               <div class="description introduction">${intro.value}</div>
             </#if>

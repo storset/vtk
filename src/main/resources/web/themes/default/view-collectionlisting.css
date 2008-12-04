@@ -234,8 +234,8 @@ div.vrtx-feed-link a {
 		margin:0.5em 0 0;
 }
 .published-date {
-	padding-right:.2em;
-	margin-right:.5em;
+/*	padding-right:.2em; 
+	margin-right:.5em;*/
 	display:inline;
 
 }
@@ -250,15 +250,15 @@ div.vrtx-feed-link a {
 	margin:0.5em 0 0;
 }
 
-.vrtx-number-of-comments-add-event-seperator{
+.vrtx-number-of-comments-add-event-container{
 	margin:0 0 0 0;
 	display:inline;
 	border-left:1px solid #AAAAAA;
 	padding-left:.5em;
 	overflow:hidden;
 	height: .8em;
-	margin:.1em 0 .1em 0;
+	margin:.1em 0 .1em .3em;
 }
-.vrtx-number-of-comments-add-event-seperator a {
+.vrtx-number-of-comments-add-event-container a {
    color: #555;
 }

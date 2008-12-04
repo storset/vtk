@@ -93,6 +93,11 @@ div.eventListing\.previousEventsSearchComponent h2 {
 	margin: .5em 0 .5em 0;
 }
 
+/* TODO: blah */
+div.articleListing\.searchComponent div.vrtx-title{
+	padding: 0 0 .5em 0;
+}
+
 div.vrtx-resource a.vrtx-title {
 	font-size: 1.2em;
 	font-weight: 900;
@@ -155,7 +160,7 @@ div.vrtx-resource div.introduction p {
 	padding: 0;
 }
 
-div.vrtx-resource a.more {
+div.vrtx-resource div.vrtx-read-more {
 	margin: .5em 0 0 0;
 	white-space: nowrap;
 	width: 100%;
@@ -164,7 +169,7 @@ div.vrtx-resource a.more {
 /* IE7 fix */
 *:first-child+html div.vrtx-resource a.more {
     width: 10%;
-    }
+}
 
 /* IE6 */
 * html div.vrtx-resource a.more {

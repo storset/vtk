@@ -342,7 +342,7 @@
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
-            <ref bean="collection.hideNumberOfComments" />
+            <ref bean="hideNumberOfCommentsPropDef" />
           </list>
         </property>
       </bean>
@@ -374,7 +374,7 @@
 
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
-			<ref bean="collection.hideNumberOfComments" />
+			<ref bean="hideNumberOfCommentsPropDef" />
           </list>
         </property>
         

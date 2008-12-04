@@ -45,7 +45,7 @@
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="viewName" value="eventListing.view" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="hideNumberOfComments" ref="collection.hideNumberOfComments" />
+    <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="upcomingEventsSearch" ref="eventListing.upcomingEventsSearchComponent" />
     <property name="previousEventsSearch" ref="eventListing.previousEventsSearchComponent" />

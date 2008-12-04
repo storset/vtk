@@ -34,9 +34,9 @@
     
     <#list resources as r>
       <div class="vrtx-resource">
-
+		<div class="vrtx-title">
         <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
-
+		</div>
         <#list collectionListing.displayPropDefs as displayPropDef>
 
           <#if displayPropDef.name = 'introduction'>
@@ -122,13 +122,15 @@
                   </#if>
                </a>
             </#if>
-            <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a>
+            <div class="vrtx-title">
+            <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a></div>
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
           	
               <div class="published-date">
                 <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}                
               </div>
             </#if>
+            
             <#if !hideNumberOfComments >
               	<#local numberOfComments = vrtx.prop(r, "numberOfComments") />
               	 <#if numberOfComments?has_content >	
@@ -197,8 +199,9 @@
                   </#if>
                </a>
             </#if>
+            <div class="vrtx-title">
             <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
-
+			</div>
         <div class="time-and-place"> 
           <@viewutils.displayTimeAndPlaceAndNumberOfComments r title hideNumberOfComments />
         </div>
@@ -210,9 +213,11 @@
         <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
 
         <#if displayMoreURLs && hasBody>
+        <div class="vrtx-read-more">
           <a href="${collectionListing.urls[r.URI]?html}" class="more" title="${title?html}">
             <@vrtx.msg code="viewCollectionListing.readMore" />
           </a>
+          </div>
         </#if>
 
       </div>

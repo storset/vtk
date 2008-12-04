@@ -33,6 +33,7 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -203,6 +204,8 @@ public interface Resource extends PropertySet, Cloneable {
      * @return the locale string (if it has one, <code>null</code> otherwise)
      */
     public String getContentLanguage();
+    
+    public Locale getContentLocale();
 
     /**
      * Gets a resource's content (MIME) type.

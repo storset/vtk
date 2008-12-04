@@ -33,9 +33,12 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.util.repository.LocaleHelper;
 
 /**
  * Implementation of {@link org.vortikal.repository.PropertySet}.
@@ -157,6 +160,14 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         Map<String, Property> map = this.propertyMap.get(namespace);
         if (map == null) return null;
         return map.get(name);
+    }
+    
+    public Locale getContentLocale() {
+        Property contentLanguage = getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME);
+        if (contentLanguage != null) {
+            return LocaleHelper.getLocale(contentLanguage.getStringValue());
+        }
+        return null;
     }
 
     public List<Property> getProperties(Namespace namespace) {

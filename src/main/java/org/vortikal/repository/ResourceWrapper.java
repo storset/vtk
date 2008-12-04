@@ -42,7 +42,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
-import org.vortikal.util.repository.LocaleHelper;
 
 public class ResourceWrapper implements Resource {
 
@@ -104,7 +103,7 @@ public class ResourceWrapper implements Resource {
     }
     
     public Locale getContentLocale() {
-        return LocaleHelper.getLocale(this.resource.getContentLanguage());
+        return this.resource.getContentLocale();
     }
     
     /** Delegation of resource implementation: **/

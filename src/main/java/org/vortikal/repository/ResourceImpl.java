@@ -33,6 +33,7 @@ package org.vortikal.repository;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.jcr.nodetype.PropertyDefinition;
@@ -46,6 +47,7 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
+import org.vortikal.util.repository.LocaleHelper;
 
 
 public class ResourceImpl extends PropertySetImpl implements Resource {
@@ -280,6 +282,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     public long getContentLength() {
         return getLongPropValue(PropertyType.CONTENTLENGTH_PROP_NAME);
+    }
+    
+    public Locale getContentLocale() {
+        return LocaleHelper.getLocale(this.getContentLanguage());
     }
 
     public void setUserSpecifiedCharacterEncoding(String characterEncoding) {

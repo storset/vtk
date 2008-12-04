@@ -237,6 +237,9 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     }
 
     private String checkPathMatch(Path uri, Resource resource) {
+        if (this.config == null) {
+            return null;
+        }
         List<Path> list = new ArrayList<Path>(uri.getPaths());
         Collections.reverse(list);
 

@@ -111,6 +111,10 @@ div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomin
 	    display:block;
 }
 
+div.articleListing\.searchComponent  a.vrtx-title{
+	padding-bottom:.5em;
+}
+
 div.tagged-resources  a.vrtx-title {
     text-decoration: none;
     color: black;

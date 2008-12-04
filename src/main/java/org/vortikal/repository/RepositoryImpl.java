@@ -655,7 +655,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             comment = this.commentDAO.createComment(original, comment);
             updateNumberOfComments(original, new Integer(comments.size() + 1), principal,
-                    (ResourceImpl) resource);
+                    (ResourceImpl) resource, token);
 
             return comment;
         } catch (IOException e) {
@@ -687,7 +687,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
                     this.maxComments);
             updateNumberOfComments(original, new Integer(comments.size()), principal,
-                    (ResourceImpl) resource);
+                    (ResourceImpl) resource, token);
 
         } catch (Exception e) {
             throw new RuntimeException("Unhandled exception", e);
@@ -715,7 +715,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
 
-            updateNumberOfComments(original, null, principal, (ResourceImpl) resource);
+            updateNumberOfComments(original, null, principal, (ResourceImpl) resource, token);
 
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -764,13 +764,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
 
     private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments,
-            Principal principal, ResourceImpl resource) {
+            Principal principal, ResourceImpl resource, String token) {
         Map<String, Object> propertyValueMap = new HashMap<String, Object>();
         propertyValueMap.put(PropertyType.NUMBER_OF_COMMENTS_PROP_NAME, numberOfComments);
         try {
             ResourceImpl newResource = this.resourceHelper.explicitValuePropertiesChange(original,
                     principal, propertyValueMap, resource);
-            this.dao.store(newResource);
+            this.store(token, newResource);
         } catch (Exception e) {
             throw new RuntimeException("Could not update number of comments", e);
         }

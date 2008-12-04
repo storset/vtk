@@ -93,7 +93,6 @@ div.eventListing\.previousEventsSearchComponent h2 {
 	margin: .5em 0 .5em 0;
 }
 
-/* TODO: blah */
 div.articleListing\.searchComponent div.vrtx-title{
 	padding: 0 0 .5em 0;
 }
@@ -113,8 +112,6 @@ div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomin
 {
 	color: #999;
 }
-
-
 
 div.articleListing\.searchComponent  a.vrtx-title{
 	padding-bottom:.5em;

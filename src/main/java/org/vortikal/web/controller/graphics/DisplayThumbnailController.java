@@ -30,11 +30,15 @@
  */
 package org.vortikal.web.controller.graphics;
 
-import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -77,7 +81,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
 		String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
-        Resource image = this.repository.retrieve(token, uri, true);   
+        Resource image = this.repository.retrieve(token, uri, true);
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
         
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
@@ -90,17 +94,40 @@ public class DisplayThumbnailController implements Controller, LastModified {
         }
         
         try {
-        	
-        	InputStream in = thumbnail.getBinaryStream();
-        	BufferedImage imageFromStream = ImageIO.read(in);
-        	in.close();
-        	
+
+            // XXX: have to first write the thumbnail to a temporary 
+            // file to be able to send a Content-Length header
+            
+            InputStream in = thumbnail.getBinaryStream();
+
+            ReadableByteChannel src = Channels.newChannel(in);
+            File tempFile = File.createTempFile(this.getClass().getName(), "vrtx");
+            FileChannel dest = new FileOutputStream(tempFile).getChannel();
+            int chunk = 100000;
+            long pos = 0;
+            while (true) {
+                long n = dest.transferFrom(src, pos, chunk);
+                if (n == 0) {
+                    break;
+                }
+                pos += n;
+            }
+            src.close();
+            dest.close();
+            
         	String mimetype = thumbnail.getBinaryMimeType();
             response.setContentType(mimetype);
+            response.setContentLength((int) tempFile.length());
             
-        	String format = mimetype.substring(mimetype.indexOf("/") + 1);
         	OutputStream out = response.getOutputStream();
-            ImageIO.write(imageFromStream, format, out);
+        	in = new FileInputStream(tempFile);
+        	byte[] buf = new byte[chunk];
+        	int n;
+        	while (true) {
+        	    n = in.read(buf);
+                if (n <= 0) break;
+        	    out.write(buf, 0, n);
+        	}
             out.flush();
             out.close();
             

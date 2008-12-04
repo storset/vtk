@@ -99,17 +99,12 @@ div.vrtx-resource a.vrtx-title {
 }
 
 div.articleListing\.searchComponent a.vrtx-title,div.eventListing\.upcomingEventsSearchComponent a.vrtx-title,div.eventListing\.previousEventsSearchComponent a.vrtx-title
-	{
+{
 	text-decoration: none;
 	color: black;
+	display:block;
 }
 
-* html div.articleListing\.searchComponent a.vrtx-title,
-* html div.eventListing\.upcomingEventsSearchComponent a.vrtx-title,
-* html div.eventListing\.previousEventsSearchComponent a.vrtx-title
-{
-	    display:block;
-}
 div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomingEventsSearchComponent a.vrtx-title:hover,div.eventListing\.previousEventsSearchComponent a.vrtx-title:hover
 {
 	color: #999;

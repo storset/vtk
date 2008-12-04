@@ -146,13 +146,6 @@
         <directory>src/main/ext/FCKeditor/fckeditor-build</directory>
         <targetPath>web/fckeditor-build</targetPath>
       </resource>
-      <resource>
-        <directory>src/changes</directory>
-        <targetPath>vortikal-changes</targetPath>
-        <includes>
-          <include>changes.xml</include>
-        </includes>
-      </resource>      
     </resources>
     
     <testResources>

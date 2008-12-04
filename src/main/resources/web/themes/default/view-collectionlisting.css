@@ -102,14 +102,20 @@ div.articleListing\.searchComponent a.vrtx-title,div.eventListing\.upcomingEvent
 	{
 	text-decoration: none;
 	color: black;
-	    display:block;
 }
 
-div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomingEventsSearchComponent a.vrtx-title:hover,div.eventListing\.previousEventsSearchComponent a.vrtx-title:hover
-	{
-	color: #999;
+* html div.articleListing\.searchComponent a.vrtx-title,
+* html div.eventListing\.upcomingEventsSearchComponent a.vrtx-title,
+* html div.eventListing\.previousEventsSearchComponent a.vrtx-title
+{
 	    display:block;
 }
+div.articleListing\.searchComponent a.vrtx-title:hover,div.eventListing\.upcomingEventsSearchComponent a.vrtx-title:hover,div.eventListing\.previousEventsSearchComponent a.vrtx-title:hover
+{
+	color: #999;
+}
+
+
 
 div.articleListing\.searchComponent  a.vrtx-title{
 	padding-bottom:.5em;

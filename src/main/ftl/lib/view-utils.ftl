@@ -152,7 +152,6 @@
   
   <span class="time-and-place"><@vrtx.msg code="article.time-and-place" />:</span>
   <span class="summary" style="display:none;">${title}</span>
-  <!-- <div class="start-and-end-container"> -->
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
   </#if>
@@ -171,7 +170,6 @@
     </#if>
   </#if>
   <#t /><#if location != "">, <span class="location">${location}</span></#if>
-  <!-- </div>	-->
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />

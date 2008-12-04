@@ -44,7 +44,7 @@
     </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />
-    <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
+    <property name="hideNumberOfComments" ref="collection.hideNumberOfComments" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="viewName" value="articleListing.view" />
     <property name="searcher" ref="articleListingSearcher" />

@@ -231,7 +231,7 @@
 
   <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
     <constructor-arg>
-	<list>
+    <list>
               <value>${themeBaseURL}/editor-container.css</value>
               <value>${themeBaseURL}/fck_editorarea.css</value>
         </list>
@@ -342,7 +342,7 @@
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
-            <ref bean="hideNumberOfCommentsPropDef" />
+            <ref bean="collection.hideNumberOfComments" />
           </list>
         </property>
       </bean>
@@ -374,7 +374,7 @@
 
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
-			<ref bean="hideNumberOfCommentsPropDef" />
+            <ref bean="collection.hideNumberOfComments" />
           </list>
         </property>
         

@@ -30,14 +30,13 @@
  */
 package org.vortikal.web.controller.graphics;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,49 +91,60 @@ public class DisplayThumbnailController implements Controller, LastModified {
         	response.sendRedirect(uri.toString());
         	return null;
         }
+
+        String mimetype = thumbnail.getBinaryMimeType();
+        response.setContentType(mimetype);
+        
+        InputStream in = null;
+        File tempFile = null;
         
         try {
+            int bufSize = 500000;
+            in = new BufferedInputStream(thumbnail.getBinaryStream());
 
-            // XXX: have to first write the thumbnail to a temporary 
-            // file to be able to send a Content-Length header
-            
-            InputStream in = thumbnail.getBinaryStream();
-
-            ReadableByteChannel src = Channels.newChannel(in);
-            File tempFile = File.createTempFile(this.getClass().getName(), "vrtx");
-            FileChannel dest = new FileOutputStream(tempFile).getChannel();
-            int chunk = 100000;
-            long pos = 0;
-            while (true) {
-                long n = dest.transferFrom(src, pos, chunk);
-                if (n == 0) {
-                    break;
+            byte[] buf = new byte[bufSize];
+            int n;
+            n = in.read(buf);
+            if (n < bufSize) {
+                // Thumbnail fits in buffer, flush it immediately:
+                //response.setHeader("Content-Length", String.valueOf(n));
+                OutputStream out = response.getOutputStream();
+                response.setContentLength(n);
+                out.write(buf, 0, n);
+                out.flush();
+                out.close();
+            } else {
+                // Write to temporary file:
+                tempFile = File.createTempFile(this.getClass().getName(), "vrtx");
+                OutputStream tempOut = new BufferedOutputStream(
+                        new FileOutputStream(tempFile));
+                while (n > 0) {
+                    tempOut.write(buf, 0, n);
+                    n = in.read(buf);
                 }
-                pos += n;
+                tempOut.flush();
+                tempOut.close();
+
+                InputStream tempIn = new FileInputStream(tempFile);
+
+                response.setContentLength((int) tempFile.length());
+                OutputStream out = response.getOutputStream();
+                while (true) {
+                    n = tempIn.read(buf);
+                    if (n <= 0) break;
+                    out.write(buf, 0, n);
+                }
+                out.flush();
+                out.close();
             }
-            src.close();
-            dest.close();
             
-        	String mimetype = thumbnail.getBinaryMimeType();
-            response.setContentType(mimetype);
-            response.setContentLength((int) tempFile.length());
-            
-        	OutputStream out = response.getOutputStream();
-        	in = new FileInputStream(tempFile);
-        	byte[] buf = new byte[chunk];
-        	int n;
-        	while (true) {
-        	    n = in.read(buf);
-                if (n <= 0) break;
-        	    out.write(buf, 0, n);
-        	}
-            out.flush();
-            out.close();
-            
-        } catch (Throwable t) {
-        	log.error("An error occured while regenerating thumbnail for image " + uri, t);
-        	response.sendRedirect(uri.toString());
-        	return null;
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
 		return null;
 	}

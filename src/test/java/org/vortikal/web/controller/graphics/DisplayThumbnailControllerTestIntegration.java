@@ -61,29 +61,20 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 		handleRequest();
 	}
 	
-	public void testDisplayNullBytestreamThumbnail() throws Exception {
-		prepareRequest(true, true);
-		
-		// No binarystream, so we should redirect
-		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryMimeType(); will(returnValue(thumbnailMimeType)); }});
-		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryStream(); will(returnValue(null)); }});
-
-		handleRequest();
-	}
-	
 	public void testDisplayThumbnail() throws Exception {
 		prepareRequest(true, false);
 		
 		BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("testImage.gif"));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ImageIO.write(image, "png", out);
-		byte[] imageBytes = out.toByteArray();
+		final byte[] imageBytes = out.toByteArray();
 		out.close();
 		final InputStream in = new ByteArrayInputStream(imageBytes);
 		
 		context.checking(new Expectations() {{ atLeast(2).of(mockThumbnail).getBinaryMimeType(); will(returnValue(thumbnailMimeType)); }});
 		context.checking(new Expectations() {{ one(mockThumbnail).getBinaryStream(); will(returnValue(in)); }});
 		context.checking(new Expectations() {{ one(mockResponse).setContentType(thumbnailMimeType); }});
+		context.checking(new Expectations() {{ one(mockResponse).setContentLength(imageBytes.length); }});
 		
 		final ServletOutputStream responseOut = new MockServletOutputStream();
 		context.checking(new Expectations() {{ one(mockResponse).getOutputStream(); will(returnValue(responseOut)); }});

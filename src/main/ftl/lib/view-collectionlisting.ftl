@@ -126,7 +126,7 @@
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
           	
               <div class="published-date">
-                <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[publishedDate.getFormattedValue('long', locale)] locale=locale />
+                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}                
               </div>
             </#if>
             <#if !hideNumberOfComments >

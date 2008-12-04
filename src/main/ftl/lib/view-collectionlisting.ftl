@@ -147,9 +147,11 @@
 			
             <#local hasBody = vrtx.propValue(r, 'hasBodyContent') == 'true' />
             <#if displayMoreURLs && hasBody>
+            <div class="vrtx-read-more">
               <a href="${articles.urls[r.URI]?html}" class="more">
                 <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
               </a>
+            </div>
             </#if>
             
             

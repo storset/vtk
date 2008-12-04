@@ -186,6 +186,13 @@ div.recursive-listing{
 	height:auto;
 }
 
+ * html #vrtx-resource\.start-date,
+ * html #vrtx-resource\.end-date
+ {
+ 	width:400px;
+ }	
+
+
 .sorting label,
 .recursive-listing label{
 /*	margin:0;

@@ -104,9 +104,9 @@
                             <img src="${src?html}" />
                           </a>
                         </#if>
-                        
+                        <div class="vrtx-title">
                         <a href="${resource.getURI()?html}" class="vrtx-title"> ${resourceTitle?html}</a>
-                        
+                        </div>
                         <#list displayPropDefs as displayPropDef>
                           <#if displayPropDef.name = 'introduction'>
                             <#assign val = getIntroduction(resource) />
@@ -127,9 +127,11 @@
                               <#if displayPropDef.name = 'introduction'>
                                   <#assign hasBody = vrtx.propValue(resource, 'hasBodyContent') == 'true' />
                                   <#if displayMoreURLs && hasBody>
+                                  	  <div class="vrtx-read-more">
                                       <a href="${listing.urls[resource.URI]?html}" class="more">
                                       <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
                                       </a>
+                                      </div>
                                   </#if>
                               </#if>
                               </div>

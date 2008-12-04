@@ -123,8 +123,6 @@
                </a>
             </#if>
             <a class="vrtx-title" href="${articles.urls[r.URI]?html}">${title?html}</a>
-            
-            <!-- <div class="published-date-container"> -->
             <#if publishedDate?has_content && articles.displayPropDefs?seq_contains(publishedDate.definition)> 
           	
               <div class="published-date">
@@ -141,9 +139,6 @@
           		</div>
           		</#if>
           	  </#if>
-             
-             
-			<!-- </div> -->
             <#if intro?has_content && articles.displayPropDefs?seq_contains(intro.definition)>
               <div class="description introduction">${intro.value}</div>
             </#if>

@@ -45,6 +45,7 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.security.Principal;
 
 
@@ -411,7 +412,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     }
     
     public void setBinaryValue(byte[] binaryValue, String binaryRef, String binaryMimeType) {
-    	Value v = new Value(binaryValue, binaryRef, binaryMimeType);
+    	Value v = new BinaryValue(binaryValue, binaryRef, binaryMimeType);
         setValue(v);
     }
     
@@ -419,14 +420,16 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-    	return this.getDefinition().getBinaryStream(this.value.getBinaryRef());
+    	BinaryValue binaryValue = (BinaryValue) this.value;
+    	return this.getDefinition().getBinaryStream(binaryValue.getBinaryRef());
     }
     
     public String getBinaryMimeType() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-    	return this.getDefinition().getBinaryMimeType(this.value.getBinaryRef());
+    	BinaryValue binaryValue = (BinaryValue) this.value;
+    	return this.getDefinition().getBinaryMimeType(binaryValue.getBinaryRef());
     }
 
 }

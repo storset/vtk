@@ -30,17 +30,20 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
 
-public final class Value implements Cloneable, Comparable<Value> {
+public class Value implements Cloneable, Comparable<Value> {
     
-    private Type type = PropertyType.Type.STRING;
+    protected Value() {
+        // REMOVE ONCE REFACTORING DONE
+    }
+    
     public static final long MAX_LENGTH = 2048;
+    protected Type type = PropertyType.Type.STRING;
 
     private String stringValue;
     private Date dateValue;
@@ -48,11 +51,6 @@ public final class Value implements Cloneable, Comparable<Value> {
     private int intValue;
     private long longValue;
     private Principal principalValue;
-    
-    // Oh no...
-    private byte[] binaryValue;
-    private String binaryRef;
-    private String binaryMimeType;
 
     public Value(String stringValue) {
         if (stringValue == null || stringValue.equals(""))
@@ -107,13 +105,6 @@ public final class Value implements Cloneable, Comparable<Value> {
         this.type = PropertyType.Type.PRINCIPAL;
         this.principalValue = principalValue;
     }
-    
-    public Value(byte[] binaryValue, String binaryRef, String binaryMimType) {
-    	this.binaryValue = binaryValue;
-    	this.binaryRef = binaryRef;
-    	this.binaryMimeType = binaryMimType;
-    	this.type = PropertyType.Type.BINARY;
-    }
 
     public Type getType() {
         return this.type;
@@ -143,18 +134,6 @@ public final class Value implements Cloneable, Comparable<Value> {
         return this.stringValue;
     }
     
-    public byte[] getBinaryValue() {
-    	return this.binaryValue;
-    }
-    
-    public String getBinaryMimeType() {
-    	return this.binaryMimeType;
-    }
-    
-    public String getBinaryRef() {
-    	return this.binaryRef;
-    }
-    
     public Object getObjectValue() {
         switch (this.type) {
         
@@ -179,7 +158,7 @@ public final class Value implements Cloneable, Comparable<Value> {
             case PRINCIPAL:
                 return this.principalValue;
             case BINARY:
-            	return this.binaryValue;
+            	return null;//this.binaryValue;
         }
         
         throw new IllegalStateException(
@@ -214,7 +193,7 @@ public final class Value implements Cloneable, Comparable<Value> {
             return (this.principalValue == null && v.getPrincipalValue() == null) ||
                 (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
         case BINARY:
-        	return Arrays.equals(this.binaryValue, v.getBinaryValue());
+        	return false;//Arrays.equals(this.binaryValue, v.getBinaryValue());
         default:
             return (this.stringValue == null && v.getStringValue() == null) ||
                 (this.stringValue != null && this.stringValue.equals(v.getStringValue()));
@@ -237,7 +216,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
         case BINARY:
-        	return hash + 6 + (this.binaryValue == null ? 0 : this.binaryValue.hashCode());
+        	return 0;//hash + 6 + (this.binaryValue == null ? 0 : this.binaryValue.hashCode());
         default:
             return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
         }
@@ -259,7 +238,7 @@ public final class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:
-        	return new Value(this.binaryValue, this.binaryRef, this.binaryMimeType);
+        	return null;//new Value(this.binaryValue, this.binaryRef, this.binaryMimeType);
         default:
             return new Value(this.stringValue);
         }
@@ -314,8 +293,8 @@ public final class Value implements Cloneable, Comparable<Value> {
                 sb.append(this.principalValue);
                 break;
             case BINARY:
-            	sb.append(this.binaryRef + ", mimetype: " + this.binaryMimeType +
-            			", contentlength:" + this.binaryValue.length);
+//            	sb.append(this.binaryRef + ", mimetype: " + this.binaryMimeType +
+//            			", contentlength:" + this.binaryValue.length);
             	break;
             default:
                 sb.append(this.stringValue);
@@ -359,7 +338,7 @@ public final class Value implements Cloneable, Comparable<Value> {
             representation = this.stringValue;
             break;
         case BINARY:
-        	representation = this.binaryValue.toString();
+        	//representation = this.binaryValue.toString();
         	break;
             
         case PRINCIPAL:

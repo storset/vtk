@@ -26,7 +26,7 @@
     <property name="targetObject" ref="repository.resourceChangeNotifier"/>
     <property name="triggerThreadName" value="${repositoryID}.indexupdater"/>
     <property name="startDelay" value="20000"/>
-    <property name="repeatInterval" value="5000"/>
+    <property name="repeatInterval" value="${repository.indexUpdater.interval}"/>
     <property name="startTriggerAfterInitialization" value="true"/>
     <property name="abortTriggerOnTargetMethodException" value="false"/>
 

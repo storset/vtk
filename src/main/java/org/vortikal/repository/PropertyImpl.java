@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +45,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.value.BinaryValue;
+import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.Principal;
 
 
@@ -416,7 +416,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         setValue(v);
     }
     
-    public InputStream getBinaryStream() throws IllegalOperationException {
+    public BinaryStream getBinaryStream() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }

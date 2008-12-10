@@ -1170,7 +1170,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
     private void setBinaryContent(Property prop, String resourceUri) {
         try {
-        	InputStream in = prop.getBinaryStream();
+        	InputStream in = prop.getBinaryStream().getStream();
         	ByteArrayOutputStream out = new ByteArrayOutputStream();
 			int i;
 			while ((i = in.read()) != -1) {

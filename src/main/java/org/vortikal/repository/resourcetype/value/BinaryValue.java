@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.resourcetype.value;
 
+import java.util.Arrays;
+
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
 
@@ -46,7 +48,8 @@ public final class BinaryValue extends Value {
         this.binaryMimeType = binaryMimeType;
         this.type = PropertyType.Type.BINARY;
     }
-    
+
+
     public BinaryValue(String binaryRef) {
         this(new byte[0], binaryRef, "");
     }
@@ -78,6 +81,31 @@ public final class BinaryValue extends Value {
         return this.binaryRef;
     }
 
-    // TODO override/fix remaining methods from parent
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof BinaryValue)) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        BinaryValue v = (BinaryValue) obj;
+        return Arrays.equals(this.binaryValue, v.getBinaryValue());
+    }
+
+
+    @Override
+    public int hashCode() {
+        return this.binaryValue.hashCode();
+    }
+
+
+    @Override
+    public String toString() {
+        return this.binaryRef + ", mimetype: " + this.binaryMimeType;
+    }
 
 }

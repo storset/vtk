@@ -157,8 +157,6 @@ public class Value implements Cloneable, Comparable<Value> {
             
             case PRINCIPAL:
                 return this.principalValue;
-            case BINARY:
-            	return null;//this.binaryValue;
         }
         
         throw new IllegalStateException(
@@ -192,8 +190,6 @@ public class Value implements Cloneable, Comparable<Value> {
         case PRINCIPAL:
             return (this.principalValue == null && v.getPrincipalValue() == null) ||
                 (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
-        case BINARY:
-        	return false;//Arrays.equals(this.binaryValue, v.getBinaryValue());
         default:
             return (this.stringValue == null && v.getStringValue() == null) ||
                 (this.stringValue != null && this.stringValue.equals(v.getStringValue()));
@@ -215,8 +211,6 @@ public class Value implements Cloneable, Comparable<Value> {
             return hash + 4 + (this.dateValue == null ? 0 : this.dateValue.hashCode());
         case PRINCIPAL:
             return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
-        case BINARY:
-        	return 0;//hash + 6 + (this.binaryValue == null ? 0 : this.binaryValue.hashCode());
         default:
             return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
         }
@@ -237,8 +231,6 @@ public class Value implements Cloneable, Comparable<Value> {
             return new Value((Date)this.dateValue.clone(), false);
         case PRINCIPAL:
             return new Value(this.principalValue);
-        case BINARY:
-        	return null;//new Value(this.binaryValue, this.binaryRef, this.binaryMimeType);
         default:
             return new Value(this.stringValue);
         }
@@ -292,10 +284,6 @@ public class Value implements Cloneable, Comparable<Value> {
             case PRINCIPAL:
                 sb.append(this.principalValue);
                 break;
-            case BINARY:
-//            	sb.append(this.binaryRef + ", mimetype: " + this.binaryMimeType +
-//            			", contentlength:" + this.binaryValue.length);
-            	break;
             default:
                 sb.append(this.stringValue);
                 break;

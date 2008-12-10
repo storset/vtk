@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,6 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.repository.store.BinaryContentDataAccessor;
+import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -154,7 +154,7 @@ public class ValueFactoryImpl implements ValueFactory {
     }
 
 
-    public InputStream getBinaryStream(String binaryName, String binaryRef) {
+    public BinaryStream getBinaryStream(String binaryName, String binaryRef) {
         return this.binaryDao.getBinaryStream(binaryName, binaryRef);
     }
 

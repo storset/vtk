@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -43,6 +42,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.store.db.ibatis.BinaryStream;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
@@ -215,7 +215,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getValueSeparator(format);
     }
     
-    public InputStream getBinaryStream(String binaryRef) {
+    public BinaryStream getBinaryStream(String binaryRef) {
     	return this.overriddenPropDef.getBinaryStream(binaryRef);
     }
     

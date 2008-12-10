@@ -53,6 +53,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -99,17 +100,19 @@ public class DisplayThumbnailController implements Controller, LastModified {
         File tempFile = null;
         
         try {
+            
+            BinaryStream binaryStream = thumbnail.getBinaryStream();
+            
             int bufSize = 500000;
-            in = new BufferedInputStream(thumbnail.getBinaryStream());
+            in = new BufferedInputStream(binaryStream.getStream());
 
             byte[] buf = new byte[bufSize];
             int n;
             n = in.read(buf);
             if (n < bufSize) {
                 // Thumbnail fits in buffer, flush it immediately:
-                //response.setHeader("Content-Length", String.valueOf(n));
                 OutputStream out = response.getOutputStream();
-                response.setContentLength(n);
+                response.setContentLength((int)binaryStream.getLength());
                 out.write(buf, 0, n);
                 out.flush();
                 out.close();

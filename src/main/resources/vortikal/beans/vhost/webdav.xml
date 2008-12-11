@@ -472,7 +472,7 @@
         <entry key="HEAD" value-ref="HEAD" />
         <entry key="LOCK" value-ref="LOCK" />
         <entry key="PROPPATCH" value-ref="HTTP_STATUS_VIEW" />
-        <entry key="MKCOL" value-ref="HTTP_STATUS_VIEW" />
+        <entry key="MKCOL" value-ref="HTTP_MKCOL_STATUS_VIEW" />
         <entry key="MOVE" value-ref="HTTP_STATUS_VIEW" />
         <entry key="UNLOCK" value-ref="HTTP_STATUS_VIEW" />
         <entry key="COPY" value-ref="HTTP_STATUS_VIEW" />
@@ -615,6 +615,20 @@
   <bean id="webdavDisplayResourceView" class="org.vortikal.web.view.DisplayResourceView" />
 
   <bean id="HTTP_STATUS_VIEW" class="org.vortikal.web.view.SimpleHttpStatusView"/>
+
+  <bean id="HTTP_MKCOL_STATUS_VIEW" class="org.vortikal.web.view.SimpleHttpStatusView">
+    <property name="contentType" value="text/html;charset=utf-8" />
+    <property name="body">
+      <value>
+        &lt;?xml version="1.0" encoding="utf-8"?&gt;
+        &lt;html&gt;&lt;head&gt;
+        &lt;title&gt;Created&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;Document created&lt;/body&gt;
+        &lt;/html&gt;
+      </value>
+    </property>
+  </bean>
 
   <bean id="HTTP_STATUS_NOT_FOUND_VIEW"
         class="org.vortikal.web.view.SimpleHttpStatusView">

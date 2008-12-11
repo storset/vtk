@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.view;
 
+import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +59,8 @@ import org.vortikal.webdav.WebdavConstants;
  *
  */
 public class SimpleHttpStatusView extends AbstractView {
+    
+    private String body;
 
     @SuppressWarnings("unchecked")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
@@ -72,10 +75,20 @@ public class SimpleHttpStatusView extends AbstractView {
         }
         
         response.setStatus(status.intValue());
-        
         String etag = (String) model.get(WebdavConstants.WEBDAVMODEL_ETAG);
         if (etag != null) {
             response.setHeader(WebdavConstants.WEBDAVMODEL_ETAG, etag);
-        }        
+        }
+        if (this.body != null) {
+            response.setContentType(getContentType());
+            PrintWriter writer = response.getWriter();
+            writer.write(this.body);
+            writer.flush();
+            writer.close();
+        }
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 }

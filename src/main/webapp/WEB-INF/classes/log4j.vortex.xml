@@ -9,16 +9,6 @@
     </layout>
   </appender>
 
-  <appender name="error" class="org.apache.log4j.RollingFileAppender">
-    <param name="maxBackupIndex" value="10" />
-    <param name="maxFileSize" value="2MB" />
-    <param name="file" value="${no.uio.webapps.log.path}/error.log" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%t [%c{2}]%x - %m%n"/>
-    </layout>
-  </appender>
-
-
   <logger name="org.vortikal.web.servlet.VortikalServlet.Error" additivity="false">
     <level value="warn" />
     <appender-ref ref="stdout"/>
@@ -35,60 +25,24 @@
     <appender-ref ref="stdout"/>
   </logger>
 
-  <logger name="org.springframework"><level value="warn" /></logger>
-
   <logger name="org.vortikal.aop"><level value="info" /></logger>
-
-  <logger name="org.vortikal.shell"><level value="info" /></logger>
-
-  <logger name="freemarker"><level value="fatal" /></logger>
-  <logger name="org.apache.axis"><level value="warn" /></logger>
-  <logger name="org.quartz"><level value="warn" /></logger>
-
+  <logger name="org.vortikal.edit"><level value="info" /></logger>
   <logger name="org.vortikal.repository"><level value="info" /></logger>
-
-  <logger name="org.vortikal.repository.store.jcr"><level value="debug" /></logger>
-
   <logger name="org.vortikal.repository.OperationLog"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.AuthorizationManagerImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.PropertyManagerImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.dao"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.dao.JDBCResourceChangeFetcher"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.dao.IndexDataAccessorImpl"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.query"><level value="info" /></logger>
-  <logger name="org.vortikal.repository.query.Reindexer"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.store.db.SqlMapIndexDao"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.search.SearcherImpl"><level value="info" /></logger>
 
-  <!--logger name="org.vortikal.repository.ns"><level value="trace" /></logger-->
   <logger name="org.vortikal.util.cache"><level value="info" /></logger>
   <logger name="org.vortikal.security"><level value="info" /></logger>
-  <logger name="org.vortikal.security.web"><level value="info" /></logger>
+  <logger name="org.vortikal.shell"><level value="info" /></logger>
   <logger name="org.vortikal.web"><level value="info" /></logger>
-  <logger name="org.vortikal.web.referencedataprovider"><level value="info" /></logger>
-  <logger name="org.vortikal.web.wrapper"><level value="info" /></logger>
-  <logger name="org.vortikal.web.xslt.ResourceXsltView"><level value="info" /></logger>
-  <logger name="org.vortikal.web.components.menu"><level value="info" /></logger>
-  <logger name="org.vortikal.web.decorating"><level value="info" 
-/></logger>
-  <logger name="org.vortikal.web.controller"><level value="info" /></logger>
-  <logger name="org.vortikal.web.service"><level value="info" /></logger>
-  <logger name="org.vortikal.web.RequestContextInitializer"><level value="info" /></logger>
-  <logger name="org.vortikal.webdav"><level value="info" /></logger>
-  <logger name="org.vortikal.uhtml"><level value="info" /></logger>
-  <logger name="org.vortikal.index"><level value="info" /></logger>
-  <logger name="org.vortikal.edit"><level value="info" /></logger>
-  <logger name="org.vortikal.edit.plaintext"><level value="info" /></logger>
-
   <logger name="org.vortikal.web.RequestLocalRepository"><level value="info" /></logger>
+  <logger name="org.vortikal.webdav"><level value="info" /></logger>
 
-  <logger name="org.vortikal.xml"><level value="info" /></logger>
-
+  <logger name="freemarker"><level value="fatal" /></logger>
+  <logger name="org.springframework"><level value="warn" /></logger>
   <logger name="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"><level value="info" /></logger>
 
-  <logger name="org.apache.pluto"><level value="info" /></logger>
-
-  <logger name="org.vortikal.security.feide"><level value="info" /></logger>
-
-  
   <logger name="com.ibatis"><level value="info" /></logger>
   <logger name="java.sql"><level value="info" /></logger>
   <logger name="org.apache.commons.dbcp"><level value="info" /></logger>

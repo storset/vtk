@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -46,6 +45,7 @@ import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.Principal;
 
 /**
@@ -352,7 +352,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.defaultValueSeparator;
     }
     
-    public InputStream getBinaryStream(String binaryRef) {
+    public BinaryStream getBinaryStream(String binaryRef) {
     	return this.valueFactory.getBinaryStream(this.getName(), binaryRef);
     }
     

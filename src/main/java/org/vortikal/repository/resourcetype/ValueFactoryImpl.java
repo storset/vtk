@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,7 +38,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.repository.store.BinaryContentDataAccessor;
+import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -51,30 +52,29 @@ public class ValueFactoryImpl implements ValueFactory {
 
     private PrincipalFactory principalFactory;
     private BinaryContentDataAccessor binaryDao;
-    
-    private static final String[] dateFormats = new String[] {        
-        "dd.MM.yyyy HH:mm:ss",
-        "dd.MM.yyyy HH:mm",
-        "dd.MM.yyyy",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd HH:mm",
-        "yyyy-MM-dd"
-    };
+
+    private static final String[] dateFormats = new String[] { "dd.MM.yyyy HH:mm:ss",
+            "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd" };
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    /* (non-Javadoc)
-     * @see org.vortikal.repository.resourcetype.ValueFactory#createValues(java.lang.String[], org.vortikal.repository.resourcetype.PropertyType.Type)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.vortikal.repository.resourcetype.ValueFactory#createValues(java.lang
+     * .String[], org.vortikal.repository.resourcetype.PropertyType.Type)
      */
-    public Value[] createValues(String[] stringValues, Type type) 
-        throws ValueFormatException {
+    public Value[] createValues(String[] stringValues, Type type) throws ValueFormatException {
 
         if (stringValues == null) {
             throw new IllegalArgumentException("stringValues cannot be null.");
         }
 
         Value[] values = new Value[stringValues.length];
-        for (int i=0; i<values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             values[i] = createValue(stringValues[i], type);
         }
 
@@ -82,11 +82,15 @@ public class ValueFactoryImpl implements ValueFactory {
 
     }
 
-    /* (non-Javadoc)
-     * @see org.vortikal.repository.resourcetype.ValueFactory#createValue(java.lang.String, org.vortikal.repository.resourcetype.PropertyType.Type)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.vortikal.repository.resourcetype.ValueFactory#createValue(java.lang
+     * .String, org.vortikal.repository.resourcetype.PropertyType.Type)
      */
-    public Value createValue(String stringValue, Type type)
-        throws ValueFormatException {
+    public Value createValue(String stringValue, Type type) throws ValueFormatException {
 
         if (stringValue == null) {
             throw new IllegalArgumentException("stringValue cannot be null");
@@ -109,8 +113,10 @@ public class ValueFactoryImpl implements ValueFactory {
             Date date = getDateFromStringValue(stringValue);
             return new Value(date, true);
         case TIMESTAMP:
-            // old: Dates are represented as number of milliseconds since January 1, 1970, 00:00:00 GMT
-            // Dates are represented as described in the configuration for this bean in the List stringFormats
+            // old: Dates are represented as number of milliseconds since
+            // January 1, 1970, 00:00:00 GMT
+            // Dates are represented as described in the configuration for this
+            // bean in the List stringFormats
             Date date2 = getDateFromStringValue(stringValue);
             return new Value(date2, false);
 
@@ -130,60 +136,68 @@ public class ValueFactoryImpl implements ValueFactory {
 
         case PRINCIPAL:
             try {
-                Principal principal = principalFactory.getPrincipal(stringValue, Principal.Type.USER);
+                Principal principal = principalFactory.getPrincipal(stringValue,
+                        Principal.Type.USER);
                 return new Value(principal);
             } catch (InvalidPrincipalException e) {
                 throw new ValueFormatException(e.getMessage(), e);
             }
         case BINARY:
-        	// Don't fetch any of the binary content until it's specifically needed
-        	return new Value(new byte[0], stringValue, "");        	
+            // Don't fetch any of the binary content until 
+            // it's specifically needed
+            return new BinaryValue(stringValue);
         }
 
-        throw new IllegalArgumentException("Cannot convert '" + stringValue 
-                + "' to unknown type '" + type+ "'");
+        throw new IllegalArgumentException("Cannot convert '" + stringValue + "' to unknown type '"
+                + type + "'");
 
     }
-    
-    public InputStream getBinaryStream(String binaryName, String binaryRef) {
-    	return this.binaryDao.getBinaryStream(binaryName, binaryRef);
+
+
+    public BinaryStream getBinaryStream(String binaryName, String binaryRef) {
+        return this.binaryDao.getBinaryStream(binaryName, binaryRef);
     }
-    
+
+
     public String getBinaryMimeType(String binaryName, String binaryRef) {
-    	return this.binaryDao.getBinaryMimeType(binaryName, binaryRef);
+        return this.binaryDao.getBinaryMimeType(binaryName, binaryRef);
     }
+
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
 
         try {
             return new Date(Long.parseLong(stringValue));
-        } catch (NumberFormatException nfe) {}
+        } catch (NumberFormatException nfe) {
+        }
 
         SimpleDateFormat format;
         Date date;
-        for (String dateFormat: dateFormats) {
+        for (String dateFormat : dateFormats) {
             format = new SimpleDateFormat(dateFormat);
             format.setLenient(false);
             try {
                 date = format.parse(stringValue);
                 return date;
             } catch (ParseException e) {
-                this.logger.debug("Failed to parse date using format '" + dateFormat
-                        + "', input '" + stringValue + "'", e);
+                this.logger.debug("Failed to parse date using format '" + dateFormat + "', input '"
+                        + stringValue + "'", e);
             }
         }
-        throw new ValueFormatException(
-                "Unable to parse date value for input string: '" + stringValue + "'");
+        throw new ValueFormatException("Unable to parse date value for input string: '"
+                + stringValue + "'");
     }
-    
+
+
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
-    
+
+
     @Required
     public void setBinaryDao(BinaryContentDataAccessor binaryDao) {
-    	this.binaryDao = binaryDao;
+        this.binaryDao = binaryDao;
     }
 
 }

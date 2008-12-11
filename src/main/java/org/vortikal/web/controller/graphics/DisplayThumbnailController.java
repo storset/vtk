@@ -31,10 +31,6 @@
 package org.vortikal.web.controller.graphics;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -92,63 +88,33 @@ public class DisplayThumbnailController implements Controller, LastModified {
         	response.sendRedirect(uri.toString());
         	return null;
         }
-
-        String mimetype = thumbnail.getBinaryMimeType();
-        response.setContentType(mimetype);
         
         InputStream in = null;
-        File tempFile = null;
-        
         try {
             
             BinaryStream binaryStream = thumbnail.getBinaryStream();
-            
-            int bufSize = 500000;
             in = new BufferedInputStream(binaryStream.getStream());
-
-            byte[] buf = new byte[bufSize];
-            int n;
-            n = in.read(buf);
-            if (n < bufSize) {
-                // Thumbnail fits in buffer, flush it immediately:
-                OutputStream out = response.getOutputStream();
-                response.setContentLength((int)binaryStream.getLength());
-                out.write(buf, 0, n);
-                out.flush();
-                out.close();
-            } else {
-                // Write to temporary file:
-                tempFile = File.createTempFile(this.getClass().getName(), "vrtx");
-                OutputStream tempOut = new BufferedOutputStream(
-                        new FileOutputStream(tempFile));
-                while (n > 0) {
-                    tempOut.write(buf, 0, n);
-                    n = in.read(buf);
-                }
-                tempOut.flush();
-                tempOut.close();
-
-                InputStream tempIn = new FileInputStream(tempFile);
-
-                response.setContentLength((int) tempFile.length());
-                OutputStream out = response.getOutputStream();
-                while (true) {
-                    n = tempIn.read(buf);
-                    if (n <= 0) break;
-                    out.write(buf, 0, n);
-                }
-                out.flush();
-                out.close();
-            }
+            
+            String mimetype = thumbnail.getBinaryMimeType();
+            response.setContentType(mimetype);
+            
+            int length = (int) binaryStream.getLength();
+            response.setContentLength(length);
+            
+            byte[] buf = new byte[length];
+            int n = in.read(buf);
+            
+            OutputStream out = response.getOutputStream();
+            out.write(buf, 0, n);
+            out.flush();
+            out.close();
             
         } finally {
             if (in != null) {
                 in.close();
             }
-            if (tempFile != null) {
-                tempFile.delete();
-            }
         }
+        
 		return null;
 	}
 

@@ -113,6 +113,42 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
+    
+    // XXX: Hack to avoid doing full re-evaluation when only updating number of comments
+    //      We should not update resource last modified just because a comment was added or deleted. 
+    //      The whole thing of storing number of comments as property is problematic, because it breaks
+    //      our current model that comments kinda belong in a domain of their own, unfortunately.
+    
+    public ResourceImpl numberOfCommentsPropertyChange(ResourceImpl original, Integer numberOfComments) 
+        throws InternalRepositoryException {
+
+        // XXX: This should be considererd highly temporary code, emergency fix.. :(
+        try {
+            ResourceImpl newResource = (ResourceImpl) original.clone(); 
+    
+            PropertyTypeDefinition def = this.resourceTypeTree.getPropertyTypeDefinition(
+                                                Namespace.DEFAULT_NAMESPACE, 
+                                                PropertyType.NUMBER_OF_COMMENTS_PROP_NAME);
+            
+            // Remove any existing numberOfComments property, should not be included if there are no comments on resource.
+
+            // XXX: Hardcoding logic which is also configured (i.e. not mandatory property).
+            newResource.removeProperty(def);
+            
+            if (numberOfComments != null && numberOfComments.intValue() >= 1) {
+                // Only add property if one comment or more.
+                PropertyImpl nocProp = (PropertyImpl) def.createProperty();
+                nocProp.setIntValue(numberOfComments.intValue());
+                newResource.addProperty(nocProp);
+            }
+            
+            return newResource;
+        } catch (CloneNotSupportedException cns) {
+            throw new InternalRepositoryException("An internal error occurred: unable to " + "clone() resource: "
+                    + original);
+        }
+        
+    }
 
 
     public ResourceImpl contentModification(ResourceImpl resource, Principal principal)

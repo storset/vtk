@@ -654,8 +654,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setApproved(true);
 
             comment = this.commentDAO.createComment(original, comment);
-            updateNumberOfComments(original, new Integer(comments.size() + 1), principal,
-                    (ResourceImpl) resource, token);
+            updateNumberOfComments(original, new Integer(comments.size() + 1));
 
             return comment;
         } catch (IOException e) {
@@ -686,8 +685,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
                     this.maxComments);
-            updateNumberOfComments(original, new Integer(comments.size()), principal,
-                    (ResourceImpl) resource, token);
+            updateNumberOfComments(original, new Integer(comments.size()));
 
         } catch (Exception e) {
             throw new RuntimeException("Unhandled exception", e);
@@ -715,7 +713,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
 
-            updateNumberOfComments(original, null, principal, (ResourceImpl) resource, token);
+            updateNumberOfComments(original, null);
 
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -762,17 +760,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-
-    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments,
-            Principal principal, ResourceImpl resource, String token) {
-        Map<String, Object> propertyValueMap = new HashMap<String, Object>();
-        propertyValueMap.put(PropertyType.NUMBER_OF_COMMENTS_PROP_NAME, numberOfComments);
+    // XXX: method contains temporary hacks
+    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments) {
         try {
-            
-            // Explicit value evaluation is probably overkill for this case. But leaving it for now, so
-            // we can think about if we really need this and perhaps refactor later.
-            ResourceImpl newResource = this.resourceHelper.explicitValuePropertiesChange(original,
-                    principal, propertyValueMap, resource);
+            // XXX: temporary
+            ResourceImpl newResource = 
+                this.resourceHelper.numberOfCommentsPropertyChange(original, numberOfComments);
             
             Path uri = newResource.getURI();
             

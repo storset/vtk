@@ -74,5 +74,8 @@ public interface RepositoryResourceHelper {
 
     public PropertySet getFixedCopyProperties(Resource resource, Principal principal, Path destUri)
             throws CloneNotSupportedException;
+    
+    // XXX: TEMPORARY
+    public ResourceImpl numberOfCommentsPropertyChange(ResourceImpl original, Integer numberOfComments); 
 
 }

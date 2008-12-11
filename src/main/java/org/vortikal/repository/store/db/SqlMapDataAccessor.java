@@ -63,7 +63,6 @@ import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
@@ -949,10 +948,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                             } else {
                                 Value value = property.getValue();
                                 if (PropertyType.Type.BINARY.equals(value.getType())) {
-                                    BinaryValue binaryValue = (BinaryValue) value;
-                                	parameters.put("value", binaryValue.getBinaryRef());
-                                	parameters.put("binaryContent", binaryValue.getBinaryValue());
-                                	parameters.put("binaryMimeType", binaryValue.getBinaryMimeType());
+                                	parameters.put("value", value.getBinaryRef());
+                                	parameters.put("binaryContent", value.getBinaryValue());
+                                	parameters.put("binaryMimeType", value.getBinaryMimeType());
                                 } else {
                                 	parameters.put("value", value.getNativeStringRepresentation());
                                 }
@@ -1170,7 +1168,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     
     private void setBinaryContent(Property prop, String resourceUri) {
         try {
-        	InputStream in = prop.getBinaryStream().getStream();
+        	InputStream in = prop.getBinaryStream();
         	ByteArrayOutputStream out = new ByteArrayOutputStream();
 			int i;
 			while ((i = in.read()) != -1) {

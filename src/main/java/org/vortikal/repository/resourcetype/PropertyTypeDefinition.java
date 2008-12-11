@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 
@@ -38,7 +39,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 
 
 /**
@@ -130,13 +130,12 @@ public interface PropertyTypeDefinition {
     public Property createProperty();
     
     /**
-     * Get a wrapper object (BinaryStream) for the binary content of this property
-     * Wrapper contains stream and length
+     * Get a stream for the binary content of this property
      * 
      * @param binaryRef The reference to the binary content
      * @return Stream holding the binary content
      */
-    public BinaryStream getBinaryStream(String binaryRef);
+    public InputStream getBinaryStream(String binaryRef);
     
     public String getBinaryMimeType(String binaryRef);
 

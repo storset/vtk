@@ -103,12 +103,11 @@ public class LockController extends AbstractWebdavController {
             depthString = depthString.toLowerCase();
             Depth depth = null;
             if ("infinity".equals(depthString)) {
-                // XXX:
-                depth = Depth.ZERO;
+                depth = Depth.INF;
             } else if ("0".equals(depthString)) {
                 depth = Depth.ZERO;
             } else if ("1".equals(depthString)) {
-                depth = Depth.ZERO;
+                depth = Depth.ONE;
             } else {
                 throw new InvalidRequestException("Invalid depth header: " + depthString);
             }
@@ -203,7 +202,7 @@ public class LockController extends AbstractWebdavController {
 
         } catch (FailedDependencyException e) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Got FailedDependencyException for URI " + uri, e);
+                this.logger.debug("Got FailedDependencyException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
@@ -211,7 +210,7 @@ public class LockController extends AbstractWebdavController {
 
         } catch (ResourceLockedException e) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Got ResourceLockedException for URI " + uri, e);
+                this.logger.debug("Got ResourceLockedException for URI " + uri);
             }
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model

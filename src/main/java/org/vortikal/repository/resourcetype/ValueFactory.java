@@ -30,8 +30,9 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.InputStream;
+
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 
 /**
  * Interface for a <code>Value</code> "factory". It currently only does
@@ -65,7 +66,7 @@ public interface ValueFactory {
      * @param binaryRef The reference to the binary content
      * @return Stream holding the binary content
      */
-    public BinaryStream getBinaryStream(String binaryName, String binaryRef);
+    public InputStream getBinaryStream(String binaryName, String binaryRef);
     
     /**
      * Get the binary mimetype for the binary content of a property

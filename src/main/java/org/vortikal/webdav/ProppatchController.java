@@ -31,8 +31,6 @@
 package org.vortikal.webdav;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,7 +73,6 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class ProppatchController extends AbstractWebdavController  {
 
-    @SuppressWarnings("deprecation")
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) {
          
@@ -96,44 +93,20 @@ public class ProppatchController extends AbstractWebdavController  {
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            Document doc = doPropertyUpdate(resource, requestBody, token);
-            Format format = Format.getPrettyFormat();
-            format.setEncoding("utf-8");
-
+            doPropertyUpdate(resource, requestBody, token);
+            
             /* Store the altered resource: */
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("storing modified Resource");
             }
             resource = this.repository.store(token, resource);
-            XMLOutputter xmlOutputter = new XMLOutputter(format);
-            String xml = xmlOutputter.outputString(doc);
-            byte[] buffer = null;
-            try {
-                buffer = xml.getBytes("utf-8");
-            } catch (UnsupportedEncodingException ex) {
-                logger.warn("Warning: UTF-8 encoding not supported", ex);
-                throw new RuntimeException("UTF-8 encoding not supported");
-            }
-            response.setHeader("Content-Type", "text/xml;charset=utf-8");
-            response.setContentLength(buffer.length);
-            response.setStatus(HttpUtil.SC_MULTI_STATUS,
-                               WebdavUtil.getStatusMessage(
-                                   HttpUtil.SC_MULTI_STATUS));
-            OutputStream out = null;
-            try {
-                out = response.getOutputStream();
-                out.write(buffer, 0, buffer.length);
-                out.flush();
-                out.close();
 
-            } finally {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-            }
-            return null;
-            
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                      new Integer(HttpServletResponse.SC_OK));
+            model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_RESOURCE,
+                      resource);
+            model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
+
         } catch (InvalidRequestException e) {
             this.logger.info("Invalid request on URI '" + uri + "'", e);
 
@@ -185,6 +158,14 @@ public class ProppatchController extends AbstractWebdavController  {
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
 
+//        } catch (AclException e) {
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Caught AclException for URI " + uri, e);
+//            }
+//            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+//            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+//                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+//
         } catch (IOException e) {
             this.logger.info("Caught IOException for URI " + uri, e);
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
@@ -276,7 +257,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * @exception InvalidRequestException if an error occurs
      */
     @SuppressWarnings("unchecked") 
-    protected Document doPropertyUpdate(Resource resource,
+    protected void doPropertyUpdate(Resource resource,
                                     Document requestBody, String token) 
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
@@ -284,14 +265,6 @@ public class ProppatchController extends AbstractWebdavController  {
         
         Element root = requestBody.getRootElement();
 
-        Element multistatus = new Element("multistatus", WebdavConstants.DAV_NAMESPACE);
-        Element response = new Element("response", WebdavConstants.DAV_NAMESPACE);
-        Element href = new Element("href", WebdavConstants.DAV_NAMESPACE);
-        Element propstat = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
-        multistatus.addContent(response);
-        response.addContent(href);
-        response.addContent(propstat);
-        
         for (Iterator actionIterator = root.getChildren().iterator();
              actionIterator.hasNext();) {
 
@@ -300,13 +273,13 @@ public class ProppatchController extends AbstractWebdavController  {
             String action = actionElement.getName();
 
             if (action.equals("set")) {
-                setProperties(propstat, resource, 
+                setProperties(resource, 
                               actionElement.getChild(
                                   "prop", WebdavConstants.DAV_NAMESPACE).getChildren(), 
                               token);
                 
             } else if (action.equals("remove")) {
-                removeProperties(propstat, resource,
+                removeProperties(resource,
                                  actionElement.getChild(
                                      "prop", WebdavConstants.DAV_NAMESPACE).getChildren());
 
@@ -316,7 +289,7 @@ public class ProppatchController extends AbstractWebdavController  {
                     + "'set' or 'remove')");
             }
         }
-        return new Document(multistatus);
+
     }
 
 
@@ -331,20 +304,17 @@ public class ProppatchController extends AbstractWebdavController  {
      * sec. 12.11)
      */
     @SuppressWarnings("unchecked") 
-    protected void setProperties(Element propstat,
-                                 Resource resource,  
+    protected void setProperties(Resource resource,  
                                  List propElements, 
                                  String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
 
-        Element resultPropElement = new Element("prop", WebdavConstants.DAV_NAMESPACE);
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
             Element propElement = (Element) elementIterator.next();
-            setProperty(resultPropElement, resource, propElement, token);
+            setProperty(resource, propElement, token);
         }
-        propstat.addContent(resultPropElement);
     }
     
 
@@ -358,7 +328,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * property, or a custom one, although at present only standard
      * DAV properties are supported.
      */
-    protected void setProperty(Element resultElement, Resource resource, Element propertyElement, 
+    protected void setProperty(Resource resource, Element propertyElement, 
                                String token)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
@@ -439,26 +409,22 @@ public class ProppatchController extends AbstractWebdavController  {
                 property.setStringValue(elementToString(propertyElement));
             }
         }
-        Element resultPropertyElement = new Element(propertyName, propertyElement.getNamespace());
-        resultElement.addContent(resultPropertyElement);
     }
     
     
 
     @SuppressWarnings("unchecked") 
-    protected void removeProperties(Element propstat, Resource resource, 
-            List propElements) {
-        Element resultPropElement = new Element("prop", WebdavConstants.DAV_NAMESPACE);
+    protected void removeProperties(Resource resource, List propElements) {
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
             Element theProperty = (Element) elementIterator.next();
-            removeProperty(resultPropElement, resource, theProperty);
+
+            removeProperty(resource, theProperty);
         }
-        propstat.addContent(resultPropElement);
     }
     
 
-    protected void removeProperty(Element resultElement, Resource resource, Element propElement) {
+    protected void removeProperty(Resource resource, Element propElement) {
 
         if (propElement.getNamespace().equals(WebdavConstants.DAV_NAMESPACE)) {
             return; 
@@ -473,8 +439,6 @@ public class ProppatchController extends AbstractWebdavController  {
             propertyNamespace = Namespace.getNamespace(elementNamespaceURI);
         }
         resource.removeProperty(propertyNamespace, propertyName);
-        Element resultPropertyElement = new Element(propertyName, propElement.getNamespace());
-        resultElement.addContent(resultPropertyElement);
     }
     
 

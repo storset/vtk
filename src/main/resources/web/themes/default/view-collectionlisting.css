@@ -162,6 +162,17 @@ div.vrtx-resource div.vrtx-read-more {
 	white-space: nowrap;
 }
 
+/* IE7 fix */
+*:first-child+html div.vrtx-resource a.more {
+    width: 10%;
+}
+
+
+/* IE6 */
+* html div.vrtx-resource a.more {
+	width: 1%;
+}
+
 /* events */
 abbr {
 	text-decoration: none;

@@ -768,14 +768,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Map<String, Object> propertyValueMap = new HashMap<String, Object>();
         propertyValueMap.put(PropertyType.NUMBER_OF_COMMENTS_PROP_NAME, numberOfComments);
         try {
+            
+            // Explicit value evaluation is probably overkill for this case. But leaving it for now, so
+            // we can think about if we really need this and perhaps refactor later.
             ResourceImpl newResource = this.resourceHelper.explicitValuePropertiesChange(original,
                     principal, propertyValueMap, resource);
-            this.store(token, newResource);
+            
+            Path uri = newResource.getURI();
+            
+            // Store at DAO layer to avoid re-evaluation of everything, and to avoid ACL write check.
+            this.dao.store(newResource);
+            
+            newResource = (ResourceImpl) this.dao.load(uri).clone();
+            
+            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
+            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            this.context.publishEvent(event);
+            
         } catch (Exception e) {
             throw new RuntimeException("Could not update number of comments", e);
         }
     }
-
 
     private Resource create(String token, Path uri, boolean collection)
             throws AuthorizationException, AuthenticationException, IllegalOperationException,

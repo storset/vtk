@@ -82,8 +82,11 @@ public class ICalController implements Controller {
 
 
     private String getICalFileName(Resource event) {
-        String resourceUri = event.getURI().toString();
-        return resourceUri.substring(resourceUri.lastIndexOf("/") + 1, resourceUri.lastIndexOf("."));
+        String name = event.getName();
+        if (name.contains(".")) {
+            name = name.substring(0, name.indexOf("."));
+        }
+        return name;
     }
 
 

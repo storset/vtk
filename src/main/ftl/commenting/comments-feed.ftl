@@ -11,7 +11,7 @@
   <#list comments as comment>
   <#assign resource = resourceMap[comment.URI] />
   <entry>
-    <title>${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" /> ${resource.title?html}</title>
+    <title>${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="about" /> "${resource.title?html}"</title>
     <link href="${(urlMap[comment.URI] + '#comment-' + comment.ID)?html}" />
     <id>${(urlMap[comment.URI] + '#comment-' + comment.ID)?html}</id>
     <author>

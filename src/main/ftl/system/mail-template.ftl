@@ -1,5 +1,6 @@
 <#if language == "no_NO">
-<pre>Hei!
+<pre>
+Hei!
 
 ${serverHostname} har en artikkel jeg tror kan være interessant for deg:
 </pre>
@@ -8,7 +9,7 @@ ${serverHostname} har en artikkel jeg tror kan være interessant for deg:
 ${comment}
         
 Les hele artikkelen her:
-${articleFullUri}
+<a href="${articleFullUri}">${articleFullUri}</a>
 
 Med vennlig hilsen,
 ${mailFrom}
@@ -33,7 +34,7 @@ ${serverHostname} har en artikkel eg trur kan væra interessant for deg:
 ${comment}
         
 Les heile artikkelen her:
-${articleFullUri}
+<a href="${articleFullUri}">${articleFullUri}</a>
 
 Med vennlig helsing,
 ${mailFrom}
@@ -56,7 +57,7 @@ ${serverHostname} has an article I believe you will find interesting:
 ${comment}
         
 Read the entire article here:
-${articleFullUri}
+<a href="${articleFullUri}">${articleFullUri}</a>
 
 Best regards,
 ${mailFrom}

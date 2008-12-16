@@ -28,8 +28,8 @@
         <li class="comment"><h2>
           <a href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
             ${comment.author.description?html}
-	    <@vrtx.msg code="commenting.comments.on" default="on" />
-            ${resourceMap[comment.URI].title?html}
+	    <@vrtx.msg code="commenting.comments.on" default="about" />
+            "${resourceMap[comment.URI].title?html}"
           </a></h2>
           <div class="comment">${comment.content}</div>
           <span class="pubdate"><@vrtx.date value=comment.time format='long' /></span>

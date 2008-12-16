@@ -51,9 +51,9 @@ public class MailTemplateProvider {
         String articleFullUri = "";
 
         if (serverPort != 80) {
-            articleFullUri = "http://" + serverHostname + ":" + serverPort + articleURI + " \n\n";
+            articleFullUri = "http://" + serverHostname + ":" + serverPort + articleURI;
         } else {
-            articleFullUri = "http://" + serverHostname + articleURI + " \n\n";
+            articleFullUri = "http://" + serverHostname + articleURI;
         }
 
         Map<String, Object> model = new HashMap<String, Object>();

@@ -1,14 +1,15 @@
 <#if language == "no_NO">
-<pre>Hei!
+<pre>
+Hei!
 
-${serverHostnameShort} har en artikkel jeg tror kan være interessant for deg:
+${serverHostname} har en artikkel jeg tror kan være interessant for deg:
 </pre>
 <h2>${title}</h2>     
 <pre>
 ${comment}
         
 Les hele artikkelen her:
-${articleFullUri}
+<a href="${articleFullUri}">${articleFullUri}</a>
 
 Med vennlig hilsen,
 ${mailFrom}
@@ -26,21 +27,21 @@ med mindre noen tipser deg om andre artikler på ${serverHostname}
 <pre>
 Hei!
 
-${serverHostnameShort} har en artikkel eg trur kan væra interessant for deg:
+${serverHostname} har en artikkel eg trur kan væra interessant for deg:
 </pre>
 <h2>${title}</h2>
 <pre>        
 ${comment}
         
 Les heile artikkelen her:
-${articleFullUri}
+<a href="${articleFullUri}">${articleFullUri}</a>
 
 Med vennlig helsing,
 ${mailFrom}
 </pre>
 <em><pre>
 --------------------------------------------
-Denne meldinga er sendt på oppfordring frå  ${mailFrom}
+Denne meldinga er sendt på oppfordring frå ${mailFrom}
 Di e-post adresse blir ikkje lagra.
 Du vil ikkje motta fleire meldingar som dette,
 med mindre nokon tipsar deg om andre artiklar på ${serverHostname}
@@ -49,14 +50,14 @@ med mindre nokon tipsar deg om andre artiklar på ${serverHostname}
 <pre>
 Hi!
 
-${serverHostnameShort} have an article I think you will find interesting:
+${serverHostname} has an article I believe you will find interesting:
 </pre>
 <h2>${title}</h2>
 <pre>       
 ${comment}
         
 Read the entire article here:
-${articleFullUri}
+<a href="${articleFullUri}">${articleFullUri}</a>
 
 Best regards,
 ${mailFrom}
@@ -65,7 +66,7 @@ ${mailFrom}
 --------------------------------------------
 This message is sent on behalf of ${mailFrom}
 Your emailaddress will not be saved.
-You will not receive more messages of this type,
-unless someone tip you of other articles on ${serverHostname}
+You will not receive further messages of this kind,
+unless someone tips you of other articles on ${serverHostname}
 </pre></em>
 </#if>

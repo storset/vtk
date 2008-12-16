@@ -42,8 +42,8 @@
     <#if comment_index &gt; number - 1><#break /></#if>
     <li>
       <a class="item-title" href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
-      ${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="on" />
-        ${resourceMap[comment.URI].title?html}
+      ${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="about" />
+        "${resourceMap[comment.URI].title?html}"
       </a>
       <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
       <div class="item-description">

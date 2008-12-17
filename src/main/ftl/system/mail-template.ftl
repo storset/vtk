@@ -27,7 +27,7 @@ med mindre noen tipser deg om andre artikler på ${serverHostname}
 <pre>
 Hei!
 
-${serverHostname} har en artikkel eg trur kan væra interessant for deg:
+${serverHostname} har ein artikkel eg trur kan vera interessant for deg:
 </pre>
 <h2>${title}</h2>
 <pre>        

@@ -11,7 +11,7 @@
   <#if files?exists>
   <Files>
   <#list files?keys as uri>
-    <File name="${files[uri].resource.name}" size="${(files[uri].resource.contentLength/1000)?html}" />
+    <File name="${files[uri].resource.name?html}" size="${(files[uri].resource.contentLength/1000)?html}" />
   </#list>
   </Files>
   </#if>

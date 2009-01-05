@@ -34,9 +34,10 @@ public class ManageCollectionTest extends BaseAuthenticatedWebTest {
 	 */
 	public void testCheckFolderName() {
 		checkFolderName("test folder", "test-folder");
-//		checkFolderName("testæfolder", "testaefolder");
-//		checkFolderName("teståfolder", "testaafolder");
-//		checkFolderName("testøfolder", "testoefolder");
+		// Unresolved encoding problems on some hosts
+		// checkFolderName("testæfolder", "testaefolder");
+		// checkFolderName("teståfolder", "testaafolder");
+		// checkFolderName("testøfolder", "testoefolder");
 	}
 
 	private void checkFolderName(String foldername, String expected) {

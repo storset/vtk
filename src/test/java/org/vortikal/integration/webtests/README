@@ -9,7 +9,8 @@ Creating/running the tests in this package:
 	- NB!! Create resources for new tests with the same user as the one used in the bundle.
 
 * Manually creating required resources on host that tests are to run against:
-	- Rootcollection with name AND title "automatedtestresources", all other testresources are created in here
+	- Rootcollection with name AND title declared as property webtests.rootcollection in webtests.properties,
+	  default is "automatedtestresources", all other testresources are created in here
 	- One collectionfolder per testcase, with the same name AND title as the testclass in lowercase
 	- Make sure the collection contains resources/files that are relevant to the testcase
 

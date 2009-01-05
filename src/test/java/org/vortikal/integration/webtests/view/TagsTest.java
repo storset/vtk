@@ -36,36 +36,37 @@ public class TagsTest extends BaseWebTest {
 
     public void testTagK1() {
         invokeTagsService("resources with keyword1");
-        assertLinksPresentWithExactText("title document-with-keyword1", "title document-with-keyword1-and-keyword2",
-        		"title document-with-keyword1-in-subfolder");
+        assertLinksPresentWithExactText("document-with-keyword1", "document-with-keyword1-and-keyword2",
+        		"document-with-keyword1-in-subfolder");
         assertLinkNotPresentWithExactText("title unpublished-article-with-keyword1");
     }
 
     public void testTagK2() {
         invokeTagsService("resources with keyword2");
-        assertLinksPresentWithExactText("title document-with-keyword2", "title document-with-keyword1-and-keyword2");
+        assertLinksPresentWithExactText("document-with-keyword2", "document-with-keyword1-and-keyword2");
     }
 
     public void testList() {
         invokeTagsService("list tags");
-        assertTextPresent("No tags specified");
+        assertLinkPresentWithExactText("tagstest-keyword1");
+        assertLinkPresentWithExactText("tagstest-keyword2");
     }
 
     public void testTagK1InSubfolderScopeFolder() {
         invokeTagsService("resources in subfolder with keyword1 scope current folder");
-        assertLinkPresentWithExactText("title document-with-keyword1-in-subfolder");
+        assertLinkPresentWithExactText("document-with-keyword1-in-subfolder");
     }
 
     public void testTagK2InSubfolderScopeFolder() {
         invokeTagsService("resources in subfolder with keyword2 scope current folder");
-        assertLinkNotPresent("document-with-keyword1-in-subfolder.html");
+        assertLinkNotPresent("document-with-keyword1-in-subfolder");
         assertTextNotPresent("No resources tagged with tagstest-k2.");
     }
 
     public void testTagK1InSubfolderNoScope() {
         invokeTagsService("resources in subfolder with keyword1 no scope");
-        assertLinksPresentWithExactText("title document-with-keyword1", "title document-with-keyword1-and-keyword2",
-        		"title document-with-keyword1-in-subfolder");
+        assertLinksPresentWithExactText("document-with-keyword1", "document-with-keyword1-and-keyword2",
+        		"document-with-keyword1-in-subfolder");
     }
 
     private void invokeTagsService(String tagsLink) {

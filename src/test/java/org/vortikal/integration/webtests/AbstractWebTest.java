@@ -50,6 +50,9 @@ public abstract class AbstractWebTest extends WebTestCase {
             beginAt("/" + rootCollection);
         }
         
+        // Make sure we start of with proper locale -> ENGLISH
+        setDefaultLocale();
+        
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
         prepare();
     }
@@ -65,6 +68,14 @@ public abstract class AbstractWebTest extends WebTestCase {
         }
         clickLinkWithExactText(testResourceName);
         assertFalse("The requested page is blank", StringUtils.isBlank(getPageSource()));
+    }
+    
+    private void setDefaultLocale() {
+        try {
+            clickLinkWithText("english");
+        } catch (AssertionFailedError afe) {
+            // Never mind, it's already english
+        }
     }
     
     protected String getProperty(String key) throws WebTestPropertyException {

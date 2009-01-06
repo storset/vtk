@@ -1,24 +1,20 @@
 <#if language == "no_NO">
 <p>
 Hei!
-</p>
-<p>
+<br /><br />
 ${serverHostname} har en artikkel jeg tror kan være interessant for deg:
 </p>
 <h2>${title}</h2>     
 <p>
 ${comment}
-</p> 
-<p>       
+<br /><br />    
 Les hele artikkelen her:<br />
 <a href="${articleFullUri}">${articleFullUri}</a>
 </p>
 <p>
 Med vennlig hilsen,<br />
 ${mailFrom}
-<p>
-
-<p>
+<br /><br />
 -------------------------------------------- <br />
 Denne meldingen er sendt på oppfordring fra ${mailFrom}<br />
 Din e-post adresse blir ikke lagret.<br />
@@ -28,15 +24,13 @@ med mindre noen tipser deg om andre artikler på ${serverHostname}<br />
 <#elseif language == "no_NO_NY">
 <p>
 Hei!
-</p>
-<p>
+<br /><br />
 ${serverHostname} har ein artikkel eg trur kan vera interessant for deg:
 </p>
 <h2>${title}</h2>
-<p>        
+<p>       
 ${comment}
-</p>
-<p>        
+<br /><br />      
 Les heile artikkelen her: <br />
 <a href="${articleFullUri}">${articleFullUri}</a>
 </p>
@@ -44,8 +38,7 @@ Les heile artikkelen her: <br />
 <p>
 Med vennlig helsing, <br />
 ${mailFrom}
-</p>
-<p>
+<br /><br />
 --------------------------------------------<br />
 Denne meldinga er sendt på oppfordring frå ${mailFrom}<br />
 Di e-post adresse blir ikkje lagra.<br />
@@ -55,15 +48,13 @@ med mindre nokon tipsar deg om andre artiklar på ${serverHostname}<br />
 <#else>
 <p>
 Hi!
-</p>
-<p>
+<br /><br />
 ${serverHostname} has an article I believe you will find interesting:
 </p>
 <h2>${title}</h2>
 <p>       
 ${comment}
-</p>
-<p>
+<br /><br />
 Read the entire article here:<br />
 <a href="${articleFullUri}">${articleFullUri}</a>
 </p>
@@ -71,8 +62,7 @@ Read the entire article here:<br />
 <p>
 Best regards,<br />
 ${mailFrom}
-</p>
-<p>
+<br /><br />
 --------------------------------------------<br />
 This message is sent on behalf of ${mailFrom}<br />
 Your emailaddress will not be saved.<br />

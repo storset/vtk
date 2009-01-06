@@ -40,10 +40,15 @@
         
         <!-- TODO: Wrap FeaturedArticlesExpressionEvaluator, like CurrentFolderExpressionEvaluator??? -->
         <bean class="org.vortikal.repository.search.preprocessor.FeaturedArticlesExpressionEvaluator"
-              parent="requestLocalRepositoryAware" />
+              parent="requestLocalRepositoryAware">
+          <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
+        </bean>
               
         <bean class="org.vortikal.repository.search.preprocessor.SubfoldersExpressionEvaluator"
-              parent="requestLocalRepositoryAware" />
+              parent="requestLocalRepositoryAware">
+          <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />
+          <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
+        </bean>
 
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">

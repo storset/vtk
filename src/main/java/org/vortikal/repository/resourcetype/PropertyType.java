@@ -90,12 +90,6 @@ public final class PropertyType {
     public static final String SCHEMA_PROP_NAME = "schema";
     public static final String XHTML_PROP_NAME = "xhtml10-type";
     public static final String THUMBNAIL_PROP_NAME = "thumbnail";
-    public static final String START_DATE_PROP_NAME = "start-date";
-    public static final String END_DATE_PROP_NAME = "end-date";
-    public static final String LOCATION_PROP_NAME = "location";
-    public static final String FEATUREDARTICLES_PROP_NAME = "featured-articles";
-    public static final String RECURSIVE_LISTING_PROP_NAME = "recursive-listing";
-    public static final String SUBFOLDERS_PROP_NAME = "recursive-listing-subfolders";
     public static final String NUMBER_OF_COMMENTS_PROP_NAME = "numberOfComments";
     
     /*

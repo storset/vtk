@@ -35,75 +35,126 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
 public class ArticleListingSearcher {
-	
-	private SearchComponent defaultSearch;
+
+    private SearchComponent defaultSearch;
     private SearchComponent featuredArticlesSearch;
     private SearchComponent subfoldersSearch;
     
-    public Listing getDefaultArticles(HttpServletRequest request, Resource collection,
-			int page, int pageLimit, int upcomingOffset) throws Exception {
-    	return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-    }
-    
-    public Listing getFeaturedArticles(HttpServletRequest request, Resource collection,
-			int page, int pageLimit, int upcomingOffset) throws Exception {
-    	return this.featuredArticlesSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-    }
-    
-    public Listing getSubfoldersArticles(HttpServletRequest request, Resource collection,
-			int page, int pageLimit, int upcomingOffset) throws Exception {
-    	return this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-    }
-    
-	public Listing getArticles(HttpServletRequest request, Resource collection,
-			int page, int pageLimit, int upcomingOffset) throws Exception {
-		
-		Namespace namespace_al = Namespace.getNamespace("http://www.uio.no/resource-types/article-listing");
-		Property recursiveListing = collection.getProperty(namespace_al, PropertyType.RECURSIVE_LISTING_PROP_NAME);
-		Property subfolders = collection.getProperty(namespace_al, PropertyType.SUBFOLDERS_PROP_NAME);
-		if ((recursiveListing != null && recursiveListing.getBooleanValue() == false)
-				|| (subfolders == null || subfolders.getValues().length == 0)) {
-			return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-		}
-		
-		return this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
-	}
+    private PropertyTypeDefinition subfolderPropDef;
+    private PropertyTypeDefinition recursiveListingPropDef;
+    private PropertyTypeDefinition featuredArticlesPropDef;
 
-	public void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles, List<PropertySet> defaultArticles) {
-		List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
-		for (PropertySet featuredArticle : featuredArticles) {
-			for (PropertySet defaultArticle : defaultArticles) {
-				if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
-					duplicateArticles.add(defaultArticle);
-				}
-			}
-		}
-		defaultArticles.removeAll(duplicateArticles);
-	}
-	
+    public Listing getDefaultArticles(HttpServletRequest request, Resource collection, int page,
+            int pageLimit, int upcomingOffset) throws Exception {
+        return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+    }
+
+
+    public Listing getFeaturedArticles(HttpServletRequest request, Resource collection, int page,
+            int pageLimit, int upcomingOffset) throws Exception {
+
+        Listing result = this.featuredArticlesSearch.execute(request, collection, page, pageLimit,
+                upcomingOffset);
+        if (result.size() > 1) {
+            Property featuredArticlesProp = collection.getProperty(featuredArticlesPropDef);
+            sortFeaturedArticles(result, featuredArticlesProp);
+        }
+
+        return result;
+    }
+
+
+    public Listing getSubfoldersArticles(HttpServletRequest request, Resource collection, int page,
+            int pageLimit, int upcomingOffset) throws Exception {
+        return this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+    }
+
+
+    public Listing getArticles(HttpServletRequest request, Resource collection, int page,
+            int pageLimit, int upcomingOffset) throws Exception {
+
+        Property recursiveListing = collection.getProperty(recursiveListingPropDef);
+        Property subfolders = collection.getProperty(subfolderPropDef);
+        if ((recursiveListing != null && recursiveListing.getBooleanValue() == false)
+                || (subfolders == null || subfolders.getValues().length == 0)) {
+            return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+        }
+
+        return this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+    }
+
+
+    public void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles,
+            List<PropertySet> defaultArticles) {
+        List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
+        for (PropertySet featuredArticle : featuredArticles) {
+            for (PropertySet defaultArticle : defaultArticles) {
+                if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
+                    duplicateArticles.add(defaultArticle);
+                }
+            }
+        }
+        defaultArticles.removeAll(duplicateArticles);
+    }
+    
+    // Sort the featured articles listing according to the propdef
+    private void sortFeaturedArticles(Listing result, Property featuredArticlesProp) {
+        Value[] featuredArticleURIs = featuredArticlesProp.getValues();
+        List<PropertySet> sortedFiles = new ArrayList<PropertySet>();
+        List<PropertySet> files = result.getFiles();
+        for (Value featuredArticleURI : featuredArticleURIs) {
+            for (PropertySet file : files) {
+                if (StringUtils.equals(file.getURI().toString(), featuredArticleURI.getStringValue())) {
+                    sortedFiles.add(file);
+                }
+            }
+        }
+        result.setFiles(sortedFiles);
+    }
+
+
+
     @Required
     public void setDefaultSearch(SearchComponent defaultSearch) {
         this.defaultSearch = defaultSearch;
     }
-	
-	@Required
+
+
+    @Required
     public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
         this.featuredArticlesSearch = featuredArticlesSearch;
     }
-    
+
+
     @Required
     public void setSubfoldersSearch(SearchComponent subfoldersSearch) {
         this.subfoldersSearch = subfoldersSearch;
+    }
+    
+
+    public void setSubfolderPropDef(PropertyTypeDefinition subfolderPropDef) {
+        this.subfolderPropDef = subfolderPropDef;
+    }
+
+
+    public void setRecursiveListingPropDef(PropertyTypeDefinition recursiveListingPropDef) {
+        this.recursiveListingPropDef = recursiveListingPropDef;
+    }
+
+
+    public void setFeaturedArticlesPropDef(PropertyTypeDefinition featuredArticlesPropDef) {
+        this.featuredArticlesPropDef = featuredArticlesPropDef;
     }
 
 }

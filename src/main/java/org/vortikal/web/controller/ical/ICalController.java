@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
@@ -48,6 +49,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
@@ -56,6 +58,9 @@ import org.vortikal.web.RequestContext;
 public class ICalController implements Controller {
 
     private Repository repository;
+    private PropertyTypeDefinition startDatePropDef;
+    private PropertyTypeDefinition endDatePropDef;
+    private PropertyTypeDefinition locationPropDef;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
@@ -96,7 +101,7 @@ public class ICalController implements Controller {
         // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is not required.
         // If DTEND not present, DTSTART will count for both start & end, as stated in spec (4.6.1).
         
-        Property startDate = event.getProperty(Namespace.DEFAULT_NAMESPACE,PropertyType.START_DATE_PROP_NAME);
+        Property startDate = event.getProperty(startDatePropDef);
         // We don't create anything unless we have the startdate
         if (startDate == null) {
             return null;
@@ -110,12 +115,12 @@ public class ICalController implements Controller {
         sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
         sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");
 
-        Property endDate = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.END_DATE_PROP_NAME);
+        Property endDate = event.getProperty(endDatePropDef);
         if (endDate != null) {
             sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "\n");
         }
 
-        Property location = event.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LOCATION_PROP_NAME);
+        Property location = event.getProperty(locationPropDef);
         if (location != null) {
             sb.append("LOCATION:" + location.getStringValue() + "\n");
         }
@@ -155,8 +160,27 @@ public class ICalController implements Controller {
     }
 
 
+    @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+    
+    
+    @Required
+    public void setStartDatePropDef(PropertyTypeDefinition startDatePropDef) {
+        this.startDatePropDef = startDatePropDef;
+    }
+    
+    
+    @Required
+    public void setEndDatePropDef(PropertyTypeDefinition endDatePropDef) {
+        this.endDatePropDef = endDatePropDef;
+    }
+    
+    
+    @Required
+    public void setLocationPropDef(PropertyTypeDefinition locationPropDef) {
+        this.locationPropDef = locationPropDef;
     }
 
 }

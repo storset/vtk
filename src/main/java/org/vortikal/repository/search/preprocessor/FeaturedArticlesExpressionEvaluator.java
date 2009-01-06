@@ -30,24 +30,29 @@
  */
 package org.vortikal.repository.search.preprocessor;
 
-import org.vortikal.repository.Namespace;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class FeaturedArticlesExpressionEvaluator extends MultiValuePropertyInExpressionEvaluator {
 	
     private final String variableName = "featuredArticles";
-    private final Namespace namespace_al = Namespace.getNamespace("http://www.uio.no/resource-types/article-listing");
+    private PropertyTypeDefinition featuredArticlesPropDef;
 
 	@Override
 	protected Property getMultiValueProperty(Resource resource) {
-		return resource.getProperty(namespace_al, PropertyType.FEATUREDARTICLES_PROP_NAME);
+		return resource.getProperty(featuredArticlesPropDef);
 	}
 
 	@Override
 	protected String getVariableName() {
 		return this.variableName;
 	}
+	
+	@Required
+    public void setFeaturedArticlesPropDef(PropertyTypeDefinition featuredArticlesPropDef) {
+        this.featuredArticlesPropDef = featuredArticlesPropDef;
+    }
 
 }

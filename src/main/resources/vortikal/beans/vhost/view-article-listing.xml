@@ -68,6 +68,9 @@
     <property name="defaultSearch" ref="articleListing.searchComponent" />
     <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
     <property name="subfoldersSearch" ref="articleListing.subfoldersSearchComponent" />
+    <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />
+    <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
+    <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
   </bean>
 
   <bean id="articleListing.searchComponent" class="org.vortikal.web.search.QueryStringSearchComponent">

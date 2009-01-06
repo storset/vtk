@@ -1,72 +1,82 @@
 <#if language == "no_NO">
-<pre>
+<p>
 Hei!
-
+</p>
+<p>
 ${serverHostname} har en artikkel jeg tror kan være interessant for deg:
-</pre>
+</p>
 <h2>${title}</h2>     
-<pre>
+<p>
 ${comment}
-        
-Les hele artikkelen her:
+</p> 
+<p>       
+Les hele artikkelen her:<br />
 <a href="${articleFullUri}">${articleFullUri}</a>
-
-Med vennlig hilsen,
+</p>
+<p>
+Med vennlig hilsen,<br />
 ${mailFrom}
-</pre>
-<em>
-<pre>
---------------------------------------------
-Denne meldingen er sendt på oppfordring fra ${mailFrom}
-Din e-post adresse blir ikke lagret.
-Du vil ikke motta flere meldinger av denne typen,
-med mindre noen tipser deg om andre artikler på ${serverHostname}
-</pre>
-</em>
+<p>
+
+<p>
+-------------------------------------------- <br />
+Denne meldingen er sendt på oppfordring fra ${mailFrom}<br />
+Din e-post adresse blir ikke lagret.<br />
+Du vil ikke motta flere meldinger av denne typen,<br />
+med mindre noen tipser deg om andre artikler på ${serverHostname}<br />
+</p>
 <#elseif language == "no_NO_NY">
-<pre>
+<p>
 Hei!
-
+</p>
+<p>
 ${serverHostname} har ein artikkel eg trur kan vera interessant for deg:
-</pre>
+</p>
 <h2>${title}</h2>
-<pre>        
+<p>        
 ${comment}
-        
-Les heile artikkelen her:
+</p>
+<p>        
+Les heile artikkelen her: <br />
 <a href="${articleFullUri}">${articleFullUri}</a>
+</p>
 
-Med vennlig helsing,
+<p>
+Med vennlig helsing, <br />
 ${mailFrom}
-</pre>
-<em><pre>
---------------------------------------------
-Denne meldinga er sendt på oppfordring frå ${mailFrom}
-Di e-post adresse blir ikkje lagra.
-Du vil ikkje motta fleire meldingar som dette,
-med mindre nokon tipsar deg om andre artiklar på ${serverHostname}
-</pre></em>
+</p>
+<p>
+--------------------------------------------<br />
+Denne meldinga er sendt på oppfordring frå ${mailFrom}<br />
+Di e-post adresse blir ikkje lagra.<br />
+Du vil ikkje motta fleire meldingar som dette,<br />
+med mindre nokon tipsar deg om andre artiklar på ${serverHostname}<br />
+</p>
 <#else>
-<pre>
+<p>
 Hi!
-
+</p>
+<p>
 ${serverHostname} has an article I believe you will find interesting:
-</pre>
+</p>
 <h2>${title}</h2>
-<pre>       
+<p>       
 ${comment}
-        
-Read the entire article here:
+</p>
+<p>
+Read the entire article here:<br />
 <a href="${articleFullUri}">${articleFullUri}</a>
+</p>
 
-Best regards,
+<p>
+Best regards,<br />
 ${mailFrom}
-</pre>
-<em><pre>
---------------------------------------------
-This message is sent on behalf of ${mailFrom}
-Your emailaddress will not be saved.
-You will not receive further messages of this kind,
-unless someone tips you of other articles on ${serverHostname}
-</pre></em>
+</p>
+<p>
+--------------------------------------------<br />
+This message is sent on behalf of ${mailFrom}<br />
+Your emailaddress will not be saved.<br />
+You will not receive further messages of this kind,<br />
+unless someone tips you of other articles on ${serverHostname}<br />
+</p>
 </#if>

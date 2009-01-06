@@ -31,7 +31,6 @@
 package org.vortikal.webdav;
 
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +57,7 @@ public class UnlockController extends AbstractWebdavController {
 
 
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception {
          
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -123,14 +122,7 @@ public class UnlockController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
-
-        } catch (IOException e) {
-            this.logger.info("Caught IOException for URI " + uri, e);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
         }
-
         return new ModelAndView("UNLOCK", model);
     }
    

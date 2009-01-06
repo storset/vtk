@@ -79,7 +79,8 @@ public class LockController extends AbstractWebdavController {
      * Performs the WebDAV 'LOCK' method.
      * 
      */
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView handleRequest(HttpServletRequest request, 
+            HttpServletResponse response) throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -234,13 +235,7 @@ public class LockController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
                     HttpServletResponse.SC_FORBIDDEN));
 
-        } catch (IOException e) {
-            this.logger.info("Got IOException for URI " + uri, e);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE, new Integer(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
         }
-
         return new ModelAndView("HTTP_STATUS_VIEW", model);
     }
 

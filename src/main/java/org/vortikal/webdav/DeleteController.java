@@ -30,7 +30,6 @@
  */
 package org.vortikal.webdav;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class DeleteController extends AbstractWebdavController {
      * @param response the <code>HttpServletResponse</code> response object
      */
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception{
 
         
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -122,11 +121,6 @@ public class DeleteController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_MULTI_STATUS));
-
-        } catch (IOException e) {
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
         }
 
         return new ModelAndView("DELETE", model);

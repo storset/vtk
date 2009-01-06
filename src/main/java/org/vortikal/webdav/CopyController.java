@@ -30,7 +30,6 @@
  */
 package org.vortikal.webdav;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,8 +61,6 @@ public class CopyController extends AbstractWebdavController {
 
     public static final String PRESERVE_ACL_HEADER = "X-Vortex-Preserve-ACL";
 
-
-
     /**
      * Performs the WebDAV 'COPY' method. This method recognizes a
      * custom HTTP Header: <code>X-Vortex-Preserve-ACL</code>. If this
@@ -75,7 +72,7 @@ public class CopyController extends AbstractWebdavController {
      * @param response the <code>HttpServletResponse</code> response object
      */
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -214,14 +211,7 @@ public class CopyController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
-        } catch (IOException e) {
-            this.logger.info("Caught IOException for URI "
-                         + uri);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-        }
-
+        } 
         return new ModelAndView("COPY", model);
     }
    

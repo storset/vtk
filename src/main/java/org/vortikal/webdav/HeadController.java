@@ -30,7 +30,6 @@
  */
 package org.vortikal.webdav;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +58,7 @@ public class HeadController extends AbstractWebdavController {
      * Performs the HTTP/WebDAV 'HEAD' method.
      */
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception {
          
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -132,14 +131,6 @@ public class HeadController extends AbstractWebdavController {
                       new Integer(HttpServletResponse.SC_NOT_MODIFIED));
             return new ModelAndView("HTTP_STATUS_VIEW", model);
             
-        } catch (IOException e) {
-            this.logger.info("Caught IOException for URI " + uri);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            return new ModelAndView("HTTP_STATUS_VIEW", model);
         }
-
     }
-    
 }

@@ -30,7 +30,6 @@
  */
 package org.vortikal.webdav;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +115,7 @@ public class PutController extends AbstractWebdavController {
     
 
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception {
          
         if (this.maxUploadSize > 0) {
             request = new UploadLimitInputStreamFilter(this.maxUploadSize).
@@ -290,14 +289,7 @@ public class PutController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpServletResponse.SC_FORBIDDEN));
 
-        } catch (IOException e) {
-            this.logger.info("Caught IOException for URI " + uri, e);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            
         }
-
         return new ModelAndView("PUT", model);
     }
    

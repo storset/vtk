@@ -77,7 +77,7 @@ public class ProppatchController extends AbstractWebdavController  {
 
     @SuppressWarnings("deprecation")
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception {
          
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -184,12 +184,6 @@ public class ProppatchController extends AbstractWebdavController  {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
-
-        } catch (IOException e) {
-            this.logger.info("Caught IOException for URI " + uri, e);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
         }
 
         return new ModelAndView("PROPPATCH", model);

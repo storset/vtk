@@ -116,7 +116,7 @@ public class PropfindController extends AbstractWebdavController {
     }
 
     public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) {
+                                      HttpServletResponse response) throws Exception {
          
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -170,14 +170,7 @@ public class PropfindController extends AbstractWebdavController {
             model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
             model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
                       new Integer(HttpUtil.SC_LOCKED));
-
-        } catch (IOException e) {
-            this.logger.debug("Caught IOException for URI " + uri, e);
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
         }
-
         return new ModelAndView("HTTP_STATUS_VIEW", model);
     }
    
@@ -201,7 +194,7 @@ public class PropfindController extends AbstractWebdavController {
     private Map<String, Object> buildPropfindModel(
         Resource resource, Document requestBody, String depth, String token)
         throws InvalidRequestException, ResourceNotFoundException,
-        AuthenticationException, AuthorizationException, IOException {
+        AuthenticationException, AuthorizationException, Exception {
         
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -351,7 +344,7 @@ public class PropfindController extends AbstractWebdavController {
     protected List<Resource> getResourceDescendants(Path uri, String depth,
                                           Repository repository, String token)
         throws ResourceNotFoundException, AuthorizationException,
-        AuthenticationException, IOException {
+        AuthenticationException, Exception {
 
         ArrayList<Resource> descendants = new ArrayList<Resource>();
         

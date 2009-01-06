@@ -30,7 +30,6 @@
  */
 package org.vortikal.webdav;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +57,7 @@ public class OptionsController extends AbstractWebdavController {
      * LOCK, UNLOCK, TRACE
      */
     public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletResponse response) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
@@ -83,12 +82,6 @@ public class OptionsController extends AbstractWebdavController {
                 
             } catch (AuthenticationException e) {
                 this.logger.debug("Caught AuthorizationException for URI " + uri, e);
-                
-            } catch (IOException e) {
-                this.logger.debug("Caught IOException for URI " + uri, e);
-                model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-                model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                        new Integer(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
             }
         }
 

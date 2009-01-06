@@ -34,7 +34,6 @@ ${comment}
 Les heile artikkelen her: <br />
 <a href="${articleFullUri}">${articleFullUri}</a>
 </p>
-
 <p>
 Med vennlig helsing, <br />
 ${mailFrom}
@@ -58,7 +57,6 @@ ${comment}
 Read the entire article here:<br />
 <a href="${articleFullUri}">${articleFullUri}</a>
 </p>
-
 <p>
 Best regards,<br />
 ${mailFrom}

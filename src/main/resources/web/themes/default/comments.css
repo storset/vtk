@@ -28,3 +28,17 @@ ul.comments li div p, ul.comments li div ul, ul.comments li div ol {
 ul.comments li span.pubdate {
   font-size: 0.9em;
 }
+
+/* RSS - stuff */
+div.vrtx-feed-link {
+	clear: both;
+	background: url(rss-icon.jpg) no-repeat top left;
+	font-size: .9em;
+	height: 24px;
+	line-height: 20px;
+}
+
+div.vrtx-feed-link a {
+	padding-left: 27px;
+}
+

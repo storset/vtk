@@ -36,5 +36,10 @@
         </li>
     </#list>
     </ul>
+	<#if feedURL?exists>
+        <div class="vrtx-feed-link">
+          <a id="vrtx-feed-link" href="${feedURL?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+        </div>
+    </#if>
   </body>
 </html>

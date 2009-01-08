@@ -30,7 +30,6 @@
  */
 package org.vortikal.edit.xml;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +47,7 @@ public class EditDoneController implements ActionHandler {
 
     public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document,
-            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
+            SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
         String mode = document.getDocumentMode();
 
@@ -66,7 +65,11 @@ public class EditDoneController implements ActionHandler {
             document.resetEditingElement();
             document.setClone(null);
 
-            document.save();
+            try {
+                document.save();
+            } catch (Exception e) {
+                throw new XMLEditException("Unable to save document", e);
+            }
 
         } else {
             Element element = document.getEditingElement();

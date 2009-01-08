@@ -32,7 +32,6 @@ package org.vortikal.web.view.xslt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -42,7 +41,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
@@ -60,7 +58,6 @@ import org.vortikal.web.InvalidModelException;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.xml.AbstractPathBasedURIResolver;
-import org.vortikal.xml.StylesheetCompilationException;
 import org.vortikal.xml.TransformerManager;
 
 
@@ -157,7 +154,7 @@ public class ResourceXsltView extends AbstractView
     @SuppressWarnings("unchecked")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
                                            HttpServletResponse response)
-        throws TransformerException, IOException {
+        throws Exception {
 
         Resource resource = (Resource) model.get("resource");
         if (resource == null) {
@@ -315,8 +312,7 @@ public class ResourceXsltView extends AbstractView
 
 
     protected Transformer getTransformer(Resource resource, Document document)
-        throws TransformerConfigurationException, TransformerException,
-            StylesheetCompilationException, IOException {
+        throws Exception {
         return this.transformerManager.getTransformer(resource, document);
     }
 

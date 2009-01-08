@@ -30,7 +30,6 @@
  */
 package org.vortikal.edit.xml;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +48,7 @@ public class NewElementAtController implements ActionHandler {
 
     public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document,
-            SchemaDocumentDefinition documentDefinition) throws IOException, XMLEditException {
+            SchemaDocumentDefinition documentDefinition) throws XMLEditException {
 
         Map<String, Object> model = new HashMap<String, Object>();
         
@@ -99,7 +98,11 @@ public class NewElementAtController implements ActionHandler {
                 document.setDocumentMode("default");
                 document.resetEditingElement();
                 
-                document.save();
+                try {
+                    document.save();
+                } catch (Exception e) {
+                    throw new XMLEditException("Unable to save document", e);
+                }
 
             } else {
                 /* Cancel; remove the new element from the document */

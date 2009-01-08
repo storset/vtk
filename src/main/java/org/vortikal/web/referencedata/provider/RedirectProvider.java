@@ -30,13 +30,12 @@
  */
 package org.vortikal.web.referencedata.provider;
 
-import java.io.IOException;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -99,7 +98,7 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request)
-        throws IOException {
+        throws Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();

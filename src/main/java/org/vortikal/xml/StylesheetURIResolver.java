@@ -30,12 +30,10 @@
  */
 package org.vortikal.xml;
 
-
 import java.io.IOException;
 import java.util.Date;
 
 import javax.xml.transform.URIResolver;
-
 
 /**
  * StylesheetResolver interface. The responsibility of the stylesheet
@@ -48,11 +46,8 @@ import javax.xml.transform.URIResolver;
  *
  * <p>Also, in order to achieve caching of compiled templates, a
  * <code>getLastModified()</code> is defined.
- *
- * @version $Id$
  */
 public interface StylesheetURIResolver extends URIResolver {
-
 
     /**
      * Decides whether this stylesheet resolver recognizes a given
@@ -62,8 +57,6 @@ public interface StylesheetURIResolver extends URIResolver {
      * @return a <code>boolean</code>
      */
     public boolean matches(String stylesheetIdentifier);
-
-
 
     /**
      * Gets the last modified date of a stylesheet resource having a
@@ -76,7 +69,5 @@ public interface StylesheetURIResolver extends URIResolver {
      * @exception IOException if an error occurs
      */
     public Date getLastModified(String stylesheetIdentifier)
-        throws IOException;
-    
-        
+        throws Exception;
 }

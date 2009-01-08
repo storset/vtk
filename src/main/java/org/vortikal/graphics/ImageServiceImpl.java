@@ -51,21 +51,20 @@ public class ImageServiceImpl implements ImageService {
     private Repository repository;
 
     
-    public ScaledImage scaleImage(String path, String width, String height) throws IOException {
+    public ScaledImage scaleImage(String path, String width, String height) throws Exception {
         BufferedImage originalImage = getImage(path);
         String format = path.substring(path.lastIndexOf(".") + 1);
         return scaleImage(originalImage, format, width, height);
     }
 
-
-    public ScaledImage scaleImage(BufferedImage image, String format, String width, String height) throws IOException {
+    public ScaledImage scaleImage(BufferedImage image, String format, String width, String height) throws Exception {
         Dimension scaleDimension = getDimension(width, height, image);
         BufferedImage scaledImage = getScaledInstance(image, scaleDimension.width, scaleDimension.height);
         return new ScaledImage(scaledImage, format);
     }
 
 
-    private BufferedImage getImage(String path) throws IOException {
+    private BufferedImage getImage(String path) throws Exception {
 
         BufferedImage originalImage = null;
 

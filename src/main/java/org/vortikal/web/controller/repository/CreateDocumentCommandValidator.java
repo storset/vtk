@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.controller.repository;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -88,7 +86,7 @@ public class CreateDocumentCommandValidator implements Validator {
                 errors.rejectValue("name", "manage.create.document.exists",
                                    "A resource of this name already exists");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("Unable to validate document creation input", e);
         }
     }

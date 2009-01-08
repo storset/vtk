@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.repository;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -134,7 +133,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
         }
     }
 
-    public void load() throws IOException {
+    public void load() throws Exception {
         if (this.repository == null || this.uri == null) {
             throw new IllegalStateException(
                 "JavaBean properties 'repository' and 'uri' must be specified");
@@ -165,7 +164,7 @@ public class PropertiesResource extends Properties implements InitializingBean {
 
     }
     
-    private void doLoad(String token, Path uri) throws IOException {
+    private void doLoad(String token, Path uri) throws Exception {
         InputStream inputStream = this.repository.getInputStream(token, uri, false);
         super.load(inputStream); 
         inputStream.close();

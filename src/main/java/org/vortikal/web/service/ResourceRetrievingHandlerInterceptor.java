@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.service;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -76,7 +74,7 @@ public class ResourceRetrievingHandlerInterceptor implements InitializingBean, H
     }
 
     protected Resource retrieveResource() 
-        throws RepositoryException, AuthenticationException, IOException {
+        throws RepositoryException, AuthenticationException, Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();

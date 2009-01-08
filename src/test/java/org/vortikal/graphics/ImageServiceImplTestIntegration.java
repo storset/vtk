@@ -28,23 +28,23 @@ public class ImageServiceImplTestIntegration extends TestCase {
         imageService = new ImageServiceImpl();
     }
     
-    public void testScaleImagePNG() throws IOException {
+    public void testScaleImagePNG() throws Exception {
         assertProperResize(pngImage, "300", "");
     }
     
-    public void testScaleImageJPG() throws IOException {
+    public void testScaleImageJPG() throws Exception {
         assertProperResize(jpgImage, "300", null);
     }
     
-    public void testScaleImageGIF() throws IOException {
+    public void testScaleImageGIF() throws Exception {
         assertProperResize(gifImage, "  ", "300");
     }
     
-    public void testScaleImageTIF() throws IOException {
+    public void testScaleImageTIF() throws Exception {
         assertProperResize(bmpImage, "250", null);
     }
     
-    public void testDontScaleImage() throws IOException {
+    public void testDontScaleImage() throws Exception {
         assertProperResize(notScaledImage, "", "");
         assertProperResize(notScaledImage, null, "");
         assertProperResize(notScaledImage, "", null);
@@ -58,14 +58,14 @@ public class ImageServiceImplTestIntegration extends TestCase {
     		try {
     			scaledImage = imageService.scaleImage(invalidPaths[i], "200", "200");
     			fail();
-    		} catch (IOException e) {
+    		} catch (Exception e) {
     			assertNull("Should be null", scaledImage);
     			assertTrue("Wrong exception", e.getMessage().contains("uknown pathformat"));
     		}
 		}
     }
     
-    public void testScaleByPath() throws IOException {
+    public void testScaleByPath() throws Exception {
     	String scaledWidth = "100";
     	ScaledImage scaledImage = imageService.scaleImage(
     			"http://somstudenter.files.wordpress.com/2007/05/uio-logo.jpg", scaledWidth, "");
@@ -74,7 +74,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
     	assertEquals("Wrong width after resizing", scaledWidth, String.valueOf(scaledImage.getImage().getWidth()));
     }
     
-    public void testGetImageBytes() throws IOException {
+    public void testGetImageBytes() throws Exception {
     	String scaledWidth = "100";
     	BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(pngImage));
     	ScaledImage scaledImage = imageService.scaleImage(originalImage, "png", scaledWidth, null);
@@ -87,7 +87,7 @@ public class ImageServiceImplTestIntegration extends TestCase {
     	assertEquals("Wrong width", scaledWidth, String.valueOf(imageFromBytes.getWidth()));
     }
     
-    private void assertProperResize(String imageName, String width, String height) throws IOException {
+    private void assertProperResize(String imageName, String width, String height) throws Exception {
         BufferedImage originalImage = ImageIO.read(this.getClass().getResourceAsStream(imageName));
         String format = imageName.substring(imageName.lastIndexOf(".") + 1);
         ScaledImage scaledImage = imageService.scaleImage(originalImage, format, width, height);

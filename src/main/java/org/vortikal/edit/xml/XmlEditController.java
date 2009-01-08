@@ -124,7 +124,7 @@ public class XmlEditController implements Controller {
     }
     
     public ModelAndView handleRequest(HttpServletRequest request, 
-            HttpServletResponse response) throws IOException, TransformerException {
+            HttpServletResponse response) throws Exception, TransformerException {
         try {
             String action = request.getParameter(ACTION_PARAMETER_NAME);
 
@@ -164,14 +164,14 @@ public class XmlEditController implements Controller {
     }
     
     private void finish(HttpServletRequest request, EditDocument document)
-    throws IOException {
+    throws Exception {
         document.finish();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String sessionID = XmlEditController.class.getName() + ":" + uri; 
         request.getSession(true).removeAttribute(sessionID);
     }
     
-    private Map<String, Object> getSessionMap(HttpServletRequest request) throws IOException {
+    private Map<String, Object> getSessionMap(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
 
@@ -218,7 +218,7 @@ public class XmlEditController implements Controller {
     
     @SuppressWarnings("unchecked")
     private void referenceData(Map model, EditDocument document) 
-        throws IOException {
+        throws Exception {
         Resource resource = document.getResource();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
@@ -320,7 +320,7 @@ public class XmlEditController implements Controller {
 
 
     private Map<String, Object> initEditSession(HttpServletRequest request) 
-    throws IOException, TransformerException {
+    throws Exception, TransformerException {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         

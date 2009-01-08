@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository;
 
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -54,7 +52,7 @@ public interface Repository {
      * not authorized to set repository properties
      */
     public void setReadOnly(String token, boolean readOnly)
-        throws AuthorizationException, IOException;
+        throws AuthorizationException, Exception;
 
     /**
      * Retrieve a resource at a specified URI authenticated with the
@@ -73,11 +71,11 @@ public interface Repository {
      * @exception AuthenticationException if the resource demands
      * authorization and the client does not supply a token
      * identifying a valid client session
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource retrieve(String token, Path uri, boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IOException;
+            AuthenticationException, Exception;
 
     /**
      * Returns a listing of the immediate children of a
@@ -106,12 +104,12 @@ public interface Repository {
      * @exception AuthenticationException if the resource or any of
      * its children demands authorization and the client does not
      * supply a token
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource[] listChildren(String token, Path uri,
         boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IOException;
+            AuthenticationException, Exception;
 
     /**
      * Store resource properties (metadata) at a specified URI
@@ -127,12 +125,12 @@ public interface Repository {
      * identifying a valid client session
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource store(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, 
-            IllegalOperationException, ReadOnlyException, IOException;
+            IllegalOperationException, ReadOnlyException, Exception;
 
     /**
      * Requests that a a byte stream be written to the content of a
@@ -152,12 +150,12 @@ public interface Repository {
      * identifying a valid client session
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource storeContent(String token, Path uri, InputStream byteStream)
         throws AuthorizationException, AuthenticationException, 
             ResourceNotFoundException, ResourceLockedException, 
-            IllegalOperationException, ReadOnlyException, IOException;
+            IllegalOperationException, ReadOnlyException, Exception;
 
     /**
      * Obtains a stream to input bytes from a resource stored in the
@@ -176,12 +174,12 @@ public interface Repository {
      * @exception AuthenticationException if the resource demands
      * authorization and the client does not supply a token
      * identifying a valid client session
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public InputStream getInputStream(String token, Path uri,
         boolean forProcessing)
         throws ResourceNotFoundException, AuthorizationException, 
-            AuthenticationException, IOException;
+            AuthenticationException, Exception;
 
     /**
      * Creates a new empty (document) resource in the repository.
@@ -200,12 +198,12 @@ public interface Repository {
      * @exception ResourceLockedException if the parent resource is locked
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource createDocument(String token, Path uri)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, ReadOnlyException, 
-            IOException;
+            Exception;
 
     /**
      * Creates a new collection resource in the repository.
@@ -225,12 +223,12 @@ public interface Repository {
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
      * @exception ResourceLockedException if the parent resource is locked
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource createCollection(String token, Path uri)
         throws AuthorizationException, AuthenticationException, 
             IllegalOperationException, ResourceLockedException, 
-            ReadOnlyException, IOException;
+            ReadOnlyException, Exception;
 
     public static enum Depth {
         ZERO("0"),
@@ -310,14 +308,14 @@ public interface Repository {
      * by <code>destUri</code> is locked
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public void copy(String token, Path srcUri, Path destUri, Depth depth,
         boolean overwrite, boolean preserveACL)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
             ResourceOverwriteException, ResourceLockedException, 
-            ResourceNotFoundException, ReadOnlyException, IOException;
+            ResourceNotFoundException, ReadOnlyException, Exception;
 
     /**
      * Moves a resource from one URI to another.
@@ -346,14 +344,14 @@ public interface Repository {
      * by <code>destUri</code> is locked
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public void move(String token, Path srcUri, Path destUri,
         boolean overwrite)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
             ResourceOverwriteException, ResourceLockedException, 
-            ResourceNotFoundException, ReadOnlyException, IOException;
+            ResourceNotFoundException, ReadOnlyException, Exception;
 
     /**
      * Permanently deletes a resource.
@@ -378,13 +376,13 @@ public interface Repository {
      * member of the <code>uri</code>)
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public void delete(String token, Path uri)
         throws IllegalOperationException, AuthorizationException, 
             AuthenticationException, ResourceNotFoundException, 
             ResourceLockedException, FailedDependencyException, 
-            ReadOnlyException, IOException;
+            ReadOnlyException, Exception;
 
     /**
      * Tests whether a resource identified by this URI exists.
@@ -398,10 +396,10 @@ public interface Repository {
      * @exception AuthenticationException if the resource demands
      * authorization and the client does not supply a token
      * identifying a valid client session
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public boolean exists(String token, Path uri)
-        throws AuthorizationException, AuthenticationException, IOException;
+        throws AuthorizationException, AuthenticationException, Exception;
 
     /**
      * Performs a lock operation on a resource.
@@ -440,14 +438,14 @@ public interface Repository {
      * @exception IllegalOperationException if invalid parameters are supplied
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public Resource lock(String token, Path uri,
             String ownerInfo, Depth depth, int requestedTimoutSeconds, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, FailedDependencyException, 
             ResourceLockedException, IllegalOperationException, 
-            ReadOnlyException, IOException;
+            ReadOnlyException, Exception;
 
     /**
      * Performs an unlock operation on a resource.
@@ -465,12 +463,12 @@ public interface Repository {
      * by <code>uri</code> is already locked by another client
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public void unlock(String token, Path uri, String lockToken)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, ResourceLockedException, ReadOnlyException, 
-            IOException;
+            Exception;
 
 
 
@@ -490,12 +488,12 @@ public interface Repository {
      * invalid
      * @exception ReadOnlyException if the resource is read-only or
      * the repository is in read-only mode
-     * @exception IOException if an I/O error occurs
+     * @exception Exception if an I/O error occurs
      */
     public void storeACL(String token, Resource resource)
         throws ResourceNotFoundException, AuthorizationException, 
             AuthenticationException, IllegalOperationException, 
-            ReadOnlyException, IOException;
+            ReadOnlyException, Exception;
 
     
     /**

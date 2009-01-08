@@ -33,7 +33,6 @@ package org.vortikal.util.repository;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -74,7 +73,7 @@ public class TextResourceContentHelper {
     
 
     public String getResourceContent(Resource resource, String token)
-        throws IOException {
+        throws Exception {
 
         /**
          * if character encoding is set on the resource, just read it
@@ -98,7 +97,7 @@ public class TextResourceContentHelper {
     
 
     public String getXMLContent(Resource resource, String token)
-        throws IOException {
+        throws Exception {
         SAXBuilder builder = new SAXBuilder();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int n = 0;
@@ -146,7 +145,7 @@ public class TextResourceContentHelper {
     
 
     public String getHTMLContent(Resource resource, String token)
-        throws IOException {
+        throws Exception {
         InputStream is = this.repository.getInputStream(
             token, resource.getURI(), false);
         byte[] bytes = StreamUtil.readInputStream(is);
@@ -160,7 +159,7 @@ public class TextResourceContentHelper {
 
 
     public String getPlainTextContent(Resource resource, String token)
-        throws IOException {
+        throws Exception {
 
         InputStream is = this.repository.getInputStream(token, resource.getURI(),
                                                    false);
@@ -237,8 +236,8 @@ public class TextResourceContentHelper {
             String string = new String(chars, 0, read);
             return getXMLCharacterEncoding(string);
                         
-        } catch (IOException e) {
-            logger.warn("Unexpected IO exception while performing "
+        } catch (Exception e) {
+            logger.warn("Unexpected exception while performing "
                         + "XML charset regexp matching on resource "
                         + resource, e);
             return this.defaultCharacterEncoding;
@@ -273,7 +272,7 @@ public class TextResourceContentHelper {
                 out.toByteArray());
             return storedEncoding;
         
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("Unexpected IO exception while finding "
                         + "HTML character encoding on resource "
                         + resource, e);

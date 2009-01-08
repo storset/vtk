@@ -32,6 +32,7 @@ package org.vortikal.xml;
 
 import java.io.IOException;
 import java.util.Date;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -41,9 +42,7 @@ import javax.xml.transform.URIResolver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Resource;
@@ -159,8 +158,7 @@ public class TransformerManager implements InitializingBean {
      * while compiling the stylesheet.
      */
     public Transformer getTransformer(String stylesheetIdentifier) throws 
-        IOException, TransformerException, TransformerConfigurationException,
-        StylesheetCompilationException {
+        Exception {
         
         StylesheetURIResolver resolver = getStylesheetResolver(stylesheetIdentifier);
         
@@ -227,8 +225,7 @@ public class TransformerManager implements InitializingBean {
      * @exception StylesheetCompilationException if an error occurs
      */
     public Transformer getTransformer(Resource resource, Document document)
-        throws IOException, TransformerException, TransformerConfigurationException,
-        StylesheetCompilationException {
+        throws Exception {
 
         String stylesheetIdentifier = resolveTemplateReference(resource, document);
 

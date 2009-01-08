@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -78,7 +77,7 @@ public class DisplayXmlResourceControllerTestCase extends TestCase {
         super.tearDown();
     }
 
-    public void testLastModified() throws IOException {
+    public void testLastModified() throws Exception {
 
         long lastModified;
         final Date lastModifiedExpected = new Date();

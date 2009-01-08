@@ -97,7 +97,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
     
 
     public Date getLastModifiedInternal(Path path)
-        throws IOException {
+        throws Exception {
         String token = this.token;
         if (token == null) {
             try {
@@ -119,7 +119,7 @@ public class RepositoryURIResolver extends AbstractPathBasedURIResolver
     }
 
     
-    protected InputStream getInputStream(Path path) throws IOException {
+    protected InputStream getInputStream(Path path) throws Exception {
         try {
             String token = this.token;
             if (token == null) {

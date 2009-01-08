@@ -30,7 +30,6 @@
  */
 package org.vortikal.util.repository;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -164,12 +163,12 @@ public class HashMapResource extends HashMap implements InitializingBean,
         }
     }
 
-    public void load(Repository repository, Path uri, String token) throws IOException {
+    public void load(Repository repository, Path uri, String token) throws Exception {
         this.load(repository, uri, token, false);
     }
     
     public void load(Repository repository, Path uri, String token,
-                     boolean demandResourceAvailability) throws IOException {
+                     boolean demandResourceAvailability) throws Exception {
         if (demandResourceAvailability) {
             this.loadInternal(repository, uri, token);
         } else {
@@ -183,7 +182,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
         }
     }
     
-    public void load() throws IOException {
+    public void load() throws Exception {
 
         if (this.repository == null || this.uri == null) {
             throw new IllegalStateException(
@@ -194,7 +193,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
     }
     
     private void loadInternal(Repository repository, Path uri, String token)
-        throws IOException {
+        throws Exception {
         InputStream inputStream = repository.getInputStream(token, uri, false);
         Properties p = new Properties();
         p.load(inputStream);

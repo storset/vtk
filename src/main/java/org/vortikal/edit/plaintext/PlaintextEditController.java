@@ -31,7 +31,6 @@
 package org.vortikal.edit.plaintext;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -255,7 +254,7 @@ public class PlaintextEditController extends SimpleFormController
 
 
     private String getTextualContent(Resource resource, String token)
-        throws IOException {
+        throws Exception {
 
         String encoding = resource.getCharacterEncoding();
         try {

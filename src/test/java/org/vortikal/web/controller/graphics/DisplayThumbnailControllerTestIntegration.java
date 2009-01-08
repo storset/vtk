@@ -82,7 +82,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 		handleRequest();
 	}
 	
-	private void prepareRequest(final boolean withThumbnail, boolean expectRedirect) throws IOException {
+	private void prepareRequest(final boolean withThumbnail, boolean expectRedirect) throws Exception {
 		// Retrieve the image to display thumbnail for
 		context.checking(new Expectations() {{ one(mockRepository).retrieve(null, requestPath, true); will(returnValue(getImage(withThumbnail))); }});
 		if (expectRedirect) {

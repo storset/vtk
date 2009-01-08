@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller.properties;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -174,7 +173,7 @@ public class PropertyEditController extends SimpleFormController
     }
 
     private PropertyEditCommand buildPropertyEditCommand(PropertyTypeDefinition definition)
-            throws IOException {
+            throws Exception {
         if (definition == null) {
             return new PropertyEditCommand(null, null, null, null, null);
         }

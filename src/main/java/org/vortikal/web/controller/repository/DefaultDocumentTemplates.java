@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller.repository;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -129,7 +128,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    public void refresh() throws IOException {
+    public void refresh() throws Exception {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Refreshing document templates list");
@@ -143,7 +142,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
     
 
-    private void loadTemplates() throws IOException {
+    private void loadTemplates() throws Exception {
    	
         if (!this.parseCategoryTemplates && !this.parseTopTemplates) return;
          
@@ -181,7 +180,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
         }
     }
     
-    private Map<Path, String> findTopTemplates() throws IOException {
+    private Map<Path, String> findTopTemplates() throws Exception {
     		
         Map<String, Path> topTemplates = new HashMap<String, Path>();
 
@@ -221,7 +220,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
     }
 
 
-    private Map<String, Map<Path, String>> findCategoryTemplates() throws IOException {
+    private Map<String, Map<Path, String>> findCategoryTemplates() throws Exception {
         Resource[] templates = this.repository.listChildren(this.trustedToken, this.templatesCollection, true);
 
         Map<String, Map<Path, String>> categories = new HashMap<String, Map<Path, String>>();
@@ -262,7 +261,7 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
 
 
     private void findTemplatesRecursively(Resource parent, Map<String, Path> templates) 
-        throws IOException {
+        throws Exception {
 
         Resource[] children = this.repository.listChildren(this.trustedToken, parent.getURI(), true);
         for (int i = 0; i < children.length; i++) {

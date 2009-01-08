@@ -30,7 +30,6 @@
  */
 package org.vortikal.edit.xml;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +49,7 @@ public class MoveItController implements ActionHandler {
     @SuppressWarnings("unchecked")
     public Map<String, Object> handle(HttpServletRequest request,
             EditDocument document, SchemaDocumentDefinition documentDefinition)
-            throws IOException, XMLEditException {
+            throws XMLEditException {
 
         Map<String, Object> model = new HashMap<String, Object>();
         String mode = document.getDocumentMode();
@@ -124,7 +123,11 @@ public class MoveItController implements ActionHandler {
             document.setDocumentMode("default");
             document.resetElements();
 
-            document.save();
+            try {
+                document.save();
+            } catch (Exception e) {
+                throw new XMLEditException("Unable to save document", e);
+            }
         } else {
             document.setDocumentMode("default");
             document.resetElements();

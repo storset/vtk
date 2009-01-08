@@ -1009,6 +1009,7 @@
   <bean id="previewTextHandler"
         class="org.vortikal.web.controller.DisplayResourceController"
         parent="requestLocalRepositoryAware">
+    <!-- XXX preview size limit.. -->
     <property name="ignoreLastModified" value="true" />
     <property name="viewName" value="previewText" />
     <property name="streamToString" value="true" />

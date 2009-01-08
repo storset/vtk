@@ -65,8 +65,7 @@ public class RequestLocalRepository implements Repository {
 
 
     public Resource retrieve(String token, Path uri, boolean forProcessing)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, ResourceLockedException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx == null) {
@@ -117,15 +116,12 @@ public class RequestLocalRepository implements Repository {
 
     public Resource[] listChildren(String token, Path uri,
                                    boolean forProcessing)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, IOException {
+        throws Exception {
         return this.repository.listChildren(token, uri, forProcessing);
     }
 
     public Resource store(String token, Resource resource)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, ResourceLockedException, 
-        IllegalOperationException, ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -136,9 +132,7 @@ public class RequestLocalRepository implements Repository {
     }
 
     public Resource storeContent(String token, Path uri, InputStream byteStream)
-        throws AuthorizationException, AuthenticationException, 
-        ResourceNotFoundException, ResourceLockedException, 
-        IllegalOperationException, ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -149,16 +143,13 @@ public class RequestLocalRepository implements Repository {
 
     public InputStream getInputStream(String token, Path uri,
                                       boolean forProcessing)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, ResourceLockedException, IOException {
+        throws Exception {
 
         return this.repository.getInputStream(token, uri, forProcessing);
     }
 
     public Resource createDocument(String token, Path uri)
-        throws IllegalOperationException, AuthorizationException, 
-        AuthenticationException, ResourceLockedException, ReadOnlyException, 
-        IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -168,18 +159,13 @@ public class RequestLocalRepository implements Repository {
     }
 
     public Resource createCollection(String token, Path uri)
-        throws AuthorizationException, AuthenticationException, 
-        IllegalOperationException, ResourceLockedException, 
-        ReadOnlyException, IOException {
+        throws Exception {
         return this.repository.createCollection(token, uri);
     }
 
     public void copy(String token, Path srcUri, Path destUri, Depth depth,
                      boolean overwrite, boolean preserveACL)
-        throws IllegalOperationException, AuthorizationException, 
-        AuthenticationException, FailedDependencyException, 
-        ResourceOverwriteException, ResourceLockedException, 
-        ResourceNotFoundException, ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -190,10 +176,7 @@ public class RequestLocalRepository implements Repository {
 
     public void move(String token, Path srcUri, Path destUri,
                      boolean overwrite)
-        throws IllegalOperationException, AuthorizationException, 
-        AuthenticationException, FailedDependencyException, 
-        ResourceOverwriteException, ResourceLockedException, 
-        ResourceNotFoundException, ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -203,10 +186,7 @@ public class RequestLocalRepository implements Repository {
     }
 
     public void delete(String token, Path uri)
-        throws IllegalOperationException, AuthorizationException, 
-        AuthenticationException, ResourceNotFoundException, 
-        ResourceLockedException, FailedDependencyException, 
-        ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -216,7 +196,7 @@ public class RequestLocalRepository implements Repository {
     }
 
     public boolean exists(String token, Path uri)
-        throws AuthorizationException, AuthenticationException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null && (ctx.getResourceHit(token, uri, true) != null
@@ -229,10 +209,7 @@ public class RequestLocalRepository implements Repository {
     public Resource lock(String token, Path uri, String ownerInfo,
                          Depth depth, int requestedTimoutSeconds,
                          String lockToken)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, FailedDependencyException, 
-        ResourceLockedException, IllegalOperationException, 
-        ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -243,9 +220,7 @@ public class RequestLocalRepository implements Repository {
     }
 
     public void unlock(String token, Path uri, String lockToken)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, ResourceLockedException, ReadOnlyException, 
-        IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -255,9 +230,7 @@ public class RequestLocalRepository implements Repository {
     }
 
     public void storeACL(String token, Resource resource)
-        throws ResourceNotFoundException, AuthorizationException, 
-        AuthenticationException, IllegalOperationException, 
-        ReadOnlyException, IOException {
+        throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
@@ -358,8 +331,11 @@ public class RequestLocalRepository implements Repository {
     }
 
 
-    public void setReadOnly(String token, boolean readOnly) throws AuthorizationException, IOException {
+    public void setReadOnly(String token, boolean readOnly) throws Exception {
         this.repository.setReadOnly(token, readOnly);
     }
 
+    public void init() throws Exception {
+        
+    }
 }

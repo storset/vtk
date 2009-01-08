@@ -30,7 +30,6 @@
  */
 package org.vortikal.edit.xml;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +48,6 @@ public interface ActionHandler {
      */
     public Map<String, Object> handle(HttpServletRequest request, EditDocument document,
             SchemaDocumentDefinition documentDefinition) 
-    throws IOException, XMLEditException;
+    throws XMLEditException;
 
 }

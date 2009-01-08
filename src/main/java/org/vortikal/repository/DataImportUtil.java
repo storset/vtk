@@ -63,7 +63,7 @@ public class DataImportUtil implements InitializingBean {
         create(file, token, Path.fromString(targetPath));
     }
     
-    private void create(File file, String token, Path uri) throws IOException {
+    private void create(File file, String token, Path uri) throws Exception {
 
         if (file.isDirectory()) {
             if (this.skipExistingResources && this.repository.exists(token, uri)) {

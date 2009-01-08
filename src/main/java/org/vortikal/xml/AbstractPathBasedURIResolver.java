@@ -30,7 +30,6 @@
  */
 package org.vortikal.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -78,9 +77,9 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * implement this method.
      *
      * @param path a <code>String</code> value
-     * @exception IOException if an error occurs
+     * @exception Exception if an error occurs
      */
-    protected abstract InputStream getInputStream(Path path) throws IOException;
+    protected abstract InputStream getInputStream(Path path) throws Exception;
 
 
     /**
@@ -89,9 +88,9 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      *
      * @param path a <code>String</code> value
      * @return a <code>Date</code>
-     * @exception IOException if an error occurs
+     * @exception Exception if an error occurs
      */
-    public abstract Date getLastModifiedInternal(Path path) throws IOException;
+    public abstract Date getLastModifiedInternal(Path path) throws Exception;
     
 
     /**
@@ -112,9 +111,9 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * Gets the last modified date for a path based resource.
      *
      * @param path a <code>String</code> value
-     * @exception IOException if an error occurs
+     * @exception Exception if an error occurs
      */
-    public final Date getLastModified(String identifier) throws IOException {
+    public final Date getLastModified(String identifier) throws Exception {
         Path path = Path.fromStringRemoveTrailingSlash(addPrefix(identifier));
         return getLastModifiedInternal(path);
     }
@@ -165,7 +164,7 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
             source.setSystemId(PROTOCOL_PREFIX + path);
             return source;
             
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new TransformerException(
                 "Unable to resolve URI [href = '" + href + "', base = '" +
                 base + "']", e);

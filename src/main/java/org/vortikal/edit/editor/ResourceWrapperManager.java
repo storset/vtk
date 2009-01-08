@@ -31,24 +31,16 @@
 package org.vortikal.edit.editor;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.AuthorizationException;
-import org.vortikal.repository.FailedDependencyException;
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
@@ -136,7 +128,7 @@ public class ResourceWrapperManager {
         }
     }    
 
-    public void store(ResourceEditWrapper wrapper) throws IOException {
+    public void store(ResourceEditWrapper wrapper) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource resource = wrapper.getResource();
@@ -198,16 +190,13 @@ public class ResourceWrapperManager {
         this.htmlPropsFilter = htmlPropsFilter;
     }
 
-    public void unlock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException,
-            FailedDependencyException, ResourceLockedException, IllegalOperationException, AuthenticationException,
-            IOException {
+    public void unlock() throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         this.repository.unlock(token, uri, null);
     }
 
-    public void lock() throws ReadOnlyException, ResourceNotFoundException, AuthorizationException,
-            ResourceLockedException, AuthenticationException, IOException {
+    public void lock() throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();

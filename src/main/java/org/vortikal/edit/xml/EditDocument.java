@@ -32,7 +32,6 @@ package org.vortikal.edit.xml;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,7 +91,7 @@ public class EditDocument extends Document {
 
 
     public static EditDocument createEditDocument(Repository repository, int lockTimeoutSeconds)
-        throws JDOMException, IOException {
+        throws JDOMException, Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -126,7 +125,7 @@ public class EditDocument extends Document {
         return new EditDocument(root, document.getDocType(), resource, repository);
     }
 
-    public void finish() throws IOException {
+    public void finish() throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         
         String token = securityContext.getToken();
@@ -134,7 +133,7 @@ public class EditDocument extends Document {
         repository.unlock(token, this.resource.getURI(), null);
     }
 
-    public void save() throws XMLEditException, IOException {
+    public void save() throws XMLEditException, Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         Path uri = this.resource.getURI();

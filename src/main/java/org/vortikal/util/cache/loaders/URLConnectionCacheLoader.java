@@ -73,8 +73,7 @@ public abstract class URLConnectionCacheLoader <T>
      * @param url the URL to load
      */
     public final T load(String url) throws Exception {
-        String address = url.toString();
-        URLConnection connection = new URL(address).openConnection();
+        URLConnection connection = new URL(url).openConnection();
         setConnectionProperties(connection);
         return handleConnection(connection);
     }

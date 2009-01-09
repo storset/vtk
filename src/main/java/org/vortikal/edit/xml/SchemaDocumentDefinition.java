@@ -238,7 +238,7 @@ public class SchemaDocumentDefinition {
         e = e.getChild("appinfo", XSD_NAMESPACE);
         e = e.getChild("edit");
         Element f = e.getChild("buttonframe");
-        String buttonFrame = f.getTextNormalize().toString();
+        String buttonFrame = f.getTextNormalize();
         return buttonFrame;
     }
 

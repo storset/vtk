@@ -52,7 +52,7 @@ public class HtmlValueFormatter implements ValueFormatter {
         if (ESCAPED_FORMAT.equals(format)) {
             return HtmlUtil.escapeHtmlString(html);
         } else if (FLATTENED_FORMAT.equals(format)) {
-            return this.htmlUtil.flatten(html).toString();
+            return this.htmlUtil.flatten(html);
         }
         return html;
     }

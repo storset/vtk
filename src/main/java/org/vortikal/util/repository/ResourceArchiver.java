@@ -177,7 +177,6 @@ public class ResourceArchiver {
     
     private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
         StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
-        encode(path);
         ensure72Bytes(path);
         
         out.println("");

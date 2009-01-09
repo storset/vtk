@@ -67,7 +67,7 @@ public class ImageRefValueFormatter implements ValueFormatter, ApplicationContex
         if (this.thumbnailServiceBeanName != null) {
             Object obj = this.applicationContext.getBean(
                     this.thumbnailServiceBeanName);
-            if (obj != null & obj instanceof Service) {
+            if (obj != null && obj instanceof Service) {
                 thumbnailService = (Service) obj;
             }
         }

@@ -108,9 +108,7 @@ public class StylesheetTemplatesRegistry {
 
         TransformerFactory factory = TransformerFactory.newInstance();
         Source source = uriResolver.resolve(stylesheetPath, null);
-        if (uriResolver != null) {
-            factory.setURIResolver(uriResolver);
-        }
+        factory.setURIResolver(uriResolver);
         return factory.newTemplates(source);
     }
 

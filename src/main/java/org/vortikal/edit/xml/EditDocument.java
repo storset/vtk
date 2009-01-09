@@ -60,7 +60,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.Xml;
 import org.vortikal.web.RequestContext;
 
-
 /**
  * The document being edited.
  */
@@ -82,6 +81,7 @@ public class EditDocument extends Document {
     private String newElementName = null;
     private List<Element> elements = null;
 
+
     EditDocument(Element root, DocType docType, Resource resource, Repository repository) {
         super(root, docType);
         this.resource = resource;
@@ -91,33 +91,31 @@ public class EditDocument extends Document {
 
 
     public static EditDocument createEditDocument(Repository repository, int lockTimeoutSeconds)
-        throws JDOMException, Exception {
+            throws JDOMException, Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
-        
+
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         Path uri = requestContext.getResourceURI();
-        
-        repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 
-                lockTimeoutSeconds, null);
+
+        repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, lockTimeoutSeconds,
+                null);
 
         Resource resource = repository.retrieve(token, uri, false);
-        
+
         if (logger.isDebugEnabled())
             logger.debug("Locked resource '" + uri + "', principal = '" + principal + "'");
 
-        SAXBuilder builder = 
-            new SAXBuilder("org.apache.xerces.parsers.SAXParser");
+        SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
         builder.setValidation(true);
 
         /* turn on schema support */
-        builder.setFeature("http://apache.org/xml/features/validation/schema",
-                true);
+        builder.setFeature("http://apache.org/xml/features/validation/schema", true);
 
         builder.setXMLFilter(new XMLSpaceCorrectingXMLFilter());
-        
+
         Document document = builder.build(repository.getInputStream(token, uri, false));
 
         Element root = document.getRootElement();
@@ -125,25 +123,27 @@ public class EditDocument extends Document {
         return new EditDocument(root, document.getDocType(), resource, repository);
     }
 
+
     public void finish() throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         String token = securityContext.getToken();
 
         repository.unlock(token, this.resource.getURI(), null);
     }
+
 
     public void save() throws XMLEditException, Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
 
         Path uri = this.resource.getURI();
         String token = securityContext.getToken();
-        
+
         if (logger.isDebugEnabled())
-                logger.debug("Saving document '" + uri + "'");
+            logger.debug("Saving document '" + uri + "'");
 
         new Validator().validate(this);
-        
+
         removeProcessingInstructions();
 
         Format format = Format.getRawFormat();
@@ -151,11 +151,11 @@ public class EditDocument extends Document {
 
         XMLOutputter xmlOutputter = new XMLOutputter();
         xmlOutputter.setFormat(format);
-        
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         xmlOutputter.output(this, outputStream);
-        
+
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
         this.resource = repository.storeContent(token, uri, stream);
 
@@ -173,15 +173,16 @@ public class EditDocument extends Document {
             logger.debug("saved document '" + uri + "'");
     }
 
+
     public String getDocumentMode() {
-        ProcessingInstruction pi = 
-            Xml.findProcessingInstruction(getRootElement(), MODE_PI_NAME);
-        
+        ProcessingInstruction pi = Xml.findProcessingInstruction(getRootElement(), MODE_PI_NAME);
+
         if (pi != null)
-            return pi.getData(); 
+            return pi.getData();
 
         return "default";
     }
+
 
     public void setDocumentMode(String mode) {
         Element rootElement = getRootElement();
@@ -194,10 +195,10 @@ public class EditDocument extends Document {
         }
     }
 
+
     public boolean hasDocumentPI() {
         return this.pi != null;
     }
-
 
 
     public void setDocumentPI(ProcessingInstruction newPI) {
@@ -206,22 +207,20 @@ public class EditDocument extends Document {
     }
 
 
-
     public void removeDocumentPI() {
         removeContent(this.pi);
         this.pi = null;
     }
+
 
     public Element getEditingElement() {
         return this.element;
     }
 
 
-
     public void setEditingElement(Element e) {
         this.element = e;
     }
-
 
 
     @SuppressWarnings("unchecked")
@@ -230,8 +229,7 @@ public class EditDocument extends Document {
         for (Iterator i = this.element.getContent().iterator(); i.hasNext();) {
             Object o = i.next();
             if ((o instanceof ProcessingInstruction)
-                    && "expanded".equals((((ProcessingInstruction) o)
-                            .getTarget()))) {
+                    && "expanded".equals((((ProcessingInstruction) o).getTarget()))) {
                 pi = (ProcessingInstruction) o;
             }
         }
@@ -240,11 +238,9 @@ public class EditDocument extends Document {
     }
 
 
-
     public List<Element> getElements() {
         return this.elements;
     }
-
 
 
     public void setElements(List<Element> e) {
@@ -252,23 +248,21 @@ public class EditDocument extends Document {
     }
 
 
-
     public void resetElements(List<Element> elements) {
         HashMap<Element, ProcessingInstruction> removalSet = new HashMap<Element, ProcessingInstruction>();
 
-        for (Element elem: elements) {
-            for (Object o: elem.getContent()) {
+        for (Element elem : elements) {
+            for (Object o : elem.getContent()) {
                 if (o instanceof ProcessingInstruction) {
-                    removalSet.put(elem, (ProcessingInstruction)o);
+                    removalSet.put(elem, (ProcessingInstruction) o);
                 }
             }
         }
-        for (Element e: removalSet.keySet()) {
+        for (Element e : removalSet.keySet()) {
             ProcessingInstruction pi = removalSet.get(e);
             e.removeContent(pi);
         }
     }
-
 
 
     public void resetElements() {
@@ -277,20 +271,18 @@ public class EditDocument extends Document {
     }
 
 
-
     protected void removeProcessingInstructions() {
         Stack<ProcessingInstruction> stack = new Stack<ProcessingInstruction>();
         for (Iterator<?> i = getContent().iterator(); i.hasNext();) {
             Object o = i.next();
             if (o instanceof ProcessingInstruction) {
-                stack.push((ProcessingInstruction)o);
+                stack.push((ProcessingInstruction) o);
             }
         }
-        for (ProcessingInstruction pi: stack) {
+        for (ProcessingInstruction pi : stack) {
             removeContent(pi);
         }
     }
-
 
 
     /**
@@ -307,7 +299,6 @@ public class EditDocument extends Document {
         addAttributesToElement(element, parameters);
 
         Map<Element, String> modifiedElements = new HashMap<Element, String>();
-
 
         String path = Xml.createNumericPath(element);
         String input = parameters.get(path);
@@ -328,29 +319,26 @@ public class EditDocument extends Document {
             }
         }
 
-        for (Element e: modifiedElements.keySet()) {
+        for (Element e : modifiedElements.keySet()) {
             documentDefinition.setElementContents(e, modifiedElements.get(e));
         }
     }
 
 
-
     private void addAttributesToElement(Element element, Map<String, String> parameters) {
-        for (String key: parameters.keySet()) {
+        for (String key : parameters.keySet()) {
             /*
              * If the input parameter is on the path of the current element and
              * matches the attribute syntax.
              */
-            if (key.matches(Xml.createNumericPath(element)
-                    + "(\\.\\d+)*:[a-zA-Z].*")) {
+            if (key.matches(Xml.createNumericPath(element) + "(\\.\\d+)*:[a-zA-Z].*")) {
                 String elementPath = key.substring(0, key.indexOf(":"));
                 String attributeName = key.substring(key.indexOf(":") + 1);
                 Element e = findElementByPath(elementPath);
- 
+
                 if (e == null)
-                    throw new EditException(
-                        "The document does not contain an element with path "
-                        + elementPath, this.resource.getURI());
+                    throw new EditException("The document does not contain an element with path "
+                            + elementPath, this.resource.getURI());
                 e.setAttribute(attributeName, parameters.get(key));
             }
         }
@@ -364,19 +352,17 @@ public class EditDocument extends Document {
      * 
      * @param path
      *            the path to search
-     * @return an <code>Element</code> if found, <code>null</code>
-     *         otherwise
+     * @return an <code>Element</code> if found, <code>null</code> otherwise
      */
     public Element findElementByPath(String path) {
         return Xml.findElementByNumericPath(this, path);
     }
 
 
-
     @SuppressWarnings("unchecked")
     public void putElementByPath(String path, Element e) {
         Element currentElement = getRootElement();
-        String currentPath = new String(path);
+        String currentPath = path;
         if (currentPath.indexOf(".") >= 0) {
             // Strip away the leading '1.' (root element)
             currentPath = currentPath.substring(2, currentPath.length());
@@ -386,38 +372,36 @@ public class EditDocument extends Document {
             if (currentPath.indexOf(".") == -1) {
                 index = Integer.parseInt(currentPath);
             } else {
-                index = Integer.parseInt(currentPath.substring(0, currentPath
-                        .indexOf(".")));
+                index = Integer.parseInt(currentPath.substring(0, currentPath.indexOf(".")));
             }
             if (currentPath.indexOf(".") == -1) {
-                /* Found the parent element. Put child elements and
-                 * processing instructions into a list */
+                /*
+                 * Found the parent element. Put child elements and processing
+                 * instructions into a list
+                 */
 
-                List l = new ArrayList(
-                    currentElement.getContent(
-                        new Filter() {
-                            public boolean matches(Object o) {
-                                return (o instanceof ProcessingInstruction)
-                                    || (o instanceof Element);
-                            }
-                            private static final long serialVersionUID = 4746825449858085648L;
-                        }
-                    ));
+                List l = new ArrayList(currentElement.getContent(new Filter() {
+                    public boolean matches(Object o) {
+                        return (o instanceof ProcessingInstruction) || (o instanceof Element);
+                    }
 
-                /* Add the new element to the list at the specified
-                 * index: */
-                l.add(index, e);                
+                    private static final long serialVersionUID = 4746825449858085648L;
+                }));
 
-                /* Remove old content from parent, replace it with the
-                 * list: */
+                /*
+                 * Add the new element to the list at the specified index:
+                 */
+                l.add(index, e);
+
+                /*
+                 * Remove old content from parent, replace it with the list:
+                 */
                 currentElement.removeContent();
                 currentElement.setContent(l);
                 break;
             }
-            currentElement = (Element) currentElement.getChildren().get(
-                    index - 1);
-            currentPath = currentPath.substring(currentPath.indexOf(".") + 1,
-                    currentPath.length());
+            currentElement = (Element) currentElement.getChildren().get(index - 1);
+            currentPath = currentPath.substring(currentPath.indexOf(".") + 1, currentPath.length());
         }
     }
 
@@ -440,14 +424,16 @@ public class EditDocument extends Document {
     public void setNewElementName(String newElementName) {
         this.newElementName = newElementName;
     }
-    
+
+
     public Resource getResource() {
         return this.resource;
     }
-    
+
+
     public String toStringDetail() {
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        
+
         return outputter.outputString(this);
     }
 }

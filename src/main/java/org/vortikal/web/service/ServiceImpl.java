@@ -69,6 +69,8 @@ import org.vortikal.util.net.NetUtils;
  */
 public class ServiceImpl implements Service, BeanNameAware {
 
+    private static final String DEFAULT_HOST = NetUtils.guessHostName();
+    
     // FIXME: Cache for all assertions, don't use directly!
     private volatile List<Assertion> allAssertions;
 
@@ -260,7 +262,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 
     public URL constructURL(Path uri) {
-        URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
+        URL urlObject = new URL("http", DEFAULT_HOST, uri);
 
         for (Assertion assertion: getAllAssertions()) {
             assertion.processURL(urlObject);
@@ -276,7 +278,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 
     public URL constructURL(Path uri, Map<String, String> parameters) {
-        URL urlObject = new URL("http", NetUtils.guessHostName(), uri);
+        URL urlObject = new URL("http", DEFAULT_HOST, uri);
 
         if (parameters != null) {
             for (Map.Entry<String, String> entry: parameters.entrySet()) {
@@ -361,7 +363,7 @@ public class ServiceImpl implements Service, BeanNameAware {
             Map<String, String> parameters, List<Assertion> assertions, boolean matchAssertions) {
 
         Path path = resource.getURI();
-        URL urlObject = new URL("http", NetUtils.guessHostName(), path);
+        URL urlObject = new URL("http", DEFAULT_HOST, path);
         if (resource.isCollection()) {
             urlObject.setCollection(true);
         }

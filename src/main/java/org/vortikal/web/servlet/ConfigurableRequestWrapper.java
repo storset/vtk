@@ -375,7 +375,7 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     }
 
     public boolean isRequestedSessionIdFromUrl() {
-        return isRequestedSessionIdFromUrl();
+        return super.isRequestedSessionIdFromUrl();
     }
     
     public Cookie[] getCookies() {

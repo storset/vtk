@@ -81,6 +81,7 @@
           editor.Config.LinkBrowser = ${enableFileBrowsers?string};
           editor.Config.LinkUpload = false;
 
+	  editor.Config.EMailProtection = 'none';
           editor.Config.ImageBrowser = ${enableFileBrowsers?string};
           editor.Config.ImageUpload = ${enableFileBrowsers?string};
           editor.Config.FlashBrowser = ${enableFileBrowsers?string};

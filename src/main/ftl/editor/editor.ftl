@@ -166,8 +166,9 @@
            fck.Config['FontFormats'] = 'p;h2;h3;h4;h5;h6;pre';
          </#if>
 
+         fck.Config.EMailProtection = 'none';
          fck.Config.DisableFFTableHandles = false;
-         fck.Config.ForcePasteAsPlainText = false;
+	 fck.Config.ForcePasteAsPlainText = false;
 
          fck.Config['SkinPath'] = fck.BasePath + 'editor/skins/silver/';
          fck.Config.BaseHref = '${fckeditorBase.documentURL?html}';

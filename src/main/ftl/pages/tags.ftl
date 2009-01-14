@@ -24,10 +24,10 @@
   <#return introduction />
 </#function>
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+
   <#if tagElements?exists && !scope.URI.root>
      <#assign title><@vrtx.msg code="tags.serviceTitle" args=[scope.title] /></#assign>
   <#elseif tagElements?exists>
@@ -55,6 +55,9 @@
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>
  </#if>
+ 
+ <meta name="robots" content="noindex"/> 
+ 
 </head>
 
 <body id="vrtx-tagview">

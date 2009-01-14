@@ -5,6 +5,7 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
+  
     <#assign title>
       <#compress>
         <@vrtx.msg code='commenting.comments'
@@ -20,6 +21,9 @@
       </#list>
     </#if>
     <title>${title?html}</title>
+    
+    <meta name="robots" content="noindex"/> 
+    
   </head>
   <body id="vrtx-recent-comments-view">
     <h1>${title?html}</h1>

@@ -37,7 +37,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.Principal;
 
 /**
@@ -97,7 +96,7 @@ public interface Property extends Cloneable {
     
     public void setBinaryValue(byte[] binary, String binaryRef, String binaryMimeType) throws ValueFormatException;
 
-    public BinaryStream getBinaryStream() throws IllegalOperationException;
+    public ContentStream getBinaryStream() throws IllegalOperationException;
     
     public String getBinaryMimeType() throws IllegalOperationException;
 

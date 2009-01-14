@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.store.BinaryContentDataAccessor;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 
 public class SqlBinaryContentMapDataAccessor extends AbstractSqlMapDataAccessor implements BinaryContentDataAccessor {
 
 	private static final Logger log = Logger.getLogger(SqlBinaryContentMapDataAccessor.class);
 
-	public BinaryStream getBinaryStream(String binaryName, String binaryRef) {
+	public ContentStream getBinaryStream(String binaryName, String binaryRef) {
 
 		try {
 			String sqlMap = getSqlMap("selectBinaryPropertyEntry");
@@ -21,7 +21,7 @@ public class SqlBinaryContentMapDataAccessor extends AbstractSqlMapDataAccessor 
 			params.put("binaryRef", binaryRef);
 			@SuppressWarnings("unchecked")
 			List<Map<String, Object>> resultList = getSqlMapClientTemplate().queryForList(sqlMap, params);
-			return (BinaryStream) resultList.get(0).get("binaryStream");
+			return (ContentStream) resultList.get(0).get("binaryStream");
 		} catch (Exception e) {
 			log.error("An error occured while getting the binary stream for " + binaryName + "/" + binaryRef, e);
 		}

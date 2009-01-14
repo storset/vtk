@@ -39,13 +39,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.Principal;
 
 /**
@@ -352,7 +352,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.defaultValueSeparator;
     }
     
-    public BinaryStream getBinaryStream(String binaryRef) {
+    public ContentStream getBinaryStream(String binaryRef) {
     	return this.valueFactory.getBinaryStream(this.getName(), binaryRef);
     }
     

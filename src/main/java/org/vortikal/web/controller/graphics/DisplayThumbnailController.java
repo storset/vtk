@@ -43,13 +43,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
@@ -92,7 +92,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
         InputStream in = null;
         try {
             
-            BinaryStream binaryStream = thumbnail.getBinaryStream();
+            ContentStream binaryStream = thumbnail.getBinaryStream();
             in = new BufferedInputStream(binaryStream.getStream());
             
             String mimetype = thumbnail.getBinaryMimeType();

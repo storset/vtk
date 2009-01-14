@@ -37,12 +37,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.db.ibatis.BinaryStream;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
@@ -215,7 +215,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getValueSeparator(format);
     }
     
-    public BinaryStream getBinaryStream(String binaryRef) {
+    public ContentStream getBinaryStream(String binaryRef) {
     	return this.overriddenPropDef.getBinaryStream(binaryRef);
     }
     

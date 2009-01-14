@@ -28,17 +28,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.store.db.ibatis;
+package org.vortikal.repository;
 
 import java.io.InputStream;
 
-public class BinaryStream {
+public class ContentStream {
     
     private InputStream stream;
     private long length;
 
 
-    public BinaryStream(InputStream stream, long length) {
+    public ContentStream(InputStream stream, long length) {
         this.stream = stream;
         this.length = length;
     }

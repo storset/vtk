@@ -9,6 +9,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
+import org.vortikal.repository.ContentStream;
 
 import com.ibatis.sqlmap.client.extensions.ParameterSetter;
 import com.ibatis.sqlmap.client.extensions.ResultGetter;
@@ -28,7 +29,7 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 			while ((i = is.read()) != -1) {
 				out.write(i);
 			}
-			return new BinaryStream(new ByteArrayInputStream(out.toByteArray()), blob.length());
+			return new ContentStream(new ByteArrayInputStream(out.toByteArray()), blob.length());
 		} catch (IOException e) {
 			log.error("An error occured while getting binary stream for a blob", e);
 		}

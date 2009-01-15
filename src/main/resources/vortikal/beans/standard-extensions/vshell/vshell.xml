@@ -82,6 +82,12 @@
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 
+   <lang:bsh id="vshell.repo.index"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/index.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
    <lang:bsh id="vshell.archive.create"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/archive/create.bsh"

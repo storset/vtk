@@ -2,8 +2,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<#assign msg = vrtx.getMsg("collectionListing.confirmation.delete", "Are you sure you want to delete" + resourceContext.currentResource.name, [resourceContext.currentResource.name]) />
-${prepend}<a id="delete-resource" href="${item.url?html}" onclick="return confirm('${msg}')">${item.title}</a>${append}
+(&nbsp;<a href="${item.url?html}&showAsHtml=true&height=80&width=230" class="thickbox">${item.title}</a>&nbsp;)
 
 <#recover>
 ${.error}

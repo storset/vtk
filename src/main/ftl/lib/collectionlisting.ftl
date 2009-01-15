@@ -180,8 +180,8 @@
                  vrtx.getMsg("collectionListing.confirmation." + item,
                              "Are you sure you want to " + item + " " + child.name + "?", 
                              [child.name]) />
-      	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}"
-      	   onclick="return confirm('${confirmation}')">${actionName}</a>&nbsp;)
+      	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}&showAsHtml=true&height=80&width=230"
+      	   class="thickbox">${actionName}</a>&nbsp;)
 	</#if>
      </td>
     </#list>

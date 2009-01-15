@@ -1,0 +1,20 @@
+* Thickbox versjon 3.1 modifisert for bruk i admin *
+
+Denne versjonen av Thickbox har en ekstra parameter "showAsHtml". Dette parameteret 
+kan settes i query stringen dersom man ønsnker å overstyre Thickbox sin innebygde 
+funksjon for nå vise bilder. Grunnen til at vi trenger denne i admin er at Thickbox
+gjetter på filtype på grunnlag av filetternavnet på filnavnet i query strengen.  
+
+Ved oppgradering til ny versjon er det viktig at man tar med seg denne
+funksjonaliteten, hvis ikke vil det oppstå feil ved blant annet sletting 
+av bilder. 
+
+* Bruk * 
+
+Lenken som skal åpnes i Thickbox må ha "showAsHtml=true" som ekstra parameter. 
+
+* Eksempel fra "collectionlisting.ftl" * 
+
+<a href="${collectionListing.childLinks[child_index][item]?html}&showAsHtml=true&height=80&width=230"
+      	   class="thickbox">${actionName}</a>
+

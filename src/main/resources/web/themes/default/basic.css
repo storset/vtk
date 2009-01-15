@@ -837,3 +837,27 @@ div.contextual-help {
 div.contextual-help a {
 	font-size: 80%;
 }
+
+/* delete msg box in admin */
+#TB_ajaxContent{
+	background:transparent url(alert.png) no-repeat scroll 210px 8px;
+}
+
+#TB_closeAjaxWindow{
+	display:none;
+}
+
+div.vrtx-confirm-delete-name{
+	display:inline;
+	color:red;
+	font-weight: bold;
+}
+
+div.vrtx-confirm-delete-msg{
+	width:200px;
+}
+
+#TB_ajaxContent form{
+	padding-top:1em;
+	padding-left:5em;
+}

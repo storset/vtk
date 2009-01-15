@@ -9,39 +9,7 @@
   <!-- (deleteResourceService has been moved out of manageService and
        made a root level service because in some cases delete URLs
        could not be generated since manageService requires read
-       permission) -->
-
-  <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
-    <property name="order" value="490" />
-    <property name="categories">
-      <set>
-        <value>resourceMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">100</value></entry>
-      </map>
-    </property>
-    <property name="assertions">
-      <list>
-        <ref local="resourceNotRootAssertion" />
-        <ref local="adminVrtxParameterRule" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="delete" />
-        </bean>
-        <ref local="deleteResourcePermissionAssertion" />
-      </list>
-    </property>
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="noCacheHandlerInterceptor" />
-      </list>
-    </property>
-    <property name="handler" ref="deleteResourceHandler" />
-  </bean>
+       permission) -->       
 
   <bean id="manageService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
@@ -754,11 +722,7 @@
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
-  <bean id="deleteResourceHandler" 
-    class="org.vortikal.web.controller.repository.DeleteResourceController"
-    parent="requestLocalRepositoryAware">
-    <property name="viewName" value="redirectToManage" />
-  </bean>
+ 
 
   <bean id="lockResourceHandler" 
     class="org.vortikal.web.controller.repository.LockResourceController"
@@ -1120,6 +1084,7 @@
             <value>${themeBaseURL}/basic.css</value>
             <value>${themeBaseURL}/tabs.css</value>
             <value>${themeBaseURL}/view-container.css</value>
+            <value>${webResources.baseURL}/thickbox-modified/thickbox.css</value>
           </list>
         </entry>
       </map>
@@ -1143,9 +1108,10 @@
           <list>
             <value>${jsBaseURL}/browser-sniffer.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/../jquery/jquery-1.2.6.js</value>
+            <value>${webResources.baseURL}/jquery/jquery-1.2.6.js</value>
             <value>${jsBaseURL}/featured-articles-multiple-properties.js</value>
             <value>${jsBaseURL}/admin-edit-display-articles.js</value>
+			<value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>
@@ -1623,7 +1589,7 @@
     </property>
     <property name="linkedServices">
       <map>
-        <entry key="delete" value-ref="deleteResourceService" />
+        <entry key="delete" value-ref="delete.viewService" />
         <!-- entry key="duplicate" value-ref="duplicateResourceService" / -->
       </map>
     </property>

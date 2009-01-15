@@ -54,7 +54,9 @@ import org.vortikal.web.RequestContext;
  */
 public class DeleteResourceController extends AbstractController implements InitializingBean {
 
-    private Repository repository;
+    private static final String CONFIRM_PARAMETER = "submit";
+    private static final String CONFIRM_INPUT = "ok";
+	private Repository repository;
     private String viewName;
     private String resourcePath;
     private String trustedToken;
@@ -104,7 +106,10 @@ public class DeleteResourceController extends AbstractController implements Init
         
         Path uri = requestContext.getResourceURI();
         Path parentUri = uri.getParent();
-        this.repository.delete(token, uri);
+        
+        String submit = request.getParameter(CONFIRM_PARAMETER);
+        if(submit.equals(CONFIRM_INPUT))	
+        	this.repository.delete(token, uri);
 
         Resource modelResource = this.repository.retrieve(token, parentUri, false);
         if (this.resourcePath != null) {
@@ -118,6 +123,8 @@ public class DeleteResourceController extends AbstractController implements Init
                 }
             }
         }
+        
+        
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", modelResource);

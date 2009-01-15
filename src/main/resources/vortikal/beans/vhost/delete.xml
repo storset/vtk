@@ -21,8 +21,14 @@
       </list>
     </property>
     <property name="handler" ref="delete.handler" />
+    <property name="categories">
+      <set>
+        <value>resourceMenu</value>
+      </set>
+    </property>
     <property name="attributes">
       <map>
+        <entry key="resourceMenuOrder"><value type="java.lang.Integer">100</value></entry>
         <entry key="decorating.servicePredicateName" value="delete" />
       </map>
     </property>
@@ -56,16 +62,6 @@
  <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="order" value="490" />
-    <property name="categories">
-      <set>
-        <value>resourceMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">100</value></entry>
-      </map>
-    </property>
     <property name="assertions">
       <list>
        <bean id="Post" class="org.vortikal.web.service.RequestMethodAssertion">

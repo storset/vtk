@@ -44,7 +44,7 @@
 	      <#-- description -->
 	      <#if conf.itemDescription?exists && (entry.description.value)?exists>
             <div class="item-description">
-              ${entry.description.value}
+              ${entry.description.value?string}
             </div>
           </#if>
           <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>

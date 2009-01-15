@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTreeImpl;
@@ -172,16 +176,59 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
 
         public Listing execute(HttpServletRequest request, Resource collection, int page,
                 int pageLimit, int baseOffset) throws Exception {
+            Listing listing = new Listing(null, null, null, 0);
 
-            // TODO create testresources to generate feedentries from
+            List<PropertySet> files = new ArrayList<PropertySet>();
+            PropertySet event1 = getPropertySet("event1.html");
+            files.add(event1);
 
-            return new Listing(null, null, null, 0);
+            listing.setFiles(files);
+            return listing;
+        }
+
+
+        private PropertySetImpl getPropertySet(String uri) {
+            PropertySetImpl propSet = new PropertySetImpl();
+
+            final Path propSetUri = Path.fromString(requestPath + "/" + uri);
+            propSet.setUri(propSetUri);
+            final URL url = new URL("http", host, propSetUri);
+            context.checking(new Expectations() {
+                {
+                    one(mockViewService).constructURL(propSetUri);
+                    will(returnValue(url));
+                }
+            });
+
+            context.checking(new Expectations() {
+                {
+                    one(mockViewService).constructLink(propSetUri);
+                    will(returnValue(url));
+                }
+            });
+
+            PropertyTypeDefinitionImpl creationTimePropDef = getPropDef(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.DATE,
+                    new DateValueFormatter());
+            propSet.addProperty(creationTimePropDef
+                    .createProperty(Calendar.getInstance().getTime()));
+
+            PropertyTypeDefinitionImpl titlePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
+                    PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());
+            propSet.addProperty(titlePropDef.createProperty(uri));
+
+            PropertyTypeDefinitionImpl lastModifiedPropDef = getPropDef(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE,
+                    new DateValueFormatter());
+            propSet.addProperty(lastModifiedPropDef
+                    .createProperty(Calendar.getInstance().getTime()));
+
+            return propSet;
         }
 
 
         public Listing execute(HttpServletRequest request, Resource collection, int page,
                 int pageLimit, int baseOffset, boolean recursive) throws Exception {
-            // TODO Auto-generated method stub
             return null;
         }
 

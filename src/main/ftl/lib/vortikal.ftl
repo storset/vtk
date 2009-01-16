@@ -290,7 +290,23 @@
   </#if>
   <#local prop= resource.getProperty(def) />
   <#local type = prop.definition.type />
-  <#return prop.getFormattedValue(format, locale) />
+  
+  <#if type != 'IMAGE_REF'>
+    <#return prop.getFormattedValue(format, locale) />
+  <#else>
+  
+    <#-- Hack for relative imagerefs -->
+    <#local imageRef = prop.getStringValue() />
+    <#if !imageRef?starts_with("/") && !imageRef?starts_with("http://") && !imageRef?starts_with("https://")>
+      <#local imageRef = resource.URI.getParent().extendAndProcess(imageRef) />
+      <#local hackedProp = def.createProperty(imageRef.toString())>
+      <#return hackedProp.getFormattedValue(format, locale) />
+    <#else>
+      <#return prop.getFormattedValue(format, locale) />
+    </#if>
+    
+  </#if>
+  
 </#function>
 
 

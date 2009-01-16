@@ -448,7 +448,7 @@
                var previewobj = urlobj + '.preview';
                if (document.getElementById(previewobj)) {
                  var url = document.getElementById(urlobj).value;
-                 if (!isValidUrl(url) && url.substr(0,1) != "/" && baseUrl) {
+                 if (jQuery.trim(url) != "" && !isValidUrl(url) && url.substr(0,1) != "/" && baseUrl) {
                      url = baseUrl + url;
                      updateUrl(url, urlobj);                     
                  }

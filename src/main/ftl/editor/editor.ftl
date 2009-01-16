@@ -442,52 +442,10 @@
                               $('div.picture').css ({ width : withoutImage + 'px'});  
                         }
                      }
-             }
-             
-             function checkUrl(urlobj, baseUrl) {
-               var previewobj = urlobj + '.preview';
-               if (document.getElementById(previewobj)) {
-                 var url = document.getElementById(urlobj).value;
-                 if (jQuery.trim(url) != "" && !isValidUrl(url) && url.substr(0,1) != "/" && baseUrl) {
-                     url = baseUrl + url;
-                     updateUrl(url, urlobj);                     
-                 }
-               }
-             }
-             
-             function isValidUrl(url) {
-               var regexp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
-               return regexp.test(url);
-             }
-             
-             function updateUrl(url, urlobj) {
-               var req = null;
-               if (window.XMLHttpRequest) {
-                 req = new window.XMLHttpRequest();
-               } else {
-                 if (window.ActiveXObject) {
-                   req = new window.ActiveXObject("Microsoft.XMLHTTP");
-                 } else {
-                   throw "error";
-                 }
-               }
-               if (!req) {
-                 throw "error";
-               }
-               req.open("HEAD", url, true);
-               req.onreadystatechange = function() {
-                 if (req.readyState == 4) {  
-                   if (req.status == 200) {
-                     document.getElementById(urlobj).value = url;
-                   }
-                 }
-               }
-               req.send(null);
              } //-->
         </script>
         <div id="input-and-button-container">
-        <#local baseobj = resource.URI?substring(0, resource.URI?last_index_of("/") + 1) />
-        <input type="text" id="resource.${name}" onblur="checkUrl(id, '${baseobj}'), previewImage(id);" name="resource.${name}" value="${value?html}" /> 
+        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" /> 
         <script language="Javascript" type="text/javascript"><!--
         document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
         document.write('</div>');

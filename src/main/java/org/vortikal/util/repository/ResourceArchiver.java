@@ -70,23 +70,27 @@ import org.vortikal.security.Principal.Type;
 public class ResourceArchiver {
 
     private PrincipalFactory principalFactory;
-
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     
+    private final String dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
+
     public interface EventListener {
-      public void expanded(Path uri);
-      public void archived(Path uri);
+        public void expanded(Path uri);
+        public void archived(Path uri);
     }
-    
+
+
     public void createArchive(String token, Resource r, OutputStream out) throws Exception {
         createArchive(token, r, out, null);
     }
-    
-    public void createArchive(String token, Resource r, OutputStream out, EventListener listener) throws Exception {
+
+
+    public void createArchive(String token, Resource r, OutputStream out, EventListener listener)
+            throws Exception {
         int rootLevel = r.getURI().getDepth() + 1;
-        
+
         File tmp = null;
         try {
             tmp = File.createTempFile("tmp-manifest", "vrtx", this.tempDir);
@@ -98,39 +102,43 @@ public class ResourceArchiver {
             jo.close();
             out.close();
         } finally {
-            if (tmp != null) tmp.delete();
+            if (tmp != null)
+                tmp.delete();
         }
     }
+
 
     public void expandArchive(String token, InputStream source, Path base) throws Exception {
         expandArchive(token, source, base, null);
     }
 
-    public void expandArchive(String token, InputStream source, Path base, EventListener listener) throws Exception {
+
+    public void expandArchive(String token, InputStream source, Path base, EventListener listener)
+            throws Exception {
         JarInputStream jarIn = new JarInputStream(new BufferedInputStream(source));
         Manifest manifest = jarIn.getManifest();
         if (manifest != null) {
-            String archiveVersion = manifest.getMainAttributes().getValue("X-vrtx-archive-version"); 
+            String archiveVersion = manifest.getMainAttributes().getValue("X-vrtx-archive-version");
             if (archiveVersion != null && !"1.0".equals(archiveVersion)) {
                 throw new RuntimeException("Incompatible archive version: " + archiveVersion);
             }
         }
-        
-        boolean decodeValues = manifest != null && 
-        "true".equals(manifest.getMainAttributes().getValue("X-vrtx-archive-encoded"));
+
+        boolean decodeValues = manifest != null
+                && "true".equals(manifest.getMainAttributes().getValue("X-vrtx-archive-encoded"));
 
         JarEntry entry;
         Set<Path> dirCache = new HashSet<Path>();
         List<Path> paths = base.getParent().getPaths();
-        for (Path p: paths) {
+        for (Path p : paths) {
             dirCache.add(p);
         }
-        
-// XXX: dir modification times
-        while((entry = jarIn.getNextJarEntry()) != null) {
+
+        // XXX: dir modification times
+        while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
-            String resourceURI = entryPath.startsWith("/") ? 
-                    base + entryPath : base + "/" + entryPath; 
+            String resourceURI = entryPath.startsWith("/") ? base + entryPath : base + "/"
+                    + entryPath;
             if (resourceURI.endsWith("/")) {
                 resourceURI = resourceURI.substring(0, resourceURI.length() - 1);
             }
@@ -143,55 +151,63 @@ public class ResourceArchiver {
                 writeFile(token, uri, jarIn);
             }
             storePropsAndPermissions(token, entry, uri, decodeValues);
-            if (listener != null) listener.expanded(uri);
+            if (listener != null)
+                listener.expanded(uri);
         }
         jarIn.close();
     }
 
-    
-    private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out) throws Exception {
+
+    private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out)
+            throws Exception {
 
         out.println("Manifest-Version: 1.0");
         out.println("Created-By: vrtx");
         out.println("X-vrtx-archive-version: 1.0");
-        out.println("X-vrtx-archive-encoded: true"); 
-        
+        out.println("X-vrtx-archive-encoded: true");
+
         addManifestEntry(token, rootLevel, r, out);
         out.flush();
         out.close();
 
     }
-    
+
+
     private String getJarPath(Resource resource, int fromLevel) {
         Path path = resource.getURI();
         List<String> elements = path.getElements();
         StringBuilder result = new StringBuilder("/");
         for (int i = fromLevel; i < elements.size(); i++) {
-            if (i != 0) result.append(elements.get(i));
-            if (i < elements.size() - 1 && !"/".equals(elements.get(i))) result.append("/");
+            if (i != 0)
+                result.append(elements.get(i));
+            if (i < elements.size() - 1 && !"/".equals(elements.get(i)))
+                result.append("/");
         }
-        if (resource.isCollection() && !"/".equals(result.toString())) result.append("/"); 
+        if (resource.isCollection() && !"/".equals(result.toString()))
+            result.append("/");
         return result.toString();
     }
-    
-    
-    private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out) throws Exception {
+
+
+    private void addManifestEntry(String token, int fromLevel, Resource r, PrintWriter out)
+            throws Exception {
         StringBuilder path = new StringBuilder(getJarPath(r, fromLevel));
         ensure72Bytes(path);
-        
+
         out.println("");
         out.println("Name: " + path);
 
-        addProperties(r, out);        
+        addProperties(r, out);
         addAcl(r, out);
-        
+
         if (r.isCollection()) {
             Resource[] children = this.repository.listChildren(token, r.getURI(), false);
-            for (Resource child: children) {
+            for (Resource child : children) {
                 addManifestEntry(token, fromLevel, child, out);
             }
         }
     }
+
 
     private void addProperties(Resource r, PrintWriter out) throws Exception {
         List<Property> properties = r.getProperties();
@@ -199,7 +215,7 @@ public class ResourceArchiver {
         for (Property property : properties) {
             PropertyTypeDefinition propDef = property.getDefinition();
             Namespace namespace = propDef.getNamespace();
-            
+
             StringBuilder entry = new StringBuilder("X-vrtx-prop-");
             entry.append(propCounter).append(": ");
             entry.append("prefix:");
@@ -208,19 +224,21 @@ public class ResourceArchiver {
             }
             entry.append(" ");
             entry.append("name:").append(propDef.getName()).append(" ");
-            if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
-                entry.append(property.getFormattedValue("yyyy-MM-dd'T'HH:mm:ssZZ", null));
+            if (propDef.getType() == PropertyType.Type.DATE
+                    || propDef.getType() == PropertyType.Type.TIMESTAMP) {
+                entry.append(property.getFormattedValue(dateFormat, null));
             } else if (propDef.getType() != PropertyType.Type.BINARY) {
                 entry.append(property.getFormattedValue());
             }
-            
+
             encode(entry);
             ensure72Bytes(entry);
             out.println(entry);
             propCounter++;
         }
     }
-    
+
+
     private void addAcl(Resource r, PrintWriter out) throws Exception {
         if (!r.isInheritedAcl()) {
             Acl acl = r.getAcl();
@@ -233,27 +251,30 @@ public class ResourceArchiver {
                 Principal[] users = acl.listPrivilegedUsers(action);
                 for (int i = 0; i < users.length; i++) {
                     Principal user = users[i];
-                    if (i > 0) entry.append(",");
+                    if (i > 0)
+                        entry.append(",");
                     entry.append("u:").append(user.getQualifiedName());
                     empty = false;
                 }
-                
+
                 Principal[] groups = acl.listPrivilegedGroups(action);
                 for (int i = 0; i < groups.length; i++) {
                     Principal group = groups[i];
-                    if (!empty || i > 0) entry.append(",");
+                    if (!empty || i > 0)
+                        entry.append(",");
                     entry.append("g:").append(group.getQualifiedName());
                     empty = false;
                 }
-                
+
                 Principal[] pseudos = acl.listPrivilegedPseudoPrincipals(action);
                 for (int i = 0; i < pseudos.length; i++) {
                     Principal pseudo = pseudos[i];
-                    if (!empty || i > 0) entry.append(",");
+                    if (!empty || i > 0)
+                        entry.append(",");
                     entry.append("p:").append(pseudo.getQualifiedName());
                     empty = false;
                 }
-                
+
                 if (!empty) {
                     encode(entry);
                     ensure72Bytes(entry);
@@ -263,12 +284,12 @@ public class ResourceArchiver {
         }
     }
 
-    
+
     private void ensure72Bytes(StringBuilder s) throws Exception {
         int i = 0;
         int count = 0;
         while (i < s.length()) {
-            int delta = s.substring(i, i+1).getBytes("utf-8").length;
+            int delta = s.substring(i, i + 1).getBytes("utf-8").length;
             if (count + delta > 72) {
                 s.insert(i, "\n ");
                 i += 2;
@@ -279,8 +300,8 @@ public class ResourceArchiver {
             }
         }
     }
-    
-    
+
+
     /**
      * Flatten "\r" and "\n" (not allowed in manifest entries)
      */
@@ -313,9 +334,10 @@ public class ResourceArchiver {
             }
         }
     }
-    
-    
-    private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut, EventListener listener) throws Exception {
+
+
+    private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut,
+            EventListener listener) throws Exception {
 
         String path = getJarPath(r, fromLevel);
 
@@ -323,7 +345,7 @@ public class ResourceArchiver {
         jarOut.putNextEntry(je);
         if (r.isCollection()) {
             Resource[] children = this.repository.listChildren(token, r.getURI(), false);
-            for (Resource child: children) {
+            for (Resource child : children) {
                 addEntry(token, fromLevel, child, jarOut, listener);
             }
         } else {
@@ -337,13 +359,13 @@ public class ResourceArchiver {
             }
             bi.close();
         }
-        if (listener != null) listener.archived(r.getURI());
+        if (listener != null)
+            listener.archived(r.getURI());
     }
-    
-    
-    
-    
-    private void storePropsAndPermissions(String token, JarEntry entry, Path resourceURI, boolean decode) throws Exception {
+
+
+    private void storePropsAndPermissions(String token, JarEntry entry, Path resourceURI,
+            boolean decode) throws Exception {
         Attributes attributes = entry.getAttributes();
         if (attributes == null) {
             return;
@@ -352,9 +374,9 @@ public class ResourceArchiver {
         Resource resource = this.repository.retrieve(token, resourceURI, false);
         boolean propsModified = false;
         boolean aclModified = false;
-        
+
         for (Object key : attributes.keySet()) {
-            
+
             String name = key.toString();
             if (name.startsWith("X-vrtx-prop-")) {
                 if (setProperty(resource, name, attributes, decode)) {
@@ -374,15 +396,19 @@ public class ResourceArchiver {
         }
     }
 
-    private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode) throws Exception {
+
+    private boolean setProperty(Resource resource, String name, Attributes attributes,
+            boolean decode) throws Exception {
         String valueString = attributes.getValue(name);
         if (decode) {
             valueString = decodeValue(valueString);
         }
         PropertyTypeDefinition propDef = parsePropDef(valueString);
-        if (propDef == null) return false;
+        if (propDef == null)
+            return false;
         String rawValue = parseRawValue(valueString);
-        if (rawValue == null || "".equals(rawValue)) return false;
+        if (rawValue == null || "".equals(rawValue))
+            return false;
 
         Property prop = resource.getProperty(propDef);
         if (prop == null) {
@@ -390,8 +416,9 @@ public class ResourceArchiver {
         }
         ValueFormatter valueFormatter = propDef.getValueFormatter();
         String format = null;
-        if (propDef.getType() == PropertyType.Type.DATE || propDef.getType() == PropertyType.Type.TIMESTAMP) {
-            format = "yyyy-MM-dd'T'HH:mm:ssZZ";
+        if (propDef.getType() == PropertyType.Type.DATE
+                || propDef.getType() == PropertyType.Type.TIMESTAMP) {
+            format = dateFormat;
         }
 
         if (propDef.isMultiple()) {
@@ -406,12 +433,13 @@ public class ResourceArchiver {
         }
         return true;
     }
-    
+
+
     private PropertyTypeDefinition parsePropDef(String valueString) {
         if (!valueString.startsWith("prefix:")) {
             return null;
         }
-            
+
         String prefix = null;
         int idx = "prefix:".length();
         if (valueString.charAt(idx) == ' ') {
@@ -439,23 +467,26 @@ public class ResourceArchiver {
         return this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
     }
 
+
     private String parseRawValue(String valueString) {
         // Assume correctly formatted string
         int idx = "prefix:".length();
-        while (valueString.charAt(idx) != ' ') idx++;
+        while (valueString.charAt(idx) != ' ')
+            idx++;
         idx++;
         idx += "name:".length();
-        while (valueString.charAt(idx) != ' ') idx++;
+        while (valueString.charAt(idx) != ' ')
+            idx++;
         idx++;
         return valueString.substring(idx);
     }
-    
 
-    private boolean setAclEntry(Resource resource, String name, Attributes attributes, boolean decode) throws Exception {
+
+    private boolean setAclEntry(Resource resource, String name, Attributes attributes,
+            boolean decode) throws Exception {
         String actionName = name.substring("X-vrtx-acl-".length());
         RepositoryAction action = Privilege.getActionByName(actionName);
 
-        
         String values = attributes.getValue(name);
         if (decode) {
             values = decodeValue(values);
@@ -464,7 +495,7 @@ public class ResourceArchiver {
 
         Acl acl = resource.getAcl();
         acl.clear();
-        for (String value: list) {
+        for (String value : list) {
             String principalName = value.substring(2);
             Principal p = null;
             char type = values.charAt(0);
@@ -479,99 +510,120 @@ public class ResourceArchiver {
                 p = principalFactory.getPrincipal(principalName, Type.GROUP);
                 break;
             }
-            if (p != null ) {
+            if (p != null) {
                 resource.setInheritedAcl(false);
                 acl.addEntry(action, p);
             }
         }
         return !resource.isInheritedAcl();
     }
-    
+
+
     private void writeFile(String token, Path uri, ZipInputStream is) throws Exception {
         this.repository.createDocument(token, uri);
         this.repository.storeContent(token, uri, new PartialZipStream(is));
     }
-    
+
 
     private String decodeValue(String s) {
         s = s.replaceAll("_esc_n_", "\n");
         s = s.replaceAll("_esc_r_", "\r");
         s = s.replaceAll("_esc_u_", "_");
         return s;
-    }    
-    
-    private void createDirectoryStructure(String token, Path dir, Set<Path> dirCache) throws Exception {
+    }
+
+
+    private void createDirectoryStructure(String token, Path dir, Set<Path> dirCache)
+            throws Exception {
         List<Path> path = dir.getPaths();
-        for (Path p: path) {
+        for (Path p : path) {
             if (!dirCache.contains(p)) {
                 this.repository.createCollection(token, p);
                 dirCache.add(p);
             }
         }
     }
-    
+
     private class PartialZipStream extends InputStream {
         ZipInputStream in;
+
+
         PartialZipStream(ZipInputStream in) {
             this.in = in;
         }
+
+
         public int available() throws IOException {
             return this.in.available();
         }
 
+
         public void close() throws IOException {
         }
+
 
         public void mark(int readLimit) {
             this.in.mark(readLimit);
         }
 
+
         public void reset() throws IOException {
             this.in.reset();
         }
 
+
         public boolean markSupported() {
             return false;
         }
-        
+
+
         public int read() throws IOException {
             return this.in.read();
         }
 
+
         public int read(byte[] b) throws IOException {
             return this.in.read(b);
         }
-        
+
+
         public int read(byte[] b, int off, int len) throws IOException {
             return this.in.read(b, off, len);
         }
+
 
         public long skip(long n) throws IOException {
             return this.in.skip(n);
         }
     }
 
-    @Required public void setRepository(Repository repository) {
+
+    @Required
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
+
 
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
         if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " does not exist");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp
+                    + " does not exist");
         }
         if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " is not a directory");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp
+                    + " is not a directory");
         }
         this.tempDir = tmp;
     }
-    
+
+
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;

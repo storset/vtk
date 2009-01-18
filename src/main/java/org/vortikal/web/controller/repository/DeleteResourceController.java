@@ -36,6 +36,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,52 +48,64 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 
-/** Delete the requested resource from repository.
+/**
+ * Delete the requested resource from repository.
  * 
- *  <p>By default puts the parent resource in the model under the 'resource' name. 
- *  This can be overridden by specifying a path (relative or absolute) to another resource.
+ * <p>
+ * By default puts the parent resource in the model under the 'resource' name.
+ * This can be overridden by specifying a path (relative or absolute) to another
+ * resource.
  */
 public class DeleteResourceController extends AbstractController implements InitializingBean {
 
-    private static final String CONFIRM_PARAMETER = "submit";
+    private static final String CONFIRM_PARAMETER = "vrtx-delete";
     private static final String CONFIRM_INPUT = "ok";
-	private Repository repository;
+    private Repository repository;
     private String viewName;
     private String resourcePath;
     private String trustedToken;
-    
+
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
+
+
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-    
+
+
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }
 
+
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
     }
-    
+
+
     public void afterPropertiesSet() throws Exception {
         if (this.viewName == null)
             throw new BeanInitializationException("Property 'viewName' must be set");
     }
 
+
     protected Repository getRepository() {
         return this.repository;
     }
-    
+
+
     protected String getTrustedToken() {
         return this.trustedToken;
     }
 
+
     protected String getViewName() {
         return this.viewName;
     }
+
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -103,33 +116,33 @@ public class DeleteResourceController extends AbstractController implements Init
             SecurityContext securityContext = SecurityContext.getSecurityContext();
             token = securityContext.getToken();
         }
-        
+
         Path uri = requestContext.getResourceURI();
         Path parentUri = uri.getParent();
-        
+
         String submit = request.getParameter(CONFIRM_PARAMETER);
-        if(submit.equals(CONFIRM_INPUT))	
-        	this.repository.delete(token, uri);
+        if (StringUtils.equals(submit, CONFIRM_INPUT)) {
+            this.repository.delete(token, uri);
+        }
 
         Resource modelResource = this.repository.retrieve(token, parentUri, false);
         if (this.resourcePath != null) {
-            Path newUri = Path.fromString(URIUtil.getAbsolutePath(this.resourcePath, uri.toString()));
+            Path newUri = Path.fromString(URIUtil
+                    .getAbsolutePath(this.resourcePath, uri.toString()));
             if (newUri != null) {
                 try {
                     modelResource = this.repository.retrieve(token, newUri, false);
                 } catch (Exception e) {
-                    this.logger.info("Unable to retireve requested resource to view '" + newUri + "'", e);
+                    this.logger.info("Unable to retireve requested resource to view '" + newUri
+                            + "'", e);
                     // Do nothing
                 }
             }
         }
-        
-        
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", modelResource);
         return new ModelAndView(this.viewName, model);
     }
 
-    
 }

@@ -32,12 +32,14 @@ public abstract class BaseAuthenticatedWebTest extends AbstractWebTest {
     }
     
     protected void deleteResource(String resourceName) {
-        // Ignore the javascript popup (asks for verification -> "do you wanna delete ... ?")
-        setScriptingEnabled(false);
         if (StringUtils.isNotBlank(resourceName)) {
         	clickLinkWithExactText(resourceName);
         }
-        clickLink("delete-resource");
+        clickLink("delete.viewService");
+        assertFormPresent("vrtx-delete-resource");
+        setWorkingForm("vrtx-delete-resource");
+        // XXX: should refactor form-submission in confirm-delete.ftl
+        clickButton("vrtx-delete");
     }
 
 }

@@ -31,10 +31,7 @@
 package org.vortikal.web.controller;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,51 +45,50 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ConfirmDeleteController implements Controller {
-
 
     private Repository repository;
     private String viewName;
     private Service deleteService;
 
 
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {        
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        
+
         String token = SecurityContext.getSecurityContext().getToken();
         Path resourceURI = RequestContext.getRequestContext().getResourceURI();
-        
+
         Resource item = repository.retrieve(token, resourceURI, true);
-        
+
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        URL url = deleteService.constructURL(item,principal);
-        
+        URL url = deleteService.constructURL(item, principal);
+
         model.put("url", url);
-        model.put("name", item.getName());   
-  
+        model.put("name", item.getName());
+
         return new ModelAndView(this.viewName, model);
     }
-    
-    
+
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+
 
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
+
     @Required
-	public void setDeleteService(Service deleteService) {
-		this.deleteService = deleteService;
-	}
-	
+    public void setDeleteService(Service deleteService) {
+        this.deleteService = deleteService;
+    }
 
 }

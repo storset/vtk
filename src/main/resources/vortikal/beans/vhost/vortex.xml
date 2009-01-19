@@ -79,8 +79,5 @@
      </description>
    </bean>
 
-   <bean id="vrtx.sessionValidationFilter" class="org.vortikal.web.filter.SessionValidationRequestFilter"
-         parent="defaultRequestFilterCategoryBean">
-   </bean>
 
 </beans>

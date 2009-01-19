@@ -17,7 +17,8 @@
      are merged: -->
 <#function getIntroduction resource>
   <#local introduction = vrtx.propValue(resource, "introduction") />
-  <#if !introduction?has_content>
+  <#local resourceType = resource.resourceType />
+  <#if !introduction?has_content && !resource.isCollection() >
     <#local introduction = vrtx.propValue(resource, "description", "", "content") />
   </#if>
   <#return introduction />

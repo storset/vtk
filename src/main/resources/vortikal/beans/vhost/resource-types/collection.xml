@@ -81,6 +81,7 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="createEvaluator" ref="collectionTitlePropertyEvaluator" />
+    <property name="contentModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
     <property name="propertiesModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
     <property name="nameModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
   </bean>

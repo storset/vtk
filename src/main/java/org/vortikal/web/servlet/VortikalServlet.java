@@ -36,9 +36,9 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -471,11 +471,9 @@ public class VortikalServlet extends DispatcherServlet {
 
     private void logRequest(HttpServletRequest req, StatusAwareResponseWrapper resp,
                             long processingTime, boolean wasCacheRequest) {
-
         if (!this.requestLogger.isInfoEnabled()) {
             return;
         }
-
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
 
@@ -505,14 +503,9 @@ public class VortikalServlet extends DispatcherServlet {
 
         String userAgent = req.getHeader("User-Agent");
         String jSession = null;
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals("JSESSIONID")) {
-                    jSession = cookies[i].getValue();
-                    break;
-                }
-            }
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            jSession = session.getId(); 
         }
         StringBuffer msg = new StringBuffer();
         msg.append(remoteHost).append(" - ").append(request);

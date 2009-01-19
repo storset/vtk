@@ -1,5 +1,8 @@
 * Thickbox versjon 3.1 modifisert for bruk i admin *
 
+
+1.1 Ekstra parameter
+
 Denne versjonen av Thickbox har en ekstra parameter "showAsHtml". Dette parameteret 
 kan settes i query stringen dersom man ønsnker å overstyre Thickbox sin innebygde 
 funksjon for nå vise bilder. Grunnen til at vi trenger denne i admin er at Thickbox
@@ -17,4 +20,11 @@ Lenken som skal åpnes i Thickbox må ha "showAsHtml=true" som ekstra parameter.
 
 <a href="${collectionListing.childLinks[child_index][item]?html}&showAsHtml=true&height=80&width=230"
       	   class="thickbox">${actionName}</a>
+      	   
+1.2 Endret sti for "loadingAnimation.gif"
+
+Første linje i "thickbox.js" endret for å peke på riktig sti til bildet "loadingAnimation.gif". 
+
+Ref: 
+var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAnimation.gif";
 

@@ -4,8 +4,9 @@
  * Copyright (c) 2007 cody lindley
  * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
 */
-		  
-var tb_pathToImage = "images/loadingAnimation.gif";
+
+// Modified path for use in Vortex
+var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAnimation.gif";
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 

@@ -119,13 +119,18 @@ public class DeleteResourceController extends AbstractController implements Init
 
         Path uri = requestContext.getResourceURI();
         Path parentUri = uri.getParent();
-
+        Resource modelResource = this.repository.retrieve(token, parentUri, false);
+        
         String submit = request.getParameter(CONFIRM_PARAMETER);
         if (StringUtils.equals(submit, CONFIRM_INPUT)) {
             this.repository.delete(token, uri);
+        }else{ 
+        	Resource currentResource = this.repository.retrieve(token, uri, false);
+        	if( currentResource.isCollection() ){ // Don't redirect on cancel regarding an collection
+        		modelResource = currentResource;
+        	}
         }
 
-        Resource modelResource = this.repository.retrieve(token, parentUri, false);
         if (this.resourcePath != null) {
             Path newUri = Path.fromString(URIUtil
                     .getAbsolutePath(this.resourcePath, uri.toString()));

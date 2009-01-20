@@ -55,12 +55,13 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
 
     public List<Comment> listCommentsByResource(Resource resource,
             boolean deep, int max) throws RuntimeException {
-        String sqlMap = getSqlMap("listCommentsByResource");
+        String sqlMap = deep ?
+                getSqlMap("listCommentsByResourceRecursively") :
+                getSqlMap("listCommentsByResource");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resource.getURI().toString());
         parameters.put("max", max);
-        parameters.put("deep", deep);
         parameters.put("uriWildcard", 
                 SqlDaoUtils.getUriSqlWildcard(resource.getURI(), 
                         SQL_ESCAPE_CHAR));

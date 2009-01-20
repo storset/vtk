@@ -649,7 +649,21 @@
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
 
+
   <select id="listCommentsByResource"
+          parameterClass="java.util.Map"
+          resultMap="Comment">
+    <include refid="listCommentsLimitPrepend" />
+    select c.id as ID, r.uri as URI, c.time, c.author, c.title, c.content, c.approved
+    from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id 
+    where c.resource_id in
+      (select resource_id from vortex_resource where uri = #uri#)
+    order by c.time desc
+    <include refid="listCommentsLimitAppend" />
+  </select>
+
+
+  <select id="listCommentsByResourceRecursively"
           parameterClass="java.util.Map"
           resultMap="Comment">
     <include refid="listCommentsLimitPrepend" />
@@ -660,6 +674,7 @@
     order by c.time desc
     <include refid="listCommentsLimitAppend" />
   </select>
+
 
   <select id="loadCommentById" parameterClass="java.lang.Integer"
           resultMap="Comment">

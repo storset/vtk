@@ -45,6 +45,10 @@
     </#if>
   </title>
   
+  <#if page?has_content>
+      <#if "${page}" != "1"><meta name="robots" content="noindex, follow"/> </#if>
+  </#if>
+  
 </head>
 <body>
   

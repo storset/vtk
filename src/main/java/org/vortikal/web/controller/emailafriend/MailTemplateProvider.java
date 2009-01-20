@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2008 University of Oslo, Norway
+/* Copyright (c) 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,61 +34,42 @@ package org.vortikal.web.controller.emailafriend;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import javax.servlet.http.HttpServletRequest;
 
-import freemarker.template.Configuration;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.View;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
+import org.vortikal.web.servlet.BufferedResponse;
 
 
 public class MailTemplateProvider {
 
-    private Configuration configuration;
-    private String freemarkerTemplate;
-
-    public String generateMailBody(String title, String articleURI, String mailFrom, String comment,
-            String serverHostname, String serverHostnameShort, int serverPort, String language) throws Exception {
-
-        String articleFullUri = "";
-
-        if (serverPort != 80) {
-            articleFullUri = "http://" + serverHostname + ":" + serverPort + articleURI;
-        } else {
-            articleFullUri = "http://" + serverHostname + articleURI;
-        }
+    private View view;
+    
+    public String generateMailBody(String title, URL articleURI, String mailFrom, 
+            String comment, String site) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("title", title);
         model.put("mailFrom", mailFrom);
         model.put("comment", comment);
-        model.put("serverHostname", serverHostname);
-        model.put("serverHostnameShort", serverHostnameShort);
-        model.put("articleFullUri", articleFullUri);
-        model.put("language", language);
+        model.put("site", site);
+        model.put("articleURI", articleURI);
 
-        // Mail-template from freemarker file.
-        // TODO: Localization in freemarker file with vrtx.msg() from
-        // messages.properties instead(?) Importing vortikal.ftl gives error..
-        // TODO: Put ${choosenTemplate} in vortikal.properties to let sites use
-        // different templates.
-        String mailMessage = "";
-
-        try {
-            mailMessage = FreeMarkerTemplateUtils.processTemplateIntoString(configuration
-                    .getTemplate(freemarkerTemplate), model);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-
+        BufferedResponse response = new BufferedResponse();
+        
+        RequestContext ctx = RequestContext.getRequestContext();
+        HttpServletRequest request = ctx.getServletRequest();
+        
+        this.view.render(model, request, response);
+        String mailMessage = response.getContentString();
         return mailMessage;
     }
 
     @Required
-    public void setFreemarkerTemplate(String freemarkerTemplate) {
-        this.freemarkerTemplate = freemarkerTemplate;
+    public void setView(View view) {
+        this.view = view;
     }
 
-    @Required
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-    }
 }

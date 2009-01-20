@@ -42,7 +42,9 @@
 
   <bean id="emailafriendHandler" class="org.vortikal.web.controller.emailafriend.EmailAFriendController">
     <property name="repository" ref="repository" />
+    <property name="viewService" ref="viewService" />
     <property name="viewName" value="emailafriend.view" />
+    <property name="siteName" value="${emailAFriend.siteName}" />
     <property name="resourceManager" ref="resourceManager"/>
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
     <property name="mailExecutor" ref="emailafriend.mailExecutor"/>
@@ -92,12 +94,11 @@
   </bean>
 
    <bean id="mailTemplateProvider" class="org.vortikal.web.controller.emailafriend.MailTemplateProvider">
-     <property name="freemarkerTemplate" value="system/mail-template.ftl"></property>
-     <property name="configuration" ref="configuration"></property>
+     <property name="view" ref="emailFriend.mailTemplateView" />
    </bean>
    
-   <bean id="configuration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
-     <property name="templateLoaderPath" value="${templateLoaderPath}"></property>
+   <bean id="emailFriend.mailTemplateView" parent="freemarkerView">
+     <property name="url" value="pages/mail-template.ftl"></property>
    </bean>
-  
+
 </beans>

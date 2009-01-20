@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -54,26 +53,27 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 
 public class EmailAFriendController implements Controller {
 
     private Repository repository;
-    protected String viewName;
+    private String viewName;
+    private String siteName;
     private ResourceWrapperManager resourceManager;
     private JavaMailSenderImpl javaMailSenderImpl;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
     private ResourceAwareLocaleResolver resourceAwareLocaleResolver;
-
+    private Service viewService;
+    
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-
-        String serverHostname = request.getServerName();
-        int serverPort = request.getServerPort();
 
         Resource resource = this.repository.retrieve(token, uri, true);
         if (resource == null) {
@@ -121,8 +121,9 @@ public class EmailAFriendController implements Controller {
                     String[] emailMultipleTo = emailTo.split(",");
                     if (isValidEmail(emailMultipleTo) && isValidEmail(emailFrom)) {
 
-                        MimeMessage mimeMessage = createMimeMessage(javaMailSenderImpl, resource, emailMultipleTo,
-                                emailFrom, comment, serverHostname, serverPort, language);
+                        MimeMessage mimeMessage = createMimeMessage(
+                                javaMailSenderImpl, resource, emailMultipleTo,
+                                emailFrom, comment);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -154,15 +155,16 @@ public class EmailAFriendController implements Controller {
     }
 
     private MimeMessage createMimeMessage(JavaMailSenderImpl sender, Resource document, String[] mailMultipleTo,
-            String emailFrom, String comment, String serverHostname, int serverPort, String language)
-            throws MessagingException, Exception {
+            String emailFrom, String comment)
+            throws Exception {
 
-        String serverHostnameShort = StringUtils.capitalize(serverHostname);
+        URL url = this.viewService.constructURL(document.getURI());
+        
+        String mailBody = mailTemplateProvider.generateMailBody(
+                document.getTitle(), url,
+                emailFrom, comment, this.siteName);
 
-        String mailBody = mailTemplateProvider.generateMailBody(document.getTitle(), document.getURI().toString(),
-                emailFrom, comment, serverHostname, serverHostnameShort, serverPort, language);
-
-        MimeMessage mimeMessage = sender.createMimeMessage();
+        MimeMessage mimeMessage = sender.createMimeMessage(); 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
         helper.setSubject(document.getTitle());
@@ -206,6 +208,16 @@ public class EmailAFriendController implements Controller {
     @Required
     public void setResourceAwareLocaleResolver(ResourceAwareLocaleResolver resourceAwareLocaleResolver) {
         this.resourceAwareLocaleResolver = resourceAwareLocaleResolver;
+    }
+    
+    @Required 
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
+    }
+    
+    @Required
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
     }
 
     private static boolean isValidEmail(String[] addrs) {

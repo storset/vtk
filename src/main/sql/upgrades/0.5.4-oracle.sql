@@ -15,3 +15,4 @@ insert into extra_prop_entry
       and (resource_type = 'collection' or resource_type = 'article-listing' or resource_type = 'event-listing'));
 
 commit;
+exit;

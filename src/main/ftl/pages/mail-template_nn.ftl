@@ -10,7 +10,7 @@
 
 <p>Les heile artikkelen her: <a href="${articleURI?html}">${articleURI?string}</a></p>
 
-<p>Med venleg helsing ${mailFrom}</p>
+<p>Med vennleg helsing ${mailFrom}</p>
 
 <hr />
 <p>

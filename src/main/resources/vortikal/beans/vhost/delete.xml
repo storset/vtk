@@ -8,7 +8,8 @@
     <property name="assertions">
       <list>
         <ref local="resourceNotRootAssertion" />
-     
+        <ref local="adminVrtxParameterRule" />
+         <ref local="deleteResourcePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="confirm-delete" />

@@ -39,6 +39,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -61,63 +62,71 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
 /**
- * Gets a comment from form input and adds it to the current
- * resource. Optionally stores the binding errors object in the
- * session.
+ * Gets a comment from form input and adds it to the current resource.
+ * Optionally stores the binding errors object in the session.
  */
 public class PostCommentController extends SimpleFormController {
 
     private Repository repository = null;
     private String formSessionAttributeName;
     private HtmlPageParser parser;
-    private int maxCommentLength = 100000;
+    private int maxCommentLength = 4000;
     private boolean requireCommentTitle = false;
-    
+
     private Set<String> illegalElements = new HashSet<String>();
     private Set<HtmlElementDescriptor> validElements = new HashSet<HtmlElementDescriptor>();
 
 
-    @Required public void setRepository(Repository repository) {
+    @Required
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    @Required public void setHtmlParser(HtmlPageParser parser) {
+
+    @Required
+    public void setHtmlParser(HtmlPageParser parser) {
         this.parser = parser;
     }
-    
+
+
     public void setFormSessionAttributeName(String formSessionAttributeName) {
         this.formSessionAttributeName = formSessionAttributeName;
     }
 
-    @Required public void setIllegalElements(Set<String> illegalElements) {
-        for (String elem: illegalElements) {
+
+    @Required
+    public void setIllegalElements(Set<String> illegalElements) {
+        for (String elem : illegalElements) {
             this.illegalElements.add(elem);
         }
     }
-    
-    @Required public void setValidElements(Set<HtmlElementDescriptor> validElements) {
-        for (HtmlElementDescriptor desc: validElements) {
+
+
+    @Required
+    public void setValidElements(Set<HtmlElementDescriptor> validElements) {
+        for (HtmlElementDescriptor desc : validElements) {
             this.validElements.add(desc);
         }
     }
 
+
     public void setMaxCommentLength(int maxCommentLength) {
         this.maxCommentLength = maxCommentLength;
     }
-    
+
+
     public void setRequireCommentTitle(boolean requireCommentTitle) {
         this.requireCommentTitle = requireCommentTitle;
     }
-    
+
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        Resource resource = this.repository.retrieve(securityContext.getToken(),
-                                                requestContext.getResourceURI(), false);
+        Resource resource = this.repository.retrieve(securityContext.getToken(), requestContext
+                .getResourceURI(), false);
         URL url = service.constructURL(resource, securityContext.getPrincipal());
         PostCommentCommand command = new PostCommentCommand(url);
         return command;
@@ -125,7 +134,7 @@ public class PostCommentController extends SimpleFormController {
 
 
     protected void onBindAndValidate(HttpServletRequest request, Object command,
-                          BindException errors) throws Exception {
+            BindException errors) throws Exception {
 
         if (!"POST".equals(request.getMethod()) && this.formSessionAttributeName != null) {
             if (request.getSession(false) != null) {
@@ -134,28 +143,30 @@ public class PostCommentController extends SimpleFormController {
         }
 
         PostCommentCommand commentCommand = (PostCommentCommand) command;
-        if (commentCommand.getCancelAction() != null) return;
+        if (commentCommand.getCancelAction() != null)
+            return;
 
-        if (this.requireCommentTitle &&
-            (commentCommand.getTitle() == null
-             || commentCommand.getTitle().trim().equals(""))) {
+        if (this.requireCommentTitle && StringUtils.isBlank(commentCommand.getTitle())) {
             errors.rejectValue("title", "commenting.post.title.missing",
-                               "You must provide a title");
+                            "You must provide a title");
         }
-        if (commentCommand.getText() == null
-            || commentCommand.getText().trim().equals("")) {
+        
+        String commentText = commentCommand.getText();
+        if (StringUtils.isBlank(commentText)) {
             errors.rejectValue("text", "commenting.post.text.missing",
-                               "You must type something in the comment field");
-        } else if (commentCommand.getText().length() > this.maxCommentLength) {
-            errors.rejectValue("text", "commenting.post.text.toolong",
-                               new Object[] {commentCommand.getText().length(), this.maxCommentLength},
-                               "Value too long: maximum length is " + this.maxCommentLength);
+                    "You must type something in the comment field");
+        } else if (commentText.length() > this.maxCommentLength) {
+            errors.rejectValue("text", "commenting.post.text.toolong", new Object[] {
+                    commentCommand.getText().length(), this.maxCommentLength },
+                    "Value too long: maximum length is " + this.maxCommentLength);
         }
-        String parsedText = parseContent(commentCommand.getText());
-        if (parsedText == null || "".equals(parsedText.trim())) {
+        
+        String parsedText = parseContent(commentText);
+        if (StringUtils.isBlank(parsedText)) {
             errors.rejectValue("text", "commenting.post.text.missing",
-                               "You must type something in the comment field");
+                    "You must type something in the comment field");
         }
+        
         commentCommand.setParsedText(parsedText);
         if (this.formSessionAttributeName == null) {
             return;
@@ -171,16 +182,16 @@ public class PostCommentController extends SimpleFormController {
             }
         }
     }
-    
 
-    protected void doSubmitAction(Object command) throws Exception {        
+
+    protected void doSubmitAction(Object command) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
         Resource resource = this.repository.retrieve(token, uri, false);
-        
+
         PostCommentCommand commentCommand = (PostCommentCommand) command;
         if (commentCommand.getCancelAction() != null) {
             commentCommand.setDone(true);
@@ -195,7 +206,8 @@ public class PostCommentController extends SimpleFormController {
     protected String parseContent(String text) throws Exception {
         if (this.parser != null) {
             HtmlFragment fragment = this.parser.parseFragment(text);
-            fragment.filter(new SimpleHtmlPageFilter(this.illegalElements, this.validElements, false));
+            fragment.filter(new SimpleHtmlPageFilter(this.illegalElements, this.validElements,
+                    false));
             List<HtmlContent> nodes = fragment.getContent();
             boolean empty = true;
             for (HtmlContent c : nodes) {
@@ -212,7 +224,7 @@ public class PostCommentController extends SimpleFormController {
             List<HtmlContent> content = new ArrayList<HtmlContent>();
             HtmlElement currentParagraph = new HtmlElementImpl("p", true, false);
             content.add(currentParagraph);
-            for (HtmlContent c: nodes) {
+            for (HtmlContent c : nodes) {
                 if (c instanceof HtmlElement && "p".equals(((HtmlElement) c).getName())) {
                     content.add(c);
                     currentParagraph = new HtmlElementImpl("p", true, false);
@@ -221,26 +233,25 @@ public class PostCommentController extends SimpleFormController {
                     currentParagraph.addContent(c);
                 }
             }
-            
+
             StringBuilder result = new StringBuilder();
-            for (HtmlContent c: content) {
+            for (HtmlContent c : content) {
                 if (c instanceof HtmlElement) {
                     result.append(((HtmlElement) c).getEnclosedContent());
                 } else if (c instanceof HtmlText) {
                     result.append(HtmlUtil.escapeHtmlString(c.getContent()));
-                } 
+                }
             }
             return result.toString();
         }
         return text;
     }
 
-    
 
     private List<HtmlContent> trimNodes(List<HtmlContent> nodes) {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         boolean contentBegun = false;
-        for (HtmlContent node: nodes) {
+        for (HtmlContent node : nodes) {
             if (!contentBegun && (node instanceof HtmlText)) {
                 String childContent = node.getContent();
                 if (childContent.trim().equals("")) {
@@ -261,12 +272,12 @@ public class PostCommentController extends SimpleFormController {
 
         return result;
     }
-    
-    
+
+
     private boolean isEmptyContent(HtmlContent node) {
         if (node instanceof EnclosingHtmlContent) {
             HtmlContent[] children = ((EnclosingHtmlContent) node).getChildNodes();
-            for (HtmlContent child: children) {
+            for (HtmlContent child : children) {
                 if (!isEmptyContent(child)) {
                     return false;
                 }
@@ -280,5 +291,5 @@ public class PostCommentController extends SimpleFormController {
         }
         return false;
     }
-    
+
 }

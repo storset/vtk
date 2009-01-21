@@ -40,10 +40,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -56,7 +54,6 @@ import org.vortikal.repository.event.ContentModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
@@ -654,7 +651,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setApproved(true);
 
             comment = this.commentDAO.createComment(original, comment);
-            updateNumberOfComments(original, new Integer(comments.size() + 1));
+            updateNumberOfComments(original, Integer.valueOf(comments.size() + 1));
 
             return comment;
         } catch (IOException e) {
@@ -685,7 +682,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
                     this.maxComments);
-            updateNumberOfComments(original, new Integer(comments.size()));
+            updateNumberOfComments(original, Integer.valueOf(comments.size()));
 
         } catch (Exception e) {
             throw new RuntimeException("Unhandled exception", e);

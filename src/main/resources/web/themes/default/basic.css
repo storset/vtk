@@ -840,7 +840,7 @@ div.contextual-help a {
 
 /* delete msg box in admin */
 #TB_ajaxContent{
-	background:transparent url(alert.png) no-repeat scroll 210px 8px;
+	/*background:transparent url(alert.png) no-repeat scroll 210px 8px;*/
 }
 
 #TB_closeAjaxWindow{
@@ -849,15 +849,29 @@ div.contextual-help a {
 
 div.vrtx-confirm-delete-name{
 	display:inline;
-	color:red;
 	font-weight: bold;
 }
 
 div.vrtx-confirm-delete-msg{
-	width:200px;
+	/*width:200px;*/
 }
 
 #TB_ajaxContent form{
 	padding-top:1em;
 	padding-left:5em;
+}
+
+#TB_ajaxWindowTitle {
+	ext-transform:capitalize;
+}
+
+#TB_title {
+	background-image:url(/vrtx/__vrtx/static-resources/thickbox-modified/header_bg.gif);
+	border-color:#999999 #CCCCCC #AAAAAA;
+	border-style:solid;
+	border-width:1px 0px;
+}
+
+#TB_window{
+	border:1px solid #525252 !important;
 }

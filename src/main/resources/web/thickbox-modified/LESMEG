@@ -28,3 +28,6 @@ Første linje i "thickbox.js" endret for å peke på riktig sti til bildet "load
 Ref: 
 var tb_pathToImage = "/vrtx/__vrtx/static-resources/thickbox-modified/loadingAnimation.gif";
 
+1.3 Fjernet linje fra CSS
+
+*{padding: 0; margin: 0;}

@@ -21,7 +21,7 @@
 ${vrtx.getMsg("collectionListing.confirmation.delete")} <div class="vrtx-confirm-delete-name"> ${name}</div>? 
 </div>   
 
-<form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post" onload="adminDeleteFormFocus()">
+<form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">
 	<input type="hidden" value="delete" name="action" id="action" />
 	<button tabindex="1" type="submit" value="ok" id="vrtx-delete" name="vrtx-delete">${vrtx.getMsg("confirm-delete.ok")}</button>
     <button tabindex="2" type="submit" onclick="tb_remove();" value="cancel" id="vrtx-delete-cancel" name="vrtx-delete-cancel">${vrtx.getMsg("confirm-delete.cancel")}</button>

@@ -35,6 +35,11 @@
       <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
+  <#if printCssURLs?exists>
+    <#list printCssURLs as cssURL>
+      <link rel="stylesheet" href="${cssURL}" media="print" />
+    </#list>
+  </#if>
   <#list alternativeRepresentations as alt>
     <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
   </#list>

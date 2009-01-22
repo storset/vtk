@@ -144,9 +144,9 @@
 
          // File browser
          <#if resourceContext.parentURI?exists>
-         var baseFolder = "${resourceContext.parentURI?html}";
+         	var baseFolder = "${resourceContext.currentURI?html}";
          <#else>
-         var baseFolder = "/";
+         	var baseFolder = "/";
          </#if>
          fck.Config['LinkBrowserURL']  = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Connector=${fckBrowse.url.pathRepresentation}';
          fck.Config['ImageBrowserURL'] = '${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}';
@@ -383,7 +383,7 @@
         <script language="Javascript" type="text/javascript"><!--
              var urlobj;
              <#if resourceContext.parentURI?exists>
-             var baseFolder = "${resourceContext.parentURI?html}";
+             var baseFolder = "${resourceContext.currentURI?html}";
              <#else>
              var baseFolder = "/";
              </#if>

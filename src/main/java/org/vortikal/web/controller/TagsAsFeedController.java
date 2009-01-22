@@ -48,20 +48,22 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
 public class TagsAsFeedController extends AtomFeedController {
-	
-	private SearchComponent searchComponent;
+
+    private SearchComponent searchComponent;
+
 
     @Override
-	protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token) throws Exception {
-        
-    	Resource scope = getScope(token, request);
+    protected Feed createFeed(HttpServletRequest request, HttpServletResponse response, String token)
+            throws Exception {
+
+        Resource scope = getScope(token, request);
 
         String tag = request.getParameter("tag");
         if (StringUtils.isBlank(tag)) {
             response.sendError(404, "Missing tag parameter");
             return null;
         }
-        
+
         String feedTitle = getTitle(scope, tag, request);
         Feed feed = populateFeed(scope, feedTitle);
 
@@ -70,25 +72,29 @@ public class TagsAsFeedController extends AtomFeedController {
         for (PropertySet result : searchResult.getFiles()) {
             populateEntry(token, result, feed.addEntry());
         }
-        
-    	return feed;
-    	
+
+        return feed;
+
     }
-    
+
+
     @Override
     protected String getFeedPrefix() {
         return "tags:";
     }
-    
+
+
     @Override
     protected Date getLastModified(Resource collection) {
         return new Date();
     }
 
+
     @Override
     protected Property getPicture(Resource collection) {
         return null;
     }
+
 
     private Resource getScope(String token, HttpServletRequest request) throws Exception {
         String scopeFromRequest = request.getParameter("scope");
@@ -100,25 +106,31 @@ public class TagsAsFeedController extends AtomFeedController {
             return this.repository.retrieve(token, currentCollection, true);
         }
         if (scopeFromRequest.startsWith("/")) {
-            Resource scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
+            Resource scopedResource = this.repository.retrieve(token, Path
+                    .fromString(scopeFromRequest), true);
             if (!scopedResource.isCollection()) {
                 throw new IllegalArgumentException("scope must be a collection");
             }
             return scopedResource;
-        } 
-        
+        }
+
         throw new IllegalArgumentException("Scope must be empty, '.' or be a valid collection");
     }
-    
+
+
     private String getTitle(Resource scope, String tag, HttpServletRequest request) {
         org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
                 request);
-        return rc.getMessage("tags.scopedTitle", new Object[]{scope.getTitle(),tag});
+        if (Path.ROOT.equals(scope.getURI())) {
+            return rc.getMessage("tags.title", new Object[] { tag });
+        }
+        return rc.getMessage("tags.scopedTitle", new Object[] { scope.getTitle(), tag });
     }
-    
-	@Required
-	public void setSearchComponent(SearchComponent searchComponent) {
-		this.searchComponent = searchComponent;
-	}
+
+
+    @Required
+    public void setSearchComponent(SearchComponent searchComponent) {
+        this.searchComponent = searchComponent;
+    }
 
 }

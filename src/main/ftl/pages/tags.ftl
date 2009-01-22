@@ -13,17 +13,6 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-
-<#-- XXX: remove this when properties 'introduction' and 'description'
-     are merged: -->
-<#function getIntroduction resource>
-  <#local introduction = vrtx.propValue(resource, "introduction") />
-  <#if !introduction?has_content>
-    <#local introduction = vrtx.propValue(resource, "description", "", "content") />
-  </#if>
-  <#return introduction />
-</#function>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -112,7 +101,7 @@
                         </div>
                         <#list displayPropDefs as displayPropDef>
                           <#if displayPropDef.name = 'introduction'>
-                            <#assign val = getIntroduction(resource) />
+                            <#assign val = vrtx.getIntroduction(resource) />
                           <#elseif displayPropDef.type = 'IMAGE_REF'>
                             <#assign val><img src="${vrtx.propValue(resource, displayPropDef.name, "")}" /></#assign>
                           <#elseif displayPropDef.name = 'lastModified'>

@@ -16,6 +16,20 @@
          configuration." />
 </#if>
 
+
+<#-- XXX: remove this when properties 'introduction' and 'description'
+     are merged: -->
+<#function getIntroduction resource>
+  <#local introduction = vrtx.propValue(resource, "introduction") />
+  <#local resourceType = resource.resourceType />
+  <#if !introduction?has_content && resourceType != 'collection' 
+       && resourceType != 'event-listing' && resourceType != 'article-listing' >
+    <#local introduction = vrtx.propValue(resource, "description", "", "content") />
+  </#if>
+  <#return introduction />
+</#function>
+
+
 <#macro localizeMessage code default args=nullArg locale=springMacroRequestContext.getLocale() >
   
   <#--

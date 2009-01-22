@@ -12,19 +12,6 @@
 <#import "vortikal.ftl" as vrtx />
 <#import "view-utils.ftl" as viewutils />
 
-
-<#-- XXX: remove this when properties 'introduction' and 'description'
-     are merged: -->
-<#function getIntroduction resource>
-  <#local introduction = vrtx.propValue(resource, "introduction") />
-  <#local resourceType = resource.resourceType />
-  <#if !introduction?has_content && resourceType != 'collection' 
-       && resourceType != 'event-listing' && resourceType != 'article-listing' >
-    <#local introduction = vrtx.propValue(resource, "description", "", "content") />
-  </#if>
-  <#return introduction />
-</#function>
-
 <#macro displayResources collectionListing>
 
   <#local resources=collectionListing.files />
@@ -42,7 +29,7 @@
         <#list collectionListing.displayPropDefs as displayPropDef>
 
           <#if displayPropDef.name = 'introduction'>
-            <#assign val = getIntroduction(r) />
+            <#assign val = vrtx.getIntroduction(r) />
           <#elseif displayPropDef.type = 'IMAGE_REF'>
             <#assign val><img src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
           <#elseif displayPropDef.name = 'lastModified'>

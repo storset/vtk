@@ -66,7 +66,7 @@
 
      <#-- Introduction -->
      <#-- @viewutils.displayIntroduction resource / -->
-     <#assign introduction = coll.getIntroduction(resource) />
+     <#assign introduction = vrtx.getIntroduction(resource) />
      <#if introduction?has_content>
        <div class="vrtx-introduction">
          ${introduction}

@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.jcr.nodetype.PropertyDefinition;
-
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;

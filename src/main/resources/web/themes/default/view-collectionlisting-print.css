@@ -1,0 +1,57 @@
+/* Introduction */
+div.vrtx-introduction {
+	overflow: visible;
+}
+
+.vrtx-resource a.vrtx-image, .vrtx-introduction-image {
+	overflow: visible;
+}
+
+body, html {
+	overflow: visible;
+}
+
+/* Fix new page bug */
+* html h1, h2 {
+    display: inline !important;
+    page-break-after: avoid;
+    overflow: hidden;
+}
+
+/* START vrtx-resource (standard, article, events) */
+
+.vrtx-resources {
+    overflow: visible;
+    float: none;
+    clear: left;
+}
+
+div.vrtx-resource {
+    overflow: visible;
+    width: 100%;
+
+}
+
+* html div.vrtx-resource {
+    float: none;
+    clear: left;	
+}
+
+*:first-child+html div.vrtx-resource {
+	float: none;
+    clear: left;
+}
+
+div.vrtx-resource div.vrtx-read-more {
+}
+
+/* END vrtx-resource (standard, article, events) */
+	/* next / previous links */
+a.vrtx-next,a.vrtx-previous {
+	display: none
+}
+
+/* RSS - stuff */
+.vrtx-feed-link {
+	display: none;
+}

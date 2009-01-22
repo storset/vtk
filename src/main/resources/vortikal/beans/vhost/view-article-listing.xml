@@ -9,7 +9,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceIsArticleListing" />
-      </list>
+      </list>   
     </property>
     <property name="handlerInterceptors">
       <list>
@@ -166,6 +166,11 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
+          </list>
+        </entry>
+        <entry key="printCssURLs">
+          <list>
+            <value>${themeBaseURL}/view-collectionlisting-print.css</value>
           </list>
         </entry>
         <entry key="searchComponents">

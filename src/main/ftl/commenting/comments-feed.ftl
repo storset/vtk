@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <#import "/lib/vortikal.ftl" as vrtx />
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title type="html"><@vrtx.msg code='commenting.comments' args=[resource.title] default='Comments' /></title>
+  <title type="html">
+    <#if resource.URI == '/'>
+      <@vrtx.msg code='commenting.comments' args=[repositoryID] default='Comments' />
+    <#else>
+      <@vrtx.msg code='commenting.comments' args=[resource.title] default='Comments' />
+    </#if>
+  </title>
   <#assign uri = resource.URI.toString() />
   <link href="${urlMap[uri]?html}" />
   <link rel="self" href="${selfURL?html}" />

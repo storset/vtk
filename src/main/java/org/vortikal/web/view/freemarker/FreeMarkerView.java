@@ -47,42 +47,42 @@ import org.vortikal.web.servlet.BufferedResponseWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-
 /**
- * An extension of the FreeMarkerView provided in the Spring
- * Framework.
- * <p>When the request method is <code>HEAD</code>, only headers is
- * written to the response.
- *
- * <p>Configurable JavaBean properties:
+ * An extension of the FreeMarkerView provided in the Spring Framework.
+ * <p>
+ * When the request method is <code>HEAD</code>, only headers is written to the
+ * response.
+ * 
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
- *   <li><code>debug</code> - a boolean indicating debug mode. When
- *   set to <code>true</code>, an entry in the model will be added
- *   with key <code>dumpedModel</code>, containing a string dump of
- *   the original model.
+ * <li><code>debug</code> - a boolean indicating debug mode. When set to
+ * <code>true</code>, an entry in the model will be added with key
+ * <code>dumpedModel</code>, containing a string dump of the original model.
  * </ul>
  */
-public class FreeMarkerView
-  extends org.springframework.web.servlet.view.freemarker.FreeMarkerView 
-  implements ReferenceDataProviding {
+public class FreeMarkerView extends org.springframework.web.servlet.view.freemarker.FreeMarkerView
+        implements ReferenceDataProviding {
 
     private boolean debug = false;
     private ReferenceDataProvider[] referenceDataProviders;
     private LocaleResolver resourceLocaleResolver;
-    
+    private String repositoryID;
+
+
     public void setResourceLocaleResolver(LocaleResolver resourceLocaleResolver) {
-		this.resourceLocaleResolver = resourceLocaleResolver;
-	}
+        this.resourceLocaleResolver = resourceLocaleResolver;
+    }
 
 
-	public void setDebug(boolean debug)  {
+    public void setDebug(boolean debug) {
         this.debug = debug;
     }
 
-    
+
     @SuppressWarnings("unchecked")
-    protected void doRender(Map model, HttpServletRequest request,
-                            HttpServletResponse response) throws Exception {
+    protected void doRender(Map model, HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         BufferedResponseWrapper wrapper = new BufferedResponseWrapper(response);
         super.doRender(model, request, wrapper);
 
@@ -108,34 +108,38 @@ public class FreeMarkerView
 
 
     @SuppressWarnings("unchecked")
-    protected void processTemplate(Template template, Map model,
-                                   HttpServletResponse response)
-        throws IOException, TemplateException {
-        
+    protected void processTemplate(Template template, Map model, HttpServletResponse response)
+            throws IOException, TemplateException {
+
         if (this.debug) {
             String debugModel = model.toString();
             model.put("dumpedModel", debugModel);
         }
-        model.put("debug", new Boolean(this.debug));
+        model.put("debug", Boolean.valueOf(this.debug));
 
         if (this.resourceLocaleResolver != null) {
-        	model.put("resourceLocaleResolver", this.resourceLocaleResolver);
+            model.put("resourceLocaleResolver", this.resourceLocaleResolver);
         }
-        
+
+        model.put("repositoryID", this.repositoryID);
+
         super.processTemplate(template, model, response);
     }
+
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return this.referenceDataProviders;
     }
 
+
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
-    
+
+
     /**
-     * Allows to set a list whose elements are either reference data 
-     * providers or nested lists of reference data providers.
+     * Allows to set a list whose elements are either reference data providers
+     * or nested lists of reference data providers.
      */
     public void setReferenceDataProviderList(List<?> l) {
         List<ReferenceDataProvider> result = new ArrayList<ReferenceDataProvider>();
@@ -144,9 +148,10 @@ public class FreeMarkerView
             this.referenceDataProviders = result.toArray(new ReferenceDataProvider[result.size()]);
         }
     }
-    
+
+
     private void addReferenceDataProviders(List<?> source, List<ReferenceDataProvider> result) {
-        
+
         for (Object object : source) {
             if (object instanceof ReferenceDataProvider) {
                 ReferenceDataProvider r = (ReferenceDataProvider) object;
@@ -157,7 +162,14 @@ public class FreeMarkerView
         }
     }
 
+
     public String toString() {
         return this.getClass().getName() + ":" + this.getUrl();
     }
+
+
+    public void setRepositoryID(String repositoryID) {
+        this.repositoryID = repositoryID;
+    }
+
 }

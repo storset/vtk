@@ -8,8 +8,11 @@
   
     <#assign title>
       <#compress>
-        <@vrtx.msg code='commenting.comments'
-                   args=[resource.title] default='Comments' />
+        <#if resource.URI == '/'>
+          <@vrtx.msg code='commenting.comments' args=[repositoryID] default='Comments' />
+        <#else>
+          <@vrtx.msg code='commenting.comments' args=[resource.title] default='Comments' />
+        </#if>
       </#compress>
     </#assign>
     <#if feedURL?exists>

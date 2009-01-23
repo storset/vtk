@@ -53,13 +53,6 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
     
 
     public boolean conflicts(Assertion assertion) {
-        if (assertion instanceof ResourceURIAssertion) {
-            Matcher m = this.pattern.matcher(((ResourceURIAssertion) assertion).getUri());
-            // XXX: validate this:
-            if (this.invert)
-                return m.matches();
-            return ! m.matches();
-        }
         return false;
     }
 

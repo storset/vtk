@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.service;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
@@ -47,19 +48,15 @@ import org.vortikal.security.Principal;
 public class ResourceURIAssertion
   extends AbstractRepositoryAssertion {
 
-    private String uri;
+    private Path uri;
     private boolean inverted = false;
     
-
-    public String getUri() {
-        return this.uri;
-    }
 
     public void setUri(String uri) {
         if (uri == null) throw new IllegalArgumentException(
             "JavaBean property 'uri' cannot be null");
     
-        this.uri = uri;
+        this.uri = Path.fromString(uri);
     }
     
     public boolean isInverted() {
@@ -75,11 +72,11 @@ public class ResourceURIAssertion
         if (assertion instanceof ResourceURIAssertion) {
             ResourceURIAssertion other = (ResourceURIAssertion) assertion;
             if (!this.inverted && !other.isInverted()) {
-                return ! (this.uri.equals(other.getUri()));
+                return ! (this.uri.equals(other.uri));
                 
             } else if (this.inverted && !other.isInverted() ||
                        !this.inverted && other.isInverted()) {
-                return this.uri.equals(other.getUri());
+                return this.uri.equals(other.uri);
             }
         }
         return false;

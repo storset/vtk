@@ -180,8 +180,13 @@
                  vrtx.getMsg("collectionListing.confirmation." + item,
                              "Are you sure you want to " + item + " " + child.name + "?", 
                              [child.name]) />
+        <#if child.isCollection()>
+        	<#assign titleMsg = vrtx.getMsg("confirm-delete.title") + " " + vrtx.getMsg("confirm-delete.folder")  />
+        <#else>
+        	 <#assign titleMsg = vrtx.getMsg("confirm-delete.title") + " " + vrtx.getMsg("confirm-delete.file")  />
+        </#if>
       	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}&showAsHtml=true&height=80&width=230"
-      	   class="thickbox" title="${actionName} ${resourceTypeName}">${actionName}</a>&nbsp;)
+      	   class="thickbox" title="${titleMsg}">${actionName}</a>&nbsp;)
 	</#if>
      </td>
     </#list>

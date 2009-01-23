@@ -18,7 +18,7 @@
 <head>
 <body>
 <div class="vrtx-confirm-delete-msg">
-${vrtx.getMsg("collectionListing.confirmation.delete")} <div class="vrtx-confirm-delete-name"> ${name}</div>? 
+${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confirm-delete-name"> ${name}</span>? 
 </div>   
 
 <form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">

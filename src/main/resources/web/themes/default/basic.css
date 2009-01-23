@@ -847,8 +847,7 @@ div.contextual-help a {
 	display:none;
 }
 
-div.vrtx-confirm-delete-name{
-	display:inline;
+span.vrtx-confirm-delete-name{
 	font-weight: bold;
 }
 

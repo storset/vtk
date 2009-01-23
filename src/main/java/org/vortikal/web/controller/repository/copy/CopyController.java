@@ -53,6 +53,7 @@ public class CopyController extends SimpleFormController {
     private CopyAction copyAction;
     private Repository repository = null;
     private String extension;
+    private String resourceName;
 
     private boolean parentViewOnSuccess = false;
     
@@ -60,6 +61,11 @@ public class CopyController extends SimpleFormController {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+    
+    public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -76,13 +82,15 @@ public class CopyController extends SimpleFormController {
         
         if (this.extension != null)
                 name += this.extension;
+        
+        if(this.resourceName != null)
+        		name = this.resourceName;
 
         CopyCommand command = new CopyCommand(name, url);
         return command;
     }
 
-
-    protected ModelAndView onSubmit(Object command) throws Exception {
+	protected ModelAndView onSubmit(Object command) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
 

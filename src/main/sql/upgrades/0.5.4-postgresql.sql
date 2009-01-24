@@ -6,7 +6,7 @@ insert into extra_prop_entry
     0,
     null,
     'introduction',
-    e.value,
+    '<p>' || e.value || '</p>',
     null,
     null
   from extra_prop_entry e

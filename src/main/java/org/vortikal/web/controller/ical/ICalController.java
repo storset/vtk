@@ -109,7 +109,7 @@ public class ICalController implements Controller {
 
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCALENDAR\n");
-        sb.append("PRODID:-//UiO//Vortex//NONSGML v1.0//NO\n");
+        sb.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
         sb.append("VERSION:2.0\n");
         sb.append("BEGIN:VEVENT\n");
         sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");

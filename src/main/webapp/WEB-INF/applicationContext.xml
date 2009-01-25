@@ -1,48 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
   "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-  
 
-  <import resource="classpath:/vortikal/beans/vhost/main.xml" />
-
-  <import resource="extensions.xml" />
-
-  <bean id="vrtx.configLocations" class="org.springframework.beans.factory.config.ListFactoryBean">
-    <property name="sourceList">
-       <list>
-         <value>classpath:/vortikal/beans/vortikal.properties</value>
-         <value>classpath:vortikal-custom.properties</value>
-         <value>file://${user.home}/vortikal.properties</value>
-         <value>file://${user.home}/vrtx.properties</value>
-       </list>
-    </property>
-  </bean>
-
-   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-     <property name="ignoreResourceNotFound" value="true" />
-     <property name="locations" ref="vrtx.configLocations" />
-   </bean>
-
-
+	<import resource="classpath:/vortikal/beans/vhost/config/property-configurer.xml" />
+	<import resource="classpath:/vortikal/beans/vhost/main.xml" />
+	<import resource="extensions.xml" />
+	
    <!-- Fix for resin 3.0 -->
-
-   <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
-         parent="defaultRequestFilterCategoryBean" />
-
-   <bean id="reqURIEncodingTranslator"
-         class="org.vortikal.web.filter.RequestURIEncodingTranslator"
-         parent="defaultRequestFilterCategoryBean">
-     <property name="order" value="10" />
-     <property name="fromEncoding" value="iso-8859-1" />
-     <property name="toEncoding" value="utf-8" />
-   </bean>
-
-   <bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder"
-         parent="defaultRequestFilterCategoryBean">
-     <property name="order" value="10" />
-     <property name="characterEncoding" value="utf-8" />
-   </bean>
-
+	<bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
+		parent="defaultRequestFilterCategoryBean" />
+	
+	<bean id="reqURIEncodingTranslator" class="org.vortikal.web.filter.RequestURIEncodingTranslator"
+		parent="defaultRequestFilterCategoryBean">
+		<property name="order" value="10" />
+		<property name="fromEncoding" value="iso-8859-1" />
+		<property name="toEncoding" value="utf-8" />
+	</bean>
+	
+	<bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder"
+		parent="defaultRequestFilterCategoryBean">
+		<property name="order" value="10" />
+		<property name="characterEncoding" value="utf-8" />
+	</bean>
+	
 </beans>

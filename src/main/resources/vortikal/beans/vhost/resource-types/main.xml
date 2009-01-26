@@ -1,112 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
-  <!-- CONSTANTS -->
-  <import resource="namespaces.xml" />
-  <import resource="protection-levels.xml" />
-  <import resource="property-types.xml" />
+    <!-- CONSTANTS -->
+	<import resource="namespaces.xml" />
+	<import resource="protection-levels.xml" />
+	<import resource="property-types.xml" />
 
-  <!-- RESOURCE TYPE DEFINITIONS -->
-  <import resource="resource.xml" />
-  <import resource="file.xml" />
-  <import resource="collection.xml"/>
-  <import resource="article-listing.xml"/>
-  <import resource="event-listing.xml"/>
-  <import resource="image.xml" />
-  <import resource="audio.xml" />
-  <import resource="video.xml" />
-  <import resource="pdf.xml" />
-  <import resource="text.xml" />
-  <import resource="apt.xml" />
-  <import resource="php.xml" />
-  <import resource="html.xml" />
-  <import resource="xhtml10trans.xml" />
-  <import resource="article.xml" />
-  <import resource="event.xml" />
-  <!-- import resource="xhtml10.xml" / -->
-  <import resource="xml.xml" />
-  <import resource="managed-xml.xml" />
+    <!-- RESOURCE TYPE DEFINITIONS -->
+	<import resource="resource.xml" />
+	<import resource="file.xml" />
+	<import resource="collection.xml" />
+	<import resource="article-listing.xml" />
+	<import resource="event-listing.xml" />
+	<import resource="image.xml" />
+	<import resource="audio.xml" />
+	<import resource="video.xml" />
+	<import resource="pdf.xml" />
+	<import resource="text.xml" />
+	<import resource="apt.xml" />
+	<import resource="php.xml" />
+	<import resource="html.xml" />
+	<import resource="xhtml10trans.xml" />
+	<import resource="article.xml" />
+	<import resource="event.xml" />
+	<import resource="xml.xml" />
+	<import resource="managed-xml.xml" />
 
-  <!-- Studinfo -->
-  <import resource="emne.xml" />
-  <import resource="semester.xml" />
-  <import resource="emnegruppe.xml" />
-  <import resource="studieprogram.xml" />
-  <import resource="studieretning.xml" />
-  <import resource="utvekslingsavtale.xml" />
+    <!-- Studinfo -->
+	<import resource="emne.xml" />
+	<import resource="semester.xml" />
+	<import resource="emnegruppe.xml" />
+	<import resource="studieprogram.xml" />
+	<import resource="studieretning.xml" />
+	<import resource="utvekslingsavtale.xml" />
   
-  <!-- Felles / Common -->
-  <import resource="artikkelsamling.xml" />
+    <!-- Felles / Common -->
+	<import resource="artikkelsamling.xml" />
 
-  <!-- UiO  -->
-  <import resource="artikkel.xml"/>
-  <import resource="disputas.xml"/>
-  <import resource="proveforelesning.xml"/>
-  <import resource="nyhet.xml"/>
-  <import resource="arrangement.xml"/>
-  <import resource="publikasjon.xml"/>
+    <!-- UiO  -->
+	<import resource="artikkel.xml" />
+	<import resource="disputas.xml" />
+	<import resource="proveforelesning.xml" />
+	<import resource="nyhet.xml" />
+	<import resource="arrangement.xml" />
+	<import resource="publikasjon.xml" />
 
-  <!-- Sakskart -->
-  <import resource="sakskart.xml" />
+    <!-- Sakskart -->
+	<import resource="sakskart.xml" />
 
-  <!-- Traktater -->
-  <import resource="treaty.xml" />
+      <!-- Traktater -->
+	<import resource="treaty.xml" />
 
-  <!-- Portal.xml - søkedokumentet -->
-  <import resource="portal.xml" />
-
-  <!-- Portalen -->
-  <!--
-  <import resource="portal-page.xml" />
-  -->
+      <!-- Portal.xml - søkedokumentet -->
+	<import resource="portal.xml" />
   
-  <!-- Romskjema -->
-  <import resource="romskjema.xml" />
+    <!-- Romskjema -->
+	<import resource="romskjema.xml" />
 
-  <!-- MUV -->
-  <import resource="muv-artikkel.xml" />
+    <!-- MUV -->
+	<import resource="muv-artikkel.xml" />
     
-  <!-- CEES -->
-  <import resource="researcher.xml" />
-  <import resource="project.xml" />
+    <!-- CEES -->
+	<import resource="researcher.xml" />
+	<import resource="project.xml" />
 
-  <!-- MIXINs -->
-  <import resource="mixins/introduction-mixin.xml" />
-  <import resource="mixins/header-control.xml" />
-  <import resource="mixins/navigation.xml" />
-  <import resource="mixins/ssi.xml" />
-  <import resource="mixins/visual-profile.xml" />
-  <import resource="mixins/content-description.xml" />
-  <import resource="mixins/scientific.xml" />
-
- <bean id="valueFormatterRegistry" class="org.vortikal.repository.resourcetype.ValueFormatterRegistry">
-  <property name="valueFormatters">
-   <map>
-    <entry key="STRING"><bean class="org.vortikal.repository.resourcetype.StringValueFormatter" /></entry>
-    <entry key="HTML">
-      <bean class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
-        <property name="htmlUtil" ref="htmlUtil" />
-      </bean>
-    </entry>
-    <entry key="IMAGE_REF">
-      <bean class="org.vortikal.repository.resourcetype.ImageRefValueFormatter">
-	<property name="thumbnailServiceBeanName" value="displayThumbnailService" />
-	<property name="requireThumbnailService" value="true" />
-      </bean>
-    </entry>
-    <entry key="INT"><bean class="org.vortikal.repository.resourcetype.IntValueFormatter" /></entry>
-    <entry key="LONG"><bean class="org.vortikal.repository.resourcetype.LongValueFormatter" /></entry>
-    <entry key="TIMESTAMP"><bean class="org.vortikal.repository.resourcetype.DateValueFormatter" /></entry>
-    <entry key="DATE"><bean class="org.vortikal.repository.resourcetype.DateValueFormatter"><constructor-arg value="true" /></bean></entry>
-    <entry key="BOOLEAN"><bean class="org.vortikal.repository.resourcetype.BooleanValueFormatter" /></entry>
-    <entry key="PRINCIPAL">
-     <bean class="org.vortikal.repository.resourcetype.PrincipalValueFormatter">
-      <property name="principalFactory" ref="principalFactory" />
-     </bean>
-    </entry>
-   </map>
-  </property>
- </bean>
+    <!-- MIXINs -->
+	<import resource="mixins/introduction-mixin.xml" />
+	<import resource="mixins/header-control.xml" />
+	<import resource="mixins/navigation.xml" />
+	<import resource="mixins/ssi.xml" />
+	<import resource="mixins/visual-profile.xml" />
+	<import resource="mixins/content-description.xml" />
+	<import resource="mixins/scientific.xml" />
+	<bean id="valueFormatterRegistry"
+		class="org.vortikal.repository.resourcetype.ValueFormatterRegistry">
+		<property name="valueFormatters">
+			<map>
+				<entry key="STRING">
+					<bean class="org.vortikal.repository.resourcetype.StringValueFormatter" />
+				</entry>
+				<entry key="HTML">
+					<bean class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
+						<property name="htmlUtil" ref="htmlUtil" />
+					</bean>
+				</entry>
+				<entry key="IMAGE_REF">
+					<bean class="org.vortikal.repository.resourcetype.ImageRefValueFormatter">
+						<property name="thumbnailServiceBeanName" value="displayThumbnailService" />
+						<property name="requireThumbnailService" value="true" />
+					</bean>
+				</entry>
+				<entry key="INT">
+					<bean class="org.vortikal.repository.resourcetype.IntValueFormatter" />
+				</entry>
+				<entry key="LONG">
+					<bean class="org.vortikal.repository.resourcetype.LongValueFormatter" />
+				</entry>
+				<entry key="TIMESTAMP">
+					<bean class="org.vortikal.repository.resourcetype.DateValueFormatter" />
+				</entry>
+				<entry key="DATE">
+					<bean class="org.vortikal.repository.resourcetype.DateValueFormatter">
+						<constructor-arg value="true" />
+					</bean>
+				</entry>
+				<entry key="BOOLEAN">
+					<bean class="org.vortikal.repository.resourcetype.BooleanValueFormatter" />
+				</entry>
+				<entry key="PRINCIPAL">
+					<bean
+						class="org.vortikal.repository.resourcetype.PrincipalValueFormatter">
+						<property name="principalFactory" ref="principalFactory" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
 </beans>

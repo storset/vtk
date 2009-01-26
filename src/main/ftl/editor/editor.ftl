@@ -144,7 +144,11 @@
 
          // File browser
          <#if resourceContext.parentURI?exists>
-         	var baseFolder = "${resourceContext.currentURI?html}";
+            <#if resourceType = 'article-listing' || resourceType = 'event-listing' || resourceType = 'collection'>              
+              var baseFolder = "${resourceContext.currentURI?html}";
+            <#else>
+              var baseFolder = "${resourceContext.parentURI?html}";
+            </#if>
          <#else>
          	var baseFolder = "/";
          </#if>
@@ -383,9 +387,14 @@
         <script language="Javascript" type="text/javascript"><!--
              var urlobj;
              <#if resourceContext.parentURI?exists>
-             var baseFolder = "${resourceContext.currentURI?html}";
+               <#if resource.resourceType = 'article-listing' || resource.resourceType = 'event-listing'
+                 || resource.resourceType = 'collection'>              
+                 var baseFolder = "${resourceContext.currentURI?html}";
+               <#else>
+                 var baseFolder = "${resourceContext.parentURI?html}";
+               </#if>
              <#else>
-             var baseFolder = "/";
+               var baseFolder = "/";
              </#if>
              function browseServer(obj, type) {
                      urlobj = obj;

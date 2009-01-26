@@ -168,6 +168,11 @@
             <value>${themeBaseURL}/view-collectionlisting.css</value>
           </list>
         </entry>
+        <entry key="printCssURLs">
+          <list>
+            <value>${themeBaseURL}/view-collectionlisting-print.css</value>
+          </list>
+        </entry>
         <entry key="searchComponents">
           <list>
             <ref bean="articleListing.searchComponent" />

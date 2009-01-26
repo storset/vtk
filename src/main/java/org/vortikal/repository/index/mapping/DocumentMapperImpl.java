@@ -243,41 +243,37 @@ public class DocumentMapperImpl implements DocumentMapper {
         // (with the same name) in the index.
         // Note that the iteration will _only_ contain _stored_ fields.
         String currentName = null;
-        List<Field> fields = null;
+        List<Field> fields = new ArrayList<Field>();
         
         for(Iterator<Field> iterator = doc.getFields().iterator(); iterator.hasNext();) {
             Field field = iterator.next();
+            String name = field.name();
             
             // Skip reserved fields
-            if (FieldNameMapping.isReservedField(field.name())) {
-                currentName = null;
-                continue;
-            }
+            if (FieldNameMapping.isReservedField(name)) continue;
             
             if (currentName == null) {
-                currentName = field.name();
-                fields = new ArrayList<Field>();
+                currentName = name;
             }
             
             // Field.name() returns an internalized String instance. 
             // Optimize by only comparing reference instead of calling 
             // String.equals(Object o). This saves a method call, 
-            // and a full string comparison in cases where the references differ.
-            if (field.name() == currentName) {
+            // and a full string comparison when the references differ.
+            if (name == currentName) {
                 fields.add(field);
             } else {
                 Property prop = getPropertyFromStoredFieldValues(currentName, 
                                                                  fields);
                 propSet.addProperty(prop);
-                
-                fields = new ArrayList<Field>();
-                currentName = field.name();
+                fields.clear();
+                currentName = name;
                 fields.add(field);
             }
         }
         
         // Make sure we don't forget the last field
-        if (currentName != null && fields != null) {
+        if (currentName != null) {
             Property prop = getPropertyFromStoredFieldValues(currentName,
                                                              fields);
             propSet.addProperty(prop);
@@ -380,7 +376,7 @@ public class DocumentMapperImpl implements DocumentMapper {
         if (FieldNameMapping.isReservedField(fieldName)) {
             throw new FieldValueMappingException("Property field name '" + fieldName 
                     + "' is a reserved index field.");
-        }
+        }   
         
         PropertyTypeDefinition def = property.getDefinition();
         if (def == null) {

@@ -150,23 +150,23 @@ public class PostCommentController extends SimpleFormController {
             errors.rejectValue("title", "commenting.post.title.missing",
                             "You must provide a title");
         }
-        
+
         String commentText = commentCommand.getText();
         if (StringUtils.isBlank(commentText)) {
             errors.rejectValue("text", "commenting.post.text.missing",
                     "You must type something in the comment field");
-        } else if (commentText.length() > this.maxCommentLength) {
-            errors.rejectValue("text", "commenting.post.text.toolong", new Object[] {
-                    commentCommand.getText().length(), this.maxCommentLength },
-                    "Value too long: maximum length is " + this.maxCommentLength);
         }
-        
+
         String parsedText = parseContent(commentText);
         if (StringUtils.isBlank(parsedText)) {
             errors.rejectValue("text", "commenting.post.text.missing",
                     "You must type something in the comment field");
+        } else if (parsedText.length() > this.maxCommentLength) {
+            errors.rejectValue("text", "commenting.post.text.toolong", new Object[] {
+                    parsedText.length(), this.maxCommentLength },
+                    "Value too long: maximum length is " + this.maxCommentLength);
         }
-        
+
         commentCommand.setParsedText(parsedText);
         if (this.formSessionAttributeName == null) {
             return;

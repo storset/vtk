@@ -360,7 +360,7 @@ values (
     'vortex@localhost',
     'vortex@localhost',
     null,
-    'application/x-vortex-collection',
+    null,
     null,
     'Y',
     null,

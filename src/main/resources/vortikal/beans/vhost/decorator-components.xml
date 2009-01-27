@@ -281,6 +281,8 @@
     <property name="connectTimeoutSeconds" value="${decorating.feedComponent.connectTimeoutSeconds}" />
     <property name="readTimeoutSeconds" value="${decorating.feedComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.feedComponent.identifier}" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="safeHtmlFilter" ref="safeHtml.filter" />
   </bean>
   
   

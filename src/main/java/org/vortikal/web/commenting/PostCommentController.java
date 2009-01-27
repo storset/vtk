@@ -32,10 +32,8 @@ package org.vortikal.web.commenting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,13 +49,12 @@ import org.vortikal.text.html.EnclosingHtmlContent;
 import org.vortikal.text.html.HtmlComment;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlElementDescriptor;
 import org.vortikal.text.html.HtmlElementImpl;
 import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlUtil;
-import org.vortikal.text.html.SimpleHtmlPageFilter;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -71,55 +68,36 @@ public class PostCommentController extends SimpleFormController {
     private Repository repository = null;
     private String formSessionAttributeName;
     private HtmlPageParser parser;
+    private HtmlPageFilter htmlFilter;
     private int maxCommentLength = 4000;
     private boolean requireCommentTitle = false;
-
-    private Set<String> illegalElements = new HashSet<String>();
-    private Set<HtmlElementDescriptor> validElements = new HashSet<HtmlElementDescriptor>();
-
 
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
     @Required
     public void setHtmlParser(HtmlPageParser parser) {
         this.parser = parser;
     }
 
-
     public void setFormSessionAttributeName(String formSessionAttributeName) {
         this.formSessionAttributeName = formSessionAttributeName;
     }
 
-
     @Required
-    public void setIllegalElements(Set<String> illegalElements) {
-        for (String elem : illegalElements) {
-            this.illegalElements.add(elem);
-        }
+    public void setHtmlFilter(HtmlPageFilter htmlFilter) {
+        this.htmlFilter = htmlFilter;
     }
-
-
-    @Required
-    public void setValidElements(Set<HtmlElementDescriptor> validElements) {
-        for (HtmlElementDescriptor desc : validElements) {
-            this.validElements.add(desc);
-        }
-    }
-
 
     public void setMaxCommentLength(int maxCommentLength) {
         this.maxCommentLength = maxCommentLength;
     }
 
-
     public void setRequireCommentTitle(boolean requireCommentTitle) {
         this.requireCommentTitle = requireCommentTitle;
     }
-
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -206,8 +184,7 @@ public class PostCommentController extends SimpleFormController {
     protected String parseContent(String text) throws Exception {
         if (this.parser != null) {
             HtmlFragment fragment = this.parser.parseFragment(text);
-            fragment.filter(new SimpleHtmlPageFilter(this.illegalElements, this.validElements,
-                    false));
+            fragment.filter(this.htmlFilter);
             List<HtmlContent> nodes = fragment.getContent();
             boolean empty = true;
             for (HtmlContent c : nodes) {
@@ -291,5 +268,4 @@ public class PostCommentController extends SimpleFormController {
         }
         return false;
     }
-
 }

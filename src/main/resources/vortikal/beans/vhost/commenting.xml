@@ -79,25 +79,12 @@
     <property name="requireCommentTitle" ref="commenting.titlesEnabled" />
     <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="illegalElements" ref="commenting.illegalHtmlElementSet" />
-    <property name="validElements" ref="commenting.validHtmlElementSet" />
+    <property name="htmlFilter" ref="commenting.htmlFilter" />
   </bean>
 
-
-  <bean id="commenting.illegalHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
-    <property name="sourceSet">
-      <set>
-        <value>script</value>
-        <value>style</value>
-        <value>form</value>
-        <value>input</value>
-        <value>frameset</value>
-        <value>frame</value>
-        <value>iframe</value>
-        <value>object</value>
-        <value>embed</value>
-      </set>
-    </property>
+  <bean id="commenting.htmlFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="illegalElements" ref="safeHtml.illegalElementSet" />
+    <property name="validElements" ref="commenting.validHtmlElementSet" />
   </bean>
 
   <bean id="commenting.validHtmlElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
@@ -144,7 +131,6 @@
       </set>
     </property>
   </bean>
-
 
   <bean name="commenting.deleteCommentController"
         class="org.vortikal.web.commenting.DeleteCommentController"

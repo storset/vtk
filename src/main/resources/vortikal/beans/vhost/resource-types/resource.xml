@@ -71,7 +71,6 @@
   <bean id="htmlUtil" class="org.vortikal.text.html.HtmlUtil">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlEntityMap" ref="htmlEntityMap" />
-    <property name="safeHtmlFilter" ref="safeHtml.filter" />
   </bean>
 
   <bean id="htmlFormatter" class="org.vortikal.repository.resourcetype.HtmlValueFormatter">

@@ -41,11 +41,15 @@
             <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />
           </span>
           </#if>
-	      <#-- description -->
-	      <#if conf.itemDescription?exists && (entry.description.value)?exists>
+
+          <#-- description -->
+          <#if conf.itemDescription?exists && (entry.description.value)?exists>
+          
             <div class="item-description">
+              <#-- This should be safe to use (HTML has been parsed in SyndFeedLoader): -->
               ${entry.description.value?string}
             </div>
+            
           </#if>
           <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>
             <ul class="categories">

@@ -35,9 +35,9 @@ import java.util.Map;
 
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
-public class ACLEditCommand extends AbstractSaveCancelCommand {
+public class ACLEditCommand extends UpdateCancelCommand {
 
     private String addUserAction = null;
     private String removeUserAction = null;

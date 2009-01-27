@@ -30,10 +30,10 @@
  */
 package org.vortikal.web.controller.properties;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
-public class OwnershipCommand extends AbstractSaveCancelCommand {
+public class OwnershipCommand extends UpdateCancelCommand {
 
     private String owner;
 

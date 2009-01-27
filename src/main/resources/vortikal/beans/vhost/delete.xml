@@ -88,6 +88,7 @@
     class="org.vortikal.web.controller.repository.DeleteResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToManage" />
+     <property name="commandClass" value="org.vortikal.web.controller.UpdateCancelCommand" />
   </bean>
   
    <bean id="adminVrtxParameterRule" class="org.vortikal.web.service.RequestParameterAssertion">

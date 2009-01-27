@@ -30,11 +30,11 @@
  */
 package org.vortikal.web.controller.properties;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
 
-public class ContentLanguageCommand extends AbstractSaveCancelCommand {
+public class ContentLanguageCommand extends UpdateCancelCommand {
 
     private String contentLanguage;
     private String[] possibleLanguages;

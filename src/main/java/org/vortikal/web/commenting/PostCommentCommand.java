@@ -30,10 +30,10 @@
  */
 package org.vortikal.web.commenting;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
 
-public class PostCommentCommand extends AbstractSaveCancelCommand {
+public class PostCommentCommand extends UpdateCancelCommand {
 
     private String title;
     private String text;

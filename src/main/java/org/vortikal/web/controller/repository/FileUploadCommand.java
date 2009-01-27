@@ -30,10 +30,10 @@
  */
 package org.vortikal.web.controller.repository;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
-public class FileUploadCommand extends AbstractSaveCancelCommand {
+public class FileUploadCommand extends UpdateCancelCommand {
 
     private String file;
 

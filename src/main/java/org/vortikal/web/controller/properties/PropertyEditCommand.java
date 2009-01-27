@@ -33,11 +33,11 @@ package org.vortikal.web.controller.properties;
 import java.util.List;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
 
-public class PropertyEditCommand extends AbstractSaveCancelCommand {
+public class PropertyEditCommand extends UpdateCancelCommand {
 
     private PropertyTypeDefinition definition;
     private List<String> possibleValues;

@@ -31,6 +31,7 @@
 package org.vortikal.web.controller.repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,14 +40,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.edit.plaintext.PlaintextEditCommand;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.controller.UpdateCancelCommand;
+import org.vortikal.web.service.Service;
 
 /**
  * Delete the requested resource from repository.
@@ -56,17 +64,15 @@ import org.vortikal.web.RequestContext;
  * This can be overridden by specifying a path (relative or absolute) to another
  * resource.
  */
-public class DeleteResourceController extends AbstractController implements InitializingBean {
-
-    private static final String CONFIRM_PARAMETER = "vrtx-delete";
-    private static final String CONFIRM_INPUT = "ok";
+public class DeleteResourceController extends SimpleFormController implements InitializingBean {
+	
     private Repository repository;
     private String viewName;
     private String resourcePath;
     private String trustedToken;
 
 
-    public void setRepository(Repository repository) {
+	public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
@@ -79,7 +85,6 @@ public class DeleteResourceController extends AbstractController implements Init
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }
-
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
@@ -106,48 +111,63 @@ public class DeleteResourceController extends AbstractController implements Init
         return this.viewName;
     }
 
+    protected Object formBackingObject(HttpServletRequest request)
+    throws Exception {
+	    RequestContext requestContext = RequestContext.getRequestContext();
+	    SecurityContext securityContext = SecurityContext.getSecurityContext();
+	    Service service = requestContext.getService();
+	    
+	    Path uri = requestContext.getResourceURI();
+	    String token = securityContext.getToken();
+	    Principal principal = securityContext.getPrincipal();
+	
+	    Resource resource = this.repository.retrieve(token, uri, false);
+	    String url = service.constructLink(resource, principal);
+	    
 
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-
-        String token = this.trustedToken;
-        if (token == null) {
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            token = securityContext.getToken();
-        }
-
-        Path uri = requestContext.getResourceURI();
-        Path parentUri = uri.getParent();
-        Resource modelResource = this.repository.retrieve(token, parentUri, false);
-        
-        String submit = request.getParameter(CONFIRM_PARAMETER);
-        if (StringUtils.equals(submit, CONFIRM_INPUT)) {
-            this.repository.delete(token, uri);
-        }else{ 
-        	Resource currentResource = this.repository.retrieve(token, uri, false);
-        	if( currentResource.isCollection() ){ // Don't redirect on cancel regarding an collection
-        		modelResource = currentResource;
-        	}
-        }
-
-        if (this.resourcePath != null) {
-            Path newUri = Path.fromString(URIUtil
-                    .getAbsolutePath(this.resourcePath, uri.toString()));
-            if (newUri != null) {
-                try {
-                    modelResource = this.repository.retrieve(token, newUri, false);
-                } catch (Exception e) {
-                    this.logger.info("Unable to retireve requested resource to view '" + newUri
-                            + "'", e);
-                    // Do nothing
-                }
-            }
-        }
-
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("resource", modelResource);
-        return new ModelAndView(this.viewName, model);
+	    return new UpdateCancelCommand(url);
     }
+    
+    protected ModelAndView onSubmit(Object command, BindException errors) throws Exception {
+    	RequestContext requestContext = RequestContext.getRequestContext();
+    	String token = this.trustedToken;
+    	
+    	if (token == null) {
+    		SecurityContext securityContext = SecurityContext.getSecurityContext();
+    		token = securityContext.getToken();
+    	}
+    	
+    	Path uri = requestContext.getResourceURI();
+    	Path parentUri = uri.getParent();
 
+    	UpdateCancelCommand updateCancelCommand = (UpdateCancelCommand) command;
+    	Resource modelResource = this.repository.retrieve(token, parentUri, false);
+    	
+    	if (updateCancelCommand.getSaveAction() == null) {
+    		Resource currentResource = this.repository.retrieve(token, uri, false);
+    		if( currentResource.isCollection() ){ // Don't redirect on cancel regarding an collection
+    			modelResource = currentResource;
+    		}
+    	}else{ // delete resource
+    		this.repository.delete(token, uri);
+    		if (this.resourcePath != null) {
+    			Path newUri = Path.fromString(URIUtil
+    					.getAbsolutePath(this.resourcePath, uri.toString()));
+    			if (newUri != null) {
+    				try {
+    					modelResource = this.repository.retrieve(token, newUri, false);
+    				} catch (Exception e) {
+    					this.logger.info("Unable to retireve requested resource to view '" + newUri
+    							+ "'", e);
+    					// Do nothing
+    				}
+    			}
+    		}
+    	}
+    	Map<String, Object> model = new HashMap<String, Object>();
+    	model.put("resource", modelResource);
+    	return new ModelAndView(this.viewName, model);
+    }
 }
+
+

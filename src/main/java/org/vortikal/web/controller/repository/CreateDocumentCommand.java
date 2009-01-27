@@ -30,10 +30,10 @@
  */
 package org.vortikal.web.controller.repository;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
-public class CreateDocumentCommand extends AbstractSaveCancelCommand {
+public class CreateDocumentCommand extends UpdateCancelCommand {
 
     private String name = null;
     private String sourceURI = null;

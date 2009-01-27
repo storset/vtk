@@ -31,10 +31,10 @@
 package org.vortikal.web.controller.repository.copy;
 
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
-public class CopyCommand extends AbstractSaveCancelCommand {
+public class CopyCommand extends UpdateCancelCommand {
 
     private String name;
 

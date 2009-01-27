@@ -30,9 +30,9 @@
  */
 package org.vortikal.web.controller.properties;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
-public class ResourcePropertyCommand extends AbstractSaveCancelCommand {
+public class ResourcePropertyCommand extends UpdateCancelCommand {
     
     private String namespace;
     private String name;

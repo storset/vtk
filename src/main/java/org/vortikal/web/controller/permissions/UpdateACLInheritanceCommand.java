@@ -30,11 +30,11 @@
  */
 package org.vortikal.web.controller.permissions;
 
-import org.vortikal.web.controller.AbstractSaveCancelCommand;
+import org.vortikal.web.controller.UpdateCancelCommand;
 
 
 
-public class UpdateACLInheritanceCommand extends AbstractSaveCancelCommand {
+public class UpdateACLInheritanceCommand extends UpdateCancelCommand {
 
     private boolean inherited = false;
     

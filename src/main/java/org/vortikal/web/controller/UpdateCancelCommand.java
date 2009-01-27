@@ -36,7 +36,7 @@ package org.vortikal.web.controller;
  * Utility base class for form command objects that have 'Save' and
  * 'Cancel' actions.
  */
-public abstract class AbstractSaveCancelCommand {
+public class UpdateCancelCommand {
 
     private String saveAction = null;
     private String cancelAction = null;
@@ -49,7 +49,7 @@ public abstract class AbstractSaveCancelCommand {
      *
      * @param submitURL the URL of the form submission.
      */
-    public AbstractSaveCancelCommand(String submitURL) {
+    public UpdateCancelCommand(String submitURL) {
         this.submitURL = submitURL;
     }
     

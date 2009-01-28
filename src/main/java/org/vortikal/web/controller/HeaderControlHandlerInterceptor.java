@@ -42,15 +42,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.RequestContext;
 
 /**
  * Interceptor for controlling various HTTP response headers.
@@ -102,9 +107,13 @@ import org.vortikal.util.web.HttpUtil;
 public class HeaderControlHandlerInterceptor
   implements HandlerInterceptor, InitializingBean  {
 
+    private static final String REQ_ATTRIBUTE = 
+        HeaderControlHandlerInterceptor.class.getName() + ".reqAttr";
 
     private Log logger = LogFactory.getLog(this.getClass());
 
+    private Repository repository;
+    private boolean allowChainedInterceptions = true;
     private PropertyTypeDefinition expiresHeaderProperty;
     private boolean includeLastModifiedHeader = false;
     private boolean includeContentLanguageHeader = false;
@@ -168,12 +177,22 @@ public class HeaderControlHandlerInterceptor
         if (modelAndView == null || response.isCommitted()) {
             return;
         }
+        Object attr = request.getAttribute(REQ_ATTRIBUTE);
+        if (attr != null && !this.allowChainedInterceptions) {
+            return;
+        }
 
         Resource resource = null;
 
         @SuppressWarnings("unchecked") Map model = modelAndView.getModel();
 
-        resource = (Resource) model.get("resource");
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+
+        Path uri = requestContext.getResourceURI();
+        String token = securityContext.getToken();
+
+        resource = this.repository.retrieve(token, uri, true);
         if (resource != null) {
             setLastModifiedHeader(resource, model, request, response);
             setEtagHeader(resource, model, request, response);
@@ -181,7 +200,7 @@ public class HeaderControlHandlerInterceptor
             setExpiresHeader(resource, model, request, response);
             setContentLanguageHeader(resource, model, request, response);
         }
-        setStaticHeaders(response);
+        setStaticHeaders(request, response);
     }
 
 
@@ -194,24 +213,26 @@ public class HeaderControlHandlerInterceptor
     protected void setExpiresHeader(Resource resource, 
             @SuppressWarnings("unchecked") Map model, 
             HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (this.expiresHeaderProperty != null) {
-            
-            Property expiresProperty = resource.getProperty(
+        if (this.expiresHeaderProperty == null) {
+            return;
+        }
+        
+        Property expiresProperty = resource.getProperty(
                 this.expiresHeaderProperty);
 
-            if (expiresProperty != null && expiresProperty.getValue() != null) {
+        if (expiresProperty != null && expiresProperty.getValue() != null) {
 
-                if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
-                    return;
-                }
-                
-                long expiresMilliseconds = expiresProperty.getLongValue() * 1000;
-                Date expires = new Date(new Date().getTime() + expiresMilliseconds);
-                response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+            if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
+                return;
+            }
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Setting header: Expires: " + HttpUtil.getHttpDateString(expires));
-                }
+            long expiresMilliseconds = expiresProperty.getLongValue() * 1000;
+            Date expires = new Date(new Date().getTime() + expiresMilliseconds);
+            response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting header: Expires: " + HttpUtil.getHttpDateString(expires));
             }
         }
     }
@@ -248,6 +269,7 @@ public class HeaderControlHandlerInterceptor
             }
             response.setHeader("Last-Modified", 
                                HttpUtil.getHttpDateString(resource.getLastModified()));
+            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         }
         
         if (logger.isDebugEnabled()) {
@@ -264,6 +286,7 @@ public class HeaderControlHandlerInterceptor
                 logger.debug("Setting header Etag: " + etag);
             }
             response.setHeader("ETag", etag);
+            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         }
     }
     
@@ -272,12 +295,14 @@ public class HeaderControlHandlerInterceptor
                                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
+            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         } else if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
             response.setHeader("Cache-Control", "private");
+            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         }
     }
 
-    protected void setStaticHeaders(HttpServletResponse response) throws Exception {
+    protected void setStaticHeaders(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (this.staticHeaders == null || this.staticHeaders.size() == 0) {
             return;
         }
@@ -288,6 +313,15 @@ public class HeaderControlHandlerInterceptor
             }
             response.setHeader(header, value);
         }
+        request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
     }
 
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setAllowChainedInterceptions(boolean allowChainedInterceptions) {
+        this.allowChainedInterceptions = allowChainedInterceptions;
+    }
 }

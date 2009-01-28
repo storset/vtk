@@ -100,7 +100,8 @@
   </bean>
 
   <bean id="editor.getSourceStripHeadersInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
   </bean>

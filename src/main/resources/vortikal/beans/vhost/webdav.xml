@@ -583,7 +583,8 @@
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 
   <bean id="webdavDisplayResourceHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="${webdavSupportETags}" />
     <!-- Because of a bug in Resin (does not distinguish between GET

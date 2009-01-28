@@ -1833,7 +1833,8 @@
   </bean>
 
   <bean id="noCacheHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor">
+        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        parent="requestLocalRepositoryAware">
     <property name="staticHeaders">
       <map>
         <entry key="Cache-Control" value="no-cache, no-store, must-revalidate, max-age=0" />

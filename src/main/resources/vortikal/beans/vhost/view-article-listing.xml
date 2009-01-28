@@ -152,6 +152,7 @@
         <entry key="articleListing.view"  value-ref="articleListing.view" />
       </map>
     </property>
+    <property name="viewWrapper" ref="collectionListing.decoratingViewWrapper" />
   </bean>
 
   <bean id="articleListing.view" parent="freemarkerView">

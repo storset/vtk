@@ -32,15 +32,14 @@ package org.vortikal.web.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-
 import org.vortikal.web.RequestContext;
 
 /**
@@ -130,7 +129,6 @@ public class ServiceHandlerMapping implements HandlerMapping {
         if (myHandlerInterceptors != null) { 
             handlerInterceptors.addAll(myHandlerInterceptors);
         }
-        
         return handlerInterceptors;
     }
 }

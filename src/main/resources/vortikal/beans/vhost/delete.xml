@@ -150,9 +150,10 @@
   </bean>
   
      <bean id="deleteFromResourceMenuHandler" 
-    class="org.vortikal.web.controller.repository.DeleteResourceFromResourceMenuController"
+    class="org.vortikal.web.controller.repository.DeleteResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToManage" />
+    <property name="requestFromResourceMenu" value="true" />
      <property name="commandClass" value="org.vortikal.web.controller.UpdateCancelCommand" />
   </bean>
   

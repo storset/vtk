@@ -65,6 +65,7 @@ public class DeleteResourceController extends SimpleFormController implements In
     private String viewName;
     private String resourcePath;
     private String trustedToken;
+    private boolean requestFromResourceMenu;
 
 
 	public void setRepository(Repository repository) {
@@ -105,6 +106,10 @@ public class DeleteResourceController extends SimpleFormController implements In
     protected String getViewName() {
         return this.viewName;
     }
+    
+	public void setRequestFromResourceMenu(boolean requestFromResourceMenu) {
+		this.requestFromResourceMenu = requestFromResourceMenu;
+	}
 
     protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
@@ -135,14 +140,15 @@ public class DeleteResourceController extends SimpleFormController implements In
     	Path uri = requestContext.getResourceURI();
     	Path parentUri = uri.getParent();
     	
-
-    	
-    	
     	UpdateCancelCommand updateCancelCommand = (UpdateCancelCommand) command;
     	Resource modelResource = this.repository.retrieve(token, parentUri, false);
     	
     	if (updateCancelCommand.getSaveAction() == null) {
-    		// nothing
+    		Resource currentResource = this.repository.retrieve(token, uri, false);
+    		// Don't redirect on cancel regarding an collection
+    		if( currentResource.isCollection() && requestFromResourceMenu){ 
+    			modelResource = currentResource;
+    		}
     	}else{ 
     		this.repository.delete(token, uri);
     		if (this.resourcePath != null) {
@@ -163,6 +169,7 @@ public class DeleteResourceController extends SimpleFormController implements In
     	model.put("resource", modelResource);
     	return new ModelAndView(this.viewName, model);
     }
+
 }
 
 

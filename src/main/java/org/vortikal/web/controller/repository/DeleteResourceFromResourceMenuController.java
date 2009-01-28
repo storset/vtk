@@ -59,7 +59,7 @@ import org.vortikal.web.service.Service;
  * This can be overridden by specifying a path (relative or absolute) to another
  * resource.
  */
-public class DeleteResourceController extends SimpleFormController implements InitializingBean {
+public class DeleteResourceFromResourceMenuController extends SimpleFormController implements InitializingBean {
 	
     private Repository repository;
     private String viewName;
@@ -142,7 +142,11 @@ public class DeleteResourceController extends SimpleFormController implements In
     	Resource modelResource = this.repository.retrieve(token, parentUri, false);
     	
     	if (updateCancelCommand.getSaveAction() == null) {
-    		// nothing
+    		Resource currentResource = this.repository.retrieve(token, uri, false);
+    		// Don't redirect on cancel regarding an collection
+    		if( currentResource.isCollection() ){ 
+    			modelResource = currentResource;
+    		}
     	}else{ 
     		this.repository.delete(token, uri);
     		if (this.resourcePath != null) {

@@ -66,7 +66,7 @@ public class ConfirmDeleteController implements Controller {
 
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
         URL url = deleteService.constructURL(item, principal);
-
+        
         model.put("url", url);
         model.put("name", item.getName());
 

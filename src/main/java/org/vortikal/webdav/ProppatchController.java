@@ -48,6 +48,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
@@ -64,9 +65,12 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
 /**
@@ -75,12 +79,15 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  */
 public class ProppatchController extends AbstractWebdavController  {
 
+    private Service webdavService;
+    
     @SuppressWarnings("deprecation")
     public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
          
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
+        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
@@ -96,7 +103,7 @@ public class ProppatchController extends AbstractWebdavController  {
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            Document doc = doPropertyUpdate(resource, requestBody, token);
+            Document doc = doPropertyUpdate(resource, requestBody, principal, token);
             Format format = Format.getPrettyFormat();
             format.setEncoding("utf-8");
 
@@ -270,8 +277,8 @@ public class ProppatchController extends AbstractWebdavController  {
      * @exception InvalidRequestException if an error occurs
      */
     @SuppressWarnings("unchecked") 
-    protected Document doPropertyUpdate(Resource resource,
-                                    Document requestBody, String token) 
+    protected Document doPropertyUpdate(Resource resource, Document requestBody, 
+            Principal principal, String token) 
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
         InvalidRequestException {
@@ -281,6 +288,10 @@ public class ProppatchController extends AbstractWebdavController  {
         Element multistatus = new Element("multistatus", WebdavConstants.DAV_NAMESPACE);
         Element response = new Element("response", WebdavConstants.DAV_NAMESPACE);
         Element href = new Element("href", WebdavConstants.DAV_NAMESPACE);
+        URL url = this.webdavService.constructURL(resource, principal);
+        href.setText(url.toString());
+
+        
         Element propstat = new Element("propstat", WebdavConstants.DAV_NAMESPACE);
         multistatus.addContent(response);
         response.addContent(href);
@@ -339,6 +350,10 @@ public class ProppatchController extends AbstractWebdavController  {
             setProperty(resultPropElement, resource, propElement, token);
         }
         propstat.addContent(resultPropElement);
+
+        Element statusElement = new Element("status", WebdavConstants.DAV_NAMESPACE);
+        statusElement.setText("HTTP/" + WebdavConstants.HTTP_VERSION_USED + " 200 OK");
+        propstat.addContent(statusElement);
     }
     
 
@@ -449,6 +464,10 @@ public class ProppatchController extends AbstractWebdavController  {
             removeProperty(resultPropElement, resource, theProperty);
         }
         propstat.addContent(resultPropElement);
+
+        Element statusElement = new Element("status", WebdavConstants.DAV_NAMESPACE);
+        statusElement.setText("HTTP/" + WebdavConstants.HTTP_VERSION_USED + " 200 OK");
+        propstat.addContent(statusElement);
     }
     
 
@@ -564,4 +583,8 @@ public class ProppatchController extends AbstractWebdavController  {
         return values;
     }
 
+    @Required
+    public void setWebdavService(Service webdavService) {
+        this.webdavService = webdavService;
+    }
 }

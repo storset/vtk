@@ -31,24 +31,19 @@
 package org.vortikal.web.controller.repository;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.edit.plaintext.PlaintextEditCommand;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
@@ -148,7 +143,7 @@ public class DeleteResourceController extends SimpleFormController implements In
     		if( currentResource.isCollection() ){ // Don't redirect on cancel regarding an collection
     			modelResource = currentResource;
     		}
-    	}else{ // delete resource
+    	}else{ 
     		this.repository.delete(token, uri);
     		if (this.resourcePath != null) {
     			Path newUri = Path.fromString(URIUtil

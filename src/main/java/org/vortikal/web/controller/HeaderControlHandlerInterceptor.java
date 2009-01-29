@@ -192,7 +192,10 @@ public class HeaderControlHandlerInterceptor
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        resource = this.repository.retrieve(token, uri, true);
+        try {
+            resource = this.repository.retrieve(token, uri, true);
+        } catch (Throwable t) { }
+
         if (resource != null) {
             setLastModifiedHeader(resource, model, request, response);
             setEtagHeader(resource, model, request, response);

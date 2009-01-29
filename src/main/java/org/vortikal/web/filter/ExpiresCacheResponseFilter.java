@@ -73,10 +73,8 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
         Service service = requestContext.getService();
         if (!service.isDescendantOf(this.rootService)) {
-            System.out.println("__not_descendant");
             return response;
         }
-        System.out.println("__foobar");
         
         boolean hasIndexFile = requestContext.getIndexFileURI() != null 
             && !requestContext.isIndexFile();

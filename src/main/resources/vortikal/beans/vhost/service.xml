@@ -385,6 +385,7 @@
         parent="defaultResponseFilterCategoryBean">
     <property name="expiresPropDef" ref="expiresSecPropDef" />
     <property name="repository" ref="repository.requestLocal" />
+    <property name="rootService" ref="viewService" />
   </bean>
 
 

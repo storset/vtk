@@ -46,6 +46,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
 public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
@@ -57,7 +58,8 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
     }
     
     private Repository repository;
-    private PropertyTypeDefinition expiresPropDef;    
+    private PropertyTypeDefinition expiresPropDef;
+    private Service rootService;
     
     public HttpServletResponse filter(HttpServletRequest request,
             HttpServletResponse response) {
@@ -69,6 +71,13 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             return response;
         }
 
+        Service service = requestContext.getService();
+        if (!service.isDescendantOf(this.rootService)) {
+            System.out.println("__not_descendant");
+            return response;
+        }
+        System.out.println("__foobar");
+        
         boolean hasIndexFile = requestContext.getIndexFileURI() != null 
             && !requestContext.isIndexFile();
         if (hasIndexFile) {
@@ -99,6 +108,10 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
 
     public void setExpiresPropDef(PropertyTypeDefinition expiresPropDef) {
         this.expiresPropDef = expiresPropDef;
+    }
+
+    public void setRootService(Service rootService) {
+        this.rootService = rootService;
     }
 
     private class ExpiresResponseWrapper extends HttpServletResponseWrapper {

@@ -379,8 +379,16 @@
         parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="true" />
     <property name="includeEtagHeader" value="false" />
-    <property name="expiresHeaderProperty" ref="expiresSecPropDef" />
   </bean>
+
+  <bean id="expiresCacheResponseFilter" class="org.vortikal.web.filter.ExpiresCacheResponseFilter"
+        parent="defaultResponseFilterCategoryBean">
+    <property name="expiresPropDef" ref="expiresSecPropDef" />
+    <property name="repository" ref="repository.requestLocal" />
+  </bean>
+
+
+
 
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />

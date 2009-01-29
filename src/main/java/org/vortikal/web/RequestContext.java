@@ -54,6 +54,7 @@ import org.vortikal.web.service.Service;
 public class RequestContext {
 
     private final HttpServletRequest servletRequest;
+    private final boolean inRepository;
     private final Service service;
     private final Path resourceURI;
     private final Path currentCollection;
@@ -74,11 +75,13 @@ public class RequestContext {
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, Resource resource, Path uri,
-                          Path indexFileURI, boolean isIndexFile) {
+                          Path indexFileURI, boolean isIndexFile, 
+                          boolean inRepository) {
         this.servletRequest = servletRequest;
         this.indexFileURI = indexFileURI;
         this.service = service;
         this.isIndexFile = isIndexFile;
+        this.inRepository = inRepository;
         if (resource != null) {
             this.resourceURI = resource.getURI();
             if (resource.isCollection()) {
@@ -97,7 +100,7 @@ public class RequestContext {
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, Path uri) {
-        this(servletRequest, service, null, uri, null, false);
+        this(servletRequest, service, null, uri, null, false, true);
     }
 
     public static void setRequestContext(RequestContext requestContext) {
@@ -207,4 +210,7 @@ public class RequestContext {
         return isIndexFile;
     }
     
+    public boolean isInRepository() {
+        return this.inRepository;
+    }
 }

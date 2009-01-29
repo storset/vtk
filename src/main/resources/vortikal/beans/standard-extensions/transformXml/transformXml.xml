@@ -8,7 +8,6 @@
         parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
-    <property name="expiresHeaderProperty" ref="expiresSecPropDef" />
   </bean>
 
 

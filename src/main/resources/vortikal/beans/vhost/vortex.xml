@@ -67,6 +67,21 @@
   </bean>
 
 
+  <bean id="defaultResponseFilters" 
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.filter.ResponseFilter" />
+    <property name="category" value="defaultServletResponseFilter" />
+  </bean>
+
+  <bean id="defaultResponseFilterCategoryBean" abstract="true">
+    <property name="order" value="0" />
+    <property name="categories">
+      <set>
+        <value>defaultServletResponseFilter</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="repositoryContextInitializer"
         class="org.vortikal.web.RepositoryContextInitializer" />
 

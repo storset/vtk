@@ -11,39 +11,9 @@
         <ref bean="resourceInCollection" />
       </list>
     </property>
-    <property name="handlerInterceptors">
-      <list>
-        <!-- Handler interceptors ("post-handler") are executed in
-             reverse order of the execution chain. -->
-        <ref bean="collectionListing.noCacheViewHandlerInterceptor" />
-        <ref bean="collectionListing.expiresHeaderInterceptor" />
-      </list>
-    </property>
     <property name="handler" ref="collectionListing.handler" />
   </bean>
   
-
-  <bean id="collectionListing.expiresHeaderInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
-    <property name="includeLastModifiedHeader" value="false" />
-    <property name="includeEtagHeader" value="false" />
-    <property name="expiresHeaderProperty" ref="expiresSecPropDef" />
-  </bean>
-
-  <bean id="collectionListing.noCacheViewHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
-    <property name="allowChainedInterceptions" value="false" />
-    <property name="staticHeaders">
-      <map>
-        <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
-        <entry key="Expires" value="0" />
-        <entry key="Pragma" value="no-cache" />
-      </map>
-    </property>
-  </bean>
-
 
   <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
@@ -142,14 +112,6 @@
     <property name="views">
       <map>
         <entry key="collectionListing.view"  value-ref="collectionListing.view" />
-      </map>
-    </property>
-    <property name="viewWrapper" ref="collectionListing.decoratingViewWrapper" />
-  </bean>
-
-  <bean id="collectionListing.decoratingViewWrapper" parent="decoratingViewWrapper">
-    <property name="staticHeaders">
-      <map>
       </map>
     </property>
   </bean>

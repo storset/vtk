@@ -167,18 +167,18 @@ public class RequestContextInitializer implements ContextInitializer {
         Path uri = getResourceURI(request);
         Resource resource = null;
 
-        boolean retrieve = true;
+        boolean inRepository = true;
         // Avoid doing repository retrievals if we know that this URI 
         // does not exist in the repository:
         for (String prefix : this.nonRepositoryRoots) {
             if (uri.toString().startsWith(prefix)) {
-                retrieve = false;
+                inRepository = false;
                 break;
             }
         }
         
         try {
-            if (retrieve) {
+            if (inRepository) {
                 resource = this.repository.retrieve(this.trustedToken, uri, false);
             }
         } catch (ResourceNotFoundException e) {
@@ -212,7 +212,8 @@ public class RequestContextInitializer implements ContextInitializer {
             // Set an initial request context (with the resource, but
             // without the matched service)
             RequestContext.setRequestContext(
-                new RequestContext(request, service, resource, uri, indexFileUri, isIndexFile));
+                new RequestContext(request, service, resource, 
+                        uri, indexFileUri, isIndexFile, inRepository));
             
             // Resolve the request to a service:
             if (resolveService(service, request, resource)) {
@@ -280,7 +281,9 @@ public class RequestContextInitializer implements ContextInitializer {
             RequestContext.setRequestContext(
                 new RequestContext(request, service, resource,
                                    requestContext.getResourceURI(),
-                                   requestContext.getIndexFileURI(), requestContext.isIndexFile()));
+                                   requestContext.getIndexFileURI(), 
+                                   requestContext.isIndexFile(), 
+                                   requestContext.isInRepository()));
             throw(e);
         }
 
@@ -304,7 +307,9 @@ public class RequestContextInitializer implements ContextInitializer {
         RequestContext.setRequestContext(
             new RequestContext(request, service, resource,
                                requestContext.getResourceURI(),
-                               requestContext.getIndexFileURI(), requestContext.isIndexFile()));
+                               requestContext.getIndexFileURI(), 
+                               requestContext.isIndexFile(), 
+                               requestContext.isInRepository()));
         return true;
     }
 

@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -40,17 +39,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
@@ -104,34 +99,16 @@ import org.vortikal.web.RequestContext;
  * </ul>
  *
  */
-public class HeaderControlHandlerInterceptor
-  implements HandlerInterceptor, InitializingBean  {
-
-    private static final String REQ_ATTRIBUTE = 
-        HeaderControlHandlerInterceptor.class.getName() + ".reqAttr";
-
+public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     private Log logger = LogFactory.getLog(this.getClass());
 
     private Repository repository;
-    private boolean allowChainedInterceptions = true;
-    private PropertyTypeDefinition expiresHeaderProperty;
     private boolean includeLastModifiedHeader = false;
     private boolean includeContentLanguageHeader = false;
     private boolean includeEtagHeader = false;
     private boolean includeNoCacheHeader = false;
     private Map<String, String> staticHeaders = new HashMap<String, String>();
     
-    public void setExpiresHeaderProperty(PropertyTypeDefinition expiresHeaderProperty) {
-        if (expiresHeaderProperty != null) {
-            if (expiresHeaderProperty.getType() != PropertyType.Type.LONG) {
-                throw new IllegalArgumentException(
-                    "expiresHeaderProperty must be a numeric property type definition");
-            }
-        }
-        this.expiresHeaderProperty = expiresHeaderProperty;
-
-    }
-
     public void setIncludeLastModifiedHeader(boolean includeLastModifiedHeader) {
         this.includeLastModifiedHeader = includeLastModifiedHeader;
     }
@@ -154,16 +131,6 @@ public class HeaderControlHandlerInterceptor
     }
     
 
-    public void afterPropertiesSet() {
-        if (this.expiresHeaderProperty != null) {
-            if (this.expiresHeaderProperty.getType() != PropertyType.Type.LONG) {
-                throw new BeanInitializationException(
-                    "JavaBean property 'expiresHeaderProperty' must be of type Long");
-            }
-        }
-    }
-
-
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
@@ -177,13 +144,7 @@ public class HeaderControlHandlerInterceptor
         if (modelAndView == null || response.isCommitted()) {
             return;
         }
-        Object attr = request.getAttribute(REQ_ATTRIBUTE);
-        if (attr != null && !this.allowChainedInterceptions) {
-            return;
-        }
-
         Resource resource = null;
-
         @SuppressWarnings("unchecked") Map model = modelAndView.getModel();
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -200,7 +161,6 @@ public class HeaderControlHandlerInterceptor
             setLastModifiedHeader(resource, model, request, response);
             setEtagHeader(resource, model, request, response);
             setCacheControlHeader(resource, model, request, response);
-            setExpiresHeader(resource, model, request, response);
             setContentLanguageHeader(resource, model, request, response);
         }
         setStaticHeaders(request, response);
@@ -213,32 +173,6 @@ public class HeaderControlHandlerInterceptor
     }
     
 
-    protected void setExpiresHeader(Resource resource, 
-            @SuppressWarnings("unchecked") Map model, 
-            HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (this.expiresHeaderProperty == null) {
-            return;
-        }
-        
-        Property expiresProperty = resource.getProperty(
-                this.expiresHeaderProperty);
-
-        if (expiresProperty != null && expiresProperty.getValue() != null) {
-
-            if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
-                return;
-            }
-
-            long expiresMilliseconds = expiresProperty.getLongValue() * 1000;
-            Date expires = new Date(new Date().getTime() + expiresMilliseconds);
-            response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
-            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting header: Expires: " + HttpUtil.getHttpDateString(expires));
-            }
-        }
-    }
 
     protected void setContentLanguageHeader(Resource resource, 
                                             @SuppressWarnings("unchecked") Map model,
@@ -271,12 +205,13 @@ public class HeaderControlHandlerInterceptor
                              + HttpUtil.getHttpDateString(resource.getLastModified()));
             }
             response.setHeader("Last-Modified", 
-                               HttpUtil.getHttpDateString(resource.getLastModified()));
-            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
+                               HttpUtil.getHttpDateString(
+                                       resource.getLastModified()));
         }
         
         if (logger.isDebugEnabled()) {
-            logger.debug("Setting HTTP status code: " + HttpServletResponse.SC_OK);
+            logger.debug("Setting HTTP status code: " 
+                    + HttpServletResponse.SC_OK);
         }
     }
 
@@ -289,7 +224,6 @@ public class HeaderControlHandlerInterceptor
                 logger.debug("Setting header Etag: " + etag);
             }
             response.setHeader("ETag", etag);
-            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         }
     }
     
@@ -298,10 +232,8 @@ public class HeaderControlHandlerInterceptor
                                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
-            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         } else if (!resource.isAuthorized(RepositoryAction.READ_PROCESSED, null)) {
             response.setHeader("Cache-Control", "private");
-            request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
         }
     }
 
@@ -316,15 +248,10 @@ public class HeaderControlHandlerInterceptor
             }
             response.setHeader(header, value);
         }
-        request.setAttribute(REQ_ATTRIBUTE, Boolean.TRUE);
     }
 
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    public void setAllowChainedInterceptions(boolean allowChainedInterceptions) {
-        this.allowChainedInterceptions = allowChainedInterceptions;
     }
 }

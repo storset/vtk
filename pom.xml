@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>0.5.4-SNAPSHOT</version>
+  <version>0.5.4</version>
   <packaging>jar</packaging>
   <name>The Vortikal Web Framework</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
@@ -70,8 +70,8 @@
   </mailingLists>
 
   <scm>
-    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+    <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/tags/release-0.5.4</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/tags/release-0.5.4</developerConnection>
   </scm>
 
   <licenses>

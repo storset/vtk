@@ -11,6 +11,11 @@
         <ref bean="resourceInCollection" />
       </list>
     </property>
+    <property name="handlerInterceptors">
+      <list>
+        <ref bean="noCacheViewHandlerInterceptor" />
+      </list>
+    </property>
     <property name="handler" ref="collectionListing.handler" />
   </bean>
   

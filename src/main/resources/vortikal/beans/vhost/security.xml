@@ -271,9 +271,4 @@
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
 
 
-  <bean id="vrtx.sessionValidationFilter" class="org.vortikal.web.filter.SessionValidationRequestFilter"
-        parent="defaultRequestFilterCategoryBean">
-  </bean>
-
-
 </beans>

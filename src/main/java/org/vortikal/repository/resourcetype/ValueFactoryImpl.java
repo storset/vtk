@@ -195,7 +195,7 @@ public class ValueFactoryImpl implements ValueFactory {
     }
 
 
-    @Required
+    //@Required
     public void setBinaryDao(BinaryContentDataAccessor binaryDao) {
         this.binaryDao = binaryDao;
     }

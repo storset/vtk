@@ -98,7 +98,7 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
         
 	}
 
-	@Required
+	//@Required
 	public void setImageService(ImageService imageService) {
 		this.imageService = imageService;
 	}

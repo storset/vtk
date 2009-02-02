@@ -185,7 +185,7 @@
         <#else>
         	 <#assign titleMsg = vrtx.getMsg("confirm-delete.title") + " " + vrtx.getMsg("confirm-delete.file")  />
         </#if>
-      	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}&showAsHtml=true&height=80&width=230"
+      	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}&amp;showAsHtml=true&amp;height=80&amp;width=230"
       	   class="thickbox" title="${titleMsg}">${actionName}</a>&nbsp;)
 	</#if>
      </td>

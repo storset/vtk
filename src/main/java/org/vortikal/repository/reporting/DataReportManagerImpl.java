@@ -67,11 +67,9 @@ public class DataReportManagerImpl implements
             
             ReportResult result = this.cache.get(key);
             if (result != null) {
-                System.out.println("REPORT RESULT FROM CACHE!!!!!");
                 LOG.debug("Got report query result from cache.");
                 return result;
             } else {
-                System.out.println("Not found in cache, dispatching to DAO....");
                 LOG.debug("No result found in cache for query.");
                 result = dispatchQuery(query, token);
                 this.cache.put(key, result);

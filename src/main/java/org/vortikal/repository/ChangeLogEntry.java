@@ -65,7 +65,7 @@ public class ChangeLogEntry {
     }
     
     private Operation operation;
-    private String uri;
+    private Path uri;
     private int changeLogEntryId = -1;
     private int resourceId = -1;
     private Date timestamp;
@@ -81,11 +81,11 @@ public class ChangeLogEntry {
         this.operation = operation;
     }
     
-    public void setUri(String uri) {
+    public void setUri(Path uri) {
         this.uri = uri;
     }
     
-    public String getUri() {
+    public Path getUri() {
         return this.uri;
     }
     

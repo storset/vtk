@@ -31,9 +31,11 @@
 package org.vortikal.repository.index;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.security.Principal;
 
 /**
  * <p>Defines an interface for modifying and inspecting the contents of 
@@ -76,11 +78,15 @@ import org.vortikal.repository.PropertySet;
 public interface PropertySetIndex {
     
     /**
-     * Add <code>PropertySet</code> to index.
+     * Add a <code>PropertySet</code> to index, in addition to a set of principals
+     * which are allowed to read it.
+     *  
      * @param propertySet
+     * @param aclReadPrincipals
      * @throws IndexException
      */
-    public void addPropertySet(PropertySet propertySet) throws IndexException;
+    public void addPropertySet(PropertySet propertySet, 
+                               Set<Principal> aclReadPrincipals) throws IndexException;
     
     /**
      * Delete any <code>PropertySet</code> with the given URI. If there
@@ -88,20 +94,18 @@ public interface PropertySetIndex {
      * deleted</em>.
      * 
      * @param uri
-     * @return The number of instances deleted.
      * @throws IndexException
      */
-    public int deletePropertySet(Path uri) throws IndexException;
+    public void deletePropertySet(Path uri) throws IndexException;
     
     /**
      * Delete <code>PropertySet</code> with the given auxilliary UUID.
      * Optional.
      * 
      * @param uuid
-     * @return The number of instances deleted.
      * @throws IndexException
      */
-    public int deletePropertySetByUUID(String uuid) throws IndexException;
+    public void deletePropertySetByUUID(String uuid) throws IndexException;
     
     /**
      * Delete the <code>PropertySet</code> at the given root URI and all its
@@ -122,10 +126,9 @@ public interface PropertySetIndex {
      * Optional.
      * 
      * @param rootUuid
-     * @return
      * @throws IndexException
      */
-    public int deletePropertySetTreeByUUID(String rootUuid) throws IndexException;
+    public void deletePropertySetTreeByUUID(String rootUuid) throws IndexException;
     
     /**
      * Get a {@link PropertySetIndexRandomAccessor} instances for this index.

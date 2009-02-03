@@ -31,7 +31,11 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
+import java.util.Set;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -47,7 +51,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
  * @author oyviste
  *
  */
-public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccessor {
+class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccessor {
 
     private TermDocs uriTermDocs;
     private TermDocs uuidTermDocs;
@@ -72,7 +76,7 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
         try {
             this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
             while (this.uriTermDocs.next()) {
-                if (! reader.isDeleted(this.uriTermDocs.doc())) ++count;
+                ++count;
             }
         } catch (IOException io) {
             throw new IndexException(io);
@@ -86,11 +90,9 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
 
         try {
             this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
-            while (this.uriTermDocs.next()) {
-                if (! reader.isDeleted(this.uriTermDocs.doc())) {
-                    propSet = this.mapper.getPropertySet(
+            if (this.uriTermDocs.next()) {
+                propSet = this.mapper.getPropertySet(
                         this.reader.document(this.uriTermDocs.doc()));
-                }
             }
         } catch (IOException io) {
             throw new IndexException(io);
@@ -103,17 +105,44 @@ public class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRando
         PropertySet propSet = null;
         try {
             this.uuidTermDocs.seek(new Term(FieldNameMapping.ID_FIELD_NAME, uuid));
-            while (this.uuidTermDocs.next()) {
-                if (! reader.isDeleted(this.uuidTermDocs.doc())) {
-                    propSet = this.mapper.getPropertySet(
-                        reader.document(this.uuidTermDocs.doc()));
-                }
+            if (this.uuidTermDocs.next()) {
+                propSet = this.mapper.getPropertySet(
+                        this.reader.document(this.uuidTermDocs.doc()));
             }
         } catch (IOException io) {
             throw new IndexException(io);
         }
         
         return propSet;
+    }
+    
+    // Select ACL_READ_PRINCIPALS stored field
+    private static final FieldSelector ACL_READ_PRINCIPALS_FIELD_SELECTOR
+        = new FieldSelector() {
+            public FieldSelectorResult accept(String fieldName) {
+                if (FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName) { // Interned string comparison
+                    return FieldSelectorResult.LOAD;
+                }
+                
+                return FieldSelectorResult.NO_LOAD;
+            }
+    };
+
+    public Set<String> getAclReadPrincipalNamesByURI(Path uri) throws IndexException {
+        try {
+            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
+            
+            if (this.uriTermDocs.next()) {
+                Document doc = this.reader.document(this.uriTermDocs.doc(), 
+                                        ACL_READ_PRINCIPALS_FIELD_SELECTOR);
+                
+                return this.mapper.getACLReadPrincipalNames(doc);
+            }
+            
+            return null;
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
     }
 
     public void close() throws IndexException {

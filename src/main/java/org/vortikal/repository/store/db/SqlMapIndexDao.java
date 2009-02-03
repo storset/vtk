@@ -45,11 +45,16 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
@@ -81,7 +86,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
         ResourceIdCachingPropertySetRowHandler rowHandler = 
             new ResourceIdCachingPropertySetRowHandler(
-                handler, this.resourceTypeTree, this.principalFactory);
+                handler, this.resourceTypeTree, this.principalFactory, this);
 
         client.queryWithRowHandler(statementId, rowHandler);
 
@@ -96,7 +101,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         String statementId = getSqlMap("orderedPropertySetIterationWithStartUri");
 
         PropertySetRowHandler rowHandler = new PropertySetRowHandler(handler,
-                this.resourceTypeTree, this.principalFactory);
+                this.resourceTypeTree, this.principalFactory, this);
 
         Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -152,7 +157,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         String statement = getSqlMap("orderedPropertySetIterationForUris");
 
         PropertySetRowHandler rowHandler = new PropertySetRowHandler(handler,
-                this.resourceTypeTree, this.principalFactory);
+                this.resourceTypeTree, this.principalFactory, this);
 
         client.queryWithRowHandler(statement, sessionId, rowHandler);
 
@@ -163,6 +168,71 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         client.delete(statement, sessionId);
 
     }
+    
+    /**
+     * Fetch a set of principals (normal principals, pseudo-principals and groups) 
+     * which are allowed to read or read-processed the resource that the property set
+     * represents.
+     * 
+     * The pseudo-principal 'pseudo:owner' is replaced with the actual
+     * owner in the set.
+     * 
+     * @return <code>null</code> if the resource or the resource from which ACL is
+     *                           inherited could not be found. Otherwise 
+     *                           a <code>Set</code> of <code>Principal</code> instances. 
+     */
+    public Set<Principal> getAclReadPrincipals(PropertySet propertySet)
+            throws org.vortikal.repository.store.DataAccessException {
+        
+        // Cast to impl
+        PropertySetImpl propSetImpl = (PropertySetImpl)propertySet;
+        
+        Set<Principal> aclReadPrincipals = new HashSet<Principal>();
+        
+        // Now determine where to fetch the rest of the ACL information (either from self or an ancestor)
+        int aclResourceId = propSetImpl.isInheritedAcl() ? 
+                    propSetImpl.getAclInheritedFrom() : propSetImpl.getID();
+        
+        // Fetch ACL from database for the given resource/node
+        String statement = getSqlMap("getAclReadPrincipalNames");
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
+        
+        List<Map<String, Object>> principalAttributeList = 
+                                    client.queryForList(statement, aclResourceId);
+
+        if (principalAttributeList.isEmpty()) {
+            // Resource is gone, return null
+            return null;
+        } else {
+            for (Map<String, Object> principalAttributes: principalAttributeList) {
+                String name = (String) principalAttributes.get("name");
+                Boolean isUser = (Boolean) principalAttributes.get("isUser");
+                
+                if (PrincipalFactory.NAME_OWNER.equals(name)) {
+                    // Replace 'pseudo:owner' with actual owner
+                    Principal owner = propertySet.getProperty(Namespace.DEFAULT_NAMESPACE, 
+                                            PropertyType.OWNER_PROP_NAME).getPrincipalValue();
+                    aclReadPrincipals.add(owner);
+                    continue;
+                }
+                
+                Principal.Type type;
+                if (name.startsWith("pseudo:")) {
+                    type = Principal.Type.PSEUDO;
+                } else if (isUser.booleanValue()) {
+                    type = Principal.Type.USER;
+                } else {
+                    type = Principal.Type.GROUP;
+                }
+                
+                Principal principal = this.principalFactory.getPrincipal(name, type);
+                aclReadPrincipals.add(principal);
+            }
+        }
+        
+        return aclReadPrincipals;
+    }
+    
 
     private class ResultAuthorizationSqlMapClientCallback 
         implements SqlMapClientCallback {

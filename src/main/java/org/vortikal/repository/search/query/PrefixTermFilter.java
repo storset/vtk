@@ -37,7 +37,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.OpenBitSet;
 
 /**
  * A Lucene <code>Filter</code> that filters on the given prefix term.
@@ -60,6 +62,7 @@ public class PrefixTermFilter extends Filter {
     private static final long serialVersionUID = -235069735083288662L;
     private Term prefixTerm;
     private BitSet bits = null;
+    private OpenBitSet docIdSet = null;
     
     /**
      * Construct filter with the given prefix term.
@@ -68,45 +71,75 @@ public class PrefixTermFilter extends Filter {
         this.prefixTerm = prefixTerm;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.lucene.search.Filter#bits(org.apache.lucene.index.IndexReader)
-     */
+    @Override
     public BitSet bits(IndexReader reader) throws IOException {
         if (this.bits == null) {
-            this.bits = getBits(reader);
+            BitSet bits = new BitSet(reader.maxDoc());
+            String fieldName = this.prefixTerm.field();
+            String prefix = this.prefixTerm.text();
+            TermEnum tenum = reader.terms(this.prefixTerm);
+            TermDocs tdocs = reader.termDocs();
+            try {
+                do {
+                    Term term = tenum.term();
+                    if (term != null && term.field() == fieldName // Field names
+                                                                  // from terms
+                                                                  // are
+                                                                  // intern()'ed
+                            && term.text().startsWith(prefix)) {
+
+                        tdocs.seek(tenum);
+
+                        while (tdocs.next()) {
+                            bits.set(tdocs.doc());
+                        }
+                    } else
+                        break;
+                } while (tenum.next());
+            } finally {
+                tenum.close();
+                tdocs.close();
+            }
+            this.bits = bits;
         }
         
         return this.bits;
     }
+    
+    @Override
+    public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+        
+        if (this.docIdSet == null) {
+            OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
+            String fieldName = this.prefixTerm.field();
+            String prefix = this.prefixTerm.text();
+            TermEnum tenum = reader.terms(this.prefixTerm);
+            TermDocs tdocs = reader.termDocs();
+            try {
+                do {
+                    Term term = tenum.term();
+                    if (term != null && term.field() == fieldName // Field names from terms are intern()'ed
+                            && term.text().startsWith(prefix)) {
 
-    private BitSet getBits(IndexReader reader) throws IOException {
-        BitSet bits = new BitSet(reader.maxDoc());
-        String fieldName = this.prefixTerm.field();
-        String prefix = this.prefixTerm.text();
-        TermEnum tenum = reader.terms(this.prefixTerm);
-        TermDocs tdocs = reader.termDocs();
-        try {
-            do {
-                Term term = tenum.term();
-                if (term != null 
-                    && term.field() == fieldName // Field names from terms are intern()'ed
-                    && term.text().startsWith(prefix)) {
-                    
-                    tdocs.seek(tenum);
-                    
-                    while (tdocs.next()) {
-                        bits.set(tdocs.doc());
-                    }
-                } else break;
-            } while (tenum.next());
-        } finally {
-            tenum.close();
-            tdocs.close();
+                        tdocs.seek(tenum);
+
+                        while (tdocs.next()) {
+                            docIdSet.fastSet(tdocs.doc());
+                        }
+                    } else
+                        break;
+                } while (tenum.next());
+            } finally {
+                tenum.close();
+                tdocs.close();
+            }
+            
+            this.docIdSet = docIdSet;
         }
         
-        return bits;
+        return this.docIdSet;
     }
-    
+
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("SimplePrefixFilter[field='").append(this.prefixTerm.field());

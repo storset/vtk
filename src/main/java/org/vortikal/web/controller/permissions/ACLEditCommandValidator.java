@@ -75,17 +75,19 @@ public class ACLEditCommandValidator implements Validator {
                     try { 
                         Principal principal = principalFactory.getPrincipal(userName, Principal.Type.USER);	
 
-                    if (!this.principalManager.validatePrincipal(principal))
+                        if (!this.principalManager.validatePrincipal(principal)) {
+                            
+                            errors.rejectValue("userNames", "permissions.user.wrong.value", 
+                                    new Object[] {userName}, "User '" + userName
+                                    + "' does not exist");
+                        }
+
+                    } catch (InvalidPrincipalException e) {
                         errors.rejectValue("userNames", "permissions.user.wrong.value", 
                                 new Object[] {userName}, "User '" + userName
-                                + "' does not exist");
-
-                } catch (InvalidPrincipalException e) {
-                    errors.rejectValue("userNames", "permissions.user.wrong.value", 
-                            new Object[] {userName}, "User '" + userName
                                        + "' is illegal");
+                    }   
                 }
-            }
             }            
         } else if (editCommand.getAddGroupAction() != null) {
             String[] groupNames = editCommand.getGroupNames();

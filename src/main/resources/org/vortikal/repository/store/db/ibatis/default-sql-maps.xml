@@ -63,6 +63,11 @@
     <result property="isUser" column="is_user" />
   </resultMap>
 
+  <resultMap id="Principal" class="java.util.HashMap">
+    <result property="name" column="user_or_group_name" />
+    <result property="isUser" column="is_user" 
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback" />
+  </resultMap>
 
   <resultMap id="ActionType" class="java.util.HashMap">
     <result property="id" column="action_type_id" javaType="int" />
@@ -105,7 +110,7 @@
     <result property="changeLogEntryId" column="changelog_entry_id" javaType="int"/>
     <result property="loggerId" column="logger_id" javaType="int"/>
     <result property="loggerType" column="logger_type" javaType="int"/>
-    <result property="uri" column="uri" />
+    <result property="uri" column="uri" typeHandler="org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback"/>
     <result property="resourceId" column="resource_id" javaType="int" nullValue="-1"/>
     <result property="operation" column="operation" 
       typeHandler="org.vortikal.repository.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback"/>
@@ -619,7 +624,7 @@
       #entry.operation,handler=org.vortikal.repository.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
       #entry.timestamp#, uri, resource_id, is_collection 
     from vortex_resource 
-    where uri = #entry.uri# or uri like #uriWildcard# escape '@'
+    where uri = #entry.uri,handler=org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback# or uri like #uriWildcard# escape '@'
   </insert>
 
 
@@ -630,9 +635,8 @@
       operation, timestamp, uri, resource_id, is_collection)
     values (<include refid="nextChangelogEntryId" />, #loggerId#, #loggerType#,
     #operation,handler=org.vortikal.repository.store.db.ibatis.ChangeLogEntryOperationTypeHandlerCallback#, 
-    #timestamp#, #uri#, #resourceId:NUMERIC:-1#, #collection,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#)
+    #timestamp#, #uri,handler=org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback#, #resourceId:NUMERIC:-1#, #collection,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#)
   </insert>
-
 
 
   <!-- Comments section -->
@@ -780,8 +784,14 @@
       </iterate>
     )
     and ace.action_type_id in (1, 3, 4)
-    
   </select>
+  
+  <select id="getAclReadPrincipalNames" resultMap="Principal"
+                                        parameterClass="java.lang.Integer">
+    select user_or_group_name, is_user from acl_entry
+    where resource_id = #value#
+      and action_type_id in (1, 3, 4)
+  </select>                                        
   
   <select id="getMaxChangeLogEntryId" parameterClass="java.util.Map"
           resultClass="java.lang.Integer">

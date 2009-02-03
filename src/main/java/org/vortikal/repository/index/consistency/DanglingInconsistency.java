@@ -68,9 +68,7 @@ public class DanglingInconsistency extends AbstractConsistencyError {
         LOG.info("Repairing dangling inconsistency by deleting all index property sets with URI '"
                 + getUri() + "'");
         
-        int n = index.deletePropertySet(getUri());
-        
-        LOG.info("Deleted " + n + " index property sets");
+        index.deletePropertySet(getUri());
     }
     
     public String toString() {

@@ -36,8 +36,10 @@ import java.util.BitSet;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.WildcardTermEnum;
+import org.apache.lucene.util.OpenBitSet;
 
 /**
  * A Lucene <code>Filter</code> that filters on the given wildcard term.
@@ -62,43 +64,71 @@ public class WildcardTermFilter extends Filter {
 
     private static final long serialVersionUID = -6256371462543503386L;
     private BitSet bits = null;
+    private OpenBitSet docIdSet = null; 
     private Term wildcardTerm;
     
     public WildcardTermFilter(Term wildcardTerm) {
         this.wildcardTerm = wildcardTerm;
     }
 
+    @Override
     public BitSet bits(IndexReader reader) throws IOException {
         if (this.bits == null) {
-            this.bits = getBits(reader);
+            BitSet bits = new BitSet(reader.maxDoc());
+            String fieldName = this.wildcardTerm.field();
+            WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
+            TermDocs tdocs = reader.termDocs();
+            try {
+                do {
+                    Term term = tenum.term();
+                    if (term != null && term.field() == fieldName) {
+                        tdocs.seek(tenum);
+                        
+                        while (tdocs.next()) {
+                            bits.set(tdocs.doc());
+                        }
+                    } else break;
+                } while (tenum.next());
+            } finally {
+                tenum.close();
+                tdocs.close();
+            }
+
+            this.bits = bits;
         }
         
         return this.bits;
     }
 
-    private BitSet getBits(IndexReader reader) throws IOException {
-        
-        BitSet bits = new BitSet(reader.maxDoc());
-        String fieldName = this.wildcardTerm.field();
-        WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
-        TermDocs tdocs = reader.termDocs();
-        try {
-            do {
-                Term term = tenum.term();
-                if (term != null && term.field() == fieldName) {
-                    tdocs.seek(tenum);
-                    
-                    while (tdocs.next()) {
-                        bits.set(tdocs.doc());
-                    }
-                } else break;
-            } while (tenum.next());
-        } finally {
-            tenum.close();
-            tdocs.close();
+
+    @Override
+    public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+
+        if (this.docIdSet == null) {
+            OpenBitSet docIdSet = new OpenBitSet(reader.maxDoc());
+            String fieldName = this.wildcardTerm.field();
+            WildcardTermEnum tenum = new WildcardTermEnum(reader, this.wildcardTerm);
+            TermDocs tdocs = reader.termDocs();
+            try {
+                do {
+                    Term term = tenum.term();
+                    if (term != null && term.field() == fieldName) {
+                        tdocs.seek(tenum);
+                        
+                        while (tdocs.next()) {
+                            docIdSet.fastSet(tdocs.doc());
+                        }
+                    } else break;
+                } while (tenum.next());
+            } finally {
+                tenum.close();
+                tdocs.close();
+            }
+
+            this.docIdSet = docIdSet;
         }
         
-        return bits;
-        
+        return this.docIdSet;
     }
+    
 }

@@ -53,7 +53,7 @@ import org.apache.lucene.analysis.Tokenizer;
  * Empty tokens are discarded.
  * 
  * @TODO: Make MAX_TOKEN_LEN a constructor parameter
- * XXX: no longer in use.
+ * @deprecated
  * 
  * @author oyviste
  */

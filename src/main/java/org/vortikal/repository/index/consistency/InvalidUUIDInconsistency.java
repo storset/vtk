@@ -30,8 +30,11 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import java.util.Set;
+
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.security.Principal;
 
 /**
  * Invalid (UU)ID inconsistency (in reality a dangling consistency error)
@@ -44,8 +47,10 @@ public class InvalidUUIDInconsistency extends InvalidDataInconsistency {
     private int indexUUID = -1;
     private int daoUUID = -1;
     
-    public InvalidUUIDInconsistency(Path uri, PropertySetImpl daoPropSet, int indexUUID, int daoUUID) {
-        super(uri, daoPropSet);
+    public InvalidUUIDInconsistency(Path uri, PropertySetImpl daoPropSet,
+                                    Set<Principal> aclReadPrincipals,
+                                    int indexUUID, int daoUUID) {
+        super(uri, daoPropSet, aclReadPrincipals);
         this.indexUUID = indexUUID;
         this.daoUUID = daoUUID;
     }

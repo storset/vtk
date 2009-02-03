@@ -35,15 +35,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -66,16 +67,20 @@ class PropertySetRowHandler implements RowHandler {
     protected List<Map<String, Object>> rowValueBuffer = new ArrayList<Map<String, Object>>();
 
     private final ResourceTypeTree resourceTypeTree;
-
+    private final IndexDao indexDao;
     private final PrincipalFactory principalFactory;
+    
+    private Map<Integer, Set<Principal>> aclReadPrincipalsCache
+        = new HashMap<Integer, Set<Principal>>();
     
     public PropertySetRowHandler(PropertySetHandler clientHandler,
                                  ResourceTypeTree resourceTypeTree,
-                                 PrincipalFactory principalFactory) {
+                                 PrincipalFactory principalFactory,
+                                 IndexDao indexDao) {
         this.clientHandler = clientHandler;
         this.resourceTypeTree = resourceTypeTree;
         this.principalFactory = principalFactory;
-      
+        this.indexDao = indexDao;
     }
     
         
@@ -90,10 +95,15 @@ class PropertySetRowHandler implements RowHandler {
         
         if (this.currentId != null && !this.currentId.equals(id)) {
             // New property set encountered in row iteration, flush out current.
-            PropertySet propertySet = createPropertySet(this.rowValueBuffer);
+            PropertySetImpl propertySet = createPropertySet(this.rowValueBuffer);
             
-            // Do client callback 
-            this.clientHandler.handlePropertySet(propertySet);
+            // Get ACL read principals
+            Set<Principal> aclReadPrincipals = getAclReadPrincipals(propertySet);
+            
+            if (aclReadPrincipals != null) {
+                // Do client callback (only if we have ACL, which means the resource is present in the database) 
+                this.clientHandler.handlePropertySet(propertySet, aclReadPrincipals);
+            }
             
             // Clear current row buffer
             this.rowValueBuffer.clear();
@@ -112,11 +122,38 @@ class PropertySetRowHandler implements RowHandler {
             return;
         }
         
-        PropertySet propertySet = createPropertySet(this.rowValueBuffer);
-        this.clientHandler.handlePropertySet(propertySet);    
+        PropertySetImpl propertySet = createPropertySet(this.rowValueBuffer);
+        
+        // Get ACL read principals
+        Set<Principal> aclReadPrincipals = getAclReadPrincipals(propertySet);
+        
+        if (aclReadPrincipals != null) {
+            // Do client callback (only if we have ACL, which means the resource is present in the database) 
+            this.clientHandler.handlePropertySet(propertySet, aclReadPrincipals);
+        } 
     }
     
-    private PropertySet createPropertySet(List<Map<String, Object>> rowBuffer) {
+    private Set<Principal> getAclReadPrincipals(PropertySetImpl propertySet) {
+        
+        Integer aclResourceId = propertySet.isInheritedAcl() ? 
+                        propertySet.getAclInheritedFrom() : propertySet.getID();
+                        
+        Set<Principal> aclReadPrincipals = this.aclReadPrincipalsCache.get(
+                                                    aclResourceId);
+        
+        if (aclReadPrincipals == null) {
+            // Not found in cache
+            aclReadPrincipals = this.indexDao.getAclReadPrincipals(propertySet);
+            
+            if (aclReadPrincipals != null) {
+                this.aclReadPrincipalsCache.put(aclResourceId, aclReadPrincipals);
+            }
+        }
+        
+        return aclReadPrincipals; // Note: might still be null if no longer in database.
+    }
+    
+    private PropertySetImpl createPropertySet(List<Map<String, Object>> rowBuffer) {
         
         Map<String, Object> firstRow = rowBuffer.get(0);
         
@@ -261,7 +298,7 @@ class PropertySetRowHandler implements RowHandler {
         
         Integer aclInheritedFrom = (Integer)row.get("aclInheritedFrom");
         if (aclInheritedFrom == null) {
-            propertySet.setAclInheritedFrom(-1);
+            propertySet.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
         } else {
             propertySet.setAclInheritedFrom(aclInheritedFrom.intValue());
         }

@@ -66,7 +66,7 @@
   </bean>
 
   <!-- Index field value mapper -->  
-  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.FieldValueMapperImpl">
+  <bean id="fieldValueMapper" class="org.vortikal.repository.index.mapping.FieldValueMapper">
     <property name="valueFactory" ref="valueFactory"/>
   </bean>
 
@@ -110,31 +110,25 @@
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
   </bean>
 
-  <!-- Searcher implementation -->
+  <!-- Searcher implementation (wrapped in throttler)-->
   <bean id="systemIndexSearcher"
-        class="org.vortikal.repository.search.SearcherImpl">
-    <property name="indexAccessor" ref="systemIndexAccessor"/>
-    <property name="documentMapper" ref="documentMapper"/>
-    <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
-    <property name="queryResultAuthorizationManager" ref="queryResultAuthorizationManager"/>
-    <property name="fieldValueMapper" ref="fieldValueMapper"/>
+        class="org.vortikal.repository.search.ThrottlingSearcherWrapper">
+    <property name="maxConcurrentQueries" value="8" />
+    <property name="searcher">
+      <bean class="org.vortikal.repository.search.SearcherImplACL">
+        <property name="indexAccessor" ref="systemIndexAccessor"/>
+        <property name="documentMapper" ref="documentMapper"/>
+        <property name="queryBuilderFactory" ref="queryBuilderFactory"/>
+        <property name="queryAuthorizationFilterFactory" ref="queryAuthorizationFilterFactory"/>
+      </bean>
+    </property>
   </bean>
-
-  <!-- Query result authorization (ACL checking) -->
-  <bean id="queryResultAuthorizationManager"
-        class="org.vortikal.repository.search.query.security.DatabaseQueryResultAuthorizationManager">
+  
+  <bean id="queryAuthorizationFilterFactory"
+        class="org.vortikal.repository.search.query.security.CachingQueryAuthorizationFilterFactory">
     <property name="principalManager" ref="principalManager"/>
     <property name="tokenManager" ref="tokenManager"/>
     <property name="roleManager" ref="roleManager"/>
-    <property name="indexDao" ref="repository.indexDao"/>
-
-    <!-- A set of principals can be excluded from database 
-         result authorization check. -->
-    <!--property name="noAuthorizationCheckForPrincipals">
-      <set>
-        <value>root@localhost</value>
-      </set>
-    </property-->
   </bean>
 
   <!-- Perform incremental updates on property set index from resource changes. -->

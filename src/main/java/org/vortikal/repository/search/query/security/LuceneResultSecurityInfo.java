@@ -56,7 +56,7 @@ public class LuceneResultSecurityInfo implements ResultSecurityInfo {
     public LuceneResultSecurityInfo(Document doc, FieldValueMapper mapper) {
         this.document = doc;
         this.aclInheritedFrom = mapper.getIntegerFromStoredBinaryField(
-                doc.getField(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME));
+                doc.getField(FieldNameMapping.STORED_ACL_INHERITED_FROM_FIELD_NAME));
         
         this.resourceId = mapper.getIntegerFromStoredBinaryField(
                 doc.getField(FieldNameMapping.STORED_ID_FIELD_NAME));

@@ -60,7 +60,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
     private final Log LOG = LogFactory.getLog(LuceneIndexManager.class);
 
-    private FSBackedLuceneIndex fsIndex;
+    private NIOFSBackedLuceneIndex niofsIndex;
     
     private String storageRootPath;
     private String storageId;
@@ -95,20 +95,20 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
                                                                this.storageId);
             
             // Initialization of file-system backed Lucene index
-            this.fsIndex = new FSBackedLuceneIndex(storageDirectory, 
+            this.niofsIndex = new NIOFSBackedLuceneIndex(storageDirectory, 
                                                    new KeywordAnalyzer(),
                                                    this.eraseExistingIndex,
                                                    this.forceUnlock);
             
-            this.fsIndex.setMaxMergeDocs(this.maxMergeDocs);
-            this.fsIndex.setMergeFactor(this.mergeFactor);
-            this.fsIndex.setMaxBufferedDocs(this.maxBufferedDocs);
+            this.niofsIndex.setMaxMergeDocs(this.maxMergeDocs);
+            this.niofsIndex.setMergeFactor(this.mergeFactor);
+            this.niofsIndex.setMaxBufferedDocs(this.maxBufferedDocs);
             
             LOG.info("Initialization of index '" + this.getStorageId() + "' complete.");
             
             if (this.closeAfterInitialization) {
                 LOG.info("Closing instance after initialization.");
-                this.fsIndex.close();
+                this.niofsIndex.close();
             }
             
         } catch (IOException io) {
@@ -149,54 +149,54 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
             return;
         }
         
-        this.fsIndex.releaseReadOnlyIndexReader(searcher.getIndexReader());
+        this.niofsIndex.releaseReadOnlyIndexReader(searcher.getIndexReader());
     }
     
     public IndexSearcher getIndexSearcher() throws IOException {
-        return new IndexSearcher(this.fsIndex.getReadOnlyIndexReader());
+        return new IndexSearcher(this.niofsIndex.getReadOnlyIndexReader());
     }
     
     public IndexReader getReadOnlyIndexReader() throws IOException {
-        return this.fsIndex.getReadOnlyIndexReader();
+        return this.niofsIndex.getReadOnlyIndexReader();
     }
     
     public void releaseReadOnlyIndexReader(IndexReader readOnlyReader) throws IOException {
-        this.fsIndex.releaseReadOnlyIndexReader(readOnlyReader);
+        this.niofsIndex.releaseReadOnlyIndexReader(readOnlyReader);
     }
 
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public IndexReader getIndexReader() throws IOException {
-        return this.fsIndex.getIndexReader();
+        return this.niofsIndex.getIndexReader();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public IndexWriter getIndexWriter() throws IOException {
-        return this.fsIndex.getIndexWriter();
+        return this.niofsIndex.getIndexWriter();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void clearContents() throws IOException {
-        this.fsIndex.createNewIndex();
+        this.niofsIndex.createNewIndex();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void reinitialize() throws IOException {
-        this.fsIndex.reinitialize();
+        this.niofsIndex.reinitialize();
     }
     
     //  CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void close() throws IOException {
-        this.fsIndex.close();
+        this.niofsIndex.close();
     }
     
     public boolean isClosed() {
-        return this.fsIndex.isClosed();
+        return this.niofsIndex.isClosed();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void optimize() throws IOException {
-        this.fsIndex.getIndexWriter().optimize();
-        this.fsIndex.commit(); // Mark read-only reader dirty (force refresh)
+        this.niofsIndex.getIndexWriter().optimize();
+        this.niofsIndex.commit(); // Mark read-only reader dirty (force refresh)
     }
     
     // Commit changes done by reader/writer and optimize index if necessary.
@@ -206,16 +206,16 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         if (++this.commitCounter % this.optimizeInterval == 0) {
             LOG.info("Reached " + this.commitCounter 
                                         + " commits, auto-optimizing index ..");
-            this.fsIndex.getIndexWriter().optimize();
+            this.niofsIndex.getIndexWriter().optimize();
             LOG.info("Auto-optimization completed.");
         }
         
-        this.fsIndex.commit();
+        this.niofsIndex.commit();
     }
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void corruptionTest() throws IOException {
-        this.fsIndex.corruptionTest();
+        this.niofsIndex.corruptionTest();
     }
     
     /* (non-Javadoc)
@@ -227,7 +227,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
        if (writeLockAttempt(this.maxLockAcquireTimeOnShutdown * 1000)) {
            LOG.info("Got write lock on index '" + this.storageId 
                    + "', closing down.");
-           this.fsIndex.close();
+           this.niofsIndex.close();
        } else {
            LOG.warn("Failed to acquire the write lock on index '" 
               + this.storageId + "' within "

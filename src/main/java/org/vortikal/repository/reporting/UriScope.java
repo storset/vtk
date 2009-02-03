@@ -73,7 +73,7 @@ public class UriScope implements ReportQueryScope {
         if ("/".equals(this.uri)) {
             retval += "*]";
         } else {
-            retval += "/*]";
+            retval += this.uri + "/*]";
         }
         
         return retval;

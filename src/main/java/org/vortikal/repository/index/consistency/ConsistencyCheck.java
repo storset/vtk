@@ -32,6 +32,7 @@ package org.vortikal.repository.index.consistency;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -49,11 +50,13 @@ import org.vortikal.repository.index.StorageCorruptionException;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 /**
  * Check consistency and optionally repair errors afterwords.
  * 
- * Note that usage of this class requires external locking of the index in question, if 
+ * NOTE ! Usage of this class requires external locking of the index in question, if 
  * writing operations are known to occur during testing. This is necessary
  * so that the index isn't modified during testing, or between testing
  * and the call to {@link #repairErrors(boolean)} (in case of errors present).
@@ -64,12 +67,20 @@ public class ConsistencyCheck {
 
     private static final Log LOG = LogFactory.getLog(ConsistencyCheck.class);
 
+    /**
+     * Error limit. If more than this number of errors are encountered during check, 
+     * an exception will be thrown. This is so as to avoid filling memory with
+     * error instances, which do carry some amount of data.
+     */
+    public static final int ERROR_LIMIT = 10000;
+
     private IndexDao indexDao;
     private PropertySetIndex index;
 
     private List<AbstractConsistencyError> errors = 
         new ArrayList<AbstractConsistencyError>(); // List of detected inconsistencies
     private boolean completed = false; 
+    
 
     /**
      * 
@@ -145,14 +156,13 @@ public class ConsistencyCheck {
     private void runConsistencyCheck(final PropertySetIndexRandomAccessor randomIndexAccessor,
                                      final Iterator indexUriIterator) 
         throws IndexException {
-        final Set<Path> valid = new HashSet<Path>(10000);
         
-        // XXX: Don't know if I like this callback style, the only way to 
-        //      abort the iteration is to throw an un-checked exception.
-        //      I don't think the exception modelling is very good here.
+        final Set<Path> validURIs = new HashSet<Path>(30000);
+        
         PropertySetHandler handler = new PropertySetHandler() {
 
-            public void handlePropertySet(PropertySet propertySet) {
+            public void handlePropertySet(PropertySet propertySet, 
+                                          Set<Principal> aclReadPrincipals) {
 
                 PropertySetImpl daoPropSet = (PropertySetImpl)propertySet;
                 Path currentUri = daoPropSet.getURI();
@@ -161,55 +171,36 @@ public class ConsistencyCheck {
                 
                 if (indexInstances == 0) {
                     // Missing in index
-                    ConsistencyCheck.this.errors.add(
-                            new MissingInconsistency(currentUri, daoPropSet));
+                    ConsistencyCheck.this.addError(
+                            new MissingInconsistency(currentUri, daoPropSet, aclReadPrincipals));
                     return;
                 } else  if (indexInstances == 1) {
                     // OK, only a single instance exists, verify the instance data
                     try {
-                        ConsistencyCheck.this.checkPropertySet(currentUri, randomIndexAccessor, daoPropSet);
+                        ConsistencyCheck.this.checkPropertySet(currentUri,
+                                                  randomIndexAccessor, 
+                                                  daoPropSet,
+                                                  aclReadPrincipals);
                     } catch (IOException io) {
                         throw new ConsistencyCheckException("IOException while running consistency check", io);
                     }
                 } else {
                     // Multiples inconsistency
-                    ConsistencyCheck.this.errors.add(
-                            new MultiplesInconsistency(currentUri, indexInstances, daoPropSet));
+                    ConsistencyCheck.this.addError(
+                            new MultiplesInconsistency(currentUri, indexInstances, daoPropSet, aclReadPrincipals));
                 }
                 // Add to set of valid index property set URIs
-                valid.add(currentUri);
+                validURIs.add(currentUri);
             }
         };
         
         this.indexDao.orderedPropertySetIteration(handler);
         
-//        while (daoIterator.hasNext()) {
-//            PropertySetImpl daoPropSet = (PropertySetImpl)daoIterator.next();
-//            String currentUri = daoPropSet.getURI();
-//            
-//            int indexInstances = randomIndexAccessor.countInstances(currentUri);
-//            
-//            if (indexInstances == 0) {
-//                // Missing in index
-//                this.errors.add(new MissingInconsistency(currentUri, daoPropSet));
-//                continue;
-//            } else  if (indexInstances == 1) {
-//                // OK, only a single instance exists, verify the instance data
-//                checkPropertySet(currentUri, randomIndexAccessor, daoPropSet);
-//            } else {
-//                // Multiples inconsistency
-//                this.errors.add(new MultiplesInconsistency(currentUri, indexInstances, daoPropSet));
-//            }
-//            
-//            // Add to set of valid index property set URIs
-//            valid.add(currentUri);
-//        }
-        
         // Need to make a complete pass over index URIs to detect dangling inconsistencies
         while (indexUriIterator.hasNext()) {
             Path currentUri = (Path) indexUriIterator.next();
-            if (! valid.contains(currentUri)) {
-                this.errors.add(new DanglingInconsistency(currentUri));
+            if (! validURIs.contains(currentUri)) {
+                this.addError(new DanglingInconsistency(currentUri));
             }
         }
     }
@@ -220,36 +211,65 @@ public class ConsistencyCheck {
      * 
      * @param indexUri
      * @param randomIndexAccessor
-     * @param daoPropSet
+     * @param repoPropSet
      * @throws IOException
      * @throws IndexException
      */
     private void checkPropertySet(Path indexUri, 
                                   PropertySetIndexRandomAccessor randomIndexAccessor, 
-                                  PropertySetImpl daoPropSet)
+                                  PropertySetImpl repoPropSet,
+                                  Set<Principal> repoAclReadPrincipals)
         throws IOException, IndexException {
     
         try {
             PropertySetImpl indexPropSet = 
                                 (PropertySetImpl)randomIndexAccessor.getPropertySetByURI(indexUri);
             
-            // If we get here, the index document has been successfully mapped to a property set instance
+            // If we get here, the index document has been successfully
+            // mapped to a property set instance.
             int indexUUID = indexPropSet.getID();
-            int daoUUID = daoPropSet.getID();
-            int indexACL = indexPropSet.getAclInheritedFrom();
-            int daoACL = daoPropSet.getAclInheritedFrom();
+            int daoUUID = repoPropSet.getID();
             
             if (indexUUID != daoUUID) {
                 // Invalid UUID (this can also be considered a dangling inconsistency)
-                this.errors.add(new InvalidUUIDInconsistency(indexUri, daoPropSet, indexUUID, daoUUID));
-            } else if (indexACL != daoACL) {
+                addError(new InvalidUUIDInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexUUID, daoUUID));
+                return;
+            } 
+            
+            // Check ACL read principals data
+            Set<String> indexAclReadPrincipalNames = randomIndexAccessor.getAclReadPrincipalNamesByURI(indexUri);
+            if (repoAclReadPrincipals.contains(PrincipalFactory.ALL)) {
+                if (! (indexAclReadPrincipalNames.contains(PrincipalFactory.NAME_ALL) && indexAclReadPrincipalNames.size() == 1)) {
+                    addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
+                    return;
+                }
+            } else {
+                // not read-for-all, then size and all elements must match
+                if (repoAclReadPrincipals.size() != indexAclReadPrincipalNames.size()) {
+                    addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
+                    return;
+                }
+                
+                for (Principal p: repoAclReadPrincipals) {
+                    String qualifiedName = p.getQualifiedName();
+                    if (!indexAclReadPrincipalNames.contains(qualifiedName)) {
+                        addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
+                        return;
+                    }
+                }
+            }
+            
+            int indexACL = indexPropSet.getAclInheritedFrom();
+            int daoACL = repoPropSet.getAclInheritedFrom();
+            if (indexACL != daoACL) {
                 // Invalid ACL inherited from
-                this.errors.add(new InvalidACLInheritedFromInconsistency(indexUri, daoPropSet, indexACL, daoACL));
+                addError(new InvalidACLInheritedFromInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexACL, daoACL));
+                return;
             }
             
         } catch (DocumentMappingException dme) {
             // Unmappable inconsistency
-            this.errors.add(new UnmappableConsistencyError(indexUri, dme, daoPropSet));
+            addError(new UnmappableConsistencyError(indexUri, dme, repoPropSet, repoAclReadPrincipals));
         }
     
     }
@@ -271,120 +291,125 @@ public class ConsistencyCheck {
      * TODO Convert to new index dao API - not done yet, because of the experimental 
      *      status.
      * 
+     * 
+     * XXX: does not work with current API. 
+     * 
+     * 
+     * 
      * @param daoIterator
      * @param indexUriIterator
      * @throws IOException
      * @throws IndexException
      */    
-    @SuppressWarnings({ "unchecked", "unused" })
-    private void runConsistencyCheckExperimental(Iterator daoIterator, Iterator indexUriIterator, 
-                                                PropertySetIndexRandomAccessor randomIndexAccessor) 
-        throws IOException, IndexException {
-
-        Path indexUri = null;
-        Path nextIndexUri = null;
-        PropertySetImpl nextDaoPropSet = null;
-
-        while (indexUriIterator.hasNext() || nextIndexUri != null) {
-
-            if (nextIndexUri != null) {
-                indexUri = nextIndexUri;
-                nextIndexUri = null;
-            } else {
-                indexUri = (Path) indexUriIterator.next();
-            }
-            
-            if (daoIterator.hasNext() || nextDaoPropSet != null) {
-                PropertySetImpl daoPropSet = null;
-                if (nextDaoPropSet != null) {
-                    daoPropSet = nextDaoPropSet;
-                    nextDaoPropSet = null;
-                } else {
-                    daoPropSet = (PropertySetImpl) daoIterator.next();
-                }
-                
-                Path daoUri = daoPropSet.getURI();
-                
-                int compare = indexUri.compareTo(daoUri);
-                if (compare == 0) {  // indexUri == daoUri
-                    
-                    // See if it is duplicated in index
-                    int instances = 1;
-                    while (indexUriIterator.hasNext()) {
-                        nextIndexUri = (Path) indexUriIterator.next();
-                        if (indexUri.compareTo(nextIndexUri) == 0) {
-                            ++instances;
-                        } else {
-                            break;
-                        }
-                    }
-                    
-                    if (instances > 1) {
-                        // Multiples in index
-                        this.errors.add(new MultiplesInconsistency(indexUri, instances, daoPropSet));
-                    } else {
-                        // No multiples
-                        LOG.debug("URI OK: " + indexUri);
-                        checkPropertySet(indexUri, randomIndexAccessor, daoPropSet);
-                    }
-                    
-                } else if (compare > 0) {   // indexUri > daoUri
-                    // Index is passed dao, this implies missing in index
-                    LOG.debug("Missing start at daoUri = " + daoUri + ", indexUri = " + indexUri);
-                    this.errors.add(new MissingInconsistency(daoUri, daoPropSet));
-                    
-                    // Missing until synced 
-                    while (daoIterator.hasNext()) {
-                        daoPropSet = (PropertySetImpl)daoIterator.next();
-                        daoUri = daoPropSet.getURI();
-                        
-                        compare = indexUri.compareTo(daoUri);
-                        if (compare > 0) {
-                            // Another one missing
-                            this.errors.add(new MissingInconsistency(daoUri, daoPropSet));
-                        } else {
-                            // In sync, or dangling
-                            LOG.debug("Missing sync-point reached: indexUri = " + indexUri + ", daoURI = " + daoUri);
-                            nextDaoPropSet = daoPropSet;
-                            nextIndexUri = indexUri;
-                            break;
-                        } 
-                    }
-                    
-                } else { // indexUri < daoUri
-                    LOG.debug("Dangling start at indexUri = " + indexUri + ", daoURI = " + daoUri);
-                    // Index is behind dao, this implies dangling instances in index
-                    this.errors.add(new DanglingInconsistency(indexUri));
-                    
-                    // Dangling until synced
-                    while (indexUriIterator.hasNext()) {
-                        indexUri = (Path) indexUriIterator.next();
-                        
-                        compare = indexUri.compareTo(daoUri);
-                        if (compare < 0) {
-                            // Index still behind
-                            this.errors.add(new DanglingInconsistency(indexUri));
-                        } else {
-                            LOG.debug("Dangling sync-point reached: indexUri=" + indexUri + ", daoURI = " + daoUri);
-                            // In sync, or missing from index
-                            nextIndexUri = indexUri;
-                            nextDaoPropSet = daoPropSet;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                // Dangling in index
-               this.errors.add(new DanglingInconsistency(indexUri));
-            }
-        }
-        
-        while (daoIterator.hasNext()) {
-            // Missing from index
-            PropertySetImpl daoPropSet = (PropertySetImpl) daoIterator.next();
-            this.errors.add(new MissingInconsistency(daoPropSet.getURI(), daoPropSet));
-        }
-    }
+//    @SuppressWarnings({ "unchecked", "unused" })
+//    private void runConsistencyCheckExperimental(Iterator daoIterator, Iterator indexUriIterator, 
+//                                                PropertySetIndexRandomAccessor randomIndexAccessor) 
+//        throws IOException, IndexException {
+//
+//        Path indexUri = null;
+//        Path nextIndexUri = null;
+//        PropertySetImpl nextDaoPropSet = null;
+//
+//        while (indexUriIterator.hasNext() || nextIndexUri != null) {
+//
+//            if (nextIndexUri != null) {
+//                indexUri = nextIndexUri;
+//                nextIndexUri = null;
+//            } else {
+//                indexUri = (Path) indexUriIterator.next();
+//            }
+//            
+//            if (daoIterator.hasNext() || nextDaoPropSet != null) {
+//                PropertySetImpl daoPropSet = null;
+//                if (nextDaoPropSet != null) {
+//                    daoPropSet = nextDaoPropSet;
+//                    nextDaoPropSet = null;
+//                } else {
+//                    daoPropSet = (PropertySetImpl) daoIterator.next();
+//                }
+//                
+//                Path daoUri = daoPropSet.getURI();
+//                
+//                int compare = indexUri.compareTo(daoUri);
+//                if (compare == 0) {  // indexUri == daoUri
+//                    
+//                    // See if it is duplicated in index
+//                    int instances = 1;
+//                    while (indexUriIterator.hasNext()) {
+//                        nextIndexUri = (Path) indexUriIterator.next();
+//                        if (indexUri.compareTo(nextIndexUri) == 0) {
+//                            ++instances;
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                    
+//                    if (instances > 1) {
+//                        // Multiples in index
+//                        addError(new MultiplesInconsistency(indexUri, instances, daoPropSet));
+//                    } else {
+//                        // No multiples
+//                        LOG.debug("URI OK: " + indexUri);
+//                        checkPropertySet(indexUri, randomIndexAccessor, daoPropSet);
+//                    }
+//                    
+//                } else if (compare > 0) {   // indexUri > daoUri
+//                    // Index is passed dao, this implies missing in index
+//                    LOG.debug("Missing start at daoUri = " + daoUri + ", indexUri = " + indexUri);
+//                    addError(new MissingInconsistency(daoUri, daoPropSet));
+//                    
+//                    // Missing until synced 
+//                    while (daoIterator.hasNext()) {
+//                        daoPropSet = (PropertySetImpl)daoIterator.next();
+//                        daoUri = daoPropSet.getURI();
+//                        
+//                        compare = indexUri.compareTo(daoUri);
+//                        if (compare > 0) {
+//                            // Another one missing
+//                            addError(new MissingInconsistency(daoUri, daoPropSet));
+//                        } else {
+//                            // In sync, or dangling
+//                            LOG.debug("Missing sync-point reached: indexUri = " + indexUri + ", daoURI = " + daoUri);
+//                            nextDaoPropSet = daoPropSet;
+//                            nextIndexUri = indexUri;
+//                            break;
+//                        } 
+//                    }
+//                    
+//                } else { // indexUri < daoUri
+//                    LOG.debug("Dangling start at indexUri = " + indexUri + ", daoURI = " + daoUri);
+//                    // Index is behind dao, this implies dangling instances in index
+//                    addError(new DanglingInconsistency(indexUri));
+//                    
+//                    // Dangling until synced
+//                    while (indexUriIterator.hasNext()) {
+//                        indexUri = (Path) indexUriIterator.next();
+//                        
+//                        compare = indexUri.compareTo(daoUri);
+//                        if (compare < 0) {
+//                            // Index still behind
+//                            addError(new DanglingInconsistency(indexUri));
+//                        } else {
+//                            LOG.debug("Dangling sync-point reached: indexUri=" + indexUri + ", daoURI = " + daoUri);
+//                            // In sync, or missing from index
+//                            nextIndexUri = indexUri;
+//                            nextDaoPropSet = daoPropSet;
+//                            break;
+//                        }
+//                    }
+//                }
+//            } else {
+//                // Dangling in index
+//               addError(new DanglingInconsistency(indexUri));
+//            }
+//        }
+//        
+//        while (daoIterator.hasNext()) {
+//            // Missing from index
+//            PropertySetImpl daoPropSet = (PropertySetImpl) daoIterator.next();
+//            addError(new MissingInconsistency(daoPropSet.getURI(), daoPropSet));
+//        }
+//    }
     
     
     /**
@@ -419,10 +444,21 @@ public class ConsistencyCheck {
                 }
             }
         }
+        this.index.commit();
+    }
+    
+    private void addError(AbstractConsistencyError error) throws ConsistencyCheckException {
+
+        if (this.errors.size() > ERROR_LIMIT) {
+            this.completed = true;
+            throw new ConsistencyCheckException("Too many errors, please consider re-indexing.");
+        }
+
+        this.errors.add(error);
     }
 
     public List<AbstractConsistencyError> getErrors() {
-        return new ArrayList<AbstractConsistencyError>(this.errors);
+        return Collections.unmodifiableList(this.errors);
     }
 
 

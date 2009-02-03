@@ -31,20 +31,70 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermDocs;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.mapping.DocumentMapper;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 
-public class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
+class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
 
     private DocumentMapper mapper;
+    private PropertySet rootUriPropset = null;
+    private boolean first = true;
     
     public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
             throws IOException {
-        super(reader, FieldNameMapping.URI_FIELD_NAME, rootUri);
+        super(reader, FieldNameMapping.URI_FIELD_NAME, ("/".equals(rootUri) ? "/" : rootUri + "/"));
         this.mapper = mapper;
+        if (!"/".equals(rootUri)) {
+            this.rootUriPropset = rootUriPropSet(reader, rootUri);
+        } else {
+            this.first = false;
+        }
+    }
+
+    private PropertySet rootUriPropSet(IndexReader reader, String rootUri) throws IOException {
+        TermDocs tdocs = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, rootUri));
+        try {
+            if (tdocs.next()) {
+                return this.mapper.getPropertySet(reader.document(tdocs.doc()));
+            }
+        } finally {
+            tdocs.close();
+        }
+
+        return null;
+    }
+    
+    @Override
+    public boolean hasNext() {
+        if (first) {
+            return this.rootUriPropset != null;
+        } else {
+            return super.hasNext();
+        }
+    }
+    
+    @Override
+    public Object next() {
+        Object retval = null;
+        if (first) {
+            if (this.rootUriPropset == null) {
+                throw new NoSuchElementException("No more elements");
+            }
+
+            retval = this.rootUriPropset;
+            first = false;
+        } else {
+            retval = super.next();
+        }
+        
+        return retval;
     }
 
     protected Object getObjectFromDocument(Document doc) throws Exception {

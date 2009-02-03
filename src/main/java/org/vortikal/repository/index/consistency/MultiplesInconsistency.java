@@ -30,12 +30,15 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
+import org.vortikal.security.Principal;
 
 /**
  * Represents error where multiple index documents (property sets) exist for a single URI.
@@ -43,17 +46,17 @@ import org.vortikal.repository.index.PropertySetIndex;
  * @author oyviste
  *
  */
-public class MultiplesInconsistency extends AbstractConsistencyError {
+public class MultiplesInconsistency extends RequireOriginalDataConsistencyError {
 
     private static final Log LOG = LogFactory.getLog(MultiplesInconsistency.class);
     
     private int multiples;
-    private PropertySetImpl repositoryPropSet;
     
-    public MultiplesInconsistency(Path uri, int multiples, PropertySetImpl repositoryPropSet) {
-        super(uri);
+    public MultiplesInconsistency(Path uri, int multiples, 
+                                  PropertySetImpl repositoryPropSet, 
+                                  Set<Principal> aclReadPrincipals) {
+        super(uri, repositoryPropSet, aclReadPrincipals);
         this.multiples = multiples;
-        this.repositoryPropSet = repositoryPropSet;
     }
     
     public boolean canRepair() {
@@ -70,14 +73,12 @@ public class MultiplesInconsistency extends AbstractConsistencyError {
      * repository.
      */
     protected void repair(PropertySetIndex index) throws IndexException {
-        
         LOG.info("Repairing multiples inconsistency for URI '" + getUri() 
                                                     + "' (" + multiples + " multiples)");
 
         index.deletePropertySet(getUri());
         
-        index.addPropertySet(this.repositoryPropSet);
-
+        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
 
     public String toString() {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index;
+package org.vortikal.repository.reporting;
 
-import java.io.IOException;
+import java.util.Comparator;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.resourcetype.Value;
 
-/**
- * Unordered property set index iterator.
- * 
- * @author oyviste
- *
- */
-class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
+public class ValueFrequencyPairComparator implements Comparator<Pair<Value, Integer>> {
 
-    private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        super(reader);
-        this.mapper = mapper;
+    PropertyValueFrequencyQuery.Ordering ordering;
+    
+    public ValueFrequencyPairComparator(PropertyValueFrequencyQuery.Ordering ordering) {
+        this.ordering = ordering;
+    }
+    
+    public int compare(Pair<Value, Integer> o1, Pair<Value, Integer> o2) {
+        switch(this.ordering) {
+        case ASCENDING_BY_FREQUENCY:
+            return o1.second().compareTo(o2.second());
+            
+        case DESCENDING_BY_FREQUENCY:
+            return o2.second().compareTo(o1.second());
+            
+        case ASCENDING_BY_PROPERTY_VALUE:
+            return o1.first().compareTo(o2.first());
+            
+        case DESCENDING_BY_PROPERTY_VALUE:
+            return o2.first().compareTo(o1.first());
+            
+        default:
+            return o1.first().compareTo(o2.first());
+        }
     }
 
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
-    }
-
+    
 }

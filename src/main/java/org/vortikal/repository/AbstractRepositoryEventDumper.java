@@ -121,7 +121,7 @@ public abstract class AbstractRepositoryEventDumper
         ChangeLogEntry entry = new ChangeLogEntry();
         entry.setLoggerId(loggerId);
         entry.setLoggerType(loggerType);
-        entry.setUri(uri.toString());
+        entry.setUri(uri);
         entry.setOperation(operation);
         entry.setResourceId(resourceId);
         entry.setCollection(collection);

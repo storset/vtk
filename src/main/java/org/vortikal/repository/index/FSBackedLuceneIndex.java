@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 
 
 /**
@@ -82,9 +82,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
                     + this.storageDirectory.getAbsolutePath() + "' is not writable.");
         }
         
-        return FSDirectory.getDirectory(this.storageDirectory);
-        
-        //return FSDirectory.getDirectory(this.storageDirectory, eraseContents);
+        return NIOFSDirectory.getDirectory(this.storageDirectory);
     }
     
     /**

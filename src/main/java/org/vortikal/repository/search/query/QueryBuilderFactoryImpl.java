@@ -41,6 +41,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -206,6 +208,17 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                                         + query.getClass().getName());
     }
     
+    // Lucene FieldSelector for only loading ID field
+    private static final FieldSelector ID_FIELD_SELECTOR = new FieldSelector() {
+        public FieldSelectorResult accept(String fieldName) {
+            if (FieldNameMapping.STORED_ID_FIELD_NAME.equals(fieldName)) {
+                return FieldSelectorResult.LOAD;
+            } 
+                
+            return FieldSelectorResult.NO_LOAD;
+        }
+    };
+    
     private Term getPropertySetIdTermFromIndex(String uri) 
         throws QueryBuilderException {
         
@@ -218,7 +231,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                                                 URIUtil.stripTrailingSlash(uri)));
             
             if (td.next()) {
-                Field field= reader.document(td.doc()).getField(
+                Field field= reader.document(td.doc(), ID_FIELD_SELECTOR).getField(
                                             FieldNameMapping.STORED_ID_FIELD_NAME);
                 
                 String value = 
@@ -240,7 +253,6 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
             } catch (IOException io) {}
         }
     }
-
     
     @Required public void setIndexAccessor(LuceneIndexManager indexAccessor) {
         this.indexAccessor = indexAccessor;

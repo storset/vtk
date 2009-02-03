@@ -30,11 +30,14 @@
  */
 package org.vortikal.repository.index;
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.security.Principal;
 
 /**
  * A simple re-indexer that works directly on the provided <code>PropertySetIndex</code> instance.
@@ -113,8 +116,9 @@ public class DirectReindexer implements PropertySetIndexReindexer {
             this.index = index;
         }
         
-        public void handlePropertySet(PropertySet propertySet) {
-            this.index.addPropertySet(propertySet);
+        public void handlePropertySet(PropertySet propertySet, 
+                                      Set<Principal> aclReadPrincipals) {
+            this.index.addPropertySet(propertySet, aclReadPrincipals);
             ++count;
         }
         

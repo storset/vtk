@@ -30,12 +30,15 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
+import org.vortikal.security.Principal;
 
 /**
  * Consistency error representing an index document which could not be mapped to a
@@ -45,17 +48,16 @@ import org.vortikal.repository.index.PropertySetIndex;
  * @author oyviste
  *
  */
-public class UnmappableConsistencyError extends AbstractConsistencyError {
+public class UnmappableConsistencyError extends RequireOriginalDataConsistencyError {
 
     private static final Log LOG = LogFactory.getLog(UnmappableConsistencyError.class);
     
-    private PropertySetImpl repositoryPropSet;
     private Exception mappingException;
     
     public UnmappableConsistencyError(Path uri, Exception mappingException, 
-                                                                PropertySetImpl repositoryPropSet) {
-        super(uri);
-        this.repositoryPropSet = repositoryPropSet;
+                                      PropertySetImpl repositoryPropSet,
+                                      Set<Principal> aclReadPrincipals) {
+        super(uri, repositoryPropSet, aclReadPrincipals);
         this.mappingException = mappingException;
     }
 
@@ -77,7 +79,7 @@ public class UnmappableConsistencyError extends AbstractConsistencyError {
 
         index.deletePropertySet(getUri());
         
-        index.addPropertySet(repositoryPropSet);
+        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
     
     public String toString() {

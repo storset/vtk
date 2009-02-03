@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2008, University of Oslo, Norway
+/* Copyright (c) 2008, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,67 +30,177 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.lucene.document.Field;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.util.cache.ReusableObjectArrayStackCache;
+import org.vortikal.util.cache.ReusableObjectCache;
 
 /**
- * Methods for mapping between <code>Value</code> and
+ * Utility methods for mapping between <code>Value</code> and
  * <code>org.apache.lucene.document.Field</code> objects.
  * 
- * Also contains a method that maps from string representations of our data
- * types to a searchable index string representation.
+ * Contains methods that map to/from:
+ * <ul>
+ * <li>String representations of our data types to a searchable index string
+ * representation.</li>
+ * <li>Binary values for storage in index</li>
+ * </ul>
  * 
  * @author oyviste
  */
-public interface FieldValueMapper {
+public final class FieldValueMapper {
+
+    private static final String STRING_VALUE_ENCODING = "UTF-8";
+
+    // Note that order (complex towards simpler format) is important here.
+    private static final String[] SUPPORTED_DATE_FORMATS = { "yyyy-MM-dd HH:mm:ss Z",
+            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
+
+    private static final ReusableObjectCache<SimpleDateFormat>[] CACHED_DATE_FORMAT_PARSERS = 
+        new ReusableObjectCache[SUPPORTED_DATE_FORMATS.length];
+
+    static {
+        // Create parser caches for each date format (maximum capacity of 5
+        // instances per format)
+        for (int i = 0; i < CACHED_DATE_FORMAT_PARSERS.length; i++) {
+            CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(5);
+        }
+    }
+
+    public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
+
+    private ValueFactory valueFactory;
+
 
     // No encoding (un-typed)
-    public Field getKeywordField(String name, int value) ;
+    public Field getKeywordField(String name, int value) {
+        
+        Field field = new Field(name, Integer.toString(value), Field.Store.NO,
+                Field.Index.NOT_ANALYZED_NO_NORMS);
+        field.setOmitTf(true);
+        return field;
+    }
 
     // No encoding (un-typed)
-    public Field getKeywordField(String name, String value);
+    public Field getKeywordField(String name, String value) {
+        Field field = new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
+        field.setOmitTf(true);
+        return field;
+    }
 
     // No encoding (un-typed)
-    public Field getStoredKeywordField(String name, int value);
+    public Field getStoredKeywordField(String name, int value) {
+        Field field = new Field(name, Integer.toString(value), Field.Store.YES,
+                Field.Index.NOT_ANALYZED_NO_NORMS);
+        field.setOmitTf(true);
+        return field;
+    }
+
 
     // No encoding (un-typed)
-    public Field getStoredKeywordField(String name, String value);
+    public Field getStoredKeywordField(String name, String value) {
+        Field field = new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        field.setOmitTf(true);
+        return field;
+    }
+
 
     /**
      * Create indexed (but not stored) <code>Field</code> from multiple
-     * <code>Value</code> objects. Should be analyzed with
-     * {@link EscapedMultiValueFieldAnalyzer}.
-
+     * <code>Value</code> objects.
+     * 
      * @param name
      * @param values
-     * @param lowercase
      * @return
      */
-    public Field getFieldFromValues(String name, Value[] values, boolean lowercase) ;
-    
+    public Field getFieldFromValues(String name, Value[] values, boolean lowercase) {
+        String[] encodedValues = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            encodedValues[i] = encodeIndexFieldValue(values[i], lowercase);
+        }
+
+        Field field = new Field(name, new StringArrayTokenStream(encodedValues));
+        field.setOmitTf(true);
+        return field;
+    }
+
+
     /**
      * Create indexed (but not stored) <code>Field</code> from single
      * <code>Value</code>.
      * 
      * @param name
      * @param value
-     * @param lowercase
      * @return
      */
-    public Field getFieldFromValue(String name, Value value, boolean lowercase) ;
+    public Field getFieldFromValue(String name, Value value, boolean lowercase) {
+        String encoded = encodeIndexFieldValue(value, lowercase);
+        return getKeywordField(name, encoded);
+    }
+
 
     /**
-     * @param value
-     * @param lowercase
-     * @return
-     * @throws FieldDataEncodingException
+     * Used for generating ancestor ids field. We don't bother to encode it
+     * because of its system-specific nature, and that it should never be used
+     * as a sane sorting key or in range queries.
      */
+    public Field getUnencodedMultiValueFieldFromIntegers(String name, int[] integers) {
+
+        String[] values = new String[integers.length];
+        for (int i = 0; i < integers.length; i++) {
+            values[i] = Integer.toString(integers[i]);
+        }
+        
+        return getUnencodedMultiValueFieldFromStrings(name, values);
+    }
+    
+    public Field getUnencodedMultiValueFieldFromStrings(String name, String[] values) {
+        Field field = new Field(name, new StringArrayTokenStream(values));
+        field.setOmitTf(true);
+        return field;
+    }
+
     public String encodeIndexFieldValue(Value value, boolean lowercase)
-            throws FieldDataEncodingException ;
+            throws FieldDataEncodingException {
+
+        switch (value.getType()) {
+        case STRING:
+        case HTML:
+            if (lowercase) {
+                return value.getNativeStringRepresentation().toLowerCase();
+            }
+            return value.getNativeStringRepresentation();
+
+        case IMAGE_REF:
+        case BOOLEAN:
+        case PRINCIPAL:
+            return value.getNativeStringRepresentation();
+
+        case DATE:
+        case TIMESTAMP:
+            return FieldDataEncoder.encodeDateValueToString(value.getDateValue().getTime());
+
+        case INT:
+            return FieldDataEncoder.encodeIntegerToString(value.getIntValue());
+
+        case LONG:
+            return FieldDataEncoder.encodeLongToString(value.getLongValue());
+
+        default:
+            throw new FieldDataEncodingException("Unknown or unsupported type: " + value.getType());
+        }
+
+    }
+
 
     /**
      * Encode a string representation into a form suitable for indexing and
@@ -98,39 +208,132 @@ public interface FieldValueMapper {
      * sortable, basically).
      * 
      * Only native string representations are supported by this method.
-     * 
-     * @param stringValue
-     * @param type
-     * @param lowercase
-     * @return
-     * @throws ValueFormatException
-     * @throws FieldDataEncodingException
      */
     public String encodeIndexFieldValue(String stringValue, Type type, boolean lowercase)
-            throws ValueFormatException, FieldDataEncodingException;
-    
-    
-    /**
-     * Used for generating ancestor ids field. We don't bother to encode it
-     * because of its system-specific nature, and that it should never be used
-     * as a sane sorting key or in range queries.
-     */
-    public Field getUnencodedMultiValueFieldFromIntegers(String name, int[] integers) ;
+            throws ValueFormatException, FieldDataEncodingException {
 
-    
-    /**
-     * 
-     * @param name
-     * @param value
-     * @return
-     * @throws FieldDataEncodingException
-     */
-    public Field getBinaryFieldFromValue(String name, Value value)
-    throws FieldDataEncodingException;
+        switch (type) {
+        case STRING:
+        case HTML:
+            if (lowercase) {
+                return stringValue.toLowerCase();
+            }
+            return stringValue;
 
-    
-    /* Methods for binary field value mapping below */
-    
+        case IMAGE_REF:
+        case BOOLEAN:
+        case PRINCIPAL:
+            return stringValue;
+
+        case DATE:
+        case TIMESTAMP:
+            try {
+                long l = Long.parseLong(stringValue);
+                return FieldDataEncoder.encodeDateValueToString(l);
+            } catch (NumberFormatException nfe) { // Failed to parse "long"
+                // format, ignore.
+            }
+
+            Date d = null;
+            for (int i = 0; i < SUPPORTED_DATE_FORMATS.length; i++) {
+                SimpleDateFormat formatter = CACHED_DATE_FORMAT_PARSERS[i].getInstance();
+                if (formatter == null) {
+                    formatter = new SimpleDateFormat(SUPPORTED_DATE_FORMATS[i]);
+                }
+
+                try {
+                    d = formatter.parse(stringValue);
+                    break;
+                } catch (Exception e) {
+                    // Ignore failed parsing attempt
+                } finally {
+                    // Cache the constructed date parser for re-use
+                    CACHED_DATE_FORMAT_PARSERS[i].putInstance(formatter);
+                }
+            }
+
+            if (d == null) {
+                throw new ValueFormatException("Unable to encode date string value '" + stringValue
+                        + "' to index field value representation");
+            }
+
+            // Finally, create encoded index field representation of the parsed
+            // date.
+            return FieldDataEncoder.encodeDateValueToString(d.getTime());
+
+        case INT:
+            try {
+                // Validate and encode
+                int n = Integer.parseInt(stringValue);
+                return FieldDataEncoder.encodeIntegerToString(n);
+            } catch (NumberFormatException nfe) {
+                throw new ValueFormatException("Unable to encode integer string value to "
+                        + "to index field value representation: " + nfe.getMessage());
+            }
+
+        case LONG:
+            try {
+                // Validate and pad
+                long l = Long.parseLong(stringValue);
+                return FieldDataEncoder.encodeLongToString(l);
+            } catch (NumberFormatException nfe) {
+                throw new ValueFormatException("Unable to encode long integer string value to "
+                        + "to index field value representation: " + nfe.getMessage());
+            }
+
+        default:
+            throw new FieldDataEncodingException("Unknown or unsupported type " + type);
+
+        }
+
+    }
+
+
+    /* Binary field value mapping methods below */
+
+    public Field getStoredBinaryFieldFromValue(String name, Value value)
+            throws FieldDataEncodingException {
+
+        byte[] byteValue = null;
+        switch (value.getType()) {
+        case BOOLEAN:
+            byteValue = FieldDataEncoder.encodeBooleanToBinary(value.getBooleanValue());
+            break;
+
+        case DATE:
+        case TIMESTAMP:
+            byteValue = FieldDataEncoder.encodeDateValueToBinary(value.getDateValue().getTime());
+            break;
+
+        case INT:
+            byteValue = FieldDataEncoder.encodeIntegerToBinary(value.getIntValue());
+            break;
+
+        case LONG:
+            byteValue = FieldDataEncoder.encodeLongToBinary(value.getLongValue());
+            break;
+
+        case PRINCIPAL:
+        case STRING:
+        case IMAGE_REF:
+        case HTML:
+            try {
+                byteValue = value.getNativeStringRepresentation().getBytes(STRING_VALUE_ENCODING);
+            } catch (UnsupportedEncodingException ue) {
+            } // Should never occur.
+            break;
+
+        default:
+            throw new FieldDataEncodingException("Unknown or unsupported type: " + value.getType());
+
+        }
+
+        Field field = new Field(name, byteValue, Field.Store.YES);
+        field.setOmitTf(true);
+        return field;
+    }
+
+
     /**
      * For multi-valued props
      * 
@@ -138,22 +341,158 @@ public interface FieldValueMapper {
      * @param values
      * @return
      */
-    public Field[] getBinaryFieldsFromValues(String name, Value[] values)
-            throws FieldDataEncodingException;
+    public Field[] getStoredBinaryFieldsFromValues(String name, Value[] values)
+            throws FieldDataEncodingException {
 
-    public Value getValueFromBinaryField(Field field, Type type)
-            throws FieldDataEncodingException, ValueFormatException;
+        if (values.length == 0) {
+            throw new IllegalArgumentException("Length of values must be greater than zero.");
+        }
 
-    public Value[] getValuesFromBinaryFields(List<Field> fields, Type type)
-            throws FieldDataEncodingException, ValueFormatException;
+        Field[] fields = new Field[values.length];
+        for (int i = 0; i < values.length; i++) {
+            fields[i] = getStoredBinaryFieldFromValue(name, values[i]);
+        }
 
-    public String getStringFromStoredBinaryField(Field f)
-            throws FieldValueMappingException;
+        return fields;
+    }
+    
+
+
+    public Value getValueFromStoredBinaryField(Field field, Type type) throws FieldDataEncodingException,
+            ValueFormatException {
+
+        byte[] value = field.getBinaryValue();
+
+        switch (type) {
+        case PRINCIPAL:
+        case IMAGE_REF:
+        case HTML:
+        case STRING:
+            try {
+                String stringValue = new String(value, STRING_VALUE_ENCODING);
+                return this.valueFactory.createValue(stringValue, type);
+            } catch (UnsupportedEncodingException ue) {
+            } // Won't happen.
+
+        case BOOLEAN:
+            boolean b = FieldDataEncoder.decodeBooleanFromBinary(value, 
+                                                                 field.getBinaryOffset(),
+                                                                 field.getBinaryLength());
+            return new Value(b);
+
+        case DATE:
+            long time = FieldDataEncoder.decodeDateValueFromBinary(value,
+                                                                   field.getBinaryOffset(),
+                                                                   field.getBinaryLength());
+            return new Value(new Date(time), true);
+
+        case TIMESTAMP:
+            long time2 = FieldDataEncoder.decodeDateValueFromBinary(value,
+                                                                    field.getBinaryOffset(),
+                                                                    field.getBinaryLength());
+            return new Value(new Date(time2), false);
+
+        case INT:
+            int n = FieldDataEncoder.decodeIntegerFromBinary(value,
+                                                             field.getBinaryOffset(),
+                                                             field.getBinaryLength());
+            return new Value(n);
+
+        case LONG:
+            long l = FieldDataEncoder.decodeLongFromBinary(value,
+                                                           field.getBinaryOffset(),
+                                                           field.getBinaryLength());
+            return new Value(l);
+        }
+
+        throw new FieldDataEncodingException("Unknown type: " + type);
+    }
+
+
+    public Value[] getValuesFromStoredBinaryFields(List<Field> fields, Type type)
+            throws FieldDataEncodingException, ValueFormatException {
+
+        if (fields.size() == 0) {
+            throw new IllegalArgumentException("Length of fields must be greater than zero");
+        }
+
+        Value[] values = new Value[fields.size()];
+        int u = 0;
+        for (Field field : fields) {
+            values[u++] = getValueFromStoredBinaryField(field, type);
+        }
+
+        return values;
+    }
+
 
     public Field getStoredBinaryIntegerField(String name, int value)
-            throws FieldValueMappingException;
+        throws FieldValueMappingException {
+        Field field = new Field(name,
+                FieldDataEncoder.encodeIntegerToBinary(value), Field.Store.YES);
+        field.setOmitTf(true);
+        return field;
+    }
 
-    public int getIntegerFromStoredBinaryField(Field f)
-            throws FieldValueMappingException;
+    public String getStringFromStoredBinaryField(Field f) throws FieldValueMappingException {
+        try {
+            return new String(f.getBinaryValue(),
+                              f.getBinaryOffset(),
+                              f.getBinaryLength(), STRING_VALUE_ENCODING);
+        } catch (UnsupportedEncodingException uee) {
+            throw new FieldValueMappingException(uee.getMessage());
+        }
+    }
     
+    public String[] getStringsFromStoredBinaryFields(Field[] fields) 
+                throws FieldValueMappingException {
+
+        String[] values = new String[fields.length];
+        try {
+            for (int i=0; i<fields.length; i++) { 
+                values[i] = new String(fields[i].getBinaryValue(),
+                                       fields[i].getBinaryOffset(),
+                                       fields[i].getBinaryLength(),
+                                                    STRING_VALUE_ENCODING);
+            }
+        } catch (UnsupportedEncodingException uee) {
+            throw new FieldValueMappingException(uee.getMessage());
+        }
+        
+        return values;
+    }
+    
+    public Field[] getStoredBinaryFieldsFromStrings(String name, String[] values) {
+
+        Field[] fields = new Field[values.length];
+        try {
+            for (int i = 0; i < values.length; i++) {
+                fields[i] = new Field(name, values[i].getBytes(STRING_VALUE_ENCODING), 
+                                      Field.Store.YES);
+                fields[i].setOmitTf(true);
+            }
+        } catch (UnsupportedEncodingException uee) {
+            throw new FieldValueMappingException(uee.getMessage());
+        }
+
+        return fields;
+    }
+        
+
+    public int getIntegerFromStoredBinaryField(Field f) throws FieldValueMappingException {
+
+        if (!f.isBinary()) {
+            throw new FieldValueMappingException("Not a binary stored field");
+        }
+
+        return FieldDataEncoder.decodeIntegerFromBinary(f.getBinaryValue(), 
+                f.getBinaryOffset(), f.getBinaryLength());
+    }
+
+
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
+        this.valueFactory = valueFactory;
+    }
+
 }

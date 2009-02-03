@@ -35,9 +35,11 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.store.DataAccessor;
+import org.vortikal.security.PrincipalFactory;
 
 /**
- * Dump repository resource change log events in database changelog.
+ * Dump repository resource change log events in database changelog suitable
+ * for incremental updates of system index.
  * 
  * <ul>
  *  <li>
@@ -46,7 +48,12 @@ import org.vortikal.repository.store.DataAccessor;
  *  </li>
  *  <li>
  *  ACL modifications on resources result in recursive modification events
- *  for the entire tree if the affected resource is a collection and inheritance 
+ *  for the entire tree if any of the following modifications are done:
+ *  * ACL inheritance is switched on or off
+ *  * ACL does not allow read-for-all
+ *  * ACL is set to allow read-for-all
+ *   
+ *   the affected resource is a collection and inheritance 
  *  has been altered.
  *  
  *  Otherwise, a single ACL modification event will be inserted for the affected
@@ -56,7 +63,7 @@ import org.vortikal.repository.store.DataAccessor;
  * 
  * @author oyviste
  */
-public class RepositoryEventDumperImpl extends AbstractRepositoryEventDumper {
+public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDumper {
 
     private DataAccessor dataAccessor;
     
@@ -115,31 +122,50 @@ public class RepositoryEventDumperImpl extends AbstractRepositoryEventDumper {
             return;
         }
         
-        if (resource.isCollection() && 
-            (originalResource.isInheritedAcl() != resource.isInheritedAcl())) {
+        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
+                resource.getURI(), 
+                ChangeLogEntry.Operation.MODIFIED_ACL, -1,
+                resource.isCollection(), 
+                new Date());
+
+        boolean recurse = false;
+        
+        if (resource.isCollection()) {
+            // Determine if we need to dump changelog entries recursively and
+            // update the whole tree in the system index.
+            if (originalResource.isInheritedAcl() != resource.isInheritedAcl()) {
+                recurse = true;
+            } else {
+                RepositoryAction[] privsForAllOrig = originalACL.getPrivilegeSet(PrincipalFactory.ALL);
+                RepositoryAction[] privsForAllNew = newACL.getPrivilegeSet(PrincipalFactory.ALL);
                 
-            ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
-                    resource.getURI(), 
-                    ChangeLogEntry.Operation.MODIFIED_ACL, -1,
-                    resource.isCollection(), 
-                    new Date());
-            
-            // ACL inheritance altered on collection resource, insert 
-            // recursive ACL modification event
-            this.dataAccessor.addChangeLogEntry(entry, true);
+                boolean origAllowsReadForAll = false;
+                boolean newAllowsReadForAll = false;
                 
+                for (RepositoryAction action: privsForAllOrig) {
+                    if (action == RepositoryAction.READ 
+                            || action == RepositoryAction.READ_PROCESSED
+                            || action == RepositoryAction.ALL) {
+                        origAllowsReadForAll = true;
+                        break;
+                    }
+                }
+                for (RepositoryAction action: privsForAllNew) {
+                    if (action == RepositoryAction.READ 
+                            || action == RepositoryAction.READ_PROCESSED
+                            || action == RepositoryAction.ALL) {
+                        newAllowsReadForAll = true;
+                        break;
+                    }
+                }
                 
-        } else {
-            
-            ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
-                    resource.getURI(),
-                    ChangeLogEntry.Operation.MODIFIED_ACL, -1,
-                    resource.isCollection(),
-                    new Date());
-            
-            // Not a collection, insert single ACL modification event
-            this.dataAccessor.addChangeLogEntry(entry, false);
+                if (! (origAllowsReadForAll && newAllowsReadForAll)) {
+                    recurse = true;
+                }
+            }
         }
+        
+        this.dataAccessor.addChangeLogEntry(entry, recurse);
     }
     
     @Required

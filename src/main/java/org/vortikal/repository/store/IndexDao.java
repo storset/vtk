@@ -35,7 +35,9 @@ import java.util.Set;
 
 import org.vortikal.repository.ChangeLogEntry;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.query.security.ResultSecurityInfo;
+import org.vortikal.security.Principal;
 
 /**
  * Callback-based interface for fetching property sets from database. 
@@ -59,6 +61,9 @@ public interface IndexDao {
     public void processQueryResultsAuthorization(
                                     Set<String> principalNames,  
                                     List<ResultSecurityInfo> resultSecurityInfo) 
+        throws DataAccessException;
+    
+    public Set<Principal> getAclReadPrincipals(PropertySet propertySet)
         throws DataAccessException;
 
     // XXX: Getting/removing db change log entries should perhaps be in some place more

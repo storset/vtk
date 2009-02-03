@@ -34,7 +34,10 @@ import java.io.IOException;
 import java.util.BitSet;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.OpenBitSet;
 
 /**
  * A {@link org.apache.lucene.search.Filter} that inverts the result of 
@@ -64,11 +67,14 @@ public class InversionFilter extends Filter {
 
     private Filter wrappedFilter;
     private BitSet bits;
+    private DocIdSet docIdSet;
     
     public InversionFilter(Filter wrappedFilter) {
         this.wrappedFilter = wrappedFilter;
     }
     
+    @Override
+    @Deprecated
     public BitSet bits(IndexReader reader) throws IOException {
         if (bits == null) {
             bits = this.wrappedFilter.bits(reader);
@@ -82,5 +88,36 @@ public class InversionFilter extends Filter {
         
         return bits;
     }
-
+    
+    @Override
+    public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+        if (this.docIdSet == null) {
+            int maxDoc = reader.maxDoc();
+            OpenBitSet docIdSet = new OpenBitSet(maxDoc);
+        
+            DocIdSetIterator iterator = this.wrappedFilter.getDocIdSet(reader).iterator();
+            int prevDocId = -1;
+            while(iterator.next()) {
+                int currentDocId = iterator.doc();
+                for (int i=prevDocId+1; i<currentDocId; i++) {
+                    if (!reader.isDeleted(i)) { 
+                        docIdSet.fastSet(i);
+                    }
+                }
+                prevDocId = currentDocId;
+            }
+            
+            // Flip the rest of the bits (last doc id+1 to maxdoc())
+            for (int i=prevDocId+1; i<maxDoc; i++) {
+                if (!reader.isDeleted(i)) {
+                    docIdSet.fastSet(i);
+                }
+            }
+            
+            this.docIdSet = docIdSet;
+        }
+        
+        return this.docIdSet;
+    }
+    
 }

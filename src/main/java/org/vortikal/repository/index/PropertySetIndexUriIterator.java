@@ -51,7 +51,7 @@ public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
     private TermEnum te;
     private TermDocs td;
     private IndexReader reader;
-    private String iteratorField = FieldNameMapping.URI_FIELD_NAME.intern();
+    private String iteratorField = FieldNameMapping.URI_FIELD_NAME;
         
     public PropertySetIndexUriIterator(IndexReader reader) throws IOException {
         this.te = reader.terms(new Term(this.iteratorField, ""));

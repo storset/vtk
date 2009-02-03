@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index;
+package org.vortikal.repository.search.query.security;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.apache.lucene.search.CachingWrapperFilter;
+import org.apache.lucene.search.Filter;
 
 /**
- * Unordered property set index iterator.
+ * A filter-factory which does caching of filters.
  * 
- * @author oyviste
- *
+ * Currently, caching is only done for ACL read for all filter. The cached
+ * filter bits are keyed on IndexReader instance, so old bitsets are automatically
+ * discarded when a new index reader instance is used. This is
+ * done in {@link CachingWrapperFilter}. A <code>Map</code> with weak keys
+ * is used internally, so it does not leak old <code>IndexReader</code> references.
+ * 
  */
-class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
-
-    private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        super(reader);
-        this.mapper = mapper;
-    }
-
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
+public class CachingQueryAuthorizationFilterFactory extends
+        SimpleQueryAuthorizationFilterFactory {
+    
+    private Filter cachingAclReadForAllFilter = new CachingWrapperFilter(
+                   SimpleQueryAuthorizationFilterFactory.ACL_READ_FOR_ALL_FILTER);
+    
+    @Override
+    public Filter authorizationQueryFilter(String token, IndexReader reader) {
+        if (token == null) {
+            return this.cachingAclReadForAllFilter;
+        } else {
+            return super.authorizationQueryFilter(token, reader);
+        }
     }
 
 }

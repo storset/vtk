@@ -30,12 +30,15 @@
  */
 package org.vortikal.repository.index.consistency;
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
+import org.vortikal.security.Principal;
 
 /**
  * Consistency error where a property exists in the repository, but not in the index.
@@ -43,14 +46,14 @@ import org.vortikal.repository.index.PropertySetIndex;
  * @author oyviste
  *
  */
-public class MissingInconsistency extends AbstractConsistencyError {
+public class MissingInconsistency extends RequireOriginalDataConsistencyError {
     
     private static final Log LOG = LogFactory.getLog(MissingInconsistency.class);
-    private PropertySetImpl repositoryPropSet;
+
     
-    public MissingInconsistency(Path uri, PropertySetImpl repositoryPropSet) {
-        super(uri);
-        this.repositoryPropSet = repositoryPropSet;
+    public MissingInconsistency(Path uri, PropertySetImpl repositoryPropSet,
+                                Set<Principal> aclReadPrincipals) {
+        super(uri, repositoryPropSet, aclReadPrincipals);
     }
 
     public boolean canRepair() {
@@ -72,8 +75,7 @@ public class MissingInconsistency extends AbstractConsistencyError {
         LOG.info("Repairing missing inconsistency by adding property set at URI '" 
                 + getUri() + "'");
         
-        index.addPropertySet(repositoryPropSet);
-
+        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
 
 }

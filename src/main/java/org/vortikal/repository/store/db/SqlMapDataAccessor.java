@@ -162,7 +162,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("entry", entry);
             parameters.put("uriWildcard", 
-                           SqlDaoUtils.getUriSqlWildcard(Path.fromString(entry.getUri()), SQL_ESCAPE_CHAR));
+                           SqlDaoUtils.getUriSqlWildcard(entry.getUri(), SQL_ESCAPE_CHAR));
 
             getSqlMapClientTemplate().insert(sqlMap, parameters);
                 

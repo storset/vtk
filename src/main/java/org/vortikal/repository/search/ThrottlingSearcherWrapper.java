@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,51 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index;
+package org.vortikal.repository.search;
 
-import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
- * Unordered property set index iterator.
- * 
- * @author oyviste
+ * A <code>Searcher</code> that wraps another <code>Searcher</code> and 
+ * trottles the number of concurrent searches
+ * to a maximum number. If overflow, incoming threads are blocked and queued
+ * in fair order.
  *
  */
-class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
+public class ThrottlingSearcherWrapper implements Searcher, InitializingBean {
 
-    private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        super(reader);
-        this.mapper = mapper;
+    private Searcher searcher;
+    private int maxConcurrentQueries = 8;
+    private Semaphore searchPermits;
+    
+    public void afterPropertiesSet() {
+        // Use fair queueing if contention
+        this.searchPermits = new Semaphore(this.maxConcurrentQueries, true);
     }
 
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
+    public ResultSet execute(String token, Search search) throws QueryException {
+        try {
+            this.searchPermits.acquire();
+        } catch (InterruptedException e) {
+            throw new QueryException("Thread interrupted while waiting for search permit");
+        }
+        
+        try {
+            return this.searcher.execute(token, search);
+        } finally {
+            this.searchPermits.release();
+        }
     }
 
+    @Required
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
+    }
+
+    public void setMaxConcurrentQueries(int maxConcurrentQueries) {
+        this.maxConcurrentQueries = maxConcurrentQueries;
+    }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index;
+package org.vortikal.repository.index.consistency;
 
-import java.io.IOException;
+import java.util.Set;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.index.IndexException;
+import org.vortikal.repository.index.PropertySetIndex;
+import org.vortikal.security.Principal;
 
-/**
- * Unordered property set index iterator.
- * 
- * @author oyviste
- *
- */
-class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
+public abstract class RequireOriginalDataConsistencyError extends
+        AbstractConsistencyError {
 
-    private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        super(reader);
-        this.mapper = mapper;
+    protected PropertySetImpl repositoryPropSet;
+    protected Set<Principal> repositoryAclReadPrincipals;
+    
+    public RequireOriginalDataConsistencyError(Path uri, PropertySetImpl repositoryPropSet,
+                                            Set<Principal> repositoryAclReadPrincipals) {
+        super(uri);
+        this.repositoryPropSet = repositoryPropSet;
+        this.repositoryAclReadPrincipals = repositoryAclReadPrincipals;
     }
+    
+    @Override
+    public abstract boolean canRepair();
 
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
-    }
+    @Override
+    public abstract String getDescription();
+
+    @Override
+    protected abstract void repair(PropertySetIndex index) throws IndexException;
 
 }

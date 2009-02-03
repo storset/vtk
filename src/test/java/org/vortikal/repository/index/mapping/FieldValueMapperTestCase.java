@@ -42,12 +42,12 @@ import org.vortikal.repository.resourcetype.ValueFactoryImpl;
  * 
  *
  */
-public class FieldValueMapperImplTestCase extends TestCase {
+public class FieldValueMapperTestCase extends TestCase {
 
-    private FieldValueMapperImpl fieldValueMapper;
+    private FieldValueMapper fieldValueMapper;
 
-    public FieldValueMapperImplTestCase() {
-        this.fieldValueMapper = new FieldValueMapperImpl();
+    public FieldValueMapperTestCase() {
+        this.fieldValueMapper = new FieldValueMapper();
         this.fieldValueMapper.setValueFactory(new ValueFactoryImpl());
     }
     

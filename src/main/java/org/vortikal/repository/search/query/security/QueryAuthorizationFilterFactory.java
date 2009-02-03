@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,31 +28,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index;
+package org.vortikal.repository.search.query.security;
 
-import java.io.IOException;
-
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.vortikal.repository.index.mapping.DocumentMapper;
+import org.apache.lucene.search.Filter;
 
-/**
- * Unordered property set index iterator.
- * 
- * @author oyviste
- *
- */
-class PropertySetIndexUnorderedIterator extends AbstractDocumentIterator {
+public interface QueryAuthorizationFilterFactory {
 
-    private DocumentMapper mapper;
-    public PropertySetIndexUnorderedIterator(IndexReader reader, DocumentMapper mapper)
-            throws IOException {
-        super(reader);
-        this.mapper = mapper;
-    }
-
-    protected Object getObjectFromDocument(Document document) throws Exception {
-        return this.mapper.getPropertySet(document);
-    }
-
+    /**
+     * Return a Lucene query <code>Filter</code> (possibly cached) that
+     * restricts search results based on index documents ACL data and the
+     * principal represented by the token.
+     * 
+     * @param token The token for the principal which the search is done on behalf of.
+     * @param reader The <code>IndexReader</code> used to search the Lucene index.
+     * @return A <code>Filter</code>, or <code>null</code> if 
+     *         no filter should be applied for the given token.
+     */
+    public Filter authorizationQueryFilter(String token, IndexReader reader);
+    
 }

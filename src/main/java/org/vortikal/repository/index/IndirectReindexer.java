@@ -38,8 +38,9 @@ import org.vortikal.repository.store.IndexDao;
  * <p>A <code>PropertySetIndex</code> re-indexer that uses a temporary index instance, instead of working
  * directly on the target index. This has the advantage that the target index can be searched 
  * while re-indexing is running. When the temporary index is complete, its contents will
- * replace the target index' contents in one go. This is usually not a lengthy process, so
- * target index "downtime" should be minimal at this stage.
+ * replace the target index' contents in one go.
+ * XXX: this takes too long, should probably switch directories at file system level, instead.
+ *      index downtime is usually very visible, so we should try our best to minimize it.
  * 
  * <p>The target index will be exclusively locked for writing immediately, while the re-indexing runs
  * on the temporary index. This is done to avoid losing any updates that might happen
@@ -104,7 +105,6 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
             }
             
             this.temporaryIndex.close();
-            
             
             // Commit new index contents
             this.targetIndex.commit();

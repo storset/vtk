@@ -45,7 +45,8 @@ import org.vortikal.util.cache.SimpleCache;
  *  - Executing report queries
  *  - Caching of results (optional)
  * 
- * XXX: No authorization of any kind if currently done. 
+ * XXX: No authorization of any kind if currently done in database DAO.
+ *      Index report DAO does proper authorization.
  * 
  */
 public class DataReportManagerImpl implements
@@ -54,18 +55,26 @@ public class DataReportManagerImpl implements
     private static final Log LOG = LogFactory.getLog(DataReportManagerImpl.class);
     
     private DataReportDAO dao;
-    private SimpleCache<ReportQuery, ReportResult> cache = null;
+    private SimpleCache<CacheItemKey, ReportResult> cache = null;
     
     public ReportResult executeReportQuery(ReportQuery query, String token) {
+        if (query == null){
+            throw new IllegalArgumentException("Query cannot be null");
+        }
+        
         if (this.cache != null) {
-            ReportResult result = this.cache.get(query);
+            CacheItemKey key = new CacheItemKey(token, (ReportQuery)query.clone());
+            
+            ReportResult result = this.cache.get(key);
             if (result != null) {
+                System.out.println("REPORT RESULT FROM CACHE!!!!!");
                 LOG.debug("Got report query result from cache.");
                 return result;
             } else {
+                System.out.println("Not found in cache, dispatching to DAO....");
                 LOG.debug("No result found in cache for query.");
                 result = dispatchQuery(query, token);
-                this.cache.put((ReportQuery)query.clone(), result);
+                this.cache.put(key, result);
             }
             
             return result;
@@ -98,13 +107,55 @@ public class DataReportManagerImpl implements
         throw new DataReportException("Unsupported report query type: " 
                                                             + query.getClass());
     }
+    
+    private static final class CacheItemKey {
+        ReportQuery query;
+        String token;
+        CacheItemKey(String token, ReportQuery query) {
+            this.query = query;
+            this.token = token;
+        }
+        
+        public int hashCode() {
+            if (this.token == null) {
+                return this.query.hashCode();
+            } else {
+                return this.query.hashCode() + this.token.hashCode();
+            }
+        }
+        
+        public boolean equals(Object obj) {
+            if (obj == null || !(obj instanceof CacheItemKey)) {
+                return false;
+            }
+            
+            if (obj == this) return true;
+            
+            CacheItemKey other = (CacheItemKey)obj;
+            if (!this.query.equals(other.query)) {
+                return false;
+            }
+            
+            if (this.token == null) {
+                if (other.token != null) return false;
+                else
+                    return true;
+            }
+            
+            if (!this.token.equals(other.token)){
+                return false;
+            }
+            
+            return true;
+        }
+    }
 
     @Required
     public void setDataReportDAO(DataReportDAO dao) {
         this.dao = dao;
     }
 
-    public void setCache(SimpleCache<ReportQuery, ReportResult> cache) {
+    public void setCache(SimpleCache<CacheItemKey, ReportResult> cache) {
         this.cache = cache;
     }
 }

@@ -50,10 +50,10 @@ public class FieldDataEncoderTestCase extends TestCase {
     public void testBinaryBooleanEncoding() {
                 
         byte[] encoded = FieldDataEncoder.encodeBooleanToBinary(false);
-        assertFalse(FieldDataEncoder.decodeBooleanFromBinary(encoded));
+        assertFalse(FieldDataEncoder.decodeBooleanFromBinary(encoded, 0, encoded.length));
         
         encoded = FieldDataEncoder.encodeBooleanToBinary(true);
-        assertTrue(FieldDataEncoder.decodeBooleanFromBinary(encoded));
+        assertTrue(FieldDataEncoder.decodeBooleanFromBinary(encoded, 0, encoded.length));
         
     }
     
@@ -102,7 +102,7 @@ public class FieldDataEncoderTestCase extends TestCase {
         byte[] encodedBinary = FieldDataEncoder.encodeIntegerToBinary(testNumber);
         assertEquals(4, encodedBinary.length);
         
-        assertEquals(testNumber, FieldDataEncoder.decodeIntegerFromBinary(encodedBinary));
+        assertEquals(testNumber, FieldDataEncoder.decodeIntegerFromBinary(encodedBinary, 0, encodedBinary.length));
         
         // Test lexicographic sorting
         String encoded1 = FieldDataEncoder.encodeIntegerToString(-4000);
@@ -131,7 +131,7 @@ public class FieldDataEncoderTestCase extends TestCase {
         byte[] encodedBinary = FieldDataEncoder.encodeLongToBinary(testNumber);
         assertEquals(8, encodedBinary.length);
         
-        assertEquals(testNumber, FieldDataEncoder.decodeLongFromBinary(encodedBinary));
+        assertEquals(testNumber, FieldDataEncoder.decodeLongFromBinary(encodedBinary, 0, encodedBinary.length));
 
         // Test lexicographic sorting
         String encoded1 = FieldDataEncoder.encodeLongToString(-400000000L);

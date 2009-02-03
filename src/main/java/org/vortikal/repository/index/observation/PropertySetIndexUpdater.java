@@ -32,6 +32,7 @@ package org.vortikal.repository.index.observation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,7 @@ import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.index.PropertySetIndex;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.security.Principal;
 
 /**
  * Incremental index updates from resource changes.
@@ -131,8 +133,8 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 return;
             }
             
-            List<ChangeLogEntry> updates = new ArrayList<ChangeLogEntry>();
-            List<ChangeLogEntry> deletes = new ArrayList<ChangeLogEntry>();
+            List<ChangeLogEntry> updates = new ArrayList<ChangeLogEntry>(changes.size());
+            List<ChangeLogEntry> deletes = new ArrayList<ChangeLogEntry>(changes.size());
 
             // Sort out deletes and updates
             for (ChangeLogEntry change: changes) {
@@ -163,16 +165,18 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // before re-adding them. This is very necessary to keep things
                 // efficient.
                 for (ChangeLogEntry update: updates) {
-                    this.index.deletePropertySet(Path.fromString(update.getUri()));
-                    updateUris.add(Path.fromString(update.getUri()));
+                    this.index.deletePropertySet(update.getUri());
+                    updateUris.add(update.getUri());
                 }
                 
                 // Now query index dao for a list of all property sets that 
                 // need updating.
                 PropertySetHandler handler = new PropertySetHandler() {
 
-                    public void handlePropertySet(PropertySet propertySet) {
-                        PropertySetIndexUpdater.this.index.addPropertySet(propertySet);
+                    public void handlePropertySet(PropertySet propertySet,
+                                                  Set<Principal> aclReadPrincipals) {
+                        
+                        PropertySetIndexUpdater.this.index.addPropertySet(propertySet, aclReadPrincipals);
                     }
                     
                 };

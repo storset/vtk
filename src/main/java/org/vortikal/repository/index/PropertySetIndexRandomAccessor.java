@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.index;
 
+import java.util.Set;
+
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 
@@ -78,6 +80,12 @@ public interface PropertySetIndexRandomAccessor {
      * @throws IndexException
      */
     public PropertySet getPropertySetByUUID(String uuid) throws IndexException;
+    
+    /**
+     * XXX: In lack of a better place to put this one .. shoud consider som API-refactoring.
+     * Get ACL read principal names for a property set by URI.
+     */
+    public Set<String> getAclReadPrincipalNamesByURI(Path uri) throws IndexException;
     
     /**
      * This method should be called after usage to free index resources.

@@ -79,19 +79,15 @@ abstract class AbstractDocumentFieldIterator implements CloseableIterator<Object
     
     // Next non-deleted URI _including_ any multiples
     private int nextDoc() throws IOException {
-        while (tdocs.next()) {
-            if (! reader.isDeleted(tdocs.doc())) {
-                return tdocs.doc();
-            }
+        if (tdocs.next()) {
+            return tdocs.doc();
         }
         
         // No more docs for current term, seek to next
         while (tenum.next() && tenum.term().field() == iterationFieldName) {
             tdocs.seek(tenum);
-            while (tdocs.next()) {
-                if (! reader.isDeleted(tdocs.doc())) {
-                    return tdocs.doc();
-                }
+            if (tdocs.next()) {
+                return tdocs.doc();
             }
         }
         

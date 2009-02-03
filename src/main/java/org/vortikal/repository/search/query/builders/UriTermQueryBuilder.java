@@ -34,7 +34,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.QueryFilter;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.search.query.InversionFilter;
@@ -69,7 +69,7 @@ public class UriTermQueryBuilder implements QueryBuilder {
             // URI NOT equal
             TermQuery tq = 
                 new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
-            return new ConstantScoreQuery(new InversionFilter(new QueryFilter(tq)));
+            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq)));
         }
         
         if (operator == UriOperator.IN) {

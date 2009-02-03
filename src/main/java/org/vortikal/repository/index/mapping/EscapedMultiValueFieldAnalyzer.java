@@ -39,7 +39,7 @@ import org.apache.lucene.analysis.TokenStream;
  * XXX: no longer in use.
  * 
  * @author oyviste
- *
+ * @deprecated
  */
 public class EscapedMultiValueFieldAnalyzer extends Analyzer {
 

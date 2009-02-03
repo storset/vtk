@@ -7,7 +7,7 @@
     <div class="feed-title">${conf.feedTitleValue?html}</div> 
   </#if>
 
-  <#if conf.feedDescription?exists>
+  <#if conf.feedDescription?exists && feed.description?exists>
     <div class="feed-description">${feed.description}</div> 
   </#if>
   

@@ -7,7 +7,7 @@
 
     <!--  Data report manager -->
     <bean id="dataReportManager" class="org.vortikal.repository.reporting.DataReportManagerImpl">
-        <property name="dataReportDAO" ref="repository.dataReportDAO"/>
+        <property name="dataReportDAO" ref="repository.indexDataReportDAO"/>
         <property name="cache" ref="dataReportManagerCache"/>
     </bean>
 

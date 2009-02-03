@@ -58,6 +58,7 @@ public interface IndexDao {
                                                 PropertySetHandler handler)
         throws DataAccessException;
 
+    @Deprecated
     public void processQueryResultsAuthorization(
                                     Set<String> principalNames,  
                                     List<ResultSecurityInfo> resultSecurityInfo) 

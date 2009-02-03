@@ -281,6 +281,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
     }
     
     @SuppressWarnings("unchecked")
+    @Deprecated
     public void processQueryResultsAuthorization(
                             Set<String> principalNames,
                             List<ResultSecurityInfo> rsiList)

@@ -35,7 +35,7 @@ package org.vortikal.repository.search.query.security;
  * processing and allows to flag a result as authorized or not.
  * 
  * @author oyviste
- *
+ * @deprecated
  */
 public interface ResultSecurityInfo {
 
@@ -50,5 +50,5 @@ public interface ResultSecurityInfo {
     public boolean isAuthorized();
     
     public void setAuthorized(boolean authorized);
-    
+
 }

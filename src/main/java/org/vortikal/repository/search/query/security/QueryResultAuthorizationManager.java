@@ -36,7 +36,7 @@ import java.util.List;
  * Generic interface for authorizing elements in a list of query results.
  * 
  * @author oyviste
- *
+ * @deprecated
  */
 public interface QueryResultAuthorizationManager {
     

@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query.security;
 import org.vortikal.repository.search.QueryException;
 
 /**
- * 
+ * @deprecated
  * @author oyviste
  */
 public class QueryAuthorizationException extends QueryException {

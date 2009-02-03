@@ -40,6 +40,7 @@ import org.vortikal.repository.index.mapping.FieldValueMapper;
  * Quickly extract relevant security info from a Lucene 
  * {@link org.apache.lucene.document.Document} without going through the
  * complete property set mapping stage.
+ * @deprecated
  * 
  * @author oyviste
  *

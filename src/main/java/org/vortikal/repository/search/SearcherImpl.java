@@ -57,6 +57,7 @@ import org.vortikal.repository.search.query.security.LuceneResultSecurityInfo;
 import org.vortikal.repository.search.query.security.QueryResultAuthorizationManager;
 import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 
+@Deprecated
 public class SearcherImpl implements Searcher {
 
     private static final Log LOG = LogFactory.getLog(SearcherImpl.class);
@@ -71,7 +72,7 @@ public class SearcherImpl implements Searcher {
     private final SortBuilder sortBuilder = new SortBuilderImpl();
     
     private static final int MIN_INITIAL_SEARCHLIMIT_UPSCALE = 500;
-    
+
     /**
      * Log a warning if any query takes longer complete than 
      * this time (milliseconds). 15 seconds is the default.

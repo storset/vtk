@@ -46,6 +46,7 @@ import org.vortikal.security.token.TokenManager;
 
 /**
  * Authorize result lists using {@link org.vortikal.repository.store.IndexDao}.
+ * @deprecated
  */
 public final class DatabaseQueryResultAuthorizationManager implements 
     QueryResultAuthorizationManager, InitializingBean {

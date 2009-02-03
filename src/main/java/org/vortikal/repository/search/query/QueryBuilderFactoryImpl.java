@@ -211,7 +211,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     // Lucene FieldSelector for only loading ID field
     private static final FieldSelector ID_FIELD_SELECTOR = new FieldSelector() {
         public FieldSelectorResult accept(String fieldName) {
-            if (FieldNameMapping.STORED_ID_FIELD_NAME.equals(fieldName)) {
+            if (FieldNameMapping.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison
                 return FieldSelectorResult.LOAD;
             } 
                 

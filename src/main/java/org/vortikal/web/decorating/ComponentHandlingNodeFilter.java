@@ -218,13 +218,17 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         HttpServletRequest servletRequest =
             RequestContext.getRequestContext().getServletRequest();
         
+        
+        // XXX: Creating NEW Spring request context for every method call, expensive ???
+        //      This method shows up glowing hot in JProfiler-testing of some decorated pages.
+        //      This will indirectly also resolve locale (by looking at ancestor locales)
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(servletRequest);
         Locale locale = ctx.getLocale();
 
         final String doctype = "";
-        
-        StringBuffer sb = new StringBuffer();
+
+        StringBuilder sb = new StringBuilder();
 
         for (ComponentInvocation invocation: componentInvocations) {
 

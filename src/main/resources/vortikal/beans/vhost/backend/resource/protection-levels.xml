@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="PROTECTION_LEVEL_ACL_WRITE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+
+	<bean id="PROTECTION_LEVEL_ACL_ADMIN"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ACL_ADMIN" />
+	</bean>
+
+	<bean id="PROTECTION_LEVEL_ROLE_ADMIN"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ROLE_ADMIN" />
+	</bean>
+
+	<bean id="PROTECTION_LEVEL_ROLE_ROOT"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_ROLE_ROOT" />
+	</bean>
+
+	<bean id="PROTECTION_LEVEL_UNEDITABLE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.resourcetype.PropertyType.PROTECTION_LEVEL_UNEDITABLE" />
+	</bean>
+	
+</beans>

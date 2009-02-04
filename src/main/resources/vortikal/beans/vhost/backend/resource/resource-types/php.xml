@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="text.xml" />
+  
+    <!-- PHP resource type -->
+	<bean id="phpResourceTypeDefinition"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="php" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="textResourceTypeDefinition" />
+		<property name="assertions">
+			<list>
+				<ref bean="contentTypeMatchesPhp" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="contentTypeMatchesPhp"
+		class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+		<property name="pattern" value="(application/x-php)|(text/x-php)|(text/php)" />
+	</bean>
+	
+</beans>

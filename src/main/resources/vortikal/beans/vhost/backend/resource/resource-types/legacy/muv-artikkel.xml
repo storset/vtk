@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="../managed-xml.xml" />
+
+    <!-- MUV-artikkel XML resource -->
+	<bean id="muvArtikkelXmlResource"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="muv-artikkel" />
+		<property name="namespace" ref="MUV-ARTIKKEL_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="managedXmlResource" />
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="muvArtikkelTittelPropDef" />
+				<ref bean="muvArtikkelIngressPropDef" />
+				<ref bean="muvArtikkelLiteBildeWebadressePropDef" />
+				<ref bean="muvArtikkelLiteBildeAlternativTekstPropDef" />
+				<ref bean="muvPubliseringsdatoPropDef" />
+				<ref bean="muvArtikkelMetadataEpokePropDef" />
+				<ref bean="muvArtikkelMetadataMenneskenePropDef" />
+				<ref bean="muvArtikkelMetadataBygningenePropDef" />
+			</list>
+		</property>
+		<property name="assertions">
+			<list>
+				<ref bean="schemaIsMuvArtikkel" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="MUV-ARTIKKEL_NAMESPACE" class="org.vortikal.repository.Namespace">
+		<constructor-arg value="muv-artikkel" />
+		<constructor-arg value="http://www.uio.no/xsd/muv/muv-artikkel" />
+	</bean>
+	
+	<bean id="schemaIsMuvArtikkel"
+		class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="schema" />
+		<property name="pattern" value="http://www.uio.no/xsd/muv/muv-artikkel/v00.*" />
+	</bean>
+	
+	<bean id="muvArtikkelTittelPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="tittel" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="true" />
+		<property name="defaultValue">
+			<bean class="org.vortikal.repository.resourcetype.Value">
+				<constructor-arg type="java.lang.String">
+					<value>muv-artikkel</value>
+				</constructor-arg>
+			</bean>
+		</property>
+		<property name="contentModificationEvaluator" ref="muvArtikkelTittelEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelTittelEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/tittel" />
+	</bean>
+	
+	<bean id="muvArtikkelIngressPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="ingress" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvArtikkelIngressEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelIngressEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/ingress/*/text()" />
+	</bean>
+	
+	<bean id="muvArtikkelLiteBildeWebadressePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="litebilde.src" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvArtikkelLiteBildeWebadresseEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelLiteBildeWebadresseEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/lite-bilde/webadresse" />
+	</bean>
+	
+	<bean id="muvArtikkelLiteBildeAlternativTekstPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="litebilde.alt" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvArtikkelLiteBildeAlternativTextEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelLiteBildeAlternativTextEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/lite-bilde/alternativ-tekst" />
+	</bean>
+	
+	<bean id="muvPubliseringsdatoPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="publiseringsdato" />
+		<property name="type" value="TIMESTAMP" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvPubliseringsdatoEvaluator" />
+	</bean>
+	
+	<bean id="muvPubliseringsdatoEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="concat(/muv-artikkel/publiseringsdato/dag, '.', /muv-artikkel/publiseringsdato/mnd, '.', /muv-artikkel/publiseringsdato/aar)" />
+	</bean>
+    
+    <!-- Metadata -->
+	<bean id="muvArtikkelMetadataEpokePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="metadata.epoke" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvArtikkelMetadataEpokeEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelMetadataEpokeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/metadata/epoke" />
+	</bean>
+	
+	<bean id="muvArtikkelMetadataMenneskenePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="metadata.menneskene" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvArtikkelMetadataMenneskeneEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelMetadataMenneskeneEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/metadata/menneskene" />
+	</bean>
+	
+	<bean id="muvArtikkelMetadataBygningenePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="metadata.bygningene" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="muvArtikkelMetadataBygningeneEvaluator" />
+	</bean>
+	
+	<bean id="muvArtikkelMetadataBygningeneEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/muv-artikkel/metadata/bygningene" />
+	</bean>
+	
+</beans>

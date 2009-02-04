@@ -1,0 +1,760 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	
+	<import resource="../managed-xml.xml" />
+    
+    <!-- Romskjema XML resource -->
+	<bean id="romskjemaXmlResource"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="romskjema" />
+		<property name="namespace" ref="ROMSKJEMA_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="managedXmlResource" />
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="romskjemaBygningsnummerPropDef" />
+				<ref bean="romskjemaBygningsnavnPropDef" />
+				<ref bean="romskjemaRomnummerPropDef" />
+				<ref bean="romskjemaRomtypePropDef" />
+				<ref bean="romskjemaRomansvarligFornavnPropDef" />
+				<ref bean="romskjemaRomansvarligEtternavnPropDef" />
+				<ref bean="romskjemaRomansvarligTelefonJobbPropDef" />
+				<ref bean="romskjemaRomansvarligTelefonPrivatPropDef" />
+				<ref bean="romskjemaRomansvarligTelefonMobilPropDef" />
+				<ref bean="romskjemaAnsvarligEnhetNavnPropDef" />
+				<ref bean="romskjemaAnsvarligEnhetTelefonPropDef" />
+				<ref bean="romskjemaRominnholdBrennbargassMengdePropDef" />
+				<ref bean="romskjemaRominnholdBrennbargassKommentarPropDef" />
+				<ref bean="romskjemaRominnholdNoytralgassMengdePropDef" />
+				<ref bean="romskjemaRominnholdNoytralgassKommentarPropDef" />
+				<ref bean="romskjemaRominnholdEksplosivgassMengdePropDef" />
+				<ref bean="romskjemaRominnholdEksplosivgassKommentarPropDef" />
+				<ref bean="romskjemaRominnholdBrennbareveskerMengdePropDef" />
+				<ref bean="romskjemaRominnholdBrennbareveskerKommentarPropDef" />
+				<ref bean="romskjemaRominnholdGiftiggassMengdePropDef" />
+				<ref bean="romskjemaRominnholdGiftiggassKommentarPropDef" />
+				<ref bean="romskjemaRominnholdEtsendeveskerMengdePropDef" />
+				<ref bean="romskjemaRominnholdEtsendeveskerKommentarPropDef" />
+				<ref bean="romskjemaRominnholdGiftigekjemikalierMengdePropDef" />
+				<ref bean="romskjemaRominnholdGiftigekjemikalierKommentarPropDef" />
+				<ref bean="romskjemaRominnholdBrannfarligstoffMengdePropDef" />
+				<ref bean="romskjemaRominnholdBrannfarligstoffKommentarPropDef" />
+				<ref bean="romskjemaRominnholdStoffReaksjonVannMengdePropDef" />
+				<ref bean="romskjemaRominnholdStoffReaksjonVannKommentarPropDef" />
+				<ref bean="romskjemaRominnholdOksiderendestofferMengdePropDef" />
+				<ref bean="romskjemaRominnholdOksiderendestofferKommentarPropDef" />
+				<ref bean="romskjemaRominnholdRadioaktiveSubstanserMengdePropDef" />
+				<ref bean="romskjemaRominnholdRadioaktiveSubstanserKommentarPropDef" />
+				<ref bean="romskjemaRominnholdHoyspenningMengdePropDef" />
+				<ref bean="romskjemaRominnholdHoyspenningKommentarPropDef" />
+				<ref bean="romskjemaRominnholdSmittefarligeBakteriekulturerMengdePropDef" />
+				<ref
+					bean="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarPropDef" />
+				<ref bean="romskjemaRominnholdOmfintligeGjenstanderMengdePropDef" />
+				<ref bean="romskjemaRominnholdOmfintligeGjenstanderKommentarPropDef" />
+				<ref bean="romskjemaRominnholdForsoksdyrMengdePropDef" />
+				<ref bean="romskjemaRominnholdForsoksdyrKommentarPropDef" />
+				<ref bean="romskjemaRominnholdAndreFarerMengdePropDef" />
+				<ref bean="romskjemaRominnholdAndreFarerKommentarPropDef" />
+			</list>
+		</property>
+		<property name="assertions">
+			<list>
+				<ref bean="schemaIsRomskjema" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="ROMSKJEMA_NAMESPACE" class="org.vortikal.repository.Namespace">
+		<constructor-arg value="romskjema" />
+		<constructor-arg value="http://www.uio.no/xsd/romfortegnelser/romskjema" />
+	</bean>
+	
+	<bean id="schemaIsRomskjema"
+		class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="schema" />
+		<property name="pattern"
+			value="http://www.uio.no/xsd/romfortegnelser/romskjema/v00.*" />
+	</bean>
+    
+    <!-- Om-rommet -->
+	<bean id="romskjemaBygningsnummerPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="omrommet.bygningsnummer" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaBygningsnummerEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaBygningsnummerEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/om-rommet/bygningsnummer" />
+	</bean>
+	
+	<bean id="romskjemaBygningsnavnPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="omrommet.bygningsnavn" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaBygningsnavnEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaBygningsnavnEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/om-rommet/bygningsnavn" />
+	</bean>
+	
+	<bean id="romskjemaRomnummerPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="omrommet.romnummer" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomnummerEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomnummerEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/om-rommet/romnummer" />
+	</bean>
+	
+	<bean id="romskjemaRomtypePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="omrommet.romtype" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomtypeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomtypeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/om-rommet/romtype" />
+	</bean>
+    
+    <!-- Romansvarlig -->
+	<bean id="romskjemaRomansvarligFornavnPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="romansvarlig.fornavn" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomansvarligFornavnEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligFornavnEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/romansvarlig/fornavn" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligEtternavnPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="romansvarlig.etternavn" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomansvarligEtternavnEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligEtternavnEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/romansvarlig/etternavn" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligTelefonJobbPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="romansvarlig.jobbtelefon" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomansvarligTelefonJobbEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligTelefonJobbEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/romansvarlig/telefoner/jobb" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligTelefonPrivatPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="romansvarlig.privattelefon" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomansvarligTelefonPrivatEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligTelefonPrivatEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/romansvarlig/telefoner/privat" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligTelefonMobilPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="romansvarlig.mobiltelefon" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRomansvarligTelefonMobilEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRomansvarligTelefonMobilEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/romansvarlig/telefoner/mobil" />
+	</bean>
+        
+    <!-- Ansvarlig-enhet -->
+	<bean id="romskjemaAnsvarligEnhetNavnPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="ansvarligenhet.navn" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaAnsvarligEnhetNavnEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaAnsvarligEnhetNavnEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/ansvarlig-enhet/navn" />
+	</bean>
+	
+	<bean id="romskjemaAnsvarligEnhetTelefonPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="ansvarligenhet.telefon" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaAnsvarligEnhetTelefonEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaAnsvarligEnhetTelefonEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/ansvarlig-enhet/telefon" />
+	</bean>
+    
+    <!-- Rominnhold -->
+	<bean id="romskjemaRominnholdBrennbargassMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.brennbargass-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdBrennbargassMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbargassMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/brennbar-gass/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbargassKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.brennbargass-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdBrennbargassKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbargassKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/brennbar-gass/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdNoytralgassMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.noytralgass-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdNoytralgassMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdNoytralgassMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/noytral-gass/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdNoytralgassKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.noytralgass-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdNoytralgassKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdNoytralgassKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/noytral-gass/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEksplosivgassMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.eksplosivgass-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdEksplosivgassMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEksplosivgassMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/eksplosiv-gass/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEksplosivgassKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.eksplosivgass-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdEksplosivgassKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEksplosivgassKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/eksplosiv-gass/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbareveskerMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.brennbarevesker-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdBrennbareveskerMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbareveskerMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/brennbare-vesker/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbareveskerKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.brennbarevesker-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdBrennbareveskerKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrennbareveskerKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/brennbare-vesker/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftiggassMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.giftiggass-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRominnholdGiftiggassMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftiggassMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/giftig-gass/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftiggassKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.giftiggass-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdGiftiggassKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftiggassKommentarEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/giftig-gass/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEtsendeveskerMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.etsendevesker-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdEtsendeveskerMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEtsendeveskerMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/etsende-vesker/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEtsendeveskerKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.etsendevesker-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdEtsendeveskerKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdEtsendeveskerKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/etsende-vesker/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftigekjemikalierMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.giftigekjemikalier-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdGiftigekjemikalierMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftigekjemikalierMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/giftige-kjemikalier/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftigekjemikalierKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.giftigekjemikalier-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdGiftigekjemikalierKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdGiftigekjemikalierKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/giftige-kjemikalier/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrannfarligstoffMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.brannfarligstoff-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdBrannfarligstoffMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrannfarligstoffMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/brannfarlig-stoff/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrannfarligstoffKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.brannfarligstoff-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdBrannfarligstoffKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdBrannfarligstoffKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/brannfarlig-stoff/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdStoffReaksjonVannMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.stoffreaksjonvann-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdStoffReaksjonVannMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdStoffReaksjonVannMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/stoff-reaksjon-vann/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdStoffReaksjonVannKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.stoffreaksjonvann-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdStoffReaksjonVannKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdStoffReaksjonVannKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/stoff-reaksjon-vann/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOksiderendestofferMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.oksiderendestoffer-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdOksiderendestofferMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOksiderendestofferMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/oksiderende-stoffer/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOksiderendestofferKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.oksiderendestoffer-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdOksiderendestofferKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOksiderendestofferKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/oksiderende-stoffer/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdRadioaktiveSubstanserMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.radioaktivesubstanser-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdRadioaktiveSubstanserMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdRadioaktiveSubstanserMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/radioaktive-substanser/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdRadioaktiveSubstanserKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.radioaktivesubstanser-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdRadioaktiveSubstanserKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdRadioaktiveSubstanserKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/radioaktive-substanser/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdHoyspenningMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.hoyspenning-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdHoyspenningMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdHoyspenningMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/hoyspenning/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdHoyspenningKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.hoyspenning-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdHoyspenningKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdHoyspenningKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/hoyspenning/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdSmittefarligeBakteriekulturerMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name"
+			value="rominnhold.smittefarligebakteriekulturer-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdSmittefarligeBakteriekulturerMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdSmittefarligeBakteriekulturerMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/smittefarlige-bakteriekulturer/mengde" />
+	</bean>
+	
+	<bean
+		id="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name"
+			value="rominnhold.smittefarligebakteriekulturer-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarEvaluator" />
+	</bean>
+	
+	<bean
+		id="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/smittefarlige-bakteriekulturer/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOmfintligeGjenstanderMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.omfintligegjenstander-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdOmfintligeGjenstanderMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOmfintligeGjenstanderMengdeEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/omfintlige-gjenstander/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOmfintligeGjenstanderKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.omfintligegjenstander-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdOmfintligeGjenstanderKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdOmfintligeGjenstanderKommentarEvaluator"
+		parent="abstractXPathEvaluator">
+		<property name="expression"
+			value="/romskjema/rominnhold/omfintlige-gjenstander/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdForsoksdyrMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.forsoksdyr-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRominnholdForsoksdyrMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdForsoksdyrMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/forsoksdyr/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdForsoksdyrKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.forsoksdyr-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdForsoksdyrKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdForsoksdyrKommentarEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/forsoksdyr/kommentar" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdAndreFarerMengdePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.andrefarer-mengde" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="romskjemaRominnholdAndreFarerMengdeEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdAndreFarerMengdeEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/andre-farer/mengde" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdAndreFarerKommentarPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="rominnhold.andrefarer-kommentar" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator"
+			ref="romskjemaRominnholdAndreFarerKommentarEvaluator" />
+	</bean>
+	
+	<bean id="romskjemaRominnholdAndreFarerKommentarEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/romskjema/rominnhold/andre-farer/kommentar" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+          "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="roleManager" class="org.vortikal.security.roles.RoleManager">
+		<description> The role manager. Principals can be assigned certain
+			special roles. Currently, two such roles are defined: the root role,
+			which allows any operation on the repository, and the 'read
+			everything' role, which allows full read access to all resources in
+			the repository. Roles are different from groups in that they are more
+			specialized and less dynamic; whereas a group may be granted certain
+			privileges to certain resources, a principal in a role will always be
+			granted the privileges of that role to ALL resources. Furthermore,
+			role privileges don't show up in the acces control lists (ACLs) of
+			resources. It is not advised that "ordinary" users be given the root
+			role or the read everything role, as this bypasses the ordinary
+			security mechanism (ACL). The standard way is to create a root
+			principal which is given the root role, and to give the read
+			everything role to any system users (indexers, etc.) that may need
+			full read access. </description>
+		<property name="rootRole">
+			<set>
+				<value>root@localhost</value>
+			</set>
+		</property>
+		<property name="readEverythingRole">
+			<set>
+				<value>trusteduser@localhost</value>
+			</set>
+		</property>
+	</bean>
+
+
+    <!-- =============================================================== -->
+    <!-- Authentication and principal management section                 -->
+    <!-- Set up the various authentication handlers, principal stores    -->
+    <!-- and session stores                                              -->
+    <!-- =============================================================== -->
+	<bean id="tokenManager" class="org.vortikal.security.token.TokenManagerImpl">
+		<description> The token manager. Tokens are "tickets" assigned to
+			users when logging into the system, and are used for repository
+			access. The token manager keeps track of these tokens, mapping them
+			to user names, and making sure they expire after periods of
+			inactivity. </description>
+		<property name="cache" ref="tokenManagerCache" />
+		<property name="defaultPrincipals">
+			<list>
+				<ref bean="trustedPrincipal" />
+				<ref bean="rootPrincipal" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="tokenManagerCache" class="org.vortikal.util.cache.SimpleCacheImpl">
+		<property name="timeoutSeconds" value="1800" />
+	</bean>
+
+    <!-- Authentication challenges -->
+	<!--
+		The digest authentication handler also implements
+		AuthenticationChallenge:
+	-->
+	<alias name="httpDigestAuthenticationHandler" alias="httpDigestAuthenticationChallenge" />
+	
+	<bean id="httpBasicAuthenticationChallenge"
+		class="org.vortikal.security.web.basic.HttpBasicAuthenticationChallenge">
+		<description>A HTTP/Basic authentication challenge</description>
+		<property name="principalStore" ref="localPrincipalStore" />
+	</bean>
+	
+	<bean id="httpBasicAuthenticationHandler"
+		class="org.vortikal.security.web.basic.HttpBasicAuthenticationHandler">
+		<description> A HTTP/Basic authentication manager running against a
+			principal store of "local" users and groups </description>
+		<property name="order" value="100" />
+		<property name="recognizedDomains">
+			<set>
+				<value>localhost</value>
+				<null />
+			</set>
+		</property>
+		<property name="requireSecureConnection"
+			value="${httpBasicAuthenticationHandler.requireSecureConnection}" />
+		<property name="challenge" ref="httpBasicAuthenticationChallenge" />
+		<property name="principalStore" ref="localPrincipalStore" />
+		<property name="principalFactory" ref="principalFactory" />
+	</bean>
+	
+	<bean id="httpDigestAuthenticationHandler"
+		class="org.vortikal.security.web.digest.HttpDigestAuthenticationHandler">
+		<description> A HTTP/Digest authentication manager running against a
+			principal store of "local" users and groups </description>
+		<property name="order" value="0" />
+		<property name="recognizedDomains">
+			<set>
+				<value>localhost</value>
+				<null />
+			</set>
+		</property>
+		<property name="principalStore" ref="localPrincipalStore" />
+		<property name="principalFactory" ref="principalFactory" />
+	</bean>
+	
+	<bean id="principalManager" class="org.vortikal.security.PrincipalManagerImpl">
+		<property name="principalStores">
+			<bean class="org.vortikal.beans.factory.BeansListingFactoryBean">
+				<property name="targetBeansClass" value="org.vortikal.security.PrincipalStore" />
+			</bean>
+		</property>
+		<property name="groupStores">
+			<bean class="org.vortikal.beans.factory.BeansListingFactoryBean">
+				<property name="targetBeansClass" value="org.vortikal.security.GroupStore" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="principalDomainURLMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="domainGroupStore" class="org.vortikal.security.store.DomainGroupStore">
+		<property name="order" value="0" />
+		<property name="knownGroups">
+			<list>
+				<ref bean="uioDomainGroup" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="localPrincipalStore"
+		class="org.vortikal.security.store.PropertyConfigurableMD5Store">
+		<property name="order" value="10" />
+		<property name="realm" value="${authenticationRealm}" />
+		<property name="principals" ref="localPrincipals" />
+		<property name="groups">
+			<map>
+				<entry key-ref="systemUsersGroup">
+					<list>
+						<value>root@localhost</value>
+						<value>vortex@localhost</value>
+						<value>user@localhost</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="localPrincipals" class="java.util.Properties">
+		<constructor-arg index="0" type="java.util.Properties">
+			<props>
+				<prop key="root@localhost">${password.root@localhost}</prop>
+				<prop key="vortex@localhost">${password.vortex@localhost}</prop>
+				<prop key="user@localhost">${password.user@localhost}</prop>
+                <!-- is not possible to authenticate as: -->
+				<prop key="trusteduser@localhost">NO_REAL_VALUE</prop>
+			</props>
+		</constructor-arg>
+	</bean>
+
+    <!-- Special principals and tokens -->
+	<bean id="systemUsersGroup" class="org.vortikal.security.PrincipalImpl">
+		<constructor-arg value="system-users@localhost" />
+		<constructor-arg value="GROUP" />
+	</bean>
+	
+	<bean id="uioDomainGroup" class="org.vortikal.security.PrincipalImpl">
+		<constructor-arg value="alle@uio.no" />
+		<constructor-arg value="GROUP" />
+	</bean>
+	
+	<bean id="trustedPrincipal" class="org.vortikal.security.PrincipalImpl">
+		<constructor-arg value="trusteduser@localhost" />
+		<constructor-arg value="USER" />
+	</bean>
+	
+	<bean id="trustedToken" lazy-init="true"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<description> This bean represents a "trusted" repository token. It is
+			used for framework components that require unconditional read access
+			to the repository, and need a way of authenticating themselves. 
+		</description>
+		<property name="targetObject" ref="tokenManager" />
+		<property name="targetMethod" value="getRegisteredToken" />
+		<property name="arguments">
+			<list>
+				<ref bean="trustedPrincipal" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="rootPrincipal" class="org.vortikal.security.PrincipalImpl">
+		<constructor-arg value="root@localhost" />
+		<constructor-arg value="USER" />
+	</bean>
+	
+	<bean id="writeAllToken"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<description> This bean is a "root" repository token. It is used by
+			framework components that require full access to the repository, as
+			the user root@localhost. </description>
+		<property name="targetObject" ref="tokenManager" />
+		<property name="targetMethod" value="getRegisteredToken" />
+		<property name="arguments">
+			<list>
+				<ref bean="rootPrincipal" />
+			</list>
+		</property>
+	</bean>
+
+    <!-- Pseudo principals: -->
+	<bean id="PRINCIPAL_ALL"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField" value="org.vortikal.security.PrincipalFactory.ALL" />
+	</bean>
+	
+	<bean id="PRINCIPAL_AUTHENTICATED"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.security.PrincipalFactory.AUTHENTICATED" />
+	</bean>
+	
+	<bean id="PRINCIPAL_OWNER"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField" value="org.vortikal.security.PrincipalFactory.OWNER" />
+	</bean>
+	
+	<bean id="isAuthenticatedAssertion" class="org.vortikal.web.service.IsAuthenticatedAssertion">
+	    <property name="requiresAuthentication" value="true" />
+	</bean>
+	
+</beans>

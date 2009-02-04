@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	
+	<bean id="introductionMixinResourceTypeDef"
+		class="org.vortikal.repository.resourcetype.MixinResourceTypeDefinitionImpl">
+		<property name="name" value="introduction-mixin" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="introductionPropDef" />
+				<ref bean="introductionImagePropDef" />
+				<ref bean="introductionImageCaptionPropDef" />
+				<ref bean="tagsPropDef" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="introductionPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="introduction" />
+		<property name="type" value="HTML" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+	<bean id="introductionImagePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="picture" />
+		<property name="type" value="IMAGE_REF" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+	<bean id="introductionImageCaptionPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="caption" />
+		<property name="type" value="HTML" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+	<bean id="tagsPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="POST_CONTENT" />
+		<property name="name" value="tags" />
+		<property name="multiple" value="true" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Base resource type -->
+	<import resource="resource-types/file.xml" />
+	
+	<!-- Collections -->
+	<import resource="resource-types/collection.xml" />
+	<import resource="resource-types/article-listing.xml" />
+	<import resource="resource-types/event-listing.xml" />
+	
+	<!-- Resources -->
+	<import resource="resource-types/image.xml" />
+	<import resource="resource-types/audio.xml" />
+	<import resource="resource-types/video.xml" />
+	<import resource="resource-types/pdf.xml" />
+	<import resource="resource-types/text.xml" />
+	<import resource="resource-types/apt.xml" />
+	<import resource="resource-types/php.xml" />
+	<import resource="resource-types/html.xml" />
+	<import resource="resource-types/xhtml10trans.xml" />
+	<import resource="resource-types/article.xml" />
+	<import resource="resource-types/event.xml" />
+	<import resource="resource-types/xml.xml" />
+	<import resource="resource-types/managed-xml.xml" />
+	
+	<!-- Studinfo -->
+	<import resource="resource-types/legacy/emne.xml" />
+	<import resource="resource-types/legacy/semester.xml" />
+	<import resource="resource-types/legacy/emnegruppe.xml" />
+	<import resource="resource-types/legacy/studieprogram.xml" />
+	<import resource="resource-types/legacy/studieretning.xml" />
+	<import resource="resource-types/legacy/utvekslingsavtale.xml" />
+  
+    <!-- Felles / Common -->
+	<import resource="resource-types/legacy/artikkelsamling.xml" />
+
+    <!-- UiO  -->
+	<import resource="resource-types/legacy/artikkel.xml" />
+	<import resource="resource-types/legacy/disputas.xml" />
+	<import resource="resource-types/legacy/proveforelesning.xml" />
+	<import resource="resource-types/legacy/nyhet.xml" />
+	<import resource="resource-types/legacy/arrangement.xml" />
+	<import resource="resource-types/legacy/publikasjon.xml" />
+
+    <!-- Sakskart -->
+	<import resource="resource-types/legacy/sakskart.xml" />
+
+    <!-- Traktater -->
+	<import resource="resource-types/legacy/treaty.xml" />
+
+    <!-- Portal.xml - søkedokumentet -->
+	<import resource="resource-types/legacy/portal.xml" />
+  
+    <!-- Romskjema -->
+	<import resource="resource-types/legacy/romskjema.xml" />
+
+    <!-- MUV -->
+	<import resource="resource-types/legacy/muv-artikkel.xml" />
+    
+    <!-- CEES -->
+	<import resource="resource-types/legacy/researcher.xml" />
+	<import resource="resource-types/legacy/project.xml" />
+	
+</beans>

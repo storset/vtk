@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="article.xml" />
+
+	<bean id="eventResourceTypeDefinition"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="event" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="documentResourceTypeDefinition" />
+		<property name="assertions">
+			<list>
+				<ref bean="isEventAssertion" />
+			</list>
+		</property>
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="startDatePropDef" />
+				<ref bean="endDatePropDef" />
+				<ref bean="locationPropDef" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="isEventAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="xhtml10-type" />
+		<property name="value" value="event" />
+		<property name="checkExistenceOnly" value="false" />
+	</bean>
+	
+	<bean id="startDatePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="start-date" />
+		<property name="type" value="DATE" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+	<bean id="endDatePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="end-date" />
+		<property name="type" value="DATE" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+	<bean id="locationPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="location" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+	
+	<bean id="resourceTypeIsEvent" class="org.vortikal.web.service.ResourceTypeAssertion">
+        <property name="resourceTypeDefinition" ref="eventResourceTypeDefinition" />
+    </bean>
+	
+</beans>

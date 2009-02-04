@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    
+   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close">
+        <property name="driverClassName" value="${databaseDriver}" />
+        <property name="maxActive" value="${maxDatabaseConnections}" />
+        <property name="url" value="${databaseURL}" />
+        <property name="username" value="${jdbcUsername}" />
+        <property name="password" value="${jdbcPassword}" />
+        <property name="defaultAutoCommit" value="false" />
+    </bean>
+	
+	<bean id="repository.sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="useTransactionAwareDataSource" value="true" />
+		<property name="configLocation"
+			value="classpath:/org/vortikal/repository/store/db/ibatis/${sqlDialect}-sql-map-config.xml" />
+		<property name="dataSource" ref="repository.dataSource" />
+		<property name="lobHandler" ref="repositoryLobHandler" />
+	</bean>
+	
+	<bean id="repositoryLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
+	
+	<bean id="repository.statementMappings" class="java.util.HashMap" />
+	
+	<!-- Abstract sqlMapDao, implementation must be defined with lookup-method -->
+	<bean id="abstractSqlMapDao" class="org.vortikal.repository.store.db.SqlMapDataAccessor" abstract="true">
+		<property name="sqlMapClient" ref="repository.sqlMapClient" />
+		<property name="sqlMaps" ref="repository.statementMappings" />
+		<property name="optimizedAclCopySupported" value="${optimizedAclCopySupported}" />
+		<property name="principalFactory" ref="principalFactory" />
+	</bean>
+	
+    <bean id="repository.sqlMapCommentDao" class="org.vortikal.repository.store.db.SqlMapCommentDAO">
+        <property name="sqlMapClient" ref="repository.sqlMapClient" />
+        <property name="sqlMaps" ref="repository.statementMappings" />
+        <property name="principalFactory" ref="principalFactory" />
+    </bean>
+	
+</beans>

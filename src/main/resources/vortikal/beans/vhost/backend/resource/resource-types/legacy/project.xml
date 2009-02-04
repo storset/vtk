@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="../managed-xml.xml" />
+
+    <!-- Project XML resource -->
+	<bean id="projectXmlResource"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="project" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="managedXmlResource" />
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="projectIdPropDef" />
+				<ref bean="projectTitlePropDef" />
+				<ref bean="projectImagePropDef" />
+				<ref bean="projectSummaryPropDef" />
+			</list>
+		</property>
+		<property name="assertions">
+			<list>
+				<ref bean="schemaIsProject" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="schemaIsProject"
+		class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="schema" />
+		<property name="pattern"
+			value="http://www.uio.no/xsd/forskning/prosjekt/v00.*" />
+	</bean>
+	
+	<bean id="projectIdPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="projectId" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="true" />
+		<property name="contentModificationEvaluator" ref="projectIdEvaluator" />
+	</bean>
+	
+	<bean id="projectIdEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/project/@id" />
+	</bean>
+	
+	<bean id="projectTitlePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="projectTitle" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="projectTitleEvaluator" />
+	</bean>
+	
+	<bean id="projectTitleEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/project/title" />
+	</bean>
+	
+	<bean id="projectSummaryPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="projectSummary" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="projectSummaryEvaluator" />
+	</bean>
+	
+	<bean id="projectSummaryEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/project/summary" />
+	</bean>
+	
+	<bean id="projectImagePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="projectImage" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="projectImageEvaluator" />
+	</bean>
+	
+	<bean id="projectImageEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/project/image/@href" />
+	</bean>
+	
+</beans>

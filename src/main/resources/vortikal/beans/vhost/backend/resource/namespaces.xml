@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	
+	<bean id="DEFAULT_NAMESPACE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.Namespace.DEFAULT_NAMESPACE" />
+	</bean>
+	
+	<bean id="CUSTOM_NAMESPACE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField"
+			value="org.vortikal.repository.Namespace.CUSTOM_NAMESPACE" />
+	</bean>
+	
+	<bean id="CONTENT_NAMESPACE" class="org.vortikal.repository.Namespace">
+		<constructor-arg value="content" />
+		<constructor-arg value="http://www.uio.no/content" />
+	</bean>
+	
+	<bean id="ARTICLE_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+		<constructor-arg value="al" />
+		<constructor-arg value="http://www.uio.no/resource-types/article-listing" />
+	</bean>
+	
+	<bean id="EVENT_LISTING_NAMESPACE" class="org.vortikal.repository.Namespace">
+		<constructor-arg value="el" />
+		<constructor-arg value="http://www.uio.no/resource-types/event-listing" />
+	</bean>
+	
+</beans>

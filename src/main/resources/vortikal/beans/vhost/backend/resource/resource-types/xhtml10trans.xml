@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="html.xml" />
+
+    <!-- XHTML 1.0 resource -->
+	<bean id="xhtml10TransResourceTypeDefinition"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="xhtml10trans" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
+		<property name="assertions">
+			<list>
+				<ref bean="docTypeIsXHtml10Transitional" />
+			</list>
+		</property>
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
+				<ref bean="xhtml10TransOverriddenCharacterEncodingPropDef" />
+				<ref bean="xhtml10TransOverriddenHtmlTitlePropDef" />
+				<ref bean="xhtml10TransOverriddenTitlePropDef" />
+				<ref bean="xhtml10TransTypePropDef" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="xhtml10TransOverriddenGuessedCharacterEncodingPropDef"
+		class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+		<property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
+		<property name="contentModificationEvaluator"
+			ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
+		<property name="defaultValue">
+			<bean class="org.vortikal.repository.resourcetype.Value">
+				<constructor-arg type="java.lang.String"
+					value="${defaultXHtml10TransitionalResourceCharacterEncoding}" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="xhtml10TransGuessedCharacterEncodingEvaluator"
+		class="org.vortikal.repository.resourcetype.property.ChainedPropertyEvaluator">
+		<property name="propertyEvaluators">
+			<list>
+				<bean
+					class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
+				<bean
+					class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="xhtml10TransOverriddenCharacterEncodingPropDef"
+		class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+		<property name="overriddenPropDef" ref="characterEncodingPropDef" />
+	</bean>
+	
+	<bean id="docTypeIsXHtml10Transitional"
+		class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="docType" />
+		<property name="pattern"
+			value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;" />
+	</bean>
+
+    <!-- Override html.htmlTitle: -->
+	<bean id="xhtml10TransOverriddenHtmlTitlePropDef"
+		class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+		<property name="overriddenPropDef" ref="htmlTitlePropDef" />
+		<property name="contentModificationEvaluator" ref="xhtmlOverriddenHtmlTitlePropertyEvaluator" />
+	</bean>
+	
+	<bean id="xhtmlOverriddenHtmlTitlePropertyEvaluator"
+		class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
+		<property name="characterEncodingPropertyDefinition" ref="characterEncodingPropDef" />
+	</bean>
+
+    <!-- Override resource.title: -->
+	<bean id="xhtml10TransOverriddenTitlePropDef"
+		class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+		<property name="overriddenPropDef" ref="titlePropDef" />
+		<property name="contentModificationEvaluator" ref="xhtmlOverriddenTitlePropertyEvaluator" />
+		<property name="nameModificationEvaluator" ref="xhtmlOverriddenTitlePropertyEvaluator" />
+	</bean>
+	
+	<bean id="xhtmlOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
+		<property name="fallbackTitlePropDef" ref="htmlTitlePropDef" />
+	</bean>
+	
+	<bean id="xhtml10TransTypePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="xhtml10-type" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+		<property name="vocabulary">
+			<bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+				<property name="messageSourceBaseName"
+					value="vortikal.beans.vhost.backend.resource.resource-types.properties.xhtml10trans-type" />
+				<property name="values">
+					<list>
+						<bean class="org.vortikal.repository.resourcetype.Value">
+							<constructor-arg type="java.lang.String">
+								<value>article</value>
+							</constructor-arg>
+						</bean>
+						<bean class="org.vortikal.repository.resourcetype.Value">
+							<constructor-arg type="java.lang.String">
+								<value>event</value>
+							</constructor-arg>
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+</beans>

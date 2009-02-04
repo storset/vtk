@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <import resource="file.xml" />
+
+    <!-- Video resource -->
+	<bean id="videoResourceTypeDefinition"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="video" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+		<property name="assertions">
+			<list>
+				<ref bean="contentTypeMatchesVideo" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="contentTypeMatchesVideo"
+		class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+		<property name="pattern" value="video/(.+)" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="xhtml10trans.xml" />
+	<import resource="mixins/introduction-mixin.xml" />
+
+	<bean id="documentResourceTypeDefinition"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="document" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="xhtml10TransResourceTypeDefinition" />
+		<property name="assertions">
+			<list>
+				<ref bean="isDocumentAssertion" />
+			</list>
+		</property>
+		<property name="mixinTypeDefinitions">
+			<list>
+				<ref bean="introductionMixinResourceTypeDef" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="isDocumentAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="xhtml10-type" />
+		<property name="value" value="article" />
+		<property name="checkExistenceOnly" value="true" />
+	</bean>
+
+	<bean id="articleResourceTypeDefinition"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="article" />
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="documentResourceTypeDefinition" />
+		<property name="assertions">
+			<list>
+				<bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+					<property name="namespace" ref="DEFAULT_NAMESPACE" />
+					<property name="name" value="xhtml10-type" />
+					<property name="value" value="article" />
+				</bean>
+			</list>
+		</property>
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="mediaPropDef" />
+				<ref bean="authorsPropDef" />
+				<ref bean="publishedDatePropDef" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mediaPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="POST_CONTENT" />
+		<property name="name" value="media" />
+		<property name="type" value="IMAGE_REF" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+
+	<bean id="authorsPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="authors" />
+		<property name="multiple" value="true" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+		<property name="valueSeparators">
+			<map>
+				<entry key="enumerated" value-ref="authorsValueSeparator" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="authorsValueSeparator"
+		class="org.vortikal.repository.resourcetype.EnumerationValueSeparator">
+		<constructor-arg
+			value="vortikal.beans.vhost.backend.resource.resource-types.properties.authors" />
+	</bean>
+
+	<bean id="publishedDatePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="contentRelation" value="PRE_CONTENT" />
+		<property name="name" value="published-date" />
+		<property name="type" value="DATE" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+	</bean>
+
+	<bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
+		<property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
+	</bean>
+
+</beans>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<import resource="../managed-xml.xml" />
+
+    <!-- Treaty XML resource -->
+	<bean id="treatyXmlResource"
+		class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+		<property name="name" value="treaty" />
+		<property name="namespace" ref="TREATY_NAMESPACE" />
+		<property name="parentTypeDefinition" ref="managedXmlResource" />
+		<property name="propertyTypeDefinitions">
+			<list>
+				<ref bean="treatyTitlePropDef" />
+				<ref bean="treatyDoneAtPropDef" />
+				<ref bean="treatyDateEnactedPropDef" />
+				<ref bean="treatyInForcePropDef" />
+				<ref bean="treatyClassificationsPropDef" />
+				<ref bean="treatyRegionPropDef" />
+			</list>
+		</property>
+		<property name="assertions">
+			<list>
+				<ref bean="schemaIsTreaty" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="TREATY_NAMESPACE" class="org.vortikal.repository.Namespace">
+		<constructor-arg value="treaty" />
+		<constructor-arg value="http://www.uio.no/xsd/jus/treaty" />
+	</bean>
+	
+	<bean id="schemaIsTreaty"
+		class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+		<property name="namespace" ref="DEFAULT_NAMESPACE" />
+		<property name="name" value="schema" />
+		<property name="pattern" value="http://www.uio.no/xsd/jus/treaty/v00.*" />
+	</bean>
+	
+	<bean id="treatyTitlePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="title" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="treatyTitleEvaluator" />
+	</bean>
+	
+	<bean id="treatyTitleEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/treaty/title" />
+	</bean>
+	
+	<bean id="treatyDoneAtPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="done-at" />
+		<property name="type" value="STRING" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="treatyDoneAtEvaluator" />
+	</bean>
+	
+	<bean id="treatyDoneAtEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/treaty/done-at" />
+	</bean>
+	
+	<bean id="treatyDateEnactedPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="date-enacted" />
+		<property name="type" value="TIMESTAMP" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="treatyDateEnactedEvaluator" />
+	</bean>
+	
+	<bean id="treatyDateEnactedEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/treaty/date-enacted" />
+	</bean>
+	
+	<bean id="treatyInForcePropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="in-force" />
+		<property name="type" value="TIMESTAMP" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="treatyInForceEvaluator" />
+	</bean>
+	
+	<bean id="treatyInForceEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/treaty/in-force" />
+	</bean>
+	
+	<bean id="treatyClassificationsPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="classification" />
+		<property name="type" value="STRING" />
+		<property name="multiple" value="true" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="treatyClassificationsEvaluator" />
+	</bean>
+
+	<bean id="treatyRegionPropDef"
+		class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+		parent="abstractPropDef">
+		<property name="name" value="region" />
+		<property name="type" value="STRING" />
+		<property name="multiple" value="false" />
+		<property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+		<property name="mandatory" value="false" />
+		<property name="contentModificationEvaluator" ref="treatyRegionEvaluator" />
+	</bean>
+	
+	<bean id="treatyClassificationsEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/treaty/meta-data/classification" />
+	</bean>
+
+	<bean id="treatyRegionEvaluator" parent="abstractXPathEvaluator">
+		<property name="expression" value="/treaty/meta-data/type" />
+	</bean>
+	
+</beans>

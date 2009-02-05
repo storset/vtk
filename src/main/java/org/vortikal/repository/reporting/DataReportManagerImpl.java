@@ -118,7 +118,7 @@ public class DataReportManagerImpl implements
             if (this.token == null) {
                 return this.query.hashCode();
             } else {
-                return this.query.hashCode() + this.token.hashCode();
+                return this.query.hashCode() ^ this.token.hashCode();
             }
         }
         

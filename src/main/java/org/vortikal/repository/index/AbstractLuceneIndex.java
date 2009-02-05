@@ -181,6 +181,14 @@ public abstract class AbstractLuceneIndex {
 
     /**
      * @return
+     * TODO: For better performance with many concurrent searches, it is 
+     *       beneficial to use more than a single read-only reader for all the
+     *       ongoing searches. This will utilize multiple CPU cores much better, because
+     *       of internal synchronization contention in IndexReader. However, it
+     *       also requires more memory. I think we would get a nice benefit by
+     *       for instance maintaining two read-only instances, and handing them out
+     *       in a round-robin fashion. 
+     *       
      * @throws IOException
      */
     protected synchronized IndexReader getReadOnlyIndexReader()

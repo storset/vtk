@@ -106,6 +106,9 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
             String uri = uriPrefixQuery.getUri();
             TermOperator operator = uriPrefixQuery.getOperator();
             List<Term> idTerms = new ArrayList<Term>();
+            
+            // XXX: Syntax parser does not really support IN operator for URI prefixes (/foo/*,/*), 
+            //      query 'uri IN /*,/src/*' yields error: 'Encountered " <WILDVALUE> "/*,/src/ ""'
             if (TermOperator.IN.equals(operator)) {
             	String[] uris = uri.split(",");
             	for (String inUri : uris) {

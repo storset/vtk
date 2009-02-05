@@ -35,6 +35,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.query.Query;
 
+/**
+ * XXX: This interface needs a better/more specific name, clashes with the original
+ * org.vortikal.repository.search.query.QueryBuilder, which is used for creating
+ * Lucene query trees.
+ *
+ */
 public interface QueryBuilder {
 
     public Query build(Resource base, HttpServletRequest request);

@@ -124,7 +124,7 @@
 
     <#elseif principal?exists && !postCommentURL?exists>
       <p><@vrtx.msg code="commenting.denied"
-                    default="You do not have sufficient privileges to add comments on this resource." /></p>
+                    default="You can not comment this resource at the moment because it is locked by another user." /></p>
 
     <#elseif postCommentURL?exists>
       <div id="comment-syntax-desc" class="comment-syntax-desc">

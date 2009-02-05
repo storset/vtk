@@ -80,6 +80,7 @@ public class SortBuilderImpl implements SortBuilder {
             if (f instanceof TypedSortField) {
                 fieldName = ((TypedSortField) f).getType();
                 
+                // Special fields, do locale-sensitive lexicographic sorting (uri, name or type) 
                 luceneSortFields[j] = new org.apache.lucene.search.SortField(
                                             fieldName, f.getLocale(), direction);                
                 
@@ -94,12 +95,18 @@ public class SortBuilderImpl implements SortBuilder {
                 case BOOLEAN:
                 case INT:
                 case LONG:
-                    // These types are all encoded as lexicographically sortable strings
+                case PRINCIPAL:
+                case IMAGE_REF:
+                case HTML: // You would be insane to sort on this one. We shouldn't really index it at all.
+                    
+                    // These types are all encoded as lexicographically sortable strings,
+                    // and there is no need to do locale-sensitive sorting on any of them.
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, org.apache.lucene.search.SortField.STRING, direction);
                     break;
 
                 default:
+                    // Sort field according to locale, typically STRING properties (slower)
                     luceneSortFields[j] = new org.apache.lucene.search.SortField(
                             fieldName, f.getLocale(), direction);
                 }

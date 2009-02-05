@@ -180,18 +180,13 @@ public abstract class AbstractLuceneIndex {
     }
 
     /**
-     * XXX: Not entirely sure we can ignore closing of old read-only readers ..
-     * Need to find out. Otherwise we risk leaking system resources.
-     * 
-     * XXX: We might need to continue with simple dirty-state tracking
-     *      here, since we do not want huge parts of index to become unavailable
-     *      during large incremental updates (because deletes are done first).
-     * 
      * @return
      * @throws IOException
      */
     protected synchronized IndexReader getReadOnlyIndexReader()
             throws IOException {
+        logger.debug("getReadOnlyIndexReader()");
+        
         if (this.directory == null) {
             throw new IOException("Index is closed");
         }
@@ -202,41 +197,38 @@ public abstract class AbstractLuceneIndex {
             // No read-only reader has been instantiated yet, create new.
             this.roReader = IndexReader.open(this.directory, true);
         } else {
-            if (!this.roReader.isCurrent()) {
-                logger
-                        .debug("Read-only index reader is outdated, re-opening ..");
+            if (! this.roReader.isCurrent()) {
+                logger.debug("Current read-only index reader is outdated, re-opening ..");
+                
+                IndexReader oldReader = this.roReader;
+                
+                // Swap in new reader before we decrease refCount on the old one, in
+                // case closing it results in IOException. Then we have a new one
+                // open no matter what happens with the old one upon doClose().
                 this.roReader = this.roReader.reopen();
+
+                // Decrease "our own" instantiation-ref for the old read-only index reader.
+                // This will close it only if it is not currently in use. Otherwise
+                // it will be closed when last thread using it releases it in
+                // #releaseReadOnlyIndexReader(IndexReader)
+                oldReader.decRef();
             } else {
                 logger.debug("Read-only index reader up-to-date");
             }
         }
+        
+        // Increase ref-count and return instance
+        this.roReader.incRef();
 
         return this.roReader;
     }
 
-    @Deprecated
     protected synchronized void releaseReadOnlyIndexReader(
             IndexReader readOnlyReader) throws IOException {
-
-        logger.debug("releaseReadOnlyIndexReader");
-
-        // if (readOnlyReader == null)
-        // return;
-        //
-        // if (!(readOnlyReader instanceof ReadOnlyIndexReader)) {
-        // throw new IllegalArgumentException(
-        // "Only instances obtained with "
-        // + " getReadOnlyIndexReader() should be released with this method");
-        // }
-        //
-        // ((ReadOnlyIndexReader) readOnlyReader).decreaseReferenceCount();
-        //
-        // if (LOG.isDebugEnabled() && this.roReader != null) {
-        // LOG
-        // .debug("releaseReadOnlyIndexReader(): current read-only reader ref count is "
-        // + this.roReader.getReferenceCount());
-        // }
-
+        logger.debug("releaseReadOnlyIndexReader()");
+        
+        // Decrease ref-count (it will be closed if refCount hits zero)
+        readOnlyReader.decRef();
     }
 
     /**
@@ -418,8 +410,7 @@ public abstract class AbstractLuceneIndex {
         if (IndexWriter.isLocked(directory)) {
             // See if we should try to force-unlock it
             if (this.forceUnlock) {
-                logger
-                        .warn("Index directory is locked, forcibly releasing lock.");
+                logger.warn("Index directory is locked, forcibly releasing lock.");
                 IndexWriter.unlock(directory);
             } else {
                 throw new IOException("Index directory '" + directory

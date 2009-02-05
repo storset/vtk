@@ -59,7 +59,7 @@ import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFac
  */
 public class SearcherImplACL implements Searcher {
 
-    private final Log logger = LogFactory.getLog(SearcherImpl.class);
+    private final Log logger = LogFactory.getLog(SearcherImplACL.class);
 
     private LuceneIndexManager indexAccessor;
     private DocumentMapper documentMapper;
@@ -91,26 +91,28 @@ public class SearcherImplACL implements Searcher {
         int clientCursor = search.getCursor();
         PropertySelect selectedProperties = search.getPropertySelect();
 
-        org.apache.lucene.search.Query luceneQuery =
-            this.queryBuilderFactory.getBuilder(query).buildQuery();
-
-        Sort luceneSort = sorting != null ? 
-                this.sortBuilder.buildSort(sorting) : null;
-        
-        FieldSelector selector = selectedProperties != null ?
-                this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Built Lucene query '" 
-                    + luceneQuery + "' from query '" + query.accept(new DumpQueryTreeVisitor(), null) + "'");
-            
-            logger.debug("Built Lucene sorting '" + luceneSort + "' from sorting '"
-                    + sorting + "'");
-        }
-        
         IndexSearcher searcher = null;
         try {
             searcher = this.indexAccessor.getIndexSearcher();
+
+            org.apache.lucene.search.Query luceneQuery = this.queryBuilderFactory
+                    .getBuilder(query, searcher.getIndexReader()).buildQuery();
+
+            Sort luceneSort = sorting != null ? this.sortBuilder
+                    .buildSort(sorting) : null;
+
+            FieldSelector selector = selectedProperties != null ? this.documentMapper
+                    .getDocumentFieldSelector(selectedProperties)
+                    : null;
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Built Lucene query '" + luceneQuery
+                        + "' from query '"
+                        + query.accept(new DumpQueryTreeVisitor(), null) + "'");
+
+                logger.debug("Built Lucene sorting '" + luceneSort
+                        + "' from sorting '" + sorting + "'");
+            }
 
             int need = clientCursor + clientLimit;
             long totalTime = 0;
@@ -178,10 +180,10 @@ public class SearcherImplACL implements Searcher {
     }
     
     private TopDocs doACLFilteredTopDocsQuery(IndexSearcher searcher, 
-                                       org.apache.lucene.search.Query query,
-                                       int limit,
-                                       Sort sort,
-                                       String token)
+                                              org.apache.lucene.search.Query query,
+                                              int limit,
+                                              Sort sort,
+                                              String token)
         throws IOException {
 
         Filter aclFilter = 

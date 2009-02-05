@@ -32,6 +32,7 @@ package org.vortikal.repository.search.query.builders;
 
 import java.util.List;
 
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -47,10 +48,13 @@ public class QueryTreeBuilder implements QueryBuilder {
 
     private AbstractMultipleQuery query;
     private QueryBuilderFactory factory;
+    private IndexReader reader;
     
-    public QueryTreeBuilder(QueryBuilderFactory factory, AbstractMultipleQuery query) {
+    public QueryTreeBuilder(QueryBuilderFactory factory, 
+            IndexReader reader, AbstractMultipleQuery query) {
         this.query = query;
         this.factory = factory;
+        this.reader = reader;
     }
 
     public org.apache.lucene.search.Query buildQuery() {
@@ -58,7 +62,6 @@ public class QueryTreeBuilder implements QueryBuilder {
     }
     
     private org.apache.lucene.search.Query buildInternal(Query query) {
-        
         Occur occur = null;
         
         if (query instanceof AndQuery) {
@@ -66,7 +69,7 @@ public class QueryTreeBuilder implements QueryBuilder {
         } else if (query instanceof OrQuery) {
             occur = BooleanClause.Occur.SHOULD;
         } else {
-            return this.factory.getBuilder(query).buildQuery();
+            return this.factory.getBuilder(query, reader).buildQuery();
         }
 
         AbstractMultipleQuery multipleQuery = (AbstractMultipleQuery)query;
@@ -78,6 +81,5 @@ public class QueryTreeBuilder implements QueryBuilder {
         }
 
         return bq;
-
     }
 }

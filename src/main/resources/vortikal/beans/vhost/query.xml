@@ -106,7 +106,6 @@
   <bean id="queryBuilderFactory"
         class="org.vortikal.repository.search.query.QueryBuilderFactoryImpl">
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
-    <property name="indexAccessor" ref="systemIndexAccessor"/>
     <property name="fieldValueMapper" ref="fieldValueMapper"/>
   </bean>
 

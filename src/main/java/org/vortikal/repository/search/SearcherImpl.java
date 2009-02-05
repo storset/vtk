@@ -101,28 +101,30 @@ public class SearcherImpl implements Searcher {
         int clientCursor = search.getCursor();
         PropertySelect selectedProperties = search.getPropertySelect();
 
-        org.apache.lucene.search.Query luceneQuery =
-            this.queryBuilderFactory.getBuilder(query).buildQuery();
-
-        Sort luceneSort = sorting != null ? 
-                this.sortBuilder.buildSort(sorting) : null;
-        
-        FieldSelector selector = selectedProperties != null ?
-                this.documentMapper.getDocumentFieldSelector(selectedProperties) : null;
-        
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Built Lucene query '" 
-                    + luceneQuery + "' from query '" + query.accept(new DumpQueryTreeVisitor(), null) + "'");
-            
-            LOG.debug("Built Lucene sorting '" + luceneSort + "' from sorting '"
-                    + sorting + "'");
-        }
-        
         IndexSearcher searcher = null;
         try {
             searcher = this.indexAccessor.getIndexSearcher();
             IndexReader reader = searcher.getIndexReader();
             
+            org.apache.lucene.search.Query luceneQuery = this.queryBuilderFactory
+                    .getBuilder(query, reader).buildQuery();
+
+            Sort luceneSort = sorting != null ? this.sortBuilder
+                    .buildSort(sorting) : null;
+
+            FieldSelector selector = selectedProperties != null ? this.documentMapper
+                    .getDocumentFieldSelector(selectedProperties)
+                    : null;
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Built Lucene query '" + luceneQuery
+                        + "' from query '"
+                        + query.accept(new DumpQueryTreeVisitor(), null) + "'");
+
+                LOG.debug("Built Lucene sorting '" + luceneSort
+                        + "' from sorting '" + sorting + "'");
+            }
+        
             int need = clientCursor + clientLimit;
             int have = 0;
             

@@ -51,7 +51,6 @@ import org.vortikal.repository.HierarchicalVocabulary;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
-import org.vortikal.repository.index.LuceneIndexManager;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -83,20 +82,15 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
 
     Log logger = LogFactory.getLog(QueryBuilderFactoryImpl.class);
     
-    private LuceneIndexManager indexAccessor;
     private ResourceTypeTree resourceTypeTree;
-    
     private FieldValueMapper fieldValueMapper;
     
-    public QueryBuilder getBuilder(Query query) throws QueryBuilderException {
-        
-//        String queryDump = (String) query.accept(new DumpQueryTreeVisitor(), null);
-//        System.out.println("Building the following query: " + queryDump);
+    public QueryBuilder getBuilder(Query query, IndexReader reader) throws QueryBuilderException {
         
         QueryBuilder builder = null;
 
         if (query instanceof AbstractMultipleQuery) {
-            builder = new QueryTreeBuilder(this, (AbstractMultipleQuery)query);
+            builder = new QueryTreeBuilder(this, reader, (AbstractMultipleQuery)query);
         }
 
         else if (query instanceof AbstractPropertyQuery) {
@@ -106,7 +100,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         else if (query instanceof UriTermQuery) {
             builder = new UriTermQueryBuilder((UriTermQuery)query);
         }
-       
+
         else if (query instanceof UriPrefixQuery) {
         	UriPrefixQuery uriPrefixQuery = (UriPrefixQuery) query;
             String uri = uriPrefixQuery.getUri();
@@ -115,10 +109,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
             if (TermOperator.IN.equals(operator)) {
             	String[] uris = uri.split(",");
             	for (String inUri : uris) {
-            		idTerms.add(getPropertySetIdTermFromIndex(inUri));
+            		idTerms.add(getPropertySetIdTermFromIndex(inUri, reader));
             	}
             } else {
-                idTerms.add(getPropertySetIdTermFromIndex(uri));
+                idTerms.add(getPropertySetIdTermFromIndex(uri, reader));
             }
             builder =  new UriPrefixQueryBuilder(uri, operator, idTerms, uriPrefixQuery.isInverted());
         }
@@ -219,14 +213,11 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         }
     };
     
-    private Term getPropertySetIdTermFromIndex(String uri) 
+    private Term getPropertySetIdTermFromIndex(String uri, IndexReader reader) 
         throws QueryBuilderException {
         
         TermDocs td = null;
-        IndexReader reader = null;
         try {
-            reader = this.indexAccessor.getReadOnlyIndexReader();
-
             td = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, 
                                                 URIUtil.stripTrailingSlash(uri)));
             
@@ -249,16 +240,12 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         } finally {
             try {
                 if (td != null) td.close();
-                this.indexAccessor.releaseReadOnlyIndexReader(reader);
             } catch (IOException io) {}
         }
     }
     
-    @Required public void setIndexAccessor(LuceneIndexManager indexAccessor) {
-        this.indexAccessor = indexAccessor;
-    }
-
-    @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
 

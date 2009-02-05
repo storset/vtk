@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.search.query;
 
+import org.apache.lucene.index.IndexReader;
+
 
 /**
  * 
@@ -37,7 +39,7 @@ package org.vortikal.repository.search.query;
  */
 public interface QueryBuilderFactory {
 
-    public QueryBuilder getBuilder(Query query) 
+    public QueryBuilder getBuilder(Query query, IndexReader reader) 
         throws QueryBuilderException;
     
 }

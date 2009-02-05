@@ -126,12 +126,12 @@ public class FieldNameMappingTestCase extends TestCase {
         
         String fieldName = FieldNameMapping.getStoredFieldName(prop);
         
-        assertEquals("_bar:foo", fieldName);
+        assertEquals("b_bar:foo", fieldName);
         
         prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
         fieldName = FieldNameMapping.getStoredFieldName(prop);
-        assertEquals("_lastModified", fieldName);
+        assertEquals("b_lastModified", fieldName);
         
     }
 
@@ -144,7 +144,7 @@ public class FieldNameMappingTestCase extends TestCase {
         
         String fieldName = FieldNameMapping.getStoredFieldName(def);
         
-        assertEquals("_bar:foo", fieldName);
+        assertEquals("b_bar:foo", fieldName);
         
         def = new PropertyTypeDefinitionImpl();
         def.setName("lastModified");
@@ -152,19 +152,19 @@ public class FieldNameMappingTestCase extends TestCase {
         
         fieldName = FieldNameMapping.getStoredFieldName(def);
         
-        assertEquals("_lastModified", fieldName);
+        assertEquals("b_lastModified", fieldName);
         
     }
 
     public void testGetPropertyNamespacePrefixFromStoredFieldName() {
         
-        String fieldName = "_foo";
+        String fieldName = "foo";
         
         String nsPrefix = FieldNameMapping.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
         
         assertNull(nsPrefix);
         
-        fieldName = "_bar:foo";
+        fieldName = "b_bar:foo";
         
         nsPrefix = FieldNameMapping.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
         
@@ -172,13 +172,13 @@ public class FieldNameMappingTestCase extends TestCase {
     }
 
     public void testGetPropertyNameFromStoredFieldName() {
-        String fieldName = "_foo";
+        String fieldName = "b_foo";
         
         String name = FieldNameMapping.getPropertyNameFromStoredFieldName(fieldName);
         
         assertEquals("foo", name);
         
-        fieldName = "_bar:foo";
+        fieldName = "b_bar:foo";
         
         name = FieldNameMapping.getPropertyNameFromStoredFieldName(fieldName);
         

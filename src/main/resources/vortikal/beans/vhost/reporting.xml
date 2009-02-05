@@ -26,10 +26,10 @@
     </bean>
 
     <!--  Data report DAO using database (This DAO does not provide security filtering) -->
-    <bean id="repository.dataReportDAO" class="org.vortikal.repository.store.db.SqlMapDataReportDAO">
-        <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-        <property name="sqlMaps" ref="repository.statementMappings" />
-        <property name="valueFactory" ref="valueFactory"/>
-    </bean> 
+<!--    <bean id="repository.dataReportDAO" class="org.vortikal.repository.store.db.SqlMapDataReportDAO">-->
+<!--        <property name="sqlMapClient" ref="repository.sqlMapClient"/>-->
+<!--        <property name="sqlMaps" ref="repository.statementMappings" />-->
+<!--        <property name="valueFactory" ref="valueFactory"/>-->
+<!--    </bean> -->
 
 </beans>

@@ -334,63 +334,6 @@
     </plugins>
   </build>
   
-  <profiles>
-    <profile>
-      <id>webtests</id>
-      <activation>
-        <property>
-          <name>webtests</name>
-        </property>
-      </activation>
-      <properties>
-        <!-- Default values, override in your own settings.xml -->
-        <!-- for your own setup. -->
-        <webtests.admin.user>vortex@localhost</webtests.admin.user>
-        <webtests.admin.password>surfer</webtests.admin.password>
-        <webtests.view.url>http://localhost:9322</webtests.view.url>
-        <webtests.webdav.url>http://localhost:9321</webtests.webdav.url>
-        <webtests.admin.url>http://localhost:9322</webtests.admin.url>
-        <webtests.rootcollection>automatedtestresources</webtests.rootcollection>
-      </properties>
-      <build>
-        <testResources>
-          <testResource>
-            <directory>src/test/resources</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>**/integration/webtests/*.properties</include>
-            </includes>
-          </testResource>
-        </testResources>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>surefire-it</id>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>test</goal>
-                </goals>
-                <configuration>
-                  <skip>false</skip>
-                  <includes>
-                    <include>**/integration/webtests/**/*Test.java</include>
-                  </includes>
-                  <excludes>
-                    <exclude>**/Abstract*.java</exclude>
-                    <exclude>**/Base*.java</exclude>
-                  </excludes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  
   <dependencies>
     <!--
       MP3 support: these dependencies are not in any known Maven
@@ -412,14 +355,6 @@
       <artifactId>dwr</artifactId>
       <version>2.0.1</version>
     </dependency -->
-    
-    <!-- JWebUnit -->
-    <dependency>
-      <groupId>net.sourceforge.jwebunit</groupId>
-      <artifactId>jwebunit-htmlunit-plugin</artifactId>
-      <version>1.5</version>
-      <scope>test</scope>
-    </dependency>
     
     <!-- JSON -->
     <dependency>

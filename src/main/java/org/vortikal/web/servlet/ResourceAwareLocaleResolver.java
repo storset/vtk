@@ -108,7 +108,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
             token = securityContext.getToken();
         }
         
-        Locale locale = this.defaultLocale;
+        Locale locale = null;
         
         try {
             Resource resource = this.repository.retrieve(token, uri, true);
@@ -122,12 +122,13 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
                 // If no ancestor has a locale set, use the default of the host
             	locale = this.defaultLocale;
             }
+        } catch (Throwable t) { 
+            locale = this.defaultLocale;
+            return this.defaultLocale;
+        }
 
-            // Cache locale:
-            request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
-
-        } catch (Throwable t) { }
-        
+        // Cache locale:
+        request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
         return locale;
     }
     

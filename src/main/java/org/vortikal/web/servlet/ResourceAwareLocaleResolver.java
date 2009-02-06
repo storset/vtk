@@ -101,10 +101,12 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
 
     	RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
+
+        Locale locale = this.defaultLocale;
         
         try {
             Resource resource = this.repository.retrieve(this.trustedToken, uri, true);
-            Locale locale = LocaleHelper.getLocale(resource.getContentLanguage());
+            locale = LocaleHelper.getLocale(resource.getContentLanguage());
 
             if (locale == null) {
                 // Check for the nearest ancestor that has a locale set and use it
@@ -114,11 +116,13 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
                 // If no ancestor has a locale set, use the default of the host
             	locale = this.defaultLocale;
             }
-            
-            return locale;
-        } catch (Throwable t) {
-            return this.defaultLocale;
-        }
+
+            // Cache locale:
+            request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
+
+        } catch (Throwable t) { }
+        
+        return locale;
     }
     
 
@@ -136,7 +140,8 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
 
 
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-        request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
+        throw new UnsupportedOperationException(
+                "This locale resolver does not support explicitly setting the request locale");
     }
     
 }

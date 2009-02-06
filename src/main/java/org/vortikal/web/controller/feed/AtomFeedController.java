@@ -105,9 +105,6 @@ public abstract class AtomFeedController implements Controller {
         feed.setId(getId(collection.getURI(), published, getFeedPrefix()));
         feed.addLink(viewService.constructLink(collection.getURI()), "alternate");
         
-        if (Path.ROOT.equals(collection.getURI())) {
-            feedTitle = this.repository.getId();
-        }
         feed.setTitle(feedTitle);
 
         String subTitle = getIntroduction(collection);

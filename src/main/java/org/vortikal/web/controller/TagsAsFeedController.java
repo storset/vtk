@@ -122,7 +122,7 @@ public class TagsAsFeedController extends AtomFeedController {
         org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
                 request);
         if (Path.ROOT.equals(scope.getURI())) {
-            return rc.getMessage("tags.title", new Object[] { tag });
+            return rc.getMessage("tags.title", new Object[] { this.repository.getId(), tag });
         }
         return rc.getMessage("tags.scopedTitle", new Object[] { scope.getTitle(), tag });
     }

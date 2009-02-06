@@ -53,7 +53,11 @@ public class CollectionListingAsAtomFeed extends AtomFeedController {
     	Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource collection = this.repository.retrieve(token, uri, true);
         
-        Feed feed = populateFeed(collection, collection.getTitle());
+        String feedTitle = collection.getTitle();
+        if (Path.ROOT.equals(collection.getURI())) {
+            feedTitle = this.repository.getId();
+        }
+        Feed feed = populateFeed(collection, feedTitle);
         
         Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);
 

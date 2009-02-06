@@ -128,7 +128,9 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         }
 
         // Cache locale:
-        request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
+        if (request != null) {
+            request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale);
+        }
         return locale;
     }
     

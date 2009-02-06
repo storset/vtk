@@ -302,7 +302,7 @@
          class="org.vortikal.web.servlet.ResourceAwareLocaleResolver"
          parent="requestLocalRepositoryAware">
      <property name="defaultLocale" value="${view.defaultLocale}" />
-     <property name="trustedToken" ref="trustedToken" />
+     <!--property name="trustedToken" ref="trustedToken" /-->
    </bean>
 
 

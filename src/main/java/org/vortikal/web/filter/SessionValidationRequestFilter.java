@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.filter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
@@ -52,10 +55,23 @@ import javax.servlet.http.HttpSession;
 public class SessionValidationRequestFilter extends AbstractRequestFilter 
     implements RequestFilter {
 
+    private Set<String> authorizedAddresses = new HashSet<String>();
+    
     public HttpServletRequest filterRequest(HttpServletRequest request) {
+        String clientAddress = request.getRemoteAddr();
+        if (authorizedAddresses.contains(clientAddress)) {
+            return request;
+        }
         return new SessionValidationRequestWrapper(request);
     }
     
+    public void setAuthorizedAddresses(Set<String> authorizedAddresses) {
+        if (authorizedAddresses == null) {
+            throw new IllegalArgumentException("Argument cannot be NULL");
+        }
+        this.authorizedAddresses = authorizedAddresses;
+    }
+
     private static class SessionValidationRequestWrapper extends HttpServletRequestWrapper {
 
         private static final String COOKIE_REQUEST_ATTRIBUTE = 
@@ -77,7 +93,7 @@ public class SessionValidationRequestFilter extends AbstractRequestFilter
             if (s == null) {
                 return null;
             }
-            String clientAddress = this.request.getRemoteAddr();
+            String clientAddress = request.getRemoteAddr();
             Object o = s.getAttribute(COOKIE_REQUEST_ATTRIBUTE);
             if (o == null || ! (o instanceof String)) {
                 s.invalidate();

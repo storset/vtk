@@ -273,7 +273,11 @@
 
   <bean id="vrtx.sessionValidationFilter" class="org.vortikal.web.filter.SessionValidationRequestFilter"
         parent="defaultRequestFilterCategoryBean">
+    <property name="authorizedAddresses">
+      <bean class="org.vortikal.context.CSVSetFactoryBean">
+        <property name="csvList" value="${sessionValidation.authorizedAddresses}" />
+      </bean>
+    </property>
   </bean>
-
 
 </beans>

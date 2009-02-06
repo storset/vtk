@@ -41,6 +41,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
 
@@ -66,7 +67,7 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     
     private Locale defaultLocale;
     private Repository repository;
-    private String trustedToken;
+    private String trustedToken = null;
     
 
     /**
@@ -85,7 +86,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         this.repository = repository;
     }
     
-    @Required
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }
@@ -102,10 +102,16 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
     	RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
 
+    	SecurityContext securityContext = SecurityContext.getSecurityContext();
+        String token = this.trustedToken;
+        if (token == null) {
+            token = securityContext.getToken();
+        }
+        
         Locale locale = this.defaultLocale;
         
         try {
-            Resource resource = this.repository.retrieve(this.trustedToken, uri, true);
+            Resource resource = this.repository.retrieve(token, uri, true);
             locale = LocaleHelper.getLocale(resource.getContentLanguage());
 
             if (locale == null) {

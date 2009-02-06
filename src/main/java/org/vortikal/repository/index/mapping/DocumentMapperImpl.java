@@ -56,7 +56,6 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.security.Principal;
@@ -162,7 +161,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         
         // ACL_READ_PRINCIPALS (index system field)
         if (aclReadPrincipals != null) {
-            // XXX: should probably fail harder if missing ACL read field data
+            // XXX: should probably fail harder if missing ACL read field data, however, if missing
+            //      the document will never be allowed in query results (so really not a problem).
             String[] qualifiedNames = getAclReadPrincipalsFieldValues(aclReadPrincipals);
             
             Field aclReadPrincipalsField = getAclReadPrincipalsField(qualifiedNames);
@@ -181,39 +181,65 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 .getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(resourceDef);
 
         // Index only properties that satisfy the following conditions:
-        // 1) Belongs to the resource type's definition
-        // 2) Exists in the property set.
-        // 3) Is not of binary type.
+        //   1) Belongs to the resource type's definition
+        //   2) Exists in the property set.
+        //   3) Is of type that is sensible to index for searching.
+        // Store *all* properties, except those of type BINARY.
         for (PropertyTypeDefinition propDef : propDefs) {
-            Property property = propSet.getProperty(propDef);
-
-            if (property == null || property.getType() == Type.BINARY)
-                continue;
-
-            // The field used for searching on the property (also tokenized single Field instance for multi-values)
-            Field indexedField = getIndexedFieldFromProperty(property, false);
-            doc.add(indexedField);
             
-            // Lower-case version of searchable field (only for property types
-            // STRING and HTML)
-            switch (property.getDefinition().getType()) {
-            case HTML: // XXX: Do we really need to add a searchable lowercase version of HTML fragment values ??????
+            Property property = propSet.getProperty(propDef);
+            
+            if (property == null) continue;
+            
+            switch (property.getType()) {
+            case BINARY: continue; // Don't index or store BINARY property values
+            
             case STRING:
+                // Add lowercase version of search field for STRING types only
                 Field lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
                 doc.add(lowercaseIndexedField);
+            
             default:
-                // Don't add lowercase-versions for other types
-            }
+                // Create regular searchable index field of value(s)
+                Field indexedField = getIndexedFieldFromProperty(property, false);
+                doc.add(indexedField);
 
-            // The field(s) used for storing the property value(s) (in binary
-            // form)
-            Field[] storedFields = getStoredFieldsFromProperty(property);
-            for (Field storedField : storedFields) {
-                doc.add(storedField);
+            case HTML: // Don't create any indexed/searchable fields for HTML (only store)
+
+                // Create stored field(s) for value(s)
+                for (Field storedField: getStoredFieldsFromProperty(property)) {
+                    doc.add(storedField);
+                }
             }
         }
-
+        
         return doc;
+
+//            if (property == null || property.getType() == Type.BINARY)
+//                continue;
+//
+            // The field used for searching on the property (also tokenized single Field instance for multi-values)
+//            Field indexedField = getIndexedFieldFromProperty(property, false);
+//            doc.add(indexedField);
+//            
+            // Lower-case version of searchable field (only for property types
+            // STRING and HTML)
+//            switch (property.getDefinition().getType()) {
+//            case HTML: // XXX: Do we really need to add a searchable lowercase version of HTML fragment values ??????
+//            case STRING:
+//                Field lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
+//                doc.add(lowercaseIndexedField);
+//            default:
+//                // Don't add lowercase-versions for other types
+//            }
+//
+            // The field(s) used for storing the property value(s) (in binary
+            // form)
+//            Field[] storedFields = getStoredFieldsFromProperty(property);
+//            for (Field storedField : storedFields) {
+//                doc.add(storedField);
+//            }
+
     }
 
 

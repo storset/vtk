@@ -35,9 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletContext;
-
-import org.springframework.web.context.ServletContextAware;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -48,7 +45,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
  * XXX: this class currently depends on the thread safety of the SyndFeed implementation: if it turns out that it is not
  * thread safe, its data has to be extracted to a custom bean after fetching a feed.
  */
-public class FeedComponent extends ViewRenderingDecoratorComponent implements ServletContextAware {
+public class FeedComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_FEED_DESCRIPTION = "feed-description";
     private static final String PARAMETER_FEED_DESCRIPTION_DESC = "Must be set to 'true' to show feed description";
@@ -85,7 +82,6 @@ public class FeedComponent extends ViewRenderingDecoratorComponent implements Se
     private static final String PARAMETER_DISPLAY_CATEGORIES_DESC = "Set to 'true' if feed elements should display contents of category field.";
 
     private ContentCache<String, SyndFeed> cache;
-
     private LocalFeedFetcher localFeedFetcher;
 
 
@@ -198,11 +194,9 @@ public class FeedComponent extends ViewRenderingDecoratorComponent implements Se
         model.put("conf", conf);
     }
 
-
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }
-
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
@@ -219,13 +213,11 @@ public class FeedComponent extends ViewRenderingDecoratorComponent implements Se
         return map;
     }
 
-
-    public void setServletContext(ServletContext servletContext) {
-        this.localFeedFetcher = new LocalFeedFetcher(servletContext);
-    }
-
-
     public void setContentCache(ContentCache<String, SyndFeed> cache) {
         this.cache = cache;
+    }
+
+    public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
+        this.localFeedFetcher = localFeedFetcher;
     }
 }

@@ -40,8 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletContext;
-
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -60,6 +58,9 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         this.cache = cache;
     }
 
+    public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
+        this.localFeedFetcher = localFeedFetcher;
+    }
 
     @Override
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -309,10 +310,6 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         return map;
     }
 
-
-    public void setServletContext(ServletContext servletContext) {
-        this.localFeedFetcher = new LocalFeedFetcher(servletContext);
-    }
 
     public class FeedMapping {
         Map<SyndEntry, SyndFeed> feedMapping = new HashMap<SyndEntry, SyndFeed>();

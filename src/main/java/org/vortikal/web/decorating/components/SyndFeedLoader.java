@@ -32,22 +32,10 @@ package org.vortikal.web.decorating.components;
 
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.text.html.HtmlContent;
-import org.vortikal.text.html.HtmlElement;
-import org.vortikal.text.html.HtmlFragment;
-import org.vortikal.text.html.HtmlPageFilter;
-import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.cache.loaders.URLConnectionCacheLoader;
 
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
 
 
 /**
@@ -56,11 +44,14 @@ import com.sun.syndication.io.XmlReader;
 public class SyndFeedLoader extends URLConnectionCacheLoader<SyndFeed> {
 
     private String clientIdentifier = "Anonymous Feed Fetcher";
-    private HtmlPageParser htmlParser;
-    private HtmlPageFilter safeHtmlFilter;
+    private SyndFeedBuilder builder;
     
     public void setClientIdentifier(String clientIdentifier) {
         this.clientIdentifier = clientIdentifier;
+    }
+
+    public void setBuilder(SyndFeedBuilder builder) {
+        this.builder = builder;
     }
     
     protected void setConnectionProperties(URLConnection connection) {
@@ -68,74 +59,13 @@ public class SyndFeedLoader extends URLConnectionCacheLoader<SyndFeed> {
         connection.setRequestProperty("User-Agent", this.clientIdentifier);
     }
 
+    
     protected SyndFeed handleConnection(URLConnection connection) throws Exception {
         InputStream stream = connection.getInputStream();
-        XmlReader xmlReader = new XmlReader(stream);
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(xmlReader);
-
-        for (Object o : feed.getEntries()) {
-            SyndEntry entry = (SyndEntry) o;
-            SyndContent desc = entry.getDescription();
-            if (desc != null) {
-                String value = desc.getValue();
-                if (value == null) {
-                    continue;
-                }
-
-                String type = desc.getType();
-                if (type != null && type.equals("xhtml")) {
-                    HtmlFragment frag = this.htmlParser.parseFragment(value);
-                    filterXhtml(frag);
-                    desc.setValue(frag.getStringRepresentation());
-
-                } else if (type.equals("text/html") && desc.getValue() != null) {
-                    HtmlFragment frag = this.htmlParser.parseFragment(value);
-                    filterHtml(frag);
-                    desc.setValue(frag.getStringRepresentation());
-
-                } else {
-                    HtmlFragment frag = this.htmlParser.parseFragment(value);
-                    filterText(frag);
-                    desc.setValue(frag.getStringRepresentation());
-                }
-            }
-        }
+        SyndFeed feed = this.builder.build(stream);
         feed.setUri(connection.getURL().toExternalForm());
         return feed;
     }
     
-    private void filterXhtml(HtmlFragment fragment) {
-        fragment.filter(this.safeHtmlFilter);
-
-        final Set<HtmlContent> toplevel = new HashSet<HtmlContent>(fragment.getContent());
-        fragment.filter(new HtmlPageFilter() {
-            public NodeResult filter(HtmlContent node) {
-                if (toplevel.contains(node)) {
-                   if (node instanceof HtmlElement) {
-                       return NodeResult.skip;
-                   }
-                   return NodeResult.exclude;
-                }
-                return NodeResult.keep;
-            }});
-    }
-
-    private void filterHtml(HtmlFragment fragment) {
-        fragment.filter(this.safeHtmlFilter);
-    }
-
-    private void filterText(HtmlFragment fragment) {
-        fragment.filter(this.safeHtmlFilter);
-    }
     
-    @Required
-    public void setHtmlParser(HtmlPageParser htmlParser) {
-        this.htmlParser = htmlParser;
-    }
-
-    @Required
-    public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {
-        this.safeHtmlFilter = safeHtmlFilter;
-    }
 }

@@ -252,6 +252,7 @@
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
+    <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
   </bean>
 
   <bean id="decorating.aggregatedFeedComponent"
@@ -261,10 +262,15 @@
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
+    <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
   </bean>
 
   <bean id="decorating.feedComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/feed-listing.ftl" />
+  </bean>
+
+  <bean id="decorating.feedComponent.localFeedFetcher" class="org.vortikal.web.decorating.components.LocalFeedFetcher">
+    <property name="feedBuilder" ref="decorating.feedComponent.feedBuilder" />
   </bean>
 
   <bean id="decorating.feedComponent.contentCache" class="org.vortikal.util.cache.ContentCache">
@@ -281,11 +287,15 @@
     <property name="connectTimeoutSeconds" value="${decorating.feedComponent.connectTimeoutSeconds}" />
     <property name="readTimeoutSeconds" value="${decorating.feedComponent.readTimeoutSeconds}" />
     <property name="clientIdentifier" value="${decorating.feedComponent.identifier}" />
-    <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="safeHtmlFilter" ref="safeHtml.filter" />
+    <property name="builder" ref="decorating.feedComponent.feedBuilder" />
   </bean>
   
   
+  <bean id="decorating.feedComponent.feedBuilder" class="org.vortikal.web.decorating.components.SyndFeedBuilder">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="safeHtmlFilter" ref="safeHtml.filter" />
+  </bean>
+
   <bean id="decorating.listMenuComponent"
         class="org.vortikal.web.decorating.components.ListMenuComponent">
     <property name="namespace" ref="decorating.includeNamespace" />

@@ -43,30 +43,23 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.context.ServletContextAware;
+import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.VortikalServlet;
-import org.vortikal.web.decorating.DecoratorRequest;
 
 import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
 
-public class LocalFeedFetcher {
+public class LocalFeedFetcher implements ServletContextAware {
 
     private ServletContext servletContext;
-
-    public LocalFeedFetcher(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
+    private SyndFeedBuilder feedBuilder;
 
     public SyndFeed getFeed(String url, DecoratorRequest request) throws Exception {
-        
         InputStream stream = retrieveLocalStream(url, request);
-        XmlReader xmlReader = new XmlReader(stream);
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(xmlReader);
+        SyndFeed feed = this.feedBuilder.build(stream);
         return feed;
-
     }
 
     private InputStream retrieveLocalStream(String uri, DecoratorRequest request)
@@ -99,6 +92,13 @@ public class LocalFeedFetcher {
         return new ByteArrayInputStream(servletResponse.getContentBuffer());
     }
 
+    @Required public void setFeedBuilder(SyndFeedBuilder feedBuilder) {
+        this.feedBuilder = feedBuilder;
+    }
+
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
     private class RequestWrapper extends HttpServletRequestWrapper {
 

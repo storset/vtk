@@ -22,9 +22,9 @@
   <#elseif tagElements?exists>
   	<#assign title>${vrtx.getMsg("tags.noTagTitle")}</#assign>
   <#elseif scope?exists && !scope.URI.root>
-    <#assign title><@vrtx.msg code="tags.scopedTitle" args=[scope.title,tag] /></#assign>
+    <#assign title><@vrtx.msg code="tags.scopedTitle" args=[scope.title, tag] /></#assign>
   <#else>
-    <#assign title><@vrtx.msg code="tags.title" args=[tag] /></#assign>
+    <#assign title><@vrtx.msg code="tags.title" args=[repositoryID, tag] /></#assign>
   </#if>
 
   <title>${title?html}

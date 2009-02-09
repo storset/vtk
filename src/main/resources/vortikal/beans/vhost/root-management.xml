@@ -332,12 +332,7 @@
     <property name="url" value="pages/repository-read-only.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <bean id="repositoryReadOnlyMessageProvider"
-              class="org.vortikal.web.referencedata.provider.RepositoryReadOnlyMessageProvider">
-          <property name="modelName" value="message" />
-          <property name="repository" ref="repository" />
-          <property name="messageKey" value="repository.readOnlyMode" />
-        </bean>
+        <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
               parent="requestLocalRepositoryAware">
           <property name="service" ref="setRepositoryReadOnlyService" />

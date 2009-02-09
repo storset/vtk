@@ -50,21 +50,6 @@
           <property name="maxConcurrentRequests" value="${webService.maxConcurrentRequests}" />
           <property name="rejectStatus" value="${webService.tooManyRequests.rejectStatus}" />
         </bean>
-        <bean class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
-          <description>
-            Interceptor on the web-based services, in order to provide a
-            global 'message' in all the MVC models that are produced by
-            the handlers.
-          </description>
-          <property name="providers">
-            <bean id="repositoryReadOnlyMessageProvider"
-                  class="org.vortikal.web.referencedata.provider.RepositoryReadOnlyMessageProvider">
-              <property name="modelName" value="message" />
-              <property name="repository" ref="repository" />
-              <property name="messageKey" value="repository.readOnlyMode" />
-            </bean>
-          </property>
-        </bean>
       </list>
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />

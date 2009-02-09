@@ -18,8 +18,8 @@
     <title>Read only status</title>
   </head>
   <body>
-    <h1>Read only status</h1>
-    <p><#if message?exists>
+    <h1>Read only status for ${resourceContext.repositoryId?html}</h1>
+    <p><#if resourceContext.repositoryReadOnly>
           Repository is in read only mode
           <#if unsetReadOnlyUrl?exists>
             (<a href="${unsetReadOnlyUrl.url?html}">switch</a>)

@@ -649,6 +649,7 @@
 
   <bean id="PROPFIND" class="org.vortikal.webdav.PropfindView">
     <property name="webdavService" ref="webdavService"/>
+    <property name="collectionContentType" value="${webdav.collectionContentType}" />
   </bean>
 
   <bean id="HEAD" class="org.vortikal.web.view.DisplayResourceView" />

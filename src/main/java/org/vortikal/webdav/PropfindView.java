@@ -78,6 +78,8 @@ public class PropfindView implements View, InitializingBean {
 
     private Service webdavService = null;
 
+    private String collectionContentType = null;
+
 
     /**
      * Sets the WebDAV service. This service is needed for URL
@@ -344,16 +346,17 @@ public class PropfindView implements View, InitializingBean {
 
             } else if (propertyName.equals("getcontenttype")) {
                 String type = resource.getContentType();
-                if (type == null || type.equals("")) return null;
                 
-                if (resource.isCollection()) {
-
-                    return null;
-                    //element.addContent("httpd/unix-directory");
-
-                }   
-               
-                element.addContent(type);
+                if (type == null || type.equals("")) {
+                    if (!resource.isCollection()) {
+                        return null;
+                    }
+                    if (this.collectionContentType != null) {
+                        element.addContent(this.collectionContentType);
+                    }
+                } else {
+                    element.addContent(type);
+                }
                
             } else if (propertyName.equals("getetag")) {
                 if (resource.getSerial() == null) {
@@ -683,4 +686,13 @@ public class PropfindView implements View, InitializingBean {
         return null;
     }
 
+
+    public void setCollectionContentType(String value) {
+        if (value != null) {
+            if (value.trim().equals("")) {
+                value = null;
+            }
+        }
+        this.collectionContentType = value;
+    }
 }

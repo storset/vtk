@@ -211,7 +211,8 @@ public class PropfindController extends AbstractWebdavController {
 
         Element root = requestBody.getRootElement();
         Element propType = (Element) root.getChildren().get(0);
-        String propTypeName = propType != null? propType.getName().toLowerCase() : null;
+        String propTypeName = propType != null ? 
+                propType.getName().toLowerCase() : null;
 
         if (! ("allprop".equals(propTypeName)
                || "propname".equals(propTypeName)
@@ -225,6 +226,7 @@ public class PropfindController extends AbstractWebdavController {
         model.put(WebdavConstants.WEBDAVMODEL_WILDCARD_PROP_REQUEST, wildcardPropRequest);
         
         List<Element> requestedProps = getRequestedProperties(requestBody, resource);
+
         model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_PROPERTIES, requestedProps);
 
         /* if property name is 'allprop' or 'prop', we expect values
@@ -317,8 +319,6 @@ public class PropfindController extends AbstractWebdavController {
                  propIter.hasNext();) {
 
                 Element requestedProperty = (Element) propIter.next();
-
-
                 if (isSupportedProperty(requestedProperty.getName(),
                                         requestedProperty.getNamespace())) {
                     propList.add(requestedProperty);

@@ -97,7 +97,6 @@ public class SortBuilderImpl implements SortBuilder {
                 case LONG:
                 case PRINCIPAL:
                 case IMAGE_REF:
-                case HTML: // You would be insane to sort on this one. We shouldn't really index it at all.
                     
                     // These types are all encoded as lexicographically sortable strings,
                     // and there is no need to do locale-sensitive sorting on any of them.

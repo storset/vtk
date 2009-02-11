@@ -20,10 +20,12 @@
           <#assign entries = entries?reverse />
         </#if> 
       <#else>
-        <#if conf.sortAscending?exists>
-          <#-- Feeds are by default sorted descending by publish-date, 
-               reverse if ascending sort is requested -->
-          <#assign entries = entries?reverse />
+
+        <#if (conf.sortDescending)?exists && conf.sortDescending>
+          <#assign entries = entries?sort_by("publishedDate")?reverse />
+
+        <#elseif (conf.sortAscending)?exists && conf.sortAscending>
+          <#assign entries = entries?sort_by("publishedDate") />
         </#if>
       </#if>
 

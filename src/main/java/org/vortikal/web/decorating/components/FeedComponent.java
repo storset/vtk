@@ -157,10 +157,12 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
                         conf.put("sortAscending", true);
                     }
                 } else if ("asc".equalsIgnoreCase(token)) {
+                    conf.remove("sortDescending");
                     conf.put("sortAscending", true);
                     directionSpecified = true;
                 } else if ("desc".equalsIgnoreCase(token)) {
                     conf.remove("sortAscending");
+                    conf.put("sortDescending", true);
                     directionSpecified = true;
                 }
             }

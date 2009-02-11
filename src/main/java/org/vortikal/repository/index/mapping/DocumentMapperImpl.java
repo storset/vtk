@@ -195,7 +195,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             case BINARY: continue; // Don't index or store BINARY property values
             
             case STRING:
-                // Add lowercase version of search field for STRING types only
+            case HTML:
+                // Add lowercase version of search field for STRING and HTML types only
                 Field lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
                 doc.add(lowercaseIndexedField);
             
@@ -203,8 +204,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 // Create regular searchable index field of value(s)
                 Field indexedField = getIndexedFieldFromProperty(property, false);
                 doc.add(indexedField);
-
-            case HTML: // Don't create any indexed/searchable fields for HTML (only store)
 
                 // Create stored field(s) for value(s)
                 for (Field storedField: getStoredFieldsFromProperty(property)) {

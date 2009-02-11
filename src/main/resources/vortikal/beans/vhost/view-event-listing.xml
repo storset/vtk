@@ -73,7 +73,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
 
     <property name="query">
       <value>(uri = {$currentFolder}/* AND type IN event) AND (start-date &gt; {$currentTime} OR end-date &gt; {$currentTime}) </value>
@@ -95,7 +95,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="defaultRecursive" value="true" />
-    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+    <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
 
     <property name="query">
       <value>(uri = {$currentFolder}/* AND type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND start-date &lt; {$currentTime}))</value>

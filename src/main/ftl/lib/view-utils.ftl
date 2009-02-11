@@ -134,8 +134,7 @@
 	
 </#macro>
 
-<#macro displayTimeAndPlaceAndNumberOfComments resource title hideNumberOfComments >
-
+<#macro displayTimeAndPlaceAndNumberOfComments resource title hideLocation hideEndDate hideNumberOfComments >
   <#local start = vrtx.propValue(resource, "start-date") />
   <#local startiso8601 = vrtx.propValue(resource, "start-date", "iso-8601") />
   <#local startshort = vrtx.propValue(resource, "start-date", "short") />
@@ -155,7 +154,7 @@
   <#if start != "">
     <abbr class="dtstart" title="${startiso8601}">${start}</abbr><#rt />
   </#if>
-  <#if end != "">
+  <#if end != "" && !hideEndDate>
     <#if startshort == endshort>
       <#if isoendhour != "00:00">
         <#t /> - <abbr class="dtend" title="${endiso8601}">${endhoursminutes}</abbr><#rt />
@@ -169,7 +168,7 @@
       <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
     </#if>
   </#if>
-  <#t /><#if location != "">, <span class="location">${location}</span></#if>
+  <#t /><#if location != "" && !hideLocation>, <span class="location">${location}</span></#if>
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />

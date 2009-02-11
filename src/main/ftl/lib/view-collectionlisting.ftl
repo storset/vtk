@@ -168,21 +168,24 @@
     <#local locale = springMacroRequestContext.getLocale() />
     <#list resources as r>
       <#local title = vrtx.propValue(r, 'title') />
-      <#local introImg  = vrtx.prop(r, 'picture')  />
-      <#local intro  = vrtx.prop(r, 'introduction')  />
+      <#local introImg = vrtx.prop(r, 'picture')  />
+      <#local intro = vrtx.prop(r, 'introduction')  />
       <#local location  = vrtx.prop(r, 'location')  />
-      <#local caption = vrtx.propValue(r, 'caption')  />
-      
+      <#local caption = vrtx.prop(r, 'caption')  />
+      <#local endDate = vrtx.prop(r, 'end-date') />
+      <#local hideLocation = !location?has_content || !collectionListing.displayPropDefs?seq_contains(location.definition) />
+      <#local hideEndDate = !endDate?has_content || !collectionListing.displayPropDefs?seq_contains(endDate.definition) />
+ 
+
       <#-- Flattened caption for alt-tag in image -->
      <#local captionFlattened>
         <@vrtx.flattenHtml value=caption escape=true />
       </#local>
-
       <div class="vrtx-resource vevent">
          
             <#if introImg?has_content && collectionListing.displayPropDefs?seq_contains(introImg.definition)>
                <#local src = vrtx.propValue(r, 'picture', 'thumbnail') />
-               <a class="vrtx-image" href="${collectionListing.urls[r.URI]?html}">        
+               <a class="vrtx-image" href="${collectionListing.urls[r.URI]?html}">
                  <#if caption != ''>
                     <img src="${src?html}" alt="${captionFlattened}" />
                   <#else>
@@ -193,8 +196,9 @@
             <div class="vrtx-title">
             <a class="vrtx-title summary" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
 			</div>
+
         <div class="time-and-place"> 
-          <@viewutils.displayTimeAndPlaceAndNumberOfComments r title hideNumberOfComments />
+          <@viewutils.displayTimeAndPlaceAndNumberOfComments r title hideLocation hideEndDate hideNumberOfComments />
         </div>
 
         <#if intro?has_content && collectionListing.displayPropDefs?seq_contains(intro.definition)>

@@ -171,7 +171,7 @@
       <#local introImg = vrtx.prop(r, 'picture')  />
       <#local intro = vrtx.prop(r, 'introduction')  />
       <#local location  = vrtx.prop(r, 'location')  />
-      <#local caption = vrtx.prop(r, 'caption')  />
+      <#local caption = vrtx.propValue(r, 'caption')  />
       <#local endDate = vrtx.prop(r, 'end-date') />
       <#local hideLocation = !location?has_content || !collectionListing.displayPropDefs?seq_contains(location.definition) />
       <#local hideEndDate = !endDate?has_content || !collectionListing.displayPropDefs?seq_contains(endDate.definition) />

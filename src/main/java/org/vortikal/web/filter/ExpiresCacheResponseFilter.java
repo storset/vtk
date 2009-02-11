@@ -55,6 +55,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
         DROPPED_HEADERS.add("Expires");
         DROPPED_HEADERS.add("Cache-Control");
         DROPPED_HEADERS.add("Pragma");
+        DROPPED_HEADERS.add("Last-Modified");
     }
     
     private Repository repository;

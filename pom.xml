@@ -4,7 +4,7 @@
 
     <groupId>vortikal</groupId>
     <artifactId>vortikal</artifactId>
-    <version>0.5.5-SNAPSHOT</version>
+    <version>0.5.5</version>
     
     <packaging>jar</packaging>
     <name>The Vortikal Web Framework</name>

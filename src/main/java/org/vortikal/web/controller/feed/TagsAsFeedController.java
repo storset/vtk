@@ -42,9 +42,9 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.tags.TagsHelper;
 
 public class TagsAsFeedController extends AtomFeedController {
 
@@ -95,25 +95,20 @@ public class TagsAsFeedController extends AtomFeedController {
     }
 
 
+    // Duplicated from TagsController :(
     private Resource getScope(String token, HttpServletRequest request) throws Exception {
-        String scopeFromRequest = request.getParameter("scope");
-        if (scopeFromRequest == null || scopeFromRequest.equals("")) {
-            return this.repository.retrieve(token, Path.ROOT, true);
-        }
-        if (".".equals(scopeFromRequest)) {
-            Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
-            return this.repository.retrieve(token, currentCollection, true);
-        }
-        if (scopeFromRequest.startsWith("/")) {
-            Resource scopedResource = this.repository.retrieve(token, Path
-                    .fromString(scopeFromRequest), true);
-            if (!scopedResource.isCollection()) {
-                throw new IllegalArgumentException("scope must be a collection");
-            }
-            return scopedResource;
+        Path requestedScope = TagsHelper.getScopePath(request);
+        Resource scopedResource = null;
+        try {
+            scopedResource = this.repository.retrieve(token, requestedScope, true);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Scope resource doesn't exist.");
         }
 
-        throw new IllegalArgumentException("Scope must be empty, '.' or be a valid collection");
+        if (!scopedResource.isCollection()) {
+            throw new IllegalArgumentException("Scope resource isn't a collection");
+        }
+        return scopedResource;
     }
 
 

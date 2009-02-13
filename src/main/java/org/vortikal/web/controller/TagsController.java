@@ -46,13 +46,13 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.tags.RepositoryTagElementsDataProvider;
 import org.vortikal.web.tags.TagElement;
+import org.vortikal.web.tags.TagsHelper;
 
 public class TagsController implements Controller {
 
@@ -65,31 +65,32 @@ public class TagsController implements Controller {
 
     private RepositoryTagElementsDataProvider tagElementsProvider;
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 
         String tag = request.getParameter("tag");
 
         Resource scope = getScope(token, request);
-        
+
         /* List all known tags for the current collection */
         if (tag == null || tag.trim().equals("")) {
-        	 return handleAllTags(token, scope);
+            return handleAllTags(token, scope);
         }
 
         return handleSingleTag(request, tag, scope);
     }
 
 
-    private ModelAndView handleSingleTag(HttpServletRequest request,
-            String tag, Resource scope) throws Exception {
+    private ModelAndView handleSingleTag(HttpServletRequest request, String tag, Resource scope)
+            throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
 
         model.put("scope", scope);
         model.put("tag", tag);
-        
-        
+
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
 
@@ -98,14 +99,16 @@ public class TagsController implements Controller {
         int limit = pageInfo.getLimit();
         int offset = pageInfo.getOffset();
 
-        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0, defaultRecursive);
+        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0,
+                defaultRecursive);
         model.put("listing", listing);
 
         // Check previous result (by redoing the previous search),
         // to see if we need to adjust the offset.
         // XXX: is there a better way?
         if (listing.getFiles().size() == 0 && offset > 0) {
-            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0, defaultRecursive);
+            Listing prevListing = this.searchComponent.execute(request, scope, page - 1, limit, 0,
+                    defaultRecursive);
             if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
                 offset -= prevListing.getFiles().size();
             }
@@ -150,7 +153,8 @@ public class TagsController implements Controller {
                 String title = service.getName();
                 org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
                         request);
-                title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service.getName());
+                title = rc.getMessage(service.getName(), new Object[] { scope.getTitle() }, service
+                        .getName());
 
                 m.put("title", title);
                 m.put("url", url);
@@ -171,42 +175,29 @@ public class TagsController implements Controller {
         model.put("scope", scope);
 
         Path scopeUri = scope.getURI();
-         
-        List<TagElement> tagElements = 
-        	 tagElementsProvider.getTagElements(
-        	         scopeUri, token, 1, 1, Integer.MAX_VALUE, 1); 
+
+        List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, token, 1, 1,
+                Integer.MAX_VALUE, 1);
 
         model.put("tagElements", tagElements);
-             
+
         return new ModelAndView(this.viewName, model);
     }
 
 
-    protected Resource getScope(String token, HttpServletRequest request) throws Exception {
-        String scopeFromRequest = request.getParameter("scope");
-
-        if (scopeFromRequest == null || "".equals(scopeFromRequest) || ".".equals(scopeFromRequest)) {
-            Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
-            return this.repository.retrieve(token, currentCollection, true);
+    private Resource getScope(String token, HttpServletRequest request) throws Exception {
+        Path requestedScope = TagsHelper.getScopePath(request);
+        Resource scopedResource = null;
+        try {
+            scopedResource = this.repository.retrieve(token, requestedScope, true);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Scope resource doesn't exist.");
         }
-        
-        if (scopeFromRequest.startsWith("/")) {
-            Resource scopedResource = null;
-            try {
-                scopedResource = this.repository.retrieve(token, Path.fromString(scopeFromRequest), true);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Scope resource doesn't exist.");
-            }
 
-            if (!scopedResource.isCollection()) {
-                throw new IllegalArgumentException("Scope resource isn't a collection");
-            }
-            return scopedResource;
-        } 
-        
-        throw new IllegalArgumentException("Scope parameter must be empty, '.' or be a valid collection");
-
-
+        if (!scopedResource.isCollection()) {
+            throw new IllegalArgumentException("Scope resource isn't a collection");
+        }
+        return scopedResource;
     }
 
 
@@ -238,10 +229,10 @@ public class TagsController implements Controller {
     public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
         this.alternativeRepresentations = alternativeRepresentations;
     }
-    
-    public void setTagElementsProvider(
-			RepositoryTagElementsDataProvider tagElementsProvider) {
-		this.tagElementsProvider = tagElementsProvider;
-	}
+
+
+    public void setTagElementsProvider(RepositoryTagElementsDataProvider tagElementsProvider) {
+        this.tagElementsProvider = tagElementsProvider;
+    }
 
 }

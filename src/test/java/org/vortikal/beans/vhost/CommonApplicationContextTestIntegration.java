@@ -42,7 +42,7 @@ import org.vortikal.text.html.HtmlUtil;
 public class CommonApplicationContextTestIntegration extends AbstractBeanContextTestIntegration {
 
     public void testCommonConfiguration() {
-        ApplicationContext ctx = getApplicationContext(new String[] {});
+        ApplicationContext ctx = getApplicationContext(false, new String[] {});
 
         checkForBeanInConfig(ctx, "defaultMessageSource");
         ResourceBundleMessageSource resourceBundleMessageSource = (ResourceBundleMessageSource) ctx

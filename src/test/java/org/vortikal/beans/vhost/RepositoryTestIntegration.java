@@ -45,7 +45,7 @@ public class RepositoryTestIntegration extends AbstractBeanContextTestIntegratio
 
     protected void setUp() throws Exception {
         super.setUp();
-        ApplicationContext ctx = getApplicationContext("backend/resource/resource.xml",
+        ApplicationContext ctx = getApplicationContext(false, "backend/resource/resource.xml",
                 "backend/repository/repository.xml");
         repository = (Repository) ctx.getBean("repository");
     }

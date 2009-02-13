@@ -107,7 +107,7 @@ public class ResourceContextTestIntegration extends AbstractBeanContextTestInteg
         configLocations.add(configFile);
         configLocations.add("backend/repository/repository.xml");
 
-        ApplicationContext ctx = getApplicationContext(configLocations
+        ApplicationContext ctx = getApplicationContext(false, configLocations
                 .toArray(new String[configLocations.size()]));
         for (String beanDef : beanDefs) {
             assertTrue("Expected bean not found in context: " + beanDef, ctx.containsBean(beanDef));

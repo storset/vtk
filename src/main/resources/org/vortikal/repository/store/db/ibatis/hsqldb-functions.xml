@@ -28,8 +28,4 @@
     next value for vortex_tmp_session_id_seq
   </sql>
 
-  <sql id="destinationUriCopy">
-    #destUri# || substring(uri, length(#uri#) + 1)
-  </sql>
-
 </sqlMap>

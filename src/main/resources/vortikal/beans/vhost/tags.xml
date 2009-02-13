@@ -60,7 +60,7 @@
   </bean>
 
   <bean id="tags.atomHandler" 
-    class="org.vortikal.web.controller.TagsAsFeedController"
+    class="org.vortikal.web.controller.feed.TagsAsFeedController"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />

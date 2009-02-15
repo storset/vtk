@@ -2,9 +2,9 @@
 <!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
     "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
 <sqlMapConfig>
-  <sqlMap resource="org/vortikal/repository/store/db/ibatis/default-functions.xml"/>
-  <sqlMap resource="org/vortikal/repository/store/db/ibatis/postgresql-functions.xml"/>
-  <sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml"/>
-  <sqlMap resource="org/vortikal/repository/store/db/ibatis/data-reporting-sql-maps.xml"/>
+	
+	<sqlMap resource="org/vortikal/repository/store/db/ibatis/postgresql-functions.xml" />
+	<sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml" />
+	<sqlMap resource="org/vortikal/repository/store/db/ibatis/data-reporting-sql-maps.xml" />
+	
 </sqlMapConfig>
-

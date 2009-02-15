@@ -3,6 +3,60 @@
       "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
 <sqlMap>
+
+  <sql id="nextVortexResourceId">
+    nextval('vortex_resource_seq_pk')
+  </sql>
+  
+  <sql id="nextExtraPropEntryId">
+    nextval('extra_prop_entry_seq_pk')
+  </sql>
+  
+  <sql id="nextAclEntryId">
+    nextval('acl_entry_seq_pk')
+  </sql>
+
+  <sql id="nextLockId">
+    nextval('vortex_lock_seq_pk')
+  </sql>
+  
+  <sql id="nextChangelogEntryId">
+    nextval('changelog_entry_seq_pk')
+  </sql>
+  
+  <sql id="nextTempTableSessionId">
+    nextval('vortex_tmp_session_id_seq')
+  </sql>
+  
+  <sql id="destinationUriCopy">
+    #destUri# || substring(uri, length(#srcUri#) + 1)
+  </sql>
+
+  <sql id="nextVortexCommentId">
+    nextval('vortex_comment_seq_pk')
+  </sql>
+
+  <sql id="destinationDescendantUriMove">
+    #destUri# || substring(uri, length(#srcUri#) + 1)
+  </sql>
+  
+  <sql id="binaryDestinationDescendantUriMove">
+    #destUri# || substring(value, length(#srcUri#) + 1)
+  </sql>
+  
+  <insert id="insertPropertyEntry" parameterClass="java.util.Map">
+    insert into extra_prop_entry
+      (extra_prop_entry_id, resource_id, name_space, name, value
+        <isNotEmpty property="binaryContent">
+          , binary_content, binary_mimetype
+        </isNotEmpty>)
+    values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
+      #namespaceUri#, #name#, #value#
+        <isNotEmpty property="binaryContent">
+          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#,
+          #binaryMimeType#
+        </isNotEmpty>)
+  </insert>
   
   <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
     update vortex_resource
@@ -11,6 +65,23 @@
           where (vortex_resource.uri = #uri# or vortex_resource.uri like #uriWildcard# escape '@')
                  and r.prev_resource_id = vortex_resource.acl_inherited_from
   </update>
+
+  <sql id="listCommentsLimitPrepend">
+    <!-- By default, nothing is prepend to query for limiting. --> 
+  </sql>
+
+  <sql id="listCommentsLimitAppend">
+    limit #max#
+  </sql>
+
+  <sql id="dataReportingLimitPrepend">
+    <!-- By default, nothing is prepend to query for limiting. --> 
+  </sql>
+  
+  <sql id="dataReportingLimitAppend">
+    <!--  Default (supported by at least PostgreSQL and MySQL) -->
+    LIMIT #limit# OFFSET 0
+  </sql>
 
 </sqlMap>
 

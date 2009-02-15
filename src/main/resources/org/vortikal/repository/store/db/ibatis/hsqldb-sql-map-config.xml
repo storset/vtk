@@ -3,7 +3,6 @@
     "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
 <sqlMapConfig>
 
-	<sqlMap resource="org/vortikal/repository/store/db/ibatis/default-functions.xml" />
 	<sqlMap resource="org/vortikal/repository/store/db/ibatis/hsqldb-functions.xml" />
 	<sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml" />
 	

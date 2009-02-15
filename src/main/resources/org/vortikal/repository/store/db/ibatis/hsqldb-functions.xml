@@ -27,5 +27,29 @@
   <sql id="nextTempTableSessionId">
     next value for vortex_tmp_session_id_seq
   </sql>
+  
+  <sql id="destinationUriCopy">
+    <!-- XXX write sql -->
+  </sql>
+
+  <sql id="nextVortexCommentId">
+    next value for vortex_comment_seq_pk
+  </sql>
+
+  <sql id="destinationDescendantUriMove">
+    <!-- XXX write sql -->
+  </sql>
+  
+  <sql id="binaryDestinationDescendantUriMove">
+    <!-- XXX write sql -->
+  </sql>
+
+  <sql id="listCommentsLimitPrepend">
+    <!-- By default, nothing is prepend to query for limiting. --> 
+  </sql>
+  
+  <sql id="listCommentsLimitAppend">
+    <!-- XXX write sql -->
+  </sql>
 
 </sqlMap>

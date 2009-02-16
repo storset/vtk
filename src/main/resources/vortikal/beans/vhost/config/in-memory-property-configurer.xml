@@ -10,7 +10,7 @@
 				<value>classpath:vortikal-custom.properties</value>
 				<value>file://${user.home}/vortikal.properties</value>
 				<value>file://${user.home}/vrtx.properties</value>
-				<value>classpath:/org/vortikal/repository/in-memory-repository.properties</value>
+				<value>classpath:/vortikal/beans/in-memory-vortikal.properties</value>
 			</list>
 		</property>
 	</bean>

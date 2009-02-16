@@ -111,10 +111,7 @@ public class BeanContextComponentResolver
         DecoratorComponent component = this.components.get(namespace + ":" + name);
         if (this.resourceType != null) {
             Resource resource = getCurrentResource();
-            if (resource == null) {
-                component = null;
-            }
-            if (!resource.isOfType(this.resourceType)) {
+            if (resource == null || !resource.isOfType(this.resourceType)) {
                 component = null;
             }
         }

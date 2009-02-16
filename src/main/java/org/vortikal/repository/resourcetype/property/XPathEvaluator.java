@@ -197,7 +197,7 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
         if (this.trimValues && stringVal != null) {
             stringVal = stringVal.trim();
         }
-        if ("".equals(stringVal.trim())) {
+        if ("".equals(stringVal)) {
             return null;
         }
         return this.valueFactory.createValue(stringVal, type);

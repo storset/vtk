@@ -358,14 +358,6 @@
   <bean id="hasIndexFileAssertion" class="org.vortikal.web.service.IndexFileAssertion" />
 
 
-
-  <bean id="displayResourceHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
-        parent="requestLocalRepositoryAware">
-    <property name="includeLastModifiedHeader" value="true" />
-    <property name="includeEtagHeader" value="false" />
-  </bean>
-
   <bean id="expiresCacheResponseFilter" class="org.vortikal.web.filter.ExpiresCacheResponseFilter"
         parent="defaultResponseFilterCategoryBean">
     <property name="expiresPropDef" ref="expiresSecPropDef" />
@@ -380,11 +372,6 @@
     <property name="parent" ref="viewService" />
     <property name="order" value="100" />
     <property name="handler" ref="displayResourceHandler" />
-    <property name="handlerInterceptors">
-      <list>
-        <ref bean="displayResourceHandlerInterceptor" />
-      </list>
-    </property>
   </bean>
 
 

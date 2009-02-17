@@ -51,6 +51,8 @@
     parent="requestLocalRepositoryAware">
     <property name="displayProcessed" value="true" />
     <property name="viewName" value="displayHTMLResource" />
+    <property name="ignoreLastModified" value="true" />
+    <property name="ignoreLastModifiedOnCollections" value="true" />
   </bean>
 
 </beans>

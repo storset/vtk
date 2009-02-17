@@ -32,7 +32,7 @@
 </#if>
 
 <#if withForm>
-  <form name="collectionListingForm" action="${action}" method="post">
+  <form name="collectionListingForm" action="${action}" method="post" accept-charset="UTF-8">
 </#if>
 
 <table id="vrtx-directoryListing" class="directoryListing">

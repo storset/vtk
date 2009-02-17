@@ -302,8 +302,9 @@ public final class ContentCache<K, V> implements InitializingBean, DisposableBea
 
         public String toString() {
             StringBuffer sb = new StringBuffer("item: [");
-            sb.append(this.key.toString()).append(" = ");
+            sb.append(this.key.toString()).append("=");
             sb.append(this.object.getClass().getName());
+            sb.append("; timestamp=").append(this.timestamp);
             sb.append("]");
             return sb.toString();
         }

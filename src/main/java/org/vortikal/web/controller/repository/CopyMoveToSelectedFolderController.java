@@ -52,8 +52,8 @@ import org.vortikal.web.controller.CopyMoveSessionBean;
 
 
 /**
- * A controller that copies (or moves) resources from one folder to another
- * based on a set of resources stored in a session variable
+ * A controller that copies (or moves) resources from one folder to another based on a set of resources stored in a
+ * session variable
  * 
  * <p>
  * Description:
@@ -69,8 +69,7 @@ import org.vortikal.web.controller.CopyMoveSessionBean;
  * Model data published:
  * <ul>
  * <li><code>createErrorMessage</code>: errormessage
- * <li><code>errorItems</code>: an array of repository items which the
- * errormessage relates to
+ * <li><code>errorItems</code>: an array of repository items which the errormessage relates to
  * </ul>
  */
 
@@ -80,13 +79,16 @@ public class CopyMoveToSelectedFolderController implements Controller {
           private String viewName = "DEFAULT_VIEW_NAME";
           private Repository repository = null;
 
+
           public void setViewName(String viewName) {
                     this.viewName = viewName;
           }
 
+
           public final void setRepository(final Repository newRepository) {
                     this.repository = newRepository;
           }
+
 
           @SuppressWarnings("unchecked")
           public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -101,8 +103,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
                     CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(
                                         COPYMOVE_SESSION_ATTRIBUTE);
 
-                    // TODO: Should probably give some feedback when there is no
-                    // session variable, but ...
+                    // TODO: Should probably give some feedback when there is no session variable, but ...
                     if (sessionBean == null) {
                               return new ModelAndView(this.viewName, model);
                     }
@@ -120,10 +121,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
                     while (i.hasNext()) {
 
-                              // TODO: Need to construct the uri to the new file
-                              // in a
-                              // more elegant
-                              // way...
+                              // TODO: Need to construct the uri to the new file in a more elegant way...
                               Path resourceUri = Path.fromString(i.next());
                               String resourceFilename = resourceUri.getName();
 
@@ -204,6 +202,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
                     return new ModelAndView(this.viewName, model);
           }
+
 
           public static Path appendCopySuffix(Path newUri) {
                     String extension = "";

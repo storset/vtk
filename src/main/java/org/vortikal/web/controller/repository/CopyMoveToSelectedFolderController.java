@@ -50,7 +50,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.CopyMoveSessionBean;
 
-
 /**
  * A controller that copies (or moves) resources from one folder to another based on a set of resources stored in a
  * session variable
@@ -146,8 +145,9 @@ public class CopyMoveToSelectedFolderController implements Controller {
                     }
 
                 } else {
-                    if (this.repository.exists(token, newResourceUri)) {
-
+                    if (!this.repository.exists(token, newResourceUri)) {
+                        this.repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false);
+                    } else {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Trying to duplicate resource: " + newResourceUri);
                         }
@@ -158,9 +158,6 @@ public class CopyMoveToSelectedFolderController implements Controller {
                             newUri = appendCopySuffix(newUri);
                         }
                         this.repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
-
-                    } else {
-                        this.repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false);
                     }
                 }
 
@@ -174,7 +171,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
             }
         }
 
-        // A small effort to provide some form of errorhandling
+        // A small effort to provide some form of errorhandling.
         if (filesFailed.size() > 0) {
             model.put("createErrorMessage", "manage.create.copyMove.error.moveFailed");
             model.put("errorItems", filesFailed);
@@ -196,6 +193,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
     }
 
 
+    // TODO: Count parentis file-number(?)
     public static Path appendCopySuffix(Path newUri) {
         String extension = "";
         String dot = "";

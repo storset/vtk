@@ -4,9 +4,9 @@
 
 <#assign unCheckedMessage = vrtx.getMsg("tabMenu2.moveUnCheckedMessage",
          "You must check at least one element to move") />
-         
+        
 <#if createErrorMessage?exists >
-   <#assign moveError = vrtx.getMsg("${createErrorMessage}") />
+   <#assign moveError = vrtx.getMsg("${createErrorMessage}", "One or more of the resources already exists in the destination-path.") />
 </#if>
 
      <#if moveError?exists >

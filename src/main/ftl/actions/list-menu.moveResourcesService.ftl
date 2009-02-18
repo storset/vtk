@@ -4,6 +4,16 @@
 
 <#assign unCheckedMessage = vrtx.getMsg("tabMenu2.moveUnCheckedMessage",
          "You must check at least one element to move") />
+         
+<#if createErrorMessage?exists >
+   <#assign moveError = vrtx.getMsg("${createErrorMessage}") />
+</#if>
+
+     <#if moveError?exists >
+          <ul class="errors">
+               <li>${moveError}</li> 
+          </ul>
+     </#if>
 
 ${prepend}<a href="javascript:copyMoveAction('${item.url?url('ISO-8859-1')}', '${unCheckedMessage}')">${item.title}</a>${append}
 

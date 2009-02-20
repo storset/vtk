@@ -95,6 +95,7 @@ public class TextUtils {
     /**
      * Removes duplicates in a String between delimiter
      * 
+     * 10000 iterations of method gives ~0.022ms in avarage pr. iteration Old: ~0.055ms
      * 
      * @param string
      *            string in question

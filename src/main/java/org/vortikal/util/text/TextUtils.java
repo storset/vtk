@@ -30,8 +30,10 @@
  */
 package org.vortikal.util.text;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -110,12 +112,10 @@ public class TextUtils {
 
         StringBuilder noDupes = new StringBuilder();
 
-        // Remove duplicates with HashSet: StringTokenizer->HashSet
-        StringTokenizer tokens = new StringTokenizer(string.toLowerCase().trim(), stringDelimiter);
-        Set<String> set = new HashSet<String>();
-        while (tokens.hasMoreTokens()) {
-            set.add(tokens.nextToken());
-        }
+        // Remove duplicates with HashSet: String[]->List[]->HashSet
+        String temp[] = string.toLowerCase().split(stringDelimiter);
+        List<String> list = Arrays.asList(temp);
+        Set<String> set = new HashSet<String>(list);
 
         // Generate result string from HashSet
         Iterator it = set.iterator();

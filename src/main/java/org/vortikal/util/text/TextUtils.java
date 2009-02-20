@@ -93,17 +93,37 @@ public class TextUtils {
 
 
     /**
+     * Removes duplicates in a String between delimiter and return spaces and delimiter
+     * 
+     * @param string
+     *            string in question
+     * @param stringDelimiter
+     *            the splitter for the string (examples: "," "." "-" )
+     * 
+     * @return the string without duplicates and in lowercase
+     */
+    public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter) {
+        return removeDuplicatesIgnoreCase(string, stringDelimiter, false, false);
+    }
+
+
+    /**
      * Removes duplicates in a String between delimiter
      * 
      * @param string
      *            string in question
      * @param stringDelimiter
-     *            the splitter for the string ex.: ", "
+     *            the splitter for the string (examples: "," "." "-" )
+     * @param removeSpaces
+     *            remove spaces between tokens in return String
+     * @param removeDelimiter
+     *            remove delimiter between tokens in return String
      * 
      * @return the string without duplicates and in lowercase
      */
     @SuppressWarnings("unchecked")
-    public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter) {
+    public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter, boolean removeSpaces,
+            boolean removeDelimiter) {
 
         StringTokenizer tokens = new StringTokenizer(string.toLowerCase(), stringDelimiter, false);
         Set<String> set = new HashSet<String>(tokens.countTokens() + 10);
@@ -112,9 +132,14 @@ public class TextUtils {
         StringBuilder noDupes = new StringBuilder();
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken().trim();
-            if (set.add(token)) { // If token can be added to HashSet = no duplicate
+            if (set.add(token)) { // If token can be added to HashSet = not duplicate
                 if (count++ > 0) {
-                    noDupes.append(stringDelimiter + " ");
+                    if (!removeDelimiter) {
+                        noDupes.append(stringDelimiter);
+                    }
+                    if (!removeSpaces) {
+                        noDupes.append(" ");
+                    }
                 }
                 noDupes.append(token);
             }

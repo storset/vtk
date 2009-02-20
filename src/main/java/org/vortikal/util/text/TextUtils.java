@@ -133,13 +133,13 @@ public class TextUtils {
      *            remove spaces between tokens in return String
      * @param removeDelimiter
      *            remove delimiter between tokens in return String
-     * @param returnCapitalizedWords
-     *            return capitalized words between delimiter
+     * @param capitalizeWords
+     *            capitalize words between delimiter
      * 
      * @return the lowercase string without duplicates
      */
     public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter, boolean removeSpaces,
-            boolean removeDelimiter, boolean returnCapitalizedWords) {
+            boolean removeDelimiter, boolean capitalizeWords) {
 
         StringTokenizer tokens = new StringTokenizer(string.toLowerCase(), stringDelimiter, false);
         Set<String> set = new HashSet<String>(tokens.countTokens() + 10);
@@ -157,7 +157,7 @@ public class TextUtils {
                         noDupes.append(" ");
                     }
                 }
-                if (returnCapitalizedWords) {
+                if (capitalizeWords) {
                     token = capitalizeString(token);
                 }
                 noDupes.append(token);

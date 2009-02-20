@@ -93,17 +93,32 @@ public class TextUtils {
 
 
     /**
-     * Removes duplicates in a String between delimiter and return spaces and delimiter
+     * Removes duplicates in a String between delimiter and capitalize, and return spaces and delimiter
      * 
      * @param string
      *            string in question
      * @param stringDelimiter
      *            the splitter for the string (examples: "," "." "-" )
      * 
-     * @return the string without duplicates and in lowercase
+     * @return the lowercase but capitalized string without duplicates
+     */
+    public static String removeDuplicatesIgnoreCaseCapitalized(String string, String stringDelimiter) {
+        return removeDuplicatesIgnoreCase(string, stringDelimiter, false, false, true);
+    }
+
+
+    /**
+     * Removes duplicates in a String between delimiter, and return spaces and delimiter
+     * 
+     * @param string
+     *            string in question
+     * @param stringDelimiter
+     *            the splitter for the string (examples: "," "." "-" )
+     * 
+     * @return the lowercase string without duplicates
      */
     public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter) {
-        return removeDuplicatesIgnoreCase(string, stringDelimiter, false, false);
+        return removeDuplicatesIgnoreCase(string, stringDelimiter, false, false, false);
     }
 
 
@@ -119,11 +134,10 @@ public class TextUtils {
      * @param removeDelimiter
      *            remove delimiter between tokens in return String
      * 
-     * @return the string without duplicates and in lowercase
+     * @return the string without duplicates
      */
-    @SuppressWarnings("unchecked")
     public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter, boolean removeSpaces,
-            boolean removeDelimiter) {
+            boolean removeDelimiter, boolean returnCapitalizedWords) {
 
         StringTokenizer tokens = new StringTokenizer(string.toLowerCase(), stringDelimiter, false);
         Set<String> set = new HashSet<String>(tokens.countTokens() + 10);
@@ -141,9 +155,31 @@ public class TextUtils {
                         noDupes.append(" ");
                     }
                 }
+                if (returnCapitalizedWords) {
+                    token = capitalizeString(token);
+                }
                 noDupes.append(token);
             }
         }
         return noDupes.toString();
+    }
+
+
+    /**
+     * Capitalize words in a String
+     * 
+     * @param string
+     *            string in question
+     * 
+     * @return the capitalized string
+     */
+    public static String capitalizeString(String string) {
+        StringTokenizer words = new StringTokenizer(string, " ", true);
+        StringBuilder capitalizedWords = new StringBuilder();
+        while (words.hasMoreTokens()) {
+            String word = words.nextToken();
+            capitalizedWords.append(word.substring(0, 1).toUpperCase() + word.substring(1));
+        }
+        return capitalizedWords.toString();
     }
 }

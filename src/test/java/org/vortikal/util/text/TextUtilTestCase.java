@@ -4,29 +4,40 @@ import junit.framework.TestCase;
 
 public class TextUtilTestCase extends TestCase {
 
-    // Test the removeDuplicates method in TextUtil class.
     public void testRemoveDuplicatesIgnoreCase() {
 
         String testTags = "Forskning, Røed Ødegård, forskning, FoRsKning, forskNING";
 
-        String expectedTagsWithSpaces = "forskning, røed ødegård";
-        String expectedTagsWithoutSpaces = "forskning,røed ødegård";
-        String expectedTagsWithoutDelimiter = "forskning røed ødegård";
-        String expectedTagsWithoutSpacesAndDelimiter = "forskningrøed ødegård";
+        String expectedTagsWithSpacesNoCapitalize = "forskning, røed ødegård";
+        String expectedTagsWithSpaces = "Forskning, Røed Ødegård";
+        String expectedTagsWithoutSpaces = "Forskning,Røed Ødegård";
+        String expectedTagsWithoutDelimiter = "Forskning Røed Ødegård";
+        String expectedTagsWithoutSpacesAndDelimiter = "ForskningRøed Ødegård";
 
-        String test0 = TextUtils.removeDuplicatesIgnoreCase(testTags, ",");
-        assertEquals(expectedTagsWithSpaces, test0);
+        // Overload methods
+        String test = TextUtils.removeDuplicatesIgnoreCase(testTags, ",");
+        assertEquals(expectedTagsWithSpacesNoCapitalize, test);
 
-        String test1 = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", false, false);
-        assertEquals(expectedTagsWithSpaces, test1);
+        test = TextUtils.removeDuplicatesIgnoreCaseCapitalized(testTags, ",");
+        assertEquals(expectedTagsWithSpaces, test);
 
-        String test2 = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", true, false);
-        assertEquals(expectedTagsWithoutSpaces, test2);
+        // Overloaded method
+        test = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", false, false, true);
+        assertEquals(expectedTagsWithSpaces, test);
 
-        String test3 = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", false, true);
-        assertEquals(expectedTagsWithoutDelimiter, test3);
+        test = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", true, false, true);
+        assertEquals(expectedTagsWithoutSpaces, test);
 
-        String test4 = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", true, true);
-        assertEquals(expectedTagsWithoutSpacesAndDelimiter, test4);
+        test = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", false, true, true);
+        assertEquals(expectedTagsWithoutDelimiter, test);
+
+        test = TextUtils.removeDuplicatesIgnoreCase(testTags, ",", true, true, true);
+        assertEquals(expectedTagsWithoutSpacesAndDelimiter, test);
+
+        // Capitalize alone
+        String expectedCapitalized = "These Words Needs To Be Capitalized";
+
+        test = TextUtils.capitalizeString("these words needs to be capitalized");
+        assertEquals(expectedCapitalized, test);
     }
 }

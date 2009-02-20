@@ -133,8 +133,10 @@ public class TextUtils {
      *            remove spaces between tokens in return String
      * @param removeDelimiter
      *            remove delimiter between tokens in return String
+     * @param returnCapitalizedWords
+     *            return capitalized words between delimiter
      * 
-     * @return the string without duplicates
+     * @return the lowercase string without duplicates
      */
     public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter, boolean removeSpaces,
             boolean removeDelimiter, boolean returnCapitalizedWords) {

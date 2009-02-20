@@ -95,10 +95,6 @@ public class TextUtils {
     /**
      * Removes duplicates in a String between delimiter
      * 
-     * 10.000 iterations of method gives ~0.022ms in avarage pr. iteration. Old: ~0.055ms.
-     * 
-     * iterations++ = time--: 100.000 = ~0.0046ms, 1.000.000 = ~0.0031ms, 10.000.000 = ~0.0027ms = 2.7ns
-     * 
      * @param string
      *            string in question
      * @param stringDelimiter

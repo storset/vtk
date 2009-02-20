@@ -123,7 +123,7 @@ public class TextUtils {
 
         while (it.hasNext()) {
             if (i >= 1) {
-                noDupes.append(", ");
+                noDupes.append(stringDelimiter);
             }
             noDupes.append(it.next());
             i++;

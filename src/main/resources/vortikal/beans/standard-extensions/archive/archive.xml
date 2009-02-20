@@ -1,116 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  <bean id="manage.createArchiveService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" /> 
-    <property name="order" value="-997" />
-    <property name="categories">
-      <set>
-        <value>resourceMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">999</value></entry>
-      </map>
-    </property>
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="create-archive" />
-        </bean>
-        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
-          <property name="username" value="root@localhost"/>
-        </bean>
-        <ref bean="resourceInCollection" />
-        <ref bean="bindPermissionAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="manage.createArchiveHandler" />
-  </bean>
-
-  <bean id="manage.createArchiveHandler" 
-        class="org.vortikal.web.controller.repository.copy.CopyController"
-        parent="requestLocalRepositoryAware">
-    <property name="extension" value=".jar" />
-    <property name="parentViewOnSuccess" value="true" />
-    <property name="copyAction" ref="manage.createArchiveAction" />
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirectToManage" />
-    <property name="cancelView" value="redirectToManage" />
-    <property name="commandClass" value="org.vortikal.web.controller.repository.copy.CopyCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
-        parent="requestLocalRepositoryAware" />
-    </property>
-  </bean>
-
-  <bean id="manage.createArchiveAction" class="org.vortikal.web.controller.repository.copy.CreateArchiveAction">
-    <property name="repository" ref="repository" />
-    <property name="archiver" ref="manage.archiver" />
-    <property name="tempDir" value="${repository.tempDir}" />
-  </bean>
-
-
-  
-  <bean id="manage.expandArchiveService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" /> 
-    <property name="order" value="-997" />
-    <property name="categories">
-      <set>
-        <value>resourceMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">999</value></entry>
-      </map>
-    </property>
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="expand-archive" />
-        </bean>
-        <bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
-          <property name="username" value="root@localhost"/>
-        </bean>
-        <ref bean="contentTypeMatchesJar" />
-        <ref bean="bindPermissionAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="manage.expandArchiveHandler" />
-  </bean>
-
-
-  <bean id="manage.expandArchiveHandler" 
-        class="org.vortikal.web.controller.repository.copy.CopyController"
-        parent="requestLocalRepositoryAware">
-    <!--property name="extension" value="" /-->
-    <property name="parentViewOnSuccess" value="true" />
-    <property name="copyAction" ref="manage.expandArchiveAction" />
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirectToManage" />
-    <property name="cancelView" value="redirectToManage" />
-    <property name="commandClass" value="org.vortikal.web.controller.repository.copy.CopyCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
-        parent="requestLocalRepositoryAware" />
-    </property>
-  </bean>
-
-  <bean id="manage.expandArchiveAction" class="org.vortikal.web.controller.repository.copy.ExpandArchiveAction">
-    <property name="repository" ref="repository" />
-    <property name="archiver" ref="manage.archiver" />
-  </bean>
-
-
-  <bean id="manage.archiver" class="org.vortikal.util.repository.ResourceArchiver">
-    <property name="repository" ref="repository" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="tempDir" value="${repository.tempDir}" />
-    <property name="principalFactory" ref="principalFactory" />
-  </bean>
-
+	
+	<bean id="manage.createArchiveService" class="org.vortikal.web.service.ServiceImpl">
+		<property name="parent" ref="manageService" />
+		<property name="order" value="-997" />
+		<property name="categories">
+			<set>
+				<value>resourceMenu</value>
+			</set>
+		</property>
+		<property name="attributes">
+			<map>
+				<entry key="resourceMenuOrder">
+					<value type="java.lang.Integer">999</value>
+				</entry>
+			</map>
+		</property>
+		<property name="assertions">
+			<list>
+				<bean class="org.vortikal.web.service.RequestParameterAssertion">
+					<property name="parameterName" value="action" />
+					<property name="parameterValue" value="create-archive" />
+				</bean>
+				<bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+					<property name="username" value="root@localhost" />
+				</bean>
+				<ref bean="resourceInCollection" />
+				<ref bean="bindPermissionAssertion" />
+			</list>
+		</property>
+		<property name="handler" ref="manage.createArchiveHandler" />
+	</bean>
+	
+	<bean id="manage.createArchiveHandler"
+		class="org.vortikal.web.controller.repository.copy.CopyController"
+		parent="requestLocalRepositoryAware">
+		<property name="extension" value=".jar" />
+		<property name="parentViewOnSuccess" value="true" />
+		<property name="copyAction" ref="manage.createArchiveAction" />
+		<property name="formView" value="admin" />
+		<property name="successView" value="redirectToManage" />
+		<property name="cancelView" value="redirectToManage" />
+		<property name="commandClass"
+			value="org.vortikal.web.controller.repository.copy.CopyCommand" />
+		<property name="validator">
+			<bean
+				class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
+				parent="requestLocalRepositoryAware" />
+		</property>
+	</bean>
+	
+	<bean id="manage.createArchiveAction"
+		class="org.vortikal.web.controller.repository.copy.CreateArchiveAction">
+		<property name="repository" ref="repository" />
+		<property name="archiver" ref="manage.archiver" />
+		<property name="tempDir" value="${repository.tempDir}" />
+	</bean>
+	
+	<bean id="manage.expandArchiveService" class="org.vortikal.web.service.ServiceImpl">
+		<property name="parent" ref="manageService" />
+		<property name="order" value="-997" />
+		<property name="categories">
+			<set>
+				<value>resourceMenu</value>
+			</set>
+		</property>
+		<property name="attributes">
+			<map>
+				<entry key="resourceMenuOrder">
+					<value type="java.lang.Integer">999</value>
+				</entry>
+			</map>
+		</property>
+		<property name="assertions">
+			<list>
+				<bean class="org.vortikal.web.service.RequestParameterAssertion">
+					<property name="parameterName" value="action" />
+					<property name="parameterValue" value="expand-archive" />
+				</bean>
+				<bean class="org.vortikal.web.service.PrincipalQualifiedNameAssertion">
+					<property name="username" value="root@localhost" />
+				</bean>
+				<ref bean="contentTypeMatchesJar" />
+				<ref bean="bindPermissionAssertion" />
+			</list>
+		</property>
+		<property name="handler" ref="manage.expandArchiveHandler" />
+	</bean>
+	
+	<bean id="manage.expandArchiveHandler"
+		class="org.vortikal.web.controller.repository.copy.CopyController"
+		parent="requestLocalRepositoryAware">
+    	<property name="parentViewOnSuccess" value="true" />
+		<property name="copyAction" ref="manage.expandArchiveAction" />
+		<property name="formView" value="admin" />
+		<property name="successView" value="redirectToManage" />
+		<property name="cancelView" value="redirectToManage" />
+		<property name="commandClass"
+			value="org.vortikal.web.controller.repository.copy.CopyCommand" />
+		<property name="validator">
+			<bean
+				class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
+				parent="requestLocalRepositoryAware" />
+		</property>
+	</bean>
+	
+	<bean id="manage.expandArchiveAction"
+		class="org.vortikal.web.controller.repository.copy.ExpandArchiveAction">
+		<property name="repository" ref="repository" />
+		<property name="archiver" ref="manage.archiver" />
+	</bean>
+	
+	<bean id="manage.archiver" class="org.vortikal.util.repository.ResourceArchiver">
+		<property name="repository" ref="repository" />
+		<property name="resourceTypeTree" ref="resourceTypeTree" />
+		<property name="tempDir" value="${repository.tempDir}" />
+		<property name="principalFactory" ref="principalFactory" />
+		<property name="principalManager" ref="principalManager" />
+	</bean>
+	
 </beans>

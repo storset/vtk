@@ -30,33 +30,37 @@
  */
 package org.vortikal.util.text;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class TextUtils {
-    
 
     /**
-     * Extracts a field from a string using the character
-     * <code>,</code> as field delimiter.
-     *
-     * @param header the string in question
-     * @param name the name of the field wanted
-     * @return the value of the field, or <code>null</code> if not
-     * found
+     * Extracts a field from a string using the character <code>,</code> as field delimiter.
+     * 
+     * @param header
+     *            the string in question
+     * @param name
+     *            the name of the field wanted
+     * @return the value of the field, or <code>null</code> if not found
      */
     public static String extractField(String string, String name) {
         return extractField(string, name, ",");
     }
-    
+
 
     /**
      * Extracts a field from a string using a given field delimiter.
-     *
-     * @param the string in question
-     * @param name the name of the field wanted
-     * @param fieldDelimiter the field delimiter
-     * @return the value of the field, or <code>null</code> if not
-     * found
+     * 
+     * @param the
+     *            string in question
+     * @param name
+     *            the name of the field wanted
+     * @param fieldDelimiter
+     *            the field delimiter
+     * @return the value of the field, or <code>null</code> if not found
      */
     public static String extractField(String string, String name, String fieldDelimiter) {
 
@@ -65,8 +69,7 @@ public class TextUtils {
             return null;
         }
 
-        StringTokenizer tokenizer = 
-            new StringTokenizer(string.substring(pos).trim(), fieldDelimiter);
+        StringTokenizer tokenizer = new StringTokenizer(string.substring(pos).trim(), fieldDelimiter);
 
         while (tokenizer.hasMoreTokens()) {
 
@@ -84,8 +87,48 @@ public class TextUtils {
                 if (startPos > 0) {
                     return token.substring(startPos);
                 }
-            }   
+            }
         }
         return null;
+    }
+
+
+    /**
+     * Removes duplicates in a String between delimiter (without sorting)
+     * 
+     * 10000 iterations of this method gives avarage ~0.055ms pr. iteration (dev laptop)
+     * 
+     * @param string
+     *            string in question
+     * @param stringDelimiter
+     *            the splitter for the string ex.: ", "
+     * 
+     * @return the string without duplicates
+     */
+    @SuppressWarnings("unchecked")
+    public static String removeDuplicates(String string, String stringDelimiter) {
+
+        StringBuilder noDupes = new StringBuilder();
+
+        // Remove duplicates with HashSet: StringTokenizer->HashSet
+        StringTokenizer tokens = new StringTokenizer(string.toLowerCase().trim(), stringDelimiter);
+        Set<String> set = new HashSet<String>();
+        while (tokens.hasMoreTokens()) {
+            set.add(tokens.nextToken());
+        }
+
+        // Generate result string from HashSet
+        Iterator it = set.iterator();
+        int i = 0;
+
+        while (it.hasNext()) {
+            if (i >= 1) {
+                noDupes.append(", ");
+            }
+            noDupes.append(it.next());
+            i++;
+        }
+        return noDupes.toString();
+
     }
 }

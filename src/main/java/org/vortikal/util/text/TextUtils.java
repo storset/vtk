@@ -30,10 +30,7 @@
  */
 package org.vortikal.util.text;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -96,39 +93,33 @@ public class TextUtils {
 
 
     /**
-     * Removes duplicates in a String between delimiter (without sorting)
+     * Removes duplicates in a String between delimiter
      * 
-     * 10000 iterations of this method gives avarage ~0.055ms pr. iteration (dev laptop)
      * 
      * @param string
      *            string in question
      * @param stringDelimiter
      *            the splitter for the string ex.: ", "
      * 
-     * @return the string without duplicates
+     * @return the string without duplicates and in lowercase
      */
     @SuppressWarnings("unchecked")
-    public static String removeDuplicates(String string, String stringDelimiter) {
+    public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter) {
 
+        StringTokenizer tokens = new StringTokenizer(string.toLowerCase(), stringDelimiter, false);
+        Set<String> set = new HashSet<String>(tokens.countTokens() + 10);
+
+        int count = 0;
         StringBuilder noDupes = new StringBuilder();
-
-        // Remove duplicates with HashSet: String->String[]->List->HashSet
-        String temp[] = string.toLowerCase().split(stringDelimiter);
-        List<String> list = Arrays.asList(temp);
-        Set<String> set = new HashSet<String>(list);
-
-        // Generate result string from HashSet
-        Iterator it = set.iterator();
-        int i = 0;
-
-        while (it.hasNext()) {
-            if (i >= 1) {
-                noDupes.append(stringDelimiter);
+        while (tokens.hasMoreTokens()) {
+            String token = tokens.nextToken().trim();
+            if (set.add(token)) {
+                if (count++ > 0) {
+                    noDupes.append(stringDelimiter + " ");
+                }
+                noDupes.append(token);
             }
-            noDupes.append(it.next());
-            i++;
         }
         return noDupes.toString();
-
     }
 }

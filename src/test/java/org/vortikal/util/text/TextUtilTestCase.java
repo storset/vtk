@@ -4,14 +4,14 @@ import junit.framework.TestCase;
 
 public class TextUtilTestCase extends TestCase {
 
-    public void testRemoveDuplicates() {
+    // Test the removeDuplicates method in TextUtil class.
+    public void testRemoveDuplicatesIgnoreCase() {
 
         String testTags = "Forskning, Røed Ødegård, forskning, FoRsKning, forskNING";
-        String expectedTags = "røed ødegård, forskning";
+        String expectedTags = "forskning, røed ødegård";
 
-        String test = TextUtils.removeDuplicates(testTags, ", ");
+        String test = TextUtils.removeDuplicatesIgnoreCase(testTags, ",");
 
         assertEquals(expectedTags, test);
-
     }
 }

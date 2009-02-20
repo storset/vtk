@@ -113,7 +113,7 @@ public class TextUtils {
         StringBuilder noDupes = new StringBuilder();
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken().trim();
-            if (set.add(token)) {
+            if (set.add(token)) { // If token can be added to HashSet = no duplicate
                 if (count++ > 0) {
                     noDupes.append(stringDelimiter + " ");
                 }

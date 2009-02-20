@@ -52,6 +52,7 @@
     <result property="name" column="name" />
     <result property="namespaceUri" column="name_space" />
     <result property="value" column="value" />
+    <result property="binary" column="is_binary" />
   </resultMap>
 
 
@@ -355,7 +356,8 @@
 
   <select id="loadPropertiesForResource" parameterClass="int" resultMap="Property">
     select
-      p.*
+      p.*,
+      coalesce(length(p.binary_content), 0) as is_binary
     from extra_prop_entry p
     where resource_id = #value#
     order by p.extra_prop_entry_id
@@ -365,7 +367,8 @@
   <select id="loadPropertiesForChildren" parameterClass="java.util.Map"
           resultMap="Property">
     select
-      p.*
+      p.*,
+      coalesce(length(p.binary_content), 0) as is_binary
     from extra_prop_entry p
     where p.resource_id in
       (select resource_id from vortex_resource
@@ -378,11 +381,11 @@
   </resultMap>
   
   <select id="selectBinaryPropertyEntry" parameterClass="java.util.Map" resultMap="BinaryStream">
-    select binary_content from extra_prop_entry where name = #binaryName# and value = #binaryRef#
+    select binary_content from extra_prop_entry where extra_prop_entry_id = #binaryRef#
   </select>
   
   <select id="selectBinaryMimeTypeEntry" parameterClass="java.util.Map" resultClass="string">
-    select binary_mimetype from extra_prop_entry where name = #binaryName# and value = #binaryRef#
+    select binary_mimetype from extra_prop_entry where extra_prop_entry_id = #binaryRef#
   </select>
 
   <insert id="copyProperties" parameterClass="java.util.Map">

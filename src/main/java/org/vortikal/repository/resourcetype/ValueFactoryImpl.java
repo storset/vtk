@@ -145,24 +145,40 @@ public class ValueFactoryImpl implements ValueFactory {
         case BINARY:
             // Don't fetch any of the binary content until 
             // it's specifically needed
-            return new BinaryValue(stringValue);
+            return new BinaryValue(new ValueRefImpl(this.binaryDao, stringValue));
         }
 
         throw new IllegalArgumentException("Cannot convert '" + stringValue + "' to unknown type '"
                 + type + "'");
 
     }
+    
+    private class ValueRefImpl implements BinaryValue.ValueRef {
 
+        private BinaryContentDataAccessor dao;
+        private String objRef;
+        
+        public ValueRefImpl(BinaryContentDataAccessor dao, String objRef) {
+            this.dao = dao;
+            this.objRef = objRef;
+        }
 
-    public ContentStream getBinaryStream(String binaryName, String binaryRef) {
-        return this.binaryDao.getBinaryStream(binaryName, binaryRef);
+        public ContentStream getValue() {
+            return this.dao.getBinaryStream(this.objRef);
+        }
+        
+        public String getContentType() {
+            return this.dao.getBinaryMimeType(this.objRef);
+        }
+
+        public String getID() {
+            return this.objRef;
+        }
+
+        public String toString() {
+            return "ref#" + this.getID();
+        }
     }
-
-
-    public String getBinaryMimeType(String binaryName, String binaryRef) {
-        return this.binaryDao.getBinaryMimeType(binaryName, binaryRef);
-    }
-
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
 

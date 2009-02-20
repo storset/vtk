@@ -94,7 +94,7 @@ public interface Property extends Cloneable {
     
     public Type getType();
     
-    public void setBinaryValue(byte[] binary, String binaryRef, String binaryMimeType) throws ValueFormatException;
+    public void setBinaryValue(byte[] binary, String binaryMimeType) throws ValueFormatException;
 
     public ContentStream getBinaryStream() throws IllegalOperationException;
     

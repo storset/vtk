@@ -32,6 +32,7 @@ package org.vortikal.repository.store.db;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -950,16 +951,15 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                 Value value = property.getValue();
                                 if (PropertyType.Type.BINARY.equals(value.getType())) {
                                     BinaryValue binaryValue = (BinaryValue) value;
-                                	parameters.put("value", binaryValue.getBinaryRef());
-                                	parameters.put("binaryContent", binaryValue.getBinaryValue());
-                                	parameters.put("binaryMimeType", binaryValue.getBinaryMimeType());
+                                	parameters.put("value", "#binary");
+                                	parameters.put("binaryContent", binaryValue.getContentStream());
+                                	parameters.put("binaryMimeType", binaryValue.getContentType());
                                 } else {
                                 	parameters.put("value", value.getNativeStringRepresentation());
                                 }
                                 executor.update(batchSqlMap, parameters);
                             }
                         }
-                    	
                     }
                     executor.executeBatch();
                     return null;
@@ -982,25 +982,39 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Map<String, Object> propEntry: propertyList) {
 
             SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
+            prop.propID = propEntry.get("id");
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
             prop.name = (String) propEntry.get("name");
-            prop.resourceId = ((Integer) propEntry.get("resourceId")).intValue();
-            
+            prop.resourceId = (Integer) propEntry.get("resourceId");
+            Object binary = propEntry.get("binary");
+            if (binary instanceof BigDecimal) {
+                prop.binary = !((BigDecimal) binary).equals(BigDecimal.ZERO);
+            } else {
+                prop.binary = (Integer) binary != 0;
+            }
             List<String> values = propMap.get(prop);
             if (values == null) {
                 values = new ArrayList<String>();
                 prop.values = values;
                 propMap.put(prop, values);
             }
-            values.add((String) propEntry.get("value"));
+            if (prop.binary) {
+                values.add(prop.propID.toString());
+            } else {
+                values.add((String) propEntry.get("value"));
+            }
         }
 
         for (SqlDaoUtils.PropHolder prop: propMap.keySet()) {
             
             ResourceImpl r = resourceMap.get(prop.resourceId);
-
-            r.createProperty(prop.namespaceUri, prop.name, 
-                    prop.values.toArray(new String[]{}));
+            if (prop.binary) {
+                r.createProperty(prop.namespaceUri, prop.name,
+                        new String[]{prop.propID.toString()});
+            } else {
+                r.createProperty(prop.namespaceUri, prop.name, 
+                        prop.values.toArray(new String[prop.values.size()]));
+            }
         }
     }
     
@@ -1176,7 +1190,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 			while ((i = in.read()) != -1) {
 				out.write(i);
 			}
-			prop.setBinaryValue(out.toByteArray(), resourceUri, prop.getBinaryMimeType());
+			prop.setBinaryValue(out.toByteArray(), prop.getBinaryMimeType());
 		} catch (Exception e) {
 			logger.error("Colud not read binary stream for property " + prop.getDefinition().getName(), e);
 		}

@@ -30,57 +30,74 @@
  */
 package org.vortikal.repository.resourcetype.value;
 
-import java.util.Arrays;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
-import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public final class BinaryValue extends Value {
 
-    private byte[] binaryValue;
-    private String binaryRef;
-    private String binaryMimeType;
-
-
-    public BinaryValue(byte[] binaryValue, String binaryRef, String binaryMimeType) {
-        this.binaryValue = binaryValue;
-        this.binaryRef = binaryRef;
-        this.binaryMimeType = binaryMimeType;
-        this.type = PropertyType.Type.BINARY;
+    private byte[] buffer;
+    private String contentType;
+    private ValueRef valueRef;
+    
+    public interface ValueRef {
+        public String getID();
+        public String getContentType();
+        public ContentStream getValue();
+    }
+    
+    // called from repo
+    public BinaryValue(ValueRef value) {
+        this.valueRef = value;
+        this.contentType = null;
+        this.buffer = null;
+    }
+    
+    // called from prop-evaluator
+    public BinaryValue(byte[] buffer, String contentType) {
+        this.buffer = buffer;
+        this.contentType = contentType;
     }
 
-
-    public BinaryValue(String binaryRef) {
-        this(new byte[0], binaryRef, "");
+    public ContentStream getContentStream() {
+        if (this.buffer != null) {
+            InputStream is = new ByteArrayInputStream(this.buffer);
+            return new ContentStream(is, this.buffer.length);
+        } else {
+            return this.valueRef.getValue();
+        }
     }
-
-
-    public byte[] getBinaryValue() {
-        return this.binaryValue;
+    
+    public String getContentType() {
+        if (this.buffer != null) {
+            return this.contentType;
+        } else {
+            return this.valueRef.getContentType();
+        }
     }
-
-
-    public String getBinaryMimeType() {
-        return this.binaryMimeType;
-    }
-
-
-    public String getBinaryRef() {
-        return this.binaryRef;
-    }
-
 
     @Override
-    public Object clone() {
-        return new BinaryValue(this.binaryValue, this.binaryRef, this.binaryMimeType);
+    public Type getType() {
+        return Type.BINARY;
     }
 
+    
+    @Override
+    public Object clone() {
+        if (this.buffer != null) {
+            return new BinaryValue(this.buffer, this.contentType);
+        } else {
+            return new BinaryValue(this.valueRef);
+        }
+    }
 
     @Override
     public Object getObjectValue() {
-        return this.binaryRef;
+        return this.buffer;
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -93,19 +110,34 @@ public final class BinaryValue extends Value {
         }
 
         BinaryValue v = (BinaryValue) obj;
-        return Arrays.equals(this.binaryValue, v.getBinaryValue());
+        if (this.buffer == null) {
+            if (v.buffer != null) {
+                return false;
+            }
+            return this.valueRef.equals(v.valueRef);
+        }
+        if (v.buffer == null) {
+            return false;
+        }
+        return this.buffer.length == v.buffer.length;
     }
 
 
     @Override
     public int hashCode() {
-        return this.binaryValue.hashCode();
+        return this.buffer.hashCode();
     }
 
 
     @Override
+    public String getNativeStringRepresentation() {
+        return this.valueRef.getID();
+    }
+    
+    @Override
     public String toString() {
-        return this.binaryRef + ", mimetype: " + this.binaryMimeType;
+        return "binary#buffer:" + this.buffer + ",ref:" 
+        + this.valueRef + ",type:" + this.contentType;
     }
 
 }

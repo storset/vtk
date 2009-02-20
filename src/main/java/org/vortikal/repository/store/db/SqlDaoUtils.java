@@ -72,6 +72,8 @@ class SqlDaoUtils {
         String name = "";
         int type;
         int resourceId;
+        Object propID = null;
+        boolean binary = false;
         List<String> values;
         
         public boolean equals(Object object) {
@@ -91,11 +93,14 @@ class SqlDaoUtils {
         }
         
         public int hashCode() {
-            if (this.namespaceUri == null) {
-                return this.name.hashCode() + this.resourceId;
+            int hashCode = this.name.hashCode() + this.resourceId;
+            if (this.namespaceUri != null) {
+                hashCode += this.namespaceUri.hashCode();
             }
-            return this.namespaceUri.hashCode() 
-                 + this.name.hashCode() + this.resourceId;
+            if (this.propID != null) {
+                hashCode += this.propID.hashCode();
+            }
+            return hashCode;
         }
     }
 

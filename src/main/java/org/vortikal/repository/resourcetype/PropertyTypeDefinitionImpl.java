@@ -39,7 +39,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
@@ -352,14 +351,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.defaultValueSeparator;
     }
     
-    public ContentStream getBinaryStream(String binaryRef) {
-    	return this.valueFactory.getBinaryStream(this.getName(), binaryRef);
-    }
-    
-    public String getBinaryMimeType(String binaryRef) {
-    	return this.valueFactory.getBinaryMimeType(this.getName(), binaryRef);
-    }
-
     public void setValueSeparators(Map<String, ValueSeparator> valueSeparators) {
         this.valueSeparators = valueSeparators;
     }

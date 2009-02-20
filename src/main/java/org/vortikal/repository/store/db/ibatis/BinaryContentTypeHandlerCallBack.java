@@ -38,13 +38,77 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 	}
 
 	public void setParameter(ParameterSetter setter, Object parameter) throws SQLException {
-		Blob blob = new BinaryValueBlob((byte[]) parameter);
+		Blob blob = new ContentStreamBlob((ContentStream) parameter);
 		setter.setBlob(blob);
 	}
 
 	public Object valueOf(String s) {
 		return null;
 	}
+
+	
+    public class ContentStreamBlob implements Blob {
+
+        private ContentStream stream = null;
+
+        public ContentStreamBlob(ContentStream stream) {
+            this.stream = stream;
+        }
+
+        public void free() throws SQLException {
+        }
+
+        public InputStream getBinaryStream() throws SQLException {
+            return this.stream.getStream();
+        }
+
+        public InputStream getBinaryStream(long pos, long length) throws SQLException {
+            throw new IllegalStateException("TODO: implement getBinaryStream(pos, length)");
+        }
+
+        public byte[] getBytes(long pos, int length) throws SQLException {
+            throw new IllegalStateException("TODO: implement getBytes(pos, length)");
+        }
+
+        public long length() throws SQLException {
+            return this.stream.getLength();
+        }
+
+        public long position(byte[] pattern, long start) throws SQLException {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        public long position(Blob pattern, long start) throws SQLException {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        public OutputStream setBinaryStream(long pos) throws SQLException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public int setBytes(long pos, byte[] bytes) throws SQLException {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        public void truncate(long len) throws SQLException {
+            // TODO Auto-generated method stub
+
+        }
+        
+        private byte[] getSubset(int pos, int length) throws SQLException {
+            throw new IllegalStateException("TODO: implement getSubset(pos, length)");
+        }
+    }
+	
 	
 	public class BinaryValueBlob implements Blob {
 

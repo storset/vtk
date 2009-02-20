@@ -33,7 +33,6 @@ package org.vortikal.repository.resourcetype;
 import java.util.Locale;
 import java.util.Map;
 
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
@@ -129,15 +128,4 @@ public interface PropertyTypeDefinition {
      */
     public Property createProperty();
     
-    /**
-     * Get a wrapper object (BinaryStream) for the binary content of this property
-     * Wrapper contains stream and length
-     * 
-     * @param binaryRef The reference to the binary content
-     * @return Stream holding the binary content
-     */
-    public ContentStream getBinaryStream(String binaryRef);
-    
-    public String getBinaryMimeType(String binaryRef);
-
 }

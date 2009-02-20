@@ -37,7 +37,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
@@ -214,13 +213,4 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     public ValueSeparator getValueSeparator(String format) {
         return this.overriddenPropDef.getValueSeparator(format);
     }
-    
-    public ContentStream getBinaryStream(String binaryRef) {
-    	return this.overriddenPropDef.getBinaryStream(binaryRef);
-    }
-    
-    public String getBinaryMimeType(String binaryRef) {
-    	return this.overriddenPropDef.getBinaryMimeType(binaryRef);
-    }
-
 }

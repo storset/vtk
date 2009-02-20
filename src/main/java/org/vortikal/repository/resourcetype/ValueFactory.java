@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
@@ -58,21 +57,4 @@ public interface ValueFactory {
      */
     public Value createValue(String stringValue, Type type) throws ValueFormatException;
     
-    /**
-     * Get a stream for the binary content of a property
-     * 
-     * @param binaryName The name of the binary content
-     * @param binaryRef The reference to the binary content
-     * @return Stream holding the binary content
-     */
-    public ContentStream getBinaryStream(String binaryName, String binaryRef);
-    
-    /**
-     * Get the binary mimetype for the binary content of a property
-     * 
-     * @param binaryName The name of the binary content
-     * @param binaryRef The reference to the binary content
-     * @return Stream holding the binary content
-     */
-    public String getBinaryMimeType(String binaryName, String binaryRef);
 }

@@ -86,8 +86,7 @@ public class ThumbnailEvaluator implements ContentModificationPropertyEvaluator 
             // TODO lossy-compression -> jpeg
             String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png" : imageFormat;
             
-            String binaryRef = ancestorPropertySet.getURI().toString();
-            property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), binaryRef, "image/" + thumbnailFormat);
+            property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
             return true;
 
 

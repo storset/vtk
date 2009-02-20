@@ -112,7 +112,7 @@ public class TextUtils {
 
         StringBuilder noDupes = new StringBuilder();
 
-        // Remove duplicates with HashSet: String[]->List[]->HashSet
+        // Remove duplicates with HashSet: String->String[]->List->HashSet
         String temp[] = string.toLowerCase().split(stringDelimiter);
         List<String> list = Arrays.asList(temp);
         Set<String> set = new HashSet<String>(list);

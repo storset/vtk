@@ -26,10 +26,10 @@ public class TextUtilTestCase extends TestCase {
         test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", true, true, true);
         assertEquals(expectedDataNoSpacesAndDelimiter, test);
 
-        // Single test without capitalizeWords
+        // Overload Method without capitalizeWords
         String expectedDataNoneCapitalized = "forskning, røed ødegård";
 
-        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", false, false, false);
+        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",");
         assertEquals(expectedDataNoneCapitalized, test);
 
     }

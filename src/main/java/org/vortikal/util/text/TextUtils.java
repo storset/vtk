@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006, 2009 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,8 @@ package org.vortikal.util.text;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang.WordUtils;
 
 public class TextUtils {
 
@@ -158,30 +160,11 @@ public class TextUtils {
                     }
                 }
                 if (capitalizeWords) {
-                    token = capitalizeString(token);
+                    token = WordUtils.capitalize(token);
                 }
                 noDupes.append(token);
             }
         }
         return noDupes.toString();
-    }
-
-
-    /**
-     * Capitalize words in a String
-     * 
-     * @param string
-     *            string in question
-     * 
-     * @return the capitalized string
-     */
-    public static String capitalizeString(String string) {
-        StringTokenizer words = new StringTokenizer(string, " ", true);
-        StringBuilder capitalizedWords = new StringBuilder();
-        while (words.hasMoreTokens()) {
-            String word = words.nextToken();
-            capitalizedWords.append(word.substring(0, 1).toUpperCase() + word.substring(1));
-        }
-        return capitalizedWords.toString();
     }
 }

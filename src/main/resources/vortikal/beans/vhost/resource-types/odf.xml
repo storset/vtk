@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="odfResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="OpenDocument Format"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
+    
+  </bean>
+
+  <bean id="contentTypeMatchesODF"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="" />
+  </bean>
+
+  <bean id="odfTextResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="OpenDocument Text"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="assertions" ref="contentTypeMatchesOdfText" />
+	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
+  </bean>
+
+  <bean id="odfPresentationResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="OpenDocument Presentation"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="assertions" ref="contentTypeMatchesOdfPresentation" />
+	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
+  </bean>
+  
+  <bean id="odfSpreadsheetResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="OpenDocument Spreadsheet"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="assertions" ref="contentTypeMatchesOdfSpreadsheet" />
+	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
+  </bean>
+
+  <bean id="odfGraphicsResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="OpenDocument Graphics"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="assertions" ref="contentTypeMatchesOdfGraphics" />
+	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
+  </bean>
+
+  <bean id="odfDatabaseResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="OpenDocument Database"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="assertions" ref="contentTypeMatchesOdfDatabase" />
+	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
+  </bean>
+
+  <bean id="contentTypeMatchesOdfText"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/vnd.oasis.opendocument.text)" />
+  </bean>
+
+  <bean id="contentTypeMatchesOdfPresentation"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/vnd.oasis.opendocument.presentation)" />
+  </bean>
+  
+  <bean id="contentTypeMatchesOdfSpreadsheet"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/vnd.oasis.opendocument.spreadsheet)" />
+  </bean>
+  
+  <bean id="contentTypeMatchesOdfGraphics"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/vnd.oasis.opendocument.graphics)" />
+  </bean>
+  
+  <bean id="contentTypeMatchesOdfDatabase"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(application/vnd.oasis.opendocument.database)" />
+  </bean>
+  
+</beans>

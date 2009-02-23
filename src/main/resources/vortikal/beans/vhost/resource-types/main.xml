@@ -26,7 +26,10 @@
 	<import resource="event.xml" />
 	<import resource="xml.xml" />
 	<import resource="managed-xml.xml" />
-
+	
+	<!--  ODF -->
+	<import resource="odf.xml" />  
+	
     <!-- Studinfo -->
 	<import resource="emne.xml" />
 	<import resource="semester.xml" />

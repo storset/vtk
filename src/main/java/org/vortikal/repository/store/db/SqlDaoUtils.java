@@ -66,7 +66,20 @@ class SqlDaoUtils {
     }
     
 
-
+    /**
+     * This class is used to aggregate property values from potentially 
+     * multiple rows for a single resource into a single prop holder 
+     * object.
+     * 
+     * Elements that together constitute prop holder identity are:
+     * * The property name space 
+     * * The property name
+     * * The resource id
+     *
+     * And nothing more. A single property instance at application level
+     * can map to multiple propIDs in database because of de-normalized storage
+     * of multi-value properties.
+     */
     public static class PropHolder {
         String namespaceUri = "";
         String name = "";
@@ -82,24 +95,27 @@ class SqlDaoUtils {
             if (object == this) return true;
             
             PropHolder other = (PropHolder) object;
-            if (this.namespaceUri == null && other.namespaceUri != null ||
-               this.namespaceUri != null && other.namespaceUri == null)
+            if (this.namespaceUri != null) {
+                if (!this.namespaceUri.equals(other.namespaceUri)) return false;
+            } else if (other.namespaceUri != null) {
+                if (!other.namespaceUri.equals(this.namespaceUri)) return false;
+            }
+            
+            if (!this.name.equals(other.name)) {
                 return false;
+            }
 
-            return ((this.namespaceUri == null && other.namespaceUri == null)
-                    || (this.namespaceUri.equals(other.namespaceUri) &&
-                        this.name.equals(other.name)                 &&
-                        this.resourceId == other.resourceId));
+            if (this.resourceId != other.resourceId) return false;
+            
+            return true;
         }
         
         public int hashCode() {
-            int hashCode = this.name.hashCode() + this.resourceId;
-            if (this.namespaceUri != null) {
-                hashCode += this.namespaceUri.hashCode();
-            }
-            if (this.propID != null) {
-                hashCode += this.propID.hashCode();
-            }
+            int hashCode = 217 + this.name.hashCode();
+            hashCode = 31 * hashCode + this.resourceId;
+            hashCode = 31 * hashCode + (this.namespaceUri != null ? 
+                                            this.namespaceUri.hashCode() : 0);
+
             return hashCode;
         }
     }

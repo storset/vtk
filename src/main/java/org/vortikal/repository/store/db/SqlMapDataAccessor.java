@@ -32,7 +32,6 @@ package org.vortikal.repository.store.db;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -987,11 +986,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             prop.name = (String) propEntry.get("name");
             prop.resourceId = (Integer) propEntry.get("resourceId");
             Object binary = propEntry.get("binary");
-            if (binary instanceof BigDecimal) {
-                prop.binary = !((BigDecimal) binary).equals(BigDecimal.ZERO);
-            } else {
-                prop.binary = (Integer) binary != 0;
-            }
+            prop.binary = (Integer) binary != 0;
             List<String> values = propMap.get(prop);
             if (values == null) {
                 values = new ArrayList<String>();

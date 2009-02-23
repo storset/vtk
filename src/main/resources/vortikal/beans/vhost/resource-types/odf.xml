@@ -33,7 +33,7 @@
   
   <bean id="odfSpreadsheetResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="OpenDocument Spreadsheet"/>
+    <property name="name" value="ods"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions" ref="contentTypeMatchesOdfSpreadsheet" />
 	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
@@ -41,7 +41,7 @@
 
   <bean id="odfGraphicsResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="OpenDocument Graphics"/>
+    <property name="name" value="odg"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions" ref="contentTypeMatchesOdfGraphics" />
 	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
@@ -49,7 +49,7 @@
 
   <bean id="odfDatabaseResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="OpenDocument Database"/>
+    <property name="name" value="odb"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions" ref="contentTypeMatchesOdfDatabase" />
 	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />

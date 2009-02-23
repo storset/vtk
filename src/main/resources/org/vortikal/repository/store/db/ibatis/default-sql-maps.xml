@@ -357,7 +357,7 @@
   <select id="loadPropertiesForResource" parameterClass="int" resultMap="Property">
     select
       p.*,
-      coalesce(length(p.binary_content), 0) as is_binary
+      case when binary_content is null then 0 else 1 end as is_binary
     from extra_prop_entry p
     where resource_id = #value#
     order by p.extra_prop_entry_id
@@ -368,7 +368,7 @@
           resultMap="Property">
     select
       p.*,
-      coalesce(length(p.binary_content), 0) as is_binary
+      case when binary_content is null then 0 else 1 end as is_binary
     from extra_prop_entry p
     where p.resource_id in
       (select resource_id from vortex_resource

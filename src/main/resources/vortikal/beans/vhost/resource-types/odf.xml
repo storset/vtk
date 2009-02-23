@@ -5,7 +5,7 @@
 
   <bean id="odfResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="OpenDocument Format"/>
+    <property name="name" value="odf"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     
@@ -17,7 +17,7 @@
 
   <bean id="odfTextResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="OpenDocument Text"/>
+    <property name="name" value="odt"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions" ref="contentTypeMatchesOdfText" />
 	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />
@@ -25,7 +25,7 @@
 
   <bean id="odfPresentationResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="OpenDocument Presentation"/>
+    <property name="name" value="odp"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="assertions" ref="contentTypeMatchesOdfPresentation" />
 	<property name="parentTypeDefinition" ref="odfResourceTypeDefinition" />

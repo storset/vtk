@@ -30,11 +30,13 @@
  */
 package org.vortikal.repository.store.db;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+
 
 public class SqlDaoUtilsTestCase extends TestCase {
 

@@ -68,7 +68,7 @@ class SqlDaoUtils {
 
     /**
      * This class is used to aggregate property values from potentially 
-     * multiple rows for a single resource into a single prop holder 
+     * multiple rows for a single property into a single prop holder 
      * object.
      * 
      * Elements that together constitute prop holder identity are:

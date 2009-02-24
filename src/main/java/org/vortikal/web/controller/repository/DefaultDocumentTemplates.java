@@ -122,8 +122,17 @@ public class DefaultDocumentTemplates implements DocumentTemplates, Initializing
             logger.warn("Required bean property 'templatesCollection' not set. " +
                         "Unable to supply document templates to create document service.");
         } else {
-
-            loadTemplates();
+            try {
+                loadTemplates();
+            } catch (Throwable t) {
+                if (logger.isDebugEnabled()) {
+                    logger.warn("Unable to load templates from " 
+                            + this.templatesCollection, t);
+                } else {
+                    logger.warn("Unable to load templates from " 
+                            + this.templatesCollection + ": " + t.getMessage());
+                }
+            }
         }
     }
 

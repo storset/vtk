@@ -155,10 +155,16 @@ public class PropertiesResource extends Properties implements InitializingBean {
                         + uri + "', repository '" + repository
                         + "', token '" + token + "' (authorization exception: "
                         + ae.getMessage()+ ")");
-            } catch (Exception e) {
-                this.logger.warn("Unable to load properties from uri '"
+            } catch (Throwable t) {
+                if (logger.isDebugEnabled()) {
+                    this.logger.warn("Unable to load properties from uri '"
                             + uri + "', repository '" + repository
-                            + "', token '" + token + "' (" + e.getMessage() + ")");
+                            + "', token '" + token, t);
+                } else {
+                    this.logger.warn("Unable to load properties from uri '"
+                            + uri + "', repository '" + repository
+                            + "', token '" + token + "' (" + t.getMessage() + ")");
+                }
             }
         }
 

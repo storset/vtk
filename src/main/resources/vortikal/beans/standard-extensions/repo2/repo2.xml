@@ -10,7 +10,7 @@
 
 
   <bean id="repository" class="org.vortikal.repo2.Repo2"
-        init-method="init" destroy-method="destroy">
+        init-method="init" destroy-method="destroy" depends-on="repo2.nodeStoreInitializer">
     <property name="id" value="${repositoryID}" />
     <property name="store" ref="repository.nodeStore" />
     <property name="contentStore" ref="repository.binaryContentStore" />
@@ -24,7 +24,9 @@
   </bean>
 
 
-  <bean id="repo2.repositoryInitializer" class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean">
+  <bean id="repo2.repositoryInitializer"
+        class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean"
+        depends-on="repo2.nodeStoreInitializer">
     <property name="transactionManager" ref="repository.transactionManager" />
     <property name="targetObject" ref="repository" />
     <property name="targetMethod" value="initRootNode" />

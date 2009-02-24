@@ -587,4 +587,12 @@ public interface Repository {
      */
     public String getId();
     
+    /**
+     * XXX: This method has to be part of the interface to be able to proxy 
+     * it/wrap the implementation in a transaction proxy and still not 
+     * lose visibility og this method from MethodInvokingFactoryBean 
+     * (see Repo2#initRootNode).
+     * @deprecated
+     */
+    public void initRootNode() throws Exception;
 }

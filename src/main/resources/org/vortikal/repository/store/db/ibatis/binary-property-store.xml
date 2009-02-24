@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+                 "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+
+  <resultMap id="BinaryContent" class="java.util.HashMap">
+    <result property="stream" column="content"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
+    <result property="type" column="content_type" />
+  </resultMap>
+  
+  <!-- XXX: PostgreSQL specific: -->
+  <statement id="createBinaryPropertyStore">
+    create table binary_property (
+        node_id varchar(128) not null,
+        content oid null,
+        content_type
+        varchar(128) null
+    )
+  </statement>
+
+  <insert id="insertBinaryProperty" parameterClass="java.util.Map">
+    insert into binary_property values (#propertyID#, #stream#, #type#)
+  </insert>
+
+  <select id="retrieveBinaryProperty" parameterClass="java.util.Map" resultMap="BinaryContent">
+    select content, content_type from binary_property where node_id = #propertyID#
+  </select>
+
+  <update id="updateBinaryProperty" parameterClass="java.util.Map">
+    update binary_property set content = #stream,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#, content_type = #type# where node_id = #propertyID#
+  </update>
+
+  <delete id="deleteBinaryProperty" parameterClass="java.util.Map">
+    delete from binary_property where node_id = #propertyID#
+  </delete>
+
+</sqlMap>

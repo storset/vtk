@@ -318,6 +318,13 @@
     </build>
 
     <dependencies>
+
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>1.6.0-beta1</version>
+        </dependency>
+
         <!-- JSON -->
         <dependency>
             <groupId>net.sf.json-lib</groupId>
@@ -325,6 +332,11 @@
             <version>2.2.2</version>
             <classifier>jdk15</classifier>
         </dependency>
+        <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20080701</version>
+        </dependency> 
     
         <!-- Abdera Atom Feed -->
         <dependency>

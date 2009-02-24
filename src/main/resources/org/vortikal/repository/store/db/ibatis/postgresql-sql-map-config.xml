@@ -6,5 +6,7 @@
 	<sqlMap resource="org/vortikal/repository/store/db/ibatis/postgresql-functions.xml" />
 	<sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml" />
 	<sqlMap resource="org/vortikal/repository/store/db/ibatis/data-reporting-sql-maps.xml" />
-	
+        <sqlMap resource="org/vortikal/repository/store/db/ibatis/node-store.xml"/>
+        <sqlMap resource="org/vortikal/repository/store/db/ibatis/binary-content-store.xml"/>
+        <sqlMap resource="org/vortikal/repository/store/db/ibatis/binary-property-store.xml"/>
 </sqlMapConfig>

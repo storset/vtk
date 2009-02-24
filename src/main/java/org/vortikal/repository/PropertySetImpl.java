@@ -57,9 +57,13 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     protected Map<Namespace, Map<String, Property>> propertyMap =
         new HashMap<Namespace, Map<String, Property>>();
     
-    // Numeric ID used by database 
+    /**
+     * Numeric ID used by database 
+     * @deprecated see #nodeID
+     */
     protected int id = NULL_RESOURCE_ID;
-    
+    protected String nodeID = null;
+
     protected boolean aclInherited = true;
 
     // Numeric ID of resource from which this resource inherits its ACL definition.
@@ -72,6 +76,10 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     public PropertySetImpl() {
     }
 
+    /**
+     * XXX
+     * @deprecated see #getNodeID()
+     */
     public int getID() {
         return this.id;
     }
@@ -80,6 +88,14 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         this.id = id;
     }
      
+    public String getNodeID() {
+        return this.nodeID;
+    }
+
+    public void setNodeID(String nodeID) {
+        this.nodeID = nodeID;
+    }
+
     public Path getURI() {
         return this.uri;
     }

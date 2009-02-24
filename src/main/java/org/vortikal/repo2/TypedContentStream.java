@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype;
+package org.vortikal.repo2;
 
-import java.io.IOException;
 import java.io.InputStream;
 
+import org.vortikal.repository.ContentStream;
 
-/**
- * Interface for accessing resource content during property
- * evaluation. Allows pluggable (and reusable) representations of the
- * resource content, e.g. JDOM Document, ByteBuffer, etc.
- */
-public interface Content {
-    
-    /**
-     * Gets the content representation specified by a given class.
-     *
-     * @param clazz the class of the desired content representation
-     * @return the content representation, or <code>null</code> if no
-     * such representation is available.
-     * @exception Exception if an error occurs
-     */
-    public Object getContentRepresentation(Class<?> clazz) throws Exception;
-    
+public class TypedContentStream extends ContentStream {
+    private String contentType;
 
-    /**
-     * Gets the content of a resource as a stream. Equivalent to
-     * calling <code>getContentRepresentation(InputStream.class)</code>
-     *
-     * @return an <code>InputStream</code>
-     * @exception IOException if an error occurs
-     */
-    public InputStream getContentInputStream() throws Exception;
-    
+    public TypedContentStream(InputStream stream, long length, String contentType) {
+        super(stream, length);
+        this.contentType = contentType;
+    }
 
+    public String getContentType() {
+        return this.contentType;
+    }
 
-    /**
-     * Gets the length of the resource's content stream measured in
-     * bytes.
-     *
-     * @return a the length of the content stream in bytes.
-     * @exception IOException if an error occurs
-     */
-    public long getContentLength() throws Exception;
-    
 }

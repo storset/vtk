@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+
+  <bean id="repository" class="org.vortikal.repo2.Repo2"
+        init-method="init" destroy-method="destroy">
+    <property name="id" value="${repositoryID}" />
+    <property name="store" ref="repository.nodeStore" />
+    <property name="contentStore" ref="repository.binaryContentStore" />
+    <property name="binaryPropertyStore" ref="repository.binaryPropertyStore" />
+    <property name="tokenManager" ref="tokenManager" />
+    <property name="authorizationManager" ref="repo2.authorizationManager" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="resourceTypeEvaluator" ref="repository.resourceTypeEvaluator" />
+    <property name="tempDir" value="${repository.tempDir}" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+
+  <bean id="repo2.repositoryInitializer" class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean">
+    <property name="transactionManager" ref="repository.transactionManager" />
+    <property name="targetObject" ref="repository" />
+    <property name="targetMethod" value="initRootNode" />
+  </bean>
+
+  <bean id="repository.nodeStore" 
+        class="org.vortikal.repo2.SqlMapNodeStore">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="cache" ref="repository.ehCache" />
+    <property name="createSchemas" value="${repository.createSchemas}" />
+  </bean>
+
+  <bean id="repo2.nodeStoreInitializer"
+        class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean">
+    <property name="transactionManager" ref="repository.transactionManager" />
+    <property name="targetObject" ref="repository.nodeStore" />
+    <property name="targetMethod" value="createTables" />
+  </bean>
+
+
+  <bean id="repository.binaryContentStore" 
+        class="org.vortikal.repo2.SqlMapBinaryContentStore">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="createSchemas" value="${repository.createSchemas}" />
+  </bean>
+
+  <bean id="repo2.binaryContentStoreInitializer"
+        class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean">
+    <property name="transactionManager" ref="repository.transactionManager" />
+    <property name="targetObject" ref="repository.binaryContentStore" />
+    <property name="targetMethod" value="createTables" />
+  </bean>
+
+  <bean id="repository.binaryPropertyStore" 
+        class="org.vortikal.repo2.SqlMapBinaryPropertyStore">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="createSchemas" value="${repository.createSchemas}" />
+  </bean>
+
+  <bean id="repo2.binaryPropertyStoreInitializer"
+        class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean">
+    <property name="transactionManager" ref="repository.transactionManager" />
+    <property name="targetObject" ref="repository.binaryPropertyStore" />
+    <property name="targetMethod" value="createTables" />
+  </bean>
+
+
+  <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="binaryDao" ref ="repo2.tmpBinaryDao" />
+  </bean>
+
+  <bean id="repo2.tmpBinaryDao" class="org.vortikal.repo2.TmpBinaryContentDataAccessor">
+    <property name="propStore" ref="repository.binaryPropertyStore"/>
+  </bean>
+
+
+  <bean id="repository.resourceTypeEvaluator"
+        class="org.vortikal.repo2.ResourceTypeEvaluator">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="contentStore" ref="repository.binaryContentStore"/>
+    <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
+  </bean>
+
+
+  <bean id="repo2.authorizationManager" class="org.vortikal.repo2.AuthorizationManager">
+    <property name="nodeStore" ref="repository.nodeStore" />
+    <property name="principalManager" ref="principalManager" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="roleManager" ref="roleManager" />
+  </bean>
+
+  <bean id="repository.ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="eternal" value="true" />
+    <!--
+    <property name="cacheManager" ref="repository.ehCache.manager" />
+    -->
+    <property name="cacheName" value="${repositoryID}" />
+    <property name="maxElementsInMemory" value="${resourceCacheSize}" />
+    <property name="maxElementsOnDisk" value="${resourceCacheSize}" />
+    <property name="memoryStoreEvictionPolicy">
+      <bean class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+        <property name="staticField"
+                  value="net.sf.ehcache.store.MemoryStoreEvictionPolicy.LRU" />
+      </bean>
+    </property>
+  </bean>
+
+</beans>

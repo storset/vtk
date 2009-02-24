@@ -414,7 +414,12 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         if (getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-    	Value v = new BinaryValue(binaryValue, binaryMimeType);
+        BinaryValue v = (BinaryValue) getValue();
+        if (v != null) {
+            v.setValue(binaryValue, binaryMimeType);
+        } else {
+            v = new BinaryValue(binaryValue, binaryMimeType);
+        }
         setValue(v);
     }
     

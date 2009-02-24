@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+                 "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap>
+
+  <resultMap id="BinaryContent" class="java.util.HashMap">
+    <result property="stream" column="content"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
+  </resultMap>
+  
+  <!-- XXX: PostgreSQL specific: -->
+  <statement id="createBinaryContentStore">
+    create table binary_content (
+        node_id varchar(128) not null,
+        content oid null
+    )
+  </statement>
+
+  <insert id="insertContent" parameterClass="java.util.Map">
+    insert into binary_content values (#nodeID#, #stream#)
+  </insert>
+
+  <select id="retrieveContent" parameterClass="java.util.Map" resultMap="BinaryContent">
+    select content from binary_content where node_id = #nodeID#
+  </select>
+
+  <update id="updateContent" parameterClass="java.util.Map">
+    update binary_content set content = #stream,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack# where node_id = #nodeID#
+  </update>
+
+  <delete id="deleteContent" parameterClass="java.util.Map">
+    delete from binary_content where node_id = #nodeID#
+  </delete>
+
+</sqlMap>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+                 "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap>
+
+  <resultMap id="Node" class="java.util.HashMap">
+    <result property="id" column="node_id" />
+    <result property="parentID" column="parent_id" />
+    <result property="childPtrs" column="child_ptrs" />
+    <result property="data" column="data" />
+  </resultMap>
+
+  <statement id="createNodeStore">
+    create table node (
+        node_id varchar(128) not null,
+        parent_id varchar(128) null,
+        child_ptrs text null,
+        data text null
+    )
+  </statement>
+
+  <insert id="insertNode" parameterClass="java.util.Map">
+    insert into node values (#nodeID#, #parentID#, #childPtrs#, #data#)
+  </insert>
+
+  <select id="retrieveNode" parameterClass="java.lang.String"
+          resultMap="Node">
+    select node_id, parent_id, child_ptrs, data from node where node_id = #value#
+  </select>
+  
+  <select id="retrieveNodes" parameterClass="java.util.List" resultMap="Node">
+    select node_id, parent_id, child_ptrs, data from node where node_id in
+    <iterate open="(" close=")" conjunction=","> 
+             #value[]# 
+    </iterate> 
+  </select>
+
+  <update id="updateNode" parameterClass="java.util.Map">
+    update node set node_id = #nodeID#,
+                    parent_id = #parentID#,
+                    child_ptrs = #childPtrs#,
+                    data = #data#
+    where node_id = #nodeID#
+  </update>
+
+
+  <delete id="deleteNode" parameterClass="java.lang.String">
+    delete from node where node_id = #value#
+  </delete>
+
+</sqlMap>

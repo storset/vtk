@@ -62,6 +62,11 @@ public final class BinaryValue extends Value {
         this.contentType = contentType;
     }
 
+    public void setValue(byte[] buffer, String contentType) {
+        this.buffer = buffer;
+        this.contentType = contentType;
+    }
+    
     public ContentStream getContentStream() {
         if (this.buffer != null) {
             InputStream is = new ByteArrayInputStream(this.buffer);
@@ -131,6 +136,9 @@ public final class BinaryValue extends Value {
 
     @Override
     public String getNativeStringRepresentation() {
+        if (this.valueRef == null) {
+            return null;
+        }
         return this.valueRef.getID();
     }
     

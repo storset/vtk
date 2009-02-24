@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 
@@ -52,184 +53,189 @@ import org.vortikal.text.html.HtmlPageParser;
 
 public class ResourceEditDataBinder extends ServletRequestDataBinder {
 
-	private HtmlPageParser htmlParser;
-	private HtmlPageFilter htmlPropsFilter;
-	private final static String defaultCharacterEncoding = "utf-8";
+    private HtmlPageParser htmlParser;
+    private HtmlPageFilter htmlPropsFilter;
+    private final static String defaultCharacterEncoding = "utf-8";
+    private Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyPreprocessors;
 
 
-	public ResourceEditDataBinder(Object target, String objectName, HtmlPageParser htmlParser,
-			HtmlPageFilter htmlPropsFilter) {
-		super(target, objectName);
-		this.htmlParser = htmlParser;
-		this.htmlPropsFilter = htmlPropsFilter;
-	}
+    public ResourceEditDataBinder(Object target, String objectName, HtmlPageParser htmlParser,
+            HtmlPageFilter htmlPropsFilter, Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyPreprocessors) {
+        super(target, objectName);
+        this.htmlParser = htmlParser;
+        this.htmlPropsFilter = htmlPropsFilter;
+        this.propertyPreprocessors = propertyPreprocessors;
+    }
 
 
-	@Override
-	public void bind(ServletRequest request) {
-		if (getTarget() instanceof ResourceEditWrapper) {
-			ResourceEditWrapper command = (ResourceEditWrapper) getTarget();
+    @Override
+    public void bind(ServletRequest request) {
+        if (getTarget() instanceof ResourceEditWrapper) {
+            ResourceEditWrapper command = (ResourceEditWrapper) getTarget();
 
-			if (request.getParameter("save") != null) {
-				command.setSave(true);
-			} else if (request.getParameter("savequit") != null) {
-				command.setSave(true);
-				command.setQuit(true);
-			} else {
-				return;
-			}
+            if (request.getParameter("save") != null) {
+                command.setSave(true);
+            } else if (request.getParameter("savequit") != null) {
+                command.setSave(true);
+                command.setQuit(true);
+            } else {
+                return;
+            }
 
-			Resource resource = command.getResource();
+            Resource resource = command.getResource();
 
-			setProperties(request, command, resource, command.getPreContentProperties());
-			setProperties(request, command, resource, command.getPostContentProperties());
+            setProperties(request, command, resource, command.getPreContentProperties());
+            setProperties(request, command, resource, command.getPostContentProperties());
 
-			if (command.getContent() != null) {
-				String content = command.getContent().getStringRepresentation();
-				String postedHtml = request.getParameter("resource.content");
-				if (!content.equals(postedHtml)) {
-					parseContent(command, postedHtml);
-				}
-			}
-		} else {
-			super.bind(request);
-		}
-	}
-
-
-	protected void setProperties(ServletRequest request, ResourceEditWrapper command, Resource resource,
-			List<PropertyTypeDefinition> propDefs) {
-
-		for (PropertyTypeDefinition propDef : propDefs) {
-			String value = null;
-
-			if (propDef.getType().equals(PropertyType.Type.TIMESTAMP)
-					|| propDef.getType().equals(PropertyType.Type.DATE)) {
-				value = request.getParameter("resource." + propDef.getName() + ".date");
-				String time = request.getParameter("resource." + propDef.getName() + ".hours");
-				if (value != null && time != null && !time.trim().equals("")) {
-					String minutes = request.getParameter("resource." + propDef.getName() + ".minutes");
-					if (minutes != null && !minutes.trim().equals("")) {
-						time += ":" + minutes;
-					}
-					value += " " + time;
-				}
-			} else {
-				value = request.getParameter("resource." + propDef.getName());
-			}
-
-			Property prop = resource.getProperty(propDef);
-			if (prop == null) {
-				if (value != null && !value.trim().equals("")) {
-					try {
-						prop = resource.createProperty(propDef);
-						setPropValue(value, prop);
-						command.setPropChange(true);
-					} catch (Throwable t) {
-						command.reject(propDef, t.getMessage());
-						resource.removeProperty(propDef);
-					}
-					continue;
-				} else if (propDef.isMandatory()) {
-					command.reject(propDef, propDef.getName() + " is required ");
-					continue;
-				}
-			} else if (value == null || value.trim().equals("")) {
-				if (propDef.isMandatory()) {
-					command.reject(propDef, propDef.getName() + " is required");
-					continue;
-				}
-				command.setPropChange(true);
-				resource.removeProperty(propDef);
-				continue;
-			} else {
-				try {
-					setPropValue(value, prop);
-					command.setPropChange(true);
-				} catch (Throwable t) {
-					command.reject(propDef, t.getMessage());
-				}
-			}
-		}
-	}
+            if (command.getContent() != null) {
+                String content = command.getContent().getStringRepresentation();
+                String postedHtml = request.getParameter("resource.content");
+                if (!content.equals(postedHtml)) {
+                    parseContent(command, postedHtml);
+                }
+            }
+        } else {
+            super.bind(request);
+        }
+    }
 
 
-	protected void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
-		PropertyTypeDefinition propDef = prop.getDefinition();
+    protected void setProperties(ServletRequest request, ResourceEditWrapper command, Resource resource,
+            List<PropertyTypeDefinition> propDefs) {
 
-		if (propDef.isMultiple()) {
-			String[] strings = valueString.split(",");
-			if (strings.length == 0) {
-				throw new IllegalArgumentException("Value cannot be empty");
-			}
+        for (PropertyTypeDefinition propDef : propDefs) {
+            String value = null;
 
-			List<Value> values = new ArrayList<Value>();
-			for (String string : strings) {
-				if (StringUtils.isNotBlank(string)) {
-					values.add(propDef.getValueFormatter().stringToValue(string.trim(), null, null));
-				}
-			}
-			prop.setValues(values.toArray(new Value[values.size()]));
-		} else if (prop.getDefinition().getType() == PropertyType.Type.HTML) {
+            if (propDef.getType().equals(PropertyType.Type.TIMESTAMP)
+                    || propDef.getType().equals(PropertyType.Type.DATE)) {
+                value = request.getParameter("resource." + propDef.getName() + ".date");
+                String time = request.getParameter("resource." + propDef.getName() + ".hours");
+                if (value != null && time != null && !time.trim().equals("")) {
+                    String minutes = request.getParameter("resource." + propDef.getName() + ".minutes");
+                    if (minutes != null && !minutes.trim().equals("")) {
+                        time += ":" + minutes;
+                    }
+                    value += " " + time;
+                }
+            } else {
+                value = request.getParameter("resource." + propDef.getName());
+            }
 
-			try {
-				HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
-				fragment.filter(this.htmlPropsFilter);
-				Value value = new Value(fragment.getStringRepresentation());
-				prop.setValue(value);
-			} catch (Throwable t) {
-				throw new IllegalArgumentException(t);
-			}
-
-		} else {
-			Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
-			prop.setValue(value);
-		}
-	}
-
-
-	protected void parseContent(ResourceEditWrapper command, String postedHtml) {
-
-		if (postedHtml == null)
-			postedHtml = "";
-		try {
-			postedHtml = "<html><head></head><body>" + postedHtml + "</body></html>";
-			ByteArrayInputStream in = null;
-			HtmlPage parsed = null;
-
-			if (Charset.isSupported(command.getResource().getCharacterEncoding())) {
-				in = new ByteArrayInputStream(postedHtml.getBytes(command.getResource().getCharacterEncoding()));
-				parsed = this.htmlParser.parse(in, command.getResource().getCharacterEncoding());
-			} else {
-				in = new ByteArrayInputStream(postedHtml.getBytes(defaultCharacterEncoding));
-				parsed = this.htmlParser.parse(in, defaultCharacterEncoding);
-			}
-
-			HtmlElement body = command.getContent().selectSingleElement("html.body");
-			HtmlElement suppliedBody = parsed.selectSingleElement("html.body");
-
-			// If body tag is non-excisting add standard web-page with supplied body-content
-			if (body == null) {
-				body = command.getContent().createElement("html.body");
-				command.setContent(parsed);
-				// Else: Normal behaviour
-			} else {
-				body.setChildNodes(suppliedBody.getChildNodes());
-			}
-			command.setContentChange(true);
-		} catch (Throwable t) {
-			throw new RuntimeException("Unable to save content", t);
-		}
-	}
+            Property prop = resource.getProperty(propDef);
+            if (prop == null) {
+                if (value != null && !value.trim().equals("")) {
+                    try {
+                        prop = resource.createProperty(propDef);
+                        setPropValue(value, prop);
+                        command.setPropChange(true);
+                    } catch (Throwable t) {
+                        command.reject(propDef, t.getMessage());
+                        resource.removeProperty(propDef);
+                    }
+                    continue;
+                } else if (propDef.isMandatory()) {
+                    command.reject(propDef, propDef.getName() + " is required ");
+                    continue;
+                }
+            } else if (value == null || value.trim().equals("")) {
+                if (propDef.isMandatory()) {
+                    command.reject(propDef, propDef.getName() + " is required");
+                    continue;
+                }
+                command.setPropChange(true);
+                resource.removeProperty(propDef);
+                continue;
+            } else {
+                try {
+                    setPropValue(value, prop);
+                    command.setPropChange(true);
+                } catch (Throwable t) {
+                    command.reject(propDef, t.getMessage());
+                }
+            }
+        }
+    }
 
 
-	public void setHtmlParser(HtmlPageParser htmlParser) {
-		this.htmlParser = htmlParser;
-	}
+    protected void setPropValue(String valueString, Property prop) throws IllegalArgumentException {
+        PropertyTypeDefinition propDef = prop.getDefinition();
+
+        if (this.propertyPreprocessors != null && this.propertyPreprocessors.containsKey(propDef)) {
+            valueString = this.propertyPreprocessors.get(propDef).preprocess(valueString, prop);
+        }
+
+        if (propDef.isMultiple()) {
+            String[] strings = valueString.split(",");
+            if (strings.length == 0) {
+                throw new IllegalArgumentException("Value cannot be empty");
+            }
+
+            List<Value> values = new ArrayList<Value>();
+            for (String string : strings) {
+                if (StringUtils.isNotBlank(string)) {
+                    values.add(propDef.getValueFormatter().stringToValue(string.trim(), null, null));
+                }
+            }
+            prop.setValues(values.toArray(new Value[values.size()]));
+        } else if (prop.getDefinition().getType() == PropertyType.Type.HTML) {
+
+            try {
+                HtmlFragment fragment = this.htmlParser.parseFragment(valueString);
+                fragment.filter(this.htmlPropsFilter);
+                Value value = new Value(fragment.getStringRepresentation());
+                prop.setValue(value);
+            } catch (Throwable t) {
+                throw new IllegalArgumentException(t);
+            }
+
+        } else {
+            Value value = propDef.getValueFormatter().stringToValue(valueString, null, null);
+            prop.setValue(value);
+        }
+    }
 
 
-	protected HtmlPageParser getHtmlParser() {
-		return htmlParser;
-	}
+    protected void parseContent(ResourceEditWrapper command, String postedHtml) {
+
+        if (postedHtml == null) postedHtml = "";
+        try {
+            postedHtml = "<html><head></head><body>" + postedHtml + "</body></html>";
+            ByteArrayInputStream in = null;
+            HtmlPage parsed = null;
+
+            if (Charset.isSupported(command.getResource().getCharacterEncoding())) {
+                in = new ByteArrayInputStream(postedHtml.getBytes(command.getResource().getCharacterEncoding()));
+                parsed = this.htmlParser.parse(in, command.getResource().getCharacterEncoding());
+            } else {
+                in = new ByteArrayInputStream(postedHtml.getBytes(defaultCharacterEncoding));
+                parsed = this.htmlParser.parse(in, defaultCharacterEncoding);
+            }
+
+            HtmlElement body = command.getContent().selectSingleElement("html.body");
+            HtmlElement suppliedBody = parsed.selectSingleElement("html.body");
+
+            // If body tag is non-excisting add standard web-page with supplied body-content
+            if (body == null) {
+                body = command.getContent().createElement("html.body");
+                command.setContent(parsed);
+                // Else: Normal behaviour
+            } else {
+                body.setChildNodes(suppliedBody.getChildNodes());
+            }
+            command.setContentChange(true);
+        } catch (Throwable t) {
+            throw new RuntimeException("Unable to save content", t);
+        }
+    }
+
+
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
+
+
+    protected HtmlPageParser getHtmlParser() {
+        return htmlParser;
+    }
 
 }

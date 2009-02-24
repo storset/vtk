@@ -44,6 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.Service;
@@ -53,13 +54,14 @@ public class ResourceEditController extends SimpleFormController {
 
     private List<Service> tooltipServices;
     private ResourceWrapperManager resourceManager;
-    
-    
-    
+    private Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
+
+
     public ResourceEditController() {
         super();
         setCommandName("resource");
     }
+
 
     protected ResourceWrapperManager getResourceManager() {
         return this.resourceManager;
@@ -73,52 +75,49 @@ public class ResourceEditController extends SimpleFormController {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             return new ModelAndView(getFormView(), model);
-        } 
+        }
 
         if (!wrapper.isSave()) {
             resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }
-                
+
         resourceManager.store(wrapper);
-        
+
         if (!wrapper.isQuit()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             wrapper.setSave(false);
             return new ModelAndView(getFormView(), model);
-        } 
-        
+        }
+
         resourceManager.unlock();
         return super.onSubmit(command);
     }
 
 
     @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command)
-    throws Exception {
-        ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(), 
-                resourceManager.getHtmlParser(), resourceManager.getHtmlPropsFilter());
-       prepareBinder(binder);
-       initBinder(request, binder);
-       return binder;
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
+        ServletRequestDataBinder binder = new ResourceEditDataBinder(command, getCommandName(), resourceManager
+                .getHtmlParser(), resourceManager.getHtmlPropsFilter(), propertyEditPreprocessors);
+        prepareBinder(binder);
+        initBinder(request, binder);
+        return binder;
     }
-        
+
+
     @Override
-    protected Object formBackingObject(HttpServletRequest request)
-            throws Exception {
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
         resourceManager.lock();
         return resourceManager.createResourceEditWrapper();
     }
 
 
-    
     @SuppressWarnings("unchecked")
     @Override
-    protected Map referenceData(HttpServletRequest request, Object command,
-            Errors errors) throws Exception {
-        Resource resource = ((ResourceWrapper)command).getResource();
+    protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+        Resource resource = ((ResourceWrapper) command).getResource();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         Map model = super.referenceData(request, command, errors);
@@ -130,16 +129,18 @@ public class ResourceEditController extends SimpleFormController {
         return model;
     }
 
+
     public void setTooltipServices(List<Service> tooltipServices) {
         this.tooltipServices = tooltipServices;
     }
+
 
     private List<Map<String, String>> resolveTooltips(Resource resource, Principal principal) {
         if (this.tooltipServices == null) {
             return null;
         }
         List<Map<String, String>> tooltips = new ArrayList<Map<String, String>>();
-        for (Service service: this.tooltipServices) {
+        for (Service service : this.tooltipServices) {
             String url = null;
             try {
                 url = service.constructLink(resource, principal);
@@ -155,9 +156,15 @@ public class ResourceEditController extends SimpleFormController {
     }
 
 
-
-    @Required public void setResourceManager(ResourceWrapperManager resourceManager) {
+    @Required
+    public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
+    }
+
+
+    public void setPropertyEditPreprocessors(
+            Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors) {
+        this.propertyEditPreprocessors = propertyEditPreprocessors;
     }
 
 }

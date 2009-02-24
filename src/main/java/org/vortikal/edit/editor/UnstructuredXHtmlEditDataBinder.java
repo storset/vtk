@@ -38,31 +38,31 @@ import org.vortikal.text.html.HtmlPageParser;
 
 public class UnstructuredXHtmlEditDataBinder extends ResourceEditDataBinder {
 
-    public UnstructuredXHtmlEditDataBinder(Object target, String objectName,
-            HtmlPageParser htmlParser, HtmlPageFilter htmlPropsFilter) {
-        super(target, objectName, htmlParser, htmlPropsFilter);
+    public UnstructuredXHtmlEditDataBinder(Object target, String objectName, HtmlPageParser htmlParser,
+            HtmlPageFilter htmlPropsFilter) {
+        super(target, objectName, htmlParser, htmlPropsFilter, null);
     }
 
-    protected void parseContent(ResourceEditWrapper command,
-            String suppliedContent) {
+
+    protected void parseContent(ResourceEditWrapper command, String suppliedContent) {
 
         super.parseContent(command, suppliedContent);
 
         try {
             HtmlPage page = command.getContent();
-            
+
             String inputTitle = command.getValueByName("htmlTitle");
             if (inputTitle != null) {
                 HtmlElement head = page.selectSingleElement("html.head");
                 HtmlElement title = page.selectSingleElement("html.head.title");
                 HtmlElement body = page.selectSingleElement("html.body");
-                
+
                 if (head != null && body != null) {
                     if (title == null) {
                         title = page.createElement("title");
                         head.addContent(title);
                     }
-                    title.setChildNodes(new HtmlContent[]{page.createTextNode(inputTitle)});
+                    title.setChildNodes(new HtmlContent[] { page.createTextNode(inputTitle) });
                 }
             }
             command.setContent(page);

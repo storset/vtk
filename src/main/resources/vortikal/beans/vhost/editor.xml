@@ -275,7 +275,16 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="propertyEditPreprocessors" >
+      <map>
+        <entry key-ref="tagsPropDef" value-ref="editor.propertyEditPreprocessors" />
+      </map>
+    </property>
   </bean>
+  
+  <bean id="editor.propertyEditPreprocessors"
+        class="org.vortikal.edit.editor.TagsEditPreprocessor">
+   </bean>
 
   <bean id="editor.unstructuredXhtmlResourceManager"
         class="org.vortikal.edit.editor.ResourceWrapperManager"

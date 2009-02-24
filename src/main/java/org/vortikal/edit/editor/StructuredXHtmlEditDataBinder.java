@@ -38,13 +38,13 @@ import org.vortikal.text.html.HtmlPageParser;
 
 public class StructuredXHtmlEditDataBinder extends ResourceEditDataBinder {
 
-    public StructuredXHtmlEditDataBinder(Object target, String objectName,
-            HtmlPageParser htmlParser, HtmlPageFilter htmlPropsFilter) {
-        super(target, objectName, htmlParser, htmlPropsFilter);
+    public StructuredXHtmlEditDataBinder(Object target, String objectName, HtmlPageParser htmlParser,
+            HtmlPageFilter htmlPropsFilter) {
+        super(target, objectName, htmlParser, htmlPropsFilter, null);
     }
 
-    protected void parseContent(ResourceEditWrapper command,
-            String suppliedContent) {
+
+    protected void parseContent(ResourceEditWrapper command, String suppliedContent) {
         super.parseContent(command, suppliedContent);
         try {
             HtmlPage page = command.getContent();
@@ -54,19 +54,19 @@ public class StructuredXHtmlEditDataBinder extends ResourceEditDataBinder {
                 HtmlElement title = page.selectSingleElement("html.head.title");
                 HtmlElement body = page.selectSingleElement("html.body");
                 HtmlElement h1 = page.selectSingleElement("html.body.h1");
-                
+
                 if (head != null && body != null) {
-                    
+
                     if (title == null) {
                         title = page.createElement("title");
                         head.addContent(title);
                     }
-                    title.setChildNodes(new HtmlContent[]{page.createTextNode(userTitle)});
+                    title.setChildNodes(new HtmlContent[] { page.createTextNode(userTitle) });
                     if (h1 == null || !h1.getContent().equals(userTitle)) {
                         h1 = page.createElement("h1");
                         body.addContent(0, h1);
-                    } 
-                    h1.setChildNodes(new HtmlContent[]{page.createTextNode(userTitle)});
+                    }
+                    h1.setChildNodes(new HtmlContent[] { page.createTextNode(userTitle) });
                 }
             }
 

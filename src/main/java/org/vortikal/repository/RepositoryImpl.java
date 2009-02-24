@@ -947,6 +947,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.periodicThread = new PeriodicThread(600);
         this.periodicThread.start();
     }
+    
+    // XXX
+    public void initRootNode() {
+    }
 
 
     public void destroy() {

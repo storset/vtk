@@ -338,4 +338,8 @@ public class RequestLocalRepository implements Repository {
     public void init() throws Exception {
         
     }
+    
+    // XXX
+    public void initRootNode() {
+    }
 }

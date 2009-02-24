@@ -40,19 +40,21 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 public class ResourceEditDataBinderTestCase extends TestCase {
-	
-	private ResourceEditDataBinder resourceEditDataBinder = new ResourceEditDataBinder(null, null, null, null);
-    
+
+    private ResourceEditDataBinder resourceEditDataBinder = new ResourceEditDataBinder(null, null, null, null, null);
+
+
     public void testSetPropValueMultiple() {
-        PropertyImpl prop = getProperty(true, Type.STRING, new StringValueFormatter());    
+        PropertyImpl prop = getProperty(true, Type.STRING, new StringValueFormatter());
         assertNull("Value should be null", prop.getValues());
         resourceEditDataBinder.setPropValue("test, ,test2, ,,, , ", prop);
         assertNotNull("Value is null", prop.getValues());
         assertEquals("Wrong length", prop.getValues().length, 2);
     }
 
-	public void testSetPropValueString() {
-		PropertyImpl prop = getProperty(false, Type.STRING, new StringValueFormatter());
+
+    public void testSetPropValueString() {
+        PropertyImpl prop = getProperty(false, Type.STRING, new StringValueFormatter());
         assertNull("Value should be null", prop.getValue());
         String testValue = "test";
         resourceEditDataBinder.setPropValue(testValue, prop);
@@ -60,15 +62,16 @@ public class ResourceEditDataBinderTestCase extends TestCase {
         assertTrue("Missing content in value", StringUtils.isNotBlank(prop.getValue().getStringValue()));
         assertEquals("Wrong value", testValue, prop.getValue().getStringValue());
     }
-	
+
+
     private PropertyImpl getProperty(boolean isMultiple, Type type, ValueFormatter valueFormatter) {
-    	PropertyImpl prop = new PropertyImpl();
-    	PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
+        PropertyImpl prop = new PropertyImpl();
+        PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
         propDef.setMultiple(isMultiple);
         propDef.setType(type);
         propDef.setValueFormatter(valueFormatter);
         prop.setDefinition(propDef);
         return prop;
-	}
+    }
 
 }

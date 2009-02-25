@@ -412,13 +412,13 @@ public class Repo2 implements Repository, ApplicationContextAware {
         NodePath nodePath = load(uri);
         if (nodePath == null) 
             throw new ResourceNotFoundException(uri);
-        Node node = nodePath.getNode();
+        Resource r = nodeToResource(nodePath, uri);
         if (forProcessing) {
-            this.authorizationManager.authorizeReadProcessed(node, principal);
+            this.authorizationManager.authorizeReadProcessed(r, principal);
         } else {
-            this.authorizationManager.authorizeRead(node, principal);
+            this.authorizationManager.authorizeRead(r, principal);
         }
-        return nodeToResource(nodePath, uri);
+        return r;
     }
 
     public InputStream getInputStream(String token, Path uri, boolean forProcessing)
@@ -429,10 +429,11 @@ public class Repo2 implements Repository, ApplicationContextAware {
         if (nodePath == null) 
             throw new ResourceNotFoundException(uri);
         Node node = nodePath.getNode();
+        Resource r = nodeToResource(nodePath, uri);
         if (forProcessing) {
-            this.authorizationManager.authorizeReadProcessed(node, principal);
+            this.authorizationManager.authorizeReadProcessed(r, principal);
         } else {
-            this.authorizationManager.authorizeRead(node, principal);
+            this.authorizationManager.authorizeRead(r, principal);
         }
         return this.contentStore.retrieve(node.getNodeID()).getStream();
     }
@@ -456,9 +457,9 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
 
         if (forProcessing) {
-            this.authorizationManager.authorizeReadProcessed(node, principal);
+            this.authorizationManager.authorizeReadProcessed(collection, principal);
         } else {
-            this.authorizationManager.authorizeRead(node, principal);
+            this.authorizationManager.authorizeRead(collection, principal);
         }
         
         List<NodeID> childIDs = new ArrayList<NodeID>(node.getChildIDs());
@@ -509,6 +510,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         Node srcNode = srcNodes.getNode();
         Node srcParentNode = srcNodes.getParentNode();
         ResourceImpl src = nodeToResource(srcNodes, srcUri);
+        ResourceImpl srcParent = nodeToResource(srcNodes.getParentNodePath(), srcUri.getParent());
         
         // Checking dest
         NodePath destNodes = load(destUri);
@@ -527,7 +529,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Invalid destination resource");
         }
 
-        this.authorizationManager.authorizeMove(srcNode, destParentNode, principal, overwrite);
+        this.authorizationManager.authorizeMove(src, srcParent, 
+                destParent, principal, overwrite);
 
         // Performing delete operation
         if (destNodes != null) {
@@ -574,12 +577,14 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
 
         Node node = nodePath.getNode();
-        this.authorizationManager.authorizeDelete(node, principal);
 
         Node parentNode = nodePath.getParentNode();
         NodePath parentNodePath = nodePath.getParentNodePath();
-        ResourceImpl parentCollection = nodeToResource(parentNodePath, uri);
+        ResourceImpl r = nodeToResource(nodePath, uri);
+        ResourceImpl parentCollection = nodeToResource(parentNodePath, uri.getParent());
         parentCollection = this.resourceEvaluator.contentModification(parentCollection, principal);
+
+        this.authorizationManager.authorizeDelete(r, parentCollection, principal);
 
         parentNode = new Node(
                 parentNode.getNodeID(), parentNode.getParentID(), 
@@ -621,7 +626,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             }
         }
 
-        this.authorizationManager.authorizeWrite(n, principal);
+        this.authorizationManager.authorizeWrite(r, principal);
         
 //        this.lockManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds,
 //                (lockToken != null));
@@ -669,7 +674,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
 
-        this.authorizationManager.authorizeWrite(n, principal);
+        this.authorizationManager.authorizeWrite(original, principal);
         ResourceImpl originalClone = (ResourceImpl) original.clone();
 
         ResourceImpl newResource = this.resourceEvaluator.propertiesChange(original, principal,
@@ -702,7 +707,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("resource is collection");
         }
 
-        this.authorizationManager.authorizeWrite(n, principal);
+        this.authorizationManager.authorizeWrite(r, principal);
         File tempFile = null;
         try {
             // Write to a temporary file to avoid locking:
@@ -740,7 +745,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
         Node n = nodePath.getNode();
         ResourceImpl r = nodeToResource(nodePath, resource.getURI());
-        this.authorizationManager.authorizeAll(n, principal);
+        this.authorizationManager.authorizeAll(r, principal);
 
         try {
             Resource original = (Resource) r.clone();
@@ -876,7 +881,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
                     + uri + ": parent is not a collection");
         }
 
-        this.authorizationManager.authorizeCreate(parentNode, principal);
+        this.authorizationManager.authorizeCreate(parent, principal);
 
         ResourceImpl newResource = this.resourceEvaluator.create(principal, uri, collection);
 

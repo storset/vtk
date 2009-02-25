@@ -35,11 +35,11 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.AclImpl;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.ReadOnlyException;
 import org.vortikal.repository.RepositoryAction;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -100,55 +100,55 @@ public class AuthorizationManager {
      * defined in {@link #ACTION_AUTHORIZATIONS}.
      * @param principal the principal performing the action
      */
-    public void authorizeAction(Node node, RepositoryAction action, 
-            Principal principal) throws AuthenticationException, AuthorizationException,
-            ResourceLockedException, IOException {
-
-        if (!RepositoryAction.REPOSITORY_ACTION_SET.contains(action)
-                || RepositoryAction.COPY.equals(action)
-                || RepositoryAction.MOVE.equals(action)) {
-            throw new IllegalArgumentException(
-                "Unable to authorize for action " + action
-                + ": must be one of (except COPY/MOVE) " + RepositoryAction.REPOSITORY_ACTION_SET);
-        }
-
-        if (RepositoryAction.UNEDITABLE_ACTION.equals(action)) {
-            throw new AuthorizationException("Uneditable");
-        } else if (RepositoryAction.READ_PROCESSED.equals(action)) {
-            authorizeReadProcessed(node, principal);
-
-        } else if (RepositoryAction.READ.equals(action)) {
-            authorizeRead(node, principal);
-
-        } else if (RepositoryAction.CREATE.equals(action)) {
-            authorizeCreate(node, principal);
-
-        } else if (RepositoryAction.WRITE.equals(action)) {
-            authorizeWrite(node, principal);
-
-        } else if (RepositoryAction.EDIT_COMMENT.equals(action)) {
-            authorizeEditComment(node, principal);
-
-        } else if (RepositoryAction.ADD_COMMENT.equals(action)) {
-            authorizeAddComment(node, principal);
-
-        } else if (RepositoryAction.WRITE_ACL.equals(action) ||
-                RepositoryAction.ALL.equals(action)) {
-            authorizeAll(node, principal);
-
-        } else if (RepositoryAction.UNLOCK.equals(action)) {
-            authorizeUnlock(node, principal);
-
-        } else if (RepositoryAction.DELETE.equals(action)) {
-            authorizeDelete(node, principal);
-
-        } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
-            authorizePropertyEditAdminRole(node, principal);
-
-        } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
-            authorizePropertyEditRootRole(node, principal);
-        }
-    }
+//    public void authorizeAction(Resource node, RepositoryAction action, 
+//            Principal principal) throws AuthenticationException, AuthorizationException,
+//            ResourceLockedException, IOException {
+//
+//        if (!RepositoryAction.REPOSITORY_ACTION_SET.contains(action)
+//                || RepositoryAction.COPY.equals(action)
+//                || RepositoryAction.MOVE.equals(action)) {
+//            throw new IllegalArgumentException(
+//                "Unable to authorize for action " + action
+//                + ": must be one of (except COPY/MOVE) " + RepositoryAction.REPOSITORY_ACTION_SET);
+//        }
+//
+//        if (RepositoryAction.UNEDITABLE_ACTION.equals(action)) {
+//            throw new AuthorizationException("Uneditable");
+//        } else if (RepositoryAction.READ_PROCESSED.equals(action)) {
+//            authorizeReadProcessed(node, principal);
+//
+//        } else if (RepositoryAction.READ.equals(action)) {
+//            authorizeRead(node, principal);
+//
+//        } else if (RepositoryAction.CREATE.equals(action)) {
+//            authorizeCreate(node, principal);
+//
+//        } else if (RepositoryAction.WRITE.equals(action)) {
+//            authorizeWrite(node, principal);
+//
+//        } else if (RepositoryAction.EDIT_COMMENT.equals(action)) {
+//            authorizeEditComment(node, principal);
+//
+//        } else if (RepositoryAction.ADD_COMMENT.equals(action)) {
+//            authorizeAddComment(node, principal);
+//
+//        } else if (RepositoryAction.WRITE_ACL.equals(action) ||
+//                RepositoryAction.ALL.equals(action)) {
+//            authorizeAll(node, principal);
+//
+//        } else if (RepositoryAction.UNLOCK.equals(action)) {
+//            authorizeUnlock(node, principal);
+//
+//        } else if (RepositoryAction.DELETE.equals(action)) {
+//            authorizeDelete(node, principal);
+//
+//        } else if (RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION.equals(action)) {
+//            authorizePropertyEditAdminRole(node, principal);
+//
+//        } else if (RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION.equals(action)) {
+//            authorizePropertyEditRootRole(node, principal);
+//        }
+//    }
     
     
     private static final RepositoryAction[] READ_PROCESSED_AUTH_PRIVILEGES = 
@@ -162,12 +162,11 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeReadProcessed(Node node, Principal principal) 
+    public void authorizeReadProcessed(Resource node, Principal principal) 
         throws AuthenticationException, AuthorizationException, IOException {
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
             return;
-
         aclAuthorize(principal, node, READ_PROCESSED_AUTH_PRIVILEGES);
     }
 
@@ -184,7 +183,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeRead(Node node, Principal principal) 
+    public void authorizeRead(Resource node, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException {
 
@@ -210,7 +209,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeCreate(Node node, Principal principal)
+    public void authorizeCreate(Resource node, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         ResourceLockedException, IOException {
 
@@ -237,7 +236,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeWrite(Node node, Principal principal)
+    public void authorizeWrite(Resource node, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -263,7 +262,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeAddComment(Node node, Principal principal)
+    public void authorizeAddComment(Resource node, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -291,7 +290,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeEditComment(Node node, Principal principal)
+    public void authorizeEditComment(Resource node, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -321,7 +320,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeAll(Node node, Principal principal)
+    public void authorizeAll(Resource node, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -350,7 +349,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeUnlock(Node node, Principal principal) 
+    public void authorizeUnlock(Resource node, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -378,16 +377,13 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeDelete(Node node, Principal principal) 
+    public void authorizeDelete(Resource node, Resource parent, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
         ResourceLockedException, IOException {
 
         checkReadOnly(principal);
 
-//        this.lockManager.lockAuthorize(resource, principal, true);
-        
         try {
-            Node parent = this.nodeStore.retrieve(node.getParentID());
             authorizeWrite(parent, principal);
             return;
         } catch (Exception e) {
@@ -410,7 +406,7 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizePropertyEditAdminRole(Node node, Principal principal) 
+    public void authorizePropertyEditAdminRole(Resource node, Principal principal) 
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException {
         if (principal == null) {
@@ -437,14 +433,14 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizePropertyEditRootRole(Node uri, Principal principal)
+    public void authorizePropertyEditRootRole(Resource node, Principal principal)
         throws AuthenticationException, AuthorizationException,
         ResourceLockedException, IOException {
 
         if (!this.roleManager.hasRole(principal, RoleManager.ROOT))
             throw new AuthorizationException();
         
-        authorizeWrite(uri, principal);
+        authorizeWrite(node, principal);
     }
     
     
@@ -458,8 +454,8 @@ public class AuthorizationManager {
      * @return is authorized
      * @throws IOException
      */
-    public void authorizeMove(Node srcNode, Node destParent,
-            Principal principal, boolean deleteDestination) 
+    public void authorizeMove(Resource srcNode, Resource srcParent, 
+            Resource destParent, Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
         ResourceLockedException, IOException {
 
@@ -469,7 +465,7 @@ public class AuthorizationManager {
             return;
         authorizeRead(srcNode, principal);
         authorizeCreate(destParent, principal);
-        authorizeDelete(srcNode, principal);
+        authorizeDelete(srcNode, srcParent, principal);
     }
 
     
@@ -494,12 +490,11 @@ public class AuthorizationManager {
      * <p>5) (g, privilege) is present in the resource's ACL, where g is a group
      * identifier and the user is a member of that group
      **/
-    private void aclAuthorize(Principal principal, Node node, RepositoryAction[] privileges) 
+    private void aclAuthorize(Principal principal, Resource node, RepositoryAction[] privileges) 
         throws AuthenticationException, AuthorizationException {
 
-        Acl acl = getAcl(node);
-        Principal owner = getOwner(node);
-        
+        Acl acl = node.getAcl();
+        Principal owner = node.getOwner();
         for (int i = 0; i < privileges.length; i++) {
             RepositoryAction privilege = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(privilege);
@@ -550,7 +545,7 @@ public class AuthorizationManager {
             }
         }
        throw new AuthorizationException("principal: " + principal 
-               + ", node: " + node.getNodeID() 
+               + ", node: " + node.getURI() 
                + ", privs: " + Arrays.asList(privileges));
     }
     
@@ -590,12 +585,4 @@ public class AuthorizationManager {
 //    }
 
     
-    private Principal getOwner(Node node) {
-        System.out.println("TODO: implement AuthorizationManager.getOwner(node)");
-        return this.principalFactory.getPrincipal("root@localhost", Principal.Type.USER);
-    }
-    
-    private Acl getAcl(Node node) {
-        return new AclImpl();
-    }
 }

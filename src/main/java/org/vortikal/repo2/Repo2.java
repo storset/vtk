@@ -881,12 +881,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
         ResourceImpl newResource = this.resourceEvaluator.create(principal, uri, collection);
 
         try {
-//            Acl newAcl = (Acl) parent.getAcl().clone();
-//            newResource.setAcl(newAcl);
-//            newResource.setInheritedAcl(true);
-//            int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent
-//                    .getID();
-//            newResource.setAclInheritedFrom(aclIneritedFrom);
+            Acl newAcl = (Acl) parent.getAcl().clone();
+            newResource.setAcl(newAcl);
+            newResource.setInheritedAcl(true);
+            NodeID aclIneritedFrom = parent.isInheritedAcl() ? 
+                    parent.getAclInheritedFrom() : parent.getNodeID();
+            newResource.setAclInheritedFrom(aclIneritedFrom);
             JSONObject nodeData = resourceToNodeData(newResource);
             String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
             NodeID id = NodeID.valueOf(identifier);

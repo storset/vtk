@@ -968,7 +968,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         }        
     }
 
-	private void populateCustomProperties(ResourceImpl[] resources, List<Map<String, Object>> propertyList) {
+	private void populateCustomProperties(ResourceImpl[] resources, List<Map<String, Object>> propertyRows) {
 
         Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
 
@@ -979,7 +979,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         Map<SqlDaoUtils.PropHolder, List<String>> propMap =
             new HashMap<SqlDaoUtils.PropHolder, List<String>>();
 
-        for (Map<String, Object> propEntry: propertyList) {
+        for (Map<String, Object> propEntry: propertyRows) {
 
             SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
             prop.propID = propEntry.get("id");

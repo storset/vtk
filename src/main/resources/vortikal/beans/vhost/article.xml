@@ -33,6 +33,11 @@
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
   </bean>
 
+  <bean id="resourceTypeIsNotDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
+	<property name="invert" value="true" />
+  </bean>
+  
   <bean id="resourceTypeIsEvent" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="eventResourceTypeDefinition" />
   </bean>

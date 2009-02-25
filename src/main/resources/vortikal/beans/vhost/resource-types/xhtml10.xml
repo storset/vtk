@@ -4,12 +4,45 @@
 <beans>
 
   <!-- XHTML 1.0 resource -->
+  
+  <bean id="xhtml10ResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="xhtml10"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
+      <property name="assertions">
+      <list>
+        <ref bean="docTypeIsXHtml10" />
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="xhtml10OverriddenGuessedCharacterEncodingPropDef" />
+        <ref bean="xhtml10OverriddenCharacterEncodingPropDef" />
+        <ref bean="xhtml10OverriddenHtmlTitlePropDef" />
+        <ref bean="xhtml10OverriddenTitlePropDef" />
+      </list>
+    </property>
+  </bean>
+  
+    <bean id="xhtml10StricResourceTypeDefinition"
+        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="xhtml10strict"/>
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="xhtml10ResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <ref bean="docTypeIsXHtml10Strict" />
+      </list>
+    </property>
+  </bean>
+  
 
   <bean id="xhtml10TransResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="xhtml10trans"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
-    <property name="parentTypeDefinition" ref="htmlResourceTypeDefinition" />
+    <property name="parentTypeDefinition" ref="xhtml10ResourceTypeDefinition" />
     <property name="assertions">
       <list>
         <ref bean="docTypeIsXHtml10Transitional" />
@@ -17,16 +50,12 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="xhtml10TransOverriddenGuessedCharacterEncodingPropDef" />
-        <ref bean="xhtml10TransOverriddenCharacterEncodingPropDef" />
-        <ref bean="xhtml10TransOverriddenHtmlTitlePropDef" />
-        <ref bean="xhtml10TransOverriddenTitlePropDef" />
         <ref bean="xhtml10TransTypePropDef" />
       </list>
     </property>
   </bean>
 
-  <bean id="xhtml10TransOverriddenGuessedCharacterEncodingPropDef"
+  <bean id="xhtml10OverriddenGuessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
     <property name="contentModificationEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
@@ -49,11 +78,11 @@
     </property>
   </bean>
 
-  <bean id="xhtml10TransOverriddenCharacterEncodingPropDef"
+  <bean id="xhtml10OverriddenCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="characterEncodingPropDef" />
   </bean>
-
+  
   <bean id="docTypeIsXHtml10Transitional"
         class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -61,9 +90,22 @@
     <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Transitional//EN&#x22;\s+&#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#x22;"/>
   </bean>
 
+  <bean id="docTypeIsXHtml10Strict"
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="docType" />
+    <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0 Strict//EN&#x22; &#x22;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&#x22;"/>
+  </bean>
+  
+    <bean id="docTypeIsXHtml10"
+        class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="docType" />
+    <property name="pattern" value="html PUBLIC &#x22;-//W3C//DTD XHTML 1.0.*" />
+  </bean>
 
   <!-- Override html.htmlTitle: -->
-  <bean id="xhtml10TransOverriddenHtmlTitlePropDef"
+  <bean id="xhtml10OverriddenHtmlTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="htmlTitlePropDef" />
     <property name="contentModificationEvaluator" ref="xhtmlOverriddenHtmlTitlePropertyEvaluator" />
@@ -77,7 +119,7 @@
 
 
   <!-- Override resource.title: -->
-  <bean id="xhtml10TransOverriddenTitlePropDef"
+  <bean id="xhtml10OverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="contentModificationEvaluator" ref="xhtmlOverriddenTitlePropertyEvaluator" />

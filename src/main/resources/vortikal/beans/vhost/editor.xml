@@ -11,7 +11,7 @@
       <list>
         <ref bean="editor.modeParameterAssertion" />
         <ref bean="requiresWritePermissionAssertion" />
-        <!--ref bean="resourceTypeInXhtmlTrans" /-->
+        <ref bean="resourceTypeInXhtml" /> 
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>
@@ -34,7 +34,8 @@
   <bean id="editor.unstructuredXhtmlEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
-        <ref bean="resourceTypeIsXhtmlTrans" />
+        <ref bean="resourceTypeInXhtml" />
+        <ref bean="resourceTypeIsNotDocument" /> 
       </list>
     </property>
     <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
@@ -291,7 +292,7 @@
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="contentResourceType" ref="xhtml10ResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">
@@ -308,7 +309,7 @@
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">
@@ -336,7 +337,7 @@
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">
@@ -366,7 +367,7 @@
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">

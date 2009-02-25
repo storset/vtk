@@ -315,17 +315,14 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
+            <ref bean="navigationTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
-            
-            <!--ref bean="collection.recursiveListingPropDef" /-->
             <ref bean="collection.pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
-           
-
           </list>
         </property>
       </bean>
@@ -343,6 +340,7 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
+            <ref bean="navigationTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
@@ -373,23 +371,19 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
+            <ref bean="navigationTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
             <ref bean="collection.pageLimitPropDef" />
-
             <ref bean="eventListing.recursiveListingPropDef" />
-
             <ref bean="eventListing.hideEndDatePropDef" />
             <ref bean="eventListing.hideLocationPropDef" />
-           
-
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="collection.hideNumberOfComments" />
           </list>
-        </property>
-        
+        </property>        
       </bean>
     </property>
   </bean>

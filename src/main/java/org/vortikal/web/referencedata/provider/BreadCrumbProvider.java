@@ -36,8 +36,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -93,19 +95,22 @@ import org.vortikal.web.service.Service;
  */
 public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBean {
 
-    private Repository repository = null;
-    private Service service = null;
+    private Repository repository;
+    private Service service;
     private String breadcrumbName = "breadcrumb";
-    private PropertyTypeDefinition ignoreProperty = null;
-    private PropertyTypeDefinition[] titleOverrideProperties = null;
-    private boolean skipCurrentResource = false;
-    private boolean skipIndexFile = false;
-    
+    private PropertyTypeDefinition ignoreProperty;
+    private PropertyTypeDefinition[] titleOverrideProperties;
+    private boolean skipCurrentResource;
+    private boolean skipIndexFile;
+    private PropertyTypeDefinition navigationTitlePropDef;
+
+	@Required
     public final void setRepository(final Repository newRepository) {
         this.repository = newRepository;
     }
 
-    public void setService(Service service) {
+	@Required
+	public void setService(Service service) {
         this.service = service;
     }
     
@@ -130,6 +135,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         this.skipCurrentResource = skipCurrentResource;
     }
     
+    public void setNavigationTitlePropDef(
+			PropertyTypeDefinition navigationTitlePropDef) {
+		this.navigationTitlePropDef = navigationTitlePropDef;
+	}
+    
     public final void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
             throw new BeanInitializationException(
@@ -144,7 +154,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 "Property 'breadcrumbName' cannot be null");
         }
     }
-
 
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) {
@@ -200,6 +209,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                 }
 
                 if (i == length - 1 && !skipLastElement) {
+                	String navigationTitle = null;
+                	if (this.navigationTitlePropDef != null) {
+                		navigationTitle = getNavigationTitle(r);
+                	}
+                	title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
                     breadCrumb.add(new BreadcrumbElement(url, title, null));
                 } else {
                     breadCrumb.add(new BreadcrumbElement(url, title));
@@ -239,6 +253,14 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
         if (resource.getName().equals("/")) return this.repository.getId();
         return resource.getName();
+    }
+    
+    private String getNavigationTitle(Resource resource) {
+    	Property prop = resource.getProperty(this.navigationTitlePropDef);
+    	if (prop != null) {
+    		return prop.getStringValue();
+    	}
+    	return null;
     }
     
     public String toString() {

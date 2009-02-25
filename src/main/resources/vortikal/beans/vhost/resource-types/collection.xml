@@ -23,22 +23,25 @@
     <property name="parentTypeDefinition" ref="resourceResourceTypeDefinition" />
     <property name="propertyTypeDefinitions">
       <list>
-
         <ref bean="collectionTitlePropDef" />
-
         <ref bean="collectionOverriddenTitlePropDef" />
+        <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
-
         <ref bean="collection.recursiveListingPropDef" />
         <ref bean="collection.pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
-
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
         <ref bean="collection.hideNumberOfComments" />
-        
       </list>
     </property>
+  </bean>
+  
+  <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="navigationTitle" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
 
   <bean id="collection.typePropDef"

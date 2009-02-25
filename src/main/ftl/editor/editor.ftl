@@ -368,9 +368,10 @@
         </div><#-- On the fly div STOP caption -->
 
       <#-- hack for setting collection titles: -->
-      <#elseif type = 'HTML' && name='userTitle' && (resource.resourceType = 'event-listing' ||
-               resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
-        <#if value = ''>
+      <#elseif (type = 'HTML' && name='userTitle') || (type = 'STRING' && name='navigationTitle')
+        && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+        
+        <#if value = '' && name='userTitle'>
           <#local value = resource.title?html />
         </#if>
         <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />

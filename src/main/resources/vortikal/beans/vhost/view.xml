@@ -239,6 +239,7 @@
         <ref bean="titlePropDef" />
       </list>
     </property>
+    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
     <property name="skipCurrentResource" value="true" />
     <property name="skipIndexFile" value="true" />
   </bean>

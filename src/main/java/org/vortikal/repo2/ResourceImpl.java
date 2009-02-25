@@ -45,7 +45,6 @@ import org.vortikal.repository.LockImpl;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
@@ -351,7 +350,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
             lock = (LockImpl) this.lock.clone();
 
         ResourceImpl clone = new ResourceImpl(this.uri, this.resourceTypeTree);
-        clone.setID(this.id);
+        clone.setNodeID(this.nodeID);
 
         if (this.acl != null) {
             Acl acl = (Acl) this.acl.clone();

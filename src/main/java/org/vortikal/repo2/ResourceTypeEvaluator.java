@@ -46,7 +46,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
@@ -704,7 +703,7 @@ public class ResourceTypeEvaluator {
 
 
         public NodeID getNodeID() {
-            return NodeID.valueOf(this.originalResource.getNodeID());
+            return this.originalResource.getNodeID();
         }
 
         public Resource getOriginalResource() {

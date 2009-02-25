@@ -38,8 +38,11 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,9 +60,10 @@ import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
@@ -75,6 +79,11 @@ import org.vortikal.security.token.TokenManager;
 public class Repo2 implements Repository, ApplicationContextAware {
 
     private static final String NODE_DATA_RESOURCE_TYPE = "rtype";
+    private static final String NODE_DATA_ACL = "acl";
+    private static final String NODE_DATA_ACL_ACTION = "acl.action";
+    private static final String NODE_DATA_ACL_USERS = "acl.users";
+    private static final String NODE_DATA_ACL_GROUPS = "acl.groups";
+    private static final String NODE_DATA_ACL_PSEUDOS = "acl.pseudos";
     private static final String NODE_DATA_PROPS = "props";
     private static final String NODE_DATA_PROP_NAMESPACE = "prop.namespace";
     private static final String NODE_DATA_PROP_NAME = "prop.name";
@@ -116,7 +125,60 @@ public class Repo2 implements Repository, ApplicationContextAware {
 //        return null;
 //    }
     
-    private List<Node> load(Path uri) throws Exception {
+
+    /**
+     * XXX: refine
+     */
+    private interface NodePath {
+        public Node getNode();
+        public Node getParentNode();
+        public NodePath extend(Node node);
+        public NodePath getParentNodePath();
+        public Iterator<Node> fromRoot();
+        public Iterator<Node> towardsRoot();
+    }
+    
+    private class NodePathImpl implements NodePath {
+        private List<Node> nodes;
+        public NodePathImpl(List<Node> nodes) {
+            this.nodes = nodes;
+        }
+        public Node getNode() {
+            return this.nodes.get(this.nodes.size() - 1);
+        }
+        public Node getParentNode() {
+            if (this.nodes.size() > 1) {
+                return this.nodes.get(this.nodes.size() - 2);
+            }
+            return null;
+        }
+        public NodePath extend(Node node) {
+            List<Node> l = new ArrayList<Node>(this.nodes);
+            l.add(node);
+            return new NodePathImpl(l);
+        }
+        public NodePath getParentNodePath() {
+            if (this.nodes.size() == 1) {
+                return null;
+            }
+            List<Node> l = this.nodes.subList(0, this.nodes.size() - 1);
+            return new NodePathImpl(l);
+        }
+        public Iterator<Node> fromRoot() {
+            List<Node> list = new ArrayList<Node>(this.nodes);
+            return list.iterator();
+        }
+        public Iterator<Node> towardsRoot() {
+            List<Node> reversed = new ArrayList<Node>(this.nodes);
+            Collections.reverse(reversed);
+            return reversed.iterator();
+        }
+        public String toString() {
+            return this.nodes.toString();
+        }
+    }
+    
+    private NodePath load(Path uri) throws Exception {
         Node n = this.store.retrieve(this.rootID);
         List<Node> result = new ArrayList<Node>();
         result.add(n);
@@ -130,7 +192,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             n = this.store.retrieve(childID);
             result.add(n);
         }
-        return result;
+        return new NodePathImpl(result);
     }
     
     private void delete(Node n) {
@@ -138,8 +200,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
     }
 
     public boolean exists(String token, Path uri) throws Exception {
-        List<Node> l = load(uri);
-        return l != null;
+        NodePath nodes = load(uri);
+        return nodes != null;
     }
     
     private Property createProp(JSONObject propsObject) throws Exception {
@@ -176,12 +238,6 @@ public class Repo2 implements Repository, ApplicationContextAware {
         return prop;
     }
 
-
-
-    private void storeBinaryProps(ResourceImpl resource) throws Exception {
-        
-    }
-    
     private JSONObject createJSONProp(Property prop) throws Exception {
         JSONObject json = new JSONObject();
         json.put(NODE_DATA_PROP_NAMESPACE, prop.getDefinition().getNamespace().getUri());
@@ -214,16 +270,109 @@ public class Repo2 implements Repository, ApplicationContextAware {
         return json;
     }
 
-    private ResourceImpl nodeToResource(Node node, Path uri) throws Exception {
+
+    private Acl createAcl(JSONArray  aclObject) throws Exception {
+        Acl acl = new AclImpl();
+        for (int i = 0; i < aclObject.length(); i++) {
+            JSONObject ace = aclObject.getJSONObject(i);
+            String action = ace.getString(NODE_DATA_ACL_ACTION);
+            RepositoryAction priv = Privilege.getActionByName(action);
+            
+            if (ace.has(NODE_DATA_ACL_USERS)) {
+                JSONArray users = ace.getJSONArray(NODE_DATA_ACL_USERS);
+                for (int j = 0; j < users.length(); j++) {
+                    String user = users.getString(j);
+                    Principal p = this.principalFactory.getPrincipal(user, Principal.Type.USER);
+                    acl.addEntry(priv, p);
+                }
+            }
+            if (ace.has(NODE_DATA_ACL_GROUPS)) {
+                JSONArray groups = ace.getJSONArray(NODE_DATA_ACL_GROUPS);
+                for (int j = 0; j < groups.length(); j++) {
+                    String group = groups.getString(j);
+                    Principal p = this.principalFactory.getPrincipal(group, Principal.Type.GROUP);
+                    acl.addEntry(priv, p);
+                }
+            }
+            if (ace.has(NODE_DATA_ACL_PSEUDOS)) {
+                JSONArray pseudos = ace.getJSONArray(NODE_DATA_ACL_PSEUDOS);
+                for (int j = 0; j < pseudos.length(); j++) {
+                    String pseudo = pseudos.getString(j);
+                    Principal p = this.principalFactory.getPrincipal(pseudo, Principal.Type.PSEUDO);
+                    acl.addEntry(priv, p);
+                }
+            }
+        }
+        return acl;
+    }
+
+    private JSONArray createJSONAcl(Acl acl) throws Exception {
+        JSONArray arr = new JSONArray();
+        Set<RepositoryAction> actions = acl.getActions();
+        for (RepositoryAction action : actions) {
+            JSONObject entry = new JSONObject();
+            JSONArray users = new JSONArray();
+            JSONArray groups = new JSONArray();
+            JSONArray pseudos = new JSONArray();
+            Set<Principal> principals = acl.getPrincipalSet(action);
+            for (Principal principal : principals) {
+                switch (principal.getType()) {
+                case USER:
+                    users.put(principal.getQualifiedName());
+                    break;
+                case GROUP:
+                    groups.put(principal.getQualifiedName());
+                    break;
+                case PSEUDO:
+                    pseudos.put(principal.getQualifiedName());
+                    break;
+                }
+            }
+            entry.put(NODE_DATA_ACL_ACTION, action.toString());
+            if (users.length() > 0) {
+                entry.put(NODE_DATA_ACL_USERS, users);
+            }
+            if (groups.length() > 0) {
+                entry.put(NODE_DATA_ACL_GROUPS, groups);
+            }
+            if (pseudos.length() > 0) {
+                entry.put(NODE_DATA_ACL_PSEUDOS, pseudos);
+            }
+            arr.put(entry);
+        }
+        return arr;
+    }
+    
+    private ResourceImpl nodeToResource(NodePath nodePath, Path uri) throws Exception {
+        Node node = nodePath.getNode();
+
         JSONObject nodeData = node.getData();
         ResourceImpl r = new ResourceImpl(
                 uri, this.resourceTypeTree);
         r.setResourceType(nodeData.getString(NODE_DATA_RESOURCE_TYPE));
-        r.setID(-1);
-        r.setNodeID(node.getNodeID().getIdentifier());
+        r.setNodeID(node.getNodeID());
         r.setUri(uri);
-        Acl acl = new AclImpl();
+
+        JSONArray aclObj = null;
+        Node aclNode = node;
+        for (Iterator<Node> i = nodePath.towardsRoot(); i.hasNext();) {
+            aclNode = i.next();
+            if (aclNode.getData().has(NODE_DATA_ACL)) {
+                aclObj = aclNode.getData().getJSONArray(NODE_DATA_ACL);
+                break;
+            }
+        }
+        if (aclObj == null) {
+            throw new IllegalStateException("Must have at least one ACL resource (/)");
+        }
+        Acl acl = createAcl(aclObj);
         r.setAcl(acl);
+        r.setInheritedAcl(false);
+        if (aclNode != node) {
+            r.setInheritedAcl(true);
+            r.setAclInheritedFrom(aclNode.getNodeID());
+        }
+        
         JSONArray props = nodeData.getJSONArray(NODE_DATA_PROPS);
         for (int i = 0; i < props.length(); i++) {
             JSONObject propsObject = props.getJSONObject(i);
@@ -241,6 +390,10 @@ public class Repo2 implements Repository, ApplicationContextAware {
     private JSONObject resourceToNodeData(ResourceImpl resource) throws Exception {
         JSONObject nodeData = new JSONObject();
         nodeData.put(NODE_DATA_RESOURCE_TYPE, resource.getResourceType());
+        if (!resource.isInheritedAcl()) {
+            JSONArray acl = createJSONAcl(resource.getAcl());
+            nodeData.put(NODE_DATA_ACL, acl);
+        }
         JSONArray props = new JSONArray();
         for (Property prop: resource.getProperties()) {
             JSONObject jsonProp = createJSONProp(prop);
@@ -256,26 +409,26 @@ public class Repo2 implements Repository, ApplicationContextAware {
             Exception {
         
         Principal principal = this.tokenManager.getPrincipal(token);
-        List<Node> nodes = load(uri);
-        if (nodes == null) 
+        NodePath nodePath = load(uri);
+        if (nodePath == null) 
             throw new ResourceNotFoundException(uri);
-        Node node = nodes.get(nodes.size() - 1);
+        Node node = nodePath.getNode();
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(node, principal);
         } else {
             this.authorizationManager.authorizeRead(node, principal);
         }
-        return nodeToResource(node, uri);
+        return nodeToResource(nodePath, uri);
     }
 
     public InputStream getInputStream(String token, Path uri, boolean forProcessing)
             throws Exception {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-        List<Node> nodes = load(uri);
-        if (nodes == null) 
+        NodePath nodePath = load(uri);
+        if (nodePath == null) 
             throw new ResourceNotFoundException(uri);
-        Node node = nodes.get(nodes.size() - 1);
+        Node node = nodePath.getNode();
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(node, principal);
         } else {
@@ -289,14 +442,14 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throws Exception {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-        List<Node> nodes = load(uri);
+        NodePath nodePath = load(uri);
 
-        if (nodes == null) {
+        if (nodePath == null) {
             throw new ResourceNotFoundException(uri);
         }
         
-        Node node = nodes.get(nodes.size() - 1);
-        Resource collection = nodeToResource(node, uri);
+        Node node = nodePath.getNode();
+        Resource collection = nodeToResource(nodePath, uri);
 
         if (!collection.isCollection()) {
             throw new IllegalOperationException("Can't list children for non-collection resources");
@@ -313,13 +466,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
         if (childIDs.size() > 0) {
             list = this.store.retrieve(childIDs);
         }
-//        ResourceImpl[] list = this.dao.loadChildren(collection);
-        
         Resource[] children = new Resource[list.size()];
         int i = 0;
         for (Node n: list) {
+            NodePath childNodePath = nodePath.extend(n);
             Path childURI = collection.getURI().extend(node.getChildName(n.getNodeID()));
-            Resource child = nodeToResource(n, childURI);
+            Resource child = nodeToResource(childNodePath, childURI);
             children[i++] = child;
         }
         return children;
@@ -350,27 +502,27 @@ public class Repo2 implements Repository, ApplicationContextAware {
         validateCopyURIs(srcUri, destUri);
 
         // Loading and checking source resource
-        List<Node> srcNodes = load(srcUri);
+        NodePath srcNodes = load(srcUri);
         if (srcNodes == null) {
             throw new ResourceNotFoundException(srcUri);
         }
-        Node srcNode = srcNodes.get(srcNodes.size() - 1);
-        Node srcParentNode = srcNodes.get(srcNodes.size() - 2);
-        ResourceImpl src = nodeToResource(srcNode, srcUri);
+        Node srcNode = srcNodes.getNode();
+        Node srcParentNode = srcNodes.getParentNode();
+        ResourceImpl src = nodeToResource(srcNodes, srcUri);
         
         // Checking dest
-        List<Node> destNodes = load(destUri);
+        NodePath destNodes = load(destUri);
         if (destNodes != null && !overwrite) {
             throw new ResourceOverwriteException(destUri);
         }
 
         // checking destParent
-        List<Node> destParentNodes = load(destUri.getParent());
+        NodePath destParentNodes = load(destUri.getParent());
         if (destParentNodes == null) {
             throw new IllegalOperationException("Invalid destination resource");
         }
-        Node destParentNode = destParentNodes.get(destParentNodes.size() - 1);
-        ResourceImpl destParent = nodeToResource(destParentNode, destUri.getParent());
+        Node destParentNode = destParentNodes.getNode();
+        ResourceImpl destParent = nodeToResource(destParentNodes, destUri.getParent());
         if (!destParent.isCollection()) {
             throw new IllegalOperationException("Invalid destination resource");
         }
@@ -379,13 +531,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
         // Performing delete operation
         if (destNodes != null) {
-            ResourceImpl dest = nodeToResource(destNodes.get(destNodes.size() - 1), destUri);
-            Node destNode = destNodes.get(destNodes.size() - 1);
+            Node destNode = destNodes.getNode();
             delete(destNode);
-//            this.dao.delete(dest);
-//            this.contentStore.deleteResource(dest.getURI());
-//             this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), destNode.getNodeID(),
-//                     dest.isCollection()));
         }
 
         try {
@@ -421,18 +568,17 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Cannot delete the root resource ('/')");
         }
 
-        List<Node> nodes = load(uri);
-        if (nodes == null) {
+        NodePath nodePath = load(uri);
+        if (nodePath == null) {
             throw new ResourceNotFoundException(uri);
         }
 
-        Node node = nodes.get(nodes.size() - 1);
+        Node node = nodePath.getNode();
         this.authorizationManager.authorizeDelete(node, principal);
 
-        ResourceImpl r = nodeToResource(node, uri);
-
-        Node parentNode = nodes.get(nodes.size() - 2);
-        ResourceImpl parentCollection = nodeToResource(parentNode, uri);
+        Node parentNode = nodePath.getParentNode();
+        NodePath parentNodePath = nodePath.getParentNodePath();
+        ResourceImpl parentCollection = nodeToResource(parentNodePath, uri);
         parentCollection = this.resourceEvaluator.contentModification(parentCollection, principal);
 
         parentNode = new Node(
@@ -457,12 +603,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
         if (depth == Depth.ONE || depth == Depth.INF) {
             throw new IllegalOperationException("Unsupported depth parameter: " + depth);
         }
-        List<Node> nodes = load(uri);
-        if (nodes == null) {
+        NodePath nodePath = load(uri);
+        if (nodePath == null) {
             throw new ResourceNotFoundException(uri);
         }
-        Node n = nodes.get(nodes.size() - 1);
-        ResourceImpl r = nodeToResource(n, uri);
+        Node n = nodePath.getNode();
+        ResourceImpl r = nodeToResource(nodePath, uri);
 
         if (lockToken != null) {
             if (r.getLock() == null) {
@@ -513,12 +659,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
         Path uri = resource.getURI();
 
-        List<Node> nodes = load(uri);
-        if (nodes == null) {
+        NodePath nodePath = load(uri);
+        if (nodePath == null) {
             throw new ResourceNotFoundException(uri);
         }
-        Node n = nodes.get(nodes.size() - 1);
-        ResourceImpl original = nodeToResource(n, uri);
+        Node n = nodePath.getNode();
+        ResourceImpl original = nodeToResource(nodePath, uri);
         if (original == null) {
             throw new ResourceNotFoundException(uri);
         }
@@ -545,12 +691,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
         Principal principal = this.tokenManager.getPrincipal(token);
 
-        List<Node> nodes = load(uri);
-        if (nodes == null) {
+        NodePath nodePath = load(uri);
+        if (nodePath == null) {
             throw new ResourceNotFoundException(uri);
         }
-        Node n = nodes.get(nodes.size() - 1);
-        ResourceImpl r = nodeToResource(n, uri);
+        Node n = nodePath.getNode();
+        ResourceImpl r = nodeToResource(nodePath, uri);
 
         if (r.isCollection()) {
             throw new IllegalOperationException("resource is collection");
@@ -588,12 +734,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
 
         Principal principal = this.tokenManager.getPrincipal(token);
-        List<Node> nodes = load(resource.getURI());
-        if (nodes == null) {
+        NodePath nodePath = load(resource.getURI());
+        if (nodePath == null) {
             throw new ResourceNotFoundException(resource.getURI());
         }
-        Node n = nodes.get(nodes.size() - 1);
-        ResourceImpl r = nodeToResource(n, resource.getURI());
+        Node n = nodePath.getNode();
+        ResourceImpl r = nodeToResource(nodePath, resource.getURI());
         this.authorizationManager.authorizeAll(n, principal);
 
         try {
@@ -605,8 +751,9 @@ public class Repo2 implements Repository, ApplicationContextAware {
             }
             ResourceImpl parent = null;
             if (!r.getURI().isRoot()) {
-                Node parentNode = nodes.get(nodes.size() - 2);
-                parent = nodeToResource(parentNode, r.getURI().getParent());
+                Path parentURI = resource.getURI().getParent();
+                NodePath parentNodePath = nodePath.getParentNodePath();
+                parent = nodeToResource(parentNodePath, parentURI);
             }
 
             if (resource.getURI().isRoot() && resource.isInheritedAcl()) {
@@ -623,11 +770,11 @@ public class Repo2 implements Repository, ApplicationContextAware {
                 AclImpl newAcl = (AclImpl) parent.getAcl().clone();
                 r.setAcl(newAcl);
                 r.setInheritedAcl(false);
-                r.setAclInheritedFrom(PropertySetImpl.NULL_RESOURCE_ID);
+                r.setAclInheritedFrom(null);
 
             } else if (!original.isInheritedAcl() && resource.isInheritedAcl()) {
                 /* Switching to inheritance. */
-                r.setAclInheritedFrom(parent.getID());
+                r.setAclInheritedFrom(parent.getNodeID());
                 r.setInheritedAcl(true);
 
             } else {
@@ -714,17 +861,16 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throws Exception {
 
         Principal principal = this.tokenManager.getPrincipal(token);
-        List<Node> nodes = load(uri.getParent());
-        if (nodes == null) {
+        NodePath parentNodePath = load(uri.getParent());
+        if (parentNodePath == null) {
             throw new IllegalOperationException("Cannot create resource " 
                     + uri + ": parent does not exist");
         }
-        Node parentNode = nodes.get(nodes.size() - 1);
+        Node parentNode = parentNodePath.getNode();
         if (parentNode.getChildNames().contains(uri.getName())) {
             throw new ResourceOverwriteException(uri);
         }
-        
-        ResourceImpl parent = nodeToResource(parentNode, uri.getParent());
+        ResourceImpl parent = nodeToResource(parentNodePath, uri.getParent());
         if (!parent.isCollection()) {
             throw new IllegalOperationException("Cannot create resource " 
                     + uri + ": parent is not a collection");
@@ -916,12 +1062,21 @@ public class Repo2 implements Repository, ApplicationContextAware {
         Node root = null;
         try {
             root = this.store.retrieve(this.rootID);
-        } catch (Throwable t) { }
-        if (root == null) {
-            Principal rootPrincipal = this.principalFactory.getPrincipal("root@localhost", Principal.Type.USER);
-            ResourceImpl rootResource = this.resourceEvaluator.create(rootPrincipal, Path.fromString("/"), true);
-            Node rootNode = new Node(this.rootID, null, new HashMap<String, NodeID>(), resourceToNodeData(rootResource));
-            this.store.create(rootNode);
+        } catch (Throwable t) { 
+            t.printStackTrace();
+        }
+        try {
+            if (root == null) {
+                Principal rootPrincipal = this.principalFactory.getPrincipal("root@localhost", Principal.Type.USER);
+                ResourceImpl rootResource = this.resourceEvaluator.create(rootPrincipal, Path.fromString("/"), true);
+                Acl acl = new AclImpl();
+                acl.addEntry(Privilege.ALL, rootPrincipal);
+                rootResource.setAcl(acl);
+                Node rootNode = new Node(this.rootID, null, new HashMap<String, NodeID>(), resourceToNodeData(rootResource));
+                this.store.create(rootNode);
+            }
+        } catch (Throwable t) { 
+            t.printStackTrace();
         }
     }
 

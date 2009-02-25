@@ -35,10 +35,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.ContentStream;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.resourcetype.Content;
 
 public class ContentImpl implements Content {

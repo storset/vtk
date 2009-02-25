@@ -65,24 +65,25 @@ public class OptionsController extends AbstractWebdavController {
         Path uri = requestContext.getResourceURI();
         Map<String, Object> model = new HashMap<String, Object>();
 
-        if (!uri.equals("*")) {
-            Resource resource;
-            try {
-                resource = this.repository.retrieve(token, uri, false);
-                model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
+        // Note: '*' as request URI for OPTIONS requests should be translated to '/'
+        // before we get here.
+        
+        Resource resource;
+        try {
+            resource = this.repository.retrieve(token, uri, false);
+            model.put(WebdavConstants.WEBDAVMODEL_ETAG, resource.getEtag());
 
-            } catch (ResourceNotFoundException e) {
-                this.logger.debug("Caught ResourceNotFoundException for URI " + uri);
-                model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-                model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                          new Integer(HttpServletResponse.SC_NOT_FOUND));
+        } catch (ResourceNotFoundException e) {
+            this.logger.debug("Caught ResourceNotFoundException for URI " + uri);
+            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
+            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
+                      new Integer(HttpServletResponse.SC_NOT_FOUND));
 
-            } catch (AuthorizationException e) {
-                this.logger.debug("Caught AuthorizationException for URI " + uri, e);
-                
-            } catch (AuthenticationException e) {
-                this.logger.debug("Caught AuthorizationException for URI " + uri, e);
-            }
+        } catch (AuthorizationException e) {
+            this.logger.debug("Caught AuthorizationException for URI " + uri, e);
+            
+        } catch (AuthenticationException e) {
+            this.logger.debug("Caught AuthorizationException for URI " + uri, e);
         }
 
         return new ModelAndView("OPTIONS", model);

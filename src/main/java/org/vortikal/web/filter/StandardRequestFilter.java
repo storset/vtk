@@ -30,20 +30,25 @@
  */
 package org.vortikal.web.filter;
 
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
- * Standard request filter. Ensures that the URI is not empty or
- * <code>null</code>.
+ * Standard request filter.
+ * 1) Ensures that the URI is not empty or <code>null</code>.
+ * 2) Translates '*' as request URI to '/' (relevant for a host global OPTIONS request).
  */
 public class StandardRequestFilter extends AbstractRequestFilter {
 
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
+    
+    private static final Pattern URL_ENCODED_SPACE = Pattern.compile("%20");
 
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);
@@ -56,25 +61,31 @@ public class StandardRequestFilter extends AbstractRequestFilter {
         public StandardRequestWrapper(HttpServletRequest request) {
 
             super(request);
-            String requestURI = request.getRequestURI();
-            this.uri = requestURI;
             
-            if (requestURI == null || "".equals(requestURI)) {
-                this.uri = "/";
-            }
+            String requestURI = request.getRequestURI();
+            this.uri = translateUri(requestURI);
 
-            // Spaces are not always decoded by the container:
-            this.uri = this.uri.replaceAll("%20", " ");
             if (logger.isDebugEnabled()) {
-                logger.debug("Translated uri: from '" + requestURI + "' to '" + uri + "'");
+                logger.debug("Translated uri: from '" + requestURI + "' to '" + this.uri + "'");
             }
         }
         
         public String getRequestURI() {
             return this.uri;
         }
-    }
         
+        private String translateUri(String requestURI) {
+            if (requestURI == null 
+                    || "".equals(requestURI)
+                    || "*".equals(requestURI)) {
+                return "/";
+            }
+
+            // Spaces are not always decoded by the container:
+            return URL_ENCODED_SPACE.matcher(requestURI).replaceAll(" ");
+        }
+    }
+
 }
     
 

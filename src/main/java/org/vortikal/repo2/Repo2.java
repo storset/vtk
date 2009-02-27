@@ -492,7 +492,49 @@ public class Repo2 implements Repository, ApplicationContextAware {
     public void copy(String token, Path srcUri, Path destUri, Repository.Depth depth,
             boolean overwrite, boolean preserveACL) throws Exception {
         
-        throw new IllegalStateException("copy() not implemented :(");
+    	validateCopyURIs(srcUri, destUri);
+    	
+    	NodePath srcNodes = load(srcUri);
+        if (srcNodes == null) {
+            throw new ResourceNotFoundException(srcUri);
+        }
+        
+    	NodePath destNodes = load(destUri);
+        if (destNodes == null) {
+            overwrite = false;
+        } else if (!overwrite) {
+            throw new ResourceOverwriteException(destUri);
+        }
+                
+        NodePath parentNodePath = load(destUri.getParent());
+        if (parentNodePath == null) {
+            throw new IllegalOperationException("destination does not exist");
+        }
+        ResourceImpl parent = nodeToResource(parentNodePath, destUri.getParent());
+        if (!parent.isCollection()) {
+        	throw new IllegalOperationException("destination is not a collection");
+        }
+        
+        // TODO implement
+//      Principal principal = this.tokenManager.getPrincipal(token);
+//      this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
+        
+        
+    	ResourceImpl original = nodeToResource(srcNodes, srcUri);
+    	ResourceImpl copy = original.createCopy(destUri);
+    	
+    	// TODO implement
+//    	copy = this.resourceHelper.nameChange(newResource, principal);
+    	
+    	JSONObject nodeData = resourceToNodeData(copy);
+        String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+        NodeID id = NodeID.valueOf(identifier);
+        Node parentNode = parentNodePath.getNode();
+        Node node = new Node(id, parentNode.getNodeID(), new HashMap<String, NodeID>(), nodeData);
+    	this.store.create(node);
+        parentNode.addChild(destUri.getName(), node.getNodeID());
+        this.store.update(parentNode);
+        
     }
 
 
@@ -577,6 +619,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
 
         Node node = nodePath.getNode();
+        
 
         Node parentNode = nodePath.getParentNode();
         NodePath parentNodePath = nodePath.getParentNodePath();
@@ -591,6 +634,9 @@ public class Repo2 implements Repository, ApplicationContextAware {
                 parentNode.getChildMap(), resourceToNodeData(parentCollection));
         parentNode.removeChild(uri.getName());
         this.store.update(parentNode);
+        
+        // XXX: Delete children
+        
         this.store.delete(node);
 
         this.contentStore.delete(node.getNodeID());

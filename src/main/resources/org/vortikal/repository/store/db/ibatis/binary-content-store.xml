@@ -11,7 +11,7 @@
   <!-- XXX: PostgreSQL specific: -->
   <statement id="createBinaryContentStore">
     create table binary_content (
-        node_id varchar(128) not null,
+        node_id varchar(128) REFERENCES node ON DELETE CASCADE,
         content oid null
     )
   </statement>

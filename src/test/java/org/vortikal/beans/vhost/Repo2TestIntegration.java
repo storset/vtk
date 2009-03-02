@@ -30,6 +30,10 @@
  */
 package org.vortikal.beans.vhost;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Random;
 
@@ -84,6 +88,8 @@ public class Repo2TestIntegration extends AbstractBeanContextTestIntegration {
 
     public void testCreateDocument() throws Exception {
         Resource testDocument = repo2.createDocument(rootToken, testDocumentPath);
+        String testDocumentContents = "This is a test document";
+        repo2.storeContent(rootToken, testDocumentPath, new ByteArrayInputStream(testDocumentContents.getBytes()));
         assertNotNull("No testdocument created", testDocument);
     }
 

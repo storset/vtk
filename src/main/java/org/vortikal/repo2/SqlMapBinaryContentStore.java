@@ -45,7 +45,7 @@ public class SqlMapBinaryContentStore extends AbstractSqlMapDataAccessor impleme
             return;
         }
         boolean exists = false;
-//        try {
+//         try {
 //            String sqlMap = getSqlMap("binaryContentStoreExistsQuery");
 //            getSqlMapClientTemplate().queryForObject(sqlMap);
 //            exists = true;
@@ -70,16 +70,13 @@ public class SqlMapBinaryContentStore extends AbstractSqlMapDataAccessor impleme
         Map<String, String> params = new HashMap<String, String>();
         params.put("nodeID", nodeID.getIdentifier());
         String sqlMap = getSqlMap("retrieveContent");
-        Map<String, Object> result = (Map<String, Object>) 
-            getSqlMapClientTemplate().queryForObject(sqlMap, params);
+        Map<String, Object> result = (Map<String, Object>) getSqlMapClientTemplate()
+                .queryForObject(sqlMap, params);
         ContentStream is = (ContentStream) result.get("stream");
         return is;
-//        BinaryStream bs = (BinaryStream) result.get("stream");
-//        return bs.getStream();
     }
 
     public void update(NodeID nodeID, ContentStream is) throws Exception {
-        //BinaryStream bs = new BinaryStream(is, -1);
         String sqlMap = getSqlMap("updateContent");
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("nodeID", nodeID.getIdentifier());

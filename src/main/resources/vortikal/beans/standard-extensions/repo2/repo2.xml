@@ -8,7 +8,6 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-
   <bean id="repository" class="org.vortikal.repo2.Repo2"
         init-method="init" destroy-method="destroy" depends-on="repo2.nodeStoreInitializer">
     <property name="id" value="${repositoryID}" />
@@ -22,7 +21,6 @@
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
-
 
   <bean id="repo2.repositoryInitializer"
         class="org.vortikal.repo2.TransactionalMethodInvokingFactoryBean"
@@ -46,7 +44,6 @@
     <property name="targetObject" ref="repository.nodeStore" />
     <property name="targetMethod" value="createTables" />
   </bean>
-
 
   <bean id="repository.binaryContentStore" 
         class="org.vortikal.repo2.SqlMapBinaryContentStore">
@@ -76,7 +73,6 @@
     <property name="targetMethod" value="createTables" />
   </bean>
 
-
   <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
     <property name="principalFactory" ref="principalFactory" />
     <property name="binaryDao" ref ="repo2.tmpBinaryDao" />
@@ -86,14 +82,12 @@
     <property name="propStore" ref="repository.binaryPropertyStore"/>
   </bean>
 
-
   <bean id="repository.resourceTypeEvaluator"
         class="org.vortikal.repo2.ResourceTypeEvaluator">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="contentStore" ref="repository.binaryContentStore"/>
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
-
 
   <bean id="repo2.authorizationManager" class="org.vortikal.repo2.AuthorizationManager">
     <property name="nodeStore" ref="repository.nodeStore" />

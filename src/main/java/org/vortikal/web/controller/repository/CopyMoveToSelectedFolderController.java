@@ -176,8 +176,6 @@ public class CopyMoveToSelectedFolderController implements Controller {
             model.put("createErrorMessage", "manage.create.copyMove.error.moveFailed");
             model.put("errorItems", filesFailed);
             // return new ModelAndView(errorViewName, model);
-
-            System.out.println(filesFailed);
         }
 
         // Removing session variable

@@ -12,7 +12,7 @@
 
   <statement id="createNodeStore">
     create table node (
-        node_id varchar(128) not null,
+        node_id varchar(128) PRIMARY KEY,
         parent_id varchar(128) null,
         child_ptrs text null,
         data text null
@@ -42,7 +42,6 @@
                     data = #data#
     where node_id = #nodeID#
   </update>
-
 
   <delete id="deleteNode" parameterClass="java.lang.String">
     delete from node where node_id = #value#

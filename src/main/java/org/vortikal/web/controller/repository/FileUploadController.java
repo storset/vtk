@@ -164,14 +164,18 @@ public class FileUploadController extends SimpleFormController {
             }
 
             Resource newResource = this.repository.createDocument(token, itemURI);
-
-            String contentType = uploadItem.getContentType();
             
-            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
-                contentType = MimeHelper.map(newResource.getName());
-            }
-            newResource.setContentType(contentType);
-            this.repository.store(token, newResource);
+            // XXX: Must be fixed/reimplemented
+            // repository.store() causes NullPointerException on ResourceTypeEvaluator.propertiesChange() when called at this point
+            // Should be called after repository.storeContent() ???
+
+//            String contentType = uploadItem.getContentType();
+//            
+//            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
+//                contentType = MimeHelper.map(newResource.getName());
+//            }
+//            newResource.setContentType(contentType);
+//            this.repository.store(token, newResource);
 
             InputStream inStream = uploadItem.getInputStream();
             this.repository.storeContent(token, itemURI, inStream);

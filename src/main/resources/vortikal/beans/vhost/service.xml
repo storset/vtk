@@ -422,7 +422,11 @@
         class="org.vortikal.web.service.RequestURIRegexpAssertion">
     <property name="pattern" value=".*[^/]$" />
   </bean>   
-  
+ 
+  <bean id="resourceTypeInHtml" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+    <property name="exactMatch" value="false" />
+  </bean> 
   
   <bean id="resourceTypeInXhtml" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="xhtml10ResourceTypeDefinition" />

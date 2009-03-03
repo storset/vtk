@@ -11,7 +11,7 @@
       <list>
         <ref bean="editor.modeParameterAssertion" />
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="resourceTypeInXhtml" /> 
+        <ref bean="resourceTypeInHtml" /> 
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>
@@ -34,7 +34,7 @@
   <bean id="editor.unstructuredXhtmlEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
-        <ref bean="resourceTypeInXhtml" />
+        <ref bean="resourceTypeInHtml" />
         <ref bean="resourceTypeIsNotDocument" /> 
       </list>
     </property>
@@ -292,7 +292,7 @@
         parent="requestLocalRepositoryAware">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
-    <property name="contentResourceType" ref="xhtml10ResourceTypeDefinition" />
+    <property name="contentResourceType" ref="htmlResourceTypeDefinition" />
     <property name="editPropertyProvider">
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">

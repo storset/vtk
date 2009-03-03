@@ -452,34 +452,7 @@
     </property>
     <property name="handler" ref="deleteResourcePropertyController" />
   </bean>
-  
-  <bean id="transformHtmlToXhtmlService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" /> 
-    <property name="order" value="-997" />
-    <property name="categories">
-      <set>
-        <value>resourceMenu</value>
-      </set>
-    </property>
-    <property name="attributes">
-      <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">2000</value></entry>
-      </map>
-    </property>
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="html-to-xhtml" />
-        </bean>
-        <ref bean="resourceTypeIsHtml" /> 
-        <ref bean="resourceTypeIsNotXhtml" /> 
-        <ref bean="bindPermissionAssertion" />
-      </list>
-    </property>
-    <property name="handler" ref="htmlToXhtmlHandler" />
-  </bean>
-  
+ 
   <bean id="resourceTypeIsHtml" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
   </bean>
@@ -489,22 +462,6 @@
     <property name="invert" value="true" />
   </bean>
 
-  <bean id="htmlToXhtmlHandler" 
-        class="org.vortikal.web.controller.repository.copy.CopyController"
-        parent="requestLocalRepositoryAware">
-    <property name="extension" value="-kopi.html" />
-    <property name="parentViewOnSuccess" value="true" />
-    <property name="copyAction" ref="tidyCopyAction" />
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirectToManage" />
-    <property name="cancelView" value="redirectToManage" />
-    <property name="commandClass" value="org.vortikal.web.controller.repository.copy.CopyCommand" />
-    <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
-        parent="requestLocalRepositoryAware" />
-    </property>
-  </bean>
-  
   <bean id="manage.refreshLockHandler"
         class="org.vortikal.web.controller.repository.LockRefreshController"
         parent="requestLocalRepositoryAware">

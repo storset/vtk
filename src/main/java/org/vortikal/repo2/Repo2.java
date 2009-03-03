@@ -227,15 +227,13 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("destination is not a collection");
         }
 
-        // XXX implement
-        Principal principal = this.tokenManager.getPrincipal(token);
-//        this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
-
         ResourceImpl original = nodeToResource(srcNodes, srcUri);
         ResourceImpl copy = original.createCopy(destUri);
-
-        // XXX implement
-//        copy = this.resourceHelper.nameChange(newResource, principal);
+        
+        Principal principal = this.tokenManager.getPrincipal(token);
+        this.authorizationManager.authorizeCopy(original, copy, parent, principal, overwrite);
+        
+        copy = this.resourceEvaluator.nameChange(copy, principal);
 
         JSONObject nodeData = resourceToNodeData(copy);
         String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
@@ -435,10 +433,11 @@ public class Repo2 implements Repository, ApplicationContextAware {
         n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(),
                 resourceToNodeData(newResource));
         this.store.update(n);
-        // ResourceModificationEvent event = new ResourceModificationEvent(this,
-        // newResource,
-        // originalClone);
-        // this.context.publishEvent(event);
+        
+//        ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, 
+//                originalClone);
+//        this.context.publishEvent(event);
+        
         return newResource;
     }
 

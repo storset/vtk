@@ -31,7 +31,6 @@
 package org.vortikal.web.controller.repository;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,13 +53,12 @@ import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
 public class FileUploadController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(FileUploadController.class);
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    
+
     private Repository repository = null;
     private int maxUploadSize = 100000000;
 
@@ -71,43 +69,36 @@ public class FileUploadController extends SimpleFormController {
     public void setMaxUploadSize(int maxUploadSize) {
         this.maxUploadSize = maxUploadSize;
     }
-    
+
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
         if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " does not exist");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp
+                    + " does not exist");
         }
         if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " is not a directory");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp
+                    + " is not a directory");
         }
         this.tempDir = tmp;
     }
 
-    protected Object formBackingObject(HttpServletRequest request)
-            throws Exception {
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
 
-        Resource resource = this.repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), false);
+        Resource resource = this.repository.retrieve(securityContext.getToken(), requestContext
+                .getResourceURI(), false);
 
-        String url = service.constructLink(
-            resource, securityContext.getPrincipal());
+        String url = service.constructLink(resource, securityContext.getPrincipal());
 
         FileUploadCommand command = new FileUploadCommand(url);
         return command;
     }
 
-        
-
-    protected ModelAndView onSubmit(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    Object command,
-                                    BindException errors)
-        throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+            Object command, BindException errors) throws Exception {
 
         FileUploadCommand fileUploadCommand = (FileUploadCommand) command;
 
@@ -116,21 +107,19 @@ public class FileUploadController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         }
 
-        FileItemFactory factory = new DiskFileItemFactory(
-            this.maxUploadSize, this.tempDir);
+        FileItemFactory factory = new DiskFileItemFactory(this.maxUploadSize, this.tempDir);
         ServletFileUpload upload = new ServletFileUpload(factory);
-    
 
         FileItem uploadItem = null;
 
         @SuppressWarnings("unchecked")
         List<FileItem> fileItems = upload.parseRequest(request);
-        for (FileItem item: fileItems) {
+        for (FileItem item : fileItems) {
             if (!item.isFormField()) {
                 uploadItem = item;
             }
         }
-        
+
         if (uploadItem == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("The user didn't upload anything");
@@ -139,7 +128,7 @@ public class FileUploadController extends SimpleFormController {
         }
 
         String name = stripWindowsPath(uploadItem.getName());
-        
+
         if (name == null || name.trim().equals("")) {
             return new ModelAndView(getSuccessView());
         }
@@ -157,34 +146,26 @@ public class FileUploadController extends SimpleFormController {
 
             boolean exists = this.repository.exists(token, itemURI);
             if (exists) {
-                errors.rejectValue("file",
-                                   "manage.upload.resource.exists",
-                                   "A resource with this name already exists");
+                errors.rejectValue("file", "manage.upload.resource.exists",
+                        "A resource with this name already exists");
                 return showForm(request, response, errors);
             }
 
             Resource newResource = this.repository.createDocument(token, itemURI);
-            
-            // XXX: Must be fixed/reimplemented
-            // repository.store() causes NullPointerException on ResourceTypeEvaluator.propertiesChange() when called at this point
-            // Should be called after repository.storeContent() ???
+            this.repository.storeContent(token, itemURI, uploadItem.getInputStream());
+            newResource = this.repository.retrieve(token, itemURI, true);
 
-//            String contentType = uploadItem.getContentType();
-//            
-//            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
-//                contentType = MimeHelper.map(newResource.getName());
-//            }
-//            newResource.setContentType(contentType);
-//            this.repository.store(token, newResource);
-
-            InputStream inStream = uploadItem.getInputStream();
-            this.repository.storeContent(token, itemURI, inStream);
+            String contentType = uploadItem.getContentType();
+            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
+                contentType = MimeHelper.map(newResource.getName());
+            }
+            newResource.setContentType(contentType);
+            this.repository.store(token, newResource);
 
         } catch (Exception e) {
             logger.warn("Caught exception while performing file upload", e);
-            errors.rejectValue("file",
-                               "manage.upload.error",
-                               "An unexpected error occurred while processing file upload");
+            errors.rejectValue("file", "manage.upload.error",
+                    "An unexpected error occurred while processing file upload");
             return showForm(request, response, errors);
         }
 
@@ -193,12 +174,10 @@ public class FileUploadController extends SimpleFormController {
 
     }
 
-
-
     /**
-     * Attempts to extract only the file name from a Windows style
-     * pathname, by stripping away everything up to and including the
-     * last backslash in the path.
+     * Attempts to extract only the file name from a Windows style pathname, by
+     * stripping away everything up to and including the last backslash in the
+     * path.
      */
     static String stripWindowsPath(String fileName) {
 
@@ -212,10 +191,9 @@ public class FileUploadController extends SimpleFormController {
             return fileName;
         } else if (pos >= 0) {
             return fileName.substring(pos + 1, fileName.length());
-        } 
+        }
 
         return fileName;
     }
 
 }
-

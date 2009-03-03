@@ -12,10 +12,9 @@
   <!-- XXX: PostgreSQL specific: -->
   <statement id="createBinaryPropertyStore">
     create table binary_property (
-        node_id varchar(128) REFERENCES node ON DELETE CASCADE,
-        content oid null,
-        content_type
-        varchar(128) null
+        property_id varchar(128) PRIMARY KEY,
+        content_type varchar(128) null,
+        content oid null
     )
   </statement>
 
@@ -24,15 +23,15 @@
   </insert>
 
   <select id="retrieveBinaryProperty" parameterClass="java.util.Map" resultMap="BinaryContent">
-    select content, content_type from binary_property where node_id = #propertyID#
+    select content, content_type from binary_property where property_id = #propertyID#
   </select>
 
   <update id="updateBinaryProperty" parameterClass="java.util.Map">
-    update binary_property set content = #stream,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#, content_type = #type# where node_id = #propertyID#
+    update binary_property set content = #stream,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#, content_type = #type# where property_id = #propertyID#
   </update>
 
   <delete id="deleteBinaryProperty" parameterClass="java.util.Map">
-    delete from binary_property where node_id = #propertyID#
+    delete from binary_property where property_id = #propertyID#
   </delete>
 
 </sqlMap>

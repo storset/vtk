@@ -48,7 +48,6 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.UpdateCancelCommand;
 import org.vortikal.web.service.Service;
 
 /**
@@ -66,7 +65,6 @@ public class DeleteResourceController extends SimpleFormController implements In
     private String resourcePath;
     private String trustedToken;
     private boolean requestFromResourceMenu;
-
 
 	public void setRepository(Repository repository) {
         this.repository = repository;
@@ -124,8 +122,7 @@ public class DeleteResourceController extends SimpleFormController implements In
 	    Resource resource = this.repository.retrieve(token, uri, false);
 	    String url = service.constructLink(resource, principal);
 	    
-
-	    return new UpdateCancelCommand(url);
+	    return new DeleteResourceCommand(url); 
     }
     
     protected ModelAndView onSubmit(Object command, BindException errors) throws Exception {
@@ -140,10 +137,10 @@ public class DeleteResourceController extends SimpleFormController implements In
     	Path uri = requestContext.getResourceURI();
     	Path parentUri = uri.getParent();
     	
-    	UpdateCancelCommand updateCancelCommand = (UpdateCancelCommand) command;
+    	DeleteResourceCommand deleteResourceCommand = (DeleteResourceCommand) command;
     	Resource modelResource = this.repository.retrieve(token, parentUri, false);
     	
-    	if (updateCancelCommand.getSaveAction() == null) {
+    	if (deleteResourceCommand.getDeleteResourceAction() == null) {
     		Resource currentResource = this.repository.retrieve(token, uri, false);
     		// Don't redirect on cancel regarding an collection
     		if( currentResource.isCollection() && requestFromResourceMenu){ 

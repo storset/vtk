@@ -52,7 +52,8 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String userNames[] = new String[0];
     private String groupNames[] = new String[0];
     private Resource resource;
-
+    private String saveAction = null;
+    
     public ACLEditCommand(String submitURL) {
         super(submitURL);
     }
@@ -179,6 +180,14 @@ public class ACLEditCommand extends UpdateCancelCommand {
         sb.append("]");
         return sb.toString();
     }
+
+	public String getSaveAction() {
+		return saveAction;
+	}
+
+	public void setSaveAction(String saveAction) {
+		this.saveAction = saveAction;
+	}
     
 
 }

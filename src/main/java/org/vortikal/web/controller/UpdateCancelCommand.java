@@ -33,19 +33,19 @@ package org.vortikal.web.controller;
 
 
 /**
- * Utility base class for form command objects that have 'Save' and
+ * Utility base class for form command objects that have 'Update' and
  * 'Cancel' actions.
  */
 public class UpdateCancelCommand {
 
-    private String saveAction = null;
+    private String updateAction = null;
     private String cancelAction = null;
     private String submitURL;
     private boolean done = false;
 
 
     /**
-     * Creates a new <code>AbstractSaveCancelCommand</code> instance.
+     * Creates a new <code>UpdateCancelCommand</code> instance.
      *
      * @param submitURL the URL of the form submission.
      */
@@ -53,23 +53,29 @@ public class UpdateCancelCommand {
         this.submitURL = submitURL;
     }
     
+    /**
+     * Creates a new <code>UpdateCancelCommand</code> instance.
+     */
+    public UpdateCancelCommand(){
+    	
+    }
 
     /**
      * Gets the value of saveAction
      *
      * @return the value of saveAction
      */
-    public String getSaveAction() {
-        return this.saveAction;
+    public String getUpdateAction() {
+        return this.updateAction;
     }
 
     /**
      * Sets the value of saveAction
      *
-     * @param saveAction Value to assign to this.saveAction
+     * @param updateAction Value to assign to this.updateAction
      */
-    public void setSaveAction(String saveAction) {
-        this.saveAction = saveAction;
+    public void setUpdateAction(String updateAction) {
+        this.updateAction = updateAction;
     }
 
     /**

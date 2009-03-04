@@ -57,6 +57,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.TextResourceContentHelper;
+import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -100,7 +101,7 @@ public class PlaintextEditController extends SimpleFormController
     
     private Log logger = LogFactory.getLog(this.getClass().getName());
     
-    private String cancelView;
+    private String manageView;
     private Repository repository;
     private int lockTimeoutSeconds = 300;
 
@@ -120,8 +121,8 @@ public class PlaintextEditController extends SimpleFormController
     }
 
     @Required
-    public void setCancelView(String cancelView) {
-        this.cancelView = cancelView;
+    public void setManageView(String manageView) {
+        this.manageView = manageView;
     }
     
     public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
@@ -173,20 +174,24 @@ public class PlaintextEditController extends SimpleFormController
         PlaintextEditCommand plaintextEditCommand =
             (PlaintextEditCommand) command;
 
-        if (plaintextEditCommand.getCancelAction() == null) {
+        if (plaintextEditCommand.getSaveAction() != null) {
             return super.onSubmit(command, errors);
         }
         
-        /** The user has selected "cancel". Unlock resource, return
-         *  the cancelView. */
-
+        /** The user has selected "cancel" or "save and quit". Unlock resource, return
+         *  the manage view. */
+        
+        if(plaintextEditCommand.getSaveQuitAction() != null) {
+        	doSubmitAction(command);
+        }
+        
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         this.repository.unlock(token, uri, null);
         
-        return new ModelAndView(this.cancelView);    
+        return new ModelAndView(this.manageView);    
     }
     
 

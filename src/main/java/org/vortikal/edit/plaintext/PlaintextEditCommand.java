@@ -41,6 +41,7 @@ import java.util.Map;
 public class PlaintextEditCommand extends UpdateCancelCommand {
 
 	private String saveAction = null;
+	private String saveQuitAction = null;
     private String content;
     private List<Map<String, String>> tooltips;
     
@@ -69,6 +70,14 @@ public class PlaintextEditCommand extends UpdateCancelCommand {
 
 	public void setSaveAction(String saveAction) {
 		this.saveAction = saveAction;
+	}
+
+	public String getSaveQuitAction() {
+		return saveQuitAction;
+	}
+
+	public void setSaveQuitAction(String saveQuitAction) {
+		this.saveQuitAction = saveQuitAction;
 	}
 
 }

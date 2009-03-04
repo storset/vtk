@@ -108,7 +108,7 @@
         parent="requestLocalRepositoryAware">
     <property name="formView" value="plaintextEdit" />
     <property name="successView" value="plaintextEdit" />
-    <property name="cancelView" value="redirectToManage" />
+    <property name="manageView" value="redirectToManage" />
     <property name="commandName" value="plaintextEditForm" />
     <property name="commandClass" value="org.vortikal.edit.plaintext.PlaintextEditCommand" />
     <property name="tooltipServices" ref="plaintextEditTooltipURLServicesFactory" />

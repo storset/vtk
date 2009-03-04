@@ -194,7 +194,7 @@ public class Cache implements DataAccessor, InitializingBean {
                 enterResource(resourceImpl);
             }
         } finally {
-            this.lockManager.unlock(obtainedLocks);
+            this.lockManager.unlock(obtainedLocks); // Release URI sync locks
         }
 
         if (this.logger.isDebugEnabled()) {
@@ -274,7 +274,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
             return r;
         } finally {
-            this.lockManager.unlock(lock);
+            this.lockManager.unlock(lock); // Release URI sync lock
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("load: took " +
@@ -303,21 +303,15 @@ public class Cache implements DataAccessor, InitializingBean {
         
         List<Path> lockedUris = this.lockManager.lock(uris);
         try {
-            this.wrappedAccessor.storeACL(r);
-            for (Path uri: uris) {
-                // XXX: Why test for containsURI here ? Removing non-existing URI does no harm
-                //      and this test will in most cases return true, I would think ..
-                //      Trying to possibly avoid synchronized call to remove() ?
-                //      This also feels a bit wrong, since containsURI() is *not* synchronized, while
-                //      remove() is .. but I don't know if there really is any problematic race
-                //      conditions here..
-                if (this.items.containsURI(uri)) {
-                    this.items.remove(uri);
-                }
-            }
-
+            this.wrappedAccessor.storeACL(r); // Persist
+            this.items.remove(uris);          // Purge all affected items from cache
+//            for (Path uri: uris) {
+//                if (this.items.containsURI(uri)) {
+//                    this.items.remove(uri);
+//                }
+//            }
         } finally {
-            this.lockManager.unlock(lockedUris);
+            this.lockManager.unlock(lockedUris); // Release URI sync lock
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -333,15 +327,16 @@ public class Cache implements DataAccessor, InitializingBean {
 
         List<Path> lockedUris = this.lockManager.lock(uris);
         try {
-            this.wrappedAccessor.store(r);
+            this.wrappedAccessor.store(r); // Persist
+            this.items.remove(uris);       // Purge item from cache
 
-            for (Path uri: uris) {
-                if (this.items.containsURI(uri)) {
-                    this.items.remove(uri);
-                }
-            }
+//            for (Path uri: uris) {
+//                if (this.items.containsURI(uri)) {
+//                    this.items.remove(uri);
+//                }
+//            }
         } finally {
-            this.lockManager.unlock(lockedUris);
+            this.lockManager.unlock(lockedUris); // Release URI sync lock
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -372,20 +367,21 @@ public class Cache implements DataAccessor, InitializingBean {
         List<Path> lockedUris = this.lockManager.lock(uris);
 
         try {
+            // Persist copy operation
             this.wrappedAccessor.copy(r, dest, newResource, copyACLs, fixedProperties);
+            // Purge affected destination parent from cache
+            this.items.remove(destParentURI);        
 
-            if (this.items.containsURI(destParentURI)) {
-                this.items.remove(destParentURI);
-            }
-
+//            if (this.items.containsURI(destParentURI)) {
+//                this.items.remove(destParentURI);
+//            }
         } finally {
-            this.lockManager.unlock(lockedUris);
+            this.lockManager.unlock(lockedUris); // Release URI sync locks
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
             }
         }
-
     }
     
 
@@ -416,16 +412,16 @@ public class Cache implements DataAccessor, InitializingBean {
         List<Path> locks = this.lockManager.lock(uris);
 
         try {
-            this.wrappedAccessor.move(r, newResource);
+            this.wrappedAccessor.move(r, newResource); // Persist move operation
+            this.items.remove(uris);                   // Purge all affected items from cache
 
-            for (Path uri: uris) {
-                if (this.items.containsURI(uri)) {
-                    this.items.remove(uri);
-                }
-            }
-
+//            for (Path uri: uris) {
+//                if (this.items.containsURI(uri)) {
+//                    this.items.remove(uri);
+//                }
+//            }
         } finally {
-            this.lockManager.unlock(locks);
+            this.lockManager.unlock(locks); // Release URI sync locks
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -456,15 +452,16 @@ public class Cache implements DataAccessor, InitializingBean {
         List<Path> locks = this.lockManager.lock(uris);
 
         try {
-            this.wrappedAccessor.delete(r);
+            this.wrappedAccessor.delete(r); // Dispatch to wrapped DAO for persistence
+            this.items.remove(uris);        // Purge all affected items from cache 
 
-            for (Path uri: uris) {
-                if (this.items.containsURI(uri)) {
-                    this.items.remove(uri);
-                }
-            }
+//            for (Path uri: uris) {
+//                if (this.items.containsURI(uri)) {
+//                    this.items.remove(uri);
+//                }
+//            }
         } finally {
-            this.lockManager.unlock(locks);
+            this.lockManager.unlock(locks); // Release URI sync locks
 
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("cache size : " + this.items.size());
@@ -576,7 +573,7 @@ public class Cache implements DataAccessor, InitializingBean {
         private Item in = null;
         private Item out = null;
 
-        public void clear() {
+        public void clear() { // Synchronized externally
             this.map.clear();
             this.in = this.out = null;
         }
@@ -624,7 +621,14 @@ public class Cache implements DataAccessor, InitializingBean {
                     this.in = i.older;
                 }
             }
+
             this.map.remove(uri);
+        }
+        
+        public synchronized void remove(List<Path> uris) {
+            for (Path uri: uris) {
+                remove(uri);
+            }
         }
 
         public int size() {

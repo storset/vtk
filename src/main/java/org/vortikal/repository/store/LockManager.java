@@ -46,8 +46,8 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
  * Manager for locks on cache items (URIs).
  */
 public class LockManager {
-    private int maxIterations = 10;
-    private long iterationWaitTimeout = 6000; // 6 seconds
+    private int maxIterations = 15;
+    private long iterationWaitTimeout = 5000; // 5 seconds
 
     @SuppressWarnings("unchecked")
     private Map locks = new ConcurrentReaderHashMap();

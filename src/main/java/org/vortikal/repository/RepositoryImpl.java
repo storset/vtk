@@ -351,15 +351,22 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         this.authorizationManager.authorizeDelete(uri, principal);
 
-        this.dao.delete(r);
-        this.contentStore.deleteResource(r.getURI());
-
+        // Store parent collection first to avoid dead-lock between Cache locking
+        // and database inter-transaction synchronization (which leads to "11-iterations"-problem)
         ResourceImpl parentCollection = this.dao.load(uri.getParent());
+        parentCollection.removeChildURI(uri);
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
         this.dao.store(parentCollection);
 
-        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, r.getID(), r
-                .isCollection());
+        this.dao.delete(r);
+        this.contentStore.deleteResource(r.getURI());
+
+//        ResourceImpl parentCollection = this.dao.load(uri.getParent());
+//        parentCollection = this.resourceHelper.contentModification(parentCollection, principal);
+//        this.dao.store(parentCollection);
+
+        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, 
+                                                    r.getID(), r.isCollection());
         this.context.publishEvent(event);
     }
 
@@ -800,21 +807,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         ResourceImpl newResource = this.resourceHelper.create(principal, uri, collection);
 
         try {
+            // Store parent first to avoid transactional dead-lock-problems between Cache 
+            // locking and database inter-transactional synchronization (which leads to "11-iteration" problems).
+            parent.addChildURI(uri);
+            parent = this.resourceHelper.contentModification(parent, principal);
+            this.dao.store(parent); 
+
+            // Store new resource
             Acl newAcl = (Acl) parent.getAcl().clone();
             newResource.setAcl(newAcl);
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent
                     .getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            this.dao.store(newResource);
+            this.dao.store(newResource);                       
             this.contentStore.createResource(newResource.getURI(), collection);
 
             newResource = this.dao.load(uri);
 
-            parent.addChildURI(uri);
-            parent = this.resourceHelper.contentModification(parent, principal);
-
-            this.dao.store(parent);
+//          parent.addChildURI(uri);
+//          parent = this.resourceHelper.contentModification(parent, principal);
+//          this.dao.store(parent); 
 
             newResource = (ResourceImpl) newResource.clone();
         } catch (CloneNotSupportedException e) {

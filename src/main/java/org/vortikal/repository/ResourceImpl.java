@@ -403,13 +403,39 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      */
     public synchronized void addChildURI(Path childURI) {
             Path[] newChildren = new Path[this.childURIs.length + 1];
-            for (int i = 0; i < this.childURIs.length; i++) {
-                newChildren[i] = this.childURIs[i];
-            }
-
+            
+            System.arraycopy(this.childURIs, 0, 
+                             newChildren,    0,
+                             this.childURIs.length);
+            
             newChildren[this.childURIs.length] = childURI;
             
             this.childURIs = newChildren;
+    }
+    
+    /**
+     * Remove a URI from the child URI list.
+     * 
+     * @param childURI
+     */
+    public synchronized void removeChildURI(Path childURI) {
+        for (int i=0; i<this.childURIs.length; i++) {
+            if (this.childURIs[i].equals(childURI)) {
+                Path[] newChildren = new Path[this.childURIs.length-1];
+                
+                if (i > 0) {
+                    System.arraycopy(this.childURIs, 0, newChildren, 0, i);
+                }
+                
+                if (i+1 < this.childURIs.length) {
+                    System.arraycopy(this.childURIs, i+1, newChildren, i, 
+                                                (this.childURIs.length-i-1));
+                }
+                
+                this.childURIs = newChildren;
+                return;
+            }
+        }
     }
 
     public boolean equals(Object obj) {
@@ -429,7 +455,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName());
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();

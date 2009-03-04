@@ -38,7 +38,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -58,42 +57,21 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.IllegalOperationException;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
-import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.token.TokenManager;
 
 public class Repo2 implements Repository, ApplicationContextAware {
 
-    private static final String NODE_DATA_RESOURCE_TYPE = "rtype";
-    private static final String NODE_DATA_ACL = "acl";
-    private static final String NODE_DATA_ACL_ACTION = "acl.action";
-    private static final String NODE_DATA_ACL_USERS = "acl.users";
-    private static final String NODE_DATA_ACL_GROUPS = "acl.groups";
-    private static final String NODE_DATA_ACL_PSEUDOS = "acl.pseudos";
-    private static final String NODE_DATA_PROPS = "props";
-    private static final String NODE_DATA_PROP_NAMESPACE = "prop.namespace";
-    private static final String NODE_DATA_PROP_NAME = "prop.name";
-    private static final String NODE_DATA_PROP_VALUE = "prop.value";
-    private static final String NODE_DATA_PROP_VALUES = "prop.values";
-
-    private NodeStore store;
-    private NodeID rootID = NodeID.valueOf("1000");
-
     // Stores:
+    private NodeStore store;
     private ContentStore contentStore;
     private BinaryPropertyStore binaryPropertyStore;
 
@@ -105,8 +83,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
     private String id;
     private int maxComments = 1000;
     private PeriodicThread periodicThread;
-    private PrincipalFactory principalFactory;
-    private ResourceTypeTree resourceTypeTree;
+    private NodeManager nodeManager;
 
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -124,7 +101,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         NodePath nodePath = load(uri);
         if (nodePath == null)
             throw new ResourceNotFoundException(uri);
-        Resource r = nodeToResource(nodePath, uri);
+        Resource r = this.nodeManager.nodeToResource(nodePath, uri);
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(r, principal);
         } else {
@@ -153,7 +130,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         if (parentNode.getChildNames().contains(uri.getName())) {
             throw new ResourceOverwriteException(uri);
         }
-        ResourceImpl parent = nodeToResource(parentNodePath, uri.getParent());
+        ResourceImpl parent = this.nodeManager.nodeToResource(parentNodePath, uri.getParent());
         if (!parent.isCollection()) {
             throw new IllegalOperationException("Cannot create resource " + uri
                     + ": parent is not a collection");
@@ -170,14 +147,14 @@ public class Repo2 implements Repository, ApplicationContextAware {
             NodeID aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom()
                     : parent.getNodeID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            JSONObject nodeData = resourceToNodeData(newResource);
+            JSONObject nodeData = this.nodeManager.resourceToNodeData(newResource);
             String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
             NodeID id = NodeID.valueOf(identifier);
             Node n = new Node(id, parentNode.getNodeID(), new HashMap<String, NodeID>(), nodeData);
             this.store.create(n);
             parent = this.resourceEvaluator.contentModification(parent, principal);
             parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), parentNode
-                    .getChildMap(), resourceToNodeData(parent));
+                    .getChildMap(), this.nodeManager.resourceToNodeData(parent));
             parentNode.addChild(uri.getName(), n.getNodeID());
             this.store.update(parentNode);
             if (!collection) {
@@ -222,12 +199,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
         if (parentNodePath == null) {
             throw new IllegalOperationException("destination does not exist");
         }
-        ResourceImpl parent = nodeToResource(parentNodePath, destUri.getParent());
+        ResourceImpl parent = this.nodeManager.nodeToResource(parentNodePath, destUri.getParent());
         if (!parent.isCollection()) {
             throw new IllegalOperationException("destination is not a collection");
         }
 
-        ResourceImpl original = nodeToResource(srcNodes, srcUri);
+        ResourceImpl original = this.nodeManager.nodeToResource(srcNodes, srcUri);
         ResourceImpl copy = original.createCopy(destUri);
         
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -235,7 +212,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         
         copy = this.resourceEvaluator.nameChange(copy, principal);
 
-        JSONObject nodeData = resourceToNodeData(copy);
+        JSONObject nodeData = this.nodeManager.resourceToNodeData(copy);
         String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
         NodeID id = NodeID.valueOf(identifier);
         Node parentNode = parentNodePath.getNode();
@@ -262,8 +239,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
         Node srcNode = srcNodes.getNode();
         Node srcParentNode = srcNodes.getParentNode();
-        ResourceImpl src = nodeToResource(srcNodes, srcUri);
-        ResourceImpl srcParent = nodeToResource(srcNodes.getParentNodePath(), srcUri.getParent());
+        ResourceImpl src = this.nodeManager.nodeToResource(srcNodes, srcUri);
+        ResourceImpl srcParent = this.nodeManager.nodeToResource(srcNodes.getParentNodePath(), srcUri.getParent());
 
         // Checking dest
         NodePath destNodes = load(destUri);
@@ -277,7 +254,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Invalid destination resource");
         }
         Node destParentNode = destParentNodes.getNode();
-        ResourceImpl destParent = nodeToResource(destParentNodes, destUri.getParent());
+        ResourceImpl destParent = this.nodeManager.nodeToResource(destParentNodes, destUri.getParent());
         if (!destParent.isCollection()) {
             throw new IllegalOperationException("Invalid destination resource");
         }
@@ -307,7 +284,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             this.store.update(destParentNode);
             this.store.update(movedNode);
 
-//            this.context.publishEvent(new ResourceCreationEvent(this, nodeToResource(movedNode,
+//            this.context.publishEvent(new ResourceCreationEvent(this, this.nodeManager.nodeToResource(movedNode,
 //                    destUri)));
 //            this.context.publishEvent(new ResourceDeletionEvent(this, srcUri,
 //                    movedNode.getNodeID(), src.isCollection()));
@@ -334,14 +311,14 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
         Node parentNode = nodePath.getParentNode();
         NodePath parentNodePath = nodePath.getParentNodePath();
-        ResourceImpl r = nodeToResource(nodePath, uri);
-        ResourceImpl parentCollection = nodeToResource(parentNodePath, uri.getParent());
+        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
+        ResourceImpl parentCollection = this.nodeManager.nodeToResource(parentNodePath, uri.getParent());
         parentCollection = this.resourceEvaluator.contentModification(parentCollection, principal);
 
         this.authorizationManager.authorizeDelete(r, parentCollection, principal);
 
         parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), parentNode
-                .getChildMap(), resourceToNodeData(parentCollection));
+                .getChildMap(), this.nodeManager.resourceToNodeData(parentCollection));
         parentNode.removeChild(uri.getName());
         this.store.update(parentNode);
         this.delete(node);
@@ -360,9 +337,10 @@ public class Repo2 implements Repository, ApplicationContextAware {
         this.store.delete(node);
 
         // XXX: No need to explicitly call contentStore.delete() as long as all
-        // data
-        // is stored in db. It's deleted with primary/foreign key constraints
+        // data is stored in db. It's deleted with primary/foreign key constraints
+        // Same goes for binary properties (and comments)
         // this.contentStore.delete(node.getNodeID());
+        
     }
 
     public Resource lock(String token, Path uri, String ownerInfo, Repository.Depth depth,
@@ -377,7 +355,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Node n = nodePath.getNode();
-        ResourceImpl r = nodeToResource(nodePath, uri);
+        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
 
         if (lockToken != null) {
             if (r.getLock() == null) {
@@ -420,7 +398,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Node n = nodePath.getNode();
-        ResourceImpl original = nodeToResource(nodePath, uri);
+        ResourceImpl original = this.nodeManager.nodeToResource(nodePath, uri);
         if (original == null) {
             throw new ResourceNotFoundException(uri);
         }
@@ -431,7 +409,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         ResourceImpl newResource = this.resourceEvaluator.propertiesChange(original, principal,
                 (ResourceImpl) resource);
         n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(),
-                resourceToNodeData(newResource));
+                this.nodeManager.resourceToNodeData(newResource));
         this.store.update(n);
         
 //        ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, 
@@ -453,7 +431,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Node n = nodePath.getNode();
-        ResourceImpl r = nodeToResource(nodePath, uri);
+        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
 
         if (r.isCollection()) {
             throw new IllegalOperationException("resource is collection");
@@ -469,8 +447,9 @@ public class Repo2 implements Repository, ApplicationContextAware {
                     new java.io.FileInputStream(tempFile)), tempFile.length());
             this.contentStore.update(n.getNodeID(), content);
             r = this.resourceEvaluator.contentModification(r, principal);
-            n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(), resourceToNodeData(r));
+            n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(), this.nodeManager.resourceToNodeData(r));
             this.store.update(n);
+            this.storeBinaryProps(n, r);
 
 //            ContentModificationEvent event = new ContentModificationEvent(this, (Resource) r
 //                    .clone(), original);
@@ -495,7 +474,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(resource.getURI());
         }
         Node n = nodePath.getNode();
-        ResourceImpl r = nodeToResource(nodePath, resource.getURI());
+        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, resource.getURI());
         this.authorizationManager.authorizeAll(r, principal);
 
         try {
@@ -509,7 +488,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
             if (!r.getURI().isRoot()) {
                 Path parentURI = resource.getURI().getParent();
                 NodePath parentNodePath = nodePath.getParentNodePath();
-                parent = nodeToResource(parentNodePath, parentURI);
+                parent = this.nodeManager.nodeToResource(parentNodePath, parentURI);
             }
 
             if (resource.getURI().isRoot() && resource.isInheritedAcl()) {
@@ -540,7 +519,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
                 r.setAcl(newAcl);
             }
 
-            n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(), resourceToNodeData(r));
+            n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(), this.nodeManager.resourceToNodeData(r));
             this.store.update(n);
 
 //            ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(),
@@ -560,7 +539,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         if (nodePath == null)
             throw new ResourceNotFoundException(uri);
         Node node = nodePath.getNode();
-        Resource r = nodeToResource(nodePath, uri);
+        Resource r = this.nodeManager.nodeToResource(nodePath, uri);
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(r, principal);
         } else {
@@ -579,7 +558,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
 
         Node node = nodePath.getNode();
-        Resource collection = nodeToResource(nodePath, uri);
+        Resource collection = this.nodeManager.nodeToResource(nodePath, uri);
 
         if (!collection.isCollection()) {
             throw new IllegalOperationException("Can't list children for non-collection resources");
@@ -601,7 +580,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
         for (Node n : list) {
             NodePath childNodePath = nodePath.extend(n);
             Path childURI = collection.getURI().extend(node.getChildName(n.getNodeID()));
-            Resource child = nodeToResource(childNodePath, childURI);
+            Resource child = this.nodeManager.nodeToResource(childNodePath, childURI);
             children[i++] = child;
         }
         return children;
@@ -629,6 +608,28 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
     public Comment updateComment(String token, Resource resource, Comment comment) {
         throw new IllegalStateException("updateAllComments() not implemented :(");
+    }
+    
+    private void storeBinaryProps(Node n, ResourceImpl r) throws Exception {
+        JSONArray props = n.getData().getJSONArray(NodeManager.NODE_DATA_PROPS);
+        for (Property prop : r.getProperties()) {
+            if (prop.getDefinition().getType() == PropertyType.Type.BINARY) {
+                for (int i=0; i<props.length(); i++) {
+                    JSONObject jsonProp = props.getJSONObject(i);
+                    String name = jsonProp.getString(NodeManager.NODE_DATA_PROP_NAME);
+                    if (prop.getDefinition().getName().equals(name)) {
+                        String id = jsonProp.getString(NodeManager.NODE_DATA_PROP_VALUE);
+                        PropertyID propID = PropertyID.valueOf(id);
+                        this.binaryPropertyStore.create(n.getNodeID(), propID);
+                        ContentStream cs = prop.getBinaryStream();
+                        TypedContentStream ts = new TypedContentStream(cs.getStream(), cs.getLength(), prop
+                                .getBinaryMimeType());
+                        this.binaryPropertyStore.update(propID, ts);
+                    }
+                }
+
+            }
+        }
     }
 
     /**
@@ -663,73 +664,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
         return null;
     }
 
-    /**
-     * XXX: refine
-     */
-    private interface NodePath {
-        public Node getNode();
-
-        public Node getParentNode();
-
-        public NodePath extend(Node node);
-
-        public NodePath getParentNodePath();
-
-        public Iterator<Node> fromRoot();
-
-        public Iterator<Node> towardsRoot();
-    }
-
-    private class NodePathImpl implements NodePath {
-        private List<Node> nodes;
-
-        public NodePathImpl(List<Node> nodes) {
-            this.nodes = nodes;
-        }
-
-        public Node getNode() {
-            return this.nodes.get(this.nodes.size() - 1);
-        }
-
-        public Node getParentNode() {
-            if (this.nodes.size() > 1) {
-                return this.nodes.get(this.nodes.size() - 2);
-            }
-            return null;
-        }
-
-        public NodePath extend(Node node) {
-            List<Node> l = new ArrayList<Node>(this.nodes);
-            l.add(node);
-            return new NodePathImpl(l);
-        }
-
-        public NodePath getParentNodePath() {
-            if (this.nodes.size() == 1) {
-                return null;
-            }
-            List<Node> l = this.nodes.subList(0, this.nodes.size() - 1);
-            return new NodePathImpl(l);
-        }
-
-        public Iterator<Node> fromRoot() {
-            List<Node> list = new ArrayList<Node>(this.nodes);
-            return list.iterator();
-        }
-
-        public Iterator<Node> towardsRoot() {
-            List<Node> reversed = new ArrayList<Node>(this.nodes);
-            Collections.reverse(reversed);
-            return reversed.iterator();
-        }
-
-        public String toString() {
-            return this.nodes.toString();
-        }
-    }
-
     private NodePath load(Path uri) throws Exception {
-        Node n = this.store.retrieve(this.rootID);
+        Node n = this.store.retrieve(NodeID.rootID);
         List<Node> result = new ArrayList<Node>();
         result.add(n);
         List<String> elements = uri.getElements();
@@ -748,206 +684,6 @@ public class Repo2 implements Repository, ApplicationContextAware {
     public boolean exists(String token, Path uri) throws Exception {
         NodePath nodes = load(uri);
         return nodes != null;
-    }
-
-    private Property createProp(JSONObject propsObject) throws Exception {
-        String propNamespace = null;
-        if (propsObject.has(NODE_DATA_PROP_NAMESPACE)) {
-            propNamespace = propsObject.getString(NODE_DATA_PROP_NAMESPACE);
-        }
-        String propName = propsObject.getString(NODE_DATA_PROP_NAME);
-
-        Namespace namespace = Namespace.DEFAULT_NAMESPACE;
-        if (propNamespace != null) {
-            namespace = this.resourceTypeTree.getNamespace(propNamespace);
-        }
-
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace,
-                propName);
-
-        String[] propValues = null;
-
-        if (propsObject.has(NODE_DATA_PROP_VALUE)) {
-            propValues = new String[1];
-            propValues[0] = propsObject.getString(NODE_DATA_PROP_VALUE);
-        } else if (propsObject.has(NODE_DATA_PROP_VALUES)) {
-            JSONArray jsonArray = propsObject.getJSONArray(NODE_DATA_PROP_VALUES);
-            propValues = new String[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++) {
-                propValues[i] = jsonArray.getString(i);
-            }
-        } else {
-            throw new IllegalStateException("Invalid property object: missing value(s): "
-                    + propsObject);
-        }
-
-        Property prop = propDef.createProperty(propValues);
-        return prop;
-    }
-
-    private JSONObject createJSONProp(Property prop) throws Exception {
-        JSONObject json = new JSONObject();
-        json.put(NODE_DATA_PROP_NAMESPACE, prop.getDefinition().getNamespace().getUri());
-        json.put(NODE_DATA_PROP_NAME, prop.getDefinition().getName());
-        if (prop.getDefinition().isMultiple()) {
-            Value[] values = prop.getValues();
-            List<String> jsonValues = new ArrayList<String>(values.length);
-            for (Value v : values) {
-                jsonValues.add(v.getNativeStringRepresentation());
-            }
-            json.put(NODE_DATA_PROP_VALUES, jsonValues);
-        } else {
-            if (prop.getDefinition().getType() == PropertyType.Type.BINARY) {
-                PropertyID propID;
-                if (prop.getValue().getNativeStringRepresentation() == null) {
-                    String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID()
-                            .toString();
-                    propID = PropertyID.valueOf(identifier);
-                    this.binaryPropertyStore.create(propID);
-                } else {
-                    propID = PropertyID.valueOf(prop.getValue().getNativeStringRepresentation());
-                }
-                ContentStream cs = prop.getBinaryStream();
-                TypedContentStream ts = new TypedContentStream(cs.getStream(), cs.getLength(), prop
-                        .getBinaryMimeType());
-                this.binaryPropertyStore.update(propID, ts);
-                json.put(NODE_DATA_PROP_VALUE, propID.toString());
-            } else {
-                json.put(NODE_DATA_PROP_VALUE, prop.getValue().getNativeStringRepresentation());
-            }
-        }
-        return json;
-    }
-
-    private Acl createAcl(JSONArray aclObject) throws Exception {
-        Acl acl = new AclImpl();
-        for (int i = 0; i < aclObject.length(); i++) {
-            JSONObject ace = aclObject.getJSONObject(i);
-            String action = ace.getString(NODE_DATA_ACL_ACTION);
-            RepositoryAction priv = Privilege.getActionByName(action);
-
-            if (ace.has(NODE_DATA_ACL_USERS)) {
-                JSONArray users = ace.getJSONArray(NODE_DATA_ACL_USERS);
-                for (int j = 0; j < users.length(); j++) {
-                    String user = users.getString(j);
-                    Principal p = this.principalFactory.getPrincipal(user, Principal.Type.USER);
-                    acl.addEntry(priv, p);
-                }
-            }
-            if (ace.has(NODE_DATA_ACL_GROUPS)) {
-                JSONArray groups = ace.getJSONArray(NODE_DATA_ACL_GROUPS);
-                for (int j = 0; j < groups.length(); j++) {
-                    String group = groups.getString(j);
-                    Principal p = this.principalFactory.getPrincipal(group, Principal.Type.GROUP);
-                    acl.addEntry(priv, p);
-                }
-            }
-            if (ace.has(NODE_DATA_ACL_PSEUDOS)) {
-                JSONArray pseudos = ace.getJSONArray(NODE_DATA_ACL_PSEUDOS);
-                for (int j = 0; j < pseudos.length(); j++) {
-                    String pseudo = pseudos.getString(j);
-                    Principal p = this.principalFactory.getPrincipal(pseudo, Principal.Type.PSEUDO);
-                    acl.addEntry(priv, p);
-                }
-            }
-        }
-        return acl;
-    }
-
-    private JSONArray createJSONAcl(Acl acl) throws Exception {
-        JSONArray arr = new JSONArray();
-        Set<RepositoryAction> actions = acl.getActions();
-        for (RepositoryAction action : actions) {
-            JSONObject entry = new JSONObject();
-            JSONArray users = new JSONArray();
-            JSONArray groups = new JSONArray();
-            JSONArray pseudos = new JSONArray();
-            Set<Principal> principals = acl.getPrincipalSet(action);
-            for (Principal principal : principals) {
-                switch (principal.getType()) {
-                case USER:
-                    users.put(principal.getQualifiedName());
-                    break;
-                case GROUP:
-                    groups.put(principal.getQualifiedName());
-                    break;
-                case PSEUDO:
-                    pseudos.put(principal.getQualifiedName());
-                    break;
-                }
-            }
-            entry.put(NODE_DATA_ACL_ACTION, action.toString());
-            if (users.length() > 0) {
-                entry.put(NODE_DATA_ACL_USERS, users);
-            }
-            if (groups.length() > 0) {
-                entry.put(NODE_DATA_ACL_GROUPS, groups);
-            }
-            if (pseudos.length() > 0) {
-                entry.put(NODE_DATA_ACL_PSEUDOS, pseudos);
-            }
-            arr.put(entry);
-        }
-        return arr;
-    }
-
-    private ResourceImpl nodeToResource(NodePath nodePath, Path uri) throws Exception {
-        Node node = nodePath.getNode();
-
-        JSONObject nodeData = node.getData();
-        ResourceImpl r = new ResourceImpl(uri, this.resourceTypeTree);
-        r.setResourceType(nodeData.getString(NODE_DATA_RESOURCE_TYPE));
-        r.setNodeID(node.getNodeID());
-        r.setUri(uri);
-
-        JSONArray aclObj = null;
-        Node aclNode = node;
-        for (Iterator<Node> i = nodePath.towardsRoot(); i.hasNext();) {
-            aclNode = i.next();
-            if (aclNode.getData().has(NODE_DATA_ACL)) {
-                aclObj = aclNode.getData().getJSONArray(NODE_DATA_ACL);
-                break;
-            }
-        }
-        if (aclObj == null) {
-            throw new IllegalStateException("Must have at least one ACL resource (/)");
-        }
-        Acl acl = createAcl(aclObj);
-        r.setAcl(acl);
-        r.setInheritedAcl(false);
-        if (aclNode != node) {
-            r.setInheritedAcl(true);
-            r.setAclInheritedFrom(aclNode.getNodeID());
-        }
-
-        JSONArray props = nodeData.getJSONArray(NODE_DATA_PROPS);
-        for (int i = 0; i < props.length(); i++) {
-            JSONObject propsObject = props.getJSONObject(i);
-            r.addProperty(createProp(propsObject));
-        }
-        List<Path> childURIs = new ArrayList<Path>();
-        for (String childName : node.getChildNames()) {
-            Path childURI = uri.extend(childName);
-            childURIs.add(childURI);
-        }
-        r.setChildURIs(childURIs.toArray(new Path[childURIs.size()]));
-        return r;
-    }
-
-    private JSONObject resourceToNodeData(ResourceImpl resource) throws Exception {
-        JSONObject nodeData = new JSONObject();
-        nodeData.put(NODE_DATA_RESOURCE_TYPE, resource.getResourceType());
-        if (!resource.isInheritedAcl()) {
-            JSONArray acl = createJSONAcl(resource.getAcl());
-            nodeData.put(NODE_DATA_ACL, acl);
-        }
-        JSONArray props = new JSONArray();
-        for (Property prop : resource.getProperties()) {
-            JSONObject jsonProp = createJSONProp(prop);
-            props.put(jsonProp);
-        }
-        nodeData.put(NODE_DATA_PROPS, props);
-        return nodeData;
     }
 
     private void periodicJob() {
@@ -1010,6 +746,11 @@ public class Repo2 implements Repository, ApplicationContextAware {
     public void setResourceTypeEvaluator(ResourceTypeEvaluator resourceEvaluator) {
         this.resourceEvaluator = resourceEvaluator;
     }
+    
+    @Required
+    public void setNodeManager(NodeManager nodeManager) {
+        this.nodeManager = nodeManager;
+    }
 
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
@@ -1032,15 +773,6 @@ public class Repo2 implements Repository, ApplicationContextAware {
         this.maxComments = maxComments;
     }
 
-    @Required
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
     public void init() throws Exception {
         this.periodicThread = new PeriodicThread(600);
         this.periodicThread.start();
@@ -1049,21 +781,13 @@ public class Repo2 implements Repository, ApplicationContextAware {
     public void initRootNode() throws Exception {
         Node root = null;
         try {
-            root = this.store.retrieve(this.rootID);
+            root = this.store.retrieve(NodeID.rootID);
         } catch (Throwable t) {
             t.printStackTrace();
         }
         try {
             if (root == null) {
-                Principal rootPrincipal = this.principalFactory.getPrincipal("root@localhost",
-                        Principal.Type.USER);
-                ResourceImpl rootResource = this.resourceEvaluator.create(rootPrincipal, Path
-                        .fromString("/"), true);
-                Acl acl = new AclImpl();
-                acl.addEntry(Privilege.ALL, rootPrincipal);
-                rootResource.setAcl(acl);
-                Node rootNode = new Node(this.rootID, null, new HashMap<String, NodeID>(),
-                        resourceToNodeData(rootResource));
+                Node rootNode = this.nodeManager.getRootNode();
                 this.store.create(rootNode);
             }
         } catch (Throwable t) {

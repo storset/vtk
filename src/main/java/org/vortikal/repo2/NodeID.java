@@ -31,6 +31,8 @@
 package org.vortikal.repo2;
 
 public final class NodeID {
+    
+    public static final NodeID rootID = NodeID.valueOf("1000");
 
 	private String identifier;
 	

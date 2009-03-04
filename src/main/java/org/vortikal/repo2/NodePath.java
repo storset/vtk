@@ -30,15 +30,20 @@
  */
 package org.vortikal.repo2;
 
+import java.util.Iterator;
 
-public interface BinaryPropertyStore {
+public interface NodePath {
 
-    public void create(NodeID nodeID, PropertyID propID) throws Exception;
-    
-    public TypedContentStream retrieve(PropertyID propertyID) throws Exception;
-    
-    public void update(PropertyID propertyID, TypedContentStream is) throws Exception;
-    
-    public void delete(PropertyID propertyID) throws Exception;
-    
+    public Node getNode();
+
+    public Node getParentNode();
+
+    public NodePath extend(Node node);
+
+    public NodePath getParentNodePath();
+
+    public Iterator<Node> fromRoot();
+
+    public Iterator<Node> towardsRoot();
+
 }

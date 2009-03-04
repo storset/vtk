@@ -12,14 +12,16 @@
   <!-- XXX: PostgreSQL specific: -->
   <statement id="createBinaryPropertyStore">
     create table binary_property (
-        property_id varchar(128) PRIMARY KEY,
+        node_id varchar(128) REFERENCES node ON DELETE CASCADE,
+        property_id varchar(128) UNIQUE,
         content_type varchar(128) null,
-        content oid null
+        content oid null,
+        PRIMARY KEY (node_id, property_id)
     )
   </statement>
 
   <insert id="insertBinaryProperty" parameterClass="java.util.Map">
-    insert into binary_property values (#propertyID#, #stream#, #type#)
+    insert into binary_property values (#nodeID#, #propertyID#, #stream#, #type#)
   </insert>
 
   <select id="retrieveBinaryProperty" parameterClass="java.util.Map" resultMap="BinaryContent">

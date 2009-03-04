@@ -30,15 +30,57 @@
  */
 package org.vortikal.repo2;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-public interface BinaryPropertyStore {
+public class NodePathImpl implements NodePath {
 
-    public void create(NodeID nodeID, PropertyID propID) throws Exception;
-    
-    public TypedContentStream retrieve(PropertyID propertyID) throws Exception;
-    
-    public void update(PropertyID propertyID, TypedContentStream is) throws Exception;
-    
-    public void delete(PropertyID propertyID) throws Exception;
-    
+    private List<Node> nodes;
+
+    public NodePathImpl(List<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    public Node getNode() {
+        return this.nodes.get(this.nodes.size() - 1);
+    }
+
+    public Node getParentNode() {
+        if (this.nodes.size() > 1) {
+            return this.nodes.get(this.nodes.size() - 2);
+        }
+        return null;
+    }
+
+    public NodePath extend(Node node) {
+        List<Node> l = new ArrayList<Node>(this.nodes);
+        l.add(node);
+        return new NodePathImpl(l);
+    }
+
+    public NodePath getParentNodePath() {
+        if (this.nodes.size() == 1) {
+            return null;
+        }
+        List<Node> l = this.nodes.subList(0, this.nodes.size() - 1);
+        return new NodePathImpl(l);
+    }
+
+    public Iterator<Node> fromRoot() {
+        List<Node> list = new ArrayList<Node>(this.nodes);
+        return list.iterator();
+    }
+
+    public Iterator<Node> towardsRoot() {
+        List<Node> reversed = new ArrayList<Node>(this.nodes);
+        Collections.reverse(reversed);
+        return reversed.iterator();
+    }
+
+    public String toString() {
+        return this.nodes.toString();
+    }
+
 }

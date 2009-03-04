@@ -57,8 +57,9 @@ public class SqlMapBinaryPropertyStore extends AbstractSqlMapDataAccessor implem
         }
     }
     
-    public void create(PropertyID propertyID) throws Exception {
+    public void create(NodeID nodeID, PropertyID propertyID) throws Exception {
         Map<String, String> params = new HashMap<String, String>();
+        params.put("nodeID", nodeID.getIdentifier());
         params.put("propertyID", propertyID.getIdentifier());
         params.put("stream", null);
         params.put("type", null);

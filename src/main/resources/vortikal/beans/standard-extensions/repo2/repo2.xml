@@ -16,10 +16,15 @@
     <property name="binaryPropertyStore" ref="repository.binaryPropertyStore" />
     <property name="tokenManager" ref="tokenManager" />
     <property name="authorizationManager" ref="repo2.authorizationManager" />
-    <property name="principalFactory" ref="principalFactory" />
-    <property name="resourceTypeEvaluator" ref="repository.resourceTypeEvaluator" />
     <property name="tempDir" value="${repository.tempDir}" />
+    <property name="resourceTypeEvaluator" ref="repository.resourceTypeEvaluator" />
+    <property name="nodeManager" ref="repo2.nodeManager" />
+  </bean>
+  
+  <bean id="repo2.nodeManager" class="org.vortikal.repo2.NodeManager">
+    <property name="principalFactory" ref="principalFactory" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="resourceTypeEvaluator" ref="repository.resourceTypeEvaluator" />
   </bean>
 
   <bean id="repo2.repositoryInitializer"

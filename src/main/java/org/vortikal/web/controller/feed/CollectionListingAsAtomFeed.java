@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.controller;
+package org.vortikal.web.controller.feed;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +39,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.feed.AtomFeedController;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
@@ -53,10 +52,7 @@ public class CollectionListingAsAtomFeed extends AtomFeedController {
     	Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource collection = this.repository.retrieve(token, uri, true);
         
-        String feedTitle = collection.getTitle();
-        if (Path.ROOT.equals(collection.getURI())) {
-            feedTitle = this.repository.getId();
-        }
+        String feedTitle = getTitle(collection);
         Feed feed = populateFeed(collection, feedTitle);
         
         Listing searchResult = searchComponent.execute(request, collection, 1, 25, 0);

@@ -55,7 +55,8 @@ public class ArticleListingAsFeedController extends AtomFeedController {
 		Path uri = RequestContext.getRequestContext().getResourceURI();
         Resource collection = this.repository.retrieve(token, uri, true);
         
-        Feed feed = populateFeed(collection, collection.getTitle());
+        String feedTitle = getTitle(collection);
+        Feed feed = populateFeed(collection, feedTitle);
         
         List<Listing> results = new ArrayList<Listing>();
         Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, 25, 0);

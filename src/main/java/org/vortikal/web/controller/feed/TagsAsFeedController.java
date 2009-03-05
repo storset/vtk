@@ -63,7 +63,7 @@ public class TagsAsFeedController extends AtomFeedController {
             return null;
         }
 
-        String feedTitle = getTitle(scope, tag, request);
+        String feedTitle = this.getTitle(scope, tag, request);
         Feed feed = populateFeed(scope, feedTitle);
 
         Listing searchResult = searchComponent.execute(request, scope, 1, 25, 0);

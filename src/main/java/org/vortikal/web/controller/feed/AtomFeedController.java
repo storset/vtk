@@ -95,6 +95,15 @@ public abstract class AtomFeedController implements Controller {
         return null;
 
     }
+    
+    
+    protected String getTitle(Resource collection) {
+        String feedTitle = collection.getTitle();
+        if (Path.ROOT.equals(collection.getURI())) {
+            feedTitle = this.repository.getId();
+        }
+        return feedTitle;
+    }
 
 
     protected Feed populateFeed(Resource collection, String feedTitle) throws IOException,

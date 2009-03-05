@@ -61,7 +61,7 @@
 
   
   <bean id="collectionListing.atomHandler" 
-    class="org.vortikal.web.controller.CollectionListingAsAtomFeed"
+    class="org.vortikal.web.controller.feed.CollectionListingAsAtomFeed"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />

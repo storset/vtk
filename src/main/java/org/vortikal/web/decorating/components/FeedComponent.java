@@ -56,6 +56,9 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_FEED_TITLE = "feed-title";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
+    
+    private static final String PARAMETER_OVERRIDE_FEED_TITLE = "override-feed-title";
+    private static final String PARAMETER_OVERRIDE_FEED_TITLE_DESC = "Override the feed title";
 
     private static final String PARAMETER_ALL_MESSAGES_LINK = "all-messages-link";
     private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";
@@ -191,6 +194,10 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         } catch (Exception e) {
             throw new RuntimeException("Could not read feed url " + url, e);
         }
+        
+        String overrideFeedTitle = request.getStringParameter(PARAMETER_OVERRIDE_FEED_TITLE);
+        if(overrideFeedTitle != null)
+        	feed.setTitle(overrideFeedTitle);
 
         model.put("feed", feed);
         model.put("conf", conf);
@@ -205,6 +212,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_URL, PARAMETER_URL_DESC);
         map.put(PARAMETER_MAX_MESSAGES, PARAMETER_MAX_MESSAGES_DESC);
         map.put(PARAMETER_FEED_TITLE, PARAMETER_FEED_TITLE_DESC);
+        map.put(PARAMETER_OVERRIDE_FEED_TITLE, PARAMETER_OVERRIDE_FEED_TITLE_DESC);
         map.put(PARAMETER_FEED_DESCRIPTION, PARAMETER_FEED_DESCRIPTION_DESC);
         map.put(PARAMETER_ITEM_DESCRIPTION, PARAMETER_ITEM_DESCRIPTION_DESC);
         map.put(PARAMETER_ALL_MESSAGES_LINK, PARAMETER_ALL_MESSAGES_LINK_DESC);

@@ -11,7 +11,6 @@
       <list>
         <ref bean="editor.modeParameterAssertion" />
         <ref bean="requiresWritePermissionAssertion" />
-        <ref bean="resourceTypeInHtml" /> 
         <ref bean="editor.parameterEqualsEdit" />
       </list>
     </property>

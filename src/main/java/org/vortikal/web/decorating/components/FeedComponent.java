@@ -196,8 +196,8 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         }
         
         String overrideFeedTitle = request.getStringParameter(PARAMETER_OVERRIDE_FEED_TITLE);
-        if(overrideFeedTitle != null)
-        	feed.setTitle(overrideFeedTitle);
+        if(overrideFeedTitle != null && overrideFeedTitle.length() > 0)
+        	model.put("overrideFeedTitle", overrideFeedTitle);
 
         model.put("feed", feed);
         model.put("conf", conf);

@@ -1,7 +1,9 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if feed.entries?size &gt; 0 || conf.includeIfEmpty>
 <div class="vrtx-feed">
-  <#if conf.feedTitle?exists>
+  <#if overrideFeedTitle?exists>
+  	<a class="feed-title" href="${feed.link}">${overrideFeedTitle?html}</a>
+  <#elseif conf.feedTitle?exists>
     <a class="feed-title" href="${feed.link}">${feed.title?html}</a> 
   <#elseif conf.feedTitleValue?exists>
     <div class="feed-title">${conf.feedTitleValue?html}</div> 

@@ -150,13 +150,12 @@ public class PropertySetIndexUpdater implements BeanNameAware,
             for (ChangeLogEntry deletion: deletes) {
                 // Delete by resource ID, this info must be provided in the event.
                 if (deletion.isCollection()) {
-                    this.index.deletePropertySetTreeByUUID(String.valueOf(deletion.getResourceId()));
+                    this.index.deletePropertySetTree(deletion.getUri());
                 } else {
-                    this.index.deletePropertySetByUUID(String.valueOf(deletion.getResourceId()));
+                    this.index.deletePropertySet(deletion.getUri());
                 }
             }
-            
-            
+                
             // Updates/additions
             if (updates.size() > 0) {
                 List<Path> updateUris = new ArrayList<Path>(updates.size());
@@ -171,17 +170,43 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 
                 // Now query index dao for a list of all property sets that 
                 // need updating.
-                PropertySetHandler handler = new PropertySetHandler() {
-
-                    public void handlePropertySet(PropertySet propertySet,
-                                                  Set<Principal> aclReadPrincipals) {
-                        
-                        PropertySetIndexUpdater.this.index.addPropertySet(propertySet, aclReadPrincipals);
-                    }
+                
+                class CountingPropertySetHandler implements PropertySetHandler {
+                    int count = 0;
                     
-                };
+                    public void handlePropertySet(PropertySet propertySet,
+                            Set<Principal> aclReadPrincipals) {
+  
+                            PropertySetIndexUpdater.this.index.addPropertySet(propertySet, aclReadPrincipals);
+                            ++count;
+                    }
+                }
+                
+                CountingPropertySetHandler handler = new CountingPropertySetHandler();
                 
                 this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
+                
+// XXX: this helps on resolving some missing inconsistencies during high concurrency updates, but it is
+//      butt ugly and therefore not enabled. 
+//                if (handler.count < updates.size()) {
+//                    LOG.debug("Got less resouces from DAO than number of update events, re-trying once.");
+//
+//                    // Try one more time because of racy conditions (we risk reading entries from changelog which do not
+//                    // show up in database-query here).
+//                    handler.count = 0;
+//                    try {
+//                        Thread.sleep(1000); 
+//                    } catch (InterruptedException ie) {}
+//                    
+//                    for (ChangeLogEntry update: updates) {
+//                        this.index.deletePropertySet(update.getUri());
+//                    }
+//                    this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
+//                    
+//                    if (handler.count < updates.size()) {
+//                        LOG.warn("Got less update resouces from DAO than was in changelog, also at second attempt.");
+//                    }
+//                }
             }
             
             this.index.commit();
@@ -191,7 +216,6 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         } finally {
             this.index.unlock();
         }
-        
     }
 
     public String getObserverId() {

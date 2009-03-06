@@ -33,6 +33,7 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.web.controller.feed.CollectionListingAsAtomFeed;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;

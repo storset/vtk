@@ -118,44 +118,73 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     }
 
 
-    public int deletePropertySetTree(Path rootUri) throws IndexException {
+    public int deletePropertySetTree(Path rootPath) throws IndexException {
+
+        String rootUri = rootPath.toString();
+        String prefix;
+        if ("/".equals(rootUri))  {
+            prefix = "/";
+        } else {
+            prefix = rootUri + "/";
+        }
 
         TermEnum tenum = null;
         TermDocs tdocs = null;
         try {
-
             IndexReader reader = this.indexAccessor.getIndexReader();
-            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri.toString());
+            Term rootUriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, rootUri);
             String fieldName = rootUriTerm.field();
             tenum = reader.terms(rootUriTerm);
             tdocs = reader.termDocs();
-
             int n = 0;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleting property set tree with root URI '" + rootUri + "'");
             }
 
+            // Do root only, first
+            Term term = tenum.term();
+            if (term != null && term.field() == fieldName
+                    && term.text().equals(rootUri)) {
+                
+                tdocs.seek(tenum);
+                while (tdocs.next()) {
+                    reader.deleteDocument(tdocs.doc());
+                    ++n;
+                }
+            }
+            tenum.close();
+
+            // Create a separate enumeration starting at slash-terminated prefix.
+            // This is important because lexicographic sorting of URIs is not always in 
+            // strict parent-child-sequence. If disregarded, the iteration will stop if
+            // any same-level URIs occur in the middle. That would result in dangling 
+            // resources in index.
+            // Example of lexicographic URI sorting which demonstrates problem, 
+            // starting at root URI /a:
+            //     /a
+            //     /a.jar       <-- Iteration would stop here if the root URI enumration was used.
+            //     /a/1
+            //     /a/2
+            
+            Term prefixTerm = new Term(FieldNameMapping.URI_FIELD_NAME, prefix);
+            fieldName = prefixTerm.field();
+            tenum = reader.terms(prefixTerm);
+            
             do {
-                Term term = tenum.term();
+                term = tenum.term();
                 if (term != null && term.field() == fieldName
-                        && term.text().startsWith(rootUri.toString())) {
+                        && term.text().startsWith(prefix)) {
 
                     tdocs.seek(tenum);
-
                     while (tdocs.next()) {
                         reader.deleteDocument(tdocs.doc());
                         ++n;
                     }
                 } else
-                    break;
+                    break; // End of subtree in sequence
 
             } while (tenum.next());
-
-            if (n == 0) {
-                logger.warn("Consistency warning: zero index documents deleted"
-                        + " for tree with root URI '" + rootUri + "'");
-            }
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Deleted " + n + " index documents.");
@@ -170,8 +199,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                     tenum.close();
                 if (tdocs != null)
                     tdocs.close();
-            } catch (IOException io) {
-            }
+            } catch (IOException io) {}
         }
     }
 

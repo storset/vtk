@@ -357,7 +357,7 @@
   <select id="loadPropertiesForResource" parameterClass="int" resultMap="Property">
     select
       p.*,
-      case when binary_content is null then 0 else 1 end as is_binary
+      case when binary_content is null then 0 else 1 end as is_binary 
     from extra_prop_entry p
     where resource_id = #value#
     order by p.extra_prop_entry_id
@@ -814,7 +814,10 @@
   select cl1.*
   from changelog_entry cl1
   where
-  cl1.operation = 'deleted' AND cl1.is_collection = 'Y'
+  cl1.logger_id = #loggerId#
+  and cl1.logger_type = #loggerType#
+  and cl1.changelog_entry_id &lt;= #maxId#
+  and cl1.operation = 'deleted'              <!--  and cl1.is_collection = 'Y' -->
   
   <!-- This fixes a subtle problem regarding deletion
   of collections. The difference between collection deletions
@@ -829,9 +832,6 @@
   and the old tree will remain in the index, except for the replaced parent node. 
   -->
     
-  and cl1.changelog_entry_id &lt;= #maxId#
-  and cl1.logger_id = #loggerId#
-  and cl1.logger_type = #loggerType#
   or 
     cl1.changelog_entry_id IN 
     ( select max(cl2.changelog_entry_id)
@@ -842,6 +842,7 @@
       and cl2.changelog_entry_id &lt;= #maxId# )
     
   order by cl1.changelog_entry_id
+
     <!-- 
       Changed ORDER BY to order by event id, instead of URI. It makes more sense
       to list events in the order they happened, rather than what the URI looks like.

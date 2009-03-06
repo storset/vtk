@@ -31,25 +31,16 @@
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.repositoryOperationPointcut"/>
   </aop:config>
 
-
-  <!-- XXX: identify (indexing-related) pointcuts that should be wrapped in transactions: -->
-  <!-- Shouldn't need transaction wrapping here, since IndexDao is already being wrapped -->
-<!--  <aop:config>
-    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repository.index.observation.ResourceChangePoller.pollChanges(..))"/>
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
-  </aop:config>-->
-
-  <!-- Query result authorization already wrapped by pointcut for SqlMapIndexDao -->
-  <!--
-  <aop:config>  
-    <aop:pointcut id="repository.searchAuthorizationPointcut" expression="execution(* org.vortikal.repository.search.query.security.QueryResultAuthorizationManager.authorizeQueryResults(..))"/>
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.searchAuthorizationPointcut"/>
-  </aop:config> -->
-
+  <!-- Resource change notifier should have a complete transaction wrapped around pollChanges --> 
   <aop:config>
-    <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repository.store.db.SqlMapIndexDao.*(..))"/>
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.sqlMapIndexDaoPointcut"/>
+    <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repository.index.observation.ResourceChangeNotifier.pollChanges(..))"/>
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
   </aop:config>
+
+<!--  <aop:config>-->
+<!--    <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repository.store.db.SqlMapIndexDao.*(..))"/>-->
+<!--    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.sqlMapIndexDaoPointcut"/>-->
+<!--  </aop:config>-->
 
   <!-- Repository -->
 

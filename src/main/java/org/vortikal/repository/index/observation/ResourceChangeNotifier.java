@@ -43,6 +43,8 @@ package org.vortikal.repository.index.observation;
  */
 public interface ResourceChangeNotifier {
     
+    public void pollChanges();
+    
     public boolean registerObserver(ResourceChangeObserver observer);
     
     public boolean unregisterObserver(ResourceChangeObserver observer);

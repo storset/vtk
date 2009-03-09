@@ -62,7 +62,7 @@ import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public class EmailAFriendController implements Controller {
 
-	private Log logger = LogFactory.getLog(this.getClass().getName());
+    private Log logger = LogFactory.getLog(this.getClass().getName());
     private Repository repository;
     private String viewName;
     private String siteName;
@@ -133,7 +133,11 @@ public class EmailAFriendController implements Controller {
                         m.put("emailSentTo", emailTo);
                         m.put("tipResponse", "OK");
                         
-                        logger.info("Remote address:" + request.getRemoteAddr() + " - Email sent to:" + emailTo + " - Url from request:" + uri.toString());
+                        logger.info("Remote address:" + request.getRemoteAddr() 
+                                    + " - Email sent to:" + emailTo 
+                                    + " - Email sent from:" + emailFrom
+                                    + " - Url from request:" + uri.toString()
+                                    );
 
                     } else {
 

@@ -45,6 +45,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
@@ -190,8 +191,10 @@ public class TagsController implements Controller {
         Resource scopedResource = null;
         try {
             scopedResource = this.repository.retrieve(token, requestedScope, true);
+        } catch (ResourceNotFoundException e) {
+            throw new IllegalArgumentException("Scope resource doesn't exist: " + requestedScope);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Scope resource doesn't exist.");
+            throw new IllegalArgumentException("Could not get scope resource");
         }
 
         if (!scopedResource.isCollection()) {

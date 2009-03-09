@@ -52,7 +52,7 @@ public final class TagsHelper {
         }
         
         throw new IllegalArgumentException(
-                "Scope parameter must be empty, '.' or a valid collection");
+                "Scope parameter must be empty, '.' or a valid path");
     }
 
 }

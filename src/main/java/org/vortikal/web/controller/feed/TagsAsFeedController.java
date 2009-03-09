@@ -42,6 +42,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.tags.TagsHelper;
@@ -101,8 +102,10 @@ public class TagsAsFeedController extends AtomFeedController {
         Resource scopedResource = null;
         try {
             scopedResource = this.repository.retrieve(token, requestedScope, true);
+        } catch (ResourceNotFoundException e) {
+            throw new IllegalArgumentException("Scope resource doesn't exist: " + requestedScope);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Scope resource doesn't exist.");
+            throw new IllegalArgumentException("Could not get scope resource");
         }
 
         if (!scopedResource.isCollection()) {

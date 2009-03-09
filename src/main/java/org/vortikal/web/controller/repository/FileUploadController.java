@@ -41,6 +41,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.validation.BindException;
@@ -167,7 +168,8 @@ public class FileUploadController extends SimpleFormController {
 
             String contentType = uploadItem.getContentType();
             
-            if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
+            if (StringUtils.isBlank(contentType) || 
+            		MimeHelper.DEFAULT_MIME_TYPE.equals(StringUtils.trim(contentType))) {
                 contentType = MimeHelper.map(newResource.getName());
             }
             newResource.setContentType(contentType);

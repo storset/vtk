@@ -203,17 +203,17 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                     continue;
                 }
                 String title = getTitle(r);
+                String navigationTitle = null;
+                if (this.navigationTitlePropDef != null) {
+            		navigationTitle = getNavigationTitle(r);
+            	}
+            	title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
                 String url = null;
                 if (i < length - 1 || skipLastElement) {
                     url = this.service.constructLink(r, principal, false);
                 }
 
                 if (i == length - 1 && !skipLastElement) {
-                	String navigationTitle = null;
-                	if (this.navigationTitlePropDef != null) {
-                		navigationTitle = getNavigationTitle(r);
-                	}
-                	title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
                     breadCrumb.add(new BreadcrumbElement(url, title, null));
                 } else {
                     breadCrumb.add(new BreadcrumbElement(url, title));

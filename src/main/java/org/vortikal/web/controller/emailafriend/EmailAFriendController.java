@@ -42,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -60,6 +62,7 @@ import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public class EmailAFriendController implements Controller {
 
+	private Log logger = LogFactory.getLog(this.getClass().getName());
     private Repository repository;
     private String viewName;
     private String siteName;
@@ -71,7 +74,7 @@ public class EmailAFriendController implements Controller {
     private Service viewService;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+    	
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
@@ -129,6 +132,8 @@ public class EmailAFriendController implements Controller {
 
                         m.put("emailSentTo", emailTo);
                         m.put("tipResponse", "OK");
+                        
+                        logger.info("Remote address:" + request.getRemoteAddr() + " - Email sent to:" + emailTo + " - Url from request:" + uri.toString());
 
                     } else {
 

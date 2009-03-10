@@ -62,7 +62,7 @@ import org.vortikal.security.Principal;
 public class PropertySetIndexUpdater implements BeanNameAware, 
                                         ResourceChangeObserver, InitializingBean {
 
-    private static final Log LOG = LogFactory.getLog(PropertySetIndexUpdater.class);
+    private final Log logger = LogFactory.getLog(PropertySetIndexUpdater.class);
     
     private PropertySetIndex index;
     private String beanName;
@@ -81,11 +81,11 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     public synchronized void disable() {
         if (this.notifier != null) {
             if (this.notifier.unregisterObserver(this)) {
-                LOG.info("Un-registered from resource change notifier.");
+                logger.info("Un-registered from resource change notifier.");
             }
         }
         this.enabled = false;
-        LOG.info("Disabled.");
+        logger.info("Disabled.");
     }
     
     /**
@@ -94,11 +94,11 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     public synchronized void enable() {
         if (this.notifier != null) {
             if (this.notifier.registerObserver(this)) {
-                LOG.info("Registered with resource change notifier.");
+                logger.info("Registered with resource change notifier.");
             }
         }
         this.enabled = true;
-        LOG.info("Enabled.");
+        logger.info("Enabled.");
     }
     
     /**
@@ -120,7 +120,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
 
         synchronized (this) {
             if (! this.enabled) {
-                LOG.info("Ignoring resource changes, disabled.");
+                logger.info("Ignoring resource changes, disabled.");
                 return;
             }
         }
@@ -128,34 +128,27 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         try {
             // Take lock immediately, we'll be doing some writing.
             if (! this.index.lock()) {
-                LOG.error("Unable to acquire lock on index, will not attempt to " +
+                logger.error("Unable to acquire lock on index, will not attempt to " +
                              "apply modifications, changes are lost !");
                 return;
             }
             
             List<ChangeLogEntry> updates = new ArrayList<ChangeLogEntry>(changes.size());
-            List<ChangeLogEntry> deletes = new ArrayList<ChangeLogEntry>(changes.size());
 
-            // Sort out deletes and updates
             for (ChangeLogEntry change: changes) {
                 if (change.getOperation() == Operation.DELETED) {
-                    deletes.add(change);
+                    // Delete immediately
+                    if (change.isCollection()) {
+                        this.index.deletePropertySetTree(change.getUri());
+                    } else {
+                        this.index.deletePropertySet(change.getUri());
+                    }
                 } else {
+                    // Add change to update list
                     updates.add(change);
                 }
             }
 
-            // Apply changes to index
-            // Regular deletes (might include collections)
-            for (ChangeLogEntry deletion: deletes) {
-                // Delete by resource ID, this info must be provided in the event.
-                if (deletion.isCollection()) {
-                    this.index.deletePropertySetTree(deletion.getUri());
-                } else {
-                    this.index.deletePropertySet(deletion.getUri());
-                }
-            }
-                
             // Updates/additions
             if (updates.size() > 0) {
                 List<Path> updateUris = new ArrayList<Path>(updates.size());
@@ -177,7 +170,8 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                     public void handlePropertySet(PropertySet propertySet,
                             Set<Principal> aclReadPrincipals) {
   
-                            PropertySetIndexUpdater.this.index.addPropertySet(propertySet, aclReadPrincipals);
+                            PropertySetIndexUpdater.this.index.addPropertySet(propertySet, 
+                                                            aclReadPrincipals);
                             ++count;
                     }
                 }
@@ -186,33 +180,18 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 
                 this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
                 
-// XXX: this helps on resolving some missing inconsistencies during high concurrency updates, but it is
-//      butt ugly and therefore not enabled. 
-//                if (handler.count < updates.size()) {
-//                    LOG.debug("Got less resouces from DAO than number of update events, re-trying once.");
-//
-//                    // Try one more time because of racy conditions (we risk reading entries from changelog which do not
-//                    // show up in database-query here).
-//                    handler.count = 0;
-//                    try {
-//                        Thread.sleep(1000); 
-//                    } catch (InterruptedException ie) {}
-//                    
-//                    for (ChangeLogEntry update: updates) {
-//                        this.index.deletePropertySet(update.getUri());
-//                    }
-//                    this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
-//                    
-//                    if (handler.count < updates.size()) {
-//                        LOG.warn("Got less update resouces from DAO than was in changelog, also at second attempt.");
-//                    }
-//                }
+                // Note that it is OK to get less resources than requested from DAO, because
+                // they can be deleted in the mean time. 
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Requested " + updates.size() 
+                            + " resources for updating, got " + handler.count + " from DAO.");
+                }
             }
-            
+
             this.index.commit();
             
         } catch (Exception e) {
-            LOG.error("Something went wrong while updating new index with changes", e);
+            logger.error("Something went wrong while updating new index with changes", e);
         } finally {
             this.index.unlock();
         }

@@ -39,7 +39,7 @@
      <ul class="items">
        <#list entries[0..maxMsgs-1] as entry>
          <li>
-          <a class="item-title" href="${entry.link?html}">${entry.title?html}</a>
+          <a class="item-title" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${entry.title?html}</a>
           <#if conf.publishedDate?exists && entry.publishedDate?exists>
           <span class="published-date">
             <@vrtx.date value=entry.publishedDate format="${conf.publishedDate}" />

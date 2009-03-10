@@ -810,14 +810,15 @@
 
   <select id="getLastChangeLogEntries" parameterClass="java.util.Map"
           resultMap="ChangeLogEntry">  
-  
+
+  <!--  Select latest change for each URI within window, but always select all delete operations. -->  
   select cl1.*
   from changelog_entry cl1
   where
   cl1.logger_id = #loggerId#
   and cl1.logger_type = #loggerType#
   and cl1.changelog_entry_id &lt;= #maxId#
-  and cl1.operation = 'deleted'              <!--  and cl1.is_collection = 'Y' -->
+  and cl1.operation = 'deleted'
   
   <!-- This fixes a subtle problem regarding deletion
   of collections. The difference between collection deletions

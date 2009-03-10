@@ -45,6 +45,7 @@ import org.apache.lucene.store.NIOFSDirectory;
 /**
  * File system backed Lucene index.
  * @author oyviste
+ * @deprecated
  */
 public class FSBackedLuceneIndex extends AbstractLuceneIndex {
     

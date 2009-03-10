@@ -129,6 +129,55 @@ div.property-item {
 
 /* ****** START: collection- event and articlelisting parameters styling */
 
+/* START Navigation */
+
+/* Margin-top */
+div#vrtx-resource\.navigationTitle {
+	float:left;
+	clear: left;
+	margin: 10px 0 10px 0;
+	width: 300px;
+}
+
+div#vrtx-resource\.navigationTitle input,
+div#vrtx-resource\.navigationTitle div {
+	width: 300px;
+	display: inline;
+	}
+
+div#vrtx-resource\.importance {
+     float: left;  
+     margin: 10px 0 10px 10px;
+     width: 100px;
+}
+
+div#vrtx-resource\.hidden {
+    float: left;
+    margin: 10px 0 10px 10px;
+    width: 85px;
+}
+
+/* Override breaks in options */
+div#vrtx-resource\.hidden br {
+   display: none;	
+}
+
+div#vrtx-resource\.hidden #resource\.hidden\.true {
+     float: left; 
+}
+
+div#vrtx-resource\.hidden #resource\.hidden\.unspecified {
+     float: left;
+}
+
+label.resource\.hidden {
+     float: left;
+     margin-right: 2px;
+}
+
+/* END Navigation */
+
+
 div#allowedValues {
    margin-bottom: 1em;	
 }
@@ -265,7 +314,7 @@ div.introduction {
   float: left; 
   width: 500px;  
   margin-right: 1.2em;
-  margin-bottom: 1em;
+  margin-bottom: 0;/*1em;*/
 }
 
 div.introduction textarea {
@@ -299,6 +348,10 @@ div.picture {
   clear: right; /*IE7*/
   margin-bottom: 0;
   overflow:hidden;
+}
+
+* html div.picture {
+  margin-right:42%;
 }
 
 #input-and-button-container {
@@ -381,6 +434,7 @@ div.caption {
   float: left;
   position: relative;
   margin-top: -105px;
+  margin-bottom:0;
 }
 
 /* IE6 fix */

@@ -46,6 +46,15 @@
         </property>
       </bean>
     </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="radio" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="importancePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

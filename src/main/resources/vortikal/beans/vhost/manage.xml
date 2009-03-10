@@ -626,8 +626,9 @@
 
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
+       <!-- Don't pass in hidden and navigational importance 
         <ref bean="hiddenPropDef" />
-        <ref bean="importancePropDef" />
+        <ref bean="importancePropDef" /> -->
 
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />

@@ -313,11 +313,15 @@
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">
           <list>
-            <ref bean="userTitlePropDef" />
-            <ref bean="navigationTitlePropDef" />
+            <ref bean="userTitlePropDef" /> 
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
+            <!-- Navigation -->
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            
             <ref bean="collection.pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
@@ -339,10 +343,15 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
-            <ref bean="navigationTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
+            
+            <!-- Navigation -->
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            
             <ref bean="collection.pageLimitPropDef" />
             <ref bean="articleListing.featuredArticlesPropDef"/>
             <ref bean="articleListing.recursiveListingPropDef" />
@@ -370,10 +379,15 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
-            <ref bean="navigationTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />
             <ref bean="introductionImageCaptionPropDef" />
+            
+            <!-- Navigation -->
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            
             <ref bean="collection.pageLimitPropDef" />
             <ref bean="eventListing.recursiveListingPropDef" />
             <ref bean="eventListing.hideEndDatePropDef" />

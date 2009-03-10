@@ -206,11 +206,11 @@
   <table id="vrtx-resourceInfoTechnical" class="resourceInfo">
 
   <#if resource.collection>
-    <!-- navigation:hidden -->
+    <!-- navigation:hidden
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:hidden' />
 
-    <!-- navigation:importance -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:importance' />
+    navigation:importance
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'navigation:importance' /> -->
 
     <!-- Type of Collection -->
 

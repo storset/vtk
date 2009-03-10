@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.commenting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -58,9 +61,12 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     private Service viewService;
     private Service resourceCommentsFeedService;
     private Service recentCommentsService;
+    private boolean includeCommentsFromUnpublished = false;
+    private PropertyTypeDefinition publishedDatePropDef;
 
 
-    @Required public void setRepository(Repository repository) {
+    @Required
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
@@ -75,7 +81,8 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         this.maxComments = maxComments;
     }
     
-    @Required public void setViewService(Service viewService) {
+    @Required
+    public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
     
@@ -86,6 +93,14 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     public void setResourceCommentsFeedService(Service resourceCommentsFeedService) {
         this.resourceCommentsFeedService = resourceCommentsFeedService;
     }
+    
+	public void setIncludeCommentsFromUnpublished(boolean includeCommentsFromUnpublished) {
+		this.includeCommentsFromUnpublished = includeCommentsFromUnpublished;
+	}
+	
+	public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
+		this.publishedDatePropDef = publishedDatePropDef;
+	}
 
     @SuppressWarnings(value={"unchecked"}) 
     public void referenceData(Map model, HttpServletRequest servletRequest) throws Exception {
@@ -105,9 +120,19 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
 
         Map<String, Resource> resourceMap = new HashMap<String, Resource>();
         Map<String, URL> commentURLMap = new HashMap<String, URL>();
+        List<Comment> filteredComments = new ArrayList<Comment>();
         for (Comment comment: comments) {
             try {
                 Resource r = this.repository.retrieve(token, comment.getURI(), true);
+                // Don't include comments from resources that have no published date
+                Property publishedDate = null;
+                if (publishedDatePropDef != null) {
+                	publishedDate = r.getProperty(publishedDatePropDef);
+                }
+                if (!this.includeCommentsFromUnpublished && publishedDate == null) {
+                	continue;
+                }
+                filteredComments.add(comment);
                 resourceMap.put(r.getURI().toString(), r);
                 URL commentURL = this.viewService.constructURL(r, principal);
                 commentURLMap.put(comment.getID(), commentURL);
@@ -136,7 +161,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         
         model.put("resource", resource);
         model.put("principal", principal);
-        model.put("comments", comments);
+        model.put("comments", filteredComments);
         model.put("resourceMap", resourceMap);
         model.put("commentURLMap", commentURLMap);
         model.put("commentsEnabled", Boolean.valueOf(commentsEnabled));
@@ -144,4 +169,5 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         model.put("feedURL", feedURL);
         model.put("recentCommentsURL", recentCommentsURL);
     }
+
 }

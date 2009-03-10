@@ -135,7 +135,7 @@ div.property-item {
 div#vrtx-resource\.navigationTitle {
 	float:left;
 	clear: left;
-	margin: 10px 0 10px 0;
+	margin: 1em 0 1em 0;
 	width: 300px;
 }
 
@@ -147,13 +147,13 @@ div#vrtx-resource\.navigationTitle div {
 
 div#vrtx-resource\.importance {
      float: left;  
-     margin: 10px 0 10px 10px;
+     margin: 1em 0 1em 10px;
      width: 100px;
 }
 
 div#vrtx-resource\.hidden {
     float: left;
-    margin: 10px 0 10px 10px;
+    margin: 1em 0 1em 10px;
     width: 85px;
 }
 
@@ -481,6 +481,7 @@ div.authors {
   clear: left;
   float: left;
   white-space: nowrap;
+  margin-top: 1em;
 }
 
 div.published-date {  
@@ -499,6 +500,7 @@ div.resource\.location{
 div.start-date, div.end-date, div.location {
   float:left;
   margin-right: 1em;
+  margin-top: 1em;
 }
 
 * html div.end-date, * html div.location {

@@ -35,7 +35,6 @@ import java.util.Set;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 import org.vortikal.security.Principal;
 
 /**
@@ -57,12 +56,6 @@ public interface IndexDao {
                                                 PropertySetHandler handler)
         throws DataAccessException;
 
-    @Deprecated
-    public void processQueryResultsAuthorization(
-                                    Set<String> principalNames,  
-                                    List<ResultSecurityInfo> resultSecurityInfo) 
-        throws DataAccessException;
-    
     public Set<Principal> getAclReadPrincipals(PropertySet propertySet)
         throws DataAccessException;
 

@@ -31,7 +31,6 @@
 package org.vortikal.repository.store.db;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.search.query.security.ResultSecurityInfo;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
@@ -65,11 +63,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     private static final Log LOG = LogFactory.getLog(SqlMapIndexDao.class);
     
-    private int queryAuthorizationBatchSize = 1000;
-    
-    // Non-adjustable batch size limit for group member-ships (Oracle hard limit is 1000)
-    private static final int GROUP_MEMBERSHIP_BATCH_SIZE = 980;
-
     private ResourceTypeTree resourceTypeTree;
 
     private PrincipalFactory principalFactory;
@@ -229,185 +222,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         return aclReadPrincipals;
     }
     
-
-    private class ResultAuthorizationSqlMapClientCallback 
-        implements SqlMapClientCallback {
-
-        private List<ResultSecurityInfo> batch;
-        private Set<Integer> allIds;
-        private Integer sessionId;
-        private int numberOfEntriesInserted = 0;
-        
-        public ResultAuthorizationSqlMapClientCallback(List<ResultSecurityInfo> batch, 
-                                                Set<Integer> allIds,
-                                                Integer sessionId) {
-            this.batch = batch;
-            this.allIds = allIds;
-            this.sessionId = sessionId;
-        }
-        
-        public Object doInSqlMapClient(SqlMapExecutor sqlMapExec) throws SQLException {
-
-            Map<String, Object> params = new HashMap<String, Object>();
-            String statement = getSqlMap("insertResourceIdIntoTempTable");
-            
-            sqlMapExec.startBatch();
-            for (ResultSecurityInfo rsi: this.batch) {
-                
-                Integer id = rsi.getAclNodeId();
-                if (! this.allIds.add(id)){
-                    continue;
-                }
-                
-                params.put("sessionId", this.sessionId);
-                params.put("resourceId", id);
-                sqlMapExec.insert(statement, params);
-                params.clear();
-                ++this.numberOfEntriesInserted;
-            }
-            int batchCount = sqlMapExec.executeBatch();
-            
-            return new Integer(batchCount);
-        }
-        
-        public int getNumberOfEntriesInserted() {
-            return this.numberOfEntriesInserted;
-        }
-        
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public void processQueryResultsAuthorization(
-                            Set<String> principalNames,
-                            List<ResultSecurityInfo> rsiList)
-        throws DataAccessException {
-
-        // List used for batch processing of principal names
-        List<String> principalNamesList = new ArrayList<String>(principalNames);
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Processing list of " 
-                    + rsiList.size() + " elements");
-        }
-        
-        SqlMapClientTemplate client = getSqlMapClientTemplate();
-
-        String statement = getSqlMap("nextTempTableSessionId");
-        
-        Integer sessionId = (Integer)client.queryForObject(statement);
-        
-        Set<Integer> authorizedIds = new HashSet<Integer>();
-        Set<Integer> allIds = new HashSet<Integer>();
-        
-        int batchSize = this.queryAuthorizationBatchSize;
-        int batchStart = 0;
-        int batchEnd = batchSize > rsiList.size() ? rsiList.size() : batchSize;
-        for (;;) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Processing batch " + batchStart + " to " + batchEnd);
-            }
-
-            ResultAuthorizationSqlMapClientCallback callback = new ResultAuthorizationSqlMapClientCallback(
-                    rsiList.subList(batchStart, batchEnd), allIds, sessionId);
-
-            Integer batchCount = (Integer) client.execute(callback);
-            int n = callback.getNumberOfEntriesInserted();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Number of inserts batched (query auth): "
-                        + batchCount);
-            }
-
-            Map<String, Object> params = new HashMap<String, Object>();
-            statement = getSqlMap("queryResultAuthorization");
-            if (n > 0) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Need to check " + n + " entries in database");
-                }
-
-                params.put("sessionId", sessionId);
-                
-                // Dispatch these queries in batches to avoid more than 1000 groups/principal names per query.
-                int principalNamesBatchStart = 0;
-                int principalNamesBatchEnd = GROUP_MEMBERSHIP_BATCH_SIZE > principalNamesList.size() 
-                                        ? principalNamesList.size() : GROUP_MEMBERSHIP_BATCH_SIZE;
-                do {
-                    List<String> principalNamesBatch = 
-                            principalNamesList.subList(principalNamesBatchStart, 
-                                                       principalNamesBatchEnd);
-                    params.put("principalNames", principalNamesBatch);
-                    
-                    // Dispatch SQL query for current group batch
-                    List<Integer> authorizedList = client.queryForList(statement, params);
-
-                    // Update authorized resource ids
-                    for (Integer authorizedId : authorizedList) {
-                        boolean added = authorizedIds.add(authorizedId);
-                        if (LOG.isDebugEnabled()) {
-                            if (added) {
-                                LOG.debug("Adding ACL node id " + authorizedId
-                                        + " to set of authorized IDs");
-                            }
-
-                            LOG.debug("Current ACL node id: " + authorizedId);
-                        }
-                    }
-                    
-                    principalNamesBatchStart = principalNamesBatchEnd;
-                    principalNamesBatchEnd += GROUP_MEMBERSHIP_BATCH_SIZE;
-                    if (principalNamesBatchEnd > principalNamesList.size()) {
-                        // Avoid overflow for last batch
-                        principalNamesBatchEnd = principalNamesList.size();
-                    }
-                } while (principalNamesBatchStart < principalNamesBatchEnd);
-
-                // Clean up temp table for current result set batch
-                statement = getSqlMap("deleteFromTempTableBySessionId");
-                client.delete(statement, sessionId);
-            }
-
-            // Process current result set batch
-            for (int i = batchStart; i < batchEnd; i++) {
-                ResultSecurityInfo rsi = rsiList.get(i);
-
-                rsi.setAuthorized(authorizedIds.contains(rsi.getAclNodeId())
-                        || principalNames.contains(rsi
-                                .getOwnerAsUserOrGroupName()));
-
-                if (LOG.isDebugEnabled()) {
-                    if (rsi.isAuthorized()) {
-                        LOG.debug("Authorized resource with ACL node id: "
-                                + rsi.getAclNodeId());
-                    } else {
-                        LOG.debug("NOT authorized resource with ACL node id: "
-                                + rsi.getAclNodeId());
-                    }
-                }
-            }
-
-            if (batchEnd == rsiList.size()) {
-                break;
-            }
-
-            batchStart += batchSize;
-            batchEnd = (batchEnd + batchSize) > rsiList.size() ? rsiList.size()
-                    : batchEnd + batchSize;
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Set of authorized IDs contains " + authorizedIds.size()
-                    + " elements");
-            LOG.debug("Set of all unique IDs contains " + allIds.size()
-                    + " elements");
-        }
-            
-        
-    }
-    
-    public void setQueryAuthorizationBatchSize(int queryAuthorizationBatchSize) {
-        this.queryAuthorizationBatchSize = queryAuthorizationBatchSize;
-    }
-
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;

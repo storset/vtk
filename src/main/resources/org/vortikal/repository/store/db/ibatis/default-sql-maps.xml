@@ -776,24 +776,6 @@
        order by p.resource_id, p.extra_prop_entry_id            
   </select>
 
-  <select id="queryResultAuthorization" resultClass="java.lang.Integer"
-                                        parameterClass="java.util.Map">
-    
-    select ace.resource_id from acl_entry ace, vortex_tmp vtmp
-    where ace.resource_id = vtmp.resource_id
-    and vtmp.session_id = #sessionId#
-    and ace.user_or_group_name in 
-    ('pseudo:all'
-      <isNotEmpty open="," property="principalNames" >
-        'pseudo:authenticated'
-      </isNotEmpty>
-      <iterate open="," property="principalNames" conjunction=",">
-        #principalNames[]#      
-      </iterate>
-    )
-    and ace.action_type_id in (1, 3, 4)
-  </select>
-  
   <select id="getAclReadPrincipalNames" resultMap="Principal"
                                         parameterClass="java.lang.Integer">
     select user_or_group_name, is_user from acl_entry

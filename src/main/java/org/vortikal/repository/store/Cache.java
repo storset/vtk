@@ -478,11 +478,6 @@ public class Cache implements DataAccessor, InitializingBean {
         return this.wrappedAccessor.discoverLocks(uri);
     }
 
-    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
-        throws DataAccessException {
-        this.wrappedAccessor.addChangeLogEntry(entry, recurse);
-    }
-    
     /**
      * Clears all cache entries.
      *

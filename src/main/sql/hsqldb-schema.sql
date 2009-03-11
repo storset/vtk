@@ -56,6 +56,8 @@ CREATE INDEX vortex_resource_depth_index ON vortex_resource(depth);
 -----------------------------------------------------------------------------
 -- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-
 --              IDs
+
+-- TODO: column 'resource_id' should be renamed to 'generic_id'
 -----------------------------------------------------------------------------
 DROP SEQUENCE vortex_tmp_session_id_seq IF EXISTS;
 CREATE SEQUENCE vortex_tmp_session_id_seq AS INTEGER START WITH 1000;

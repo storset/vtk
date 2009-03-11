@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
+import org.vortikal.repository.store.ChangeLogDAO;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
@@ -46,6 +47,7 @@ import org.vortikal.security.PrincipalFactory;
 public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
 
     private DataAccessor dataAccessor;
+    private ChangeLogDAO changeLogDAO;
 
     public final static String CREATED = "created";
     public final static String DELETED = "deleted";
@@ -60,13 +62,17 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
         this.dataAccessor = dataAccessor;
     }
 
+    @Required
+    public void setChangeLogDAO(ChangeLogDAO changeLogDAO)  {
+        this.changeLogDAO = changeLogDAO;
+    }
 
     public void created(Resource resource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.CREATED,
                 -1, resource.isCollection(), new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, true);
+        this.changeLogDAO.addChangeLogEntry(entry, true);
 
     }
 
@@ -75,7 +81,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 Operation.DELETED,
                 resourceId, collection, new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
     public void modified(Resource resource, Resource originalResource) {
@@ -83,7 +89,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 Operation.MODIFIED_PROPS,
                 -1, resource.isCollection(), new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
 
@@ -92,7 +98,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                 Operation.MODIFIED_CONTENT, -1, resource.isCollection(),
                 new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
 
@@ -143,7 +149,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                     resource.getURI(), op, -1,
                     resource.isCollection(), new Date());
             
-            this.dataAccessor.addChangeLogEntry(entry, false);
+            this.changeLogDAO.addChangeLogEntry(entry, false);
             
             if (resource.isCollection()) {
                 
@@ -153,7 +159,7 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
                     entry = changeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
                             op, -1, childResources[i].isCollection(), new Date());
                     
-                    this.dataAccessor.addChangeLogEntry(entry, false);
+                    this.changeLogDAO.addChangeLogEntry(entry, false);
                 }
             }
         } catch (IOException e) {

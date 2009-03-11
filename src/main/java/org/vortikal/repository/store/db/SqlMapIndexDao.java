@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
-import org.vortikal.repository.ChangeLogEntry;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -66,9 +65,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     private static final Log LOG = LogFactory.getLog(SqlMapIndexDao.class);
     
-    private int loggerId;
-    private int loggerType;
-
     private int queryAuthorizationBatchSize = 1000;
     
     // Non-adjustable batch size limit for group member-ships (Oracle hard limit is 1000)
@@ -408,59 +404,8 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
     }
     
-    @SuppressWarnings("unchecked")
-    public List<ChangeLogEntry> getLastChangeLogEntries()
-        throws DataAccessException {
-        
-        SqlMapClientTemplate client = getSqlMapClientTemplate();
-
-        String statement = getSqlMap("getMaxChangeLogEntryId");
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("loggerId", this.loggerId);
-        params.put("loggerType", this.loggerType);
-        Integer maxId = (Integer) client.queryForObject(statement, params);
-
-        params.put("maxId", maxId);
-        statement = getSqlMap("getLastChangeLogEntries");
-
-        List<ChangeLogEntry> entries = client.queryForList(statement, params);
-
-        return entries;
-    }
-    
-    public void removeChangeLogEntries(List<ChangeLogEntry> entries)
-        throws DataAccessException {
-        
-        int maxId = -1;
-        for (ChangeLogEntry entry: entries) {
-            maxId = Math.max(maxId, entry.getChangeLogEntryId());
-        }
-        
-        SqlMapClientTemplate client = getSqlMapClientTemplate();
-
-        String statement = getSqlMap("removeChangeLogEntries");
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("loggerId", this.loggerId);
-        params.put("loggerType", this.loggerType);
-        params.put("maxId", maxId);
-
-        client.delete(statement, params);
-    }
-
-
     public void setQueryAuthorizationBatchSize(int queryAuthorizationBatchSize) {
         this.queryAuthorizationBatchSize = queryAuthorizationBatchSize;
-    }
-    
-    @Required
-    public void setLoggerId(int loggerId) {
-        this.loggerId = loggerId;
-    }
-
-    @Required
-    public void setLoggerType(int loggerType) {
-        this.loggerType = loggerType;
     }
 
     @Required

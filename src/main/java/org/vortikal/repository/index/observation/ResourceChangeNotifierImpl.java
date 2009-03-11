@@ -36,8 +36,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry;
-import org.vortikal.repository.store.IndexDao;
+import org.vortikal.repository.ChangeLogEntry.Operation;
+import org.vortikal.repository.store.ChangeLogDAO;
 
 /**
  * Class for distributing resouce changes from database to a set of observers.
@@ -49,7 +51,9 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     
     private Log logger = LogFactory.getLog(ResourceChangeNotifierImpl.class);
     private Set<ResourceChangeObserver> observers = new HashSet<ResourceChangeObserver>();
-    private IndexDao indexDao;
+    private ChangeLogDAO changeLogDAO;
+    private int loggerType;
+    private int loggerId;
     
     /**
      * This method should be periodically called to poll for resource changes.
@@ -57,28 +61,57 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     public synchronized void pollChanges() {
         
         try {
-            // Get last relevant changes to resources. This list should only
-            // contain unique resources, and the last change that has happened to them.
-            List<ChangeLogEntry> changes = this.indexDao.getLastChangeLogEntries();
+            List<ChangeLogEntry> changes = this.changeLogDAO.getChangeLogEntries(this.loggerType, 
+                                                                                 this.loggerId);
+            
+            if (logger.isDebugEnabled() && changes.size() > 0) {
+                logger.debug("");
+                logger.debug("--- pollChanges(): Start of window");
+                logger.debug("--- pollChanges(): Got the following changelog events from DAO");
+                for (ChangeLogEntry change: changes) {
+                    StringBuilder log = new StringBuilder();
+                    if (change.getOperation() == Operation.DELETED) {
+                        log.append("DEL    ");                        
+                    } else {
+                        log.append("UPDATE ");
+                    }
+
+                    if (change.isCollection()) {
+                        log.append("COL ");
+                    }
+                    log.append(change.getUri());
+                    
+                    log.append(", RESOURCE ID=").append(change.getResourceId());
+                    log.append(", EVENT ID=").append(change.getChangeLogEntryId());
+                    logger.debug(log.toString());
+                }
+                logger.debug("--- pollChanges(): End of list, going to dispatch to observers");
+                logger.debug("");
+            }
             
             if (changes != null && changes.size() > 0) {
                 // Index changes
-                this.logger.debug("Notifying observers/indexes of resource changes.");
+                this.logger.debug("--- pollChanges(): Notifying observers/indexes of resource changes");
                 for (ResourceChangeObserver observer: this.observers) {
                     
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("Notifying observer '" + observer.getObserverId() + "'");
+                        this.logger.debug("--- pollChanges(): Notifying observer '" + observer.getObserverId() + "'");
                     }
                     
                     observer.notifyResourceChanges(changes);
                 }
-                this.logger.debug("Finished notifying observers of changes.");
+                this.logger.debug("--- pollChanges(): Finished notifying observers of changes.");
                 
-                // Remove _all_ changes _up_until_the_latest_ change in the list.
-                this.indexDao.removeChangeLogEntries(changes);
+                // Remove changelog entries from DAO
+                this.changeLogDAO.removeChangeLogEntries(changes);
+                
                 if (this.observers.size() == 0 && this.logger.isDebugEnabled()) {
                     this.logger.debug("Changelog contents discarded, no observers are registered.");
                 }
+                
+                logger.debug("--- pollChanges(): End of window"); 
+                this.logger.debug("");
+                this.logger.debug("");
             }
         } catch (Throwable t) {
             this.logger.error("Unexpected error while updating indexes !", t);
@@ -112,9 +145,20 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
             this.observers = observers; // code should call this setter during init.
         }
     }
-    
-    public void setIndexDao(IndexDao indexDao) {
-        this.indexDao = indexDao;
+
+    @Required
+    public void setChangeLogDAO(ChangeLogDAO changeLogDAO) {
+        this.changeLogDAO = changeLogDAO;
     }
-    
+
+    @Required
+    public void setLoggerType(int loggerType) {
+        this.loggerType = loggerType;
+    }
+
+    @Required
+    public void setLoggerId(int loggerId) {
+        this.loggerId = loggerId;
+    }
+
 }

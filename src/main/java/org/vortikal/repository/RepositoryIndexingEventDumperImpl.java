@@ -34,7 +34,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
-import org.vortikal.repository.store.DataAccessor;
+import org.vortikal.repository.store.ChangeLogDAO;
 import org.vortikal.security.PrincipalFactory;
 
 /**
@@ -65,7 +65,7 @@ import org.vortikal.security.PrincipalFactory;
  */
 public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDumper {
 
-    private DataAccessor dataAccessor;
+    private ChangeLogDAO changeLogDAO;
     
     public void created(Resource resource) {
 
@@ -74,7 +74,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
                                             -1, resource.isCollection(),
                                             new Date());
 
-        this.dataAccessor.addChangeLogEntry(entry, true);
+        this.changeLogDAO.addChangeLogEntry(entry, true);
     }
 
     public void deleted(Path uri, int resourceId, boolean collection) {
@@ -83,7 +83,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
                                             Operation.DELETED, resourceId, collection, 
                                             new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
 
     }
 
@@ -94,7 +94,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
                 -1, resource.isCollection(),
                 new Date());
 
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
 
     }
 
@@ -106,7 +106,7 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
                 resource.isCollection(),
                 new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
     public void aclModified(Resource resource, Resource originalResource, 
@@ -165,12 +165,12 @@ public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDu
             }
         }
         
-        this.dataAccessor.addChangeLogEntry(entry, recurse);
+        this.changeLogDAO.addChangeLogEntry(entry, recurse);
     }
     
     @Required
-    public void setDataAccessor(DataAccessor dataAccessor) {
-        this.dataAccessor = dataAccessor;
+    public void setChangeLogDAO(ChangeLogDAO changeLogDAO)  {
+        this.changeLogDAO = changeLogDAO;
     }
 
 }

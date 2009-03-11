@@ -111,13 +111,11 @@
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <property name="principalFactory" ref="principalFactory" />
-    
-    <!-- How many query hits to process for authorization in one batch -->
-    <property name="queryAuthorizationBatchSize" value="1000"/>
-    
-    <!-- Logger id and logger type for change log -->
-    <property name="loggerId" value="1"/>
-    <property name="loggerType" value="3"/>
+  </bean>
+  
+  <bean id="repository.changeLogDAO" class="org.vortikal.repository.store.db.SqlMapChangeLogDAO">
+    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
+    <property name="sqlMaps" ref="repository.statementMappings" />
   </bean>
 
   <bean id="resourceImpl" class="org.vortikal.repository.ResourceImpl" scope="prototype">

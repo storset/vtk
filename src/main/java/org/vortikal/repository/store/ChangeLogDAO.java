@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,39 +31,18 @@
 package org.vortikal.repository.store;
 
 import java.util.List;
-import java.util.Set;
 
-import org.vortikal.repository.Path;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.search.query.security.ResultSecurityInfo;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.ChangeLogEntry;
 
-/**
- * Callback-based interface for fetching property sets from database. 
- * 
- * @author oyviste
- *
- */
-public interface IndexDao {
+public interface ChangeLogDAO {
 
-    public void orderedPropertySetIteration(PropertySetHandler handler)
+    public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId)
+        throws DataAccessException;
+
+    public void removeChangeLogEntries(List<ChangeLogEntry> entries)
         throws DataAccessException;
     
-    public void orderedPropertySetIteration(Path startUri, 
-                                            PropertySetHandler handler) 
+    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
         throws DataAccessException;
     
-    public void orderedPropertySetIterationForUris(List<Path> uris, 
-                                                PropertySetHandler handler)
-        throws DataAccessException;
-
-    @Deprecated
-    public void processQueryResultsAuthorization(
-                                    Set<String> principalNames,  
-                                    List<ResultSecurityInfo> resultSecurityInfo) 
-        throws DataAccessException;
-    
-    public Set<Principal> getAclReadPrincipals(PropertySet propertySet)
-        throws DataAccessException;
-
 }

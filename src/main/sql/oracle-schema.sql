@@ -82,6 +82,7 @@ show errors;
 -----------------------------------------------------------------------------
 -- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-
 --              IDs
+-- TODO: column 'resource_id' should be renamed to 'generic_id'
 -----------------------------------------------------------------------------
 drop sequence vortex_tmp_session_id_seq;
 create sequence vortex_tmp_session_id_seq increment by 1 start with 1000;

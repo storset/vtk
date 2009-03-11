@@ -31,7 +31,9 @@
 package org.vortikal.repository.index.observation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -133,46 +135,61 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 return;
             }
             
-            List<ChangeLogEntry> updates = new ArrayList<ChangeLogEntry>(changes.size());
+            logger.debug("--- indexUpdate(): Going to process change log window ---");
+            
+            // Map maintaining last change *per URI*
+            Map<Path, ChangeLogEntry> lastChanges = new HashMap<Path, ChangeLogEntry>();
 
             for (ChangeLogEntry change: changes) {
+                // If delete, we do it immediately
                 if (change.getOperation() == Operation.DELETED) {
-                    // Delete immediately
                     if (change.isCollection()) {
                         this.index.deletePropertySetTree(change.getUri());
                     } else {
                         this.index.deletePropertySet(change.getUri());
                     }
-                } else {
-                    // Add change to update list
-                    updates.add(change);
                 }
-            }
 
+                // Update map of last changes per URI
+                lastChanges.put(change.getUri(), change);
+            }
+            
             // Updates/additions
-            if (updates.size() > 0) {
-                List<Path> updateUris = new ArrayList<Path>(updates.size());
+            if (lastChanges.size() > 0) {
+                List<Path> updateUris = new ArrayList<Path>(lastChanges.size());
                 
                 // Remove updated property sets from index in one batch, first, 
                 // before re-adding them. This is very necessary to keep things
                 // efficient.
-                for (ChangeLogEntry update: updates) {
-                    this.index.deletePropertySet(update.getUri());
-                    updateUris.add(update.getUri());
+                logger.debug("--- indexUpdate(): Update list:");
+                for (Map.Entry<Path, ChangeLogEntry> entry: lastChanges.entrySet()) {
+                    // If not last operation on resource was delete, we add to updates
+                    if (! (entry.getValue().getOperation() == Operation.DELETED)) {
+                        Path uri = entry.getKey();
+                        logger.debug(uri);
+
+                        this.index.deletePropertySet(uri);
+                        updateUris.add(uri);
+                    }
                 }
+                
+                logger.debug("--- indexUpdate(): End of update list, going to fetch from DAO and add to index:");
                 
                 // Now query index dao for a list of all property sets that 
                 // need updating.
-                
                 class CountingPropertySetHandler implements PropertySetHandler {
                     int count = 0;
-                    
                     public void handlePropertySet(PropertySet propertySet,
                             Set<Principal> aclReadPrincipals) {
   
-                            PropertySetIndexUpdater.this.index.addPropertySet(propertySet, 
+                        if (logger.isDebugEnabled()) {
+                            PropertySetIndexUpdater.this.logger.debug("ADD " + propertySet.getURI());
+                        }
+
+                        // Add updated resource to index
+                        PropertySetIndexUpdater.this.index.addPropertySet(propertySet, 
                                                             aclReadPrincipals);
-                            ++count;
+                        ++count;
                     }
                 }
                 
@@ -183,11 +200,12 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // Note that it is OK to get less resources than requested from DAO, because
                 // they can be deleted in the mean time. 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Requested " + updates.size() 
+                    logger.debug("--- indexUpdate(): Requested " + lastChanges.size() 
                             + " resources for updating, got " + handler.count + " from DAO.");
                 }
             }
 
+            logger.debug("--- indexUpdate(): Committing changes to index.");
             this.index.commit();
             
         } catch (Exception e) {

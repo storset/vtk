@@ -50,7 +50,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.AclImpl;
-import org.vortikal.repository.ChangeLogEntry;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.LockImpl;
 import org.vortikal.repository.Namespace;
@@ -154,25 +153,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
     }
 
     
-
-
-    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse) {
-        String sqlMap = null;
-        if (entry.isCollection() && recurse) {
-            sqlMap = getSqlMap("insertChangeLogEntriesRecursively");
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("entry", entry);
-            parameters.put("uriWildcard", 
-                           SqlDaoUtils.getUriSqlWildcard(entry.getUri(), SQL_ESCAPE_CHAR));
-
-            getSqlMapClientTemplate().insert(sqlMap, parameters);
-                
-        } else {
-            sqlMap = getSqlMap("insertChangeLogEntry");
-            getSqlMapClientTemplate().insert(sqlMap, entry);
-        }
-
-    }
 
 
     public Path[] discoverLocks(Path uri) {

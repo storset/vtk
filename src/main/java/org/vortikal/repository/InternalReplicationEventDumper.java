@@ -34,6 +34,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
+import org.vortikal.repository.store.ChangeLogDAO;
 import org.vortikal.repository.store.DataAccessor;
 
 
@@ -43,7 +44,13 @@ import org.vortikal.repository.store.DataAccessor;
  */
 public class InternalReplicationEventDumper extends AbstractRepositoryEventDumper {
 
+    private ChangeLogDAO changeLogDAO;
     private DataAccessor dataAccessor;
+
+    @Required
+    public void setChangeLogDAO(ChangeLogDAO changeLogDAO)  {
+        this.changeLogDAO = changeLogDAO;
+    }
 
     @Required
     public void setDataAccessor(DataAccessor dataAccessor)  {
@@ -52,61 +59,61 @@ public class InternalReplicationEventDumper extends AbstractRepositoryEventDumpe
 
     public void created(Resource resource) {
         
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(),
+        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, resource.getURI(),
                 Operation.CREATED, -1, resource.isCollection(),
                 new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
 
         if (resource.isCollection()) {
             org.vortikal.repository.ResourceImpl[] childResources =
                 this.dataAccessor.loadChildren(this.dataAccessor.load(resource.getURI()));
             for (int i = 0; i < childResources.length; i++) {
-                entry = changeLogEntry(this.loggerId, this.loggerType, childResources[i].getURI(),
+                entry = changeLogEntry(super.loggerId, super.loggerType, childResources[i].getURI(),
                                                     Operation.CREATED, -1, childResources[i].isCollection(),
                                                     new Date());
                 
-                this.dataAccessor.addChangeLogEntry(entry, false);
+                this.changeLogDAO.addChangeLogEntry(entry, false);
             }
         }
     }
 
 
     public void deleted(Path uri, int resourceId, boolean collection) {
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, uri, 
+        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, uri, 
                 Operation.DELETED, resourceId,
                 collection, new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
 
 
     public void modified(Resource resource, Resource originalResource) {
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, resource.getURI(), 
                 Operation.MODIFIED_PROPS,
                 -1, resource.isCollection(), new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
 
     public void contentModified(Resource resource) {
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, resource.getURI(), 
                 Operation.MODIFIED_CONTENT,
                 -1, resource.isCollection(), new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
 
     public void aclModified(Resource resource, Resource originalResource,
                             Acl originalACL, Acl newACL) {
         
-        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, resource.getURI(), 
                 Operation.MODIFIED_ACL,
                 -1, resource.isCollection(), new Date());
         
-        this.dataAccessor.addChangeLogEntry(entry, false);
+        this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 }

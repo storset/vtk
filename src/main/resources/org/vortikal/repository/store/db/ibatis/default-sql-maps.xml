@@ -729,6 +729,11 @@
     insert into vortex_tmp(session_id, uri) values (#sessionId#, #uri#)
   </insert>
   
+  <!--  TODO: Column vortex_tmp.resource_id should be renamed to vortex_tmp.generic_id -->
+  <insert id="insertChangelogEntryIdIntoTempTable" parameterClass="java.util.Map">
+    insert into vortex_tmp(session_id, resource_id) values (#sessionId#, #changelogEntryId#)     
+  </insert>
+  
   <insert id="insertResourceIdIntoTempTable" parameterClass="java.util.Map">
     insert into vortex_tmp(session_id, resource_id) values (#sessionId#, #resourceId#)
   </insert>
@@ -796,63 +801,17 @@
       and action_type_id in (1, 3, 4)
   </select>                                        
   
-  <select id="getMaxChangeLogEntryId" parameterClass="java.util.Map"
-          resultClass="java.lang.Integer">
-    select max(cl.changelog_entry_id) from changelog_entry cl
-    where cl.logger_type=#loggerType# and cl.logger_id=#loggerId#
-  </select>
-
-  <delete id="removeChangeLogEntries" parameterClass="java.util.Map">
-    delete from changelog_entry where changelog_entry_id &lt;= #maxId#  
-    and logger_type=#loggerType#
-    and logger_id=#loggerId#
+  <delete id="removeChangelogEntriesByTempTable" parameterClass="java.lang.Integer">
+    delete from changelog_entry 
+      where changelog_entry_id in (select resource_id from vortex_tmp where session_id=#value#)
   </delete>
 
-  <select id="getLastChangeLogEntries" parameterClass="java.util.Map"
-          resultMap="ChangeLogEntry">  
-
-  <!--  Select latest change for each URI within window, but always select all delete operations. -->  
-  select cl1.*
-  from changelog_entry cl1
-  where
-  cl1.logger_id = #loggerId#
-  and cl1.logger_type = #loggerType#
-  and cl1.changelog_entry_id &lt;= #maxId#
-  and cl1.operation = 'deleted'
-  
-  <!-- This fixes a subtle problem regarding deletion
-  of collections. The difference between collection deletions
-  and every other operation, is that the event doesn't map 1:1 with
-  the number of affected resources, but rather 1:N. A collection deletion
-  can involve many resources in a tree. 
-  Therefore, we must make sure that we don't miss any of 
-  these events. Only picking the very latest event for collections, 
-  can result in masking earlier deletion events for collections
-  whose names were the same as newly created collections.
-  This will cause the indexing system to miss these important events, 
-  and the old tree will remain in the index, except for the replaced parent node. 
-  -->
-    
-  or 
-    cl1.changelog_entry_id IN 
-    ( select max(cl2.changelog_entry_id)
-      from changelog_entry cl2
-      where cl1.uri = cl2.uri 
-      and cl2.logger_id = #loggerId#
-      and cl2.logger_type = #loggerType#
-      and cl2.changelog_entry_id &lt;= #maxId# )
-    
-  order by cl1.changelog_entry_id
-
-    <!-- 
-      Changed ORDER BY to order by event id, instead of URI. It makes more sense
-      to list events in the order they happened, rather than what the URI looks like.
-      The URI is only an ID treated specially, and it doesn't
-      necessarily need a parent URI to exist in the index. The index is not a file
-      system, only a collection of documents, which happen to have an URI. 
-    -->
-    
-  </select>  
+  <select id="getChangeLogEntries" parameterClass="java.util.Map" 
+                                   resultMap="ChangeLogEntry">
+    select * from changelog_entry
+      where logger_type=#loggerType# and logger_id=#loggerId# 
+      order by changelog_entry_id;
+  </select>
 
   <select id="getContextList"  
           parameterClass="org.vortikal.repository.resourcetype.PropertyTypeDefinition"

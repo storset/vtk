@@ -7,6 +7,7 @@
   <bean id="processedContentEventDumper" 
     class="org.vortikal.repository.ProcessedContentEventDumper">
     <property name="dataAccessor" ref="repository.sqlMapDao"/>
+    <property name="changeLogDAO" ref="repository.changeLogDAO" />
     <property name="repository" ref="repository"/>
     <property name="loggerType" value="1" />
     <property name="loggerId" value="1" />

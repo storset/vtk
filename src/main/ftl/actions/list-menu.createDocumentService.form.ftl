@@ -17,13 +17,19 @@
           </#list>
 		</ul>
       </#if>
-      <#assign defaultTemplate = "">        
+      <#assign newDocName = "">
+      <#-- Set the name of the new file to whatever the user already has supplied-->
+      <#if createDocumentForm.name?exists>
+        <#assign newDocName = createDocumentForm.name>
+      </#if>
       <#if templates?exists && templates?size &gt; 0>
         <ul>
           <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
-        <#-- Need to assign a default filename -->
-        <#assign defaultTemplate = templates?values?sort[0]>
+        <#-- Assign a default filename if user has not yet entered anything -->
+        <#if newDocName = "">
+          <#assign newDocName = templates?values?sort[0]>
+        </#if>
       </#if>
       </#compress>
       <@spring.bind "createDocumentForm" + ".name" /> 
@@ -34,7 +40,7 @@
           </#list>
         </ul>
       </#if>
-    <input type="text" name="${spring.status.expression}" value="${defaultTemplate}">
+    <input type="text" name="${spring.status.expression}" value="${newDocName}">
     <div id="submitButtons">
       <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>">
       <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>"/>

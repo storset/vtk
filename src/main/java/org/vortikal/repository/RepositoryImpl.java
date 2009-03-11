@@ -657,7 +657,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setContent(text);
             comment.setApproved(true);
 
-            comment = this.commentDAO.createComment(original, comment);
+            comment = this.commentDAO.createComment(comment);
             updateNumberOfComments(original, Integer.valueOf(comments.size() + 1));
 
             return comment;

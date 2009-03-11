@@ -846,6 +846,10 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
 
 
     // CommentDAO implementation
+    
+    public Comment createComment(Comment comment) {
+    	return null;
+    }
 
     public Comment createComment(Resource resource, Comment comment) throws RuntimeException {
         Session session = getSession();

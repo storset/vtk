@@ -43,7 +43,7 @@ public interface CommentDAO {
 
     public void deleteAllComments(Resource resource) throws RuntimeException;
 
-    public Comment createComment(Resource resource, Comment comment) throws RuntimeException;
+    public Comment createComment(Comment comment) throws RuntimeException;
 
     public Comment updateComment(Comment comment) throws RuntimeException;
 

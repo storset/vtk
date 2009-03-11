@@ -97,7 +97,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         getSqlMapClientTemplate().delete(sqlMap, resource);
     }
 
-    public Comment createComment(Resource resource, Comment comment) {
+    public Comment createComment(Comment comment) {
         String sqlMap = getSqlMap("insertComment");
         getSqlMapClientTemplate().insert(sqlMap, comment);
         // XXX: define new semantics for creating a new comment:

@@ -199,8 +199,8 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 
                 // Note that it is OK to get less resources than requested from DAO, because
                 // they can be deleted in the mean time. 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("--- indexUpdate(): Requested " + lastChanges.size() 
+                if (logger.isDebugEnabled() && updateUris.size() > 0) {
+                    logger.debug("--- indexUpdate(): Requested " + updateUris.size() 
                             + " resources for updating, got " + handler.count + " from DAO.");
                 }
             }

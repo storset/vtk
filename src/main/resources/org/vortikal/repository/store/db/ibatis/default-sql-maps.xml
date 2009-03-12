@@ -792,7 +792,7 @@
                                    resultMap="ChangeLogEntry">
     select * from changelog_entry
       where logger_type=#loggerType# and logger_id=#loggerId# 
-      order by changelog_entry_id;
+      order by changelog_entry_id
   </select>
 
   <select id="getContextList"  

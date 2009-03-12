@@ -102,15 +102,15 @@ public class PropertySetIndexImpl implements PropertySetIndex {
 
     public void deletePropertySetTreeByUUID(String rootUuid) throws IndexException {
         try {
-            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            IndexReader reader = this.indexAccessor.getIndexReader();
+
+            int n = reader.deleteDocuments(new Term(FieldNameMapping.ID_FIELD_NAME, rootUuid));
+
+            n += reader.deleteDocuments(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, rootUuid));
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Deleting property set tree with root ID '" + rootUuid + "'");
+                logger.debug("Deleted " + n + " docs from index for property set tree with root ID '" + rootUuid + "'");
             }
-
-            writer.deleteDocuments(new Term(FieldNameMapping.ID_FIELD_NAME, rootUuid));
-
-            writer.deleteDocuments(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, rootUuid));
 
         } catch (IOException io) {
             throw new IndexException(io);
@@ -207,13 +207,13 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void deletePropertySet(Path uri) throws IndexException {
         try {
             Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString());
-            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            IndexReader reader = this.indexAccessor.getIndexReader();
+            int n = reader.deleteDocuments(uriTerm);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Deleting property set at URI '" + uri + "' from index.");
+                logger.debug("Deleted " + n + " docs from index, for property set at URI '" + uri + "'");
             }
 
-            writer.deleteDocuments(uriTerm);
         } catch (IOException io) {
             throw new IndexException(io);
         }
@@ -223,13 +223,14 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void deletePropertySetByUUID(String uuid) throws IndexException {
         try {
             Term uuidTerm = new Term(FieldNameMapping.ID_FIELD_NAME, uuid);
-            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            IndexReader reader = this.indexAccessor.getIndexReader();
 
+            int n = reader.deleteDocuments(uuidTerm);
+            
             if (logger.isDebugEnabled()) {
-                logger.debug("Deleting property set with ID '" + uuid + "'");
+                logger.debug("Deleted " + n + " docs from index, for property set with ID '" + uuid + "'");
             }
 
-            writer.deleteDocuments(uuidTerm);
         } catch (IOException io) {
             throw new IndexException(io);
         }

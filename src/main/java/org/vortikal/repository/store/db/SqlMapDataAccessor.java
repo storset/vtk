@@ -31,7 +31,6 @@
 package org.vortikal.repository.store.db;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -70,7 +69,6 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
-import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.web.URLUtil;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;

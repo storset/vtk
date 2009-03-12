@@ -38,7 +38,9 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 	}
 
 	public void setParameter(ParameterSetter setter, Object parameter) throws SQLException {
-		Blob blob = new ContentStreamBlob((ContentStream) parameter);
+		byte[] b = (byte[]) parameter;
+		ContentStream cs = new ContentStream(new ByteArrayInputStream(b), b.length);
+		Blob blob = new ContentStreamBlob(cs);
 		setter.setBlob(blob);
 	}
 

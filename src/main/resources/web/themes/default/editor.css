@@ -136,25 +136,25 @@ div#vrtx-resource\.navigationTitle {
 	float:left;
 	clear: left;
 	margin: 1em 0 1em 0;
-	width: 300px;
+	width: 317px;
 }
 
 div#vrtx-resource\.navigationTitle input,
 div#vrtx-resource\.navigationTitle div {
-	width: 300px;
+	width: 317px;
 	display: inline;
 	}
 
 div#vrtx-resource\.importance {
      float: left;  
      margin: 1em 0 1em 10px;
-     width: 100px;
+     width: 180px;
 }
 
 div#vrtx-resource\.hidden {
     float: left;
-    margin: 1em 0 1em 10px;
-    width: 85px;
+    margin: 1em 0 1em 13px;
+    width: 155px;
 }
 
 /* Override breaks in options */

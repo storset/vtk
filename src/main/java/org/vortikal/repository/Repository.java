@@ -552,7 +552,7 @@ public interface Repository {
      * @param comment The comment to store
      * @return The stored comment
      */
-    public Comment storeComment(String token, Comment comment) throws AuthenticationException;
+    public Comment addComment(String token, Comment comment) throws AuthenticationException;
 
 
     /**

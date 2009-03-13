@@ -255,8 +255,8 @@ public class RequestLocalRepository implements Repository {
         return this.repository.addComment(token, resource, title, text);
     }
     
-    public Comment storeComment(String token, Comment comment) {
-    	return this.repository.storeComment(token, comment);
+    public Comment addComment(String token, Comment comment) {
+    	return this.repository.addComment(token, comment);
     }
 
     public void deleteComment(String token, Resource resource, Comment comment)

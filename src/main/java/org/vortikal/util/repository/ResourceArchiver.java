@@ -176,7 +176,7 @@ public class ResourceArchiver {
         // And we don't break the archiving if something should go wrong here
         for (Comment comment : comments) {
             try {
-            	this.repository.storeComment(token, comment);
+            	this.repository.addComment(token, comment);
             } catch (Throwable t) {
             	t.printStackTrace();
             }

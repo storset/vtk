@@ -667,7 +667,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
     
     
-    public Comment storeComment(String token, Comment comment) {
+    public Comment addComment(String token, Comment comment) {
     	
     	Principal principal = this.tokenManager.getPrincipal(token);
     	

@@ -114,9 +114,8 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             Path dstUri = (Path)args[2];
             params = "(" + srcUri + ", " + dstUri + ")";
             
-        } else if (RepositoryOperation.STORE == operation               ||
+        } else if (RepositoryOperation.STORE == operation            ||
                 RepositoryOperation.STORE_ACL == operation           ||
-                RepositoryOperation.ADD_COMMENT == operation         ||
                 RepositoryOperation.DELETE_COMMENT == operation      ||
                 RepositoryOperation.DELETE_ALL_COMMENTS == operation ||
                 RepositoryOperation.UPDATE_COMMENT == operation) {
@@ -125,6 +124,15 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             Path uri = resource.getURI();
             params = "(" + uri + ")";
 
+        } else if (RepositoryOperation.ADD_COMMENT == operation) {
+        	Object o = args[1];
+        	Path uri = null;
+        	if (o instanceof Resource) {
+        		uri = ((Resource) o).getURI();
+        	} else {
+        		uri = ((Comment) o).getURI();
+        	}
+        	params = "(" + uri + ")";
         }
         
         // Dispatch to intercepted method and log result

@@ -542,7 +542,17 @@ public interface Repository {
      */
     public Comment addComment(String token, Resource resource, String title, String text)
         throws RepositoryException, AuthenticationException;
-
+    
+    
+    /**
+     * 
+     * Store a single comment object
+     * 
+     * @param token the security token of the current principal
+     * @param comment The comment to store
+     * @return The stored comment
+     */
+    public Comment storeComment(String token, Comment comment) throws AuthenticationException;
 
 
     /**

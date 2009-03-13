@@ -665,6 +665,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new RuntimeException("Unhandled IO exception", e);
         }
     }
+    
+    
+    public Comment storeComment(String token, Comment comment) {
+    	
+    	Principal principal = this.tokenManager.getPrincipal(token);
+    	
+    	// XXX Only allow for users with root privilege?
+    	this.authorizationManager.authorizeRootRoleAction(principal);
+    	
+    	return this.commentDAO.createComment(comment);
+    }
 
 
     public void deleteComment(String token, Resource resource, Comment comment) {

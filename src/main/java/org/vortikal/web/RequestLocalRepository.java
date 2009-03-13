@@ -250,13 +250,14 @@ public class RequestLocalRepository implements Repository {
         return this.repository.getComments(token, resource, deep, max);
     }
 
-
-
     public Comment addComment(String token, Resource resource, String title, String text)
         throws RepositoryException, AuthenticationException {
         return this.repository.addComment(token, resource, title, text);
     }
     
+    public Comment storeComment(String token, Comment comment) {
+    	return this.repository.storeComment(token, comment);
+    }
 
     public void deleteComment(String token, Resource resource, Comment comment)
         throws RepositoryException, AuthenticationException {

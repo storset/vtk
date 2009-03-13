@@ -31,16 +31,21 @@
 package org.vortikal.util.repository;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -51,6 +56,7 @@ import java.util.zip.ZipInputStream;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Comment;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -66,6 +72,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalImpl;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 
@@ -76,8 +83,9 @@ public class ResourceArchiver {
     private Repository repository;
     private ResourceTypeTree resourceTypeTree;
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
-
+    
     private final String dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
+    private final String commentPath = "META-INF/COMMENTS/";
 
     public interface EventListener {
         public void expanded(Path uri);
@@ -134,13 +142,22 @@ public class ResourceArchiver {
         }
 
         // XXX: dir modification times
+        List<Comment> comments = new ArrayList<Comment>();
         while ((entry = jarIn.getNextJarEntry()) != null) {
             String entryPath = entry.getName();
-            String resourceURI = entryPath.startsWith("/") ? base + entryPath : base + "/" + entryPath;
-            if (resourceURI.endsWith("/")) {
-                resourceURI = resourceURI
-                        .substring(0, resourceURI.length() - 1);
+            
+            // Keep comments for later processing, add them after resources 
+            // have been expanded
+            if (entryPath.startsWith(commentPath)) {
+            	try {
+            		comments.add(getArchivedComment(jarIn, base));
+            	} catch (Throwable t) {
+            		t.printStackTrace();
+            	}
+            	continue;
             }
+            
+            String resourceURI = getExpandedEntryUri(base, entryPath);
 
             Path uri = Path.fromString(resourceURI);
             Path dir = entry.isDirectory() ? uri : uri.getParent();
@@ -154,7 +171,64 @@ public class ResourceArchiver {
                 listener.expanded(uri);
         }
         jarIn.close();
+        
+        // We restore comments after everything else, since comments aren't crucial
+        // And we don't break the archiving if something should go wrong here
+        for (Comment comment : comments) {
+            try {
+            	this.repository.storeComment(token, comment);
+            } catch (Throwable t) {
+            	t.printStackTrace();
+            }
+        }
+        
     }
+    
+    private Comment getArchivedComment(JarInputStream jarIn, Path base) throws Exception {
+    	
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(jarIn));
+    	
+    	String entryLinePrefix = "X-vrtx-comment-";
+		String entryLine = null;
+		String entryKey = null;
+		Map<String, StringBuilder> commentContent = new HashMap<String, StringBuilder>();
+    	while ((entryLine = reader.readLine()) != null) {
+    		entryKey = entryLine.startsWith(entryLinePrefix) ? entryLine.substring(0, entryLine.indexOf(":")) : entryKey;
+    		StringBuilder content = commentContent.get(entryKey);
+    		if (content == null) {
+    			commentContent.put(entryKey, new StringBuilder(entryLine.substring(entryLine.indexOf(":") + 1).trim()));
+    		} else {
+    			content.append("\n" + entryLine);
+    		}
+        }
+    	
+    	String path = commentContent.get(entryLinePrefix + "parent").toString();
+    	String author = commentContent.get(entryLinePrefix + "author").toString();
+    	String time = commentContent.get(entryLinePrefix + "time").toString();
+    	String title = null;
+    	if (commentContent.containsKey(entryLinePrefix + "title")) {
+    		title = commentContent.get(entryLinePrefix + "title").toString();
+    	}
+    	String content = commentContent.get(entryLinePrefix + "content").toString();
+    	
+		Comment comment = new Comment();
+    	comment.setURI(Path.fromString(getExpandedEntryUri(base.getParent(), path)));
+    	comment.setAuthor(new PrincipalImpl(author, Type.USER));
+    	comment.setTitle(title);
+    	comment.setTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time.toString()));
+    	comment.setContent(content.toString());
+        
+		return comment;
+	}
+    
+    private String getExpandedEntryUri(Path base, String entryPath) {
+    	String resourceURI = entryPath.startsWith("/") ? base + entryPath : base + "/" + entryPath;
+        if (resourceURI.endsWith("/")) {
+            resourceURI = resourceURI
+                    .substring(0, resourceURI.length() - 1);
+        }
+		return resourceURI;
+	}
 
     private void writeManifest(String token, int rootLevel, Resource r, PrintWriter out) throws Exception {
 
@@ -203,7 +277,7 @@ public class ResourceArchiver {
         }
     }
 
-    private void addProperties(Resource r, PrintWriter out) throws Exception {
+	private void addProperties(Resource r, PrintWriter out) throws Exception {
         List<Property> properties = r.getProperties();
         int propCounter = 0;
         for (Property property : properties) {
@@ -351,10 +425,36 @@ public class ResourceArchiver {
                 jarOut.write(buf, 0, n);
             }
             bi.close();
+            
+            // We don't break the archiving if something should go wrong with comments
+            try {
+            	archiveComments(token, r, path, jarOut);
+            } catch (Throwable t) {
+            	t.printStackTrace();
+            }
+            
         }
         if (listener != null)
             listener.archived(r.getURI());
     }
+    
+    private void archiveComments(String token, Resource r, String path, JarOutputStream jo) throws IOException {
+		List<Comment> comments = this.repository.getComments(token, r);
+		for (Comment comment : comments) {
+	        JarEntry je = new JarEntry(commentPath + comment.getID() + ".txt");
+	        jo.putNextEntry(je);
+	        StringBuilder sb = new StringBuilder();
+	        sb.append("X-vrtx-comment-parent: " + r.getURI().toString() + "\n");
+	        sb.append("X-vrtx-comment-author: " + comment.getAuthor() + "\n");
+	        String title = comment.getTitle();
+	        if (title != null && !"".equals(title.trim())) {
+	        	sb.append("X-vrtx-comment-title: " + comment.getTitle() + "\n");
+	        }
+	        sb.append("X-vrtx-comment-time: " + comment.getTime() + "\n");
+	        sb.append("X-vrtx-comment-content: " + comment.getContent());
+	        jo.write(sb.toString().getBytes());
+		}
+	}
 
     private void storePropsAndPermissions(String token, JarEntry entry,
             Path resourceURI, boolean decode) throws Exception {

@@ -92,12 +92,6 @@ public interface DataAccessor {
 
 
     /**
-     * Used externally to report a resource modification
-     */
-//    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
-//        throws DataAccessException;
-    
-    /**
      * Atomically copies a resource to a new destination.
      * @param resource the resource to copy from
      * @param dest the resource to copy into (becomes the parent of

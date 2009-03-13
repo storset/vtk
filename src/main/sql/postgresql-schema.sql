@@ -43,7 +43,6 @@ create table vortex_resource
 alter table vortex_resource
       add constraint vortex_resource_PK primary key (resource_id);
 
-
 alter table vortex_resource
       add constraint vortex_resource_FK foreign key (acl_inherited_from)
           references vortex_resource (resource_id);
@@ -126,7 +125,7 @@ primary key (lock_id);
 
 alter table vortex_lock
     add constraint vortex_lock_FK_1 foreign key (resource_id)
-    references vortex_resource (resource_id)
+    references vortex_resource (resource_id) on delete cascade
 ;
 
 create index vortex_lock_index1 on vortex_lock(resource_id);
@@ -174,7 +173,7 @@ primary key (acl_entry_id);
 
 alter table acl_entry
     add constraint acl_entry_FK_1 foreign key (resource_id)
-    references vortex_resource (resource_id)
+    references vortex_resource (resource_id) on delete cascade
 ;
 
 alter table acl_entry
@@ -227,7 +226,7 @@ primary key (extra_prop_entry_id);
 
 alter table extra_prop_entry
     add constraint extra_prop_entry_FK_1 foreign key (resource_id)
-    references vortex_resource (resource_id)
+    references vortex_resource (resource_id) on delete cascade
 ;
 
 alter table extra_prop_entry

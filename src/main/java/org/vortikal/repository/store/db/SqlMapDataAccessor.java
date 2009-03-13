@@ -278,17 +278,20 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         parameters.put("uriWildcard",
                        SqlDaoUtils.getUriSqlWildcard(resource.getURI(),
                                                      SQL_ESCAPE_CHAR));
-            
-        String sqlMap = getSqlMap("deleteAclEntriesByUri");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
 
-        sqlMap = getSqlMap("deleteLocksByUri");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
+// Was inconsistent before, vortex_comment used cascading deletes, but not
+// any of the other tables:        
+//        String sqlMap = getSqlMap("deleteAclEntriesByUri");
+//        getSqlMapClientTemplate().update(sqlMap, parameters);
+//
+//        sqlMap = getSqlMap("deleteLocksByUri");
+//        getSqlMapClientTemplate().update(sqlMap, parameters);
+//
+//        sqlMap = getSqlMap("deletePropertiesByUri");
+//        getSqlMapClientTemplate().update(sqlMap, parameters);
 
-        sqlMap = getSqlMap("deletePropertiesByUri");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
-
-        sqlMap = getSqlMap("deleteResourceByUri");
+        // Use database cascading-deletes:
+        String sqlMap = getSqlMap("deleteResourceByUri");
         getSqlMapClientTemplate().update(sqlMap, parameters);
     }
 

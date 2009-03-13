@@ -18,11 +18,11 @@ FCKConfig.ToolbarSets['Complete-article'] = [
 
 
 FCKConfig.ToolbarSets['Inline'] = [
-            ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']
+            ['Source','PasteText','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough','Subscript','Superscript']
 ] ;
 
 FCKConfig.ToolbarSets['Inline-S'] = [
-            ['Source','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough']
+            ['Source','PasteText','Link','Unlink', 'Bold','Italic','Underline','StrikeThrough']
 ] ;
 
 FCKConfig.ToolbarSets['Vortikal'] = [

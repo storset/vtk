@@ -16,7 +16,7 @@
   <#if title?exists>
     <span class="title">${title?html}:</span>
   <#else>
-    <span class="title">Tags:</span>
+    <span class="title"><@vrtx.msg code="decorating.tags" default="Tags" />:</span>
   </#if>
   <span class="vrtx-tags-links">
      <#list values as v>

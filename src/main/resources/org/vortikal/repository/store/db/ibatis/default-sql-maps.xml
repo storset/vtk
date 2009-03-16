@@ -27,12 +27,6 @@
     <result property="aclInheritedFrom" column="acl_inherited_from" javaType="int" />
   </resultMap>
 
-  <!-- TODO: Result map class can be a java.lang.String directly. 
-             No need to go through a Map -->
-  <resultMap id="Uri" class="java.util.HashMap">
-    <result property="uri" column="uri" />
-  </resultMap>
-
 
   <resultMap id="UriResourceId" class="java.util.HashMap">
     <result property="uri" column="uri" />
@@ -297,7 +291,7 @@
 
 
   <select id="loadChildUrisForChildren" parameterClass="java.util.Map"
-          resultMap="Uri">
+                                        resultClass="java.lang.String">
     select uri from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth# 
   </select>
 
@@ -495,7 +489,7 @@
   </insert>
   
 
-  <select id="discoverAcls" parameterClass="java.util.Map" resultMap="Uri">
+  <select id="discoverAcls" parameterClass="java.util.Map" resultClass="java.lang.String">
     select distinct
       r.uri as uri
     from acl_entry a inner join vortex_resource r on a.resource_id = r.resource_id
@@ -605,8 +599,8 @@
     delete from vortex_lock where timeout &lt; #value#
   </delete>
 
-
-  <select id="discoverLocks" parameterClass="java.util.Map" resultMap="Uri">
+  <select id="discoverLocks" parameterClass="java.util.Map"
+                             resultClass="java.lang.String">
     select
       r.uri from vortex_resource r
         inner join vortex_lock l on r.resource_id = l.resource_id

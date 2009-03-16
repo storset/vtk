@@ -164,12 +164,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         String sqlMap = getSqlMap("discoverLocks");
         @SuppressWarnings("unchecked") 
-        List<Map<String,String>> list = 
+        List<String> list = 
             getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
         Path[] locks = new Path[list.size()];
         for (int i = 0; i < list.size(); i++) {
-            locks[i] = Path.fromString(list.get(i).get("uri"));
+            locks[i] = Path.fromString(list.get(i));
         }
         return locks;
     }
@@ -338,12 +338,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         String sqlMap = getSqlMap("discoverAcls");
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<String> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
             
         Path[] result = new Path[uris.size()];
         int n = 0;
-        for (Map<String, String> map: uris) {
-            result[n++] = Path.fromString(map.get("uri"));
+        for (String uriString: uris) {
+            result[n++] = Path.fromString(uriString);
         }
         return result;
     }
@@ -552,12 +552,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         String sqlMap = getSqlMap("loadChildUrisForChildren");
         
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> resourceList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
-        
-        Path[] childUris = new Path[resourceList.size()];
+        List<String> resourceUriList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+
+        Path[] childUris = new Path[resourceUriList.size()];
         int n = 0;
-        for (Map<String, String> map: resourceList) {
-            childUris[n++] = Path.fromString(map.get("uri"));
+        for (String uri: resourceUriList) {
+            childUris[n++] = Path.fromString(uri);
         }
 
         parent.setChildURIs(childUris);
@@ -580,10 +580,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         String sqlMap = getSqlMap("loadChildUrisForChildren");
 
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<String> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
-        for (Map<String, String> map: resourceUris) {
-            Path uri = Path.fromString((String) map.get("uri"));
+        for (String uriString: resourceUris) {
+            Path uri = Path.fromString(uriString);
             Path parentUri = uri.getParent();
             if (parentUri != null) {
                 childMap.get(parentUri).add(uri);

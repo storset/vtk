@@ -330,6 +330,7 @@
     <property name="viewService" ref="webService" />
     <property name="modelName" value="subFolderMenu" />
     <property name="description" value="Lists the subfolders of the current folder" />
+    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
   </bean>
 
   <bean name="decorating.subFolderMenuComponent.view" parent="freemarkerView">

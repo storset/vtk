@@ -121,6 +121,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private PropertyTypeDefinition hiddenPropDef;
     private PropertyTypeDefinition importancePropDef;
     private ResourceTypeDefinition collectionResourceType;
+    private PropertyTypeDefinition navigationTitlePropDef;
     private String modelName = "menu";
     private int searchLimit = DEFAULT_SEARCH_LIMIT;
     private Searcher searcher;
@@ -303,7 +304,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         Path uri = resource.getURI();
         URL url = this.viewService.constructURL(uri);
         url.setCollection(true);
-        Property titleProperty = resource.getProperty(this.titlePropDef);
+        
+        Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
+        titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef) : titleProperty;
         Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
@@ -550,8 +553,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;
     }
+    
+	
+    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
+		this.navigationTitlePropDef = navigationTitlePropDef;
+	}
 
-
+	
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -607,5 +615,5 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             throw new BeanInitializationException("JavaBean property '" + searchLimit + "' must be a positive integer");
         }
     }
-
+	
 }

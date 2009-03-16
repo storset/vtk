@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+  <!-- @Reqired annotations -->
+  <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
+  
+  <!-- Context Initializers -->
+  <bean id="requestContextInitializer" class="org.vortikal.web.RequestContextInitializer"
+    lazy-init="true">
+    <description> This bean is required in order to initialize requests with the
+      request context. The request context contains the service and the URI for
+      each request. (See classes org.vortikal.web.RequestContext and
+      org.vortikal.web.service.Service) </description>
+    <property name="trustedToken" ref="trustedToken" />
+    <property name="repository" ref="repository.requestLocal" />
+    <property name="indexFileResolver" ref="indexFileResolver" />
+    <property name="services" ref="services" />
+    <property name="nonRepositoryRoots">
+      <set>
+        <value>${vrtx.staticResourcesBaseURL}</value>
+      </set>
+    </property>
+  </bean>
+  
+  <bean id="services" class="org.vortikal.beans.factory.BeansListingFactoryBean">
+    <property name="targetBeansClass" value="org.vortikal.web.service.Service" />
+  </bean>
+  
+  <bean id="indexFileResolver" class="org.vortikal.web.IndexFileResolver">
+    <property name="indexFileList" ref="indexFileList" />
+  </bean>
+  
+  <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${indexFiles}" />
+  </bean>
+  
+  <bean id="securityInitializer" class="org.vortikal.security.web.SecurityInitializer">
+    <description> This bean initializes the security context for each request.
+      The security context contains the authenticated principal and the
+      repository token. </description>
+    <property name="tokenManager" ref="tokenManager" />
+  </bean>
+  
+  <bean id="defaultRequestFilters" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.filter.RequestFilter" />
+    <property name="category" value="defaultServletRequestFilter" />
+  </bean>
+  
+  <bean id="defaultRequestFilterCategoryBean" abstract="true">
+    <property name="order" value="0" />
+    <property name="categories">
+      <set>
+        <value>defaultServletRequestFilter</value>
+      </set>
+    </property>
+  </bean>
+  
+  <bean id="defaultResponseFilters" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.filter.ResponseFilter" />
+    <property name="category" value="defaultServletResponseFilter" />
+  </bean>
+  
+  <bean id="defaultResponseFilterCategoryBean" abstract="true">
+    <property name="order" value="0" />
+    <property name="categories">
+      <set>
+        <value>defaultServletResponseFilter</value>
+      </set>
+    </property>
+  </bean>
+  
+  <bean id="repositoryContextInitializer" class="org.vortikal.web.RepositoryContextInitializer" />
+
+  <!-- HandlerMapping -->
+  <bean id="serviceMapping" class="org.vortikal.web.service.ServiceHandlerMapping">
+    <description> The service handler mapping must be set in order for the
+      service framework to function. </description>
+  </bean>
+  
+</beans>

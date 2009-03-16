@@ -139,7 +139,7 @@
 
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.xhtml10trans-type" />
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.xhtml10trans-type" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">

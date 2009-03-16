@@ -1,36 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+    
+    <import resource="protection-levels.xml" />
 
-  <!-- Pre-defined boolean values for convenience:  -->
-  <bean id="VALUE_TRUE" class="org.vortikal.repository.resourcetype.Value">
-    <constructor-arg type="boolean">
-      <value>true</value>
-    </constructor-arg>
-  </bean>
-
-  <bean id="VALUE_FALSE" class="org.vortikal.repository.resourcetype.Value">
-    <constructor-arg type="boolean">
-      <value>false</value>
-    </constructor-arg>
-  </bean>
-
-  <!-- Value factory -->
-  <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
-    <property name="principalFactory" ref="principalFactory" />
-    <property name="binaryDao" ref ="binaryDao" />
-  </bean>
-  
-  <bean id="binaryDao" class="org.vortikal.repository.store.db.SqlBinaryContentMapDataAccessor">
-    <property name="sqlMapClient" ref="repository.sqlMapClient"/>
-    <property name="sqlMaps" ref="repository.statementMappings" />
-  </bean>
-
-
-  <bean id="abstractPropDef" abstract="true">
-    <property name="valueFactory" ref="valueFactory"/>
-    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
-  </bean>
-  
+    <!--
+        Protection level PROTECTION_LEVEL_UNEDITABLE and mandatory=false are
+        default values used by properties, should only be overwritten where
+        necessary. Default type of properties is STRING
+    -->
+    <bean id="abstractPropDef" abstract="true">
+        <property name="valueFactory" ref="valueFactory" />
+        <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
+        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+        <property name="mandatory" value="false" />
+    </bean>
+    
+    <!-- XXX: cyclic headache -->
+    <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
+        <property name="principalFactory" ref="principalFactory" />
+        <!--
+            One hackey way of resolving the headache is to use this hack instead
+            of ref="repository.binaryDao" when ripping the resource layer away
+            from the backend, and letting the valueFactory-bean itself fetch the
+            binaryDao-bean when it needs it.
+        -->
+        <!--property name="binaryDaoBeanName" value="repository.binaryDao" /-->
+        <property name="binaryDao" ref="repository.binaryDao" />
+    </bean>
+    
+    <bean id="valueFormatterRegistry"
+        class="org.vortikal.repository.resourcetype.ValueFormatterRegistry">
+        <property name="valueFormatters">
+            <map>
+                <entry key="STRING">
+                    <bean class="org.vortikal.repository.resourcetype.StringValueFormatter" />
+                </entry>
+                <entry key="HTML">
+                    <bean class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
+                        <property name="htmlUtil" ref="htmlUtil" />
+                    </bean>
+                </entry>
+                <entry key="IMAGE_REF">
+                    <bean class="org.vortikal.repository.resourcetype.ImageRefValueFormatter">
+                        <property name="thumbnailServiceBeanName" value="displayThumbnailService" />
+                        <property name="requireThumbnailService" value="true" />
+                    </bean>
+                </entry>
+                <entry key="INT">
+                    <bean class="org.vortikal.repository.resourcetype.IntValueFormatter" />
+                </entry>
+                <entry key="LONG">
+                    <bean class="org.vortikal.repository.resourcetype.LongValueFormatter" />
+                </entry>
+                <entry key="TIMESTAMP">
+                    <bean class="org.vortikal.repository.resourcetype.DateValueFormatter" />
+                </entry>
+                <entry key="DATE">
+                    <bean class="org.vortikal.repository.resourcetype.DateValueFormatter">
+                        <constructor-arg value="true" />
+                    </bean>
+                </entry>
+                <entry key="BOOLEAN">
+                    <bean class="org.vortikal.repository.resourcetype.BooleanValueFormatter" />
+                </entry>
+                <entry key="PRINCIPAL">
+                    <bean
+                        class="org.vortikal.repository.resourcetype.PrincipalValueFormatter">
+                        <property name="principalFactory" ref="principalFactory" />
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="VALUE_TRUE" class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="boolean">
+            <value>true</value>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="VALUE_FALSE" class="org.vortikal.repository.resourcetype.Value">
+        <constructor-arg type="boolean">
+            <value>false</value>
+        </constructor-arg>
+    </bean>
+    
 </beans>

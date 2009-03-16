@@ -36,65 +36,6 @@
     </property>
   </bean>
 
-
-  <bean id="decorating.htmlParser"
-        class="org.vortikal.text.html.HtmlPageParserImpl">
-    <property name="compositeTags" ref="decorating.htmlParser.compositeTags" />
-    <property name="emptyTags" ref="decorating.htmlParser.emptyTags" />
-  </bean>
-
-  <bean id="decorating.htmlParser.compositeTags"
-        class="org.springframework.beans.factory.config.SetFactoryBean">
-    <property name="sourceSet">
-      <set>
-        <value>pre</value>
-        <value>b</value>
-        <value>address</value>
-        <value>map</value>
-        <value>thead</value>
-        <value>tfoot</value>
-        <value>tbody</value>
-        <value>fieldset</value>
-        <value>optgroup</value>
-        <value>small</value>
-        <value>big</value>
-        <value>i</value>
-        <value>tt</value>
-        <value>em</value>
-        <value>acronym</value>
-        <value>strong</value>
-        <value>code</value>
-        <value>samp</value>
-        <value>kbd</value>
-        <value>var</value>
-        <value>iframe</value>
-
-	<value>v:component</value>
-      </set>
-    </property>
-  </bean>
-
-  <bean id="decorating.htmlParser.emptyTags"
-        class="org.springframework.beans.factory.config.SetFactoryBean">
-    <property name="sourceSet">
-      <set>
-        <value>br</value>
-        <value>area</value>
-        <value>link</value>
-        <value>img</value>
-        <value>param</value>
-        <value>hr</value>
-        <value>input</value>
-        <value>col</value>
-        <value>base</value>
-        <value>meta</value>
-
-	<value>v:parameter</value>
-      </set>
-    </property>
-  </bean>
-
-
   <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentHandlingNodeFilter">
     <property name="ssiDirectiveComponentMap">
       <map>

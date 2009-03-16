@@ -34,7 +34,7 @@
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
         <property name="type" value="BOOLEAN" />
-        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.navigation-importance" />
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.navigation-importance" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">

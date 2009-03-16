@@ -37,13 +37,11 @@
     </property>
   </bean>
 
-
   <!-- =============================================================== -->
   <!-- Authentication and principal management section                 -->
   <!-- Set up the various authentication handlers, principal stores    -->
   <!-- and session stores                                              -->
   <!-- =============================================================== -->
-
 
   <bean id="tokenManager" class="org.vortikal.security.token.TokenManagerImpl">
     <description>
@@ -68,22 +66,15 @@
   </bean>
 
   <!-- Authentication challenges -->
-
   <!-- The digest authentication handler also implements AuthenticationChallenge: -->
   <alias name="httpDigestAuthenticationHandler" 
          alias="httpDigestAuthenticationChallenge" />
-
-
-
 
   <bean id="httpBasicAuthenticationChallenge" 
         class="org.vortikal.security.web.basic.HttpBasicAuthenticationChallenge">
     <description>A HTTP/Basic authentication challenge</description>
     <property name="principalStore" ref="localPrincipalStore" />
   </bean>
-
-
-
 
   <bean id="httpBasicAuthenticationHandler" 
         class="org.vortikal.security.web.basic.HttpBasicAuthenticationHandler">
@@ -121,11 +112,6 @@
     <property name="principalStore" ref="localPrincipalStore" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
-
-  <!--   <bean id="digestStateMap" class="org.vortikal.util.cache.SimpleCacheImpl">
-         <property name="timeoutSeconds" value="1800" />
-    </bean>-->
-
 
   <bean id="principalManager"
         class="org.vortikal.security.PrincipalManagerImpl">
@@ -187,22 +173,16 @@
     </constructor-arg>
   </bean>
 
-  
-
-
   <!-- Special principals and tokens -->
-
   <bean id="systemUsersGroup" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="system-users@localhost" />
     <constructor-arg value="GROUP" />
   </bean>
 
-
   <bean id="uioDomainGroup" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="alle@uio.no" />
     <constructor-arg value="GROUP" />
   </bean>
-
 
   <bean id="trustedPrincipal" class="org.vortikal.security.PrincipalImpl">
     <constructor-arg value="trusteduser@localhost" />
@@ -247,7 +227,6 @@
   </bean>
 
   <!-- Pseudo principals: -->
-
   <bean id="PRINCIPAL_ALL"
         class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField"
@@ -266,10 +245,8 @@
               value="org.vortikal.security.PrincipalFactory.OWNER" />
   </bean>
 
-
   <!-- Principal factory and related beans -->
   <bean id="principalFactory" class="org.vortikal.security.PrincipalFactory" />
-
 
   <bean id="vrtx.sessionValidationFilter" class="org.vortikal.web.filter.SessionValidationRequestFilter"
         parent="defaultRequestFilterCategoryBean">

@@ -9,14 +9,12 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-  
-  <!-- Transaction setup -->
 
+  <!-- Transaction setup -->
   <bean id="repository.transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
-
 
   <tx:advice id="repository.txAdvice" transaction-manager="repository.transactionManager">
     <tx:attributes>
@@ -37,13 +35,7 @@
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
   </aop:config>
 
-<!--  <aop:config>-->
-<!--    <aop:pointcut id="repository.sqlMapIndexDaoPointcut" expression="execution(* org.vortikal.repository.store.db.SqlMapIndexDao.*(..))"/>-->
-<!--    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.sqlMapIndexDaoPointcut"/>-->
-<!--  </aop:config>-->
-
   <!-- Repository -->
-
   <bean id="repository" class="org.vortikal.repository.RepositoryImpl"
         init-method="init" destroy-method="destroy">
     <property name="id" value="${repositoryID}" />
@@ -57,7 +49,6 @@
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
-
   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">
     <property name="driverClassName" value="${databaseDriver}" />
@@ -66,12 +57,9 @@
     <property name="username" value="${jdbcUsername}" />
     <property name="password"  value="${jdbcPassword}" />
     <property name="defaultAutoCommit" value="false" />
-  </bean>
-
-  
+  </bean>  
 
   <!-- SqlMap setup for iBATIS Database Layer -->
-
   <bean id="repository.sqlMapClient"
         class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
     <property name="useTransactionAwareDataSource" value="true" />
@@ -82,6 +70,11 @@
   </bean>
 
   <bean id="repository.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
+  
+  <bean id="repository.binaryDao" class="org.vortikal.repository.store.db.SqlBinaryContentMapDataAccessor">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+  </bean>
 
   <!-- Override iBATIS SQL map statement names in this map (should
        generally not be necessary): -->
@@ -135,17 +128,6 @@
     <property name="principalFactory" ref="principalFactory" />
   </bean>
 
-  <!--
-  <bean id="repository.cache" class="org.vortikal.repository.store.JBossCacheDataAccessor">
-    <property name="wrappedAccessor" ref="${repository.dao}" />
-    <property name="treeCache" ref="jbossTreeCache" />
-  </bean>
-
-  <bean id="jbossTreeCache" class="org.jboss.cache.TreeCache"
-        init-method="startService" destroy-method="stopService">
-  </bean>
-  -->
-
   <bean id="repository.requestLocal" class="org.vortikal.web.RequestLocalRepository">
     <property name="repository" ref="repository"/>
   </bean>
@@ -170,13 +152,6 @@
     <property name="contentStore" ref="${repository.contentStore}"/>
     <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry"/>
   </bean>
-  
-  <bean id="resourceTypeTree"
-        class="org.vortikal.repository.ResourceTypeTreeImpl" >
-    <property name="typeLocalizationProvider" ref="typeLocalizationProvider"/>
-    <property name="valueFactory" ref="valueFactory" />
-    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
-  </bean>    
 
   <bean id="typeLocalizationProvider" 
     class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">
@@ -192,12 +167,10 @@
 
   <bean id="jdomContentFactory" class="org.vortikal.repository.content.JDOMContentFactory" />
 
-
   <bean id="jtidyContentFactory" class="org.vortikal.repository.content.JTidyContentFactory" />
   <bean id="bufferedImageContentFactory" class="org.vortikal.repository.content.BufferedImageContentFactory" />
   <bean id="audioFileContentFactory"
         class="org.vortikal.repository.content.AudioFileContentFactory" />
-
 
   <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManagerImpl">
     <property name="readOnly" value="${repositoryReadOnly}" />
@@ -206,36 +179,5 @@
     <property name="roleManager" ref="roleManager" />
     <property name="dao" ref="${repositoryBackend}" />
   </bean>
-
-   <bean id="messageSource"
-         class="org.vortikal.web.context.ChildDelegatingMessageSource">
-   </bean>
-
-   <bean id="defaultMessageSource"
-         class="org.springframework.context.support.ResourceBundleMessageSource">
-     <property name="basenames">
-       <list>
-         <value>vortikal.i18n.messages</value>
-       </list>
-     </property>
-   </bean>
-
-<!--
-  <bean id="repository.importer" class="org.vortikal.repository.DataImportUtil">
-    <property name="repository" ref="repository" />
-  </bean>
-
-
-  <bean id="repository.evaluator" class="org.vortikal.repository.EvaluatorUtil">
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="dataAccessor" ref="${repository.dao}" />
-  </bean>
--->
-
-<!--   <bean class="org.vortikal.repository.ResourceImpl" scope="prototype"> -->
-<!--     <property name="resourceTypeTree" ref="resourceTypeTree" /> -->
-<!--     <property name="authorizationManager" ref="authorizationManager" /> -->
-<!--   </bean> -->
-
 
 </beans>

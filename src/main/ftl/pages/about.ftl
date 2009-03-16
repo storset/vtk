@@ -219,7 +219,7 @@
 
   <#else>
     <!-- Content type -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' />
+    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'contentType' inputSize=50/>
 
     <!-- Character encoding -->
     <#if aboutItems['characterEncoding']?exists>

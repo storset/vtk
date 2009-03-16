@@ -121,7 +121,7 @@
         var completeEditor = completeEditor != null ? completeEditor : false;
         var withoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false; 
         
-        var fck = new FCKeditor( name ) ;
+        var fck = new FCKeditor( name ,'100%', 400) ;
         fck.BasePath = "${fckeditorBase.url?html}/";
 
         fck.Config['DefaultLanguage'] = '<@vrtx.requestLanguage />';

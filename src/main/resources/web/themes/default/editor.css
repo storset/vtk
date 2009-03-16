@@ -465,11 +465,11 @@ div.html-content textarea {
 }
 
 * html div.html-content iframe {
-  height: 20em; 
+  height: 30em; 
 } 
 
 #resource\.content___Frame{
-  height: 20em;
+  height: 30em;
 }
 
 /* ****** END: (Main) Content styling */

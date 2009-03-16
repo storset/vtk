@@ -146,6 +146,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     private PropertyTypeDefinition hiddenPropDef;
     private PropertyTypeDefinition importancePropdef;
     private ResourceTypeDefinition collectionResourceType;
+    private PropertyTypeDefinition navigationTitlePropDef;
     private String modelName = "menu";
     private int searchLimit = DEFAULT_SEARCH_LIMIT;
     private Searcher searcher;
@@ -358,6 +359,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();
         select.addPropertyDefinition(this.titlePropDef);
+        select.addPropertyDefinition(this.navigationTitlePropDef);
         if (this.hiddenPropDef != null) {
             select.addPropertyDefinition(this.hiddenPropDef);
         }
@@ -482,8 +484,15 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         item.setLabel(label);
 
         // Title
-        Property titleProperty = resource.getProperty(this.titlePropDef);
-        String title = (titleProperty != null) ? titleProperty.getStringValue() : label;
+        String title = null;
+        Property navigationTitleProperty = resource.getProperty(this.navigationTitlePropDef);
+        if (navigationTitleProperty != null) {
+        	title = navigationTitleProperty.getStringValue();
+        }
+        if (title == null) {
+        	Property titleProperty = resource.getProperty(this.titlePropDef);
+        	title = (titleProperty != null) ? titleProperty.getStringValue() : label;
+        }
         item.setTitle(title);
 
         return item;
@@ -702,6 +711,11 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     @Required
+	public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
+		this.navigationTitlePropDef = navigationTitlePropDef;
+	}
+    
+    @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
@@ -735,4 +749,5 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         return map;
     }
+
 }

@@ -308,6 +308,7 @@
     <property name="importancePropDef" ref="importancePropDef" />
     <property name="collectionResourceType" ref="collectionResourceTypeDefinition" />
     <property name="viewService" ref="webService" />
+    <property name="navigationTitlePropDef" ref="navigationTitlePropDef" />
   </bean>
   
   <bean name="decorating.listMenuComponent.view" parent="freemarkerView">

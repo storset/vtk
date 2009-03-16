@@ -242,7 +242,8 @@ create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
 -----------------------------------------------------------------------------
 drop sequence changelog_entry_seq_pk;
 
-create sequence changelog_entry_seq_pk increment by 1 start with 1000;
+-- NB, this sequence needs explicit ordering requirement for Oracle RAC:
+create sequence changelog_entry_seq_pk increment by 1 start with 1000 cache 40 order;
 
 drop table changelog_entry cascade constraints;
 

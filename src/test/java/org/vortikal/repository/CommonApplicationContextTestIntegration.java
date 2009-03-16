@@ -30,41 +30,38 @@
  */
 package org.vortikal.repository;
 
-import java.util.List;
+import java.util.Locale;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal.Type;
+import org.vortikal.text.html.HtmlUtil;
 
-public class InMemoryRepositoryTestIntegration extends AbstractBeanContextTestIntegration {
+public class CommonApplicationContextTestIntegration extends AbstractBeanContextTestIntegration {
 
-    private Repository repository;
+    public void testCommonConfiguration() {
+        ApplicationContext ctx = getApplicationContext(false, new String[] {});
 
+        checkForBeanInConfig(ctx, "defaultMessageSource");
+        ResourceBundleMessageSource resourceBundleMessageSource = (ResourceBundleMessageSource) ctx
+                .getBean("defaultMessageSource");
+        String message = resourceBundleMessageSource.getMessage("title.admin",
+                new String[] { "testfolder" }, new Locale("en"));
+        assertEquals("Managing: testfolder", message);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ApplicationContext ctx = getApplicationContext(true, "resource-types/resource.xml",
-                "repository.xml");
-        repository = (Repository) ctx.getBean("repository");
-    }
+        checkForBeanInConfig(ctx, "htmlUtil");
+        HtmlUtil htmlUtil = (HtmlUtil) ctx.getBean("htmlUtil");
+        String html = "<html><body>TEST</body></html>";
+        assertEquals("TEST", htmlUtil.flatten(html));
 
+        checkForBeanInConfig(ctx, "principalFactory");
+        PrincipalFactory principalFactory = (PrincipalFactory) ctx.getBean("principalFactory");
+        Principal principal = principalFactory.getPrincipal(PrincipalFactory.NAME_ALL, Type.PSEUDO);
+        assertNotNull("No principal returned", principal);
+        assertEquals("Wrong principal returned", principal, PrincipalFactory.ALL);
 
-    public void testRetrieveNonExisitng() {
-        Resource nonExisiting = null;
-        try {
-            nonExisiting = repository.retrieve(null, Path.fromString("/non_existing.html"), true);
-            fail();
-        } catch (Exception e) {
-            assertNull("What???", nonExisiting);
-        }
-    }
-
-
-    public void testRetrieveRoot() throws Exception {
-        Resource root = repository.retrieve(null, Path.ROOT, true);
-        assertNotNull("No root object exists", root);
-        List<Property> properties = root.getProperties();
-        assertTrue("Root object has no properties", properties != null && properties.size() > 0);
-        assertNotNull("Root object has no acl associated with it", root.getAcl());
     }
 
 }

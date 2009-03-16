@@ -33,33 +33,25 @@ package org.vortikal.repository;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 
-public class InMemoryRepositoryTestIntegration extends AbstractBeanContextTestIntegration {
+public class RepositoryTestIntegration extends AbstractBeanContextTestIntegration {
 
     private Repository repository;
 
 
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        ApplicationContext ctx = getApplicationContext(true, "resource-types/resource.xml",
+        ApplicationContext ctx = getApplicationContext(false, "resource-types/resource.xml",
                 "repository.xml");
         repository = (Repository) ctx.getBean("repository");
     }
 
 
-    public void testRetrieveNonExisitng() {
-        Resource nonExisiting = null;
-        try {
-            nonExisiting = repository.retrieve(null, Path.fromString("/non_existing.html"), true);
-            fail();
-        } catch (Exception e) {
-            assertNull("What???", nonExisiting);
-        }
-    }
-
-
-    public void testRetrieveRoot() throws Exception {
+    public void testRetrieve() throws Exception {
         Resource root = repository.retrieve(null, Path.ROOT, true);
         assertNotNull("No root object exists", root);
         List<Property> properties = root.getProperties();

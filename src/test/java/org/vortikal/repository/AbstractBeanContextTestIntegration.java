@@ -30,41 +30,50 @@
  */
 package org.vortikal.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class InMemoryRepositoryTestIntegration extends AbstractBeanContextTestIntegration {
+public abstract class AbstractBeanContextTestIntegration extends TestCase {
 
-    private Repository repository;
+    private final static String configBasePath = "classpath:/vortikal/beans/vhost/";
 
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ApplicationContext ctx = getApplicationContext(true, "resource-types/resource.xml",
-                "repository.xml");
-        repository = (Repository) ctx.getBean("repository");
+    static {
+        System.setProperty("org.apache.commons.logging.Log",
+                "org.apache.commons.logging.impl.Log4JLogger");
+        System.setProperty("log4j.configuration", "log4j.test.xml");
     }
 
 
-    public void testRetrieveNonExisitng() {
-        Resource nonExisiting = null;
-        try {
-            nonExisiting = repository.retrieve(null, Path.fromString("/non_existing.html"), true);
-            fail();
-        } catch (Exception e) {
-            assertNull("What???", nonExisiting);
+    protected ApplicationContext getApplicationContext(boolean inMemory, String... configFiles) {
+
+        List<String> configLocations = new ArrayList<String>();
+        if (!inMemory) {
+            configLocations.add(configBasePath + "config/property-configurer.xml");
+        } else {
+            configLocations.add(configBasePath + "config/in-memory-property-configurer.xml");
         }
+        
+        configLocations.add(configBasePath + "common/html-util.xml");
+        configLocations.add(configBasePath + "common/common.xml");
+        configLocations.add(configBasePath + "common/security.xml");
+        configLocations.add(configBasePath + "common/vortikal.xml");
+
+        for (String configFile : configFiles) {
+            configLocations.add(configBasePath + configFile);
+        }
+
+        return new ClassPathXmlApplicationContext(configLocations
+                .toArray(new String[configLocations.size()]));
     }
 
 
-    public void testRetrieveRoot() throws Exception {
-        Resource root = repository.retrieve(null, Path.ROOT, true);
-        assertNotNull("No root object exists", root);
-        List<Property> properties = root.getProperties();
-        assertTrue("Root object has no properties", properties != null && properties.size() > 0);
-        assertNotNull("Root object has no acl associated with it", root.getAcl());
+    protected void checkForBeanInConfig(ApplicationContext ctx, String beanDef) {
+        assertTrue("Expected bean not found: " + beanDef, ctx.containsBean(beanDef));
     }
 
 }

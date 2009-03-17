@@ -32,7 +32,7 @@ ul.comments li span.pubdate {
 /* RSS - stuff */
 div.vrtx-feed-link {
 	clear: both;
-	background: url(rss-icon.jpg) no-repeat top left;
+	background: url(icons/rss-icon.jpg) no-repeat top left;
 	font-size: .9em;
 	height: 24px;
 	line-height: 20px;

@@ -56,5 +56,5 @@ div.banner {
 .close {
         padding-right: 15px;
 	padding-left: 20px;
-        background: transparent url(close.gif) no-repeat 1px 0px;
+        background: transparent url(icons/close.gif) no-repeat 1px 0px;
 }

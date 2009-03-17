@@ -184,7 +184,7 @@ span.vrtx-add-event a.vrtx-ical {
 }
 
 span.vrtx-add-event a.vrtx-ical-help {
-       background: url(icon-info.gif) no-repeat;
+       background: url(icons/icon-info.gif) no-repeat;
        background-position: 87% 50%;
        padding: 0px 10px 0px 10px;
        zoom: 1; /* IE hack to get background image to display. To be fixed. */
@@ -200,7 +200,7 @@ a.vrtx-next,a.vrtx-previous {
 /* RSS - stuff */
 div.vrtx-feed-link {
 	clear: both;
-	background: url(rss-icon.jpg) no-repeat top left;
+	background: url(icons/rss-icon.jpg) no-repeat top left;
 	font-size: .9em;
 	height: 24px;
 	line-height: 20px;

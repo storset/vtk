@@ -21,7 +21,7 @@ h2.notice-board {
 }
 
 ul.tabMenu2 li.newNoticeService {
-        background: transparent url(nyfil.gif) no-repeat 0px 2px;
+        background: transparent url(icons/nyfil.gif) no-repeat 0px 2px;
         padding-top: 4px; /* Taller icon*/
 }
 

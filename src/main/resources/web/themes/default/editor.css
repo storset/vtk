@@ -544,7 +544,7 @@ span.colon {
 a.calendar {
   width: 19px;
   height: 19px;
-  background: url(cal.gif) no-repeat 0 0;
+  background: url(icons/cal.gif) no-repeat 0 0;
   text-decoration: none;
 }
 

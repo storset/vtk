@@ -418,8 +418,7 @@
         && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
         
         <#if name == 'navigationTitle'>
-           <#-- jQuery Help / tooltip -->
-           <a class="show-tooltip" href="#" title="Brukes i menyer og brødsmulemeny dersom fylt ut, ellers benyttes tittel.">(?)</a>
+           <a class="show-tooltip" href="#" title="Brukes i menyer og brødsmulemeny dersom fylt ut, ellers benyttes tittel.">____</a>
         </#if>
 
         <#if value = '' && name='userTitle'>

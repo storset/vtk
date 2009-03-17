@@ -243,7 +243,7 @@
   </bean>
 
   <bean id="renameService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
+    <property name="parent" ref="manageService" />
     <property name="order" value="-1000" />
     <property name="categories">
       <set>

@@ -596,15 +596,11 @@ td.calcell.oom {
 .calheader {
   margin-bottom: 0 !important;
 }
-
-
-      
+ 
 /* END: YUI calendar */
 
-
-
-
 /* ****** END: Event and Article specific styling */
+
 
 /* ****** START: Tooltip jQuery */
 
@@ -629,6 +625,4 @@ td.calcell.oom {
          }
          
 /* ****** END: Tooltip jQuery */
-
-
 

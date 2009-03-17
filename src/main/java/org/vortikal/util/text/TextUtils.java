@@ -150,7 +150,7 @@ public class TextUtils {
         StringBuilder noDupes = new StringBuilder();
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken().trim();
-            if (set.add(token)) { // If token can be added to HashSet = not duplicate
+            if (set.add(token)) {
                 if (count++ > 0) {
                     if (!removeDelimiter) {
                         noDupes.append(stringDelimiter);

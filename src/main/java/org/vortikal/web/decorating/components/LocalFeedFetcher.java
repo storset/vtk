@@ -42,6 +42,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
@@ -87,7 +88,9 @@ public class LocalFeedFetcher implements ServletContextAware {
 
         BufferedResponse servletResponse = new BufferedResponse();
         rd.forward(requestWrapper, servletResponse);
-
+        if (servletResponse.getStatus() != HttpServletResponse.SC_OK) {
+            return null;
+        }
         requestWrapper.setAttribute(IncludeComponent.INCLUDE_ATTRIBUTE_NAME, null);
         return new ByteArrayInputStream(servletResponse.getContentBuffer());
     }

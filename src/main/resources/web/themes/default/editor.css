@@ -611,8 +611,7 @@ td.calcell.oom {
         a.show-tooltip {
            text-decoration: none;
            color: #efefef;
-           background: url(http://www.iconarchive.com/icons/ruby-software/toolbar-3/help-16x16.png) no-repeat;
-           /* Linkware */
+           background: url(icons/help.gif) no-repeat;
         }
         span.show-tooltip-text { 
            display: none;

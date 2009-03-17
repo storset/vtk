@@ -174,8 +174,9 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
             sort(entries);
         } catch (MissingPublishedDateException e) {
             SyndFeed f = feedMapping.get(e.getEntry());
-            throw new MissingPublishedDateException("Feed " + f.getUri()
-                    + " missing published date. Not possible to sort.");
+            throw new MissingPublishedDateException(
+                    "Unable to sort feed '" + f.getUri() 
+                    + "': does not contain published date");
         }
 
         model.put("feed", feed);

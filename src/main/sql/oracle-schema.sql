@@ -182,7 +182,7 @@ alter table acl_entry
 ;
 
 create index acl_entry_index1 on acl_entry(resource_id);
-
+create index acl_entry_index2 on acl_entry(action_type_id);
 
 -----------------------------------------------------------------------------
 -- prop_type
@@ -231,11 +231,12 @@ alter table extra_prop_entry
 
 alter table extra_prop_entry
     add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
-    references prop_type(prop_type_id) on delete cascade
+    references prop_type(prop_type_id)
 ;
 
 
 create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
+create index extra_prop_entry_index2 on extra_prop_entry(prop_type_id);
 
 -----------------------------------------------------------------------------
 -- changelog_entry
@@ -298,7 +299,7 @@ alter table vortex_comment
           references vortex_resource (resource_id) on delete cascade;
 
 
-
+create index vortex_comment_index1 on vortex_comment(resource_id);
 
 -----------------------------------------------------------------------------
 -- initial application data

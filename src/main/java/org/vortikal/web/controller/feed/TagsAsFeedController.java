@@ -66,7 +66,9 @@ public class TagsAsFeedController extends AtomFeedController {
             return null;
         }
 
-        String feedTitle = this.getTitle(scope, tag, request);
+        RequestContext rc = RequestContext.getRequestContext();
+    	Service service = rc.getService();
+        String feedTitle = service.getLocalizedName(scope, request);
         Feed feed = populateFeed(scope, feedTitle);
 
         Listing searchResult = searchComponent.execute(request, scope, 1, 25, 0);
@@ -114,13 +116,6 @@ public class TagsAsFeedController extends AtomFeedController {
             throw new IllegalArgumentException("Scope resource isn't a collection");
         }
         return scopedResource;
-    }
-
-
-    private String getTitle(Resource scope, String tag, HttpServletRequest request) {
-    	RequestContext rc = RequestContext.getRequestContext();
-    	Service service = rc.getService();
-    	return service.getLocalizedName(scope, request);
     }
 
 

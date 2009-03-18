@@ -210,6 +210,7 @@
       <set>
         <value>downcase</value>
         <value>include-last-element</value>
+        <value>include-service-name</value>
       </set>
     </property>
     <property name="parameterDescriptions">
@@ -218,6 +219,8 @@
                value="If set to 'true', display breadcrumb elements in lower-case. The default is 'false'." />
         <entry key="include-last-element"
                value="Whether to include the last element in the breadcrumb. The default is 'false'." />
+        <entry key="include-service-name"
+               value="Whether to include the name of the service in the breadcrumb. The default is 'false'." />
       </map>
     </property>
   </bean>

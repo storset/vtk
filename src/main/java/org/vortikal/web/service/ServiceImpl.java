@@ -36,14 +36,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.util.net.NetUtils;
+import org.vortikal.web.service.provider.ServiceNameProvider;
 
 
 /**
@@ -85,6 +89,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     private Set<String> categories = null;
     private List<URLPostProcessor> urlPostProcessors = new ArrayList<URLPostProcessor>();
     private List<URLPostProcessor> accumulatedUrlPostProcessors = null;
+    private ServiceNameProvider serviceNameProvider;
     	
     
     public List<Assertion> getAllAssertions() {
@@ -389,6 +394,19 @@ public class ServiceImpl implements Service, BeanNameAware {
 
         return urlObject;
     }
+    
+    
+    public void setServiceNameProvider(ServiceNameProvider serviceNameProvider) {
+    	this.serviceNameProvider = serviceNameProvider;
+    }
+    
+    
+    public String getLocalizedName(Resource resource, HttpServletRequest request) {
+    	if (this.serviceNameProvider != null) {
+    		return this.serviceNameProvider.getLocalizedName(resource, request);
+    	}
+    	return null;
+    }
 
-
+    
 }

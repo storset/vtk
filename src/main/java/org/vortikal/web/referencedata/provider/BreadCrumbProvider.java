@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -103,6 +104,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     private boolean skipCurrentResource;
     private boolean skipIndexFile;
     private PropertyTypeDefinition navigationTitlePropDef;
+    
+    private final Logger logger = Logger.getLogger(BreadCrumbProvider.class);
 
 	@Required
     public final void setRepository(final Repository newRepository) {
@@ -166,18 +169,37 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
         boolean skipLastElement = this.skipCurrentResource;
         Object includeLast = model.get("include-last-element");
-        if (includeLast != null 
-                && ("true".equals(includeLast) || Boolean.TRUE.equals(includeLast))) {
+        if (parameterExists(includeLast)) {
             skipLastElement = false;
         }
         
+        Object includeServiceName = model.get("include-service-name");
+        String serviceName = null;
+        if (parameterExists(includeServiceName)) {
+        	try {
+            	Service service = requestContext.getService();
+            	Resource resource = this.repository.retrieve(token, uri, true);
+            	serviceName = service.getLocalizedName(resource, request);
+        	} catch (Exception e) {
+        		// Let's not fail the entire breadcrumb just 
+        		// because we can't show the service name
+        		logger.error("An error occured while getting the servicename", e);
+        	}
+        }
+        
         List<BreadcrumbElement> breadCrumb = 
-            generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile());
+            generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile(), serviceName);
         model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
+    }
+    
+    
+    private boolean parameterExists(Object parameter) {
+    	return parameter != null && ("true".equals(parameter) || Boolean.TRUE.equals(parameter));
     }
 
 
-    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, Path uri, boolean skipLastElement, boolean isIndexFile) {
+    private List<BreadcrumbElement> generateBreadcrumb(String token, Principal principal, Path uri, boolean skipLastElement,
+    		boolean isIndexFile, String serviceName) {
         
         List<BreadcrumbElement> breadCrumb = new ArrayList<BreadcrumbElement>();
         if (uri.isRoot()) {
@@ -194,6 +216,11 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         if (skipLastElement) {
             length--;
         }
+        
+        BreadcrumbElement serviceNameCrumb = null;
+        if (serviceName != null && !"".equals(serviceName.trim())) {
+        	serviceNameCrumb = new BreadcrumbElement(null, serviceName, null);
+        }
 
         for (int i = 0; i < length; i++) {
             try {
@@ -208,16 +235,27 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
             		navigationTitle = getNavigationTitle(r);
             	}
             	title = StringUtils.isBlank(navigationTitle) ? title : navigationTitle;
-                String url = null;
-                if (i < length - 1 || skipLastElement) {
-                    url = this.service.constructLink(r, principal, false);
-                }
-
-                if (i == length - 1 && !skipLastElement) {
-                    breadCrumb.add(new BreadcrumbElement(url, title, null));
-                } else {
-                    breadCrumb.add(new BreadcrumbElement(url, title));
-                }
+            	
+            	String url = this.service.constructLink(r, principal, false);
+            	if (!skipLastElement) {
+                    if (i == length - 1) {
+                    	if (serviceNameCrumb != null) {
+                    		breadCrumb.add(new BreadcrumbElement(url, title));
+                    		breadCrumb.add(serviceNameCrumb);
+                    	} else {
+                    		breadCrumb.add(new BreadcrumbElement(null, title, null));
+                    	}
+                    } else {
+                    	breadCrumb.add(new BreadcrumbElement(url, title));
+                    }
+            	} else {
+            		if (i < length - 1) {
+                        breadCrumb.add(new BreadcrumbElement(url, title));
+                    } else {
+                    	breadCrumb.add(new BreadcrumbElement(url, title, null));
+                    }
+            	}
+                
             } catch (Exception e) {
                 breadCrumb.add(new BreadcrumbElement(null, path.get(i)));
                 String msg = e.getMessage();

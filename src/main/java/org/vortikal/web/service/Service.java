@@ -33,6 +33,8 @@ package org.vortikal.web.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.context.Categorizable;
@@ -247,7 +249,13 @@ public interface Service extends Ordered, Categorizable {
      * service.
      */
     public void setParent(Service service);
-
+    
+    
+    /**
+     * 
+     * @return A localized name for this service
+     */
+    public String getLocalizedName(Resource resource, HttpServletRequest request);
     
 
 }

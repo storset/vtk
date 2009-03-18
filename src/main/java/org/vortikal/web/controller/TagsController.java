@@ -69,6 +69,9 @@ public class TagsController implements Controller {
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+    	
+    	// XXX Should set the service title here, not in tags.ftl (service.getLocalizedName())
+    	
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
 

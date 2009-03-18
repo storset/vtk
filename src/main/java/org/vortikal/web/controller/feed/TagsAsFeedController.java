@@ -43,8 +43,10 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.tags.TagsHelper;
 
 public class TagsAsFeedController extends AtomFeedController {
@@ -116,12 +118,9 @@ public class TagsAsFeedController extends AtomFeedController {
 
 
     private String getTitle(Resource scope, String tag, HttpServletRequest request) {
-        org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
-                request);
-        if (Path.ROOT.equals(scope.getURI())) {
-            return rc.getMessage("tags.title", new Object[] { this.repository.getId(), tag });
-        }
-        return rc.getMessage("tags.scopedTitle", new Object[] { scope.getTitle(), tag });
+    	RequestContext rc = RequestContext.getRequestContext();
+    	Service service = rc.getService();
+    	return service.getLocalizedName(scope, request);
     }
 
 

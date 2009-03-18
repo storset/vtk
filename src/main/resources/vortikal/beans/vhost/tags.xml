@@ -22,6 +22,11 @@
         <entry key="decorating.servicePredicateName" value="tags" />
       </map>
     </property>
+    <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
+  </bean>
+  
+  <bean id="tags.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.TagsViewServiceNameProvider" >
+    <property name="repositoryId" value="${repositoryID}" />
   </bean>
   
   <bean id="tags.atomService" class="org.vortikal.web.service.ServiceImpl">
@@ -32,6 +37,7 @@
       </list>
     </property>
     <property name="handler" ref="tags.atomHandler" />
+    <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
     
   <bean id="feedViewParameterAssertion" 

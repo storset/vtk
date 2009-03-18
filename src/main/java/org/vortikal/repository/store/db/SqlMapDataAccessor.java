@@ -272,6 +272,40 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         
     }
 
+    /**
+     * Oracle tends to dead-lock with itself here if write-load is high, 
+     * for currently unknown reasons.
+     * This methods wraps deleteInternal(Resource) and adds retry-logic for
+     * that particular case. According to Oracle-documentation ,the exception
+     * will only lead to statement-level rollback, so we shold be good.
+     */
+//    public void delete(ResourceImpl resource) { 
+//        
+//        int attempt = 0;
+//        final int maxRetries = 1;
+//        final long graceTime = 2000; 
+//        while (attempt++ <= maxRetries) {
+//            try {
+//                deleteInternal(resource);
+//                break;
+//            } catch (DeadlockLoserDataAccessException de) {
+//                logger.warn("Deadlock loser exception when trying to delete resource '" 
+//                     + resource.getURI() + "' from database: "  + de.getCause().getMessage());
+//
+//                if (attempt <= maxRetries) {
+//                    logger.warn("Will retry in " + graceTime + " milliseconds ...");
+//                    try {
+//                        Thread.sleep(graceTime);
+//                    } catch (InterruptedException ie) {}
+//                } else {
+//                    logger.warn("Giving up delete of resource '" 
+//                                + resource.getURI() + "' and rolling back.");
+//                    throw de;
+//                }
+//            }
+//        }
+//    }
+
     public void delete(ResourceImpl resource) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uri", resource.getURI().toString());

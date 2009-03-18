@@ -13,7 +13,7 @@
   <bean id="visualProfilePropertyDefinitions" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
-        <ref bean="visualProfileEnabledPropdef" />
+        <ref bean="visualProfileDisabledPropdef" />
         <ref bean="visualProfileCustomDefinedPropdef" />
         <ref bean="unitPropDef" />
         <ref bean="topicPropDef" />
@@ -24,15 +24,15 @@
     </property>
   </bean>
 
-  <bean id="visualProfileEnabledPropdef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="enabled" />
+  <bean id="visualProfileDisabledPropdef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="disabled" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
         <property name="type" value="BOOLEAN" />
-        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.enabled" />
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.visualprofiledisabled" />
         <property name="values">
           <list>
             <ref bean="VALUE_TRUE" />
@@ -41,6 +41,7 @@
       </bean>
     </property>
   </bean>
+
 
   <bean id="visualProfileCustomDefinedPropdef"
     class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

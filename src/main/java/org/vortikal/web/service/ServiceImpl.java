@@ -405,7 +405,8 @@ public class ServiceImpl implements Service, BeanNameAware {
     	if (this.serviceNameProvider != null) {
     		return this.serviceNameProvider.getLocalizedName(resource, request);
     	}
-    	return null;
+    	RequestContext rc = new RequestContext(request);
+    	return rc.getMessage(this.getName());
     }
 
     

@@ -175,7 +175,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         
         Object includeServiceName = model.get("include-service-name");
         String serviceName = null;
-        if (parameterExists(includeServiceName)) {
+        if (!skipLastElement && parameterExists(includeServiceName)) {
         	try {
             	Service service = requestContext.getService();
             	Resource resource = this.repository.retrieve(token, uri, true);

@@ -176,13 +176,15 @@ alter table acl_entry
     references vortex_resource (resource_id) on delete cascade
 ;
 
-alter table acl_entry
-    add constraint acl_entry_FK_2 foreign key (action_type_id)
-    references action_type (action_type_id)
-;
+-- Unnecessary constraint b/c table action_type is not really in use from
+-- application's point of view:
+-- alter table acl_entry
+--     add constraint acl_entry_FK_2 foreign key (action_type_id)
+--     references action_type (action_type_id)
+-- ;
 
 create index acl_entry_index1 on acl_entry(resource_id);
-create index acl_entry_index2 on acl_entry(action_type_id);
+
 
 -----------------------------------------------------------------------------
 -- prop_type
@@ -229,14 +231,14 @@ alter table extra_prop_entry
     references vortex_resource (resource_id) on delete cascade
 ;
 
-alter table extra_prop_entry
-    add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
-    references prop_type(prop_type_id)
-;
-
+-- Unnecessary constraint b/c table prop_type is not really in use from
+-- application's point of view:
+-- alter table extra_prop_entry
+--     add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
+--     references prop_type(prop_type_id)
+-- ;
 
 create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
-create index extra_prop_entry_index2 on extra_prop_entry(prop_type_id);
 
 -----------------------------------------------------------------------------
 -- changelog_entry
@@ -244,7 +246,7 @@ create index extra_prop_entry_index2 on extra_prop_entry(prop_type_id);
 drop sequence changelog_entry_seq_pk;
 
 -- NB, this sequence needs explicit ordering requirement for Oracle RAC:
-create sequence changelog_entry_seq_pk increment by 1 start with 1000 cache 40 order;
+create sequence changelog_entry_seq_pk increment by 1 start with 1000 cache 60 order;
 
 drop table changelog_entry cascade constraints;
 
@@ -297,7 +299,6 @@ alter table vortex_comment
 alter table vortex_comment
       add constraint vortex_comment_fk foreign key (resource_id)
           references vortex_resource (resource_id) on delete cascade;
-
 
 create index vortex_comment_index1 on vortex_comment(resource_id);
 

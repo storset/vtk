@@ -1,22 +1,15 @@
 -- Set ordering requirement and caching on changelog_entry_seq_pk sequence:
 
-alter sequence changelog_entry_seq_pk cache 40 order;
+alter sequence changelog_entry_seq_pk cache 60 order;
 
--- Create some new indexes necessary to avoid deadlock-situations:
-
-create index acl_entry_index2 on acl_entry(action_type_id);
-
-create index extra_prop_entry_index2 on extra_prop_entry(prop_type_id);
-
+-- Create index on foreign key constraint for vortex_comment:
 create index vortex_comment_index1 on vortex_comment(resource_id);
 
--- Remove cascading deletes on prop_type table:
+-- Remove prop_type_id foreign key constraint from extra_prop_entry:
 alter table extra_prop_entry drop constraint extra_prop_entry_FK_2;
-alter table extra_prop_entry
-     add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
-     references prop_type(prop_type_id)
-;
 
+-- Remove action_type_id foreign key constraint from acl_entry:
+alter table acl_entry drop constraint acl_entry_FK_2;
 
 -- Insert property 'visual-profile:disabled = true' for
 -- resources that do not have 'visual-profile:enabled = true':

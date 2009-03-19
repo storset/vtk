@@ -169,13 +169,13 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
         boolean skipLastElement = this.skipCurrentResource;
         Object includeLast = model.get("include-last-element");
-        if (parameterExists(includeLast)) {
+        if (includeLast != null 
+                && ("true".equals(includeLast) || Boolean.TRUE.equals(includeLast))) {
             skipLastElement = false;
         }
         
-        Object includeServiceName = model.get("include-service-name");
         String serviceName = null;
-        if (!skipLastElement && parameterExists(includeServiceName)) {
+        if (!skipLastElement) {
         	try {
             	Service service = requestContext.getService();
             	Resource resource = this.repository.retrieve(token, uri, true);
@@ -190,11 +190,6 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         List<BreadcrumbElement> breadCrumb = 
             generateBreadcrumb(token, principal, uri, skipLastElement, requestContext.isIndexFile(), serviceName);
         model.put(this.breadcrumbName, breadCrumb.toArray(new BreadcrumbElement[breadCrumb.size()]));
-    }
-    
-    
-    private boolean parameterExists(Object parameter) {
-    	return parameter != null && ("true".equals(parameter) || Boolean.TRUE.equals(parameter));
     }
 
 

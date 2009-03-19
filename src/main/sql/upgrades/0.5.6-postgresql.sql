@@ -17,8 +17,15 @@ alter table extra_prop_entry
      add constraint extra_prop_entry_FK_1 foreign key (resource_id)
      references vortex_resource (resource_id) on delete cascade ;
 
+-- Create index on vortex_comment(resource_id) foreign key:
+create index vortex_comment_index1 on vortex_comment(resource_id);
 
 
+-- Drop unnecessary constraints:
+alter table extra_prop_entry drop constraint extra_prop_entry_FK_2
+;
+alter table acl_entry drop constraint acl_entry_FK_2
+;
 
 -- Insert property 'visual-profile:disabled = true' for
 -- resources that do not have 'visual-profile:enabled = true':

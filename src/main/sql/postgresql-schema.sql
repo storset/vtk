@@ -57,7 +57,8 @@ create index vortex_resource_depth_index on vortex_resource(depth);
 -- Stored function for retrieving a resource's ancestor IDs.
 -- Returns a VARCHAR of single-space-separated id integers.
 -----------------------------------------------------------------------------
-drop function resource_ancestor_ids(varchar); create or replace
+drop function resource_ancestor_ids(varchar); 
+create or replace
 function resource_ancestor_ids(varchar) returns varchar as ' DECLARE
   parent varchar DEFAULT ''/'';
   id integer;
@@ -176,10 +177,11 @@ alter table acl_entry
     references vortex_resource (resource_id) on delete cascade
 ;
 
-alter table acl_entry
-    add constraint acl_entry_FK_2 foreign key (action_type_id)
-    references action_type (action_type_id)
-;
+-- Unnecessary constraint, table not really in use:
+-- alter table acl_entry
+--     add constraint acl_entry_FK_2 foreign key (action_type_id)
+--     references action_type (action_type_id)
+-- ;
 
 create index acl_entry_index1 on acl_entry(resource_id);
 
@@ -229,10 +231,11 @@ alter table extra_prop_entry
     references vortex_resource (resource_id) on delete cascade
 ;
 
-alter table extra_prop_entry
-    add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
-    references prop_type(prop_type_id)
-;
+-- Unnecessary constraint, table not really in use:
+-- alter table extra_prop_entry
+--     add constraint extra_prop_entry_FK_2 foreign key (prop_type_id)
+--     references prop_type(prop_type_id)
+-- ;
 
 create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
 
@@ -296,6 +299,7 @@ alter table vortex_comment
       add constraint vortex_comment_fk foreign key (resource_id)
           references vortex_resource (resource_id) on delete cascade;
 
+create index vortex_comment_index1 on vortex_comment(resource_id);
 
 
 -----------------------------------------------------------------------------
@@ -366,7 +370,6 @@ values (
     null,
     'collection'
 );
-
 
 -- Insert title property for root resource:
 

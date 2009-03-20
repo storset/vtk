@@ -153,7 +153,7 @@
     <property name="url" value="layouts/toc.ftl" />
     <property name="attributes">
       <map>
-	<entry key="url" value="${jsBaseURL}/toc.js" /> 
+	   <entry key="url" value="${jsBaseURL}/toc.js" /> 
         <!-- entry key="url" value="${decorating.tableOfContentsComponent.javascript}" / -->
       </map>
     </property>
@@ -218,6 +218,7 @@
                value="If set to 'true', display breadcrumb elements in lower-case. The default is 'false'." />
         <entry key="include-last-element"
                value="Whether to include the last element in the breadcrumb. The default is 'false'." />
+       </map>               
     </property>
   </bean>
 

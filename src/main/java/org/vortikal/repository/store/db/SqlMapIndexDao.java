@@ -43,12 +43,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
@@ -163,14 +161,11 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
      * which are allowed to read or read-processed the resource that the property set
      * represents.
      * 
-     * The pseudo-principal 'pseudo:owner' is replaced with the actual
-     * owner in the set.
-     * 
      * @return <code>null</code> if the resource or the resource from which ACL is
      *                           inherited could not be found. Otherwise 
      *                           a <code>Set</code> of <code>Principal</code> instances. 
      */
-    public Set<Principal> getAclReadPrincipals(PropertySet propertySet)
+    protected Set<Principal> getAclReadPrincipals(PropertySet propertySet)
             throws org.vortikal.repository.store.DataAccessException {
         
         // Cast to impl
@@ -196,14 +191,6 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
             for (Map<String, Object> principalAttributes: principalAttributeList) {
                 String name = (String) principalAttributes.get("name");
                 Boolean isUser = (Boolean) principalAttributes.get("isUser");
-                
-                if (PrincipalFactory.NAME_OWNER.equals(name)) {
-                    // Replace 'pseudo:owner' with actual owner
-                    Principal owner = propertySet.getProperty(Namespace.DEFAULT_NAMESPACE, 
-                                            PropertyType.OWNER_PROP_NAME).getPrincipalValue();
-                    aclReadPrincipals.add(owner);
-                    continue;
-                }
                 
                 Principal.Type type;
                 if (name.startsWith("pseudo:")) {

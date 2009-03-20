@@ -218,7 +218,7 @@
                value="If set to 'true', display breadcrumb elements in lower-case. The default is 'false'." />
         <entry key="include-last-element"
                value="Whether to include the last element in the breadcrumb. The default is 'false'." />
-       </map>               
+      </map>               
     </property>
   </bean>
 

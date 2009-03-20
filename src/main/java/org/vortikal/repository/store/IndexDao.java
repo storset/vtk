@@ -31,11 +31,8 @@
 package org.vortikal.repository.store;
 
 import java.util.List;
-import java.util.Set;
 
 import org.vortikal.repository.Path;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.security.Principal;
 
 /**
  * Callback-based interface for fetching property sets from database. 
@@ -54,9 +51,6 @@ public interface IndexDao {
     
     public void orderedPropertySetIterationForUris(List<Path> uris, 
                                                 PropertySetHandler handler)
-        throws DataAccessException;
-
-    public Set<Principal> getAclReadPrincipals(PropertySet propertySet)
         throws DataAccessException;
 
 }

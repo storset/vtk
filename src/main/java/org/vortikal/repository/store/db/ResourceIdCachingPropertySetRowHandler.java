@@ -37,7 +37,6 @@ import java.util.Map;
 
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.PrincipalFactory;
 
@@ -55,7 +54,7 @@ class ResourceIdCachingPropertySetRowHandler extends
     private Map<String, Integer> resourceIdCache = new HashMap<String, Integer>();
 
     public ResourceIdCachingPropertySetRowHandler(PropertySetHandler clientHandler,
-            ResourceTypeTree resourceTypeTree, PrincipalFactory principalFactory, IndexDao indexDao) {
+            ResourceTypeTree resourceTypeTree, PrincipalFactory principalFactory, SqlMapIndexDao indexDao) {
         super(clientHandler, resourceTypeTree, principalFactory, indexDao);
     }
     

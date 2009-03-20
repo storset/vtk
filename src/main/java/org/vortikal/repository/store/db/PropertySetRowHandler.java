@@ -31,8 +31,10 @@
 package org.vortikal.repository.store.db;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,12 +46,13 @@ import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
 import com.ibatis.sqlmap.client.event.RowHandler;
+
+
 
 /**
  *
@@ -67,7 +70,7 @@ class PropertySetRowHandler implements RowHandler {
     protected List<Map<String, Object>> rowValueBuffer = new ArrayList<Map<String, Object>>();
 
     private final ResourceTypeTree resourceTypeTree;
-    private final IndexDao indexDao;
+    private final SqlMapIndexDao indexDao;
     private final PrincipalFactory principalFactory;
     
     private Map<Integer, Set<Principal>> aclReadPrincipalsCache
@@ -76,7 +79,7 @@ class PropertySetRowHandler implements RowHandler {
     public PropertySetRowHandler(PropertySetHandler clientHandler,
                                  ResourceTypeTree resourceTypeTree,
                                  PrincipalFactory principalFactory,
-                                 IndexDao indexDao) {
+                                 SqlMapIndexDao indexDao) {
         this.clientHandler = clientHandler;
         this.resourceTypeTree = resourceTypeTree;
         this.principalFactory = principalFactory;
@@ -138,6 +141,7 @@ class PropertySetRowHandler implements RowHandler {
         Integer aclResourceId = propertySet.isInheritedAcl() ? 
                         propertySet.getAclInheritedFrom() : propertySet.getID();
                         
+        // Try cache first:
         Set<Principal> aclReadPrincipals = this.aclReadPrincipalsCache.get(
                                                     aclResourceId);
         
@@ -146,11 +150,27 @@ class PropertySetRowHandler implements RowHandler {
             aclReadPrincipals = this.indexDao.getAclReadPrincipals(propertySet);
             
             if (aclReadPrincipals != null) {
-                this.aclReadPrincipalsCache.put(aclResourceId, aclReadPrincipals);
+                this.aclReadPrincipalsCache.put(aclResourceId, Collections.unmodifiableSet(aclReadPrincipals));
             }
         }
         
-        return aclReadPrincipals; // Note: might still be null if no longer in database.
+        // Swap 'pseudo:owner' with real owner name
+        if (aclReadPrincipals != null) {
+            
+            // Shallow-copy Set that possibly comes from cache (going to modify)
+            Set<Principal> pseudoOwnerReplaced = new HashSet<Principal>(aclReadPrincipals);
+            
+            if (pseudoOwnerReplaced.remove(PrincipalFactory.OWNER)) {
+              // Replace 'pseudo:owner' with actual owner principal
+              Principal owner = propertySet.getProperty(Namespace.DEFAULT_NAMESPACE, 
+                                      PropertyType.OWNER_PROP_NAME).getPrincipalValue();
+              pseudoOwnerReplaced.add(owner);
+            }
+            
+            return pseudoOwnerReplaced;
+        }
+        
+        return null; // No longer found in database
     }
     
     private PropertySetImpl createPropertySet(List<Map<String, Object>> rowBuffer) {

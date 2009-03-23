@@ -205,7 +205,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
             ListMenu<PropertySet> m = new ListMenu<PropertySet>();
-            m.setComparator(new SubFolderMenuComparator(menuRequest));
+            m.setComparator(new SubFolderMenuComparator(menuRequest,this.navigationTitlePropDef));
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
             m.addAllItems(subList);
@@ -291,7 +291,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
-        menu.setComparator(new SubFolderMenuComparator(menuRequest));
+        menu.setComparator(new SubFolderMenuComparator(menuRequest,this.navigationTitlePropDef));
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
@@ -318,7 +318,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
             ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
-            subMenu.setComparator(new SubFolderMenuComparator(menuRequest));
+            subMenu.setComparator(new SubFolderMenuComparator(menuRequest,this.navigationTitlePropDef));
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
@@ -488,13 +488,15 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private boolean ascending = true;
         private PropertyTypeDefinition sortPropDef;
         private PropertyTypeDefinition importancePropDef;
+        private PropertyTypeDefinition navigationTitlePropDef;
 
 
-        public SubFolderMenuComparator(MenuRequest menuRequest) {
+        public SubFolderMenuComparator(MenuRequest menuRequest, PropertyTypeDefinition navigationTitlePropDef) {
             this.ascending = menuRequest.isAscendingSort();
             this.collator = Collator.getInstance(menuRequest.getLocale());
             this.sortPropDef = menuRequest.getSortProperty();
             this.importancePropDef = menuRequest.getImportancePropDef();
+            this.navigationTitlePropDef = navigationTitlePropDef;
         }
 
 
@@ -520,6 +522,21 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             if (!this.ascending) {
                 return collator.compare(value2, value1);
             }
+            
+            String x1 = null, x2 = null;
+            if(item1.getValue().getProperty(this.navigationTitlePropDef) != null) {
+                x1 = item1.getValue().getProperty(navigationTitlePropDef).getStringValue();
+                if(x1 != null){
+                    value1 = x1;
+                }
+            }
+            if(item2.getValue().getProperty(this.navigationTitlePropDef) != null) {
+                x2 = item2.getValue().getProperty(navigationTitlePropDef).getStringValue();
+                if(x2 != null){
+                    value2 = x2;
+                }
+            }
+            
             return collator.compare(value1, value2);
         }
     }

@@ -135,7 +135,7 @@ div.property-item {
 div#vrtx-resource\.navigationTitle {
 	float:left;
 	clear: left;
-	margin: 1em 0 1em 0;
+	margin: 0 0 0.5em 0;
 	width: 317px;
 	position: relative;
 }
@@ -148,13 +148,15 @@ div#vrtx-resource\.navigationTitle div {
 
 div#vrtx-resource\.importance {
      float: left;  
-     margin: 1em 0 1em 10px;
+     margin: 0.5em 0 0.5em 0;
      width: 180px;
+     clear: left;
 }
 
 div#vrtx-resource\.hidden {
     float: left;
-    margin: 1em 0 1em 13px;
+    clear: left;
+    margin: 0.5em 0 1em 0;
     width: 155px;
 }
 
@@ -173,7 +175,7 @@ div#vrtx-resource\.hidden #resource\.hidden\.unspecified {
 
 label.resource\.hidden {
      float: left;
-     margin-right: 2px;
+     margin-right: 0px;
 }
 
 /* END Navigation */
@@ -315,7 +317,7 @@ div.introduction {
   float: left; 
   width: 500px;  
   margin-right: 1.2em;
-  margin-bottom: 0;/*1em;*/
+  margin-bottom: 1em;/*1em;*/
 }
 
 div.introduction textarea {
@@ -435,7 +437,7 @@ div.caption {
   float: left;
   position: relative;
   margin-top: -105px;
-  margin-bottom:0;
+  margin-bottom:1em;
 }
 
 /* IE6 fix */
@@ -482,7 +484,7 @@ div.authors {
   clear: left;
   float: left;
   white-space: nowrap;
-  margin-top: 1em;
+  /*margin-top: 1em;*/
 }
 
 div.published-date {  
@@ -501,7 +503,7 @@ div.resource\.location{
 div.start-date, div.end-date, div.location {
   float:left;
   margin-right: 1em;
-  margin-top: 1em;
+  /*margin-top: 1em;*/
 }
 
 * html div.end-date, * html div.location {

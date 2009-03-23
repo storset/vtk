@@ -50,6 +50,12 @@
         <entry key="decorating.servicePredicateName" value="comments" />
       </map>
     </property>
+    <property name="serviceNameProvider" ref="commenting.serviceNameProvider" />
+  </bean>
+  
+  <bean id="commenting.serviceNameProvider"
+      class="org.vortikal.web.service.provider.CommentingServiceNameProvider">
+    <property name="repositoryId" value="${repositoryID}" />
   </bean>
 
   <bean name="commenting.feedService" class="org.vortikal.web.service.ServiceImpl">

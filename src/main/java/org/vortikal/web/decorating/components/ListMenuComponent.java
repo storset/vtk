@@ -396,7 +396,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     }
     
     private List<MenuItem<PropertySet>> sortDefaultOrder(List<MenuItem<PropertySet>> items, Locale locale) {
-        Collections.sort(items, new ListMenuComparator(locale, this.importancePropdef));
+        Collections.sort(items, new ListMenuComparator(locale, this.importancePropdef,this.navigationTitlePropDef));
         return items;
     }
     
@@ -663,10 +663,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
         private Collator collator;
         private PropertyTypeDefinition importancePropertyDef;
+        private PropertyTypeDefinition navigationTitlePropDef;
 
-        public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef) {
+        public ListMenuComparator(Locale locale, PropertyTypeDefinition importancePropertyDef, PropertyTypeDefinition navigationTitlePropDef) {
             this.collator = Collator.getInstance(locale);
             this.importancePropertyDef = importancePropertyDef;
+            this.navigationTitlePropDef = navigationTitlePropDef;
         }
         
         public int compare(MenuItem<PropertySet> i1, MenuItem<PropertySet> i2) {
@@ -682,7 +684,25 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
                     return importance2 - importance1;
                 }
             }
-            return this.collator.compare(i1.getTitle(), i2.getTitle());
+            String x1 = null, x2 = null;
+            if(i1.getValue().getProperty(this.navigationTitlePropDef) != null) {
+                x1 = i1.getValue().getProperty(navigationTitlePropDef).getStringValue();
+            }
+            if(i2.getValue().getProperty(this.navigationTitlePropDef) != null) {
+                x2 = i2.getValue().getProperty(navigationTitlePropDef).getStringValue();
+            }
+            String value1, value2;
+            if(x1 != null){
+                value1 = x1;
+            }else{
+                value1 = i1.getTitle();  
+            }
+            if(x2 != null){
+                value2 = x2;
+            }else{
+                value2 = i2.getTitle();
+            }
+            return this.collator.compare(value1,value2);
         }
     }
     

@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -405,8 +404,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     	if (this.serviceNameProvider != null) {
     		return this.serviceNameProvider.getLocalizedName(resource, request);
     	}
-    	RequestContext rc = new RequestContext(request);
-    	return rc.getMessage(this.getName());
+    	return null;
     }
 
     

@@ -105,11 +105,16 @@
                <ul>
                  <#list subCollections as c>
                    <#if c_index = splitList>
-                 </ul></td>
-                 <td><ul>
+                     </ul></td>
+                     <td><ul>
                      <#assign splitList = splitList + interval />
                    </#if>
-                   <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title")?html}</a></li>
+                   <#assign navigationTitle = vrtx.propValue(c, "navigationTitle")?html />
+                   <#if navigationTitle?exists && navigationTitle != "">
+                     <li><a href="${c.getURI()?html}">${navigationTitle}</a></li>
+                   <#else>
+                     <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title")?html}</a></li>
+                   </#if>
                  </#list>                                                                                          
            </ul></td></tr>
          </table>

@@ -67,9 +67,13 @@ public abstract class AbstractCollectionListingController implements Controller 
     protected int defaultPageLimit = 20;
     protected PropertyTypeDefinition pageLimitPropDef;
     protected PropertyTypeDefinition hideNumberOfComments;
-    protected List<PropertyTypeDefinition> sortPropDefs;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
+    
+    // A list of properties used when sorting the list of collections
+    // @see ResourcePropertyComparator
+    protected List<PropertyTypeDefinition> sortPropDefs;
+    protected Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs;
     
     protected static final String UPCOMING_PAGE_PARAM = "page";
     protected static final String PREVIOUS_PAGE_PARAM = "p-page";
@@ -93,7 +97,7 @@ public abstract class AbstractCollectionListingController implements Controller 
         }
 
         Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, false, locale));
+        Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, this.overridingSortPropDefs, false, locale));
         
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
@@ -210,6 +214,10 @@ public abstract class AbstractCollectionListingController implements Controller 
     @Required 
     public void setSortPropDefs(List<PropertyTypeDefinition> sortPropDefs) {
         this.sortPropDefs = sortPropDefs;
+    }
+    
+    public void setOverridingSortPropDefs(Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs) {
+        this.overridingSortPropDefs = overridingSortPropDefs;
     }
 
     @Required

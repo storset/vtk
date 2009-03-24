@@ -34,6 +34,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
@@ -47,7 +48,10 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  */
 public class ResourcePropertyComparator implements Comparator<Resource> {
 
+    // Default list of props to use when sorting
     private List<PropertyTypeDefinition> propDefs;
+    // Alternative list of props to check if a resource to sort does not have default prop set
+    private Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> alternativePropDefs;
     private boolean invert = false;
     private Locale locale = null;
     
@@ -69,6 +73,13 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
         this.locale = locale;
     }
 
+    public ResourcePropertyComparator(List<PropertyTypeDefinition> sortPropDefs,
+            Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs,
+            boolean invert, Locale locale) {
+        this(sortPropDefs, invert, locale);
+        this.alternativePropDefs = overridingSortPropDefs;
+    }
+
     public int compare(Resource r1, Resource r2) {
         
         if (this.invert) {
@@ -77,8 +88,8 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
         
         for (PropertyTypeDefinition propDef : this.propDefs) {
             
-            Property p1 = r1.getProperty(propDef);
-            Property p2 = r2.getProperty(propDef);
+            Property p1 = getSortProp(r1, propDef);
+            Property p2 = getSortProp(r2, propDef);
             
             int result = 0;
             
@@ -115,6 +126,24 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
         }
         
         return 0;
+    }
+
+    private Property getSortProp(Resource resource, PropertyTypeDefinition propDef) {
+        Property prop = resource.getProperty(propDef);
+        return prop == null ? getAlternativeSortProp(resource, propDef) : prop;
+    }
+
+    private Property getAlternativeSortProp(Resource resource, PropertyTypeDefinition propDef) {
+        if (this.alternativePropDefs != null && this.alternativePropDefs.containsKey(propDef)) {
+            List<PropertyTypeDefinition> alternativeProps = this.alternativePropDefs.get(propDef);
+            for (PropertyTypeDefinition propTypeDef : alternativeProps) {
+                Property prop = resource.getProperty(propTypeDef);
+                if (prop != null) {
+                    return prop;
+                }
+            }
+        }
+        return null;
     }
 
     private int compare(Property p1, Property p2) {

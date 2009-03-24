@@ -40,8 +40,18 @@
     <property name="sortPropDefs">
       <list>
         <ref bean="importancePropDef" />
+        <ref bean="navigationTitlePropDef" />
         <ref bean="titlePropDef" />        
       </list>
+    </property>
+    <property name="overridingSortPropDefs">
+      <map>
+        <entry key-ref="navigationTitlePropDef">
+          <list>
+            <ref bean="titlePropDef" />
+          </list>
+        </entry>
+      </map>
     </property>
     <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="pageLimitPropDef" ref="collection.pageLimitPropDef" />

@@ -162,10 +162,10 @@ public class PutController extends AbstractWebdavController {
                 }
                 
                 /* if lock-null resource, act as if it did not exist.. */
-                if (resource.getContentLength() == 0 &&
-                    resource.getLock() != null) {
-                    exists = false;
-                }
+//                 if (resource.getContentLength() == 0 &&
+//                     resource.getLock() != null) {
+//                     exists = false;
+//                 }
                 
 
                 if (resource.isCollection()) {

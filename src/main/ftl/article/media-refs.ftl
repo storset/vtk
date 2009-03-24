@@ -25,15 +25,16 @@
         <param name="menu" value="false"/>
         <param name="wmode" value="transparent"/>
       </object>
-      <#-- elseif (mediaRes != "" && (mediaRes.contentType == 'video/mpeg' || mediaRes.contentType == 'video/quicktime'))>
+      <#elseif (mediaRes != "" && mediaRes.contentType == 'video/quicktime')>
       <object id="videoplayer1" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="320" height="255" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
         <param name="src" value="${media}"/>
         <param name="autoplay" value="false"/>
         <param name="controller" value="true"/>
         <param name="loop" value="false"/>
-        <embed id="videoplayer1" src="${media}" width="320" height="255" autoplay="false" controller="true" loop="false" pluginspage="http://www.apple.com/quicktime/download/">
+        <param name="scale" value="aspect" />         
+        <embed id="videoplayer1" src="${media}" width="320" height="255" autoplay="false" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
-      </object -->
+      </object>
     <#else>
       <a class="vrtx-media" href="${media}"><@vrtx.msg code="article.media-file" /></a>
     </#if>

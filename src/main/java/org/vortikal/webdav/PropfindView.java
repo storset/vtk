@@ -189,19 +189,19 @@ public class PropfindView implements View, InitializingBean {
 //                && currentResource.getLock() != null
 //                && currentResource.getContentLength() == 0) {
 
-                /* resource is lock-null (avoid listing), unless
-                 * client is requesting the lockdiscovery property: */
+//                 /* resource is lock-null (avoid listing), unless
+//                  * client is requesting the lockdiscovery property: */
 
-                if (requestedProps.contains(
-                        new Element("lockdiscovery", WebdavConstants.DAV_NAMESPACE))) {
-                    Element responseElement = buildResponseElement(
-                        currentResource, requestedProps, 
-                        appendPropertyValues, isWildcardPropRequest);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Lock-Null resource " + currentResource.getURI());
-                    }
-                    multiStatus.addContent(responseElement);
-                }
+//                 if (requestedProps.contains(
+//                         new Element("lockdiscovery", WebdavConstants.DAV_NAMESPACE))) {
+//                     Element responseElement = buildResponseElement(
+//                         currentResource, requestedProps, 
+//                         appendPropertyValues, isWildcardPropRequest);
+//                     if (logger.isDebugEnabled()) {
+//                         logger.debug("Lock-Null resource " + currentResource.getURI());
+//                     }
+//                     multiStatus.addContent(responseElement);
+//                 }
 
 //            } else {
 

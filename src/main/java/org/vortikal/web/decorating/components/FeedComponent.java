@@ -58,7 +58,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
     
     private static final String PARAMETER_OVERRIDE_FEED_TITLE = "override-feed-title";
-    private static final String PARAMETER_OVERRIDE_FEED_TITLE_DESC = "Override the feed title";
+    private static final String PARAMETER_OVERRIDE_FEED_TITLE_DESC = "Optional string overriding the feed title";
 
     private static final String PARAMETER_ALL_MESSAGES_LINK = "all-messages-link";
     private static final String PARAMETER_ALL_MESSAGES_LINK_DESC = "Defaults to 'true' displaying 'All messages' link at the bottom. Set to 'false' to remove this link.";

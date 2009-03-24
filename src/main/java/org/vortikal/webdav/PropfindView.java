@@ -185,9 +185,9 @@ public class PropfindView implements View, InitializingBean {
 
         for (Resource currentResource: resourceList) {
         
-            if (!currentResource.isCollection()
-                && currentResource.getLock() != null
-                && currentResource.getContentLength() == 0) {
+//            if (!currentResource.isCollection()
+//                && currentResource.getLock() != null
+//                && currentResource.getContentLength() == 0) {
 
                 /* resource is lock-null (avoid listing), unless
                  * client is requesting the lockdiscovery property: */
@@ -203,14 +203,14 @@ public class PropfindView implements View, InitializingBean {
                     multiStatus.addContent(responseElement);
                 }
 
-            } else {
+//            } else {
 
                 Element responseElement = buildResponseElement(
                     currentResource, requestedProps, 
                     appendPropertyValues, isWildcardPropRequest);
             
                 multiStatus.addContent(responseElement);
-            }
+//            }
         }
         
         return multiStatus;

@@ -244,11 +244,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
                     	breadCrumb.add(new BreadcrumbElement(url, title));
                     }
             	} else {
-            		if (i < length - 1) {
-                        breadCrumb.add(new BreadcrumbElement(url, title));
-                    } else {
-                    	breadCrumb.add(new BreadcrumbElement(url, title, null));
-                    }
+            	    breadCrumb.add(new BreadcrumbElement(url, title));
             	}
                 
             } catch (Exception e) {

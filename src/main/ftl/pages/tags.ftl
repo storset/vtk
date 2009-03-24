@@ -161,7 +161,7 @@
 
     <#else> <#-- no resources found for tag -->
       <p>
-        ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag}</span>.
+        ${vrtx.getMsg("tags.notFound")} <span class="italic">${tag?html}</span>.
       </p>
     </#if>
   </#if>

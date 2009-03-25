@@ -75,6 +75,7 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalImpl;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.web.RequestContext;
 
 public class ResourceArchiver {
 
@@ -212,7 +213,7 @@ public class ResourceArchiver {
     	String content = commentContent.get(entryLinePrefix + "content").toString();
     	
 		Comment comment = new Comment();
-    	comment.setURI(Path.fromString(getExpandedEntryUri(base.getParent(), path)));
+    	comment.setURI(Path.fromString(getExpandedEntryUri(base, path)));
     	comment.setAuthor(new PrincipalImpl(author, Type.USER));
     	comment.setTitle(title);
     	comment.setTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time.toString()));
@@ -444,7 +445,12 @@ public class ResourceArchiver {
 	        JarEntry je = new JarEntry(commentPath + comment.getID() + ".txt");
 	        jo.putNextEntry(je);
 	        StringBuilder sb = new StringBuilder();
-	        sb.append("X-vrtx-comment-parent: " + r.getURI().toString() + "\n");
+	        RequestContext rc = RequestContext.getRequestContext();
+	        Path currentCollection = rc.getCurrentCollection();
+	        Path archivedResourcePath = r.getURI();
+	        String archivedCommentParentPath = archivedResourcePath.toString().substring(
+	                currentCollection.toString().length() + 1);
+	        sb.append("X-vrtx-comment-parent: " + archivedCommentParentPath + "\n");
 	        sb.append("X-vrtx-comment-author: " + comment.getAuthor() + "\n");
 	        String title = comment.getTitle();
 	        if (title != null && !"".equals(title.trim())) {

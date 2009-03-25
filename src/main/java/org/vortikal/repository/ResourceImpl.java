@@ -195,7 +195,10 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     public String getSerial() {
-        String serial = getURI().toString() + getContentLastModified() + getPropertiesLastModified();
+        String serial = getURI().toString() 
+                            + getContentLastModified()
+                            + getPropertiesLastModified()
+                            + getContentLength();
         serial = MD5.md5sum(serial);
         serial = "vortex-" + serial;
         return serial;

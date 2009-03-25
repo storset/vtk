@@ -58,9 +58,11 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         this.cache = cache;
     }
 
+
     public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
         this.localFeedFetcher = localFeedFetcher;
     }
+
 
     @Override
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -174,8 +176,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
             sort(entries);
         } catch (MissingPublishedDateException e) {
             SyndFeed f = feedMapping.get(e.getEntry());
-            throw new MissingPublishedDateException(
-                    "Unable to sort feed '" + f.getUri() 
+            throw new MissingPublishedDateException("Unable to sort feed '" + f.getUri()
                     + "': does not contain published date");
         }
 
@@ -274,7 +275,7 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
                 "max-messages", "The max number of messages to display, defaults to 10"), ITEM_DESCRIPTION(
                 "item-description", "Must be set to 'true' to show item descriptions"), INCLUDE_IF_EMPTY(
                 "include-if-empty", "Set to 'false' if you don't want to display empty feeds. Default is 'true'."), DISPLAY_CATEGORIES(
-                "display-catgories", "Set to 'true' if feed elements should display contents of category field.");
+                "display-categories", "Set to 'true' if feed elements should display contents of category field.");
 
         private final String id;
         private final String desc;
@@ -310,7 +311,6 @@ public class AggregatedFeedsComponent extends ViewRenderingDecoratorComponent {
         map.put(Parameter.DISPLAY_CATEGORIES.getId(), Parameter.DISPLAY_CATEGORIES.getDesc());
         return map;
     }
-
 
     public class FeedMapping {
         Map<SyndEntry, SyndFeed> feedMapping = new HashMap<SyndEntry, SyndFeed>();

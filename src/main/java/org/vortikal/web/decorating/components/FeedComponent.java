@@ -56,7 +56,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_FEED_TITLE = "feed-title";
     private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
-    
+
     private static final String PARAMETER_OVERRIDE_FEED_TITLE = "override-feed-title";
     private static final String PARAMETER_OVERRIDE_FEED_TITLE_DESC = "Optional string overriding the feed title";
 
@@ -81,7 +81,7 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_INCLUDE_IF_EMPTY = "include-if-empty";
     private static final String PARAMETER_INCLUDE_IF_EMPTY_DESC = "Set to 'false' if you don't want to display empty feeds. Default is 'true'.";
 
-    private static final String PARAMETER_DISPLAY_CATEGORIES = "display-catgories";
+    private static final String PARAMETER_DISPLAY_CATEGORIES = "display-categories";
     private static final String PARAMETER_DISPLAY_CATEGORIES_DESC = "Set to 'true' if feed elements should display contents of category field.";
 
     private ContentCache<String, SyndFeed> cache;
@@ -194,18 +194,20 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         } catch (Exception e) {
             throw new RuntimeException("Could not read feed url " + url, e);
         }
-        
+
         String overrideFeedTitle = request.getStringParameter(PARAMETER_OVERRIDE_FEED_TITLE);
         if (overrideFeedTitle != null && overrideFeedTitle.length() > 0) {
-        	model.put("overrideFeedTitle", overrideFeedTitle);
+            model.put("overrideFeedTitle", overrideFeedTitle);
         }
         model.put("feed", feed);
         model.put("conf", conf);
     }
 
+
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
     }
+
 
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
@@ -223,9 +225,11 @@ public class FeedComponent extends ViewRenderingDecoratorComponent {
         return map;
     }
 
+
     public void setContentCache(ContentCache<String, SyndFeed> cache) {
         this.cache = cache;
     }
+
 
     public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
         this.localFeedFetcher = localFeedFetcher;

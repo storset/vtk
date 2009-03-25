@@ -10,7 +10,7 @@
 </#if>
 
      <#if moveError?exists >
-          <ul class="errors">
+          <ul class="errors" id="move-error">
                <li>${moveError}</li> 
           </ul>
      </#if>

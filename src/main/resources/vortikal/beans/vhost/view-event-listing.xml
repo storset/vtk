@@ -17,7 +17,6 @@
       </list>
     </property>
     <property name="handler" ref="eventListing.handler" />
-    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
   
 

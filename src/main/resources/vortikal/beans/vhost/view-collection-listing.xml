@@ -17,12 +17,8 @@
       </list>
     </property>
     <property name="handler" ref="collectionListing.handler" />
-    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
   
-  <bean id="collectionListing.viewService.serviceNameProvider"
-      class="org.vortikal.web.service.provider.CollectionListingViewServiceNameProvider" />
-
   <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-1" />

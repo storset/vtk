@@ -139,14 +139,6 @@ ul.errors {
 	color: red;
 }
 
-#move-error {
-    float: left;
-    margin-right: 10px;
-}
-#move-error li {
-    margin-left:0px;
-}
-
 /* Banner section: */
 div.banner {
 	width: 100%;
@@ -337,8 +329,6 @@ ul.tabMenu1 li.navigateToParentService a {
 ul.tabMenu2 {
 	float: right;
 	padding: 2px 0 2px 0px;
-	text-align:right;
-	width: 100%;
 }
 
 ul.tabMenu2 li {

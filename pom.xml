@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <groupId>vortikal</groupId>
     <artifactId>vortikal</artifactId>
-    <version>0.5.6-SNAPSHOT</version>
+    <version>0.5.6</version>
     <packaging>jar</packaging>
     <name>The Vortikal Web Framework</name>
     <url>http://www.usit.uio.no/it/vortex/</url>
@@ -80,8 +79,8 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/trunk</developerConnection>
+        <connection>scm:svn:svn://svn.uio.no/svnroot/vortikal/tags/release-0.5.6</connection>
+        <developerConnection>scm:svn:svn+ssh://svn.uio.no/svnroot/vortikal/tags/release-0.5.6</developerConnection>
     </scm>
 
     <licenses>

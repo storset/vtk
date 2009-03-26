@@ -353,10 +353,6 @@ div.picture {
   overflow:hidden;
 }
 
-* html div.picture {
-  margin-right:42%;
-}
-
 #input-and-button-container {
   width: 330px;
   float: left;

@@ -70,8 +70,8 @@ public class SocketHandlerThread extends ShellHandlerThread {
     private int port = 9999;
     private String listenAddress = "localhost";
     private Set<ConnectionHandlerThread> connections = new HashSet<ConnectionHandlerThread>();
+    private SessionAuthenticator authenticator;
     
-        
     public void setPort(int port) {
         if (port <= 0) {
             throw new IllegalArgumentException("Invalid port number: " + port);
@@ -81,6 +81,10 @@ public class SocketHandlerThread extends ShellHandlerThread {
     
     public void setListenAddress(String listenAddress) {
         this.listenAddress = listenAddress;
+    }
+    
+    public void setSessionAuthenticator(SessionAuthenticator sessionAuthenticator) {
+        this.authenticator = sessionAuthenticator;
     }
     
     public void interrupt() {
@@ -95,8 +99,13 @@ public class SocketHandlerThread extends ShellHandlerThread {
         }
         super.interrupt();
     }
-        
 
+    void removeThread(ConnectionHandlerThread thread) {
+        synchronized(this.connections) {
+            this.connections.remove(thread);
+        }
+    }
+    
     public void run() {
 
         ServerSocket serverSocket = null;
@@ -113,21 +122,22 @@ public class SocketHandlerThread extends ShellHandlerThread {
             logger.warn("Unable to listen to port " + this.port, e);
             return;
         }
-
         logger.info("Listening for connections on port " + this.port);
-
+ 
         while (this.alive) {
             try {
-
                 Socket clientSocket = serverSocket.accept();
                 count++;
-                ConnectionHandlerThread handlerThread = new ConnectionHandlerThread(
-                    this.getName() + ".handler.", clientSocket);
-                handlerThread.setName(handlerThread.getName()
-                                      + count);
-                this.connections.add(handlerThread);
-                handlerThread.start();
-
+                try {
+                    ConnectionHandlerThread handlerThread = new ConnectionHandlerThread(
+                            this.getName() + ".handler.", clientSocket, this.authenticator);
+                    handlerThread.setName(handlerThread.getName()
+                            + count);
+                    handlerThread.start();
+                    this.connections.add(handlerThread);
+                } catch (Throwable t) {
+                    clientSocket.close();
+                }
             } catch (Throwable t) {
                 logger.warn("Error creating connection handler", t);
             }
@@ -152,7 +162,7 @@ public class SocketHandlerThread extends ShellHandlerThread {
         private PrintStream outputter;
         private InetAddress peer;
 
-        public ConnectionHandlerThread(String name, Socket clientSocket) throws IOException {
+        public ConnectionHandlerThread(String name, Socket clientSocket, SessionAuthenticator auth) throws Exception {
             super(name);
             this.clientSocket = clientSocket;
             this.inStream = clientSocket.getInputStream();
@@ -161,6 +171,14 @@ public class SocketHandlerThread extends ShellHandlerThread {
                                                  this.inStream));
             this.outputter = new PrintStream(this.outStream);
             this.peer = clientSocket.getInetAddress();
+            if (auth != null) {
+                if (!auth.authenticate(reader, outputter)) {
+                    String msg = "Authentication failed";
+                    this.outputter.println(msg);
+                    throw new IOException(msg);
+                }
+            }
+            logger.info("Connection established with: " + this.peer);
         }
         
         public void interrupt() {
@@ -173,56 +191,48 @@ public class SocketHandlerThread extends ShellHandlerThread {
             }
             super.interrupt();
         }
-        
 
         public void run() {
-
-            logger.info("Connection established with: " + this.peer);
+            try {
+                handleConversation();
+            } catch (Throwable t) {
+                this.alive = false;
+                try {
+                    this.outputter.println("Error: " + t.getMessage());
+                    t.printStackTrace(this.outputter);
+                } catch (Throwable t2) {
+                    logger.info("Unable to write error message to " + this.peer, t2);
+                }
+            } finally {
+                removeThread(this);
+            }
+        }
+        
+        private void handleConversation() throws IOException {
 
             while (this.alive) {
-                try {
-                    
-                    if (this.alive) {
-                        this.outputter.print("vrtx$ ");
-                        
-                        StringBuilder line = new StringBuilder();
-                        while (true) {
-                            String input = this.reader.readLine();
-                            if (input == null) {
-                                logger.info("Disconnected from " + this.peer);
-                                return;
-                            }
-                            if (input.endsWith("\\")) {
-                                line.append(input.substring(0, input.length() - 1));
-                                this.outputter.print("> ");
-                            } else {
-                                line.append(input);
-                                break;
-                            }
-                        }
+                this.outputter.print("vrtx$ ");
 
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Read line from " + this.peer);
-                        }
-
-                        getShell().eval(line.toString(), this.outputter);
+                StringBuilder line = new StringBuilder();
+                while (true) {
+                    String input = this.reader.readLine();
+                    if (input == null) {
+                        logger.info("Disconnected from " + this.peer);
+                        return;
                     }
-                } catch (Throwable t) {
-
-                    this.alive = false;
-
-                    try {
-                        this.outputter.println("Error: " + t.getMessage());
-                        t.printStackTrace(this.outputter);
-                    } catch (Throwable t2) {
-                        logger.info("Unable to write error message to " + this.peer, t2);
-
-                    } finally {
-                        logger.warn("Error handling connection with " + this.peer, t);
+                    if (input.endsWith("\\")) {
+                        line.append(input.substring(0, input.length() - 1));
+                        this.outputter.print("> ");
+                    } else {
+                        line.append(input);
+                        break;
                     }
                 }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Read line from " + this.peer);
+                }
+                getShell().eval(line.toString(), this.outputter);
             }
-            connections.remove(this);
         }
     }
     

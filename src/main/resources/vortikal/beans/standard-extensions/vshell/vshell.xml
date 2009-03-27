@@ -10,7 +10,8 @@
         <bean class="org.vortikal.shell.SocketHandlerThread">
           <property name="port" value="${vshell.listenPort}" />
           <property name="listenAddress" value="${vshell.listenAddress}" />
-        </bean>
+          <property name="sessionAuthenticator" ref="${vshell.sessionAuthenticator}" />
+     </bean>
       </property>
       <property name="securityContext">
         <bean class="org.vortikal.security.SecurityContext">
@@ -20,6 +21,13 @@
       </property>
    </bean>
 
+   <bean id="vshell.nullSessionAuthenticator" class="org.vortikal.shell.NullSessionAuthenticator" />
+   
+   <bean id="vshell.rootPasswordSessionAuthenticator"
+         class="org.vortikal.shell.SimplePasswordSessionAuthenticator">
+     <property name="passwordStore" ref="localPrincipalStore" />
+     <property name="principal" ref="rootPrincipal" />
+   </bean>
 
    <lang:bsh id="vshell.repo.cat"
              refresh-check-delay="1000"

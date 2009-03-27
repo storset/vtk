@@ -172,14 +172,19 @@ public abstract class AbstractConsole
 
         this.init();
 
-        if (this.logger.isDebugEnabled())
+        if (this.logger.isDebugEnabled()) {
             this.logger.debug("Binding: 'context'");
+        }
         this.bind("context", this.context);
-        if (this.logger.isDebugEnabled())
+
+        if (this.logger.isDebugEnabled()) {
             this.logger.debug("Binding: 'resourceLoader'");
+        }
         this.bind("resourceLoader", this.resourceLoader);
-        if (this.logger.isDebugEnabled())
+
+        if (this.logger.isDebugEnabled()) {
             this.logger.debug("Binding: 'logger'");
+        }
         this.bind("logger", this.logger);
 
         if (this.initFiles != null) {
@@ -188,8 +193,9 @@ public abstract class AbstractConsole
                 InputStream stream = null;
                 try {
                     stream = resource.getInputStream();
-                    if (this.logger.isDebugEnabled())
+                    if (this.logger.isDebugEnabled()) {
                         this.logger.debug("Evaluating init file " + resource);
+                    }
                     this.evalInitFile(stream, System.out);
                 
                 } catch (IOException e) {
@@ -204,7 +210,6 @@ public abstract class AbstractConsole
                     }
                 }
             }
-
         }
 
         if (this.runEvalLoop) {

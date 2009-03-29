@@ -16,6 +16,7 @@
     <property name="dataSource" ref="repository.dataSource"/>
   </bean>
 
+  <!-- AOP transaction advice -->
   <tx:advice id="repository.txAdvice" transaction-manager="repository.transactionManager">
     <tx:attributes>
       <!--tx:method name="get*" read-only="true" /-->
@@ -24,19 +25,22 @@
     </tx:attributes>
   </tx:advice>
 
+  <!-- Setup tx advice point-cut for RepositoryImpl instance.
+       Only for bean 'repository.internal', we don't want proxies around other beans implementing Repository ! -->
   <aop:config>
-    <aop:pointcut id="repository.repositoryOperationPointcut" expression="execution(* org.vortikal.repository.Repository.*(..))"/>
+    <aop:pointcut id="repository.repositoryOperationPointcut" 
+                  expression="execution(* org.vortikal.repository.Repository.*(..)) and bean(repository.internal)"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.repositoryOperationPointcut"/>
   </aop:config>
 
-  <!-- Resource change notifier should have a complete transaction wrapped around pollChanges --> 
+  <!-- Setup tx advice point-cut for ResourceChangeNotifier.pollChanges() --> 
   <aop:config>
     <aop:pointcut id="repository.resourceChangeNotifierPointcut" expression="execution(* org.vortikal.repository.index.observation.ResourceChangeNotifier.pollChanges(..))"/>
     <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"/>
   </aop:config>
 
   <!-- Repository -->
-  <bean id="repository" class="org.vortikal.repository.RepositoryImpl"
+  <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl"
         init-method="init" destroy-method="destroy">
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
@@ -47,6 +51,12 @@
     <property name="lockManager" ref="repository.lockManager" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
     <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
+  
+  <!--  Repository cache purge control wrapper hack -->
+  <bean id="repository" class="org.vortikal.repository.CachePurgeControlRepositoryWrapper">
+    <property name="wrappedRepository" ref="repository.internal"/>
+    <property name="cache" ref="repository.cache"/>
   </bean>
 
   <bean id="repository.dataSource" class="org.apache.commons.dbcp.BasicDataSource"

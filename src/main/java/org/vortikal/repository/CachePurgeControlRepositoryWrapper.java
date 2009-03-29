@@ -1,0 +1,318 @@
+/* Copyright (c) 2009, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.repository;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.store.Cache;
+import org.vortikal.security.AuthenticationException;
+
+/**
+ * A hack and necessary evil to fix some cache coherency problems after repository
+ * service transactions are completed. Some services need extra cache purge on
+ * affected resources <em>after</em> the transactions has completed, especially
+ * when the affected resources are loaded while modifications are happening.
+ * Otherwise cache can become inconsistent, especially collection resource child
+ * URI lists.
+ * 
+ * Specifically, the following service methods need extra cache purging on
+ * affected resources when they complete successfully:
+ * <ul>
+ *   <li>Repository.delete()
+ *   <li>Repository.createDocument()
+ *   <li>Repository.createCollection()
+ *   <li>Repository.copy()
+ *   <li>Repository.move()
+ * </ul>
+ * 
+ * So wrap Repository and make sure the necessary cache purge operations are done
+ * after the relevant transactions complete. For this to work, the AOP tx join
+ * points must be set for the wrapped Repository bean and *NOT* this bean.
+ * 
+ * This is an ugly, but not so intrusive way (code-wise) of handling our
+ * layering/model problems with the cache, since we here gain a back-door access
+ * to the cache impl, while at the same time having control over repository
+ * service transaction calls. 
+ * 
+ * Since we are currently developing a new backend, this
+ * should be an acceptable solution to keep the old one humping along a little
+ * longer.
+ */
+public class CachePurgeControlRepositoryWrapper implements Repository {
+
+    private Cache cache;
+    private Repository wrappedRepository;
+    private final Log logger = LogFactory.getLog(CachePurgeControlRepositoryWrapper.class);
+    
+    public Comment addComment(String token, Resource resource, String title,
+            String text) throws RepositoryException, AuthenticationException {
+        return this.wrappedRepository.addComment(token, resource, title, text);
+    }
+
+    public Comment addComment(String token, Comment comment)
+            throws AuthenticationException {
+        return this.wrappedRepository.addComment(token, comment); // Tx
+    }
+    
+    public void copy(String token, Path srcUri, Path destUri, Depth depth,
+            boolean overwrite, boolean preserveACL)
+            throws IllegalOperationException, AuthorizationException,
+            AuthenticationException, FailedDependencyException,
+            ResourceOverwriteException, ResourceLockedException,
+            ResourceNotFoundException, ReadOnlyException, Exception {
+        
+        this.wrappedRepository.copy(token, srcUri, destUri, depth, overwrite, preserveACL); // Tx
+        
+        // Purge destination parent URI from cache after transaction has been comitted.
+        Path destParentUri = destUri.getParent();
+        if (destParentUri != null) {
+            if (logger.isDebugEnabled()) {
+                logPurge("copy", destParentUri);
+            }
+            this.cache.purgeFromCache(destParentUri);
+        }
+    }
+
+    public void move(String token, Path srcUri, Path destUri, boolean overwrite)
+            throws IllegalOperationException, AuthorizationException,
+            AuthenticationException, FailedDependencyException,
+            ResourceOverwriteException, ResourceLockedException,
+            ResourceNotFoundException, ReadOnlyException, Exception {
+
+        this.wrappedRepository.move(token, srcUri, destUri, overwrite); // Tx
+        
+        // Purge source, source parent and dest-parent from cache after transaction has been comitted.
+        List<Path> affected = new ArrayList<Path>(4);
+        affected.add(srcUri);
+        affected.add(destUri);
+        
+        Path srcParent = srcUri.getParent();
+        Path destParent = destUri.getParent();
+        
+        if (srcParent != null) affected.add(srcParent);
+        if (destParent != null && !affected.contains(destParent)) affected.add(destParent);
+        
+        if (logger.isDebugEnabled()) {
+            logPurge("move", affected);
+        }
+        
+        this.cache.purgeFromCache(affected);
+    }
+
+    public Resource createCollection(String token, Path uri)
+            throws AuthorizationException, AuthenticationException,
+            IllegalOperationException, ResourceLockedException,
+            ReadOnlyException, Exception {
+
+        Resource resource = this.wrappedRepository.createCollection(token, uri); // Tx
+        
+        Path parent = resource.getURI().getParent();
+        if (parent != null) {
+            if (logger.isDebugEnabled()) {
+                logPurge("createCollection", parent);
+            }
+            this.cache.purgeFromCache(parent); // Purge parent from cache after transaction has been comitted.
+        }
+        
+        return resource;
+    }
+
+    public Resource createDocument(String token, Path uri)
+            throws IllegalOperationException, AuthorizationException,
+            AuthenticationException, ResourceLockedException,
+            ReadOnlyException, Exception {
+        
+        Resource resource = this.wrappedRepository.createDocument(token, uri); // Tx
+        
+        Path parent = resource.getURI().getParent();
+        if (parent != null) {
+            if (logger.isDebugEnabled()) {
+                logPurge("createDocument", parent);
+            }
+            // Purge parent from cache after transaction has been comitted.
+            this.cache.purgeFromCache(parent); 
+        }
+        
+        return resource;
+    }
+
+    public void delete(String token, Path uri)
+            throws IllegalOperationException, AuthorizationException,
+            AuthenticationException, ResourceNotFoundException,
+            ResourceLockedException, FailedDependencyException,
+            ReadOnlyException, Exception {
+
+        this.wrappedRepository.delete(token, uri); // Tx
+        
+        List<Path> affected = new ArrayList<Path>(2);
+        affected.add(uri);
+        Path parent = uri.getParent();
+        if (parent != null) {
+            affected.add(parent);
+        }
+        if (logger.isDebugEnabled()) {
+            logPurge("delete", affected);
+        }
+        // Purge parent and deleted resource from cache after transaction has been comitted.
+        this.cache.purgeFromCache(affected);
+
+    }
+
+    public void deleteAllComments(String token, Resource resource)
+            throws RepositoryException, AuthenticationException {
+        this.wrappedRepository.deleteAllComments(token, resource); // Tx
+
+    }
+
+    public void deleteComment(String token, Resource resource, Comment comment)
+            throws RepositoryException, AuthenticationException {
+        this.wrappedRepository.deleteComment(token, resource, comment); // Tx
+    }
+
+    public boolean exists(String token, Path uri)
+            throws AuthorizationException, AuthenticationException, Exception {
+        return this.wrappedRepository.exists(token, uri);
+    }
+
+    public List<Comment> getComments(String token, Resource resource)
+            throws RepositoryException, AuthenticationException {
+        return this.wrappedRepository.getComments(token, resource); // Tx
+    }
+
+    public List<Comment> getComments(String token, Resource resource,
+            boolean deep, int max) throws RepositoryException,
+            AuthenticationException {
+        return this.wrappedRepository.getComments(token, resource, deep, max); // Tx
+    }
+
+    public String getId() {
+        return this.wrappedRepository.getId();
+    }
+
+    public InputStream getInputStream(String token, Path uri,
+            boolean forProcessing) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+        return this.wrappedRepository.getInputStream(token, uri, forProcessing); // Tx
+    }
+
+    public boolean isReadOnly() {
+        return this.wrappedRepository.isReadOnly(); // Tx
+    }
+
+    public Resource[] listChildren(String token, Path uri, boolean forProcessing)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, Exception {
+        return this.wrappedRepository.listChildren(token, uri, forProcessing); // Tx
+    }
+
+    public Resource lock(String token, Path uri, String ownerInfo, Depth depth,
+            int requestedTimoutSeconds, String lockToken)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, FailedDependencyException,
+            ResourceLockedException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        return this.wrappedRepository.lock(token, uri, ownerInfo, depth, requestedTimoutSeconds, lockToken); // Tx
+    }
+
+    public Resource retrieve(String token, Path uri, boolean forProcessing)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, Exception {
+        return this.wrappedRepository.retrieve(token, uri, forProcessing); // Tx
+    }
+
+    public void setReadOnly(String token, boolean readOnly)
+            throws AuthorizationException, Exception {
+        this.wrappedRepository.setReadOnly(token, readOnly); // Tx
+    }
+
+    public Resource store(String token, Resource resource)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, ResourceLockedException,
+            IllegalOperationException, ReadOnlyException, Exception {
+        return this.wrappedRepository.store(token, resource); // Tx
+    }
+
+    public void storeACL(String token, Resource resource)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        this.wrappedRepository.storeACL(token, resource); // Tx
+    }
+
+    public Resource storeContent(String token, Path uri, InputStream byteStream)
+            throws AuthorizationException, AuthenticationException,
+            ResourceNotFoundException, ResourceLockedException,
+            IllegalOperationException, ReadOnlyException, Exception {
+        return this.wrappedRepository.storeContent(token, uri, byteStream); // Tx
+    }
+
+    public void unlock(String token, Path uri, String lockToken)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, ResourceLockedException,
+            ReadOnlyException, Exception {
+        this.wrappedRepository.unlock(token, uri, lockToken); // Tx
+    }
+
+    public Comment updateComment(String token, Resource resource,
+            Comment comment) throws RepositoryException,
+            AuthenticationException {
+        return this.wrappedRepository.updateComment(token, resource, comment); // Tx
+    }
+
+    private void logPurge(String serviceMethodName, List<Path> uris) {
+        logger.debug(serviceMethodName + "() completed, purging the following URIs from cache:");
+        for (Path uri: uris) {
+            logger.debug(uri);
+        }
+    }
+
+    private void logPurge(String serviceMethodName, Path uri) {
+        List<Path> uris = new ArrayList<Path>();
+        uris.add(uri);
+        logPurge(serviceMethodName, uris);
+    }
+
+    @Required
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+
+    @Required
+    public void setWrappedRepository(Repository wrappedRepository) {
+        this.wrappedRepository = wrappedRepository;
+    }
+
+}

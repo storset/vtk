@@ -8,9 +8,10 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
+  <!--  Setup point-cut for operation log interceptor (only for bean 'repository.internal') -->
   <aop:config>
     <aop:pointcut id="operationLog.repositoryOperation"
-                  expression="execution(* org.vortikal.repository.Repository.*(..))" />
+                  expression="execution(* org.vortikal.repository.Repository.*(..)) and bean(repository.internal)" />
     <aop:advisor advice-ref="repository.repositoryOperationLogInterceptor"
                  pointcut-ref="operationLog.repositoryOperation"/>
   </aop:config>

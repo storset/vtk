@@ -342,8 +342,37 @@ public class Cache implements DataAccessor, InitializingBean {
             }
         }
     }
+    
+    /**
+     * Explicity purge a resource from cache by URI. Used by external cache control code.
+     * 
+     * @param uri
+     */
+    public void purgeFromCache(Path uri) {
+        List<Path> uris = new ArrayList<Path>(1);
+        uris.add(uri);
+        List<Path> lockedUris = this.lockManager.lock(uris);
+        try {
+            this.items.remove(lockedUris);
+        } finally {
+            this.lockManager.unlock(lockedUris);
+        }
+    }
+    
+    /**
+     * Eplicitly pruge a list of resources from cache by URI. Used by external cache control code.
+     * @param uris
+     */
+    public void purgeFromCache(List<Path> uris) {
+        List<Path> lockedUris = this.lockManager.lock(uris);
+        try {
+            this.items.remove(lockedUris);
+        } finally {
+            this.lockManager.unlock(lockedUris);
+        }
+    }
 
-    public void copy(ResourceImpl r, ResourceImpl dest, PropertySet newResource, boolean copyACLs,
+    public void copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
                      PropertySet fixedProperties) throws DataAccessException {
         
         Path destURI = newResource.getURI();
@@ -352,7 +381,7 @@ public class Cache implements DataAccessor, InitializingBean {
         uris.add(r.getURI());
         uris.add(destURI);
 
-        Path destParentURI = dest.getURI();
+        Path destParentURI = destParent.getURI();
         if (this.items.containsURI(destParentURI)) {
             uris.add(destParentURI);
         }
@@ -367,7 +396,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
         try {
             // Persist copy operation
-            this.wrappedAccessor.copy(r, dest, newResource, copyACLs, fixedProperties);
+            this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
             // Purge affected destination parent from cache
             this.items.remove(destParentURI);        
 

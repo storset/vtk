@@ -100,10 +100,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     public boolean exists(String token, Path uri) throws IOException {
 
-        if (this.dao.load(uri) != null)
-            return true;
+        return (this.dao.load(uri) != null);
 
-        return false;
     }
 
 

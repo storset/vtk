@@ -79,7 +79,8 @@ public interface PropertySetIndex {
     
     /**
      * Add a <code>PropertySet</code> to index, in addition to a set of principals
-     * which are allowed to read it.
+     * which are allowed to read it. Does not erasing any existing property sets
+     * at the same URI.
      *  
      * @param propertySet
      * @param aclReadPrincipals
@@ -87,6 +88,18 @@ public interface PropertySetIndex {
      */
     public void addPropertySet(PropertySet propertySet, 
                                Set<Principal> aclReadPrincipals) throws IndexException;
+    
+    
+    /**
+     * Updates a <code>PropertySet</code> in index. If no property set exists
+     * at the URI, this method will give the same result as {@link #addPropertySet(PropertySet, Set)}.
+     * 
+     * This method will always erase any existing property sets at the URI for
+     * the property set to update.
+     */
+    public void updatePropertySet(PropertySet propertySet,
+                                  Set<Principal> aclReadPrincipals) throws IndexException;
+    
     
     /**
      * Delete any <code>PropertySet</code> with the given URI. If there

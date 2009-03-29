@@ -77,9 +77,7 @@ public class UnmappableConsistencyError extends RequireOriginalDataConsistencyEr
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing unmappable consistency error at URI '" + getUri() + "'");
 
-        index.deletePropertySet(getUri());
-        
-        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
     
     public String toString() {

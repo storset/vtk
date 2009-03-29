@@ -72,9 +72,7 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
         LOG.info("Repairing invalid data for property set at URI '"
                 + getUri() + "'");
         
-        index.deletePropertySet(getUri());
-        
-        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
     
     public String toString() {

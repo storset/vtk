@@ -75,10 +75,7 @@ public class MultiplesInconsistency extends RequireOriginalDataConsistencyError 
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing multiples inconsistency for URI '" + getUri() 
                                                     + "' (" + multiples + " multiples)");
-
-        index.deletePropertySet(getUri());
-        
-        index.addPropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
+        index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
 
     public String toString() {

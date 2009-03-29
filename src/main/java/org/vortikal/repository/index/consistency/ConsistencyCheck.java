@@ -294,8 +294,6 @@ public class ConsistencyCheck {
      * 
      * XXX: does not work with current API. 
      * 
-     * 
-     * 
      * @param daoIterator
      * @param indexUriIterator
      * @throws IOException

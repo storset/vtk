@@ -98,6 +98,23 @@ public class PropertySetIndexImpl implements PropertySetIndex {
             throw new IndexException(io);
         }
     }
+    
+    public void updatePropertySet(PropertySet propertySet,
+                                  Set<Principal> aclReadPrincipals) throws IndexException {
+        
+        try {
+            Term uriTerm = new Term(FieldNameMapping.URI_FIELD_NAME, 
+                                        propertySet.getURI().toString());
+
+            IndexWriter writer = this.indexAccessor.getIndexWriter();
+            
+            writer.deleteDocuments(uriTerm);
+            
+            addPropertySet(propertySet, aclReadPrincipals);
+        } catch (IOException io) {
+            throw new IndexException(io);
+        }
+    }
 
 
     public void deletePropertySetTreeByUUID(String rootUuid) throws IndexException {

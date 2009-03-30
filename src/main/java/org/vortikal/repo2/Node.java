@@ -37,7 +37,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
-public class Node {
+public class Node implements Comparable<Node> {
 	private NodeID nodeID;
 	private NodeID parentID;
 	private Map<String, NodeID> childMap;
@@ -83,34 +83,19 @@ public class Node {
 	    return Collections.unmodifiableSet(this.reverseChildMap.keySet());
 	}
 	
-	public synchronized void addChild(String name, NodeID nodeID) {
-		if (this.childMap.containsKey(name)) {
-			throw new IllegalArgumentException("A child of name '" + name 
-					+ "' already exists in this node");
-		}
-		this.childMap.put(name, nodeID);
-		this.reverseChildMap.put(nodeID, name);
-	}
-	
-	public synchronized void removeChild(String name) {
-	    if (!this.childMap.containsKey(name)) {
-	        throw new IllegalArgumentException("No child of name '" 
-	                + name + "' extsis in this node");
-	    }
-	    NodeID removed = this.childMap.remove(name);
-	    this.reverseChildMap.remove(removed);
-	}
-	
 	public JSONObject getData() {
 		return this.data;
+	}
+	
+	public int compareTo(Node node) {
+	    return this.nodeID.toString().compareTo(node.nodeID.toString());
 	}
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder(this.getClass().getName());
 		sb.append("[id=").append(this.nodeID);
 		sb.append(", parent=").append(this.parentID);
-		sb.append(", children=").append(this.childMap);
-		sb.append(", data=").append(this.data);
+		sb.append("]");
 		return sb.toString();
 	}
 }

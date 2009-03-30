@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -84,6 +85,7 @@ public class Repo2 implements Repository, ApplicationContextAware {
     private int maxComments = 1000;
     private PeriodicThread periodicThread;
     private NodeManager nodeManager;
+    private NodeSyncManager sync;
 
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -93,6 +95,11 @@ public class Repo2 implements Repository, ApplicationContextAware {
         return this.id;
     }
 
+    @Required public void setNodeSyncManager(NodeSyncManager sync) {
+        this.sync = sync;
+    }
+    
+    
     public Resource retrieve(String token, Path uri, boolean forProcessing)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
             Exception {
@@ -127,20 +134,24 @@ public class Repo2 implements Repository, ApplicationContextAware {
                     + ": parent does not exist");
         }
         Node parentNode = parentNodePath.getNode();
-        if (parentNode.getChildNames().contains(uri.getName())) {
-            throw new ResourceOverwriteException(uri);
-        }
-        ResourceImpl parent = this.nodeManager.nodeToResource(parentNodePath, uri.getParent());
-        if (!parent.isCollection()) {
-            throw new IllegalOperationException("Cannot create resource " + uri
-                    + ": parent is not a collection");
-        }
 
-        this.authorizationManager.authorizeCreate(parent, principal);
-
-        ResourceImpl newResource = this.resourceEvaluator.create(principal, uri, collection);
-
+        NodeSyncToken lock = sync.lock(parentNode);
+        
         try {
+            parentNodePath = load(uri.getParent());
+            ResourceImpl parent = this.nodeManager.nodeToResource(parentNodePath, uri.getParent());
+            this.authorizationManager.authorizeCreate(parent, principal);
+
+            if (parentNode.getChildNames().contains(uri.getName())) {
+                throw new ResourceOverwriteException(uri);
+            }
+            if (!parent.isCollection()) {
+                throw new IllegalOperationException("Cannot create resource " + uri
+                        + ": parent is not a collection");
+            }
+
+            ResourceImpl newResource = this.resourceEvaluator.create(principal, uri, collection);
+
             Acl newAcl = (Acl) parent.getAcl().clone();
             newResource.setAcl(newAcl);
             newResource.setInheritedAcl(true);
@@ -153,29 +164,23 @@ public class Repo2 implements Repository, ApplicationContextAware {
             Node n = new Node(id, parentNode.getNodeID(), new HashMap<String, NodeID>(), nodeData);
             this.store.create(n);
             parent = this.resourceEvaluator.contentModification(parent, principal);
-            parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), parentNode
-                    .getChildMap(), this.nodeManager.resourceToNodeData(parent));
-            parentNode.addChild(uri.getName(), n.getNodeID());
+            Map<String, NodeID> newChildMap = new HashMap<String, NodeID>(parentNode.getChildMap());
+            newChildMap.put(uri.getName(), n.getNodeID());
+            parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), 
+                    newChildMap, this.nodeManager.resourceToNodeData(parent));
             this.store.update(parentNode);
             if (!collection) {
                 this.contentStore.create(id);
             }
-//            this.dao.store(newResource);
-//            this.contentStore.createResource(newResource.getURI(), collection);
-//            newResource = this.dao.load(uri);
-//            parent.addChildURI(uri);
-//            parent = this.resourceEvaluator.contentModification(parent, principal);
-//
-//            this.dao.store(parent);
-//
-//            newResource = (ResourceImpl) newResource.clone();
+//          this.context.publishEvent(new ResourceCreationEvent(this, newResource));
+            System.out.println(Thread.currentThread().getName() + "  created: " + uri);
+            return newResource;
         } catch (CloneNotSupportedException e) {
             throw new IOException("An internal error occurred: unable to " + "clone() resource: "
                     + uri);
+        } finally {
+            sync.unlock(lock);
         }
-
-//        this.context.publishEvent(new ResourceCreationEvent(this, newResource));
-        return newResource;
     }
 
     public void copy(String token, Path srcUri, Path destUri, Repository.Depth depth,
@@ -204,27 +209,34 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("destination is not a collection");
         }
 
-        ResourceImpl original = this.nodeManager.nodeToResource(srcNodes, srcUri);
-        ResourceImpl copy = original.createCopy(destUri);
-        
-        Principal principal = this.tokenManager.getPrincipal(token);
-        this.authorizationManager.authorizeCopy(original, copy, parent, principal, overwrite);
-        
-        copy = this.resourceEvaluator.nameChange(copy, principal);
+        NodeSyncToken lock = sync.lock(parentNodePath.getNode());
 
-        JSONObject nodeData = this.nodeManager.resourceToNodeData(copy);
-        String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
-        NodeID id = NodeID.valueOf(identifier);
-        Node parentNode = parentNodePath.getNode();
-        Node node = new Node(id, parentNode.getNodeID(), new HashMap<String, NodeID>(), nodeData);
-        this.store.create(node);
-        parentNode.addChild(destUri.getName(), node.getNodeID());
-        this.store.update(parentNode);
-        if (!copy.isCollection()) {
-            this.contentStore.create(id);
-            this.storeContent(token, destUri, this.getInputStream(token, srcUri, true));
+        try {
+            ResourceImpl original = this.nodeManager.nodeToResource(srcNodes, srcUri);
+            ResourceImpl copy = original.createCopy(destUri);
+
+            Principal principal = this.tokenManager.getPrincipal(token);
+            this.authorizationManager.authorizeCopy(original, copy, parent, principal, overwrite);
+
+            copy = this.resourceEvaluator.nameChange(copy, principal);
+
+            JSONObject nodeData = this.nodeManager.resourceToNodeData(copy);
+            String identifier = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+            NodeID id = NodeID.valueOf(identifier);
+            Node parentNode = parentNodePath.getNode();
+            Node node = new Node(id, parentNode.getNodeID(), new HashMap<String, NodeID>(), nodeData);
+            this.store.create(node);
+            Map<String, NodeID> newChildMap = new HashMap<String, NodeID>(parentNode.getChildMap());
+            newChildMap.put(destUri.getName(), node.getNodeID());
+            parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), newChildMap, parentNode.getData());
+            this.store.update(parentNode);
+            if (!copy.isCollection()) {
+                this.contentStore.create(id);
+                this.storeContent(token, destUri, this.getInputStream(token, srcUri, true));
+            }
+        } finally {
+            sync.unlock(lock);
         }
-
     }
 
     public void move(String token, Path srcUri, Path destUri, boolean overwrite) throws Exception {
@@ -250,29 +262,37 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
         // checking destParent
         NodePath destParentNodes = load(destUri.getParent());
-        if (destParentNodes == null) {
-            throw new IllegalOperationException("Invalid destination resource");
-        }
         Node destParentNode = destParentNodes.getNode();
-        ResourceImpl destParent = this.nodeManager.nodeToResource(destParentNodes, destUri.getParent());
-        if (!destParent.isCollection()) {
-            throw new IllegalOperationException("Invalid destination resource");
-        }
 
-        this.authorizationManager.authorizeMove(src, srcParent, destParent, principal, overwrite);
-
-        // Performing delete operation
-        if (destNodes != null) {
-            Node destNode = destNodes.getNode();
-            delete(destNode);
-        }
+        NodeSyncToken lock = sync.lock(srcNode, srcParentNode, destParentNode);
 
         try {
-            srcParentNode.removeChild(srcUri.getName());
+            if (destParentNodes == null) {
+                throw new IllegalOperationException("Invalid destination resource");
+            }
+            ResourceImpl destParent = this.nodeManager.nodeToResource(destParentNodes, destUri.getParent());
+            if (!destParent.isCollection()) {
+                throw new IllegalOperationException("Invalid destination resource");
+            }
+
+            this.authorizationManager.authorizeMove(src, srcParent, destParent, principal, overwrite);
+
+            // Performing delete operation
+            if (destNodes != null) {
+                Node destNode = destNodes.getNode();
+                delete(destNode);
+            }
+
+            Map<String, NodeID> srcParentChildMap = new HashMap<String, NodeID>(srcParentNode.getChildMap());
+            srcParentChildMap.remove(srcUri.getName());
+            srcParentNode = new Node(srcParentNode.getNodeID(), srcParentNode.getParentID(), srcParentChildMap, srcParentNode.getData());
             if (!srcParentNode.getNodeID().equals(destParentNode.getNodeID())) {
 
             }
-            destParentNode.addChild(destUri.getName(), srcNode.getNodeID());
+
+            Map<String, NodeID> destParentChildMap = new HashMap<String, NodeID>(destParentNode.getChildMap());
+            destParentChildMap.put(destUri.getName(), srcNode.getNodeID());
+            destParentNode = new Node(destParentNode.getNodeID(), destParentNode.getParentID(), destParentChildMap, destParentNode.getData());
             destParent = this.resourceEvaluator.contentModification(destParent, principal);
 
             JSONObject data = srcNode.getData();
@@ -291,6 +311,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
         } catch (CloneNotSupportedException e) {
             throw new IOException("clone() operation failed");
+        } finally {
+            sync.unlock(lock);
         }
     }
 
@@ -308,24 +330,27 @@ public class Repo2 implements Repository, ApplicationContextAware {
         }
 
         Node node = nodePath.getNode();
-
         Node parentNode = nodePath.getParentNode();
-        NodePath parentNodePath = nodePath.getParentNodePath();
-        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
-        ResourceImpl parentCollection = this.nodeManager.nodeToResource(parentNodePath, uri.getParent());
-        parentCollection = this.resourceEvaluator.contentModification(parentCollection, principal);
+        NodeSyncToken lock = sync.lock(node, parentNode);
+        try {
+            NodePath parentNodePath = nodePath.getParentNodePath();
+            ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
+            ResourceImpl parentCollection = this.nodeManager.nodeToResource(parentNodePath, uri.getParent());
+            parentCollection = this.resourceEvaluator.contentModification(parentCollection, principal);
 
-        this.authorizationManager.authorizeDelete(r, parentCollection, principal);
-
-        parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), parentNode
-                .getChildMap(), this.nodeManager.resourceToNodeData(parentCollection));
-        parentNode.removeChild(uri.getName());
-        this.store.update(parentNode);
-        this.delete(node);
-
-//        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, node.getNodeID(), r
-//                .isCollection());
-//        this.context.publishEvent(event);
+            this.authorizationManager.authorizeDelete(r, parentCollection, principal);
+            Map<String, NodeID> newChildMap = new HashMap<String, NodeID>(parentNode.getChildMap());
+            newChildMap.remove(uri.getName());
+            parentNode = new Node(parentNode.getNodeID(), parentNode.getParentID(), newChildMap, this.nodeManager.resourceToNodeData(parentCollection));
+            this.store.update(parentNode);
+            this.delete(node);
+            System.out.println(Thread.currentThread().getName() + "  deleted: " + uri);
+            //        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, node.getNodeID(), r
+            //                .isCollection());
+            //        this.context.publishEvent(event);
+        } finally {
+            sync.unlock(lock);
+        }
     }
 
     private void delete(Node node) throws Exception {
@@ -340,7 +365,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
         // data is stored in db. It's deleted with primary/foreign key constraints
         // Same goes for binary properties (and comments)
         // this.contentStore.delete(node.getNodeID());
-        
+
+        // XXX: Yes, but what about non-db stores? 
     }
 
     public Resource lock(String token, Path uri, String ownerInfo, Repository.Depth depth,
@@ -355,25 +381,30 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Node n = nodePath.getNode();
-        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
+        NodeSyncToken lock = sync.lock(n);
+        
+        try {
+            ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
 
-        if (lockToken != null) {
-            if (r.getLock() == null) {
-                throw new IllegalOperationException("Invalid lock refresh request: lock token '"
-                        + lockToken + "' does not exists on resource " + r.getURI());
+            if (lockToken != null) {
+                if (r.getLock() == null) {
+                    throw new IllegalOperationException("Invalid lock refresh request: lock token '"
+                            + lockToken + "' does not exists on resource " + r.getURI());
+                }
+                if (!r.getLock().getLockToken().equals(lockToken)) {
+                    throw new IllegalOperationException("Invalid lock refresh request: lock token '"
+                            + lockToken + "' does not match existing lock token on resource " + uri);
+                }
             }
-            if (!r.getLock().getLockToken().equals(lockToken)) {
-                throw new IllegalOperationException("Invalid lock refresh request: lock token '"
-                        + lockToken + "' does not match existing lock token on resource " + uri);
-            }
+
+            this.authorizationManager.authorizeWrite(r, principal);
+            
+            //        this.lockManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds,
+            //                (lockToken != null));
+            return r;
+        } finally {
+            sync.unlock(lock);
         }
-
-        this.authorizationManager.authorizeWrite(r, principal);
-
-//        this.lockManager.lockResource(r, principal, ownerInfo, depth, requestedTimeoutSeconds,
-//                (lockToken != null));
-
-        return r;
     }
 
     public void unlock(String token, Path uri, String lockToken) throws Exception {
@@ -398,25 +429,31 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Node n = nodePath.getNode();
-        ResourceImpl original = this.nodeManager.nodeToResource(nodePath, uri);
-        if (original == null) {
-            throw new ResourceNotFoundException(uri);
+
+        NodeSyncToken lock = sync.lock(n);
+        try {
+            ResourceImpl original = this.nodeManager.nodeToResource(nodePath, uri);
+            if (original == null) {
+                throw new ResourceNotFoundException(uri);
+            }
+
+            this.authorizationManager.authorizeWrite(original, principal);
+            ResourceImpl originalClone = (ResourceImpl) original.clone();
+
+            ResourceImpl newResource = this.resourceEvaluator.propertiesChange(original, principal,
+                    (ResourceImpl) resource);
+            n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(),
+                    this.nodeManager.resourceToNodeData(newResource));
+            this.store.update(n);
+
+            //        ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, 
+            //                originalClone);
+            //        this.context.publishEvent(event);
+
+            return newResource;
+        } finally {
+            sync.unlock(lock);
         }
-
-        this.authorizationManager.authorizeWrite(original, principal);
-        ResourceImpl originalClone = (ResourceImpl) original.clone();
-
-        ResourceImpl newResource = this.resourceEvaluator.propertiesChange(original, principal,
-                (ResourceImpl) resource);
-        n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(),
-                this.nodeManager.resourceToNodeData(newResource));
-        this.store.update(n);
-        
-//        ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, 
-//                originalClone);
-//        this.context.publishEvent(event);
-        
-        return newResource;
     }
 
     /**
@@ -431,34 +468,38 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Node n = nodePath.getNode();
-        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
-
-        if (r.isCollection()) {
-            throw new IllegalOperationException("resource is collection");
-        }
-
-        this.authorizationManager.authorizeWrite(r, principal);
-        File tempFile = null;
+        NodeSyncToken lock = sync.lock(n);
         try {
-            // Write to a temporary file to avoid locking:
-            tempFile = writeTempFile(r.getName(), byteStream);
+            ResourceImpl r = this.nodeManager.nodeToResource(nodePath, uri);
+
+            if (r.isCollection()) {
+                throw new IllegalOperationException("resource is collection");
+            }
+            this.authorizationManager.authorizeWrite(r, principal);
             Resource original = (ResourceImpl) r.clone();
-            ContentStream content = new ContentStream(new java.io.BufferedInputStream(
-                    new java.io.FileInputStream(tempFile)), tempFile.length());
-            this.contentStore.update(n.getNodeID(), content);
-            r = this.resourceEvaluator.contentModification(r, principal);
-            n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(), this.nodeManager.resourceToNodeData(r));
-            this.store.update(n);
-            this.storeBinaryProps(n, r);
+            File tempFile = null;
+            try {
+                // Write to a temporary file to avoid locking:
+                tempFile = writeTempFile(r.getName(), byteStream);
+                ContentStream content = new ContentStream(new java.io.BufferedInputStream(
+                        new java.io.FileInputStream(tempFile)), tempFile.length());
+                this.contentStore.update(n.getNodeID(), content);
+                r = this.resourceEvaluator.contentModification(r, principal);
+                n = new Node(n.getNodeID(), n.getParentID(), n.getChildMap(), this.nodeManager.resourceToNodeData(r));
+                this.store.update(n);
+                this.storeBinaryProps(n, r);
+            } finally {
+                if (tempFile != null) {
+                    tempFile.delete();
+                }
+            }
 
 //            ContentModificationEvent event = new ContentModificationEvent(this, (Resource) r
 //                    .clone(), original);
 //            this.context.publishEvent(event);
             return r;
         } finally {
-            if (tempFile != null) {
-                tempFile.delete();
-            }
+            sync.unlock(lock);
         }
     }
 
@@ -474,10 +515,12 @@ public class Repo2 implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(resource.getURI());
         }
         Node n = nodePath.getNode();
-        ResourceImpl r = this.nodeManager.nodeToResource(nodePath, resource.getURI());
-        this.authorizationManager.authorizeAll(r, principal);
 
+        NodeSyncToken lock = sync.lock(n);
+        
         try {
+            ResourceImpl r = this.nodeManager.nodeToResource(nodePath, resource.getURI());
+            this.authorizationManager.authorizeAll(r, principal);
             Resource original = (Resource) r.clone();
 
             if (original.isInheritedAcl() && resource.isInheritedAcl()) {
@@ -528,6 +571,8 @@ public class Repo2 implements Repository, ApplicationContextAware {
 
         } catch (CloneNotSupportedException e) {
             throw new IOException(e.getMessage());
+        } finally {
+            sync.unlock(lock);
         }
     }
 
@@ -654,14 +699,6 @@ public class Repo2 implements Repository, ApplicationContextAware {
         src.close();
         dest.close();
         return tempFile;
-    }
-
-    private List<Object> lock(List<Node> nodes) {
-//        Collections.sort(nodes);
-//        for (Node node : nodes) {
-//            lock(node);
-//        }
-        return null;
     }
 
     private NodePath load(Path uri) throws Exception {

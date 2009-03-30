@@ -19,8 +19,11 @@
     <property name="tempDir" value="${repository.tempDir}" />
     <property name="resourceTypeEvaluator" ref="repository.resourceTypeEvaluator" />
     <property name="nodeManager" ref="repo2.nodeManager" />
+    <property name="nodeSyncManager" ref="repo2.nodeSyncManager" />
   </bean>
   
+  <bean id="repo2.nodeSyncManager" class="org.vortikal.repo2.NullNodeSyncManager" />
+
   <bean id="repo2.nodeManager" class="org.vortikal.repo2.NodeManager">
     <property name="principalFactory" ref="principalFactory" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />

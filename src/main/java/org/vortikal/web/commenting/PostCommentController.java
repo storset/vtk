@@ -139,7 +139,7 @@ public class PostCommentController extends SimpleFormController {
         if (StringUtils.isBlank(parsedText)) {
             errors.rejectValue("text", "commenting.post.text.missing",
                     "You must type something in the comment field");
-        } else if (parsedText.length() > this.maxCommentLength) {
+        } else if (parsedText.getBytes("utf-8").length > this.maxCommentLength) {
             errors.rejectValue("text", "commenting.post.text.toolong", new Object[] {
                     parsedText.length(), this.maxCommentLength },
                     "Value too long: maximum length is " + this.maxCommentLength);

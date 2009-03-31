@@ -21,7 +21,8 @@
   </statement>
 
   <insert id="insertBinaryProperty" parameterClass="java.util.Map">
-    insert into binary_property values (#nodeID#, #propertyID#, #stream#, #type#)
+    insert into binary_property (node_id, property_id, content_type, content)
+    values (#nodeID#, #propertyID#, #stream#, #type#)
   </insert>
 
   <select id="retrieveBinaryProperty" parameterClass="java.util.Map" resultMap="BinaryContent">

@@ -125,26 +125,25 @@
 
 
      <#-- List resources: -->
-
-     <#if collection.resourceType = 'article-listing'>
-       <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
-     <#else>
-       <#list searchComponents as searchComponent>
-         <#if collection.resourceType = 'event-listing'>
-           <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true  />
-         <#else>
-           <@coll.displayResources collectionListing=searchComponent />
-         </#if>
-       </#list>
-     </#if>
-
-     <#-- Previous/next URLs: -->
-
-     <#if prevURL?exists>
-       <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-     </#if>
-     <#if nextURL?exists>
-       <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+     <#if searchComponents?has_content>
+       <#if collection.resourceType = 'article-listing'>
+         <@coll.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+       <#else>
+         <#list searchComponents as searchComponent>
+           <#if collection.resourceType = 'event-listing'>
+             <@coll.displayEvents collectionListing=searchComponent hideNumberOfComments=hideNumberOfComments displayMoreURLs=true  />
+           <#else>
+             <@coll.displayResources collectionListing=searchComponent />
+           </#if>
+         </#list>
+       </#if>
+       <#-- Previous/next URLs: -->
+       <#if prevURL?exists>
+         <a class="vrtx-previous" href="${prevURL?html}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
+       </#if>
+       <#if nextURL?exists>
+         <a class="vrtx-next" href="${nextURL?html}"><@vrtx.msg code="viewCollectionListing.next" /></a>
+       </#if>
      </#if>
 
     <#-- XXX: display first link with content type = atom: -->

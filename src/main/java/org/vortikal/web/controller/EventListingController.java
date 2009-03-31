@@ -57,13 +57,9 @@ public class EventListingController extends AbstractCollectionListingController 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
 
-    
-    
     protected void runSearch(HttpServletRequest request, Resource collection,
-    		Map<String, Object> model) throws Exception {
+    		Map<String, Object> model, int pageLimit) throws Exception {
 
-        int pageLimit = getPageLimit(collection);
-    	
     	int upcomingEventPage = getPage(request, UPCOMING_PAGE_PARAM);
         int prevEventPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
@@ -156,8 +152,7 @@ public class EventListingController extends AbstractCollectionListingController 
         
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
-
-        model.put("hideNumberOfComments",getHideNumberOfComments(collection));
+        model.put("hideNumberOfComments", getHideNumberOfComments(collection));
 
         cleanURL(nextURL);
         cleanURL(prevURL);

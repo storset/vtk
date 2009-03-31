@@ -156,5 +156,9 @@ public class ArticleListingSearcher {
     public void setFeaturedArticlesPropDef(PropertyTypeDefinition featuredArticlesPropDef) {
         this.featuredArticlesPropDef = featuredArticlesPropDef;
     }
+    
+    public PropertyTypeDefinition getFeaturedArticlesPropDef() {
+        return this.featuredArticlesPropDef;
+    }
 
 }

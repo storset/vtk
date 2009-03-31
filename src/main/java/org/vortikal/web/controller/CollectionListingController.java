@@ -47,11 +47,9 @@ public class CollectionListingController extends AbstractCollectionListingContro
     private List<SearchComponent> searchComponents;
 
     protected void runSearch(HttpServletRequest request, Resource collection,
-    		Map<String, Object> model) throws Exception {
+    		Map<String, Object> model, int pageLimit) throws Exception {
 
         int page = getPage(request, UPCOMING_PAGE_PARAM);
-
-        int pageLimit = getPageLimit(collection);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
         

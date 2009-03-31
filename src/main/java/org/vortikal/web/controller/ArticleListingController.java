@@ -47,10 +47,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
 	private ArticleListingSearcher searcher;
         	
     protected void runSearch(HttpServletRequest request, Resource collection,
-    		Map<String, Object> model) throws Exception {
-    	
-        int pageLimit = getPageLimit(collection);
-        
+    		Map<String, Object> model, int pageLimit) throws Exception {
+    	        
         int featuredArticlesPage = getPage(request, UPCOMING_PAGE_PARAM);
         int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
@@ -59,7 +57,10 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         URL nextURL = null;
         URL prevURL = null;
 
-        boolean atLeastOneFeaturedArticle = this.searcher.getFeaturedArticles(request, collection, 1, 1, 0).size() > 0;
+        boolean atLeastOneFeaturedArticle = false;
+        if (collection.getProperty(searcher.getFeaturedArticlesPropDef()) != null) {
+            atLeastOneFeaturedArticle = this.searcher.getFeaturedArticles(request, collection, 1, 1, 0).size() > 0;
+        }
 
         List<Listing> results = new ArrayList<Listing>();
         Listing featuredArticles = null;
@@ -148,7 +149,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         
         model.put("searchComponents", results);
         model.put("page", userDisplayPage);
-        model.put("hideNumberOfComments",getHideNumberOfComments(collection));
+        model.put("hideNumberOfComments", getHideNumberOfComments(collection));
         
         cleanURL(nextURL);
         cleanURL(prevURL);

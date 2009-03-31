@@ -103,8 +103,11 @@ public abstract class AbstractCollectionListingController implements Controller 
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
         model.put("subCollections", subCollections);
         
-        /* Run the actual search (done in subclasses) */
-        runSearch(request, collection, model);
+        int pageLimit = getPageLimit(collection);
+        if (pageLimit > 0) {
+            /* Run the actual search (done in subclasses) */
+            runSearch(request, collection, model, pageLimit);
+        }
         
         Set<Object> alt = new HashSet<Object>();
         for (String contentType: this.alternativeRepresentations.keySet()) {
@@ -132,7 +135,7 @@ public abstract class AbstractCollectionListingController implements Controller 
     
 	
 	protected abstract void runSearch(HttpServletRequest request, Resource collection,
-			Map<String, Object> model) throws Exception;
+			Map<String, Object> model, int pageLimit) throws Exception;
 	
 	
 	protected int getPageLimit(Resource collection) {

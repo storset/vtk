@@ -182,11 +182,6 @@
             <value>${themeBaseURL}/view-collectionlisting-print.css</value>
           </list>
         </entry>
-        <entry key="searchComponents">
-          <list>
-            <ref bean="articleListing.searchComponent" />
-          </list>
-        </entry>
       </map>
     </property>
   </bean>

@@ -8,11 +8,15 @@
     <property name="name" value="odf"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
-    
-  </bean>
-
-  <bean id="contentTypeMatchesODF"  class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesOdfText" />
+        <ref bean="contentTypeMatchesOdfPresentation" />
+        <ref bean="contentTypeMatchesOdfSpreadsheet" />
+        <ref bean="contentTypeMatchesOdfGraphics" />
+        <ref bean="contentTypeMatchesOdfDatabase" />
+      </list>
+    </property>
   </bean>
 
   <bean id="odfTextResourceTypeDefinition"

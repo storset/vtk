@@ -119,8 +119,8 @@ public class CommentsProvider implements ReferenceDataProvider {
 
         boolean commentsEnabled =
             resource.getAcl().getActions().contains(RepositoryAction.ADD_COMMENT);
-
         model.put("commentsEnabled", commentsEnabled);
+        model.put("repositoryReadOnly", this.repository.isReadOnly());
 
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();
 

@@ -110,11 +110,14 @@
   <div class="add-comment" id="comment-form">
     <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
 
-
     <#if !commentsEnabled>
       <p><@vrtx.msg code="commenting.disabled"
                     default="Commenting is disabled on this resource." /></p>
 
+    <#elseif repositoryReadOnly?exists && repositoryReadOnly>
+       <p><@vrtx.msg code="commenting.read.only"
+                    default="You cannot add comments because the system is currently in read only mode." /></p>
+      
     <#elseif !postCommentURL?exists && !principal?exists && loginURL?exists>
       <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
       <#assign defaultMsg>

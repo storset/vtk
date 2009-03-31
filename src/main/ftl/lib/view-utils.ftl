@@ -177,18 +177,18 @@
   <#if numberOfComments?has_content || isValidStartDate?string == "true" >	
   <div class="vrtx-number-of-comments-add-event-container">
   </#if>
-  <#if !hideNumberOfComments >
- 	 <#local locale = springMacroRequestContext.getLocale() />
-  	<@displayNumberOfComments resource locale />
+  <#if hideNumberOfComments?exists && !hideNumberOfComments >
+    <#local locale = springMacroRequestContext.getLocale() />
+    <@displayNumberOfComments resource locale />
   </#if>
   <#if isValidStartDate?string == "true">
-     <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
+    <span class="vrtx-add-event"><#-- XXX: remove hard-coded '?vrtx=ical' URL: -->
       <a class="vrtx-ical" href='${resource.URI}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")}"></a>
     </span>
-   </#if>
-   <#if numberOfComments?has_content || isValidStartDate?string == "true" >
-	</div>
-	</#if>
+  </#if>
+  <#if numberOfComments?has_content || isValidStartDate?string == "true" >
+    </div>
+  </#if>
 	
 </#macro>
 

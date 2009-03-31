@@ -120,16 +120,14 @@
               </div>
             </#if>
             
-            <#if !hideNumberOfComments >
-              	<#local numberOfComments = vrtx.prop(r, "numberOfComments") />
-              	 <#if numberOfComments?has_content >	
-              	<div class="vrtx-number-of-comments-add-event-container">
-              	</#if>
-          		   <@viewutils.displayNumberOfComments r locale />
-          		 <#if numberOfComments?has_content >	
-          		</div>
-          		</#if>
-          	  </#if>
+            <#if hideNumberOfComments?exists && !hideNumberOfComments >
+               <#local numberOfComments = vrtx.prop(r, "numberOfComments") />
+               <#if numberOfComments?has_content >	
+                 <div class="vrtx-number-of-comments-add-event-container">
+                   <@viewutils.displayNumberOfComments r locale />
+                 </div>
+               </#if>
+          	</#if>
             <#if intro?has_content && articles.displayPropDefs?seq_contains(intro.definition)>
               <div class="description introduction">${intro.value}</div>
             </#if>

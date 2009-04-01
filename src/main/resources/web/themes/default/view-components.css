@@ -11,6 +11,10 @@ ul.vrtx-vertical-menu {
   border-bottom: 1px solid #ccc; /*for IE */
 } 
 
+* html ul.vrtx-vertical-menu {
+  position: relative; /* for IE6 */
+}
+
 ul.vrtx-vertical-menu li {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;

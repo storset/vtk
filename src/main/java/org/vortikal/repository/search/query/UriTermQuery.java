@@ -33,9 +33,9 @@ package org.vortikal.repository.search.query;
 public class UriTermQuery implements UriQuery {
 
     private final String uri;
-    private final UriOperator operator;
+    private final TermOperator operator;
 
-    public UriTermQuery(String uri, UriOperator operator) {
+    public UriTermQuery(String uri, TermOperator operator) {
         this.uri = uri;
         this.operator = operator;
     }
@@ -44,7 +44,7 @@ public class UriTermQuery implements UriQuery {
         return this.uri;
     }
 
-    public UriOperator getOperator() {
+    public TermOperator getOperator() {
         return this.operator;
     }
 

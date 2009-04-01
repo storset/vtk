@@ -66,9 +66,6 @@ public class ArticleListingAsFeedController extends AtomFeedController {
         
         Listing articles = this.searcher.getArticles(request, collection, 1, 25, 0);
         if (articles.size() > 0) {
-        	if (featuredArticles.size() > 0) {
-        		this.searcher.removeFeaturedArticlesFromDefault(featuredArticles.getFiles(), articles.getFiles());
-        	}
         	results.add(articles);
         }
 

@@ -91,10 +91,6 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             if (upcomingOffset > pageLimit) upcomingOffset = 0;
             Listing defaultArticles = this.searcher.getArticles(request, collection, defaultArticlesPage, pageLimit, upcomingOffset);
             if (defaultArticles.size() > 0) {
-            	if (atLeastOneFeaturedArticle) {
-            		Listing fa = this.searcher.getFeaturedArticles(request, collection, 1, pageLimit, 0);
-            		this.searcher.removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
-            	}
             	results.add(defaultArticles);
             }
             
@@ -126,10 +122,6 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             int upcomingOffset = pageLimit - featuredArticles.size();
             Listing defaultArticles = this.searcher.getArticles(request, collection, 1, upcomingOffset, 0);
             if (defaultArticles.size() > 0) {
-            	if (atLeastOneFeaturedArticle) {
-            		Listing fa = this.searcher.getFeaturedArticles(request, collection, 1, pageLimit, 0);
-            		this.searcher.removeFeaturedArticlesFromDefault(fa.getFiles(), defaultArticles.getFiles());
-            	}
             	results.add(defaultArticles);
             }
             

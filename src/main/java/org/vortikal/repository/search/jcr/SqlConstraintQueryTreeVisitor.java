@@ -51,7 +51,6 @@ import org.vortikal.repository.search.query.QueryTreeVisitor;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.repository.store.jcr.JcrDaoConstants;
@@ -355,11 +354,11 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         StringBuilder buffer = checkDataParam(data);
         
-        UriOperator op = utQuery.getOperator();
+        TermOperator op = utQuery.getOperator();
         buffer.append(" ");
-        if (op == UriOperator.NE){
+        if (TermOperator.NE.equals(op)){
             buffer.append(SqlConstraintOperator.UNARY_NOT).append(" (");
-        } else if (op != UriOperator.EQ){
+        } else if (TermOperator.EQ.equals(op)){
             throw new UnsupportedQueryException("Unsupported UriOperator: " + op);
         }
         
@@ -367,7 +366,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         buffer.append("jcr:path ").append(SqlConstraintOperator.EQUAL).append(" ");
         buffer.append("'").append(jcrPath).append("'");
         
-        if (op == UriOperator.NE) {
+        if (TermOperator.NE.equals(op)) {
             buffer.append(")");
         }
         

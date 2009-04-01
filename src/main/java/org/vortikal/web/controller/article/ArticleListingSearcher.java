@@ -56,16 +56,16 @@ public class ArticleListingSearcher {
     private PropertyTypeDefinition featuredArticlesPropDef;
 
     public Listing getDefaultArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int upcomingOffset) throws Exception {
-        return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+            int pageLimit, int offset) throws Exception {
+        return this.defaultSearch.execute(request, collection, page, pageLimit, offset);
     }
 
 
     public Listing getFeaturedArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int upcomingOffset) throws Exception {
+            int pageLimit, int offset) throws Exception {
 
         Listing result = this.featuredArticlesSearch.execute(request, collection, page, pageLimit,
-                upcomingOffset);
+                offset);
         if (result.size() > 1) {
             Property featuredArticlesProp = collection.getProperty(featuredArticlesPropDef);
             sortFeaturedArticles(result, featuredArticlesProp);
@@ -76,38 +76,25 @@ public class ArticleListingSearcher {
 
 
     public Listing getSubfoldersArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int upcomingOffset) throws Exception {
-        return this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+            int pageLimit, int offset) throws Exception {
+        return this.subfoldersSearch.execute(request, collection, page, pageLimit, offset);
     }
 
 
     public Listing getArticles(HttpServletRequest request, Resource collection, int page,
-            int pageLimit, int upcomingOffset) throws Exception {
+            int pageLimit, int offset) throws Exception {
 
         Property recursiveListing = collection.getProperty(recursiveListingPropDef);
         Property subfolders = collection.getProperty(subfolderPropDef);
         if ((recursiveListing != null && recursiveListing.getBooleanValue() == false)
                 || (subfolders == null || subfolders.getValues().length == 0)) {
-            return this.defaultSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+            return this.defaultSearch.execute(request, collection, page, pageLimit, offset);
         }
 
-        return this.subfoldersSearch.execute(request, collection, page, pageLimit, upcomingOffset);
+        return this.subfoldersSearch.execute(request, collection, page, pageLimit, offset);
     }
 
 
-    public void removeFeaturedArticlesFromDefault(List<PropertySet> featuredArticles,
-            List<PropertySet> defaultArticles) {
-        List<PropertySet> duplicateArticles = new ArrayList<PropertySet>();
-        for (PropertySet featuredArticle : featuredArticles) {
-            for (PropertySet defaultArticle : defaultArticles) {
-                if (defaultArticle.getURI().equals(featuredArticle.getURI())) {
-                    duplicateArticles.add(defaultArticle);
-                }
-            }
-        }
-        defaultArticles.removeAll(duplicateArticles);
-    }
-    
     // Sort the featured articles listing according to the propdef
     private void sortFeaturedArticles(Listing result, Property featuredArticlesProp) {
         Value[] featuredArticleURIs = featuredArticlesProp.getValues();
@@ -122,7 +109,6 @@ public class ArticleListingSearcher {
         }
         result.setFiles(sortedFiles);
     }
-
 
 
     @Required

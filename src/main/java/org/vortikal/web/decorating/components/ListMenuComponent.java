@@ -59,7 +59,6 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
@@ -271,7 +270,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         if (menuRequest.isParentIncluded()) {
             OrQuery or = new OrQuery();
             or.add(query);
-            or.add(new UriTermQuery(uri.toString(), UriOperator.EQ));
+            or.add(new UriTermQuery(uri.toString(), TermOperator.EQ));
             return or;
         }
         return query;
@@ -301,7 +300,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         }
         name = name.trim();
         String childURI = URIUtil.makeAbsoluteURI(name, uri.toString());
-        return new UriTermQuery(childURI, UriOperator.EQ);
+        return new UriTermQuery(childURI, TermOperator.EQ);
     }
 
 

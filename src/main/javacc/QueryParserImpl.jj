@@ -27,7 +27,6 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 
@@ -284,18 +283,20 @@ Query UriPrefixQuery() :
 
 Query UriTermQuery() : 
 {
-    Token t, eq = null, ne = null, in = null;
-    UriOperator o;
+    Token t, eq = null, ne = null, in = null, ni = null;
+    TermOperator o;
 }
 {
-    <URI> (eq=<EQ> | ne=<NE> | in=<IN>) t=<VALUE>
+    <URI> (eq=<EQ> | ne=<NE> | in=<IN> | ni=<NI>) t=<VALUE>
         {  
             if (eq != null) 
-                o = UriOperator.EQ;
+                o = TermOperator.EQ;
             else if (ne != null) 
-                o = UriOperator.NE;
+                o = TermOperator.NE;
+            else if (ni != null) 
+                o = TermOperator.NI;
             else 
-                o = UriOperator.IN;
+                o = TermOperator.IN;
                 
             String value = unescape(t.image);
             return new UriTermQuery(value, o);

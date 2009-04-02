@@ -52,7 +52,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         int featuredArticlesPage = getPage(request, UPCOMING_PAGE_PARAM);
         int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
-        int userDisplayPage = defaultArticlesPage;
+        int userDisplayPage = featuredArticlesPage;
 
         URL nextURL = null;
         URL prevURL = null;
@@ -81,6 +81,9 @@ public class ArticleListingController extends AbstractCollectionListingControlle
                 nextURL.removeParameter(PREVIOUS_PAGE_PARAM);
                 nextURL.removeParameter(PREV_BASE_OFFSET_PARAM);
                 nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage + 1));
+            } else if (featuredArticles.size() == pageLimit) {
+                nextURL = URL.create(request);
+                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(featuredArticlesPage));
             }
         }
 

@@ -90,6 +90,9 @@ public class EventListingController extends AbstractCollectionListingController 
                 nextURL.removeParameter(PREVIOUS_PAGE_PARAM);
                 nextURL.removeParameter(PREV_BASE_OFFSET_PARAM);
                 nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage + 1));
+            } else if (upcoming.size() == pageLimit) {
+                nextURL = URL.create(request);
+                nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(upcomingEventPage));
             }
         }
 

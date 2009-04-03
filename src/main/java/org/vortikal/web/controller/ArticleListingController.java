@@ -53,7 +53,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         int defaultArticlesPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
         int userDisplayPage = featuredArticlesPage;
-
+        
         URL nextURL = null;
         URL prevURL = null;
 
@@ -70,16 +70,12 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             if (featuredArticles.size() > 0) {
             	results.add(featuredArticles);
                 if (featuredArticlesPage > 1) {
-                    prevURL = URL.create(request);
-                    prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                    prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                    prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                     prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage - 1));
                 }
             }
             if (featuredArticles.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                nextURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                nextURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                 nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage + 1));
             } else if (featuredArticles.size() == pageLimit) {
                 nextURL = URL.create(request);
@@ -103,13 +99,11 @@ public class ArticleListingController extends AbstractCollectionListingControlle
                 prevURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage - 1));
 
             } else if (defaultArticlesPage == 1 && atLeastOneFeaturedArticle) {
-                prevURL = URL.create(request);
-                prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
             }
 
             if (defaultArticles.hasMoreResults()) {
-                nextURL = URL.create(request);
+                nextURL = createURL(request);
                 nextURL.setParameter(PREV_BASE_OFFSET_PARAM, String.valueOf(upcomingOffset));
                 nextURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(defaultArticlesPage + 1));
             }
@@ -129,9 +123,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
             }
             
             if (featuredArticlesPage > 1) {
-                prevURL = URL.create(request);
-                prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                 prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(featuredArticlesPage - 1));
             }
             
@@ -148,13 +140,20 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         
         cleanURL(nextURL);
         cleanURL(prevURL);
+        
+        if (nextURL != null) {
+            nextURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage + 1));
+        }
+        if (prevURL != null && userDisplayPage > 2) {
+            prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage -1));
+        }
 
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);
     	
     }
-	
-	@Required
+
+    @Required
 	public void setSearcher(ArticleListingSearcher searcher) {
 		this.searcher = searcher;
 	}

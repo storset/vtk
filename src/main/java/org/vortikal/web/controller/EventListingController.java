@@ -64,7 +64,7 @@ public class EventListingController extends AbstractCollectionListingController 
         int prevEventPage = getPage(request, PREVIOUS_PAGE_PARAM);
 
         int userDisplayPage = upcomingEventPage;
-
+        
         URL nextURL = null;
         URL prevURL = null;
 
@@ -79,16 +79,12 @@ public class EventListingController extends AbstractCollectionListingController 
             if (upcoming.size() > 0) {
             	results.add(upcoming);
                 if (upcomingEventPage > 1) {
-                    prevURL = URL.create(request);
-                    prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                    prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                    prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                     prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage - 1));
                 }
             }
             if (upcoming.hasMoreResults()) {
-                nextURL = URL.create(request);
-                nextURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                nextURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                nextURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                 nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage + 1));
             } else if (upcoming.size() == pageLimit) {
                 nextURL = URL.create(request);
@@ -113,9 +109,7 @@ public class EventListingController extends AbstractCollectionListingController 
                 prevURL.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(prevEventPage - 1));
 
             } else if (prevEventPage == 1 && atLeastOneUpcoming) {
-                prevURL = URL.create(request);
-                prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
             }
 
             if (previous.hasMoreResults()) {
@@ -140,9 +134,7 @@ public class EventListingController extends AbstractCollectionListingController 
             }
             
             if (upcomingEventPage > 1) {
-                prevURL = URL.create(request);
-                prevURL.removeParameter(PREVIOUS_PAGE_PARAM);
-                prevURL.removeParameter(PREV_BASE_OFFSET_PARAM);
+                prevURL = createURL(request, PREVIOUS_PAGE_PARAM, PREV_BASE_OFFSET_PARAM);
                 prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(upcomingEventPage - 1));
             }
             
@@ -159,6 +151,13 @@ public class EventListingController extends AbstractCollectionListingController 
 
         cleanURL(nextURL);
         cleanURL(prevURL);
+        
+        if (nextURL != null) {
+            nextURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage + 1));
+        }
+        if (prevURL != null && userDisplayPage > 2) {
+            prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(userDisplayPage -1));
+        }
 
         model.put("nextURL", nextURL);
         model.put("prevURL", prevURL);

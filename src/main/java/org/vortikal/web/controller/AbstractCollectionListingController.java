@@ -60,30 +60,32 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class AbstractCollectionListingController implements Controller {
-	
+
     protected Repository repository;
-    protected ResourceWrapperManager resourceManager;    
+    protected ResourceWrapperManager resourceManager;
     protected PropertyTypeDefinition hiddenPropDef;
     protected int defaultPageLimit = 20;
     protected PropertyTypeDefinition pageLimitPropDef;
     protected PropertyTypeDefinition hideNumberOfComments;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
-    
+
     // A list of properties used when sorting the list of collections
     // @see ResourcePropertyComparator
     protected List<PropertyTypeDefinition> sortPropDefs;
     protected Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs;
-    
+
     protected static final String UPCOMING_PAGE_PARAM = "page";
     protected static final String PREVIOUS_PAGE_PARAM = "p-page";
     protected static final String PREV_BASE_OFFSET_PARAM = "p-offset";
-    
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		
+
+    public static final String USER_DISPLAY_PAGE = "u-page";
+
+    public ModelAndView handleRequest(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
         Path uri = RequestContext.getRequestContext().getResourceURI();
-        SecurityContext securityContext = SecurityContext.getSecurityContext(); 
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
         Resource collection = this.repository.retrieve(token, uri, true);
@@ -96,65 +98,74 @@ public abstract class AbstractCollectionListingController implements Controller 
             }
         }
 
-        Locale locale = new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-        Collections.sort(subCollections, new ResourcePropertyComparator(this.sortPropDefs, this.overridingSortPropDefs, false, locale));
-        
+        Locale locale = new org.springframework.web.servlet.support.RequestContext(
+                request).getLocale();
+        Collections.sort(subCollections, new ResourcePropertyComparator(
+                this.sortPropDefs, this.overridingSortPropDefs, false, locale));
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
         model.put("subCollections", subCollections);
-        
+
         int pageLimit = getPageLimit(collection);
         if (pageLimit > 0) {
             /* Run the actual search (done in subclasses) */
             runSearch(request, collection, model, pageLimit);
         }
-        
+
         Set<Object> alt = new HashSet<Object>();
-        for (String contentType: this.alternativeRepresentations.keySet()) {
+        for (String contentType : this.alternativeRepresentations.keySet()) {
             try {
                 Map<String, Object> m = new HashMap<String, Object>();
                 Service service = this.alternativeRepresentations.get(contentType);
                 URL url = service.constructURL(collection, principal);
                 String title = service.getName();
-                org.springframework.web.servlet.support.RequestContext rc = 
-                new org.springframework.web.servlet.support.RequestContext(request);
-                title = rc.getMessage(service.getName(), new Object[]{collection.getTitle()}, service.getName());
-                
+                org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
+                        request);
+                title = rc.getMessage(service.getName(), new Object[] { collection
+                        .getTitle() }, service.getName());
+
                 m.put("title", title);
                 m.put("url", url);
                 m.put("contentType", contentType);
-  
-                
+
                 alt.add(m);
-            } catch (Throwable t) { }
+            } catch (Throwable t) {
+            }
         }
         model.put("alternativeRepresentations", alt);
-        
-		return new ModelAndView(this.viewName, model);
-	}
-    
-	
-	protected abstract void runSearch(HttpServletRequest request, Resource collection,
-			Map<String, Object> model, int pageLimit) throws Exception;
-	
-	
-	protected int getPageLimit(Resource collection) {
+
+        return new ModelAndView(this.viewName, model);
+    }
+
+    protected URL createURL(HttpServletRequest request, String... removeableParams) {
+        URL url = URL.create(request);
+        for (String removableParam : removeableParams) {
+            url.removeParameter(removableParam);
+        }
+        return url;
+    }
+
+    protected abstract void runSearch(HttpServletRequest request, Resource collection,
+            Map<String, Object> model, int pageLimit) throws Exception;
+
+    protected int getPageLimit(Resource collection) {
         int pageLimit = this.defaultPageLimit;
         Property pageLimitProp = collection.getProperty(this.pageLimitPropDef);
         if (pageLimitProp != null) {
             pageLimit = pageLimitProp.getIntValue();
         }
         return pageLimit;
-	}
-	
-	protected boolean getHideNumberOfComments(Resource collection) {
-		Property p = collection.getProperty(this.hideNumberOfComments);
-		if(p == null){
-			return false;
-		}
-		return p.getBooleanValue();
-	}
-	
+    }
+
+    protected boolean getHideNumberOfComments(Resource collection) {
+        Property p = collection.getProperty(this.hideNumberOfComments);
+        if (p == null) {
+            return false;
+        }
+        return p.getBooleanValue();
+    }
+
     protected int getPage(HttpServletRequest request, String parameter) {
         int page = 0;
         String pageParam = request.getParameter(parameter);
@@ -164,7 +175,8 @@ public abstract class AbstractCollectionListingController implements Controller 
                 if (page < 1) {
                     page = 1;
                 }
-            } catch (Throwable t) { }
+            } catch (Throwable t) {
+            }
         }
 
         if (page == 0) {
@@ -172,15 +184,16 @@ public abstract class AbstractCollectionListingController implements Controller 
         }
         return page;
     }
-    
-    protected int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
+
+    protected int getIntParameter(HttpServletRequest request, String name,
+            int defaultValue) {
         String param = request.getParameter(name);
         if (param == null) {
             return defaultValue;
         }
         try {
             return Integer.parseInt(param);
-        } catch (Throwable t) { 
+        } catch (Throwable t) {
             return defaultValue;
         }
     }
@@ -196,9 +209,10 @@ public abstract class AbstractCollectionListingController implements Controller 
             if ("0".equals(param)) {
                 url.removeParameter(PREV_BASE_OFFSET_PARAM);
             }
+            url.removeParameter(USER_DISPLAY_PAGE);
         }
     }
-	
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -210,16 +224,17 @@ public abstract class AbstractCollectionListingController implements Controller 
     }
 
     @Required
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) { 
+    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
         this.hiddenPropDef = hiddenPropDef;
     }
-    
-    @Required 
+
+    @Required
     public void setSortPropDefs(List<PropertyTypeDefinition> sortPropDefs) {
         this.sortPropDefs = sortPropDefs;
     }
-    
-    public void setOverridingSortPropDefs(Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs) {
+
+    public void setOverridingSortPropDefs(
+            Map<PropertyTypeDefinition, List<PropertyTypeDefinition>> overridingSortPropDefs) {
         this.overridingSortPropDefs = overridingSortPropDefs;
     }
 
@@ -238,12 +253,13 @@ public abstract class AbstractCollectionListingController implements Controller 
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-    
-    public void setAlternativeRepresentations(Map<String, Service> alternativeRepresentations) {
+
+    public void setAlternativeRepresentations(
+            Map<String, Service> alternativeRepresentations) {
         this.alternativeRepresentations = alternativeRepresentations;
     }
 
-	public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
-		this.hideNumberOfComments = hideNumberOfComments;
-	}
+    public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
+        this.hideNumberOfComments = hideNumberOfComments;
+    }
 }

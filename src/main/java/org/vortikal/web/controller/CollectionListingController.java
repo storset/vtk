@@ -53,6 +53,9 @@ public class CollectionListingController extends AbstractCollectionListingContro
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
         
+        URL nextURL = null;
+        URL prevURL = null;
+        
         List<Listing> results = new ArrayList<Listing>();
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
@@ -84,20 +87,20 @@ public class CollectionListingController extends AbstractCollectionListingContro
         model.put("searchComponents", results);
         model.put("page", page);
 
-        URL nextURL = null;
-        URL prevURL = null;
         if (results.size() > 0) {
             Listing last = results.get(results.size() - 1);
             if (last.hasMoreResults()) {
                 nextURL = URL.create(request);
                 nextURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page + 1));
+                nextURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(page + 1));
             }
             if (page > 1) {
                 prevURL = URL.create(request);
-                if (page == 1) {
-                    prevURL.removeParameter(UPCOMING_PAGE_PARAM);
+                prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page - 1));
+                if (page > 2) {
+                    prevURL.setParameter(USER_DISPLAY_PAGE, String.valueOf(page - 1));
                 } else {
-                    prevURL.setParameter(UPCOMING_PAGE_PARAM, String.valueOf(page - 1));
+                    prevURL.removeParameter(USER_DISPLAY_PAGE);
                 }
             }
         }

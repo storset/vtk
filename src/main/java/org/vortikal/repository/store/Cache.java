@@ -344,7 +344,8 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
     /**
-     * Explicity purge a resource from cache by URI. Used by external cache control code.
+     * Explicity purge a resource from cache by URI.
+     * Used by external cache control code.
      * 
      * @param uri
      */
@@ -360,7 +361,9 @@ public class Cache implements DataAccessor, InitializingBean {
     }
     
     /**
-     * Eplicitly pruge a list of resources from cache by URI. Used by external cache control code.
+     * Eplicitly purge a list of resources from cache by URI.
+     * Used by external cache control code.
+     * 
      * @param uris
      */
     public void purgeFromCache(List<Path> uris) {

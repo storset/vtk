@@ -336,6 +336,9 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
 
     /**
      * Temp. way of getting a "clean" resource clone
+     * XXX: Should be renamed to something other than "cloneXyz", like
+     *      createCopyWithoutProperties. Clone implies identical, as defined by equals(), and
+     *      a "clone" without props is not identical. 
      */
     public ResourceImpl cloneWithoutProperties() 
         throws CloneNotSupportedException {

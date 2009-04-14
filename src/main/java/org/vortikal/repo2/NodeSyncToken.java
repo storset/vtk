@@ -32,4 +32,20 @@ package org.vortikal.repo2;
 
 public interface NodeSyncToken {
 
+    /**
+     * Aquire a token to use for locking a node
+     */
+    public void aquire();
+
+    /**
+     * Relase a lock held by a token on a node
+     */
+    public void release();
+
+    /**
+     * 
+     * @return The number of nodes currently held by this token
+     */
+    public int getCount();
+
 }

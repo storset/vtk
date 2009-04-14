@@ -30,14 +30,78 @@
  */
 package org.vortikal.repo2;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class NullNodeSyncManager implements NodeSyncManager {
 
+    private Map<NodeID, NodeSyncToken> tokenList = new ConcurrentHashMap<NodeID, NodeSyncToken>();
+
     public NodeSyncToken lock(Node... nodes) {
-        return new NodeSyncToken() {
-        };
+        NodeSyncToken token = null;
+        for (Node node : nodes) {
+            // Get a token for the node
+            token = getToken(node.getNodeID());
+            // Attempt to aquire a lock
+            token.aquire();            
+        }
+        return token;
     }
 
     public void unlock(NodeSyncToken token) {
+        token.release();
+        if (token.getCount() == 0) {
+            disposeToken(token);
+        }
+    }
+
+    private synchronized NodeSyncToken getToken(NodeID nodeID) {
+        if (tokenList.containsKey(nodeID)) {
+            return tokenList.get(nodeID);
+        }
+        NodeSyncToken token = new NullNodeSyncToken();
+        this.tokenList.put(nodeID, token);
+        return token;
+    }
+
+    private synchronized void disposeToken(NodeSyncToken token) {
+        tokenList.remove(token);
+    }
+
+    private class NullNodeSyncToken implements NodeSyncToken {
+
+        // Number of nodes held by this token
+        private int count;
+
+        public NullNodeSyncToken() {
+            // NodeID ?
+            // Thread ?
+        }
+
+        public synchronized void aquire() {
+            // XXX IMPLEMENT!!!
+            if (true) {
+                // We've aquired a lock
+                this.count++;
+            } else {
+                // If we can't get a lock, wait
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+
+        public synchronized void release() {
+            // Release the lock
+            this.count--;
+            notifyAll();
+        }
+
+        public synchronized int getCount() {
+            return this.count;
+        }
+
     }
 
 }

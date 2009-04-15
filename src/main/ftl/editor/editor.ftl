@@ -34,10 +34,7 @@
     <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
     
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
-
-    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/jquery/jquery-1.2.6.js"></script>
-    
+    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>    
     
     <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
 
@@ -416,9 +413,9 @@
       <#-- hack for setting collection titles: -->
       <#elseif (type = 'HTML' && name='userTitle') || (type = 'STRING' && name='navigationTitle')
         && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
-        
+  
         <#if name == 'navigationTitle'>
-           <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">____</a>
+               <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">____</a>
         </#if>
 
         <#if value = '' && name='userTitle'>
@@ -549,6 +546,7 @@
         </#if>
 
         <#local uniqueName = 'cal_' + propDef_index />
+        
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
             value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
         

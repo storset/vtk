@@ -102,7 +102,7 @@ public class TextUtils {
      * @param stringDelimiter
      *            the splitter for the string (examples: "," "." "-" )
      * 
-     * @return the lowercase but capitalized string without duplicates
+     * @return the capitalized string without duplicates
      */
     public static String removeDuplicatesIgnoreCaseCapitalized(String string, String stringDelimiter) {
         return removeDuplicatesIgnoreCase(string, stringDelimiter, false, false, true);
@@ -117,7 +117,7 @@ public class TextUtils {
      * @param stringDelimiter
      *            the splitter for the string (examples: "," "." "-" )
      * 
-     * @return the lowercase string without duplicates
+     * @return the string without duplicates
      */
     public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter) {
         return removeDuplicatesIgnoreCase(string, stringDelimiter, false, false, false);
@@ -138,19 +138,19 @@ public class TextUtils {
      * @param capitalizeWords
      *            capitalize words between delimiter
      * 
-     * @return the lowercase string without duplicates
+     * @return the string without duplicates
      */
     public static String removeDuplicatesIgnoreCase(String string, String stringDelimiter, boolean removeSpaces,
             boolean removeDelimiter, boolean capitalizeWords) {
 
-        StringTokenizer tokens = new StringTokenizer(string.toLowerCase(), stringDelimiter, false);
+        StringTokenizer tokens = new StringTokenizer(string, stringDelimiter, false);
         Set<String> set = new HashSet<String>(tokens.countTokens() + 10);
 
         int count = 0;
         StringBuilder noDupes = new StringBuilder();
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken().trim();
-            if (set.add(token)) {
+            if (set.add(token.toLowerCase())) {
                 if (count++ > 0) {
                     if (!removeDelimiter) {
                         noDupes.append(stringDelimiter);

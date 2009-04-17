@@ -34,7 +34,8 @@
     <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
     
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>    
+    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
+    <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/js/tooltip.js"></script>  
     
     <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
 
@@ -58,46 +59,6 @@
          }
         </style>
     <![endif]-->
-    
-    <#-- Place title as jQuery tooltip on classes unobtrusive. -->
-    <#-- placed in external file? -->
-    <script  language="Javascript" type="text/javascript">
-    ShowTooltip = function(e){
-      var text = $(this).next('.show-tooltip-text');
-      if (text.attr('class') != 'show-tooltip-text')
-        return false;
-
-      text.fadeIn()
-        .css('top', -50)
-        .css('left', 130);
-
-      return false;
-    }
-   
-    HideTooltip = function(e){
-      var text = $(this).next('.show-tooltip-text');
-      if (text.attr('class') != 'show-tooltip-text')
-        return false;
-
-      text.fadeOut();
-    }
-
-    SetupTooltips = function(){
-     $('.show-tooltip')
-        .each(function(){
-            $(this)
-                .after($('<span/>')
-                    .attr('class', 'show-tooltip-text')
-                    .html($(this).attr('title')))
-                .attr('title', '');
-        })
-        .hover(ShowTooltip, HideTooltip);
-    }
-
-   $(document).ready(function() {
-      SetupTooltips();
-    });
-    </script>
     
   </head>
   <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}');">

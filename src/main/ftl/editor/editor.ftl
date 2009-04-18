@@ -35,7 +35,7 @@
     
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
-    <script language="Javascript" type="text/javascript" src="/vrtx/__vrtx/static-resources/js/tooltip.js"></script>  
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL}/tooltip.js"></script>  
     
     <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
 
@@ -462,30 +462,19 @@
                      }
              } //-->
         </script>
-        <div id="input-and-button-container">
-        <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" /> 
-        <script language="Javascript" type="text/javascript"><!--
-        document.write('<button type="button" onclick="browseServer(\'resource.${name}\');"><@vrtx.msg code="editor.browseImages"/></button>');
-        document.write('</div>');
-        document.write('<div id="resource.${name}.preview">');
-        
-        var withoutImage = 390;
-        var withImage = 530;
-        
-          <#if value != ''>
-            document.write('<img src="${value}"  alt="preview">');
-            
-            $('div.picture').css ({ width : withImage + 'px'}); 
-         <#else>
-            document.write('<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">');
- 			
-            $('div.picture').css ({ width : withoutImage + 'px'}); 
-          </#if>
-          
-        document.write('</div>');  
-        
-        // -->
-        </script>
+        <div id="picture-and-caption">
+          <div id="input-and-button-container">
+            <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+            <button type="button" onclick="browseServer('resource.${name}');"><@vrtx.msg code="editor.browseImages"/></button>
+          </div>
+          <div id="resource.${name}.preview">
+            <#if value != ''>
+              <img src="${value}" alt="preview" />
+            <#else>
+              <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
+            </#if>
+          </div>
+        </div>
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />

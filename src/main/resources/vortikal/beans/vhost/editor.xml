@@ -133,6 +133,7 @@
     <property name="views">
       <map>
         <entry key="editor.editView" value-ref="editor.editView" />
+        <entry key="editor.collectionEditView" value-ref="editor.collectionEditView" />
       </map>
     </property>
   </bean>
@@ -195,11 +196,16 @@
               <entry key="editorHelpURL" value="${editor.helpURL}" />
               <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
             </map>
           </property>
         </bean>
       </list>
     </property>
+  </bean>
+  
+  <bean id="editor.collectionEditView" parent="editor.editView">
+    <!-- property name="url" value="editor/collection-editor.ftl" / -->
   </bean>
 
   <bean id="editor.browseView" parent="freemarkerView">
@@ -233,10 +239,10 @@
 
   <bean id="editor.fckEditorAreaCSSURL" class="java.util.ArrayList">
     <constructor-arg>
-    <list>
-              <value>${themeBaseURL}/editor-container.css</value>
-              <value>${themeBaseURL}/fck_editorarea.css</value>
-        </list>
+      <list>
+        <value>${themeBaseURL}/editor-container.css</value>
+        <value>${themeBaseURL}/fck_editorarea.css</value>
+      </list>
     </constructor-arg>
   </bean>
 

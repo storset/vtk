@@ -401,10 +401,10 @@
           <span class="input-description">(${description})</span>
         </#if>
 
-      <#elseif name = 'media'><#-- XXX -->
+      <#elseif name = 'media'>
         <input type="text" id="resource.${name}"  name="resource.${name}" value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ="${value?html}" />
         <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-              '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+              '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
       <#elseif type = 'IMAGE_REF'>
         <div id="picture-and-caption">

@@ -4,12 +4,14 @@ var urlobj;
 function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
     urlobj = obj;
     if (type) {
-        openServerBrowser(editorBase + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
+        openServerBrowser(editorBase + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + 
+                '&Type=' + type + '&Connector=' + editorBrowseUrl,
                 screen.width * 0.7,
                 screen.height * 0.7 ) ;
 
     } else {
-        openServerBrowser(editorBase + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + editorBrowseUrl,
+        openServerBrowser(editorBase + '/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + 
+                '&Type=Image&Connector=' + editorBrowseUrl,
                 screen.width * 0.7,
                 screen.height * 0.7 ) ;
     }

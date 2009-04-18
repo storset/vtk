@@ -35,7 +35,9 @@
     
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
-    <script language="Javascript" type="text/javascript" src="${jsBaseURL}/tooltip.js"></script>  
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL}/tooltip.js"></script>
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/serverbrowsedialog.js"></script>
     
     <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
 
@@ -61,7 +63,19 @@
     <![endif]-->
     
   </head>
-  <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}');">
+  
+  <#assign baseFolder = "/" />
+  <#if resourceContext.parentURI?exists>
+    <#if resource.resourceType = 'article-listing' || resource.resourceType = 'event-listing'
+         || resource.resourceType = 'collection'>
+      <#assign baseFolder = resourceContext.currentURI?html />
+    <#else>
+      <#assign baseFolder = resourceContext.parentURI?html />
+    </#if>
+  </#if>
+  
+  <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');">
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[resource.resourceTypeDefinition.getLocalizedName(springMacroRequestContext.getLocale())?lower_case] />
     </#assign>
@@ -389,83 +403,15 @@
 
       <#elseif name = 'media'><#-- XXX -->
         <input type="text" id="resource.${name}"  name="resource.${name}" value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ="${value?html}" />
-        <button type="button" onclick="browseServer('resource.${name}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
+        <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+              '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
         
       <#elseif type = 'IMAGE_REF'>
-        <div id="picture-and-caption"><#-- On the fly <div> START caption -->
-        <script language="Javascript" type="text/javascript"><!--
-             var urlobj;
-             <#if resourceContext.parentURI?exists>
-               <#if resource.resourceType = 'article-listing' || resource.resourceType = 'event-listing'
-                 || resource.resourceType = 'collection'>              
-                 var baseFolder = "${resourceContext.currentURI?html}";
-               <#else>
-                 var baseFolder = "${resourceContext.parentURI?html}";
-               </#if>
-             <#else>
-               var baseFolder = "/";
-             </#if>
-             function browseServer(obj, type) {
-                     urlobj = obj;
-                     if (type) {
-                        openServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=' + type + '&Connector=${fckBrowse.url.pathRepresentation}',
-                             screen.width * 0.7,
-                             screen.height * 0.7 ) ;
-
-                     } else {
-                        openServerBrowser('${fckeditorBase.url?html}/editor/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=${fckBrowse.url.pathRepresentation}',
-                             screen.width * 0.7,
-                             screen.height * 0.7 ) ;
-                     }
-             }
-
-             function openServerBrowser( url, width, height ) {
-                     var iLeft = (screen.width  - width) / 2 ;
-                     var iTop  = (screen.height - height) / 2 ;
-                     var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
-                     sOptions += ",width=" + width ;
-                     sOptions += ",height=" + height ;
-                     sOptions += ",left=" + iLeft ;
-                     sOptions += ",top=" + iTop ;
-                     var oWindow = window.open( url, "BrowseWindow", sOptions ) ;
-             }
-
-             // Callback from the FCKEditor image browser:
-             function SetUrl(url, width, height, alt) {
-                     url = decodeURIComponent(url);
-                     document.getElementById(urlobj).value = url ;
-                     oWindow = null;
-                     previewImage(urlobj);
-             }
-
-             function previewImage(urlobj) {
-                     var previewobj = urlobj + '.preview';
-                     if (document.getElementById(previewobj)) {
-                        var url = document.getElementById(urlobj).value;
-                        
-                        var withoutImage = 390;
-                        var withImage = 530;
-                        
-                        if (url) {
-                        
-                            document.getElementById(previewobj).innerHTML = 
-                            '<img src="' + url + '" alt="preview">';
-                            
-                            $('div.picture').css ({ width : withImage + 'px'}); 
-                      
-                        } else {
-                            document.getElementById(previewobj).innerHTML = 
-                            '<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">';
-			                 
-                              $('div.picture').css ({ width : withoutImage + 'px'});  
-                        }
-                     }
-             } //-->
-        </script>
         <div id="picture-and-caption">
           <div id="input-and-button-container">
             <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
-            <button type="button" onclick="browseServer('resource.${name}');"><@vrtx.msg code="editor.browseImages"/></button>
+            <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+              '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
           </div>
           <div id="resource.${name}.preview">
             <#if value != ''>
@@ -474,7 +420,6 @@
               <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
             </#if>
           </div>
-        </div>
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />

@@ -304,7 +304,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
 
-    private void evaluateManagedProperty(EvaluationContext ctx, PropertyTypeDefinition propDef) {
+    private void evaluateManagedProperty(EvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
         Property evaluatedProp = null;
         switch (ctx.getEvaluationType()) {
@@ -324,7 +324,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             evaluatedProp = evaluateNameChange(ctx, propDef);
             break;
         }
-
+        
         ResourceImpl newResource = ctx.getNewResource();
 
         if (evaluatedProp == null && propDef.isMandatory()) {
@@ -344,7 +344,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 //        if (propDef.getValidator() != null && evaluatedProp != null) {
 //            propDef.getValidator().validate(ctx.principal, ctx.originalResource, evaluatedProp);
 //        }
-        
+
         if (evaluatedProp != null) {
             newResource.addProperty(evaluatedProp);
         }
@@ -471,11 +471,17 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
 
-    private Property evaluatePropertiesChange(EvaluationContext ctx, PropertyTypeDefinition propDef) {
+    private Property evaluatePropertiesChange(EvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
         // Check for user change or addition
         Property property = checkForUserAdditionOrChange(ctx, propDef);
         if (property != null) {
+            if (propDef.getProtectionLevel() != null) {
+                this.authorizationManager.authorizeAction(
+                        ctx.getOriginalResource().getURI(), 
+                        propDef.getProtectionLevel(),
+                        ctx.getPrincipal());
+            }
             return property;
         }
 

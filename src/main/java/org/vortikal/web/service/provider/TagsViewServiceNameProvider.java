@@ -5,8 +5,6 @@ import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;

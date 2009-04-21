@@ -68,9 +68,9 @@ public class ImageServiceImplTestIntegration extends TestCase {
     public void testScaleByPath() throws Exception {
     	String scaledWidth = "100";
     	ScaledImage scaledImage = imageService.scaleImage(
-    			"http://somstudenter.files.wordpress.com/2007/05/uio-logo.jpg", scaledWidth, "");
+    			"http://www.uio.no/profil/portal/grafikk/s1/logobeiges1.gif", scaledWidth, "");
     	assertNotNull("No image was fetched", scaledImage);
-    	assertEquals("Wrong format", "jpg", scaledImage.getOriginalFormat());
+    	assertEquals("Wrong format", "gif", scaledImage.getOriginalFormat());
     	assertEquals("Wrong width after resizing", scaledWidth, String.valueOf(scaledImage.getImage().getWidth()));
     }
     

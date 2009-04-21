@@ -31,11 +31,11 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.httpclient.util.URIUtil;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -94,7 +94,7 @@ public class ResourceWrapper implements Resource {
         if (propDef.getType().equals(PropertyType.Type.IMAGE_REF)) {
             try {
                 String ref = resource.getProperty(propDef).getStringValue();
-                ref = URIUtil.decode(ref);
+                ref = URLDecoder.decode(ref, "utf-8");
                 Path uri = Path.fromString(ref);
                 return this.resourceManager.createResourceWrapper(uri);
             } catch (Exception e) { }

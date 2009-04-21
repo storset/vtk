@@ -238,6 +238,21 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <!-- http://antlr.org/antlr3-maven-plugin/ -->
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr3-maven-plugin</artifactId>
+                <version>3.1.3-1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -307,8 +322,6 @@
                         <exclude>**/SimpleFileSystemContentStoreTestCase.java</exclude>
                         <exclude>**/MemoryContentStoreTestCase.java</exclude>
                         <exclude>**/DataAccessor*.java</exclude>
-                        <!-- Failing test -->
-                        <exclude>**/RepositoryOperationsTestCase.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -610,6 +623,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.1.3</version>
         </dependency>
 
         <!-- Code dependencies not used runtime = provided -->

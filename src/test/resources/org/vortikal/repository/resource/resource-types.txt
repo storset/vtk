@@ -1,0 +1,11 @@
+
+resourcetype atom-article {
+  properties {
+    title : string,
+    summary : html,
+    image : image,
+    author : string,
+    published-date : date,
+    content : html
+  }
+}

@@ -340,6 +340,11 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             evaluatedProp.setValue(defaultValue);
         }
 
+// Oddmund: fiks
+//        if (propDef.getValidator() != null && evaluatedProp != null) {
+//            propDef.getValidator().validate(ctx.principal, ctx.originalResource, evaluatedProp);
+//        }
+        
         if (evaluatedProp != null) {
             newResource.addProperty(evaluatedProp);
         }

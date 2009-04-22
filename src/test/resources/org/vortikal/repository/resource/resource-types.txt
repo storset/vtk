@@ -1,11 +1,4 @@
 
-resourcetype atom-article {
-  properties {
-    title : string,
-    summary : html,
-    image : image,
-    author : string,
-    published-date : date,
-    content : html
-  }
-}
+/* Testfile for resourcedefinition grammer test */
+
+resourcetype atom-article

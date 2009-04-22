@@ -1,18 +1,34 @@
 package org.vortikal.web.controller.repository;
 
-import org.vortikal.repository.Path;
-
 import junit.framework.TestCase;
 
+import org.vortikal.repository.Path;
+
 public class CopyMoveToSelectedFolderControllerTest extends TestCase {
+    
+    private CopyMoveToSelectedFolderController controller;
+    
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        controller = new CopyMoveToSelectedFolderController();
+    }
 
     public void testAppendCopySuffix() {
-        Path path = Path.fromString("/lala.html");
-        String expectedString = "/lala(1).html";
-        Path expected = Path.fromString(expectedString);
-        Path copy = CopyMoveToSelectedFolderController.appendCopySuffix(path);
-        assertEquals(expectedString, copy.toString());
-        assertEquals(expected, copy);
+        Path original = Path.fromString("/lala.html");
+        
+        Path firstCopy = controller.appendCopySuffix(original, 1);
+        assertEquals(firstCopy, Path.fromString("/lala(1).html"));
+        
+        Path secondCopy = controller.appendCopySuffix(firstCopy, 1);
+        assertEquals(secondCopy, Path.fromString("/lala(2).html"));
+        
+        Path thirdCopy = controller.appendCopySuffix(secondCopy, 1);
+        assertEquals(thirdCopy, Path.fromString("/lala(3).html"));
+        
+        Path parantisName = Path.fromString("/test/te(3)st.xml");
+        Path copiedParantis = controller.appendCopySuffix(parantisName, 3);
+        assertEquals(copiedParantis, Path.fromString("/test/te(3)st(3).xml"));
     }
     
 }

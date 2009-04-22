@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,6 +75,7 @@ import org.vortikal.web.controller.CopyMoveSessionBean;
  */
 
 public class CopyMoveToSelectedFolderController implements Controller {
+    
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
     private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
@@ -154,8 +157,10 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
                         Path newUri = newResourceUri;
 
+                        int number = 1;
                         while (this.repository.exists(token, newUri)) {
-                            newUri = appendCopySuffix(newUri);
+                            newUri = appendCopySuffix(newUri, number);
+                            number++;
                         }
                         this.repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
                     }
@@ -171,11 +176,9 @@ public class CopyMoveToSelectedFolderController implements Controller {
             }
         }
 
-        // A small effort to provide some form of errorhandling.
         if (filesFailed.size() > 0) {
-            model.put("createErrorMessage", "manage.create.copyMove.error.moveFailed");
             model.put("errorItems", filesFailed);
-            // return new ModelAndView(errorViewName, model);
+            model.put("createErrorMessage", "manage.create.copyMove.error.moveFailed");
         }
 
         // Removing session variable
@@ -190,12 +193,10 @@ public class CopyMoveToSelectedFolderController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-
-    // TODO: Count parentis file-number(?)
-    public static Path appendCopySuffix(Path newUri) {
+    
+    protected Path appendCopySuffix(Path newUri, int number) {
         String extension = "";
         String dot = "";
-        int number = 1;
         String name = newUri.getName();
 
         if (name.endsWith(".")) {
@@ -206,6 +207,19 @@ public class CopyMoveToSelectedFolderController implements Controller {
             dot = ".";
             name = name.substring(0, name.lastIndexOf("."));
         }
+        
+        Pattern pattern = Pattern.compile("\\(\\d\\)$");
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find()) {
+            String count = matcher.group();
+            count = count.substring(1, count.length() - 1);
+            try {
+                number = Integer.parseInt(count) + 1;
+                name = pattern.split(name)[0];
+            } catch (Exception e) {
+            }
+        }
+        
         name = name + "(" + number + ")" + dot + extension;
         return newUri.getParent().extend(name);
     }

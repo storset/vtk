@@ -27,8 +27,8 @@ public class CopyMoveToSelectedFolderControllerTest extends TestCase {
         assertEquals(thirdCopy, Path.fromString("/lala(3).html"));
         
         Path parenthesisName = Path.fromString("/test/te(3)st.xml");
-        Path copiedParantis = controller.appendCopySuffix(parenthesisName, 3);
-        assertEquals(copiedParantis, Path.fromString("/test/te(3)st(3).xml"));
+        Path copiedParenthesis = controller.appendCopySuffix(parenthesisName, 3);
+        assertEquals(copiedParenthesis, Path.fromString("/test/te(3)st(3).xml"));
     }
     
 }

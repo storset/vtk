@@ -49,6 +49,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.controller.CopyMoveSessionBean;
 
@@ -75,7 +76,7 @@ import org.vortikal.web.controller.CopyMoveSessionBean;
  */
 
 public class CopyMoveToSelectedFolderController implements Controller {
-    
+
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
     private static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
@@ -177,8 +178,12 @@ public class CopyMoveToSelectedFolderController implements Controller {
         }
 
         if (filesFailed.size() > 0) {
-            model.put("errorItems", filesFailed);
-            model.put("createErrorMessage", "manage.create.copyMove.error.moveFailed");
+
+            model.put("msg.messages", filesFailed);
+
+            String msgCode = "manage.create.copyMove.error.moveFailed";
+            requestContext.addErrorMessage(new Message(msgCode));
+
         }
 
         // Removing session variable
@@ -193,7 +198,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
         return new ModelAndView(this.viewName, model);
     }
 
-    
+
     protected Path appendCopySuffix(Path newUri, int number) {
         String extension = "";
         String dot = "";
@@ -207,7 +212,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
             dot = ".";
             name = name.substring(0, name.lastIndexOf("."));
         }
-        
+
         Pattern pattern = Pattern.compile("\\(\\d\\)$");
         Matcher matcher = pattern.matcher(name);
         if (matcher.find()) {
@@ -219,7 +224,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
             } catch (Exception e) {
             }
         }
-        
+
         name = name + "(" + number + ")" + dot + extension;
         return newUri.getParent().extend(name);
     }

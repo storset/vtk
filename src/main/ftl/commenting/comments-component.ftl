@@ -146,13 +146,16 @@
         <script type="text/javascript"><!--
 
           function editor() {
-             document.getElementById("comment-syntax-desc").style.display = "none";
-             document.getElementById("comments-text-div").style.margin = "0";
-             loadEditor();
+            if (editorAvailable()){
+               document.getElementById("comment-syntax-desc").style.display = "none";
+               document.getElementById("comments-text-div").style.margin = "0";
+               loadEditor();
+             }
           }
-          if (editorAvailable()) {
-          document.write("<p><a class=\"javascript-editor\" href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="Use HTML-editor" /></a></p>");
-          }
+          
+          //if (editorAvailable()) {
+          //document.write("<p><a class=\"javascript-editor\" href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="Use HTML-editor" /></a></p>");
+          //}
           // -->
         </script>
       </div>
@@ -173,7 +176,7 @@
         </#if>
         <div class="comments-text" id="comments-text-div">
           <#assign value><#if form?exists && form.text?exists>${form.text}</#if></#assign>
-          <textarea id="comments-text" name="text" rows="6" cols="80">${value?html}</textarea>
+          <textarea id="comments-text" name="text" rows="6" cols="80" onFocus="javascript:editor();">${value?html}</textarea>
         <#if errors?exists && errors.getFieldError('text')?exists>
           <div class="error">
             <@vrtx.msg code=errors.getFieldError('text').getCode()

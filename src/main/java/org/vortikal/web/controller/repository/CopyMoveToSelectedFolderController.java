@@ -32,6 +32,7 @@ package org.vortikal.web.controller.repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -179,19 +180,21 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
         if (filesFailed.size() > 0) {
 
+            String msgCode = "";
+
             if (action.equals("move-resources")) {
-
-                model.put("msg.messages", filesFailed);
-
-                String msgCode = "manage.create.copyMove.error.moveFailed";
-                requestContext.addErrorMessage(new Message(msgCode));
-
+                msgCode = "manage.create.copyMove.error.moveFailed";
             } else {
-
-                String msgCode = "manage.create.copyMove.error.copyFailed";
-                requestContext.addErrorMessage(new Message(msgCode));
-
+                msgCode = "manage.create.copyMove.error.copyFailed";
             }
+
+            Message msg = new Message(msgCode);
+
+            for (Iterator<Path> j = filesFailed.iterator(); j.hasNext();) {
+                msg.addMessage(j.next().toString());
+            }
+
+            requestContext.addErrorMessage(msg);
 
         }
 

@@ -179,10 +179,12 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
         if (filesFailed.size() > 0) {
 
-            model.put("msg.messages", filesFailed);
+            if (action.equals("move-resources")) {
+                model.put("msg.messages", filesFailed);
 
-            String msgCode = "manage.create.copyMove.error.moveFailed";
-            requestContext.addErrorMessage(new Message(msgCode));
+                String msgCode = "manage.create.copyMove.error.moveFailed";
+                requestContext.addErrorMessage(new Message(msgCode));
+            }
 
         }
 

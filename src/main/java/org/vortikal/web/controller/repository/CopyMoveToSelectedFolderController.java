@@ -186,6 +186,11 @@ public class CopyMoveToSelectedFolderController implements Controller {
                 String msgCode = "manage.create.copyMove.error.moveFailed";
                 requestContext.addErrorMessage(new Message(msgCode));
 
+            } else { // Copy action
+
+                String msgCode = "manage.create.copyMove.error.copyFailed";
+                requestContext.addErrorMessage(new Message(msgCode));
+
             }
 
         }

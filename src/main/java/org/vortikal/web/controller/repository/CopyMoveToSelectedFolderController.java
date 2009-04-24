@@ -191,9 +191,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
             Message msg = new Message(msgCode);
 
             for (Iterator<Path> j = filesFailed.iterator(); j.hasNext();) {
-                msg.addMessage(j.next().toString());
+                msg.addMessage(j.next().getName().toString());
             }
-
             requestContext.addErrorMessage(msg);
 
         }

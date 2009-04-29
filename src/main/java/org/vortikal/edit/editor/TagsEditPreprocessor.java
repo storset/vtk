@@ -6,7 +6,7 @@ import org.vortikal.util.text.TextUtils;
 public class TagsEditPreprocessor implements PropertyEditPreprocessor {
 
     public String preprocess(String valueString, Property prop) {
-        return TextUtils.removeDuplicatesIgnoreCaseCapitalized(valueString, ",");
+        return TextUtils.removeDuplicatesIgnoreCase(valueString, ",");
     }
 
 }

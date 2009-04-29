@@ -860,15 +860,32 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         }
     }
     
-
-
     private Map<Integer, AclImpl> loadAclMap(List<Integer> resourceIds) {
 
         Map<Integer, AclImpl> resultMap = new HashMap<Integer, AclImpl>();
         if (resourceIds.isEmpty()) {
             return resultMap;
         }
+        int batchSize = 500;
+        int total = resourceIds.size();
+                
+        List<Integer> subList;
 
+        int start = 0;
+        int end = Math.min(batchSize, total);
+
+        while (end <= total && start < end) {
+            subList = resourceIds.subList(start, end);
+
+            loadAclBatch(subList, resultMap);
+                    
+            start += batchSize;
+            end = Math.min(end + batchSize, total);
+        }
+        return resultMap;
+    }
+    
+    private void loadAclBatch(List<Integer> resourceIds, Map<Integer, AclImpl> resultMap) {
         Map<String, Object> parameterMap = new HashMap<String, Object>();
         parameterMap.put("resourceIds", resourceIds);
 
@@ -876,7 +893,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> aclEntries = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
-            
+
 
         for (Map<String, Object> map: aclEntries) {
 
@@ -884,12 +901,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             String privilege = (String) map.get("action");
 
             AclImpl acl = resultMap.get(resourceId);
-            
+
             if (acl == null) {
                 acl = new AclImpl();
                 resultMap.put(resourceId, acl);
             }
-            
+
             boolean isGroup = "N".equals(map.get("isUser"));
             String name = (String) map.get("principal");
             Principal p = null;
@@ -903,11 +920,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             RepositoryAction action = Privilege.getActionByName(privilege);
             acl.addEntry(action, p);
         }
-        return resultMap;
     }
-    
-
-    
 
     private void storeLock(ResourceImpl r) {
 

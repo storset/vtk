@@ -36,31 +36,34 @@ public class TextUtilTestCase extends TestCase {
 
     public void testRemoveDuplicatesIgnoreCase() {
 
-        String testData = "Forskning, Røed Ødegård, forskning, FoRsKning, forskNING";
+        // OLD: String testData = "Forskning, Røed Ødegård, forskning, FoRsKning, forskNING";
+        String testData = "oFFentlig helseVesen, jon blund, Offentlig helsevesen, Jon Blund";
 
-        String expectedData = "Forskning, Røed Ødegård";
-        String expectedDataNoSpaces = "Forskning,Røed Ødegård";
-        String expectedDataNoDelimiter = "Forskning Røed Ødegård";
-        String expectedDataNoSpacesAndDelimiter = "ForskningRøed Ødegård";
+        String expectedData = "oFFentlig helseVesen, jon blund";
+        String expectedDataNoSpaces = "oFFentlig helseVesen,jon blund";
+        String expectedDataNoDelimiter = "oFFentlig helseVesen jon blund";
+        String expectedDataNoSpacesAndDelimiter = "oFFentlig helseVesenjon blund";
+        String expectedDataCapitalized = "OFFentlig HelseVesen, Jon Blund";
 
-        // Test noSpaces, noDelimiter boolean configurations with capitalizeWords
-        String test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", false, false, true);
+        // Test noSpaces, noDelimiter boolean configurations
+        String test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", false, false, false);
         assertEquals(expectedData, test);
 
-        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", true, false, true);
+        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", true, false, false);
         assertEquals(expectedDataNoSpaces, test);
 
-        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", false, true, true);
+        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", false, true, false);
         assertEquals(expectedDataNoDelimiter, test);
 
-        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", true, true, true);
+        test = TextUtils.removeDuplicatesIgnoreCase(testData, ",", true, true, false);
         assertEquals(expectedDataNoSpacesAndDelimiter, test);
 
-        // Overload Method without capitalizeWords
-        String expectedDataNoneCapitalized = "forskning, røed ødegård";
-
+        // Overload Methods
         test = TextUtils.removeDuplicatesIgnoreCase(testData, ",");
-        assertEquals(expectedDataNoneCapitalized, test);
+        assertEquals(expectedData, test);
+
+        test = TextUtils.removeDuplicatesIgnoreCaseCapitalized(testData, ",");
+        assertEquals(expectedDataCapitalized, test);
 
     }
 }

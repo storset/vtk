@@ -3,7 +3,7 @@
 
     <groupId>vortikal</groupId>
     <artifactId>vortikal</artifactId>
-    <version>0.5.6</version>
+    <version>0.5.6.1</version>
     <packaging>jar</packaging>
     <name>The Vortikal Web Framework</name>
     <url>http://www.usit.uio.no/it/vortex/</url>

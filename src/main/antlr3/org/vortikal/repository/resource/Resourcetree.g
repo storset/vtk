@@ -15,11 +15,6 @@ tokens {
 
 @header {
 package org.vortikal.repository.resource;
-
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 }
 
 @lexer::header {
@@ -28,27 +23,9 @@ package org.vortikal.repository.resource;
 
 resources     : (resourcetypedef)+ ;
 
-resourcetypedef
-scope {
-        PrimaryResourceTypeDefinitionImpl resource;
-        List<PropertyTypeDefinition> props;
-      }
-@init {
-        $resourcetypedef::resource = new PrimaryResourceTypeDefinitionImpl();
-        $resourcetypedef::props = new ArrayList<PropertyTypeDefinition>();
-      }
-              : (
-                   RESOURCETYPE NAME parent
-                     resourcedef
-                )
-                {
-                  $resourcetypedef::resource.setName($NAME.text);
-                  $resourcetypedef::resource.setNamespace(Namespace.DEFAULT_NAMESPACE);
-                  $resourcetypedef::resource.setPropertyTypeDefinitions(
-                    $resourcetypedef::props.toArray(new PropertyTypeDefinition[$resourcetypedef::props.size()])
-                  );
-                }
-              ;
+resourcetypedef : RESOURCETYPE NAME parent
+                  resourcedef
+                ;
 
 parent        : (COLON NAME)?;
 
@@ -64,27 +41,15 @@ resourceprops : PROPERTIES LCB
                 RCB
               ;
 
-propertytypedef
-scope { PropertyTypeDefinitionImpl property; }
-@init { $propertytypedef::property = new PropertyTypeDefinitionImpl(); }
-              : (
-                  NAME COLON PROPTYPE
-                )
-                {
-                  $propertytypedef::property.setName($NAME.text);
-                  $propertytypedef::property.setNamespace(Namespace.DEFAULT_NAMESPACE);
-                  // XXX set proptype
-                  $resourcetypedef::props.add($propertytypedef::property);
-                }
-              ;
+propertytypedef : NAME COLON PROPTYPE;
 
 editrules     : EDITRULES LCB
-                  // XXX write ruledef
+                  // ruledef
                 RCB
               ;
 
 viewdefinition : VIEWDEFINITION LCB
-                   // XXX write ruledef
+                   // ruledef
                  RCB
                ;
 

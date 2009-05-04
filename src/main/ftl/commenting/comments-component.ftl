@@ -152,11 +152,7 @@
                loadEditor();
              }
           }
-          
-          //if (editorAvailable()) {
-          //document.write("<p><a class=\"javascript-editor\" href=\"javascript:editor();\"><@vrtx.msg code="commenting.form.rich-editor" default="Use HTML-editor" /></a></p>");
-          //}
-          // -->
+           -->
         </script>
       </div>
       <form action="${postCommentURL?string?html}#comment-form" method="post">
@@ -176,7 +172,7 @@
         </#if>
         <div class="comments-text" id="comments-text-div">
           <#assign value><#if form?exists && form.text?exists>${form.text}</#if></#assign>
-          <textarea id="comments-text" name="text" rows="6" cols="80" onfocus="javascript:editor();">${value?html}</textarea>
+          <textarea id="comments-text" name="text" rows="6" cols="80" onmousedown="javascript:editor();">${value?html}</textarea>
         <#if errors?exists && errors.getFieldError('text')?exists>
           <div class="error">
             <@vrtx.msg code=errors.getFieldError('text').getCode()

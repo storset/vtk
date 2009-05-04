@@ -44,7 +44,7 @@ function removeFormField(id) {
     $(id).remove();
 }
 
-function formatFeturedArticlesData() {
+function formatFeaturedArticlesData() {
     if ($( "#resource\\.featured-articles" ).val() == null)
         return;
 

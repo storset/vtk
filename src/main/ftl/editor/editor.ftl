@@ -85,6 +85,11 @@
       <@handleProps />
 
       <div class="properties">
+      <div id="submit" class="save-cancel">
+       <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+       <input type="submit" id="saveAndQuitButton" onClick="formatFeaturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
+       <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
+      </div>
         <a id="help-link" href="${editorHelpURL?html}" target="new_window"><@vrtx.msg code="editor.help"/></a>
         <@propsForm resource.preContentProperties />
       </div>
@@ -108,11 +113,7 @@
       	<div id="allowedValues"></div>
       </#if>
 
-      <div id="submit" class="save-cancel">
-       <input type="submit" id="saveButton" onClick="formatFeturedArticlesData();cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
-       <input type="submit" id="saveAndQuitButton" onClick="formatFeturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
-       <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
-      </div>
+      
 
       <#if (resource.content)?exists>
       <script language="Javascript" type="text/javascript">

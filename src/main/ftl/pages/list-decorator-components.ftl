@@ -60,12 +60,12 @@
   <div class="content">                         
   <h2>List of components</h2>                         
   <ul>
-    <#list componentList?sort_by('namespace') as component>
+    <#list componentList?sort_by('name')?sort_by('namespace') as component>
       <li><a href="#${component.namespace?html}:${component.name?html}">${component.namespace?html}:${component.name?html}</a></li>
       </#list>
   </ul>
   </div>
-    <#list componentList?sort_by('namespace') as component>
+    <#list componentList?sort_by('name') as component>
       <h2 id="${component.namespace?html}:${component.name?html}">
         ${component.namespace?html}:${component.name?html}
       </h2>

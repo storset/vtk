@@ -18,37 +18,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Available decorator components</title>
-  <style type="text/css">
-     body {
-       font-family: Arial, Helvetica, sans-serif;
-       padding-left: 1em;
-       padding-right: 1em;
-    }
-
-    h2 {margin-bottom: 0px; margin-top:1.3em;}
-    h3 {margin-bottom:.6em; margin-top:1em;}
-
-
-    div.content {
-     padding: 1em;
-     border: 1px solid #aaa;
-    }
-
-    div.content h2 {margin-top:0px;}
-
-    div.content ul {
-      list-style-type: square;
-      margin-bottom:0px;
-    }
-
-    div.content ul.content li {
-
-    }
-
-    dt {
-      font-family: monospace;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/list-decorator-components.css" />
 </head>
 <body>
   <h1>Available decorator components</h1>

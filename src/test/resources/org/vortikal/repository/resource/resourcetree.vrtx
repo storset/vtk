@@ -1,0 +1,19 @@
+
+resourcetype file {
+  properties {
+    contenttype : string,
+    contentlength : int
+  }
+}
+
+resourcetype article : file {
+  properties {
+    title : string,
+    introduction : html
+  }
+  edit-rules {}
+}
+
+resourcetype event : article {
+  view-definition {}
+}

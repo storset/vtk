@@ -1,4 +1,0 @@
-
-/* Testfile for resourcedefinition grammer test */
-
-resourcetype atom-article

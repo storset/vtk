@@ -610,7 +610,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     private enum EvaluationType {
-        Create, ContentChange, PropertiesChange, ExplicitValuPropertiesChange, NameChange
+        Create, ContentChange, PropertiesChange, NameChange
     }
 
 

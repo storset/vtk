@@ -1,23 +1,10 @@
-grammar Resourcetree;
+parser grammar ResourcetreeParser;
 
-tokens {
-  RESOURCETYPE = 'resourcetype';
-  PROPERTIES = 'properties';
-  EDITRULES = 'edit-rules';
-  VIEWDEFINITION = 'view-definition';
-  LCB    = '{' ;
-  RCB    = '}' ;
-  LP     = '(' ;
-  RP     = ')' ;
-  COLON  = ':' ;
-  COMMA  = ',' ;
+options {
+  tokenVocab = ResourcetreeLexer;
 }
 
 @header {
-package org.vortikal.repository.resource;
-}
-
-@lexer::header {
 package org.vortikal.repository.resource;
 }
 
@@ -37,7 +24,7 @@ resourcedef   : LCB
               ;
 
 resourceprops : PROPERTIES LCB
-                  propertytypedef (COMMA propertytypedef)*
+                  (propertytypedef (COMMA propertytypedef)*)*
                 RCB
               ;
 
@@ -52,7 +39,3 @@ viewdefinition : VIEWDEFINITION LCB
                    // ruledef
                  RCB
                ;
-
-PROPTYPE : ('string' | 'html' | 'boolean' | 'int' | 'timestamp');
-NAME     : ('a'..'z' | 'A'..'Z' | '-')+;
-WS       : (' ' | '\t' | '\n')+ {$channel=HIDDEN;};

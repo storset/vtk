@@ -31,7 +31,6 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
@@ -53,16 +52,6 @@ public interface RepositoryResourceHelper {
     public ResourceImpl propertiesChange(ResourceImpl resource, Principal principal,
             ResourceImpl dto) throws AuthenticationException, AuthorizationException,
             CloneNotSupportedException, IOException;
-
-
-    /**
-     * propertiesChange, but evaluates specific properties to explicit values,
-     * given as property/value-pairs in propertyValueMap.
-     */
-    public ResourceImpl explicitValuePropertiesChange(ResourceImpl resource, Principal principal,
-            Map<String, Object> propertyValueMap, ResourceImpl suppliedResource)
-            throws AuthenticationException, AuthorizationException, CloneNotSupportedException,
-            IOException;
 
 
     public ResourceImpl contentModification(ResourceImpl resource, Principal principal)

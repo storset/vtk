@@ -5,6 +5,11 @@ options {
   output = AST;
 }
 
+tokens {
+  PARENT;
+  PROPERTY;
+}
+
 @header {
 package org.vortikal.repository.resource;
 }
@@ -14,10 +19,10 @@ resources     : (resourcetypedef)+;
 resourcetypedef : RESOURCETYPE NAME (parent)? LCB
                     resourcedef
                   RCB
-                  -> ^(NAME resourcedef)
+                  -> ^(NAME (parent)? resourcedef)
                 ;
 
-parent        : COLON NAME;
+parent        : COLON NAME -> ^(PARENT NAME);
 
 resourcedef   : (resourceprops)?
                 (editrules)?
@@ -30,7 +35,7 @@ resourceprops : PROPERTIES LCB
                 -> ^(PROPERTIES (propertytypedef)*)
               ;
 
-propertytypedef : NAME COLON PROPTYPE -> ^(NAME PROPTYPE);
+propertytypedef : NAME COLON PROPTYPE -> ^(PROPERTY ^(COLON NAME PROPTYPE));
 
 editrules     : EDITRULES LCB
                   // ruledef

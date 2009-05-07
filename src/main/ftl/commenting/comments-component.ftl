@@ -172,7 +172,7 @@
         </#if>
         <div class="comments-text" id="comments-text-div">
           <#assign value><#if form?exists && form.text?exists>${form.text}</#if></#assign>
-          <textarea id="comments-text" name="text" rows="6" cols="80" onmousedown="javascript:editor();">${value?html}</textarea>
+          <textarea id="comments-text" name="text" rows="6" cols="80" onfocus="javascript:editor();">${value?html}</textarea>
         <#if errors?exists && errors.getFieldError('text')?exists>
           <div class="error">
             <@vrtx.msg code=errors.getFieldError('text').getCode()

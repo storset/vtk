@@ -69,10 +69,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private boolean mandatory = false;
     private Value defaultValue;
     private Constraint constraint;
-    private CreatePropertyEvaluator createEvaluator;
-    private ContentModificationPropertyEvaluator contentModificationEvaluator;
-    private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
-    private NameChangePropertyEvaluator nameModificationEvaluator;
+    private PropertyEvaluator propertyEvaluator;
     private PropertyValidator validator;
     private Value[] allowedValues;
 
@@ -190,33 +187,15 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
             }
         }
     }
+
+    public PropertyEvaluator getPropertyEvaluator() {
+        return this.propertyEvaluator;
+    }
+
+    public void setPropertyEvaluator(PropertyEvaluator propertyEvaluator) {
+        this.propertyEvaluator = propertyEvaluator;
+    }
     
-    public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
-        return this.contentModificationEvaluator;
-    }
-
-    public void setContentModificationEvaluator(
-            ContentModificationPropertyEvaluator contentModificationEvaluator) {
-        this.contentModificationEvaluator = contentModificationEvaluator;
-    }
-
-    public CreatePropertyEvaluator getCreateEvaluator() {
-        return this.createEvaluator;
-    }
-
-    public void setCreateEvaluator(CreatePropertyEvaluator createEvaluator) {
-        this.createEvaluator = createEvaluator;
-    }
-
-    public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator() {
-        return this.propertiesModificationEvaluator;
-    }
-
-    public void setPropertiesModificationEvaluator(
-            PropertiesModificationPropertyEvaluator propertiesModificationEvaluator) {
-        this.propertiesModificationEvaluator = propertiesModificationEvaluator;
-    }
-
     public Constraint getConstraint() {
         return this.constraint;
     }
@@ -297,15 +276,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": [name=").append(this.name).append("]");
         return sb.toString();
-    }
-
-    public NameChangePropertyEvaluator getNameModificationEvaluator() {
-        return nameModificationEvaluator;
-    }
-
-    public void setNameModificationEvaluator(
-            NameChangePropertyEvaluator nameModificationEvaluator) {
-        this.nameModificationEvaluator = nameModificationEvaluator;
     }
 
     public Vocabulary<Value> getVocabulary() {

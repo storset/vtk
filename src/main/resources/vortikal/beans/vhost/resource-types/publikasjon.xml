@@ -47,7 +47,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonTittelEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonTittelEvaluator" />
     </bean>
     
     <bean id="publikasjonTittelEvaluator" parent="abstractXPathEvaluator">
@@ -61,7 +61,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonForfattereEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonForfattereEvaluator" />
     </bean>
     
     <bean id="publikasjonForfattereEvaluator" parent="abstractXPathEvaluator">
@@ -74,7 +74,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonDatoEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonDatoEvaluator" />
     </bean>
         
     <bean id="publikasjonDatoEvaluator" parent="abstractXPathEvaluator">
@@ -87,7 +87,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonSerienummerEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonSerienummerEvaluator" />
     </bean>
     
     <bean id="publikasjonSerienummerEvaluator" parent="abstractXPathEvaluator">
@@ -100,7 +100,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonSammendragEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonSammendragEvaluator" />
     </bean>
     
     <bean id="publikasjonSammendragEvaluator" parent="abstractXPathEvaluator">
@@ -113,7 +113,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonBildeEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonBildeEvaluator" />
     </bean>
     
     <bean id="publikasjonBildeEvaluator" parent="abstractXPathEvaluator">
@@ -126,7 +126,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="publikasjonFulltekstEvaluator" />
+        <property name="propertyEvaluator" ref="publikasjonFulltekstEvaluator" />
     </bean>
     
     <bean id="publikasjonFulltekstEvaluator" parent="abstractXPathEvaluator">

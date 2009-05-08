@@ -31,6 +31,7 @@
 package org.vortikal.repository.store;
 
 import java.util.List;
+
 import org.vortikal.repository.Comment;
 import org.vortikal.repository.Resource;
 
@@ -39,6 +40,8 @@ public interface CommentDAO {
 
     public List<Comment> listCommentsByResource(Resource resource, boolean deep, int max) throws RuntimeException;
 
+    public int getNumberOfComments(Resource resource) throws RuntimeException;
+
     public void deleteComment(Comment comment) throws RuntimeException;
 
     public void deleteAllComments(Resource resource) throws RuntimeException;
@@ -46,5 +49,5 @@ public interface CommentDAO {
     public Comment createComment(Comment comment) throws RuntimeException;
 
     public Comment updateComment(Comment comment) throws RuntimeException;
-
+    
 }

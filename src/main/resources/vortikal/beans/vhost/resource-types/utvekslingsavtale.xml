@@ -45,7 +45,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="utvekslingsavtaleUniversitetEvaluator" />
+    <property name="propertyEvaluator" ref="utvekslingsavtaleUniversitetEvaluator" />
   </bean>
 
 
@@ -58,7 +58,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="utvekslingsavtaleLandEvaluator" />
+    <property name="propertyEvaluator" ref="utvekslingsavtaleLandEvaluator" />
   </bean>
 
 
@@ -73,7 +73,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="utvekslingsavtaleAvtaleeierEvaluator" />
+    <property name="propertyEvaluator" ref="utvekslingsavtaleAvtaleeierEvaluator" />
   </bean>
 
   <bean id="utvekslingsavtaleAvtaleeierEvaluator" parent="abstractXPathEvaluator">
@@ -87,7 +87,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="utvekslingsavtaleAvtaletypeEvaluator" />
+    <property name="propertyEvaluator" ref="utvekslingsavtaleAvtaletypeEvaluator" />
   </bean>
 
   <bean id="utvekslingsavtaleAvtaletypeEvaluator" parent="abstractXPathEvaluator">
@@ -100,7 +100,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="utvekslingsavtaleStudienivaEvaluator" />
+    <property name="propertyEvaluator" ref="utvekslingsavtaleStudienivaEvaluator" />
   </bean>
 
   <bean id="utvekslingsavtaleStudienivaEvaluator" parent="abstractXPathEvaluator">

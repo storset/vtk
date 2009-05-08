@@ -53,6 +53,15 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         this.principalFactory = principalFactory;
     }
 
+    public int getNumberOfComments(Resource resource) throws RuntimeException {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("uri", resource.getURI().toString());
+
+        String sqlMap = getSqlMap("numberOfCommentsByResource");
+        Integer n =  (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, parameters);
+        return n.intValue();
+    }
+    
     public List<Comment> listCommentsByResource(Resource resource,
             boolean deep, int max) throws RuntimeException {
         String sqlMap = deep ?

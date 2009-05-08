@@ -84,10 +84,7 @@
     <property name="name" value="collectionTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="createEvaluator" ref="collectionTitlePropertyEvaluator" />
-    <property name="contentModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="collectionTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="collectionTitlePropertyEvaluator" />
   </bean>
 
   <bean id="collectionTitlePropertyEvaluator" parent="titleEvaluator">
@@ -97,10 +94,7 @@
   <bean id="collectionOverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="createEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
-    <property name="contentModificationEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="collectionOverriddenTitlePropertyEvaluator" parent="titleEvaluator">

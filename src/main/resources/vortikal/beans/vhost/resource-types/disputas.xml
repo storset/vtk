@@ -45,7 +45,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasDoktorandFornavnEvaluator" />
+        <property name="propertyEvaluator" ref="disputasDoktorandFornavnEvaluator" />
     </bean>
         
     <bean id="disputasDoktorandFornavnEvaluator" parent="abstractXPathEvaluator">
@@ -58,7 +58,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasDoktorandEtternavnEvaluator" />
+        <property name="propertyEvaluator" ref="disputasDoktorandEtternavnEvaluator" />
     </bean>
         
     <bean id="disputasDoktorandEtternavnEvaluator" parent="abstractXPathEvaluator">
@@ -71,7 +71,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasOppgavetittelEvaluator" />
+        <property name="propertyEvaluator" ref="disputasOppgavetittelEvaluator" />
     </bean>
     
     <bean id="disputasOppgavetittelEvaluator" parent="abstractXPathEvaluator">
@@ -85,7 +85,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasStarttidspunktEvaluator" />
+        <property name="propertyEvaluator" ref="disputasStarttidspunktEvaluator" />
     </bean>
     
     <bean id="disputasStarttidspunktEvaluator" parent="abstractXPathEvaluator">
@@ -99,7 +99,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasSluttidspunktEvaluator" />
+        <property name="propertyEvaluator" ref="disputasSluttidspunktEvaluator" />
     </bean>
 
 
@@ -114,7 +114,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="disputasStedEvaluator" />
+        <property name="propertyEvaluator" ref="disputasStedEvaluator" />
     </bean>
     
     <bean id="disputasStedEvaluator" parent="abstractXPathEvaluator">

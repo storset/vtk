@@ -49,28 +49,18 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
 	
     private OverridablePropertyTypeDefinition overriddenPropDef;
     
-    private CreatePropertyEvaluator createEvaluator;
-    private ContentModificationPropertyEvaluator contentModificationEvaluator;
-    private PropertiesModificationPropertyEvaluator propertiesModificationEvaluator;
-    private NameChangePropertyEvaluator nameModificationEvaluator;
+    private PropertyEvaluator propertyEvaluator;
     private Value defaultValue;
 
     public Constraint getConstraint() {
         return this.overriddenPropDef.getConstraint();
     }
 
-    public ContentModificationPropertyEvaluator getContentModificationEvaluator() {
-        if (this.contentModificationEvaluator != null) {
-            return this.contentModificationEvaluator;
+    public PropertyEvaluator getPropertyEvaluator() {
+        if (this.propertyEvaluator != null) {
+            return this.propertyEvaluator;
         }
-        return this.overriddenPropDef.getContentModificationEvaluator();
-    }
-
-    public CreatePropertyEvaluator getCreateEvaluator() {
-        if (this.createEvaluator != null) {
-            return this.createEvaluator;
-        }
-        return this.overriddenPropDef.getCreateEvaluator();
+        return this.overriddenPropDef.getPropertyEvaluator();
     }
 
     public Value getDefaultValue() {
@@ -89,23 +79,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getLocalizedName(locale);
     }
 
-    public NameChangePropertyEvaluator getNameModificationEvaluator() {
-        if (this.nameModificationEvaluator != null) {
-            return this.nameModificationEvaluator;
-        }
-        
-        return this.overriddenPropDef.getNameModificationEvaluator();
-    }
-
     public Namespace getNamespace() {
         return this.overriddenPropDef.getNamespace();
-    }
-
-    public PropertiesModificationPropertyEvaluator getPropertiesModificationEvaluator() {
-        if (this.propertiesModificationEvaluator != null) {
-            return this.propertiesModificationEvaluator;
-        }
-        return this.overriddenPropDef.getPropertiesModificationEvaluator();
     }
 
     public RepositoryAction getProtectionLevel() {
@@ -145,23 +120,9 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         }
     }
 
-    public void setContentModificationEvaluator(
-            ContentModificationPropertyEvaluator contentModificationEvaluator) {
-        this.contentModificationEvaluator = contentModificationEvaluator;
-    }
-
-    public void setCreateEvaluator(CreatePropertyEvaluator createEvaluator) {
-        this.createEvaluator = createEvaluator;
-    }
-
-    public void setNameModificationEvaluator(
-            NameChangePropertyEvaluator nameModificationEvaluator) {
-        this.nameModificationEvaluator = nameModificationEvaluator;
-    }
-
-    public void setPropertiesModificationEvaluator(
-            PropertiesModificationPropertyEvaluator propertiesModificationEvaluator) {
-        this.propertiesModificationEvaluator = propertiesModificationEvaluator;
+    public void setPropertyEvaluator(
+            PropertyEvaluator propertyEvaluator) {
+        this.propertyEvaluator = propertyEvaluator;
     }
 
     public void setDefaultValue(Value defaultValue) {

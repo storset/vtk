@@ -37,7 +37,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="docTypeEvaluator" />
+    <property name="propertyEvaluator" ref="docTypeEvaluator" />
   </bean>
 
   <bean id="docTypeEvaluator" class="org.vortikal.repository.resourcetype.property.DocTypeEvaluator" />
@@ -47,7 +47,7 @@
     <property name="name" value="htmlTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="htmlTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="htmlTitlePropertyEvaluator" />
   </bean>
 
   <bean id="htmlTitlePropertyEvaluator"
@@ -58,8 +58,7 @@
   <bean id="htmlOverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="contentModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="htmlOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="htmlOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
@@ -69,7 +68,7 @@
   <bean id="htmlOverriddenGuessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
-    <property name="contentModificationEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
+    <property name="propertyEvaluator" ref="htmlGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
         <constructor-arg type="java.lang.String"
@@ -105,7 +104,7 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="defaultValue" ref="VALUE_TRUE" />
-    <property name="contentModificationEvaluator" ref="htmlHasBodyContentEvaluator" />
+    <property name="propertyEvaluator" ref="htmlHasBodyContentEvaluator" />
   </bean>
 
 

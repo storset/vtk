@@ -41,7 +41,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="true" />
-        <property name="contentModificationEvaluator" ref="researcherIdEvaluator" />
+        <property name="propertyEvaluator" ref="researcherIdEvaluator" />
     </bean>
     
     <bean id="researcherIdEvaluator" parent="abstractXPathEvaluator">
@@ -55,7 +55,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="researcherGivenNameEvaluator" />
+        <property name="propertyEvaluator" ref="researcherGivenNameEvaluator" />
     </bean>
     
     <bean id="researcherGivenNameEvaluator" parent="abstractXPathEvaluator">
@@ -68,7 +68,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="researcherSurNameEvaluator" />
+        <property name="propertyEvaluator" ref="researcherSurNameEvaluator" />
     </bean>
     
     <bean id="researcherSurNameEvaluator" parent="abstractXPathEvaluator">
@@ -81,7 +81,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="researcherImageEvaluator" />
+        <property name="propertyEvaluator" ref="researcherImageEvaluator" />
     </bean>
     
     <bean id="researcherImageEvaluator" parent="abstractXPathEvaluator">
@@ -96,7 +96,7 @@
         <property name="multiple" value="true" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="researchSubjectsEvaluator" />
+        <property name="propertyEvaluator" ref="researchSubjectsEvaluator" />
     </bean>
     
     <bean id="researchSubjectsEvaluator" parent="abstractXPathEvaluator">
@@ -110,7 +110,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="positionTitleEvaluator" />
+        <property name="propertyEvaluator" ref="positionTitleEvaluator" />
     </bean>
 
     <bean id="positionTitleEvaluator" parent="abstractXPathEvaluator">

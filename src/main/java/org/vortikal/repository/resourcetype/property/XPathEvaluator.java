@@ -47,15 +47,15 @@ import org.jdom.Document;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 import org.vortikal.xml.xpath.XPathFunction;
-
 
 /**
  * Evaluates XPath expressions on an XML document.
@@ -72,7 +72,7 @@ import org.vortikal.xml.xpath.XPathFunction;
  * </ul>
  *
  */
-public class XPathEvaluator implements ContentModificationPropertyEvaluator {
+public class XPathEvaluator implements PropertyEvaluator {
 
     private static final Log logger = LogFactory.getLog(XPathEvaluator.class);
 
@@ -101,16 +101,15 @@ public class XPathEvaluator implements ContentModificationPropertyEvaluator {
         }
     }
 
-    public boolean contentModification(Principal principal, 
-                                       Property property, 
-                                       PropertySet ancestorPropertySet, 
-                                       Content content, 
-                                       Date time) {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() == null) {
+            return false;
+        }
         try {
-            XPath xpath = createXPath(principal, property,
-                                      ancestorPropertySet, content, time);
+            XPath xpath = createXPath(ctx.getPrincipal(), property,
+                                      ctx.getNewResource(), ctx.getContent(), ctx.getTime());
             Document doc = null;
-            doc = (Document) content.getContentRepresentation(Document.class);
+            doc = (Document) ctx.getContent().getContentRepresentation(Document.class);
             if (doc == null) {
                 return false;
             }

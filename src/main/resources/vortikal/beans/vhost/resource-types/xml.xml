@@ -28,7 +28,7 @@
     <property name="name" value="schema" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="schemaEvaluator" />
+    <property name="propertyEvaluator" ref="schemaEvaluator" />
   </bean>
 
 
@@ -68,7 +68,7 @@
   <bean id="xmlOverriddenGuessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
-    <property name="contentModificationEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
+    <property name="propertyEvaluator" ref="xmlGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
         <constructor-arg type="java.lang.String"

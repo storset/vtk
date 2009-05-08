@@ -32,34 +32,29 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
-
-public class PDFTitleEvaluator implements ContentModificationPropertyEvaluator {
+public class PDFTitleEvaluator implements PropertyEvaluator {
 
     private static Log logger = LogFactory.getLog(PDFTitleEvaluator.class);
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() == null) {
+            return false;
+        }
         
         InputStream stream = null;
         PDDocument doc = null;
         try {
 
-            stream = (InputStream) content.getContentRepresentation(InputStream.class);
+            stream = (InputStream) ctx.getContent().getContentRepresentation(InputStream.class);
             doc = PDDocument.load(stream);
             PDDocumentInformation info = doc.getDocumentInformation();
             String title = info.getTitle();
@@ -71,7 +66,7 @@ public class PDFTitleEvaluator implements ContentModificationPropertyEvaluator {
             
         } catch (Exception e) {
             logger.warn("Unable to evaluate title of PDF resource '"
-                        + ancestorPropertySet.getURI() + "'", e);
+                        + ctx.getNewResource().getURI() + "'", e);
             return false;
         } finally {
             if (doc != null) {
@@ -81,7 +76,4 @@ public class PDFTitleEvaluator implements ContentModificationPropertyEvaluator {
             }
         }
     }
-    
-    
-    
 }

@@ -52,7 +52,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneEmnekodeEvaluator" />
+    <property name="propertyEvaluator" ref="emneEmnekodeEvaluator" />
   </bean>
 
 
@@ -67,7 +67,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneEmnenavnEvaluator" />
+    <property name="propertyEvaluator" ref="emneEmnenavnEvaluator" />
   </bean>
 
   <bean id="emneEmnenavnEvaluator" parent="abstractXPathEvaluator">
@@ -81,7 +81,7 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneStudiepoengEvaluator" />
+    <property name="propertyEvaluator" ref="emneStudiepoengEvaluator" />
   </bean>
 
   <bean id="emneStudiepoengEvaluator" parent="abstractXPathEvaluator">
@@ -102,7 +102,7 @@
         </constructor-arg>
       </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="emneUndervisningsSpraakEvaluator" />
+    <property name="propertyEvaluator" ref="emneUndervisningsSpraakEvaluator" />
   </bean>
 
   <bean id="emneUndervisningsSpraakEvaluator" parent="abstractXPathEvaluator">
@@ -123,7 +123,7 @@
         </constructor-arg>
       </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterEvaluator" />
+    <property name="propertyEvaluator" ref="emneUndervisningsSemesterEvaluator" />
   </bean>
 
   <bean id="emneUndervisningsSemesterEvaluator" parent="abstractXPathEvaluator">
@@ -138,7 +138,7 @@
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterBestemteSemestreEvaluator" />
+    <property name="propertyEvaluator" ref="emneUndervisningsSemesterBestemteSemestreEvaluator" />
   </bean>
 
   <bean id="emneUndervisningsSemesterBestemteSemestreEvaluator" parent="abstractXPathEvaluator">
@@ -152,7 +152,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneUndervisningsSemesterAnnetEvaluator" />
+    <property name="propertyEvaluator" ref="emneUndervisningsSemesterAnnetEvaluator" />
   </bean>
 
   <bean id="emneUndervisningsSemesterAnnetEvaluator" parent="abstractXPathEvaluator">
@@ -172,7 +172,7 @@
         </constructor-arg>
       </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="emneEksamensSemesterEvaluator" />
+    <property name="propertyEvaluator" ref="emneEksamensSemesterEvaluator" />
   </bean>
 
   <bean id="emneEksamensSemesterEvaluator" parent="abstractXPathEvaluator">
@@ -187,7 +187,7 @@
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneEksamensSemesterBestemteSemestreEvaluator" />
+    <property name="propertyEvaluator" ref="emneEksamensSemesterBestemteSemestreEvaluator" />
   </bean>
 
   <bean id="emneEksamensSemesterBestemteSemestreEvaluator" parent="abstractXPathEvaluator">
@@ -201,7 +201,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emneStatusEvaluator" />
+    <property name="propertyEvaluator" ref="emneStatusEvaluator" />
   </bean>
 
   <bean id="emneStatusEvaluator" parent="abstractXPathEvaluator">
@@ -215,7 +215,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" /> 
-    <property name="contentModificationEvaluator" ref="emneEmnetypeEvaluator" />
+    <property name="propertyEvaluator" ref="emneEmnetypeEvaluator" />
   </bean>
 
   <bean id="emneEmnetypeEvaluator" parent="abstractXPathEvaluator">
@@ -236,7 +236,7 @@
         </constructor-arg>
       </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="emneSpraakEvaluator" />
+    <property name="propertyEvaluator" ref="emneSpraakEvaluator" />
   </bean>
 
   <bean id="emneSpraakEvaluator" parent="abstractXPathEvaluator">

@@ -48,7 +48,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementTittelEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementTittelEvaluator" />
     </bean>
     
     <bean id="arrangementTittelEvaluator" parent="abstractXPathEvaluator">
@@ -61,7 +61,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementIngressEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementIngressEvaluator" />
     </bean>
     
     <bean id="arrangementIngressEvaluator" parent="abstractXPathEvaluator">
@@ -74,7 +74,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementIngressbildeEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementIngressbildeEvaluator" />
     </bean>
     
     <bean id="arrangementIngressbildeEvaluator" parent="abstractXPathEvaluator">
@@ -87,7 +87,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementTypeEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementTypeEvaluator" />
     </bean>
     
     <bean id="arrangementTypeEvaluator" parent="abstractXPathEvaluator">
@@ -101,7 +101,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementStarttidspunktEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementStarttidspunktEvaluator" />
     </bean>
     
     <bean id="arrangementStarttidspunktEvaluator" parent="abstractXPathEvaluator">
@@ -115,7 +115,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementSluttidspunktEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementSluttidspunktEvaluator" />
     </bean>
 
     <bean id="arrangementSluttidspunktEvaluator" parent="abstractXPathEvaluator">
@@ -128,7 +128,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementStedEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementStedEvaluator" />
     </bean>
     
     <bean id="arrangementStedEvaluator" parent="abstractXPathEvaluator">
@@ -141,7 +141,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="arrangementArrangorEvaluator" />
+        <property name="propertyEvaluator" ref="arrangementArrangorEvaluator" />
     </bean>
     
     <bean id="arrangementArrangorEvaluator" parent="abstractXPathEvaluator">

@@ -44,7 +44,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emnegruppeEmnegruppekodeEvaluator" />
+    <property name="propertyEvaluator" ref="emnegruppeEmnegruppekodeEvaluator" />
   </bean>
 
   <bean id="emnegruppeEmnegruppekodeEvaluator" parent="abstractXPathEvaluator">
@@ -56,7 +56,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emnegruppeEmnegruppenavnEvaluator" />
+    <property name="propertyEvaluator" ref="emnegruppeEmnegruppenavnEvaluator" />
   </bean>
 
   <bean id="emnegruppeEmnegruppenavnEvaluator" parent="abstractXPathEvaluator">
@@ -68,7 +68,7 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emnegruppeEmnegruppeomfangEvaluator" />
+    <property name="propertyEvaluator" ref="emnegruppeEmnegruppeomfangEvaluator" />
   </bean>
 
   <bean id="emnegruppeEmnegruppeomfangEvaluator" parent="abstractXPathEvaluator">
@@ -81,7 +81,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="emnegruppeStatusEvaluator" />
+    <property name="propertyEvaluator" ref="emnegruppeStatusEvaluator" />
   </bean>
 
   <bean id="emnegruppeStatusEvaluator" parent="abstractXPathEvaluator">
@@ -101,7 +101,7 @@
         </constructor-arg>
       </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="emnegruppeSpraakEvaluator" />
+    <property name="propertyEvaluator" ref="emnegruppeSpraakEvaluator" />
   </bean>
 
   <bean id="emnegruppeSpraakEvaluator" class="org.vortikal.repository.resourcetype.property.XMLSchemaEvaluator" / -->

@@ -45,7 +45,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="treatyTitleEvaluator" />
+        <property name="propertyEvaluator" ref="treatyTitleEvaluator" />
     </bean>
     
     <bean id="treatyTitleEvaluator" parent="abstractXPathEvaluator">
@@ -58,7 +58,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="treatyDoneAtEvaluator" />
+        <property name="propertyEvaluator" ref="treatyDoneAtEvaluator" />
     </bean>
     
     <bean id="treatyDoneAtEvaluator" parent="abstractXPathEvaluator">
@@ -71,7 +71,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="treatyDateEnactedEvaluator" />
+        <property name="propertyEvaluator" ref="treatyDateEnactedEvaluator" />
     </bean>
     
     <bean id="treatyDateEnactedEvaluator" parent="abstractXPathEvaluator">
@@ -85,7 +85,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="treatyInForceEvaluator" />
+        <property name="propertyEvaluator" ref="treatyInForceEvaluator" />
     </bean>
     
     <bean id="treatyInForceEvaluator" parent="abstractXPathEvaluator">
@@ -100,7 +100,7 @@
       <property name="multiple" value="true" />
       <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
       <property name="mandatory" value="false" />
-      <property name="contentModificationEvaluator" ref="treatyClassificationsEvaluator" />
+      <property name="propertyEvaluator" ref="treatyClassificationsEvaluator" />
     </bean>
     
     <!-- Added: 12 sept. 2008. used for sorting on different world regions. -->
@@ -111,7 +111,7 @@
         <property name="multiple" value="false" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="treatyRegionEvaluator" />
+        <property name="propertyEvaluator" ref="treatyRegionEvaluator" />
     </bean>
   
     <bean id="treatyClassificationsEvaluator" parent="abstractXPathEvaluator">

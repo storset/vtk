@@ -42,15 +42,14 @@ import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.sink.SinkAdapter;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 
-
-public class DoxiaTitleEvaluator
-  implements ContentModificationPropertyEvaluator {
+public class DoxiaTitleEvaluator implements PropertyEvaluator {
 
     private PropertyTypeDefinition characterEncodingPropDef;
     private Class<AbstractParser> parserClass;
@@ -68,15 +67,15 @@ public class DoxiaTitleEvaluator
     }
 
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
-        
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() != null) {
+            return false;
+        }
         InputStream stream = null;
-        String encoding = determineCharacterEncoding(principal, property, ancestorPropertySet, content, time);
+        String encoding = determineCharacterEncoding(ctx.getPrincipal(), property, ctx.getNewResource(), ctx.getContent(), ctx.getTime());
         
         try {
-            stream = content.getContentInputStream();
+            stream = ctx.getContent().getContentInputStream();
             Reader source = new InputStreamReader(stream, encoding);
             TitleSink titleSink = new TitleSink();
             AbstractParser parser = this.parserClass.newInstance();
@@ -90,7 +89,7 @@ public class DoxiaTitleEvaluator
             
         } catch (Exception e) {
             logger.warn("Unable to evaluate title of APT resource '"
-                        + ancestorPropertySet.getURI() + "'", e);
+                        + ctx.getNewResource().getURI() + "'", e);
             return false;
         } finally {
             if (stream != null) {

@@ -30,20 +30,16 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
 import javax.sound.sampled.AudioFileFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 
-public class AudioFilePropertyEvaluator implements ContentModificationPropertyEvaluator {
+public class AudioFilePropertyEvaluator implements PropertyEvaluator {
 
     private static Log logger = LogFactory.getLog(AudioFilePropertyEvaluator.class);
 
@@ -54,14 +50,15 @@ public class AudioFilePropertyEvaluator implements ContentModificationPropertyEv
     }
     
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            return false;
+        }
 
         AudioFileFormat audioFileFormat = null;
 
         try {
-            audioFileFormat = (AudioFileFormat) content.getContentRepresentation(
+            audioFileFormat = (AudioFileFormat) ctx.getContent().getContentRepresentation(
                 AudioFileFormat.class);
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {

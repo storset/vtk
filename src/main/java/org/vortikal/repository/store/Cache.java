@@ -441,7 +441,6 @@ public class Cache implements DataAccessor, InitializingBean {
         }
         
         List<Path> locks = this.lockManager.lock(uris);
-
         try {
             this.wrappedAccessor.move(r, newResource); // Persist move operation
             this.items.remove(uris);                   // Purge all affected items from cache
@@ -452,6 +451,7 @@ public class Cache implements DataAccessor, InitializingBean {
 //                }
 //            }
         } finally {
+
             this.lockManager.unlock(locks); // Release URI sync locks
 
             if (this.logger.isDebugEnabled()) {

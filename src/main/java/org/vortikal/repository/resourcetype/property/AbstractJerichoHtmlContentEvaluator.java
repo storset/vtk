@@ -37,11 +37,11 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 
@@ -49,7 +49,7 @@ import au.id.jericho.lib.html.Source;
 
 
 public abstract class AbstractJerichoHtmlContentEvaluator
-  implements ContentModificationPropertyEvaluator {
+  implements PropertyEvaluator {
 
     private PropertyTypeDefinition characterEncodingPropDef;
 
@@ -66,24 +66,27 @@ public abstract class AbstractJerichoHtmlContentEvaluator
         Date time, Source source) throws PropertyEvaluationException;
 
     
-    public final boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         
+        if (ctx.getContent() == null) {
+            return false;
+        }
         InputStream stream = null;
-        String encoding = determineCharacterEncoding(principal, property, ancestorPropertySet, content, time);
+        String encoding = determineCharacterEncoding(ctx.getPrincipal(), property, 
+                ctx.getNewResource(), ctx.getContent(), ctx.getTime());
         
         try {
             Source source = null;
-            stream = (InputStream) content.getContentRepresentation(InputStream.class);
+            stream = (InputStream) ctx.getContent().getContentRepresentation(InputStream.class);
             source = new Source(new InputStreamReader(stream, encoding));
 
-            return doContentModification(principal, property,
-                                         ancestorPropertySet, time, source);
+            return doContentModification(ctx.getPrincipal(), property,
+                                         ctx.getNewResource(), ctx.getTime(), 
+                                         source);
             
         } catch (Exception e) {
             logger.warn("Unable to evaluate title of HTML resource '"
-                        + ancestorPropertySet.getURI() + "'", e);
+                        + ctx.getNewResource().getURI() + "'", e);
             return false;
         } finally {
             if (stream != null) {

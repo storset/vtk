@@ -38,10 +38,15 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 	}
 
 	public void setParameter(ParameterSetter setter, Object parameter) throws SQLException {
-		byte[] b = (byte[]) parameter;
-		ContentStream cs = new ContentStream(new ByteArrayInputStream(b), b.length);
-		Blob blob = new ContentStreamBlob(cs);
-		setter.setBlob(blob);
+	    ContentStream cs; 
+	    if (parameter instanceof byte[]) {
+	        byte[] b = (byte[]) parameter;
+	        cs = new ContentStream(new ByteArrayInputStream(b), b.length);
+	    } else {
+	        cs = (ContentStream) parameter;
+	    }
+        Blob blob = new ContentStreamBlob(cs);
+        setter.setBlob(blob);
 	}
 
 	public Object valueOf(String s) {

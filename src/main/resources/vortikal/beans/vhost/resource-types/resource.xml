@@ -53,19 +53,19 @@
     <property name="name" value="numberOfComments"/>
     <property name="type" value="INT"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE"/>
-    <property name="propertiesModificationEvaluator" ref="numberOfCommentsModifiedEvaluator" />
+    <property name="propertyEvaluator" ref="numberOfCommentsModifiedEvaluator" />
   </bean>
   
-  <bean id="numberOfCommentsModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.NumberOfCommentsModifiedEvaluator" />
+  <bean id="numberOfCommentsModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.NumberOfCommentsModifiedEvaluator">
+    <property name="commentDAO" ref="${repository.commentDao}" />
+  </bean>
   
   <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="title" />
     <property name="type" value="HTML" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="titleEvaluator" />
-    <property name="contentModificationEvaluator" ref="titleEvaluator" />
-    <property name="nameModificationEvaluator" ref="titleEvaluator" />
+    <property name="propertyEvaluator" ref="titleEvaluator" />
   </bean>
 
   <bean id="titleEvaluator" class="org.vortikal.repository.resourcetype.property.DefaultTitleEvaluator">
@@ -86,7 +86,7 @@
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="ownerEvaluator" />
+    <property name="propertyEvaluator" ref="ownerEvaluator" />
   </bean>
 
   <bean id="ownerPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
@@ -94,7 +94,7 @@
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="ownerEvaluator" />
+    <property name="propertyEvaluator" ref="ownerEvaluator" />
     <property name="validator" ref="ownerEvaluator" />
   </bean>
 
@@ -103,16 +103,12 @@
     <property name="authorizationManager" ref="authorizationManager" />
   </bean>
   
-  <bean id="principalEvaluator" class="org.vortikal.repository.resourcetype.property.PrincipalEvaluator">
-    <property name="principalManager" ref="principalManager" />
-  </bean>
-
   <bean id="collectionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="collection" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="collectionEvaluator" /> 
+    <property name="propertyEvaluator" ref="collectionEvaluator" /> 
   </bean>
 
   <bean id="collectionEvaluator" class="org.vortikal.repository.resourcetype.property.CollectionEvaluator" />
@@ -122,7 +118,7 @@
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="creationTimeEvaluator" />
+    <property name="propertyEvaluator" ref="creationTimeEvaluator" />
   </bean>
 
   <bean id="creationTimeEvaluator" 
@@ -133,8 +129,7 @@
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="contentLastModifiedEvaluator" />
-    <property name="contentModificationEvaluator" ref="contentLastModifiedEvaluator" />
+    <property name="propertyEvaluator" ref="contentLastModifiedEvaluator" />
   </bean>
 
   <bean id="contentLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.ContentLastModifiedEvaluator" />
@@ -144,8 +139,7 @@
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="contentModifiedByEvaluator" />
-    <property name="contentModificationEvaluator" ref="contentModifiedByEvaluator" />
+    <property name="propertyEvaluator" ref="contentModifiedByEvaluator" />
   </bean>
 
   <bean id="contentModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.ContentModifiedByEvaluator" />
@@ -155,8 +149,7 @@
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="propertiesLastModifiedEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="propertiesLastModifiedEvaluator" />
+    <property name="propertyEvaluator" ref="propertiesLastModifiedEvaluator" />
   </bean>
 
   <bean id="propertiesLastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesLastModifiedEvaluator" />
@@ -166,8 +159,7 @@
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ADMIN" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="propertiesModifiedByEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="propertiesModifiedByEvaluator" />
+    <property name="propertyEvaluator" ref="propertiesModifiedByEvaluator" />
   </bean>
 
   <bean id="propertiesModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.PropertiesModifiedByEvaluator" />
@@ -177,9 +169,7 @@
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="lastModifiedEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="lastModifiedEvaluator" />
-    <property name="contentModificationEvaluator" ref="lastModifiedEvaluator" />
+    <property name="propertyEvaluator" ref="lastModifiedEvaluator" />
   </bean>
 
   <bean id="lastModifiedEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedEvaluator" />
@@ -189,9 +179,7 @@
     <property name="type" value="PRINCIPAL" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="lastModifiedByEvaluator" />
-    <property name="contentModificationEvaluator" ref="lastModifiedByEvaluator" />
-    <property name="propertiesModificationEvaluator" ref="lastModifiedByEvaluator" />
+    <property name="propertyEvaluator" ref="lastModifiedByEvaluator" />
   </bean>
 
   <bean id="lastModifiedByEvaluator" class="org.vortikal.repository.resourcetype.property.LastModifiedByEvaluator" />

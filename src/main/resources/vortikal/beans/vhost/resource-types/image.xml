@@ -30,7 +30,7 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="imageHeightEvaluator" />
+    <property name="propertyEvaluator" ref="imageHeightEvaluator" />
   </bean>
 
   <bean id="imageHeightEvaluator" 
@@ -44,7 +44,7 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="imageWidthEvaluator" />
+    <property name="propertyEvaluator" ref="imageWidthEvaluator" />
   </bean>
 
   <bean id="imageWidthEvaluator" 
@@ -58,7 +58,7 @@
     <property name="type" value="BINARY" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="thumbnailEvaluator" />
+    <property name="propertyEvaluator" ref="thumbnailEvaluator" />
   </bean>
 
   <bean id="thumbnailEvaluator" 

@@ -417,22 +417,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             supplyFixedProperties(parameters, fixedProperties);
         }
         
-        // Copy any binary props for this resource
-        for (Property prop: newResource.getProperties()) {
-        	if (PropertyType.Type.BINARY.equals(prop.getType())) {
-        		setBinaryContent(prop, newResource.getURI().toString());
-        	}
-        }
-        
         String sqlMap = getSqlMap("copyResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
         sqlMap = getSqlMap("copyProperties");
         getSqlMapClientTemplate().update(sqlMap, parameters);
         
-        sqlMap = getSqlMap("updateBinaryRefsForCopy");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
-
         if (copyACLs) {
 
             sqlMap = getSqlMap("copyAclEntries");
@@ -550,14 +540,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         sqlMap = getSqlMap("moveDescendants");
         getSqlMapClientTemplate().update(sqlMap, parameters);
         
-        sqlMap = getSqlMap("updateBinaryRefsForMove");
-        getSqlMapClientTemplate().update(sqlMap, parameters);
-
         ResourceImpl created = loadResourceInternal(newResource.getURI());
         for (Property prop: newResource.getProperties()) {
-        	if (PropertyType.Type.BINARY.equals(prop.getType())) {
-        		setBinaryContent(prop, created.getURI().toString());
-        	}
             created.addProperty(prop);
         }
         storeProperties(created);
@@ -571,7 +555,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             parameters.put("inheritedFrom", nearestAclNode);
             parameters.put("previouslyInheritedFrom", srcNearestAcl);
 
-            //sqlMap = getSqlMap("updateAclInheritedFromByUri");
             sqlMap = getSqlMap("updateAclInheritedFromByPreviousInheritedFromAndUri");
             getSqlMapClientTemplate().update(sqlMap, parameters);
         }
@@ -948,6 +931,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
 
     private void storeProperties(final ResourceImpl r) {
+
+        for (Property p: r.getProperties()) {
+            if (PropertyType.Type.BINARY.equals(p.getDefinition().getType())) {
+                // XXX: mem copying has to be done because of the way properties 
+                // are stored: first deleted then inserted (never updated)
+                copyBinaryPropValueToMemory(p);                
+            }
+        }
         
         String sqlMap = getSqlMap("deletePropertiesByResourceId");
         getSqlMapClientTemplate().update(sqlMap, r.getID());
@@ -982,7 +973,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                                 if (PropertyType.Type.BINARY.equals(value.getType())) {
                                     BinaryValue binaryValue = (BinaryValue) value;
                                 	parameters.put("value", "#binary");
-                                	parameters.put("binaryContent", binaryValue.getObjectValue());
+                                	parameters.put("binaryContent", binaryValue.getContentStream());
                                 	parameters.put("binaryMimeType", binaryValue.getContentType());
                                 } else {
                                 	parameters.put("value", value.getNativeStringRepresentation());
@@ -1211,8 +1202,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             
         return groups;
     }
-    
-    private void setBinaryContent(Property prop, String resourceUri) {
+
+    private void copyBinaryPropValueToMemory(Property prop) {
         try {
         	InputStream in = prop.getBinaryStream().getStream();
         	ByteArrayOutputStream out = new ByteArrayOutputStream();

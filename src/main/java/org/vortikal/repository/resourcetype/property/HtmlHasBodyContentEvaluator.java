@@ -1,34 +1,28 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.io.InputStream;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlUtil;
 
-public class HtmlHasBodyContentEvaluator implements
-        ContentModificationPropertyEvaluator {
+public class HtmlHasBodyContentEvaluator implements PropertyEvaluator {
 
     private HtmlUtil htmlUtil;
     private PropertyTypeDefinition characterEncodingPropDef;
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
         property.setBooleanValue(false);
         try {
-            String encoding = ancestorPropertySet.getProperty(
+            String encoding = ctx.getNewResource().getProperty(
                     this.characterEncodingPropDef).getStringValue();
-            InputStream in = content.getContentInputStream();
+            InputStream in = ctx.getContent().getContentInputStream();
             HtmlPage page = this.htmlUtil.parse(in, encoding);
             HtmlElement body = page.selectSingleElement("html.body");
             if (body != null) {

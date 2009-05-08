@@ -58,9 +58,7 @@
     <property name="name" value="characterEncoding" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="characterEncodingEvaluator" />
-    <property name="contentModificationEvaluator" ref="characterEncodingEvaluator" />
-    <property name="nameModificationEvaluator" ref="characterEncodingEvaluator" />
+    <property name="propertyEvaluator" ref="characterEncodingEvaluator" />
   </bean>
 
   <bean id="characterEncodingEvaluator"

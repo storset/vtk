@@ -38,7 +38,7 @@
         </property>
       </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="ssiDirectivesEvaluator" />
+    <property name="propertyEvaluator" ref="ssiDirectivesEvaluator" />
   </bean>
 
   <bean id="ssiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">

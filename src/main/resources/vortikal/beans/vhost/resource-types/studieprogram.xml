@@ -49,7 +49,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramProgramkodeEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramProgramkodeEvaluator" />
   </bean>
 
   <bean id="studieprogramProgramkodeEvaluator" parent="abstractXPathEvaluator">
@@ -63,7 +63,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramProgramnavnEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramProgramnavnEvaluator" />
   </bean>
 
   <bean id="studieprogramProgramnavnEvaluator" parent="abstractXPathEvaluator">
@@ -76,7 +76,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramProgramtypeEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramProgramtypeEvaluator" />
   </bean>
 
   <bean id="studieprogramProgramtypeEvaluator" parent="abstractXPathEvaluator">
@@ -88,7 +88,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramAntallaarEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramAntallaarEvaluator" />
   </bean>
 
   <bean id="studieprogramAntallaarEvaluator" parent="abstractXPathEvaluator">
@@ -100,7 +100,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramStudiepoengEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramStudiepoengEvaluator" />
   </bean>
 
   <bean id="studieprogramStudiepoengEvaluator" parent="abstractXPathEvaluator">
@@ -112,7 +112,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramOmfangoppgaveEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramOmfangoppgaveEvaluator" />
   </bean>
 
   <bean id="studieprogramOmfangoppgaveEvaluator" parent="abstractXPathEvaluator">
@@ -124,7 +124,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramSoknadsfristEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramSoknadsfristEvaluator" />
   </bean>
 
   <bean id="studieprogramSoknadsfristEvaluator" parent="abstractXPathEvaluator">
@@ -136,7 +136,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramStudieplasserEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramStudieplasserEvaluator" />
   </bean>
 
   <bean id="studieprogramStudieplasserEvaluator" parent="abstractXPathEvaluator">
@@ -148,7 +148,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieprogramSokodeEvaluator" />
+    <property name="propertyEvaluator" ref="studieprogramSokodeEvaluator" />
   </bean>
 
   <bean id="studieprogramSokodeEvaluator" parent="abstractXPathEvaluator">

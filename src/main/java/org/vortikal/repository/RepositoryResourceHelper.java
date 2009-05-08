@@ -58,13 +58,15 @@ public interface RepositoryResourceHelper {
             throws IOException;
 
 
-    public ResourceImpl nameChange(ResourceImpl resource, Principal principal) throws IOException;
+    public ResourceImpl nameChange(ResourceImpl originalResource, 
+            ResourceImpl resource, Principal principal) throws IOException;
+
+    public ResourceImpl commentsChange(ResourceImpl originalResource, 
+            Principal principal, ResourceImpl suppliedResource) throws IOException;
 
 
     public PropertySet getFixedCopyProperties(Resource resource, Principal principal, Path destUri)
             throws CloneNotSupportedException;
     
-    // XXX: TEMPORARY
-    public ResourceImpl numberOfCommentsPropertyChange(ResourceImpl original, Integer numberOfComments); 
 
 }

@@ -42,7 +42,7 @@
     <property name="name" value="aptTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="aptTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="aptTitlePropertyEvaluator" />
   </bean>
 
   <bean id="aptTitlePropertyEvaluator"
@@ -54,8 +54,7 @@
   <bean id="aptOverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="contentModificationEvaluator" ref="aptOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="aptOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="aptOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="aptOverriddenTitlePropertyEvaluator" parent="titleEvaluator">

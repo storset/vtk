@@ -31,18 +31,15 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.awt.image.BufferedImage;
-import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 
-public class ImageDimensionEvaluator implements ContentModificationPropertyEvaluator {
+public class ImageDimensionEvaluator implements PropertyEvaluator {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private boolean evaluateHeight = true; // Otherwise width
@@ -51,15 +48,14 @@ public class ImageDimensionEvaluator implements ContentModificationPropertyEvalu
         this.evaluateHeight = evaluateHeight;
     }
     
-
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
-
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            return false;
+        }
         try {
-            
+
             BufferedImage image = (BufferedImage)
-                content.getContentRepresentation(BufferedImage.class);
+                ctx.getContent().getContentRepresentation(BufferedImage.class);
             if (image == null) {
                 return false;
             }

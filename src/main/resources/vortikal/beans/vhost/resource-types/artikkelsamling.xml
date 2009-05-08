@@ -50,7 +50,7 @@
                 </constructor-arg>
             </bean>
         </property>
-        <property name="contentModificationEvaluator" ref="artikkelsamlingTittelEvaluator" />
+        <property name="propertyEvaluator" ref="artikkelsamlingTittelEvaluator" />
     </bean>
     
     <bean id="artikkelsamlingTittelEvaluator" parent="abstractXPathEvaluator">
@@ -62,7 +62,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="artikkelsamlingIngressEvaluator" />
+        <property name="propertyEvaluator" ref="artikkelsamlingIngressEvaluator" />
     </bean>
     
     <bean id="artikkelsamlingIngressEvaluator" parent="abstractXPathEvaluator">
@@ -74,7 +74,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="artikkelsamlingLiteBildeWebadresseEvaluator" />
+        <property name="propertyEvaluator" ref="artikkelsamlingLiteBildeWebadresseEvaluator" />
     </bean>
     
     <bean id="artikkelsamlingLiteBildeWebadresseEvaluator" parent="abstractXPathEvaluator">
@@ -86,7 +86,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="artikkelsamlingLiteBildeAlternativTextEvaluator" />
+        <property name="propertyEvaluator" ref="artikkelsamlingLiteBildeAlternativTextEvaluator" />
     </bean>
     
     <bean id="artikkelsamlingLiteBildeAlternativTextEvaluator" parent="abstractXPathEvaluator">

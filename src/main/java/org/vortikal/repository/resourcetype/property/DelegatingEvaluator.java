@@ -30,71 +30,36 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
-import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.security.Principal;
 
 /**
  * Evaluate name....
  */
-public class DelegatingEvaluator implements NameChangePropertyEvaluator, 
-    CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
-        ContentModificationPropertyEvaluator {
+public class DelegatingEvaluator implements PropertyEvaluator {
 
     private PropertyTypeDefinition propertyDefinition;
-
-    public boolean nameModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Date time) {
-        return evaluateProp(property, ancestorPropertySet);
-    }
-
-    public boolean create(Principal principal, Property property,
-            PropertySet ancestorPropertySet, boolean isCollection, Date time)
-            throws PropertyEvaluationException {
-        return evaluateProp(property, ancestorPropertySet);
-    }
-
-    public boolean propertiesModification(Principal principal,
-            Property property, PropertySet ancestorPropertySet, Date time)
-            throws PropertyEvaluationException {
-        return evaluateProp(property, ancestorPropertySet);
-    }
-
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
-        return evaluateProp(property, ancestorPropertySet);
-    }
 
     public void setPropertyDefinition(PropertyTypeDefinition propertyDefinition) {
         this.propertyDefinition = propertyDefinition;
     }
 
-    private boolean evaluateProp(Property property,
-            PropertySet ancestorPropertySet) throws ValueFormatException,
-            IllegalOperationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-        Property prop = ancestorPropertySet.getProperty(propertyDefinition);
-        if (prop != null)
+        Property prop = ctx.getNewResource().getProperty(propertyDefinition);
+        if (prop != null) {
             property.setStringValue(prop.getStringValue());
-        else
-            property.setStringValue(getFallback(property, ancestorPropertySet));
-
+        } else {
+            property.setStringValue(getFallback(property, ctx.getNewResource()));
+        }
         return true;
     }
 
     protected String getFallback(Property property, PropertySet ancestorPropertySet) throws ValueFormatException {
         return ancestorPropertySet.getName();
     }
-
 }

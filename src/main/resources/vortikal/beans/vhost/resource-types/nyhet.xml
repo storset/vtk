@@ -45,7 +45,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="nyhetTittelEvaluator" />
+        <property name="propertyEvaluator" ref="nyhetTittelEvaluator" />
     </bean>
     
     <bean id="nyhetTittelEvaluator" parent="abstractXPathEvaluator">
@@ -59,7 +59,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="nyhetIngressEvaluator" />
+        <property name="propertyEvaluator" ref="nyhetIngressEvaluator" />
     </bean>
     
     <bean id="nyhetIngressEvaluator" parent="abstractXPathEvaluator">
@@ -72,7 +72,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="nyhetIngressbildeEvaluator" />
+        <property name="propertyEvaluator" ref="nyhetIngressbildeEvaluator" />
     </bean>
     
     <bean id="nyhetIngressbildeEvaluator" parent="abstractXPathEvaluator">
@@ -84,7 +84,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="nyhetDatoEvaluator" />
+        <property name="propertyEvaluator" ref="nyhetDatoEvaluator" />
     </bean>
         
     <bean id="nyhetDatoEvaluator" parent="abstractXPathEvaluator">
@@ -97,7 +97,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="nyhetMediaEvaluator" />
+        <property name="propertyEvaluator" ref="nyhetMediaEvaluator" />
     </bean>
     
     <bean id="nyhetMediaEvaluator" parent="abstractXPathEvaluator">

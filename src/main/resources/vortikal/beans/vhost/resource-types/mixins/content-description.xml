@@ -32,7 +32,7 @@
     <property name="type" value="TIMESTAMP" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="validToEvaluator"/>
+    <property name="propertyEvaluator" ref="validToEvaluator"/>
   </bean>
 
   <bean id="validToEvaluator"

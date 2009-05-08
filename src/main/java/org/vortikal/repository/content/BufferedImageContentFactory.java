@@ -32,9 +32,8 @@ package org.vortikal.repository.content;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import javax.imageio.ImageIO;
 
-import org.vortikal.repository.content.ContentFactory;
+import javax.imageio.ImageIO;
 
 
 public class BufferedImageContentFactory implements ContentFactory {

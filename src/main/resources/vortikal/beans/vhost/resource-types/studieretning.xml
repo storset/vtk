@@ -43,7 +43,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieretningStudieretningskodeEvaluator" />
+    <property name="propertyEvaluator" ref="studieretningStudieretningskodeEvaluator" />
   </bean>
 
   <bean id="studieretningStudieretningskodeEvaluator" parent="abstractXPathEvaluator">
@@ -57,7 +57,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieretningStudieretningsnavnEvaluator" />
+    <property name="propertyEvaluator" ref="studieretningStudieretningsnavnEvaluator" />
   </bean>
 
   <bean id="studieretningStudieretningsnavnEvaluator" parent="abstractXPathEvaluator">
@@ -71,7 +71,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="studieretningProgramkodeEvaluator" />
+    <property name="propertyEvaluator" ref="studieretningProgramkodeEvaluator" />
   </bean>
 
   <bean id="studieretningProgramkodeEvaluator" parent="abstractXPathEvaluator">

@@ -29,7 +29,7 @@
     <property name="name" value="contentType" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="true" />
-    <property name="createEvaluator" ref="contentTypeEvaluator" />
+    <property name="propertyEvaluator" ref="contentTypeEvaluator" />
   </bean>
 
   <bean id="contentTypeEvaluator" class="org.vortikal.repository.resourcetype.property.ContentTypeEvaluator" />
@@ -39,7 +39,7 @@
     <property name="type" value="LONG" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
-    <property name="contentModificationEvaluator" ref="contentLengthEvaluator" />
+    <property name="propertyEvaluator" ref="contentLengthEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
         <constructor-arg type="long">

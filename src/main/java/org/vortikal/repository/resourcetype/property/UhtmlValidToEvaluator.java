@@ -30,34 +30,30 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.security.Principal;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class UhtmlValidToEvaluator implements ContentModificationPropertyEvaluator {
+public class UhtmlValidToEvaluator implements PropertyEvaluator {
 
     private ValueFactory valueFactory;
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
-        
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() == null) {
+            return false;
+        }
         Document document = null;
         
         try {
-            document = (Document) content.getContentRepresentation(Document.class);
+            document = (Document) ctx.getContent().getContentRepresentation(Document.class);
         } catch (Exception e) {
             throw new PropertyEvaluationException(
                     "Unable to get DOM representation of content", e);

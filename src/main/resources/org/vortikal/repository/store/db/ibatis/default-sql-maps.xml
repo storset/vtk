@@ -414,20 +414,6 @@
         (select resource_id from vortex_resource where uri = #destUri# or uri like #uriWildcard#)
   </delete>
   
-  <update id="updateBinaryRefsForCopy">
-    update extra_prop_entry set value = <include refid="binaryDestinationDescendantUriMove" />
-        where binary_content is not null and value like #uriWildcard# escape '@'
-        and resource_id in (select resource_id from vortex_resource where uri like #destUriWildcard#)
-  </update>
-  
-  
-  <update id="updateBinaryRefsForMove" parameterClass="java.util.Map">
-    update extra_prop_entry set
-        value = <include refid="binaryDestinationDescendantUriMove" />
-        where binary_content is not null and value like #uriWildcard# escape '@'
-  </update>
-
-
   <delete id="deletePropertiesByResourceId" parameterClass="int">
     delete from extra_prop_entry where resource_id = #resourceId#
   </delete>
@@ -650,6 +636,14 @@
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
 
+
+  <select id="numberOfCommentsByResource"
+          parameterClass="java.util.Map"
+          resultClass="Integer">
+    select count(c.id) as num
+    from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id
+    where r.uri = #uri#
+  </select>
 
   <select id="listCommentsByResource"
           parameterClass="java.util.Map"

@@ -30,22 +30,18 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyValidator;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-
-
 
 /**
  * An evaluator and validator for the resource owner property. Sets
@@ -57,8 +53,8 @@ import org.vortikal.security.PrincipalManager;
  * the operation of taking ownership should be configured as a
  * protection level in the property definition.
  */
-public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidator,
-                                       InitializingBean {
+public class OwnerEvaluator 
+    implements PropertyEvaluator, PropertyValidator, InitializingBean {
 
     private PrincipalManager principalManager;
     private AuthorizationManager authorizationManager;
@@ -84,10 +80,10 @@ public class OwnerEvaluator implements CreatePropertyEvaluator, PropertyValidato
     }
 
 
-    public boolean create(Principal principal, Property property, 
-                          PropertySet ancestorPropertySet, boolean isCollection, Date time) 
-        throws PropertyEvaluationException {
-        property.setPrincipalValue(principal);
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+            property.setPrincipalValue(ctx.getPrincipal());
+        }
         return true;
     }
 

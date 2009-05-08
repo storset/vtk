@@ -34,49 +34,20 @@ import java.util.Date;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.Principal;
 
+public class LastModifiedEvaluator implements PropertyEvaluator {
 
-public class LastModifiedEvaluator
-  implements CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
-             ContentModificationPropertyEvaluator {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-    public boolean create(Principal principal, Property property,
-                          PropertySet ancestorPropertySet, boolean isCollection,
-                          Date time) throws PropertyEvaluationException {
-
-        return evaluate(property, ancestorPropertySet);
-    }
-
-
-    public boolean propertiesModification(Principal principal, Property property,
-                                          PropertySet ancestorPropertySet,
-                                          Date time) throws PropertyEvaluationException {
-        return evaluate(property, ancestorPropertySet);
-
-    }
-
-
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content,
-                                       Date time) throws PropertyEvaluationException {
-
-        return evaluate(property, ancestorPropertySet);
-    }
-    
-
-
-    private boolean evaluate(Property property, PropertySet ancestorPropertySet) 
-        throws PropertyEvaluationException {
-
+        PropertySet ancestorPropertySet = ctx.getNewResource();
+        
         Property contentLastModified = ancestorPropertySet.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+
         Property propertiesLastModified = ancestorPropertySet.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
         
@@ -92,7 +63,4 @@ public class LastModifiedEvaluator
         property.setDateValue(lastModified);
         return true;
     }
-    
-
-
 }

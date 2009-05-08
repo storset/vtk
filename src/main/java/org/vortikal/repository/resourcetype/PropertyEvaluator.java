@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,15 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.Date;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
-import org.vortikal.security.Principal;
 
-public interface ContentModificationPropertyEvaluator {
+public interface PropertyEvaluator {
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time) 
-        throws PropertyEvaluationException;
+//    public boolean evaluate(Principal principal, Property property,
+//            PropertySet ancestorPropertySet, Content content, Date time) 
+//        throws PropertyEvaluationException;
 
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException;
 }

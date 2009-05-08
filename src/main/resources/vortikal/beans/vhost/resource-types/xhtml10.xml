@@ -58,7 +58,7 @@
   <bean id="xhtml10OverriddenGuessedCharacterEncodingPropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="guessedCharacterEncodingPropDef" />
-    <property name="contentModificationEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
+    <property name="propertyEvaluator" ref="xhtml10TransGuessedCharacterEncodingEvaluator" />
     <property name="defaultValue">
       <bean class="org.vortikal.repository.resourcetype.Value">
         <constructor-arg type="java.lang.String"
@@ -108,7 +108,7 @@
   <bean id="xhtml10OverriddenHtmlTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="htmlTitlePropDef" />
-    <property name="contentModificationEvaluator" ref="xhtmlOverriddenHtmlTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="xhtmlOverriddenHtmlTitlePropertyEvaluator" />
   </bean>
 
 
@@ -122,8 +122,7 @@
   <bean id="xhtml10OverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="contentModificationEvaluator" ref="xhtmlOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="xhtmlOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="xhtmlOverriddenTitlePropertyEvaluator" />
   </bean>
 
 

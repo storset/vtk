@@ -30,25 +30,16 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jdom.Document;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.xml.StylesheetReferenceResolver;
-
-
-
 
 /**
  * Evaluate XML stylesheet reference. Stylesheet references are
@@ -62,19 +53,16 @@ import org.vortikal.xml.StylesheetReferenceResolver;
  *   stylesheet reference.
  * </ul>
  */
-public class XMLStylesheetEvaluator implements ContentModificationPropertyEvaluator,
-                                               InitializingBean {
+public class XMLStylesheetEvaluator 
+    implements PropertyEvaluator, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
-
     private StylesheetReferenceResolver[] stylesheetReferenceResolvers;
-
 
     public void setStylesheetReferenceResolvers(
         StylesheetReferenceResolver[] stylesheetReferenceResolvers) {
         this.stylesheetReferenceResolvers = stylesheetReferenceResolvers;
     }
-    
 
     public void afterPropertiesSet() {
         if (this.stylesheetReferenceResolvers == null) {
@@ -83,16 +71,12 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
         }
     }
     
-
-    public boolean contentModification(Principal principal, 
-                                       Property property, 
-                                       PropertySet ancestorPropertySet, 
-                                       Content content, 
-                                       Date time)
-            throws PropertyEvaluationException {
-
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() == null) {
+            return false;
+        }
         try {
-            Document doc = (Document) content.getContentRepresentation(org.jdom.Document.class);
+            Document doc = (Document) ctx.getContent().getContentRepresentation(org.jdom.Document.class);
             if (doc == null) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Content representation '"
@@ -101,18 +85,18 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
                 return false;
             }
             
-            String stylesheetReference = resolveTemplateReference(ancestorPropertySet, doc);
+            String stylesheetReference = resolveTemplateReference(ctx.getNewResource(), doc);
             
             if (stylesheetReference == null) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Did not find stylesheet identifier for resource '" +
-                                 ancestorPropertySet + "'");
+                                 ctx.getNewResource() + "'");
                 }
                 return false;
             }
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Found stylesheet identifier for resource '" +
-                             ancestorPropertySet + "': '" + stylesheetReference + "'");
+                             ctx.getNewResource() + "': '" + stylesheetReference + "'");
             }
             property.setStringValue(stylesheetReference);
             return true;
@@ -121,7 +105,7 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
         } catch (Exception e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to find stylesheet reference for resource "
-                             + ancestorPropertySet, e);
+                             + ctx.getNewResource(), e);
             }
             return false;
         }
@@ -138,6 +122,4 @@ public class XMLStylesheetEvaluator implements ContentModificationPropertyEvalua
         }
         return null;
     }
-
-
 }

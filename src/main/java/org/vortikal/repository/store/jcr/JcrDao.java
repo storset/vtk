@@ -962,6 +962,30 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         }
     }
 
+    public int getNumberOfComments(Resource resource) throws RuntimeException {
+        Session session = getSession();
+        try {
+            Path uri = resource.getURI();
+            String jcrPath = JcrDaoConstants.VRTX_ROOT;
+            if (!"/".equals(uri)) {
+                jcrPath += uri;
+            }
+            StringBuilder stmt = new StringBuilder();
+            stmt.append("select * from vrtx:comment ");
+            stmt.append("where jcr:path = '").append(jcrPath);
+            stmt.append("/").append(JcrDaoConstants.VRTX_COMMENTS_NAME);
+            stmt.append("/%' ");
+            stmt.append("order by vrtx:commentTime");
+            Query query = session.getWorkspace().getQueryManager().createQuery(stmt.toString(), Query.SQL); 
+            QueryResult result = query.execute();
+            long comments = result.getNodes().getSize();
+            return (int) comments;
+        } catch (RepositoryException e) {
+            throw new DataAccessException(e);
+        } finally {
+            session.logout();
+        }
+    }
     private void populateCommentNode(Node commentNode, Comment comment) throws RepositoryException {
         String author = comment.getAuthor().getQualifiedName();
         String content = comment.getContent();

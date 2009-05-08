@@ -32,17 +32,14 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.util.io.StreamUtil;
 
 
@@ -59,8 +56,7 @@ import org.vortikal.util.io.StreamUtil;
  * <p>One possibility might be to use
  * <code>org.dom4j.Document#getXMLEncoding</code>?
  */
-public class XMLCharacterEncodingEvaluator implements 
-        ContentModificationPropertyEvaluator {
+public class XMLCharacterEncodingEvaluator implements PropertyEvaluator {
 
     private int maxBytes = 10000000;
 
@@ -76,15 +72,15 @@ public class XMLCharacterEncodingEvaluator implements
     }
     
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
-
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() == null) {
+            return false;
+        }
         String characterEncoding = null;
         String xmlContent = null;
       
         try {
-            InputStream inputStream = content.getContentInputStream();
+            InputStream inputStream = ctx.getContent().getContentInputStream();
             byte[] buffer = StreamUtil.readInputStream(inputStream, this.maxBytes);
             xmlContent = new String(buffer, "utf-8");
 

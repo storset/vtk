@@ -30,41 +30,32 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 /**
  * Evaluate contentLength.
  */
-public class ContentLengthEvaluator implements ContentModificationPropertyEvaluator {
+public class ContentLengthEvaluator implements PropertyEvaluator {
 
-    public boolean contentModification(Principal principal, 
-                                       Property property, 
-                                       PropertySet ancestorPropertySet, 
-                                       Content content, Date time) 
-        throws PropertyEvaluationException {
-        
-
-        if (content == null) {
-            // Shouldn't happen, the content-length property evaluator should not be called
-            // for collections
-            throw new 
-                PropertyEvaluationException("Cannot evaluate content-length, content was null");
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.isCollection()) {
+            return false;
         }
-        
-        try {
-            property.setLongValue(content.getContentLength());
-        } catch (Exception e) {
-            throw new PropertyEvaluationException(
-                    "Unable to get content length: " + e.getMessage());
+        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            return true;
         }
-        
+        Content content = ctx.getContent();
+        if (content != null) {
+            try {
+                property.setLongValue(content.getContentLength());
+            } catch (Exception e) {
+                throw new PropertyEvaluationException(
+                        "Unable to get content length: " + e.getMessage());
+            }
+        }
         return true;
     }
-
 }

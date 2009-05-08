@@ -30,34 +30,18 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
-public class ContentLastModifiedEvaluator implements CreatePropertyEvaluator, 
-    ContentModificationPropertyEvaluator {
+public class ContentLastModifiedEvaluator implements PropertyEvaluator {
 
-    public boolean create(Principal principal, 
-                          Property property, 
-                          PropertySet ancestorPropertySet, 
-                          boolean isCollection, 
-                          Date time) throws PropertyEvaluationException {
-        property.setDateValue(time);
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        PropertyEvaluationContext.Type type = ctx.getEvaluationType();
+        if (type == PropertyEvaluationContext.Type.ContentChange
+                || type == PropertyEvaluationContext.Type.Create) {
+            property.setDateValue(ctx.getTime());
+        }
         return true;
     }
-
-    public boolean contentModification(Principal principal, 
-                                       Property property, 
-                                       PropertySet ancestorPropertySet, 
-                                       Content content, 
-                                       Date time) throws PropertyEvaluationException {
-        property.setDateValue(time);
-        return true;
-    }
-
 }

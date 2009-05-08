@@ -30,16 +30,12 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
 /**
  * Evaluate XML schema property on content modification. Gets the XML
@@ -47,22 +43,18 @@ import org.vortikal.security.Principal;
  * <code>http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation</code>
  * attribute on the root element of the document.
  */
-public class XMLSchemaEvaluator implements ContentModificationPropertyEvaluator {
+public class XMLSchemaEvaluator implements PropertyEvaluator {
 
     private String xmlSchemaAttributeNamespace = "http://www.w3.org/2001/XMLSchema-instance";
     private String xmlSchemaAttributeName = "noNamespaceSchemaLocation";
 
-    public boolean contentModification(Principal principal, 
-                                       Property property, 
-                                       PropertySet ancestorPropertySet, 
-                                       Content content, 
-                                       Date time)
-            throws PropertyEvaluationException {
-
-        
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (ctx.getContent() == null) {
+            return false;
+        }
         String schemaLocation = null;
         try {
-            Document doc = (Document)content.getContentRepresentation(org.jdom.Document.class);
+            Document doc = (Document) ctx.getContent().getContentRepresentation(org.jdom.Document.class);
             Element root = doc.getRootElement();
             Namespace ns = Namespace.getNamespace(this.xmlSchemaAttributeNamespace);
             schemaLocation = root.getAttributeValue(this.xmlSchemaAttributeName, ns);

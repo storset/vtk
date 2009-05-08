@@ -30,29 +30,25 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class PropertyValueConditionalEvaluator implements ContentModificationPropertyEvaluator {
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-    private Map<Pattern, ContentModificationPropertyEvaluator> conditionalValueEvaluatorMap;
+public class PropertyValueConditionalEvaluator implements PropertyEvaluator {
+
+    private Map<Pattern, PropertyEvaluator> conditionalValueEvaluatorMap;
     private PropertyTypeDefinition propertyDefinition;
 
 
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         
-        Property existing = ancestorPropertySet.getProperty(this.propertyDefinition);
+        Property existing = ctx.getNewResource().getProperty(this.propertyDefinition);
         if (existing == null) {
             return false;
         }
@@ -62,10 +58,9 @@ public class PropertyValueConditionalEvaluator implements ContentModificationPro
         for (Pattern pattern: conditionalValueEvaluatorMap.keySet()) {
             Matcher m = pattern.matcher(value);
             if (m.find()) {
-                ContentModificationPropertyEvaluator evaluator =
+                PropertyEvaluator evaluator =
                     this.conditionalValueEvaluatorMap.get(pattern);
-                return evaluator.contentModification(principal, property,
-                                                     ancestorPropertySet, content, time);
+                return evaluator.evaluate(property, ctx);
             }
         }
         return false;
@@ -75,14 +70,13 @@ public class PropertyValueConditionalEvaluator implements ContentModificationPro
         this.propertyDefinition = propertyDefinition;
     }
 
-    public void setConditionalValueEvaluatorMap(Map<String, ContentModificationPropertyEvaluator> conditionalValueEvaluatorMap) {
-        this.conditionalValueEvaluatorMap = new HashMap<Pattern, ContentModificationPropertyEvaluator>();
+    public void setConditionalValueEvaluatorMap(Map<String, PropertyEvaluator> conditionalValueEvaluatorMap) {
+        this.conditionalValueEvaluatorMap = new HashMap<Pattern, PropertyEvaluator>();
         for (String key: conditionalValueEvaluatorMap.keySet()) {
-            ContentModificationPropertyEvaluator evaluator = conditionalValueEvaluatorMap.get(key);
+            PropertyEvaluator evaluator = conditionalValueEvaluatorMap.get(key);
             Pattern pattern = Pattern.compile(key, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
             this.conditionalValueEvaluatorMap.put(pattern, evaluator);
         }
 
     }
-    
 }

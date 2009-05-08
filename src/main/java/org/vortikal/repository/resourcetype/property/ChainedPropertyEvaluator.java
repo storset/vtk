@@ -32,34 +32,19 @@ package org.vortikal.repository.resourcetype.property;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
-
-public class ChainedPropertyEvaluator
-  implements CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
-             ContentModificationPropertyEvaluator {
+public class ChainedPropertyEvaluator implements PropertyEvaluator {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    private List<CreatePropertyEvaluator> createEvaluators = 
-        new ArrayList<CreatePropertyEvaluator>();
-    private List<ContentModificationPropertyEvaluator> contentModificationEvaluators = 
-        new ArrayList<ContentModificationPropertyEvaluator>();
-    private List<PropertiesModificationPropertyEvaluator> propertiesModificationEvaluators = 
-        new ArrayList<PropertiesModificationPropertyEvaluator>();
-    
+    private List<PropertyEvaluator> propertyEvaluators = new ArrayList<PropertyEvaluator>();
     
     public void setPropertyEvaluators(Object[] propertyEvaluators) {
         if (propertyEvaluators == null || propertyEvaluators.length == 0) {
@@ -67,72 +52,22 @@ public class ChainedPropertyEvaluator
         }
 
         for (Object o: propertyEvaluators) {
-            if (o instanceof CreatePropertyEvaluator) {
-                createEvaluators.add((CreatePropertyEvaluator)o);
-            }
-            else if (o instanceof ContentModificationPropertyEvaluator) {
-                contentModificationEvaluators.add((ContentModificationPropertyEvaluator)o);
-            }
-            else if (o instanceof PropertiesModificationPropertyEvaluator) {
-                propertiesModificationEvaluators.add((PropertiesModificationPropertyEvaluator)o);
-            }
-            else {
-                throw new IllegalArgumentException("Property evaluator not of required class " + o);
+            if (o instanceof PropertyEvaluator) {
+                this.propertyEvaluators.add((PropertyEvaluator) o);
             }
         }
     }
-    
 
-
-    public boolean create(Principal principal, Property property,
-                          PropertySet ancestorPropertySet, boolean isCollection,
-                          Date time) throws PropertyEvaluationException {
-        for (CreatePropertyEvaluator evaluator: this.createEvaluators) {
-            if (evaluator.create(principal, property,
-                                                ancestorPropertySet, isCollection, time)) {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        for (PropertyEvaluator evaluator: this.propertyEvaluators) {
+            if (evaluator.evaluate(property, ctx)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for property evaluator '"
-                            + evaluator + "', property set: " + property);
+                            + evaluator + "', property set: " + ctx.getNewResource());
                 }
                 return true;
             }
         }
         return false;
     }
-
-
-    public boolean propertiesModification(Principal principal, Property property,
-                                          PropertySet ancestorPropertySet,
-                                          Date time) throws PropertyEvaluationException {
-        for (PropertiesModificationPropertyEvaluator evaluator: this.propertiesModificationEvaluators) {
-            if (evaluator.propertiesModification(
-                    principal, property, ancestorPropertySet, time)) {
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found match for property evaluator '"
-                            + evaluator + "', property set: " + property);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public boolean contentModification(Principal principal, Property property,
-                                       PropertySet ancestorPropertySet, Content content,
-                                       Date time) throws PropertyEvaluationException {
-        for (ContentModificationPropertyEvaluator evaluator: this.contentModificationEvaluators) {
-            if (evaluator.contentModification(
-                    principal, property, ancestorPropertySet, content, time)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found match for property evaluator '"
-                            + evaluator + "', property set: " + property);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

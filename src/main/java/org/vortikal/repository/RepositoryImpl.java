@@ -250,7 +250,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     destUri);
 
             ResourceImpl newResource = src.createCopy(destUri);
-            newResource = this.resourceHelper.nameChange(newResource, principal);
+            newResource = this.resourceHelper.nameChange(src, newResource, principal);
             destParent = this.resourceHelper.contentModification(destParent, principal);
 
             this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
@@ -313,7 +313,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setAcl(src.getAcl());
             newResource.setInheritedAcl(src.isInheritedAcl());
             newResource.setAclInheritedFrom(src.getAclInheritedFrom());
-            newResource = this.resourceHelper.nameChange(newResource, principal);
+            newResource = this.resourceHelper.nameChange(src, newResource, principal);
 
             this.dao.move(src, newResource);
 
@@ -656,8 +656,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment.setApproved(true);
 
             comment = this.commentDAO.createComment(comment);
-            updateNumberOfComments(original, Integer.valueOf(comments.size() + 1));
 
+            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal,
+                    (ResourceImpl) resource);
+            this.dao.store(newResource);
+
+            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
+            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            this.context.publishEvent(event);
+            
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -696,9 +703,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteComment(comment);
 
-            List<Comment> comments = this.commentDAO.listCommentsByResource(resource, false,
-                    this.maxComments);
-            updateNumberOfComments(original, Integer.valueOf(comments.size()));
+            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal,
+                    (ResourceImpl) resource);
+            this.dao.store(newResource);
+
+            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
+            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            this.context.publishEvent(event);
 
         } catch (Exception e) {
             throw new RuntimeException("Unhandled exception", e);
@@ -726,7 +737,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeEditComment(resource.getURI(), principal);
             this.commentDAO.deleteAllComments(resource);
 
-            updateNumberOfComments(original, null);
+            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal,
+                    (ResourceImpl) resource);
+            this.dao.store(newResource);
+
+            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
+            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+            this.context.publishEvent(event);
 
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
@@ -774,27 +791,27 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     // XXX: method contains temporary hacks
-    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments) {
-        try {
-            // XXX: temporary
-            ResourceImpl newResource = 
-                this.resourceHelper.numberOfCommentsPropertyChange(original, numberOfComments);
-            
-            Path uri = newResource.getURI();
-            
-            // Store at DAO layer to avoid re-evaluation of everything, and to avoid ACL write check.
-            this.dao.store(newResource);
-            
-            newResource = (ResourceImpl) this.dao.load(uri).clone();
-            
-            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
-            this.context.publishEvent(event);
-            
-        } catch (Exception e) {
-            throw new RuntimeException("Could not update number of comments", e);
-        }
-    }
+//    private void updateNumberOfComments(ResourceImpl original, Integer numberOfComments) {
+//        try {
+//            // XXX: temporary
+//            ResourceImpl newResource = 
+//                this.resourceHelper.numberOfCommentsPropertyChange(original, numberOfComments);
+//            
+//            Path uri = newResource.getURI();
+//            
+//            // Store at DAO layer to avoid re-evaluation of everything, and to avoid ACL write check.
+//            this.dao.store(newResource);
+//            
+//            newResource = (ResourceImpl) this.dao.load(uri).clone();
+//            
+//            // Publish resource modification event (necessary to trigger re-indexing, since a prop is now modified)
+//            ResourceModificationEvent event = new ResourceModificationEvent(this, newResource, original);
+//            this.context.publishEvent(event);
+//            
+//        } catch (Exception e) {
+//            throw new RuntimeException("Could not update number of comments", e);
+//        }
+//    }
 
     private Resource create(String token, Path uri, boolean collection)
             throws AuthorizationException, AuthenticationException, IllegalOperationException,

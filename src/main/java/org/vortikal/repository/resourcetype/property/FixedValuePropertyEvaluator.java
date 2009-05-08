@@ -30,16 +30,10 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.security.Principal;
 
 /**
  * Property evaluator that always evaluates to the same, fixed value.
@@ -49,9 +43,7 @@ import org.vortikal.security.Principal;
  *   <li><code>value</code> - the {@link Value} to evaluate to
  * </ul>
  */
-public class FixedValuePropertyEvaluator
-  implements CreatePropertyEvaluator, ContentModificationPropertyEvaluator,
-             PropertiesModificationPropertyEvaluator {
+public class FixedValuePropertyEvaluator implements PropertyEvaluator {
 
     private Value value;
 
@@ -63,29 +55,9 @@ public class FixedValuePropertyEvaluator
         this.value = value;
     }
     
-    public boolean create(Principal principal, Property property, 
-            PropertySet ancestorPropertySet, boolean isCollection, Date time)
-        throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
         property.setValue(this.value);
         return true;
     }
-    
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content, Date time)
-            throws PropertyEvaluationException {
-
-        property.setValue(this.value);
-        return true;
-    }
-
-    public boolean propertiesModification(Principal principal, Property property,
-                                          PropertySet ancestorPropertySet,
-                                          Date time) throws PropertyEvaluationException {
-        property.setValue(this.value);
-        return true;
-    }
-
-
-
 }

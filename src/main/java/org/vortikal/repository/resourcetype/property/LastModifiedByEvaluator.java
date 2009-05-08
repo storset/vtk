@@ -30,43 +30,14 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 
+public class LastModifiedByEvaluator implements PropertyEvaluator {
 
-public class LastModifiedByEvaluator
-  implements CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
-             ContentModificationPropertyEvaluator {
-
-    public boolean create(Principal principal, Property property,
-                          PropertySet ancestorPropertySet, boolean isCollection,
-                          Date time) throws PropertyEvaluationException {
-        property.setPrincipalValue(principal);
-        return true;
-    }
-
-
-    public boolean propertiesModification(Principal principal, Property property,
-                                          PropertySet ancestorPropertySet,
-                                          Date time) throws PropertyEvaluationException {
-        property.setPrincipalValue(principal);
-        return true;
-
-    }
-
-
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content,
-                                       Date time) throws PropertyEvaluationException {
-
-        property.setPrincipalValue(principal);
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        property.setPrincipalValue(ctx.getPrincipal());
         return true;
     }
 }

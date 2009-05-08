@@ -45,7 +45,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandFornavnEvaluator" />
+        <property name="propertyEvaluator" ref="proveforelesningDoktorandFornavnEvaluator" />
     </bean>
         
     <bean id="proveforelesningDoktorandFornavnEvaluator" parent="abstractXPathEvaluator">
@@ -58,7 +58,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningDoktorandEtternavnEvaluator" />
+        <property name="propertyEvaluator" ref="proveforelesningDoktorandEtternavnEvaluator" />
     </bean>
         
     <bean id="proveforelesningDoktorandEtternavnEvaluator" parent="abstractXPathEvaluator">
@@ -72,7 +72,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningEmneEvaluator" />
+        <property name="propertyEvaluator" ref="proveforelesningEmneEvaluator" />
     </bean>
     
     <bean id="proveforelesningEmneEvaluator" parent="abstractXPathEvaluator">
@@ -86,7 +86,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningStarttidspunktEvaluator" />
+        <property name="propertyEvaluator" ref="proveforelesningStarttidspunktEvaluator" />
     </bean>
     
     <bean id="proveforelesningStarttidspunktEvaluator" parent="abstractXPathEvaluator">
@@ -100,7 +100,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningSluttidspunktEvaluator" />
+        <property name="propertyEvaluator" ref="proveforelesningSluttidspunktEvaluator" />
     </bean>
 
     <bean id="proveforelesningSluttidspunktEvaluator" parent="abstractXPathEvaluator">
@@ -114,7 +114,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="proveforelesningStedEvaluator" />
+        <property name="propertyEvaluator" ref="proveforelesningStedEvaluator" />
     </bean>
     
     <bean id="proveforelesningStedEvaluator" parent="abstractXPathEvaluator">

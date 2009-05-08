@@ -43,7 +43,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="portalTitleEvaluator" />
+        <property name="propertyEvaluator" ref="portalTitleEvaluator" />
     </bean>
     
     <bean id="portalTitleEvaluator" parent="abstractXPathEvaluator">
@@ -56,7 +56,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="portalShortTitleEvaluator" />
+        <property name="propertyEvaluator" ref="portalShortTitleEvaluator" />
     </bean>
     
     <bean id="portalShortTitleEvaluator" parent="abstractXPathEvaluator">
@@ -69,7 +69,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="portalIntroductionEvaluator" />
+        <property name="propertyEvaluator" ref="portalIntroductionEvaluator" />
     </bean>
     
     <bean id="portalIntroductionEvaluator" parent="abstractXPathEvaluator">

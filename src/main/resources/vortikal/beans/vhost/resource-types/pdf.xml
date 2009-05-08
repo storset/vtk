@@ -35,7 +35,7 @@
     <property name="name" value="title" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="audioTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioTitlePropertyEvaluator" />
   </bean>
 
   <bean id="pdfTitlePropertyEvaluator"
@@ -45,8 +45,7 @@
   <bean id="pdfOverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="contentModificationEvaluator" ref="pdfOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="pdfOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="pdfOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="pdfOverriddenTitlePropertyEvaluator"

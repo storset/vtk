@@ -55,7 +55,7 @@
                 </constructor-arg>
             </bean>
         </property>
-        <property name="contentModificationEvaluator" ref="muvArtikkelTittelEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelTittelEvaluator" />
     </bean>
     
     <bean id="muvArtikkelTittelEvaluator" parent="abstractXPathEvaluator">
@@ -67,7 +67,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvArtikkelIngressEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelIngressEvaluator" />
     </bean>
     
     <bean id="muvArtikkelIngressEvaluator" parent="abstractXPathEvaluator">
@@ -79,7 +79,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvArtikkelLiteBildeWebadresseEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelLiteBildeWebadresseEvaluator" />
     </bean>
     
     <bean id="muvArtikkelLiteBildeWebadresseEvaluator" parent="abstractXPathEvaluator">
@@ -91,7 +91,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvArtikkelLiteBildeAlternativTextEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelLiteBildeAlternativTextEvaluator" />
     </bean>
     
     <bean id="muvArtikkelLiteBildeAlternativTextEvaluator" parent="abstractXPathEvaluator">
@@ -103,7 +103,7 @@
         <property name="type" value="TIMESTAMP" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvPubliseringsdatoEvaluator" />
+        <property name="propertyEvaluator" ref="muvPubliseringsdatoEvaluator" />
     </bean>
     
     <bean id="muvPubliseringsdatoEvaluator" parent="abstractXPathEvaluator">
@@ -118,7 +118,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvArtikkelMetadataEpokeEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelMetadataEpokeEvaluator" />
     </bean>
     
     <bean id="muvArtikkelMetadataEpokeEvaluator" parent="abstractXPathEvaluator">
@@ -130,7 +130,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvArtikkelMetadataMenneskeneEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelMetadataMenneskeneEvaluator" />
     </bean>
     
     <bean id="muvArtikkelMetadataMenneskeneEvaluator" parent="abstractXPathEvaluator">
@@ -142,7 +142,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="muvArtikkelMetadataBygningeneEvaluator" />
+        <property name="propertyEvaluator" ref="muvArtikkelMetadataBygningeneEvaluator" />
     </bean>
     
     <bean id="muvArtikkelMetadataBygningeneEvaluator" parent="abstractXPathEvaluator">

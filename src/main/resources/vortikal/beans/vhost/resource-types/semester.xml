@@ -43,7 +43,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="semesterEmnekodeEvaluator" />
+    <property name="propertyEvaluator" ref="semesterEmnekodeEvaluator" />
   </bean>
 
   <bean id="semesterEmnekodeEvaluator" parent="abstractXPathEvaluator">
@@ -56,7 +56,7 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="semesterSemesterEvaluator" />
+    <property name="propertyEvaluator" ref="semesterSemesterEvaluator" />
   </bean>
 
   <bean id="semesterSemesterEvaluator" parent="abstractXPathEvaluator">
@@ -68,7 +68,7 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="semesterAarEvaluator" />
+    <property name="propertyEvaluator" ref="semesterAarEvaluator" />
   </bean>
 
   <bean id="semesterAarEvaluator" parent="abstractXPathEvaluator">
@@ -88,7 +88,7 @@
           </constructor-arg>
         </bean>
     </property>
-    <property name="contentModificationEvaluator" ref="semesterSpraakEvaluator" />
+    <property name="propertyEvaluator" ref="semesterSpraakEvaluator" />
   </bean>
 
   <bean id="semesterSpraakEvaluator" parent="abstractXPathEvaluator">

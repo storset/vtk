@@ -42,7 +42,7 @@
     <property name="name" value="author" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="audioAuthorPropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioAuthorPropertyEvaluator" />
   </bean>
   <bean id="audioAuthorPropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
@@ -54,7 +54,7 @@
     <property name="name" value="album" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="audioAlbumPropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioAlbumPropertyEvaluator" />
   </bean>
   <bean id="audioAlbumPropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
@@ -66,7 +66,7 @@
     <property name="name" value="title" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="audioTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioTitlePropertyEvaluator" />
   </bean>
 
   <bean id="audioTitlePropertyEvaluator"
@@ -77,8 +77,7 @@
   <bean id="audioOverriddenTitlePropDef"
         class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="contentModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="audioOverriddenTitlePropertyEvaluator"
@@ -91,7 +90,7 @@
     <property name="name" value="track" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="audioTrackPropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioTrackPropertyEvaluator" />
   </bean>
   <bean id="audioTrackPropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
@@ -103,7 +102,7 @@
     <property name="name" value="genre" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="audioGenrePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="audioGenrePropertyEvaluator" />
   </bean>
   <bean id="audioGenrePropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">

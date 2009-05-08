@@ -58,14 +58,13 @@
     <property name="name" value="managedXmlTitle" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="contentModificationEvaluator" ref="managedXmlTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="managedXmlTitlePropertyEvaluator" />
   </bean>
 
   <bean id="managedXmlOverriddenTitlePropDef"
     class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
-    <property name="contentModificationEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
-    <property name="nameModificationEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
+    <property name="propertyEvaluator" ref="managedXmlOverriddenTitlePropertyEvaluator" />
   </bean>
 
   <bean id="managedXmlOverriddenTitlePropertyEvaluator" parent="titleEvaluator">

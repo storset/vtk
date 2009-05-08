@@ -30,42 +30,44 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.PropertiesModificationExplicitValueEvaluator;
-import org.vortikal.security.Principal;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.store.CommentDAO;
 
-public class NumberOfCommentsModifiedEvaluator implements
-        PropertiesModificationExplicitValueEvaluator {
+public class NumberOfCommentsModifiedEvaluator implements PropertyEvaluator {
 
-    public boolean propertiesModification(Principal principal, Object value, Property property,
-            PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
+    private CommentDAO commentDAO;
+    
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-        if (value == null) {
-            return false;
-        }
-
-        if (!(value instanceof Integer)) {
-            throw new PropertyEvaluationException("Value must be of type INTEGER, "
-                    + "was instead " + value.getClass());
-        }
-
-        Integer numberOfComments = (Integer) value;
-
+//        if (value == null) {
+//            return false;
+//        }
+//
+//        if (!(value instanceof Integer)) {
+//            throw new PropertyEvaluationException("Value must be of type INTEGER, "
+//                    + "was instead " + value.getClass());
+//        }
+//
+//        Integer numberOfComments = (Integer) value;
+//
+//        if (numberOfComments < 1) {
+//            return false;
+//        }
+//
+//        property.setIntValue(numberOfComments.intValue());
+        int numberOfComments = commentDAO.getNumberOfComments(ctx.getNewResource());
         if (numberOfComments < 1) {
             return false;
         }
-
-        property.setIntValue(numberOfComments.intValue());
+        property.setIntValue(numberOfComments);
         return true;
     }
-
-
-    public boolean propertiesModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Date time) throws PropertyEvaluationException {
-        return false;
+    
+    @Required public void setCommentDAO(CommentDAO commentDAO) {
+        this.commentDAO = commentDAO;
     }
 
 }

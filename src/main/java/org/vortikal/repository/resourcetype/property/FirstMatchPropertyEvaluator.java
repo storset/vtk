@@ -30,26 +30,14 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
-import org.vortikal.repository.resourcetype.CreatePropertyEvaluator;
-import org.vortikal.repository.resourcetype.NameChangePropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertiesModificationPropertyEvaluator;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
 
-
-
-public class FirstMatchPropertyEvaluator
-  implements CreatePropertyEvaluator, PropertiesModificationPropertyEvaluator,
-             ContentModificationPropertyEvaluator, NameChangePropertyEvaluator {
+public class FirstMatchPropertyEvaluator implements PropertyEvaluator {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -59,40 +47,11 @@ public class FirstMatchPropertyEvaluator
         this.propertyDefinitions = propertyDefinitions;
     }
     
-
-
-    public boolean create(Principal principal, Property property,
-                          PropertySet ancestorPropertySet, boolean isCollection,
-                          Date time) throws PropertyEvaluationException {
-
-        return evaluate(property, ancestorPropertySet);
-    }
-
-
-    public boolean propertiesModification(Principal principal, Property property,
-                                          PropertySet ancestorPropertySet,
-                                          Date time) throws PropertyEvaluationException {
-        return evaluate(property, ancestorPropertySet);
-
-    }
-
-
-    public boolean contentModification(Principal principal, Property property,
-            PropertySet ancestorPropertySet, Content content,
-                                       Date time) throws PropertyEvaluationException {
-
-        return evaluate(property, ancestorPropertySet);
-    }
-    
-
-
-
-    private boolean evaluate(Property property, PropertySet ancestorPropertySet) 
-        throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
         for (PropertyTypeDefinition propDef: this.propertyDefinitions) {
 
-            Property prop = ancestorPropertySet.getProperty(propDef);
+            Property prop = ctx.getNewResource().getProperty(propDef);
             if (prop != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Found match for property definition '"
@@ -112,13 +71,4 @@ public class FirstMatchPropertyEvaluator
         }
         return false;
     }
-
-
-
-    public boolean nameModification(Principal principal, Property property, PropertySet ancestorPropertySet, Date time) {
-        return evaluate(property, ancestorPropertySet);
-    }
-    
-
-
 }

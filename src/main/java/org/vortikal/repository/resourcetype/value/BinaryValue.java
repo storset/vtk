@@ -96,7 +96,7 @@ public final class BinaryValue extends Value {
 
     @Override
     public Object getObjectValue() {
-        return this.buffer;
+        return getContentStream();
     }
 
     @Override

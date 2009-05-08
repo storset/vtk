@@ -90,7 +90,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaBygningsnummerEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaBygningsnummerEvaluator" />
     </bean>
     
     <bean id="romskjemaBygningsnummerEvaluator" parent="abstractXPathEvaluator">
@@ -103,7 +103,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaBygningsnavnEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaBygningsnavnEvaluator" />
     </bean>
     
     <bean id="romskjemaBygningsnavnEvaluator" parent="abstractXPathEvaluator">
@@ -116,7 +116,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomnummerEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomnummerEvaluator" />
     </bean>
     
     <bean id="romskjemaRomnummerEvaluator" parent="abstractXPathEvaluator">
@@ -129,7 +129,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomtypeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomtypeEvaluator" />
     </bean>
     
     <bean id="romskjemaRomtypeEvaluator" parent="abstractXPathEvaluator">
@@ -143,7 +143,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomansvarligFornavnEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomansvarligFornavnEvaluator" />
     </bean>
     
     <bean id="romskjemaRomansvarligFornavnEvaluator" parent="abstractXPathEvaluator">
@@ -156,7 +156,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomansvarligEtternavnEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomansvarligEtternavnEvaluator" />
     </bean>
     
     <bean id="romskjemaRomansvarligEtternavnEvaluator" parent="abstractXPathEvaluator">
@@ -169,7 +169,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomansvarligTelefonJobbEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomansvarligTelefonJobbEvaluator" />
     </bean>
     
     <bean id="romskjemaRomansvarligTelefonJobbEvaluator" parent="abstractXPathEvaluator">
@@ -182,7 +182,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomansvarligTelefonPrivatEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomansvarligTelefonPrivatEvaluator" />
     </bean>
     
     <bean id="romskjemaRomansvarligTelefonPrivatEvaluator" parent="abstractXPathEvaluator">
@@ -195,7 +195,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRomansvarligTelefonMobilEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRomansvarligTelefonMobilEvaluator" />
     </bean>
     
     <bean id="romskjemaRomansvarligTelefonMobilEvaluator" parent="abstractXPathEvaluator">
@@ -209,7 +209,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaAnsvarligEnhetNavnEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaAnsvarligEnhetNavnEvaluator" />
     </bean>
         
     <bean id="romskjemaAnsvarligEnhetNavnEvaluator" parent="abstractXPathEvaluator">
@@ -222,7 +222,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaAnsvarligEnhetTelefonEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaAnsvarligEnhetTelefonEvaluator" />
     </bean>
     
     <bean id="romskjemaAnsvarligEnhetTelefonEvaluator" parent="abstractXPathEvaluator">
@@ -236,7 +236,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdBrennbargassMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdBrennbargassMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdBrennbargassMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -249,7 +249,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdBrennbargassKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdBrennbargassKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdBrennbargassKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -262,7 +262,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdNoytralgassMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdNoytralgassMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdNoytralgassMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -275,7 +275,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdNoytralgassKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdNoytralgassKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdNoytralgassKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -288,7 +288,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdEksplosivgassMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdEksplosivgassMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdEksplosivgassMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -301,7 +301,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdEksplosivgassKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdEksplosivgassKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdEksplosivgassKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -314,7 +314,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdBrennbareveskerMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdBrennbareveskerMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdBrennbareveskerMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -327,7 +327,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdBrennbareveskerKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdBrennbareveskerKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdBrennbareveskerKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -340,7 +340,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdGiftiggassMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdGiftiggassMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdGiftiggassMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -353,7 +353,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdGiftiggassKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdGiftiggassKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdGiftiggassKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -366,7 +366,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdEtsendeveskerMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdEtsendeveskerMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdEtsendeveskerMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -379,7 +379,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdEtsendeveskerKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdEtsendeveskerKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdEtsendeveskerKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -392,7 +392,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdGiftigekjemikalierMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdGiftigekjemikalierMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdGiftigekjemikalierMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -405,7 +405,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdGiftigekjemikalierKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdGiftigekjemikalierKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdGiftigekjemikalierKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -418,7 +418,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdBrannfarligstoffMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdBrannfarligstoffMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdBrannfarligstoffMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -431,7 +431,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdBrannfarligstoffKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdBrannfarligstoffKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdBrannfarligstoffKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -444,7 +444,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdStoffReaksjonVannMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdStoffReaksjonVannMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdStoffReaksjonVannMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -457,7 +457,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdStoffReaksjonVannKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdStoffReaksjonVannKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdStoffReaksjonVannKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -470,7 +470,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdOksiderendestofferMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdOksiderendestofferMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdOksiderendestofferMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -483,7 +483,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdOksiderendestofferKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdOksiderendestofferKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdOksiderendestofferKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -496,7 +496,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdRadioaktiveSubstanserMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdRadioaktiveSubstanserMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdRadioaktiveSubstanserMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -509,7 +509,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdRadioaktiveSubstanserKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdRadioaktiveSubstanserKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdRadioaktiveSubstanserKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -522,7 +522,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdHoyspenningMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdHoyspenningMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdHoyspenningMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -535,7 +535,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdHoyspenningKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdHoyspenningKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdHoyspenningKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -548,7 +548,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdSmittefarligeBakteriekulturerMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdSmittefarligeBakteriekulturerMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdSmittefarligeBakteriekulturerMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -561,7 +561,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdSmittefarligeBakteriekulturerKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -574,7 +574,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdOmfintligeGjenstanderMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdOmfintligeGjenstanderMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdOmfintligeGjenstanderMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -587,7 +587,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdOmfintligeGjenstanderKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdOmfintligeGjenstanderKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdOmfintligeGjenstanderKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -600,7 +600,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdForsoksdyrMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdForsoksdyrMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdForsoksdyrMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -613,7 +613,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdForsoksdyrKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdForsoksdyrKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdForsoksdyrKommentarEvaluator" parent="abstractXPathEvaluator">
@@ -625,7 +625,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdAndreFarerMengdeEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdAndreFarerMengdeEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdAndreFarerMengdeEvaluator" parent="abstractXPathEvaluator">
@@ -638,7 +638,7 @@
         <property name="type" value="STRING" />
         <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
         <property name="mandatory" value="false" />
-        <property name="contentModificationEvaluator" ref="romskjemaRominnholdAndreFarerKommentarEvaluator" />
+        <property name="propertyEvaluator" ref="romskjemaRominnholdAndreFarerKommentarEvaluator" />
     </bean>
     
     <bean id="romskjemaRominnholdAndreFarerKommentarEvaluator" parent="abstractXPathEvaluator">

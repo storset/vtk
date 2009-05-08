@@ -30,22 +30,15 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.BeanInitializationException;
-
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.ContentModificationPropertyEvaluator;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.security.Principal;
-
-
 
 /**
  * Evaluator that performs a regular expression match on the resource
@@ -64,7 +57,7 @@ import org.vortikal.security.Principal;
  * </ul>
  *
  */
-public class ContentRegexpEvaluator implements ContentModificationPropertyEvaluator {
+public class ContentRegexpEvaluator implements PropertyEvaluator {
 
     private String characterEncoding = "ascii";
     private String pattern;
@@ -90,15 +83,16 @@ public class ContentRegexpEvaluator implements ContentModificationPropertyEvalua
         Charset.forName(this.characterEncoding);
     }
     
-    public boolean contentModification(Principal principal, Property property, 
-                                       PropertySet ancestorPropertySet, Content content, 
-                                       Date time) {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         if (property.getDefinition().getType() != PropertyType.Type.BOOLEAN) {
             throw new PropertyEvaluationException("Type of property " + property
                                                   + " is not boolean, cannot evaluate ");
         }
+        if (ctx.getContent() == null) {
+            return false;
+        }
         try {
-            byte[] buffer = (byte[]) content.getContentRepresentation(byte[].class);
+            byte[] buffer = (byte[]) ctx.getContent().getContentRepresentation(byte[].class);
             String contentString = new String(buffer, this.characterEncoding);
             Matcher matcher = this.compiledPattern.matcher(contentString);
             boolean match = matcher.find();

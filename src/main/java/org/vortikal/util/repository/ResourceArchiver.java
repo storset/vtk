@@ -513,6 +513,9 @@ public class ResourceArchiver {
         PropertyTypeDefinition propDef = parsePropDef(valueString);
         if (propDef == null)
             return false;
+        if (propDef.getProtectionLevel() == RepositoryAction.UNEDITABLE_ACTION) {
+            return false;
+        }
         String rawValue = parseRawValue(valueString);
         if (rawValue == null || "".equals(rawValue))
             return false;

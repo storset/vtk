@@ -223,7 +223,7 @@ public abstract class AtomFeedController implements Controller {
             if (!imageRef.startsWith("/") && !imageRef.startsWith("https://")
                     && !imageRef.startsWith("https://")) {
                 try {
-                    imageRef = resource.getURI().getParent().extendAndProcess(imageRef).toString();
+                    imageRef = resource.getURI().getParent().expand(imageRef).toString();
                     pic.setValue(new Value(imageRef));
                 } catch (Throwable t) {
                 }

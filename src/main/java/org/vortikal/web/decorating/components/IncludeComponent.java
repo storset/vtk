@@ -61,12 +61,12 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
-import org.vortikal.web.decorating.DecoratorRequest;
-import org.vortikal.web.decorating.DecoratorResponse;
 
 public class IncludeComponent extends AbstractDecoratorComponent
   implements ServletContextAware {
@@ -133,7 +133,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         if (uri != null) {
             if (!uri.startsWith("/")) {
                 Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
-                uri = currentCollection.extendAndProcess(uri).toString();
+                uri = currentCollection.expand(uri).toString();
             }
             handleDirectInclude(uri, request, response);
             return;
@@ -156,7 +156,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
 
         if (!uri.startsWith("/")) {
             Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
-            uri = currentCollection.extendAndProcess(uri).toString();
+            uri = currentCollection.expand(uri).toString();
         }
 
         handleVirtualInclude(uri, request, response);

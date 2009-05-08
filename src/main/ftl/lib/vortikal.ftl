@@ -313,7 +313,7 @@
     <#attempt>
       <#local imageRef = prop.getStringValue() />
       <#if !imageRef?starts_with("/") && !imageRef?starts_with("http://") && !imageRef?starts_with("https://")>
-        <#local imageRef = resource.URI.getParent().extendAndProcess(imageRef) />
+        <#local imageRef = resource.URI.getParent().expand(imageRef) />
         <#local hackedProp = def.createProperty(imageRef.toString())>
         <#return hackedProp.getFormattedValue(format, locale) />
       </#if>

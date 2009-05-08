@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
-import org.vortikal.util.repository.URIUtil;
 
 /**
  * The <code>Path</code> class represents a set of 
@@ -215,8 +214,9 @@ public final class Path implements Comparable<Path> {
     /**
      * Extends this path with a sub-path. For example, the path 
      * <code>/a</code> when extended with the sub-path <code>b/c</code>
-     * would produce the resulting path </code>/a/b/c</code>.
-     * @param subPath
+     * would produce the resulting path </code>/a/b/c</code>. The parameter may 
+     * not contain <code>../<code> or <code>./</code>
+     * @param subPath the (relative) path with which to extend this path
      * @return the extended path
      */
     public Path extend(String subPath) {
@@ -228,15 +228,46 @@ public final class Path implements Comparable<Path> {
     }
 	
     /**
-     * XXX: refactor
+     * Extends this path with a sub-path, and also expands <code>..</code> 
+     * and <code>./</code>. 
+     * For example, the path 
+     * <code>/a/b/c</code> when extended with the sub-path <code>../d</code>
+     * would produce the resulting path </code>/a/b/d</code>.
+     * @param expansion the (relative) path with which to extend this path
+     * @return the expanded path (or <code>null</code>) if the expansion 
+     * string contains too many <code>../</code> sequences
      */
-    public Path extendAndProcess(String subPath) {
-        String expandPath = this.path.equals("/") ?
-            URIUtil.expandPath(this.path + subPath) :
-            URIUtil.expandPath(this.path + "/" + subPath);
-        return fromString(expandPath);
+    public Path expand(String expansion) {
+        Path cur = this;
+        StringBuilder segment = new StringBuilder();
+        int i = 0;
+        while (i < expansion.length()) {
+            if (cur == null) {
+                return null;
+            }
+            char c = expansion.charAt(i);
+            if (c == '/') {
+                if ("..".equals(segment.toString())) {
+                    cur = cur.getParent();
+                    segment.delete(0, segment.length());
+                } else if (".".equals(segment.toString())) {
+                    segment.delete(0, segment.length());
+                } else {
+                    cur = cur.extend(segment.toString());
+                    segment.delete(0, segment.length());
+                }
+            } else {
+                segment.append(c);
+                if (i == expansion.length() - 1) {
+                    cur = cur.extend(segment.toString());
+                }
+            }
+            i++;
+        }
+        return cur;
     }
-
+    
+    
     public boolean equals(Object o) {
         if (!(o instanceof Path)) return false;
         return ((Path)o).path.equals(this.path);

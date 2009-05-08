@@ -57,23 +57,23 @@ public final class Path implements Comparable<Path> {
      */
     public static final Path ROOT = new Path("/");
 	
-	private String path;
-	private String name;
+    private String path;
+    private String name;
     
-	private Path(String path) {
+    private Path(String path) {
         this.path = path;
         if ("/".equals(path)) {
             this.name = "/";
         } else {
             this.name = path.substring(path.lastIndexOf("/") + 1);
         }
-	}
+    }
 	
-	private static Path instance(String path) {
-	    // Use cached instance of '/'
-	    if (ROOT.path.equals(path)) return ROOT;
-	    return new Path(path);
-	}
+    private static Path instance(String path) {
+        // Use cached instance of '/'
+        if (ROOT.path.equals(path)) return ROOT;
+        return new Path(path);
+    }
 	
     /**
      * Instantiates a path from a string representation. 
@@ -81,181 +81,172 @@ public final class Path implements Comparable<Path> {
      * @param path the string representation (must be a well-formed path)
      * @throws IllegalArgumentException if the parameter is not well-formed
      */
-	public static Path fromString(String path) {
-		if (StringUtils.isBlank(path)
-                || path.length() >= MAX_LENGTH
-                || !path.startsWith("/")
-                || path.contains("//") || path.contains("/../")
-                || path.endsWith("/..") || path.endsWith("/.")
-                || (!path.equals("/") && path.endsWith("/"))) {
+    public static Path fromString(String path) {
+        if (StringUtils.isBlank(path)
+            || path.length() >= MAX_LENGTH
+            || !path.startsWith("/")
+            || path.contains("//") || path.contains("/../")
+            || path.endsWith("/..") || path.endsWith("/.")
+            || (!path.equals("/") && path.endsWith("/"))) {
 
             throw new IllegalArgumentException("Invalid path: '" + path + "'");
         }
-		return instance(path);
-	}
+        return instance(path);
+    }
 
 	
-	/**
-	 * Gets the string representation of this path. 
-	 * This is the same string used to 
-	 * construct this path. 
-	 */
-	public String toString() {
-	    return this.path;
-	}
+    /**
+     * Gets the string representation of this path. 
+     * This is the same string used to 
+     * construct this path. 
+     */
+    public String toString() {
+        return this.path;
+    }
 
 
-	/**
-	 * Compares this path to another path.
-	 */
-	public int compareTo(Path path) {
-	    return this.path.compareTo(path.path);
-	}
+    /**
+     * Compares this path to another path.
+     */
+    public int compareTo(Path path) {
+        return this.path.compareTo(path.path);
+    }
 	
-	/**
-	 * Gets the name (last element) of this path.
-	 * @return the last element of the path
-	 */
-	public String getName() {
-		return this.name;
-	}
+    /**
+     * Gets the name (last element) of this path.
+     * @return the last element of the path
+     */
+    public String getName() {
+        return this.name;
+    }
 
-	/**
-	 * Returns true if this path is the root path (<code>/</code>).
-	 * @return whether this path is the root path
-	 */
-	public boolean isRoot() {
-	    return this.path.equals("/");
-	}
+    /**
+     * Returns true if this path is the root path (<code>/</code>).
+     * @return whether this path is the root path
+     */
+    public boolean isRoot() {
+        return this.path.equals("/");
+    }
 	
-	/**
-	 * Gets the depth of this path. The depth is 
-	 * equal to the number of elements in the path 
-	 * minus one.
-	 */
-	public int getDepth() {
-		return this.elements().size() - 1;
-	}
+    /**
+     * Gets the depth of this path. The depth is 
+     * equal to the number of elements in the path 
+     * minus one.
+     */
+    public int getDepth() {
+        return this.elements().size() - 1;
+    }
 	
-	/**
-	 * Returns whether this path contains another path, 
-	 * i.e. that this path is one of the ancestors of or 
-	 * is the same path as the other.
-	 * @param other the other path
-	 * @return true if this path contains the other, false otherwise.
-	 */
-	public boolean isAncestorOf(Path other) {
-	    if (other.elements().size() <= this.elements().size()) {
-	        // If other path's depth is less than or equal to this, we cannot
-	        // be ancestor.
-	        return false;
-	    } 
+    /**
+     * Returns whether this path contains another path, 
+     * i.e. that this path is one of the ancestors of or 
+     * is the same path as the other.
+     * @param other the other path
+     * @return true if this path contains the other, false otherwise.
+     */
+    public boolean isAncestorOf(Path other) {
+        if (other.elements().size() <= this.elements().size()) {
+            // If other path's depth is less than or equal to this, we cannot
+            // be ancestor.
+            return false;
+        } 
 
-	    List<String> thisPath = this.elements();
+        List<String> thisPath = this.elements();
         List<String> otherPath = other.elements();
 	    
-	    // Compare elements from the root down to last element of this path
-	    for (int i = 0; i < thisPath.size(); i++) {
+        // Compare elements from the root down to last element of this path
+        for (int i = 0; i < thisPath.size(); i++) {
             if (!thisPath.get(i).equals(otherPath.get(i))) {
                 return false;
             }
         }
-	    return true;
-	}
+        return true;
+    }
 	
-	/**
-	 * Gets the elements of this path as a list.
-	 * @return the path elements
-	 */
-	public List<String> getElements() {
-		return Collections.unmodifiableList(this.elements());
-	}
+    /**
+     * Gets the elements of this path as a list.
+     * @return the path elements
+     */
+    public List<String> getElements() {
+        return Collections.unmodifiableList(this.elements());
+    }
 	
-	/**
-	 * Returns the paths that comprise this path, as a list. 
-	 * For example, for the path <code>/a/b/c</code>, this 
-	 * method would return the following paths:
-	 * <code>/</code>, <code>/a</code>, <code>/a/b</code> and 
-	 * <code>/a/b/c</code>. 
-	 * @return the paths that make up this path
-	 */
-	public List<Path> getPaths() {
-	    return Collections.unmodifiableList(this.paths());
-	}
+    /**
+     * Returns the paths that comprise this path, as a list. 
+     * For example, for the path <code>/a/b/c</code>, this 
+     * method would return the following paths:
+     * <code>/</code>, <code>/a</code>, <code>/a/b</code> and 
+     * <code>/a/b/c</code>. 
+     * @return the paths that make up this path
+     */
+    public List<Path> getPaths() {
+        return Collections.unmodifiableList(this.paths());
+    }
 	
-	/**
-	 * Gets the ancestor paths as a list. This method is identical to 
-	 * {@link #getPaths} except that the last element (the path itself)
-	 * is omitted.
-	 * @return
-	 */
-	public List<Path> getAncestors() {
-	    if (this.path.equals("/")) {
-	        return Collections.emptyList();
-	    } else {
-	        List<Path> paths = this.paths();
-	        List<Path> result = paths.subList(0, paths.size() - 1); 
-	        return Collections.unmodifiableList(result);
-	    }
-	}
+    /**
+     * Gets the ancestor paths as a list. This method is identical to 
+     * {@link #getPaths} except that the last element (the path itself)
+     * is omitted.
+     * @return
+     */
+    public List<Path> getAncestors() {
+        if (this.path.equals("/")) {
+            return Collections.emptyList();
+        } else {
+            List<Path> paths = this.paths();
+            List<Path> result = paths.subList(0, paths.size() - 1); 
+            return Collections.unmodifiableList(result);
+        }
+    }
 	
-	/**
-	 * Gets the parent path of this path.
-	 * @return the parent path, or <code>null</code> if 
-	 * this path is the root path.
-	 */
-	public Path getParent() {
-	    List<Path> paths = this.paths();
-	    if (paths.size() == 1) {
-	        return null;
-	    }
-	    return paths.get(paths.size() - 2);
-	}
+    /**
+     * Gets the parent path of this path.
+     * @return the parent path, or <code>null</code> if 
+     * this path is the root path.
+     */
+    public Path getParent() {
+        List<Path> paths = this.paths();
+        if (paths.size() == 1) {
+            return null;
+        }
+        return paths.get(paths.size() - 2);
+    }
 	
-	/**
-	 * Extends this path with a sub-path. For example, the path 
-	 * <code>/a</code> when extended with the sub-path <code>b/c</code>
-	 * would produce the resulting path </code>/a/b/c</code>.
-	 * @param subPath
-	 * @return the extended path
-	 */
-	public Path extend(String subPath) {
-	    if ("/".equals(this.path)) {
-	        return fromString(this.path + subPath);
-	    } else {
-	        return fromString(this.path + "/" + subPath);
-	    }
-	}
+    /**
+     * Extends this path with a sub-path. For example, the path 
+     * <code>/a</code> when extended with the sub-path <code>b/c</code>
+     * would produce the resulting path </code>/a/b/c</code>.
+     * @param subPath
+     * @return the extended path
+     */
+    public Path extend(String subPath) {
+        if ("/".equals(this.path)) {
+            return fromString(this.path + subPath);
+        } else {
+            return fromString(this.path + "/" + subPath);
+        }
+    }
 	
-	/**
-	 * XXX: refactor
-	 */
-	public Path extendAndProcess(String subPath) {
-	    String expandPath = this.path.equals("/") ?
-	            URIUtil.expandPath(this.path + subPath) :
-	            URIUtil.expandPath(this.path + "/" + subPath);
-	    return fromString(expandPath);
-	}
-
     /**
      * XXX: refactor
      */
-    public static Path fromStringRemoveTrailingSlash(String path) {
-        if (path.endsWith("/") && !path.equals("/"))
-            path = path.substring(0, path.length() - 1);
-        return fromString(path);
+    public Path extendAndProcess(String subPath) {
+        String expandPath = this.path.equals("/") ?
+            URIUtil.expandPath(this.path + subPath) :
+            URIUtil.expandPath(this.path + "/" + subPath);
+        return fromString(expandPath);
     }
-    
-	public boolean equals(Object o) {
-	    if (!(o instanceof Path)) return false;
-	    return ((Path)o).path.equals(this.path);
-	}
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Path)) return false;
+        return ((Path)o).path.equals(this.path);
+    }
 	
-	public int hashCode() {
-	    return this.path.hashCode();
-	}
+    public int hashCode() {
+        return this.path.hashCode();
+    }
 	
-	private List<String> elements() {
+    private List<String> elements() {
         List<String> elements = new ArrayList<String>();
         if ("/".equals(this.path)) {
             elements.add("/");
@@ -268,7 +259,7 @@ public final class Path implements Comparable<Path> {
         }
         elements.add(0, "/");
         return elements;
-	}
+    }
 	
     private List<Path> paths() {
         List<String> elements = new ArrayList<String>();

@@ -114,7 +114,10 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
      * @exception Exception if an error occurs
      */
     public final Date getLastModified(String identifier) throws Exception {
-        Path path = Path.fromStringRemoveTrailingSlash(addPrefix(identifier));
+        if (identifier.endsWith("/") && !identifier.equals("/"))
+            identifier = identifier.substring(0, identifier.length() - 1);
+
+        Path path = Path.fromString(addPrefix(identifier));
         return getLastModifiedInternal(path);
     }
     
@@ -155,7 +158,10 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
 
             Source source = null;
 
-            InputStream inStream = getInputStream(Path.fromStringRemoveTrailingSlash(path));
+            if (path.endsWith("/") && !path.equals("/"))
+                path = path.substring(0, path.length() - 1);
+
+            InputStream inStream = getInputStream(Path.fromString(path));
 
             if (inStream != null)
                 source = new StreamSource(inStream);

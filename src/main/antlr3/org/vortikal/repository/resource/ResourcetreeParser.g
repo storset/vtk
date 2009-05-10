@@ -16,13 +16,14 @@ package org.vortikal.repository.resource;
 
 resources     : (resourcetypedef)+;
 
+
+parent        : COLON NAME -> ^(PARENT NAME);
+
 resourcetypedef : RESOURCETYPE NAME (parent)? LCB
                     resourcedef
                   RCB
-                  -> ^(NAME (parent)? resourcedef)
+                  -> ^(NAME (parent)? (resourcedef)?)
                 ;
-
-parent        : COLON NAME -> ^(PARENT NAME);
 
 resourcedef   : (resourceprops)?
                 (editrules)?

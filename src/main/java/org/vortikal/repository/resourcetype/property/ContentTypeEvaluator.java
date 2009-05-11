@@ -32,17 +32,20 @@ package org.vortikal.repository.resourcetype.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.util.repository.MimeHelper;
 
 public class ContentTypeEvaluator implements PropertyEvaluator {
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-
-        if (!ctx.isCollection()) {
-            property.setStringValue(MimeHelper.map(ctx.getNewResource().getName()));
-        } else {
-            property.setStringValue("application/x-vortex-collection");
+        Type evalType = ctx.getEvaluationType();
+        if (evalType == Type.NameChange || evalType == Type.Create) { 
+            if (!ctx.isCollection()) {
+                property.setStringValue(MimeHelper.map(ctx.getNewResource().getName()));
+            } else {
+                property.setStringValue("application/x-vortex-collection");
+            }
         }
         return true;
     }

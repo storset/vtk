@@ -517,7 +517,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
                 	params.put("name", propertyName);
                 	executor.delete(batchSqlMap, params);
                 }
-                executor.executeBatch();
+               executor.executeBatch();
                 return null;
             }
         });
@@ -544,6 +544,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Property prop: newResource.getProperties()) {
             created.addProperty(prop);
         }
+        sqlMap = getSqlMap("updateResource");
+        parameters = getResourceAsMap(newResource);
+        getSqlMapClientTemplate().update(sqlMap, parameters);
+
         storeProperties(created);
 
         if (newResource.isInheritedAcl()) {

@@ -83,7 +83,9 @@ public class StandardHttpView implements View {
     @SuppressWarnings({ "unchecked", "deprecation" })
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
-        
+        if (model == null) {
+            model = new HashMap();
+        }
         Integer modelStatusCode = (Integer) model.get("statusCode");
         String modelStatusMessage = (String) model.get("statusMessage");
         Map<String, Object> modelHeaders = (Map<String, Object>) model.get("headers");

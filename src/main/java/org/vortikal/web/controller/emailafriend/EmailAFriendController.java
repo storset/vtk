@@ -42,11 +42,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
@@ -57,12 +56,10 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
-import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 
 public class EmailAFriendController implements Controller {
 
-    private Log logger = LogFactory.getLog(this.getClass().getName());
     private Repository repository;
     private String viewName;
     private String siteName;
@@ -70,11 +67,11 @@ public class EmailAFriendController implements Controller {
     private JavaMailSenderImpl javaMailSenderImpl;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
-    private ResourceAwareLocaleResolver resourceAwareLocaleResolver;
+    private LocaleResolver localeResolver;
     private Service viewService;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
+
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
 
@@ -85,7 +82,7 @@ public class EmailAFriendController implements Controller {
 
         String language = resource.getContentLanguage();
         if (language == null) {
-            Locale locale = resourceAwareLocaleResolver.resolveLocale(request);
+            Locale locale = localeResolver.resolveLocale(request);
             language = locale.toString();
         }
 
@@ -132,12 +129,6 @@ public class EmailAFriendController implements Controller {
 
                         m.put("emailSentTo", emailTo);
                         m.put("tipResponse", "OK");
-                        
-                        logger.info("Remote address:" + request.getRemoteAddr() 
-                                    + " - Email sent to:" + emailTo 
-                                    + " - Email sent from:" + emailFrom
-                                    + " - Url from request:" + uri.toString()
-                                    );
 
                     } else {
 
@@ -215,8 +206,8 @@ public class EmailAFriendController implements Controller {
     }
 
     @Required
-    public void setResourceAwareLocaleResolver(ResourceAwareLocaleResolver resourceAwareLocaleResolver) {
-        this.resourceAwareLocaleResolver = resourceAwareLocaleResolver;
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
     
     @Required 

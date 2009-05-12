@@ -49,7 +49,7 @@
     <property name="javaMailSenderImpl" ref="javaMailSenderImpl"/>
     <property name="mailExecutor" ref="emailafriend.mailExecutor"/>
     <property name="mailTemplateProvider" ref="mailTemplateProvider"/>
-    <property name="resourceAwareLocaleResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
   </bean> 
 
   <bean id="emailafriend.mailExecutor" class="org.vortikal.web.controller.emailafriend.MailExecutor">

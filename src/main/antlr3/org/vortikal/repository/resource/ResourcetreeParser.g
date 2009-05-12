@@ -6,46 +6,66 @@ options {
 }
 
 tokens {
+  /* Imaginary token used for intermediate handeling 
+     of proper child-parent relationship */
   PARENT;
-  PROPERTY;
 }
 
 @header {
 package org.vortikal.repository.resource;
 }
 
-resources     : (resourcetypedef)+;
+resources
+	:	(resourcetypedef)+;
 
 
-parent        : COLON NAME -> ^(PARENT NAME);
+parent	:	COLON NAME -> ^(PARENT NAME);
 
-resourcetypedef : RESOURCETYPE NAME (parent)? LCB
-                    resourcedef
-                  RCB
-                  -> ^(NAME (parent)? (resourcedef)?)
-                ;
+resourcetypedef
+	:	RESOURCETYPE NAME (parent)? LCB
+                  resourcedef
+                RCB
+                -> ^(RESOURCETYPE ^(NAME (parent)? (resourcedef)?))
+        ;
 
-resourcedef   : (resourceprops)?
+resourcedef
+	:	(resourceprops)?
                 (editrules)?
                 (viewdefinition)?
-              ;
+        ;
 
-resourceprops : PROPERTIES LCB
+resourceprops
+	:	PROPERTIES LCB
                   (propertytypedef (COMMA propertytypedef)*)*
                 RCB
                 -> ^(PROPERTIES (propertytypedef)*)
-              ;
+        ;
 
-propertytypedef : NAME COLON PROPTYPE -> ^(PROPERTY ^(COLON NAME PROPTYPE));
+propertytypedef
+	:	NAME COLON PROPTYPE (REQUIRED)? -> ^(NAME PROPTYPE (REQUIRED)?);
 
-editrules     : EDITRULES LCB
-                  // ruledef
+editrules
+	:	EDITRULES LCB
+                  (editruledef (COMMA editruledef)*)*
                 RCB
-                -> ^(EDITRULES)
-              ;
+                -> ^(EDITRULES (editruledef)*)
+        ;
 
-viewdefinition : VIEWDEFINITION LCB
-                   // ruledef
+editruledef
+	:	NAME position -> ^(NAME position)
+	|	GROUP NAME grouping (position)? -> ^(GROUP ^(NAME grouping) ^(position)?)
+	;
+
+position
+	:	pos NAME COLON NAME -> ^(pos ^(NAME NAME));
+
+pos	:	(BEFORE | AFTER);
+
+grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
+
+viewdefinition
+	:	VIEWDEFINITION LCB
+                   // viewdef
                  RCB
                  -> ^(VIEWDEFINITION)
-               ;
+        ;

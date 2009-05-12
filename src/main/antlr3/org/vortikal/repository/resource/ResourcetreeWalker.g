@@ -10,6 +10,11 @@ package org.vortikal.repository.resource;
 }
 
 @members {
+private CommonTree getParent(CommonTree child) {
+  return null;
+}
 }
 
-resources :	{};
+resources
+        // Damn it...
+	:	 {};

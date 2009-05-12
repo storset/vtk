@@ -1,7 +1,7 @@
 
 resourcetype file {
   properties {
-    contenttype : string,
+    contenttype : string required,
     contentlength : int
   }
 }
@@ -9,11 +9,22 @@ resourcetype file {
 resourcetype article : file {
   properties {
     title : string,
-    introduction : html
+    introduction : html,
+    content : html
   }
-  edit-rules {}
 }
 
 resourcetype event : article {
-  view-definition {}
+  properties {
+    start-date : datetime required,
+    end-date : datetime required,
+    location : string required,
+    mapref : string
+  }
+  edit-rules {
+    group starts-ends (start-date, end-date) before article:content,
+    mapref after event:location
+  }
+  view-definition {
+  }
 }

@@ -4,24 +4,38 @@ lexer grammar ResourcetreeLexer;
 package org.vortikal.repository.resource;
 }
 
-RESOURCETYPE   : 'resourcetype';
-PROPERTIES     : 'properties';
-EDITRULES      : 'edit-rules';
-VIEWDEFINITION : 'view-definition';
+RESOURCETYPE
+	:	'resourcetype';
+PROPERTIES
+	:	'properties';
+EDITRULES
+	:	'edit-rules';
+VIEWDEFINITION
+	:	'view-definition';
 
-LCB    : '{' ;
-RCB    : '}' ;
-LP     : '(' ;
-RP     : ')' ;
-COLON  : ':' ;
-COMMA  : ',' ;
+LCB	:	'{' ;
+RCB	:	'}' ;
+LP	:	'(' ;
+RP	:	')' ;
+COLON	:	':' ;
+COMMA	:	',' ;
 
-PROPTYPE : (STRING | HTML | BOOLEAN | INT | TIMESTAMP);
-NAME     : ('a'..'z' | 'A'..'Z' | '-')+;
-WS       : (' ' | '\t' | '\n')+ {$channel=HIDDEN;};
+PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME);
+REQUIRED:	'required';
+GROUP	:	'group';
+BEFORE	:	'before';
+AFTER	:	'after';
+LETTERS	:	('a'..'z' | 'A'..'Z');
+NAME	:	(LETTERS | '-')+;
+WS	:	(' ' | '\t' | '\n')+ {$channel=HIDDEN;};
 
-fragment STRING    : 'string';
-fragment HTML      : 'html';
-fragment BOOLEAN   : 'boolean';
-fragment INT       : 'int';
-fragment TIMESTAMP : 'timestamp';
+fragment STRING
+	:	'string';
+fragment HTML
+	:	'html';
+fragment BOOLEAN
+	:	'boolean';
+fragment INT
+	:	'int';
+fragment DATETIME
+	:	'datetime';

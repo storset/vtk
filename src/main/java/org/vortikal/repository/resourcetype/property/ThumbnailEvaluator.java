@@ -44,49 +44,57 @@ import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
 
 public class ThumbnailEvaluator implements PropertyEvaluator {
-	
+
     private static final Logger log = Logger.getLogger(ThumbnailEvaluator.class);
-	
+
     private ImageService imageService;
     private String width;
     private Set<String> supportedFormats;
     private boolean scaleUp;
 
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx)
+            throws PropertyEvaluationException {
         if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
             return false;
-        } else if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+        } else if (property.isValueInitialized()
+                && ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
             return true;
         }
-	    
+
         try {
-            BufferedImage image = (BufferedImage) ctx.getContent().getContentRepresentation(BufferedImage.class);
+            BufferedImage image = (BufferedImage) ctx.getContent()
+                    .getContentRepresentation(BufferedImage.class);
             if (image == null) {
                 return false;
             }
 
-            Property contentType = ctx.getNewResource().getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            Property contentType = ctx.getNewResource().getProperty(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
             String mimetype = contentType.getStringValue();
             String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
-            
+
             if (!supportedFormats.contains(imageFormat.toLowerCase())) {
-            	log.warn("Unable to get create thumbnail, unsupported format: " + imageFormat);
-            	return false;
+                log.warn("Unable to get create thumbnail, unsupported format: "
+                        + imageFormat);
+                return false;
             }
-            
+
             if (!scaleUp && image.getWidth() <= Integer.parseInt(width)) {
                 if (log.isDebugEnabled()) {
                     log.debug("Will not create a thumbnail: configured NOT to scale up");
                 }
                 return false;
             }
-            
-            ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, "");
-            
+
+            ScaledImage thumbnail = imageService
+                    .scaleImage(image, imageFormat, width, "");
+
             // TODO lossy-compression -> jpeg
-            String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png" : imageFormat;
-            
-            property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
+            String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png"
+                    : imageFormat;
+
+            property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/"
+                    + thumbnailFormat);
             return true;
 
         } catch (Exception e) {
@@ -95,23 +103,23 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
         }
     }
 
-    //@Required
+    // @Required
     public void setImageService(ImageService imageService) {
         this.imageService = imageService;
     }
 
     @Required
-	public void setWidth(String width) {
+    public void setWidth(String width) {
         this.width = width;
     }
-	
+
     @Required
-	public void setSupportedFormats(Set<String> supportedFormats) {
+    public void setSupportedFormats(Set<String> supportedFormats) {
         this.supportedFormats = supportedFormats;
     }
-	
+
     @Required
-	public void setScaleUp(boolean scaleUp) {
+    public void setScaleUp(boolean scaleUp) {
         this.scaleUp = scaleUp;
     }
 }

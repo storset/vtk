@@ -518,7 +518,7 @@ div.start-date {
   clear:left;
 }
 
-div.linktomap {
+*:first-child+html div.linktomap {
   clear:left;
 }
 

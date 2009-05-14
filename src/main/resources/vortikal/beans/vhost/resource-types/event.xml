@@ -18,6 +18,7 @@
         <ref bean="startDatePropDef" />
         <ref bean="endDatePropDef" />
         <ref bean="locationPropDef" />
+        <ref bean="locationWebAddressPropDef" />
       </list>
     </property>
   </bean>
@@ -49,6 +50,14 @@
   <bean id="locationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="location"/>
+    <property name="type" value="STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+  
+  <bean id="locationWebAddressPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="location-webaddress"/>
     <property name="type" value="STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>

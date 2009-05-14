@@ -96,6 +96,7 @@
   <#local endshort = vrtx.propValue(resource, "end-date", "short") />
   <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
   <#local location = vrtx.propValue(resource, "location") />
+  <#local locationwebaddress = vrtx.propValue(resource, "location-webaddress") />
   
   <#local isoendhour = "" />
   <#if endiso8601 != "" >
@@ -121,7 +122,9 @@
       <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
     </#if>
   </#if>
-  <#t /><#if location != "">, <span class="location">${location}</span></#if>
+  <#t />
+  <#if location != "" && locationwebaddress == "">, <span class="location">${location}</span>
+  <#elseif location != "" && locationwebaddress != "">, <span class="location"><a href="${locationwebaddress}">${location}</a></span></#if>
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
@@ -143,6 +146,7 @@
   <#local endshort = vrtx.propValue(resource, "end-date", "short") />
   <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
   <#local location = vrtx.propValue(resource, "location") />
+  <#local locationwebaddress = vrtx.propValue(resource, "location-webaddress") />
   
   <#local isoendhour = "" />
   <#if endiso8601 != "" >
@@ -168,7 +172,10 @@
       <#t /><abbr class="dtend" title="${endiso8601}">${end}</abbr><#rt />
     </#if>
   </#if>
-  <#t /><#if location != "" && !hideLocation>, <span class="location">${location}</span></#if>
+  <#t />
+  <#if location != "" && !hideLocation && locationwebaddress == "">, <span class="location">${location}</span>
+  <#elseif location != "" && !hideLocation && locationwebaddress != "">, <span class="location"><a href="${locationwebaddress}">${location}</a></span></#if>
+  
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />

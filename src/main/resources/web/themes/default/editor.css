@@ -496,7 +496,7 @@ div.resource\.location{
 
 /* START time and place */
 
-div.start-date, div.end-date, div.location {
+div.start-date, div.end-date, div.location, div.location-webaddress {
   float:left;
   margin-right: 1em;
   /*margin-top: 1em;*/

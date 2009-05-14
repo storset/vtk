@@ -30,14 +30,21 @@
     <script language="Javascript" type="text/javascript" src="${fckeditorBase.url?html}/fckeditor.js"></script>
     <@setupFckEditor resource.resourceType />
 
-    <!-- Yahoo YUI library: -->
-    <link rel="stylesheet" type="text/css" href="${yuiBase.url?html}/build/calendar/assets/skins/sam/calendar.css" />
-    
+    <!-- Yahoo YUI library: --> 
     <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script language="Javascript" type="text/javascript" src="${yuiBase.url?html}/build/calendar/calendar-min.js"></script>
-    <script language="Javascript" type="text/javascript" src="${jsBaseURL}/tooltip.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/serverbrowsedialog.js"></script>
+    
+    <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
+
+    <!-- JQuery UI (used for date picker) -->
+	<link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+	<script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
+	<script type="text/javascript">
+	$(function() {
+		$(".date").datepicker({dateFormat: 'yy-mm-dd'});
+	});
+	</script>
     
     <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
 
@@ -53,11 +60,6 @@
      <style type="text/css">
          div.properties div.start-date, div.properties div.end-date, div.properties div.location {
            clear: both;
-         }
-
-         div.yui-calcontainer { 
-           margin-left: 0em;
-           margin-top: -16.5em; 
          }
         </style>
     <![endif]-->
@@ -402,7 +404,7 @@
         </#if>
 
       <#elseif name = 'media'>
-        <input type="text" id="resource.${name}"  name="resource.${name}" value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ="${value?html}" />
+        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
         <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
               '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
         
@@ -443,118 +445,14 @@
         <#local uniqueName = 'cal_' + propDef_index />
         
         <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
-            value="${dateVal}" onblur="YAHOO.resource.${uniqueName}.calendar.cal1.syncDates()">
-        
-        <a class="calendar" id="${uniqueName}.calendar.href"><span>cal</span></a>
-        <div id="resource.${name}.calendar" class="yui-skin-sam"></div>
+            value="${dateVal}" />
         
         <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours"
             value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes"
             id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
 
-        <script language="Javascript" type="text/javascript">
-        <!--
-
-          YAHOO.namespace("resource.${uniqueName}.calendar");
-          var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
-          if (!cal1) {
-            cal1 = YAHOO.resource.${uniqueName}.calendar.cal1 = 
-            new YAHOO.widget.Calendar("cal1", "resource.${name}.calendar");
-          }
-
-          cal1.cfg.setProperty("iframe", true);
-          <#if value != "">
-            cal1.cfg.setProperty("selected", "${month}/${date}/${year}", false);
-            cal1.cfg.setProperty("pagedate", "${month}/${year}", false);
-          </#if>
-          cal1.render();
-
-          cal1.selectEvent.subscribe(function(type, dates) {
-            var date = this._toDate(dates[0][0]);
-            var year = date.getFullYear();
-            var monthNumber = date.getMonth() + 1;
-            var month = monthNumber < 10 ? '0' + monthNumber  : '' + monthNumber;
-            var day = date.getDate(); if (day < 10 ) day = '0' + day;
-            var dateStr =  year + '-' + month + '-' + day;
-
-            document.getElementById('resource.${name}').value = dateStr;
-            ${uniqueName}_hide();
-          }, cal1, true);
-
-
-          cal1.syncDates = function() {
-            var input = document.getElementById('resource.${name}').value;
-            var regexp = /(\d+)\-(\d\d)-(\d\d)/;
-            var match = regexp.exec(input);
-             
-            if (match) {
-              var d = new Date();
-              d.setFullYear(match[1]);
-              d.setMonth(match[2]);
-              d.setDate(match[3]);
-
-              this.cfg.setProperty("selected", d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear(), false);
-              this.cfg.setProperty("pagedate", d.getMonth() + "/" + d.getFullYear(), false);
-              this.render();
-            }
-          }
-
-          var ${uniqueName}_hidden = true;
-
-          function ${uniqueName}_show() {
-            var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
-            cal1.show();
-            ${uniqueName}_hidden = false;
-          }
-
-          function ${uniqueName}_hide() {
-            var cal1 = YAHOO.resource.${uniqueName}.calendar.cal1;
-            cal1.hide();
-            ${uniqueName}_hidden = true;
-          }
-
-          function ${uniqueName}_toggle() {
-            if (${uniqueName}_hidden) {
-              ${uniqueName}_show();
-            } else {
-              ${uniqueName}_hide();
-            }
-          }
-
-          function ${uniqueName}_click(e) {
-            if (!e) var e = window.event;
-            var target;
-            if (e.target) {
-              target = e.target;
-            } else if (e.srcElement) {
-              target = e.srcElement;
-            }
-            var inCalendarRef = "${uniqueName}.calendar.href" == target.id;
-            var inCalendar = false;
-              
-            for (t = target; t; t = t.parentNode) {
-              if ("resource.${name}.calendar" == t.id) {
-                inCalendar = true;
-                  break;
-              }
-            }
-
-            if (inCalendarRef) {
-              ${uniqueName}_toggle();
-            } else if (!${uniqueName}_hidden && !inCalendarRef && !inCalendar) {
-              ${uniqueName}_hide();
-            } else return true;
-          }
-
-          if (window.addEventListener) {
-            window.addEventListener("click", ${uniqueName}_click, false);
-          } else if (window.attachEvent) {
-            document.attachEvent('onclick', ${uniqueName}_click);
-          }
-        //-->
-        </script>
       <#else>
-
+      
         <#if (propDef.vocabulary)?exists>
           <#local allowedValues = propDef.vocabulary.allowedValues />
 

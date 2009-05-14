@@ -197,6 +197,7 @@
               <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
+              <entry key="webResources" value="${webResources.baseURL}" />
             </map>
           </property>
         </bean>

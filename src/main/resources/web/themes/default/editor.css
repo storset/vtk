@@ -624,3 +624,7 @@ td.calcell.oom {
          
 /* ****** END: Tooltip jQuery */
 
+#ui-datepicker-div {
+	font-size:10px;
+}
+

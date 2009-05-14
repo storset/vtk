@@ -496,10 +496,15 @@ div.resource\.location{
 
 /* START time and place */
 
+/* ie7 hack */
+*:first-child+html div.start-date, *:first-child+html div.end-date, *:first-child+html div.location, *:first-child+html div.linktomap {
+	width: 100%;
+}
+
 div.start-date, div.end-date, div.location, div.linktomap {
   float:left;
   margin-right: 1em;
-  /*margin-top: 1em;*/
+/*margin-top: 1em;*/                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 }
 
 * html div.end-date, * html div.location {
@@ -510,6 +515,10 @@ div.start-date, div.end-date, div.location, div.linktomap {
 /* There is IE7-specific conditional comments in editor.ftl for time and place elements */
 
 div.start-date {
+  clear:left;
+}
+
+div.linktomap {
   clear:left;
 }
 

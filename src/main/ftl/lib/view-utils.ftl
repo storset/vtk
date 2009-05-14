@@ -96,7 +96,7 @@
   <#local endshort = vrtx.propValue(resource, "end-date", "short") />
   <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
   <#local location = vrtx.propValue(resource, "location") />
-  <#local linktomap = vrtx.propValue(resource, "linktomap") />
+  <#local mapurl = vrtx.propValue(resource, "mapurl") />
   
   <#local isoendhour = "" />
   <#if endiso8601 != "" >
@@ -123,8 +123,8 @@
     </#if>
   </#if>
   <#t />
-  <#if location != "" && linktomap == "">, <span class="location">${location}</span>
-  <#elseif location != "" && linktomap != "">, <span class="location"><a href="${linktomap}">${location}</a></span></#if>
+  <#if location != "" && mapurl == "">, <span class="location">${location}</span>
+  <#elseif location != "" && mapurl != "">, <span class="location"><a href="${mapurl}">${location}</a></span></#if>
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />
   <#local isValidStartDate = validateStartDate(resource, currentDate) />
@@ -146,7 +146,7 @@
   <#local endshort = vrtx.propValue(resource, "end-date", "short") />
   <#local endhoursminutes = vrtx.propValue(resource, "end-date", "hours-minutes") />
   <#local location = vrtx.propValue(resource, "location") />
-  <#local linktomap = vrtx.propValue(resource, "linktomap") />
+  <#local mapurl = vrtx.propValue(resource, "mapurl") />
   
   <#local isoendhour = "" />
   <#if endiso8601 != "" >
@@ -173,8 +173,8 @@
     </#if>
   </#if>
   <#t />
-  <#if location != "" && !hideLocation && linktomap == "">, <span class="location">${location}</span>
-  <#elseif location != "" && !hideLocation && linktomap != "">, <span class="location"><a href="${linktomap}">${location}</a></span></#if>
+  <#if location != "" && !hideLocation && mapurl == "">, <span class="location">${location}</span>
+  <#elseif location != "" && !hideLocation && mapurl != "">, <span class="location"><a href="${mapurl}">${location}</a></span></#if>
   
   <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#local currentDate = constructor("java.util.Date") />

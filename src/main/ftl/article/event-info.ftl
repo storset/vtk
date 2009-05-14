@@ -16,7 +16,7 @@
 <#assign start = vrtx.propValue(resource, "start-date") />
 <#assign end = vrtx.propValue(resource, "end-date") />
 <#assign location = vrtx.propValue(resource, "location") />
-<#assign linktomap = vrtx.propValue(resource, "linktomap") />
+<#assign mapurl = vrtx.propValue(resource, "mapurl") />
 <#assign title = vrtx.propValue(resource, "title") />
 
 <#if start != "" || end != "" || location != "">

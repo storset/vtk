@@ -30,93 +30,40 @@
  */
 package org.vortikal.web.controller.autocomplete;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.tags.Tag;
-import org.vortikal.web.tags.VocabularyDataProvider;
 
-public class AutoCompleteController implements Controller {
+public abstract class AutoCompleteController implements Controller {
     
-    private final Log logger = LogFactory.getLog(getClass());
-    private final String callback = "callback";
+    protected final static String SUGGESTION_DELIMITER = "\n";
+    private final static String PREFIX_PARAM = "q";
     
-    private VocabularyDataProvider<Tag> dataProvider;
-    private String fieldName;
+    protected abstract String getAutoCompleteSuggestions(String prefix, Path contextUri, String securityToken);
 
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        
+
         String token = SecurityContext.getSecurityContext().getToken();
-        // Not using contextUri, yet.        
-//      RequestContext requestContext = RequestContext.getRequestContext();
-//      String contextUri = requestContext.getCurrentCollection();
-        
-        String prefix = request.getParameter(this.fieldName);
+
+        String prefix = request.getParameter(PREFIX_PARAM);
         if (prefix == null) {
             return null;
         }
-        // XXX: Further input data validation of some sorts necessary ?
         
-        Map<String, Object> resultSet = new HashMap<String, Object>();
-        List<Tag> completions = 
-                     this.dataProvider.getPrefixCompletions(prefix, null, token);
-        
-        resultSet.put(this.fieldName, completions);
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("Completion items for query: '" 
-                    + prefix + "' on field '" + this.fieldName + "':");
-            for (Object item: completions) {
-                logger.debug(item);
-            }
+        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(prefix, null, token);
+        if (autoCompleteSuggestions == null) {
+            return null;
         }
-
-        try {
-            JSONObject completionList = (JSONObject) JSONSerializer.toJSON(resultSet);
-            String jsonString = completionList.toString();
-            
-            // YUI requires that any service returning JSON for autocomplete be
-            // wrapped by the 'callback' function if it's present on the request
-            String callbackFunction = request.getParameter(this.callback);
-            if (callbackFunction != null) {
-               jsonString = callbackFunction + "(" + jsonString + ")";
-            }
-            
-            // YUI prefers the contenttype to be text/javascript
-            // as opposed to application/json
-            response.setContentType("text/javascript;charset=utf-8");
-            response.getWriter().print(jsonString);
-        } catch (JSONException jse) {
-            logger.warn(
-              "Unable to serialize auto-complete data provider result to JSON", jse);
-        }
+        
+        response.setContentType("text/plain;charset=utf-8");
+        response.getWriter().print(autoCompleteSuggestions.toString());
 
         return null;
     }
-    
-    @Required
-    public void setDataProvider(VocabularyDataProvider<Tag> dataProvider) {
-        this.dataProvider = dataProvider;
-    }
-    
-    @Required
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-    
+
 }

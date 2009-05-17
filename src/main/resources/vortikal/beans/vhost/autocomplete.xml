@@ -4,7 +4,7 @@
 
 <beans>
  
-  <bean id="autoCompleteService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="autoCompleteService" class="org.vortikal.web.service.ServiceImpl" abstract="true">
     <property name="order" value="-999" />
     <property name="assertions">
       <list>
@@ -17,14 +17,12 @@
     </property>
   </bean>
   
-  <bean id="tagsAutoCompleteService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="autoCompleteService" />
-    <property name="order" value="-2" />
+  <bean id="tagsAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="field" />
-          <property name="parameterValue" ref="tagAutoCompleteFieldName" />
+          <property name="parameterValue" value="tags" />
         </bean>
       </list>
     </property>
@@ -32,13 +30,8 @@
   </bean>
   
   <bean id="tagsAutoCompleteHandler"
-    class="org.vortikal.web.controller.autocomplete.AutoCompleteController">
-    <property name="fieldName" ref="tagAutoCompleteFieldName" />
+    class="org.vortikal.web.controller.autocomplete.TagsAutoCompleteController">
     <property name="dataProvider" ref="tagsAutoCompleteDataProvider" />
-  </bean>
-  
-  <bean id="tagAutoCompleteFieldName" class="java.lang.String">
-    <constructor-arg value="tags" />
   </bean>
   
   <bean id="tagsAutoCompleteDataProvider"

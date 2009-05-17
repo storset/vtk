@@ -11,7 +11,6 @@
   -  
   - Optional model data:
   -
-  -  yuiBase.url
   -  autoCompleteBaseURL
   -
   -->
@@ -42,7 +41,7 @@
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
     
-    <@autocomplete.addAutoCompleteScripts srcBase="${yuiBase.url?html}"/>
+    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
 
     <!--[if IE 6]>
       <style type="text/css">
@@ -74,6 +73,7 @@
   
   <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                   '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');">
+
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[resource.resourceTypeDefinition.getLocalizedName(springMacroRequestContext.getLocale())?lower_case] />
     </#assign>
@@ -507,7 +507,7 @@
           <#-- AutoComplete only for the tags inputfield -->
           <#if name = 'tags'>
             <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" fieldName="${name}" 
-                    description="${description}" value="${value?html}" width="18" schema=["text"]/>
+                    value="${value?html}"/>
           <#else>
             <#if name = 'recursive-listing-subfolders'>
             	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
@@ -516,9 +516,9 @@
             <#if name = 'recursive-listing-subfolders'>
             	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
             </#if>
-            <#if description != "">
-              <span class="input-description">(${description})</span>
-            </#if>
+          </#if>
+          <#if description != "">
+            <span class="input-description">(${description})</span>
           </#if>
         
         </#if>

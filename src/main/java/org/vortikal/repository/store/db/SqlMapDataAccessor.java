@@ -624,11 +624,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             return;
         }
 
-        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
-
-        for (int i = 0; i < resources.length; i++) {
-            resourceMap.put(resources[i].getID(), resources[i]);
-        }
+//        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
+//
+//        for (int i = 0; i < resources.length; i++) {
+//            resourceMap.put(resources[i].getID(), resources[i]);
+//        }
         
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard",
@@ -1033,6 +1033,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (SqlDaoUtils.PropHolder prop: propMap.keySet()) {
             
             ResourceImpl r = resourceMap.get(prop.resourceId);
+            
+            if (r == null) {
+                // A property was loaded for a resource that was committed to database after we loaded
+                // the initial set of children in loadChildren. This is normal because of default
+                // READ COMITTED tx isolation level. We simply skip the property here ..
+                continue;
+            }
+            
             if (prop.binary) {
                 r.createProperty(prop.namespaceUri, prop.name,
                         new String[]{prop.propID.toString()});

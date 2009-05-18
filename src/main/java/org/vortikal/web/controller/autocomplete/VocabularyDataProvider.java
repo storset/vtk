@@ -30,38 +30,34 @@
  */
 package org.vortikal.web.controller.autocomplete;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
-import org.vortikal.security.SecurityContext;
 
-public abstract class AutoCompleteController implements Controller {
-    
-    protected final static String SUGGESTION_DELIMITER = "\n";
-    private final static String PREFIX_PARAM = "q";
-    
-    protected abstract String getAutoCompleteSuggestions(String prefix, Path contextUri, String securityToken);
+/**
+ * Generic auto-complete data provider/query interface of sorts.
+ * 
+ */
+public interface VocabularyDataProvider<T> {
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    /**
+     * Get list of prefix completions (complete words starting with prefix) for
+     * something.
+     * 
+     * @param contextUri
+     * @param prefix
+     * @param token
+     * @return
+     */
+    public List<T> getPrefixCompletions(String prefix, Path contextUri, String token);
 
-        String token = SecurityContext.getSecurityContext().getToken();
-
-        String prefix = request.getParameter(PREFIX_PARAM);
-        if (prefix == null) {
-            return null;
-        }
-        
-        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(prefix, null, token);
-        autoCompleteSuggestions = autoCompleteSuggestions == null ? "" : autoCompleteSuggestions;
-        
-        response.setContentType("text/plain;charset=utf-8");
-        response.getWriter().print(autoCompleteSuggestions);
-
-        return null;
-    }
+    /**
+     * Get list of all words
+     * 
+     * @param scopeUri
+     * @param token
+     * @return
+     */
+    public List<T> getCompletions(Path scopeUri, String token);
 
 }

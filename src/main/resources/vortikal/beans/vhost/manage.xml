@@ -1444,6 +1444,14 @@
       <list>
         <ref bean="adminACLProvider" />
         <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="webResources" value="${webResources.baseURL}" />
+              <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
+            </map>
+          </property>
+        </bean>
       </list>
     </property>
   </bean>

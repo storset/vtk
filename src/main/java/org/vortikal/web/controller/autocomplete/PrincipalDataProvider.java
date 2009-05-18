@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,31 @@
  */
 package org.vortikal.web.controller.autocomplete;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.security.SecurityContext;
+import org.vortikal.security.Principal;
 
-public abstract class AutoCompleteController implements Controller {
+public class PrincipalDataProvider implements VocabularyDataProvider<Principal> {
     
-    protected final static String SUGGESTION_DELIMITER = "\n";
-    private final static String PREFIX_PARAM = "q";
-    
-    protected abstract String getAutoCompleteSuggestions(String prefix, Path contextUri, String securityToken);
+    private Principal.Type type;
 
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-
-        String token = SecurityContext.getSecurityContext().getToken();
-
-        String prefix = request.getParameter(PREFIX_PARAM);
-        if (prefix == null) {
-            return null;
-        }
-        
-        String autoCompleteSuggestions = this.getAutoCompleteSuggestions(prefix, null, token);
-        autoCompleteSuggestions = autoCompleteSuggestions == null ? "" : autoCompleteSuggestions;
-        
-        response.setContentType("text/plain;charset=utf-8");
-        response.getWriter().print(autoCompleteSuggestions);
-
+    public List<Principal> getCompletions(Path scopeUri, String token) {
         return null;
+    }
+
+    public List<Principal> getPrefixCompletions(String prefix, Path contextUri,
+            String token) {
+        
+        // XXX implement
+        return new ArrayList<Principal>(0);
+    }
+    
+    @Required
+    public void setType(Principal.Type type) {
+        this.type = type;
     }
 
 }

@@ -35,8 +35,30 @@
   </bean>
   
   <bean id="tagsAutoCompleteDataProvider"
-    class="org.vortikal.web.tags.RepositoryTagsDataProvider">
+    class="org.vortikal.web.controller.autocomplete.RepositoryTagsDataProvider">
     <property name="tagsReporter" ref="tagsReporter" />
+  </bean>
+  
+  <bean id="userNamesAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="userNames" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="userNamesAutoCompleteHandler" />
+  </bean>
+  
+  <bean id="userNamesAutoCompleteHandler"
+    class="org.vortikal.web.controller.autocomplete.PrincipalAutoCompleteController">
+    <property name="dataProvider" ref="userNamesAutoCompleteDataProvider" />
+  </bean>
+  
+  <bean id="userNamesAutoCompleteDataProvider"
+    class="org.vortikal.web.controller.autocomplete.PrincipalDataProvider">
+    <property name="type" value="USER" />
   </bean>
   
   <bean id="autoComplete.appResourceAssertion"

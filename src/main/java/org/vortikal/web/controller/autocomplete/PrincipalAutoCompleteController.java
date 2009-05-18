@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,38 +28,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.tags;
+package org.vortikal.web.controller.autocomplete;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.security.Principal;
 
-/**
- * Generic auto-complete data provider/query interface of sorts. 
- *
- */
-public interface VocabularyDataProvider<T> {
+public class PrincipalAutoCompleteController extends AutoCompleteController {
+
+    private VocabularyDataProvider<Principal> dataProvider;
+
+    @Override
+    protected String getAutoCompleteSuggestions(String prefix, Path contextUri,
+            String securityToken) {
+        
+        List<Principal> completions = this.dataProvider.getPrefixCompletions(prefix, contextUri, securityToken);
+        
+        StringBuilder result = new StringBuilder();
+        
+        // XXX TEMPORARY!!! Must extend Principal with full name
+        for (Principal principal : completions) {
+            result.append(principal.getName() + SUGGESTION_DELIMITER);
+        }
+        
+        return result.toString();
+    }
     
-    /**
-     * Get list of prefix completions (complete words starting with prefix)
-     * for something.
-     * 
-     * @param contextUri
-     * @param prefix
-     * @param token
-     * @return
-     */
-    public List<T> getPrefixCompletions(String prefix, 
-                                             Path contextUri,
-                                             String token);
-    
-    /**
-     * Get list of all words
-     * 
-     * @param scopeUri
-     * @param token
-     * @return
-     */
-    public List<T> getCompletions(Path scopeUri, String token);
+    @Required
+    public void setDataProvider(VocabularyDataProvider<Principal> dataProvider) {
+        this.dataProvider = dataProvider;
+    }
 
 }

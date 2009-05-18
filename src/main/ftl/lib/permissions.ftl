@@ -13,6 +13,7 @@
 
 <#import "/spring.ftl" as spring />
 <#import "dump.ftl" as dumper />
+<#import "/lib/autocomplete.ftl" as autocomplete />
 
 <#if !resourceContext?exists>
   <#stop "Unable to render model: required submodel
@@ -341,10 +342,9 @@
       </#if>
       </#if>
       <span class="addUser">
-        <input type="text" size="15"
-               name="${spring.status.expression}"
-               value="${value}">&nbsp;
-	<input type="submit" name="addUserAction"
+        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
+                    id="${spring.status.expression}" value="${value?html}"/>&nbsp;
+	    <input type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>
       </fieldset>

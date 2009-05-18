@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.tags;
+package org.vortikal.web.controller.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.reporting.TagsReportingComponent;
+import org.vortikal.web.tags.Tag;
 
 
 /**

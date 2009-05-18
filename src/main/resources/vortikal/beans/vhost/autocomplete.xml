@@ -21,7 +21,7 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="field" />
+          <property name="parameterName" value="service" />
           <property name="parameterValue" value="tags" />
         </bean>
       </list>

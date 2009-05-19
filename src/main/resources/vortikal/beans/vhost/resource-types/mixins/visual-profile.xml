@@ -249,6 +249,16 @@
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
+                <value>astro</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>math</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
                 <value>psyk</value>
               </constructor-arg>
             </bean>

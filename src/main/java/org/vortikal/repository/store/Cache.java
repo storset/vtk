@@ -574,8 +574,6 @@ public class Cache implements DataAccessor, InitializingBean {
      * Note: this method is not thread safe, lock uri first
      *
      * @param item a <code>Resource</code> value
-     * @param noReplace If <code>true</code>, then an item won't be replaced if it
-     *        already is in the cache. This avoids jiggling the eviction list.
      *
      */
     private void enterResource(ResourceImpl item) {

@@ -119,11 +119,9 @@
     select * from vortex_resource where uri = #value#
   </select>
 
-
   <select id="loadResourceIdByUri" resultMap="UriResourceId">
     select uri, resource_id from vortex_resource where uri = #value#
   </select>
-
 
   <update id="updateResource" parameterClass="java.util.Map">
     update vortex_resource set
@@ -291,7 +289,7 @@
 
 
   <select id="loadChildUrisForChildren" parameterClass="java.util.Map"
-                                        resultClass="java.lang.String">
+                                        resultClass="org.vortikal.repository.Path">
     select uri from vortex_resource where uri like #uriWildcard# escape '@' and depth = #depth# 
   </select>
 
@@ -475,7 +473,7 @@
   </insert>
   
 
-  <select id="discoverAcls" parameterClass="java.util.Map" resultClass="java.lang.String">
+  <select id="discoverAcls" parameterClass="java.util.Map" resultClass="org.vortikal.repository.Path">
     select distinct
       r.uri as uri
     from acl_entry a inner join vortex_resource r on a.resource_id = r.resource_id

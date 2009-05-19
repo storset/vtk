@@ -329,7 +329,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         getSqlMapClientTemplate().update(sqlMap, parameters);
     }
 
-
     public ResourceImpl[] loadChildren(ResourceImpl parent) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(
@@ -372,14 +371,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         String sqlMap = getSqlMap("discoverAcls");
         @SuppressWarnings("unchecked")
-        List<String> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
-            
-        Path[] result = new Path[uris.size()];
-        int n = 0;
-        for (String uriString: uris) {
-            result[n++] = Path.fromString(uriString);
-        }
-        return result;
+        List<Path> uris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        
+        return uris.toArray(new Path[uris.size()]);
     }
     
     private void supplyFixedProperties(Map<String, Object> parameters, PropertySet fixedProperties) {
@@ -573,24 +567,19 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         String sqlMap = getSqlMap("loadChildUrisForChildren");
         
         @SuppressWarnings("unchecked")
-        List<String> resourceUriList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<Path> resourceUriList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
-        Path[] childUris = new Path[resourceUriList.size()];
-        int n = 0;
-        for (String uri: resourceUriList) {
-            childUris[n++] = Path.fromString(uri);
-        }
-
+        Path[] childUris = resourceUriList.toArray(new Path[resourceUriList.size()]);
         parent.setChildURIs(childUris);
     }
-    
+
 
     private void loadChildUrisForChildren(ResourceImpl parent, ResourceImpl[] children) {
         
-        // Initialize a map from child.URI to the set of grandchildren's URIs:
-        Map<Path, Set<Path>> childMap = new HashMap<Path, Set<Path>>();
+        // Initialize a map from child.URI to the list of grandchildren's URIs:
+        Map<Path, List<Path>> childMap = new HashMap<Path, List<Path>>();
         for (int i = 0; i < children.length; i++) {
-            childMap.put(children[i].getURI(), new HashSet<Path>());
+            childMap.put(children[i].getURI(), new ArrayList<Path>());
         }
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -601,10 +590,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         String sqlMap = getSqlMap("loadChildUrisForChildren");
 
         @SuppressWarnings("unchecked")
-        List<String> resourceUris = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
+        List<Path> resourceUris = 
+            getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
-        for (String uriString: resourceUris) {
-            Path uri = Path.fromString(uriString);
+        for (Path uri: resourceUris) {
             Path parentUri = uri.getParent();
             if (parentUri != null) {
                 childMap.get(parentUri).add(uri);
@@ -613,23 +602,16 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
         for (int i = 0; i < children.length; i++) {
             if (!children[i].isCollection()) continue;
-            Set<Path> childURIs = childMap.get(children[i].getURI());
+            List<Path> childURIs = childMap.get(children[i].getURI());
             children[i].setChildURIs(childURIs.toArray(new Path[childURIs.size()]));
         }
     }
-    
 
     private void loadPropertiesForChildren(ResourceImpl parent, ResourceImpl[] resources) {
         if ((resources == null) || (resources.length == 0)) {
             return;
         }
 
-//        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
-//
-//        for (int i = 0; i < resources.length; i++) {
-//            resourceMap.put(resources[i].getID(), resources[i]);
-//        }
-        
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("uriWildcard",
                        SqlDaoUtils.getUriSqlWildcard(parent.getURI(), SQL_ESCAPE_CHAR));

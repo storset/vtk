@@ -69,15 +69,39 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
  * <ul>
  *   <li><code>wrappedAccessor</code> - the {@link DataAccessor} to
  *   act as a cache for.
+ * 
  *   <li><code>maxItems</code> - an positive integer denoting the
  *   cache size. The default value is <code>1000</code>.
+ *   
  *   <li><code>evictionRatio</code> - a number between 0 and 1
  *   specifying the number of items (as a percentage of
  *   <code>maxItems</code>) to remove when the cache is filled up. The
  *   default value is <code>0.1</code> (10%).
+ *   
  *   <li><code>gatherStatistics</code> - a boolean specifying whether
  *   or not to gather hit/miss statistics during operation. The
  *   default value is <code>false</code>.
+ *   
+ *   <li><code>loadChildrenSelectivelyThreshold</code> - 
+ *    Specifies threshold for when children are loaded selectively from database,
+ *    in #loadChildren(ResourceImpl). If less than this percentage of children
+ *    is *missing* from cache, then *only* the missing children are loaded invidiually,
+ *    instead of loading absolutely all children from database (regardless of their
+ *    presence in the cache). 
+ *   
+ *    Example:
+ *    If a resource has 1000 children, and 951 of those are currently present in
+ *    the cache, then 49 are missing. 49 is below the default threshold of 5 percent,
+ *    which will cause only the missing children to be loaded with individual
+ *    calls to the wrapped {@link DataAccessor#load(Path)}-method. If 51 were
+ *    missing, then this would be above the threshold and all 1000 children would
+ *    be loaded by calling wrapped {@link DataAccessor#loadChildren(ResourceImpl)}.
+ *    
+ *    The number should be a float in the typical range of [0.01..0.1].
+ *    Don't set it too high, as normally it's efficient to
+ *    to load all children of a single parent URI in one go.
+ *    Only when the number of children gets high (in the thousands) should
+ *    selective loading of missing ones kick in. Default is 5 percent or 0.05.
  * </ul>
  */
 public class Cache implements DataAccessor, InitializingBean {
@@ -93,7 +117,8 @@ public class Cache implements DataAccessor, InitializingBean {
     private long hits = 0;
     private long misses = 0;
     
-
+    private float loadChildrenSelectivelyThreshold = 0.05f;
+    
     public boolean validate() throws DataAccessException {
         return this.wrappedAccessor.validate();
     }
@@ -114,7 +139,11 @@ public class Cache implements DataAccessor, InitializingBean {
         }
         this.evictionRatio = evictionRatio;
     }
-    
+
+    public void setLoadChildrenSelectivelyThreshold(
+            float loadChildrenSelectivelyThreshold) {
+        this.loadChildrenSelectivelyThreshold = loadChildrenSelectivelyThreshold;
+    }
 
     @Required
     public void setWrappedAccessor(DataAccessor wrappedAccessor) {
@@ -137,7 +166,6 @@ public class Cache implements DataAccessor, InitializingBean {
     
     
     public void afterPropertiesSet() {
-
         this.removeItems = (int) (this.maxItems * this.evictionRatio);
 
         if (this.removeItems == 0) {
@@ -150,8 +178,10 @@ public class Cache implements DataAccessor, InitializingBean {
 
         List<ResourceImpl> found = new ArrayList<ResourceImpl>();
         List<Path> notFound = new ArrayList<Path>();
+        
+        Path[] childUris = parent.getChildURIs();
 
-        for (Path uri: parent.getChildURIs()) {
+        for (Path uri: childUris) {
 
             ResourceImpl r = this.items.get(uri);
             boolean lockTimedOut =
@@ -172,29 +202,65 @@ public class Cache implements DataAccessor, InitializingBean {
         if (this.gatherStatistics) {
             updateStatistics(found.size(), notFound.size());
         }
-
+        
         if (notFound.size() == 0) {
+            // Every child was found in cache, and none of them had expired locks.
             return found.toArray(new ResourceImpl[found.size()]);
         }
 
         ResourceImpl[] resources = null;
         
+        List<Path> obtainedLocks = this.lockManager.lock(childUris);
         
-        List<Path> obtainedLocks = this.lockManager.lock(parent.getChildURIs());
-        try {
-
+        float notFoundRatio = (float)notFound.size() / childUris.length;
+        
+        if (notFoundRatio <= this.loadChildrenSelectivelyThreshold) {
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Loading " + parent.getChildURIs().length + " resources");
+                this.logger.debug("loadChildren(): Less than " + (this.loadChildrenSelectivelyThreshold*100) 
+                                  + " percent of children missing from cache for URI '"
+                                  + parent.getURI() + "', "
+                                  + "loading " + notFound.size() + " missing or expired children individually.");
             }
-
-            resources = this.wrappedAccessor.loadChildren(parent);
-
-            for (ResourceImpl resourceImpl: resources) {
-                enterResource(resourceImpl);
+            
+            try {
+                // Below threshold for number of missing children in cache, we
+                // load the missing ones selectively from database for better efficiency.
+                for (Path missingChild: notFound) {
+                    ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
+                    if (resourceImpl != null) {
+                        found.add(resourceImpl);
+                        enterResource(resourceImpl);
+                    }
+                }
+            
+            } finally {
+                this.lockManager.unlock(obtainedLocks); // Release URI sync locks
             }
-        } finally {
-            this.lockManager.unlock(obtainedLocks); // Release URI sync locks
+            
+            return found.toArray(new ResourceImpl[found.size()]);
+            
+        } else {
+            // Above threshold of children missing from cache or child too list too large
+            // for current cache size. Load everything in one go.
+            try {
+
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.debug("Loading all children of URI '" 
+                            + parent.getURI() + "' from database, " 
+                            + parent.getChildURIs().length + " resources.");
+                }
+
+                resources = this.wrappedAccessor.loadChildren(parent);
+
+                for (ResourceImpl resourceImpl: resources) {
+                    enterResource(resourceImpl); // Put in cache, replace any existing (full refresh).
+                }
+            } finally {
+                this.lockManager.unlock(obtainedLocks); // Release URI sync locks
+            }
+            
         }
+        
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("cache size : " + this.items.size());
@@ -225,7 +291,6 @@ public class Cache implements DataAccessor, InitializingBean {
         if (this.logger.isInfoEnabled() && lockTimedOut) {
             this.logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
         }
-
 
         if (r != null && ! lockTimedOut) {
             if (this.gatherStatistics) {
@@ -304,11 +369,6 @@ public class Cache implements DataAccessor, InitializingBean {
         try {
             this.wrappedAccessor.storeACL(r); // Persist
             this.items.remove(uris);          // Purge all affected items from cache
-//            for (Path uri: uris) {
-//                if (this.items.containsURI(uri)) {
-//                    this.items.remove(uri);
-//                }
-//            }
         } finally {
             this.lockManager.unlock(lockedUris); // Release URI sync lock
 
@@ -329,11 +389,6 @@ public class Cache implements DataAccessor, InitializingBean {
             this.wrappedAccessor.store(r); // Persist
             this.items.remove(uris);       // Purge item from cache
 
-//            for (Path uri: uris) {
-//                if (this.items.containsURI(uri)) {
-//                    this.items.remove(uri);
-//                }
-//            }
         } finally {
             this.lockManager.unlock(lockedUris); // Release URI sync lock
 
@@ -403,9 +458,6 @@ public class Cache implements DataAccessor, InitializingBean {
             // Purge affected destination parent from cache
             this.items.remove(destParentURI);        
 
-//            if (this.items.containsURI(destParentURI)) {
-//                this.items.remove(destParentURI);
-//            }
         } finally {
             this.lockManager.unlock(lockedUris); // Release URI sync locks
 
@@ -445,11 +497,6 @@ public class Cache implements DataAccessor, InitializingBean {
             this.wrappedAccessor.move(r, newResource); // Persist move operation
             this.items.remove(uris);                   // Purge all affected items from cache
 
-//            for (Path uri: uris) {
-//                if (this.items.containsURI(uri)) {
-//                    this.items.remove(uri);
-//                }
-//            }
         } finally {
 
             this.lockManager.unlock(locks); // Release URI sync locks
@@ -485,12 +532,6 @@ public class Cache implements DataAccessor, InitializingBean {
         try {
             this.wrappedAccessor.delete(r); // Dispatch to wrapped DAO for persistence
             this.items.remove(uris);        // Purge all affected items from cache 
-
-//            for (Path uri: uris) {
-//                if (this.items.containsURI(uri)) {
-//                    this.items.remove(uri);
-//                }
-//            }
         } finally {
             this.lockManager.unlock(locks); // Release URI sync locks
 
@@ -528,11 +569,14 @@ public class Cache implements DataAccessor, InitializingBean {
     public int size() {
         return this.items.size();
     }
-
+    
     /**
      * Note: this method is not thread safe, lock uri first
      *
      * @param item a <code>Resource</code> value
+     * @param noReplace If <code>true</code>, then an item won't be replaced if it
+     *        already is in the cache. This avoids jiggling the eviction list.
+     *
      */
     private void enterResource(ResourceImpl item) {
         synchronized (this.items) {
@@ -550,14 +594,12 @@ public class Cache implements DataAccessor, InitializingBean {
                                 + ") reached, removed " + this.removeItems
                                 + " oldest items in " + processingTime + " ms");
                 }
-                
             }
 
             this.items.put(item.getURI(), item);
         }
     }
-
-
+    
     private synchronized void updateStatistics(long hits, long misses) {
         if ((this.hits > (Long.MAX_VALUE - this.hits))
             || (this.misses > (Long.MAX_VALUE) - misses)) {
@@ -596,8 +638,8 @@ public class Cache implements DataAccessor, InitializingBean {
     private class Items {
         @SuppressWarnings("unchecked")
         private Map<Path, Item> map = new ConcurrentReaderHashMap();
-        private Item in = null;
-        private Item out = null;
+        private Item in = null; // Item eviction list head (newest item)
+        private Item out = null;// Item eviction list tail (oldest item)
 
         public void clear() { // Synchronized externally
             this.map.clear();
@@ -617,8 +659,23 @@ public class Cache implements DataAccessor, InitializingBean {
         public synchronized void put(Path uri, ResourceImpl resource) {
             Item i = new Item(resource);
 
-            this.map.put(uri, i);
+            Item replaced = this.map.put(uri, i);
+            if (replaced != null) {
+                // Remove replaced item from eviction list
+                // This avoid growing the eviction list if the same set of URIs
+                // are frequently replaced in the cache (which can cause huge memory usage).
+                if (replaced.older != null)
+                    replaced.older.newer = replaced.newer;
+                else
+                    this.out = replaced.newer;
 
+                if (replaced.newer != null)
+                    replaced.newer.older = replaced.older;
+                else
+                    this.in = replaced.older;
+            }
+
+            // Put new item in eviction list head
             if (this.in != null) {
                 this.in.newer = i;
             }
@@ -669,6 +726,7 @@ public class Cache implements DataAccessor, InitializingBean {
             return this.map.containsKey(uri);
         }
 
+        // XXX: Not in use, for LRU-style eviction list shuffling ?
         public synchronized void hit(Path uri) {
             Item i = this.map.get(uri);
 
@@ -725,6 +783,5 @@ public class Cache implements DataAccessor, InitializingBean {
     public Set<Principal> discoverGroups() throws DataAccessException {
         return this.wrappedAccessor.discoverGroups();
     }
-
 
 }

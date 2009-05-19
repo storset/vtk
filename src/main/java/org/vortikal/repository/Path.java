@@ -54,23 +54,28 @@ public final class Path implements Comparable<Path> {
     /**
      * Represents the root path (<code>/</code>).
      */
-    public static final Path ROOT = new Path("/");
+    public static final Path ROOT = new Path();
 	
-    private String path;
-    private String name;
+    private final String path;
+    private final String name;
     
+    // Private constructor for the ROOT path (only called at class init/load)
+    private Path() {
+        this.path = this.name = "/";
+    }
+    
+    // Private constructor for other paths (only called from Path#instance(String))
     private Path(String path) {
         this.path = path;
-        if ("/".equals(path)) {
-            this.name = "/";
-        } else {
-            this.name = path.substring(path.lastIndexOf("/") + 1);
-        }
+        this.name = path.substring(path.lastIndexOf('/') + 1);
     }
 	
+    // This is the only method from which Path instances can be created.
     private static Path instance(String path) {
         // Use cached instance of '/'
-        if (ROOT.path.equals(path)) return ROOT;
+        if (ROOT.path.equals(path))
+            return ROOT;
+
         return new Path(path);
     }
 	
@@ -81,10 +86,10 @@ public final class Path implements Comparable<Path> {
      * @throws IllegalArgumentException if the parameter is not well-formed
      */
     public static Path fromString(String path) {
-        if (StringUtils.isBlank(path)
+        if (path == null
             || path.length() >= MAX_LENGTH
             || !path.startsWith("/")
-            || path.contains("//") || path.contains("/../")
+            || path.contains("//")  || path.contains("/../")
             || path.endsWith("/..") || path.endsWith("/.")
             || (!path.equals("/") && path.endsWith("/"))) {
 
@@ -124,7 +129,7 @@ public final class Path implements Comparable<Path> {
      * @return whether this path is the root path
      */
     public boolean isRoot() {
-        return this.path.equals("/");
+        return (this == ROOT);
     }
 	
     /**
@@ -144,18 +149,18 @@ public final class Path implements Comparable<Path> {
      * @return true if this path contains the other, false otherwise.
      */
     public boolean isAncestorOf(Path other) {
-        if (other.elements().size() <= this.elements().size()) {
+        List<String> thisPathElements = this.elements();
+        List<String> otherPathElements = other.elements();
+
+        if (otherPathElements.size() <= thisPathElements.size()) {
             // If other path's depth is less than or equal to this, we cannot
             // be ancestor.
             return false;
         } 
-
-        List<String> thisPath = this.elements();
-        List<String> otherPath = other.elements();
 	    
         // Compare elements from the root down to last element of this path
-        for (int i = 0; i < thisPath.size(); i++) {
-            if (!thisPath.get(i).equals(otherPath.get(i))) {
+        for (int i = 0; i < thisPathElements.size(); i++) {
+            if (!thisPathElements.get(i).equals(otherPathElements.get(i))) {
                 return false;
             }
         }
@@ -167,7 +172,7 @@ public final class Path implements Comparable<Path> {
      * @return the path elements
      */
     public List<String> getElements() {
-        return Collections.unmodifiableList(this.elements());
+        return this.elements();
     }
 	
     /**
@@ -179,7 +184,7 @@ public final class Path implements Comparable<Path> {
      * @return the paths that make up this path
      */
     public List<Path> getPaths() {
-        return Collections.unmodifiableList(this.paths());
+        return this.paths();
     }
 	
     /**
@@ -189,12 +194,11 @@ public final class Path implements Comparable<Path> {
      * @return
      */
     public List<Path> getAncestors() {
-        if (this.path.equals("/")) {
+        if (this == ROOT) {
             return Collections.emptyList();
         } else {
             List<Path> paths = this.paths();
-            List<Path> result = paths.subList(0, paths.size() - 1); 
-            return Collections.unmodifiableList(result);
+            return paths.subList(0, paths.size() - 1); 
         }
     }
 	
@@ -285,26 +289,29 @@ public final class Path implements Comparable<Path> {
 	
     private List<String> elements() {
         List<String> elements = new ArrayList<String>();
-        if ("/".equals(this.path)) {
-            elements.add("/");
+        elements.add("/");
+        if (this == ROOT) {
             return elements;
         }
+        
         StringTokenizer st = new StringTokenizer(this.path, "/");
         while (st.hasMoreTokens()) {
             String name = st.nextToken();
             elements.add(name);
         }
-        elements.add(0, "/");
+
         return elements;
     }
 	
     private List<Path> paths() {
         List<String> elements = new ArrayList<String>();
         List<Path> paths = new ArrayList<Path>();
-        if ("/".equals(this.path)) {
-            paths.add(this);
+        paths.add(ROOT);
+        
+        if (this == ROOT) {
             return paths;
         }
+        
         StringTokenizer st = new StringTokenizer(this.path, "/");
         while (st.hasMoreTokens()) {
             String name = st.nextToken();
@@ -320,7 +327,6 @@ public final class Path implements Comparable<Path> {
                 paths.add(instance(ancestorString.toString()));
             }
         }
-        paths.add(0, instance("/"));
         paths.add(this);
         return paths;
     }

@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 public class PathTest extends TestCase {
@@ -40,6 +42,7 @@ public class PathTest extends TestCase {
         assertInvalid("");
         assertInvalid(" ");
         assertInvalid("invalid.path");
+        assertInvalid(" /invalid/path");
         assertInvalid("/invalid.path/..");
         assertInvalid("/invalid.path/.");
         assertInvalid("/invalid//path");
@@ -78,7 +81,25 @@ public class PathTest extends TestCase {
         assertEquals("b", p.getElements().get(2));
         assertEquals("c", p.getElements().get(3));
         assertEquals("d", p.getElements().get(4));
+        
+        assertEquals(1, Path.fromString("/").getElements().size());
+        assertEquals("/", Path.fromString("/").getElements().get(0));
 
+        List<Path> paths = Path.fromString("/aa/bb/cc").getPaths();
+        assertEquals(4, paths.size());
+        assertEquals(Path.fromString("/"), paths.get(0));
+        assertEquals(0, paths.get(0).getDepth());
+        assertEquals(Path.fromString("/aa"), paths.get(1));
+        assertEquals(1, paths.get(1).getDepth());
+        assertEquals(Path.fromString("/aa/bb"), paths.get(2));
+        assertEquals(2, paths.get(2).getDepth());
+        assertEquals(Path.fromString("/aa/bb/cc"), paths.get(3));
+        assertEquals(3, paths.get(3).getDepth());
+        
+        paths = Path.fromString("/").getPaths();
+        assertEquals(1, paths.size());
+        assertEquals(Path.ROOT, paths.get(0));
+        
         assertEquals("c", p.getParent().getElements().get(3));
         
         assertTrue(p.isAncestorOf(Path.fromString("/a/b/c/d/e")));
@@ -88,10 +109,18 @@ public class PathTest extends TestCase {
         assertFalse(Path.fromString("/a/b").isAncestorOf(Path.fromString("/a/b")));
         assertFalse(Path.fromString("/a/b/c").isAncestorOf(Path.fromString("/a/b/d")));
         assertFalse(Path.fromString("/").isAncestorOf(Path.fromString("/")));
- 
+        
         assertEquals(p.extend("e"), Path.fromString("/a/b/c/d/e"));
         assertEquals(p.extend("e/f/g"), Path.fromString("/a/b/c/d/e/f/g"));
         
+        // Test getAncestors()
+        List<Path> ancestors = Path.fromString("/1/2/3/4").getAncestors();
+        assertEquals(Path.fromString("/"), ancestors.get(0));
+        assertEquals(Path.fromString("/1"), ancestors.get(1));
+        assertEquals(Path.fromString("/1/2"), ancestors.get(2));
+        assertEquals(Path.fromString("/1/2/3"), ancestors.get(3));
+        
+        assertEquals(0, Path.fromString("/").getAncestors().size());
     }
     
     private void assertInvalid(String path) {
@@ -103,11 +132,12 @@ public class PathTest extends TestCase {
         }
     }
     
-    private String getString(String chr, int length) {
+    private String getString(String str, int length) {
         StringBuilder sb = new StringBuilder("/");
         for (int i = 1; i < length; i++) {
-            sb.append(chr);
+            sb.append(str);
         }
         return sb.toString();
     }
+
 }

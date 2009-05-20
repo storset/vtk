@@ -43,7 +43,6 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
 
-    
     /**
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
      */
@@ -55,67 +54,88 @@ public class ACLEditCommandValidator implements Validator {
     public void validate(Object command, Errors errors) {
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
-        // Don't validate on cancel/save
-        if (editCommand.getCancelAction() != null 
-                || editCommand.getSaveAction() != null) 
+        // Don't validate on cancel
+        if (editCommand.getCancelAction() != null) {
             return;
-        
+        }
+
+        if (editCommand.getSaveAction() != null) {
+            validateUserNames(editCommand.getUserNames(), errors);
+            validateGroupNames(editCommand.getGroupNames(), errors);
+        }
+
         if (editCommand.getAddUserAction() != null) {
             String userNames[] = editCommand.getUserNames();
+
+            if (userNames.length == 0) {
+                errors.rejectValue("userNames", "permissions.user.missing.value",
+                        "You must type a value");
+            }
             
-            for (int i = 0; i < userNames.length; i++) {
-                String userName = userNames[i];
-                if (userName == null || userName.trim().equals("")) {
-                    errors.rejectValue("userNames", "permissions.user.missing.value",
-                         "You must type a value");
-                } else if (!userName.toLowerCase().equals(userName)) {
-                    errors.rejectValue("userNames", "permissions.user.uppercase.value",
-                    "You must use lower case characters");
-                } else {
-                    try { 
-                        Principal principal = principalFactory.getPrincipal(userName, Principal.Type.USER);	
+            validateUserNames(userNames, errors);
 
-                        if (!this.principalManager.validatePrincipal(principal)) {
-                            
-                            errors.rejectValue("userNames", "permissions.user.wrong.value", 
-                                    new Object[] {userName}, "User '" + userName
-                                    + "' does not exist");
-                        }
-
-                    } catch (InvalidPrincipalException e) {
-                        errors.rejectValue("userNames", "permissions.user.wrong.value", 
-                                new Object[] {userName}, "User '" + userName
-                                       + "' is illegal");
-                    }   
-                }
-            }            
         } else if (editCommand.getAddGroupAction() != null) {
             String[] groupNames = editCommand.getGroupNames();
 
-            for (int i = 0; i < groupNames.length; i++) {
-                String groupName = groupNames[i];
-            if (groupName == null || groupName.trim().equals(""))
-                errors.rejectValue("groupNames",
-                                   "permissions.group.missing.value",
-                                   "You must type a value");
-            Principal group = null; 
-            try {
-                group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
-            } catch (InvalidPrincipalException e) {
-                errors.rejectValue("groupNames", "permissions.group.illegal.value",
-                        new Object[] {groupName}, "String '" + groupName
-                                   + "' is an illegal group name");
+            if (groupNames.length == 0) {
+                errors.rejectValue("groupNames", "permissions.group.missing.value",
+                        "You must type a value");
             }
             
-            if (group != null && !this.principalManager.validateGroup(group))
-                errors.rejectValue("groupNames", "permissions.group.wrong.value",
-                        new Object[] {groupName}, "Group '" + groupName
-                                   + "' does not exist");
+            validateGroupNames(groupNames, errors);
+        }
+
+    }
+
+    private void validateUserNames(String[] userNames, Errors errors) {
+        for (int i = 0; i < userNames.length; i++) {
+            String userName = userNames[i];
+            if (!userName.toLowerCase().equals(userName)) {
+                errors.rejectValue("userNames", "permissions.user.uppercase.value",
+                        "You must use lower case characters");
+            } else {
+                try {
+                    Principal principal = principalFactory.getPrincipal(userName,
+                            Principal.Type.USER);
+
+                    if (!this.principalManager.validatePrincipal(principal)) {
+
+                        errors.rejectValue("userNames", "permissions.user.wrong.value",
+                                new Object[] { userName }, "User '" + userName
+                                        + "' does not exist");
+                    }
+
+                } catch (InvalidPrincipalException e) {
+                    errors.rejectValue("userNames", "permissions.user.wrong.value",
+                            new Object[] { userName }, "User '" + userName
+                                    + "' is illegal");
+                }
             }
         }
     }
+    
+    private void validateGroupNames(String[] groupNames, Errors errors) {
+        for (int i = 0; i < groupNames.length; i++) {
+            String groupName = groupNames[i];
+            Principal group = null;
+            try {
+                group = principalFactory
+                        .getPrincipal(groupName, Principal.Type.GROUP);
+            } catch (InvalidPrincipalException e) {
+                errors.rejectValue("groupNames", "permissions.group.illegal.value",
+                        new Object[] { groupName }, "String '" + groupName
+                                + "' is an illegal group name");
+            }
 
-    @Required public void setPrincipalManager(PrincipalManager principalManager) {
+            if (group != null && !this.principalManager.validateGroup(group))
+                errors.rejectValue("groupNames", "permissions.group.wrong.value",
+                        new Object[] { groupName }, "Group '" + groupName
+                                + "' does not exist");
+        }
+    }
+
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
 

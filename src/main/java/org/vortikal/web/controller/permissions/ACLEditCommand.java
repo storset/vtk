@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.controller.permissions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -151,7 +152,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
     }
 
     public void setGroupNames(String[] groupNames) {
-        this.groupNames = groupNames;
+        this.groupNames = stripBlanks(groupNames);
     }
 
     public String[] getUserNames() {
@@ -159,7 +160,17 @@ public class ACLEditCommand extends UpdateCancelCommand {
     }
 
     public void setUserNames(String[] userNames) {
-        this.userNames = userNames;
+        this.userNames = stripBlanks(userNames);
+    }
+
+    private String[] stripBlanks(String[] values) {
+        List<String> noBlanks = new ArrayList<String>();
+        for (String value : values) {
+            if (value != null && !value.trim().equals("")) {
+                noBlanks.add(value);
+            }
+        }
+        return (String[]) noBlanks.toArray(new String[noBlanks.size()]);
     }
 
     public String toString() {

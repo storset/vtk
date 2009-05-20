@@ -342,8 +342,9 @@
       </#if>
       </#if>
       <span class="addUser">
-        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
-                    id="${spring.status.expression}" value="${value?html}"/>&nbsp;
+        <input type="text" size="15"
+               name="${spring.status.expression}"
+               value="${value}">&nbsp;
 	    <input type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>

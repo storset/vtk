@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.vortikal.repository.Property;
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 /**
@@ -46,7 +46,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  * If one or both of the resources miss the given property or the propertyvalues are 
  * equal, move to the next propertydef in the list.
  */
-public class ResourcePropertyComparator implements Comparator<Resource> {
+public class ResourcePropertyComparator implements Comparator<PropertySet> {
 
     // Default list of props to use when sorting
     private List<PropertyTypeDefinition> propDefs;
@@ -80,10 +80,10 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
         this.alternativePropDefs = overridingSortPropDefs;
     }
 
-    public int compare(Resource r1, Resource r2) {
+    public int compare(PropertySet r1, PropertySet r2) {
         
         if (this.invert) {
-            Resource tmp = r1; r1 = r2; r2 = tmp;
+            PropertySet tmp = r1; r1 = r2; r2 = tmp;
         }
         
         for (PropertyTypeDefinition propDef : this.propDefs) {
@@ -128,12 +128,12 @@ public class ResourcePropertyComparator implements Comparator<Resource> {
         return 0;
     }
 
-    private Property getSortProp(Resource resource, PropertyTypeDefinition propDef) {
+    private Property getSortProp(PropertySet resource, PropertyTypeDefinition propDef) {
         Property prop = resource.getProperty(propDef);
         return prop == null ? getAlternativeSortProp(resource, propDef) : prop;
     }
 
-    private Property getAlternativeSortProp(Resource resource, PropertyTypeDefinition propDef) {
+    private Property getAlternativeSortProp(PropertySet resource, PropertyTypeDefinition propDef) {
         if (this.alternativePropDefs != null && this.alternativePropDefs.containsKey(propDef)) {
             List<PropertyTypeDefinition> alternativeProps = this.alternativePropDefs.get(propDef);
             for (PropertyTypeDefinition propTypeDef : alternativeProps) {

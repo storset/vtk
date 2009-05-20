@@ -43,19 +43,20 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
     @Override
     protected String getAutoCompleteSuggestions(String prefix, Path contextUri,
             String securityToken) {
-        
-        List<Principal> completions = this.dataProvider.getPrefixCompletions(prefix, contextUri, securityToken);
-        
+
+        List<Principal> completions = this.dataProvider.getPrefixCompletions(prefix,
+                contextUri, securityToken);
+
         StringBuilder result = new StringBuilder();
-        
-        // XXX TEMPORARY!!! Must extend Principal with full name
+
         for (Principal principal : completions) {
-            result.append(principal.getName() + SUGGESTION_DELIMITER);
+            result.append(principal.getDescription() + SUGGESTION_SEPERATOR
+                    + principal.getName() + SUGGESTION_DELIMITER);
         }
-        
+
         return result.toString();
     }
-    
+
     @Required
     public void setDataProvider(VocabularyDataProvider<Principal> dataProvider) {
         this.dataProvider = dataProvider;

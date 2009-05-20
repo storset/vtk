@@ -6,7 +6,7 @@
 
 </#macro>
 
-<#macro createAutoCompleteInputField appSrcBase service id value>
+<#macro createAutoCompleteInputField appSrcBase service id value="" multiple=true width="" minChars=2 hasDescription=false>
 
   <#-- id might contain '.' (dot) -->
   <#local elementId = "" />  
@@ -25,7 +25,22 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $("#${elementId}").autocomplete('${appSrcBase}?vrtx=admin&action=autocomplete&service=${service}', 
-          { minChars:2, multiple:true });
+          { minChars:${minChars}
+            <#if multiple>,
+              multiple:true
+            </#if>
+            <#if width != "">,
+              width:${width}
+            </#if>
+            <#if hasDescription>,
+              formatItem: function(data, i, n, value) {
+                return value.split(";")[0] + " (" + value.split(";")[1] + ")";
+              },
+              formatResult: function(data, value) {
+                return value.split(";")[1];
+              }
+            </#if>
+          });
     });
   </script>
   <input type="text" id="${id}" name="${id}" value="${value?html}" />

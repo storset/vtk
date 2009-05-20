@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.controller;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,9 +48,19 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriDepthQuery;
+import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.repository.ResourcePropertyComparator;
@@ -61,10 +70,12 @@ import org.vortikal.web.service.URL;
 
 public abstract class AbstractCollectionListingController implements Controller {
 
-    protected Repository repository;
+    private Repository repository;
+    protected Searcher searcher;
     protected ResourceWrapperManager resourceManager;
     protected PropertyTypeDefinition hiddenPropDef;
     protected int defaultPageLimit = 20;
+    protected int collectionDisplayLimit = 1000;
     protected PropertyTypeDefinition pageLimitPropDef;
     protected PropertyTypeDefinition hideNumberOfComments;
     protected String viewName;
@@ -88,16 +99,10 @@ public abstract class AbstractCollectionListingController implements Controller 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         String token = securityContext.getToken();
         Principal principal = securityContext.getPrincipal();
+
         Resource collection = this.repository.retrieve(token, uri, true);
-
-        Resource[] children = this.repository.listChildren(token, uri, true);
-        List<Resource> subCollections = new ArrayList<Resource>();
-        for (Resource r : children) {
-            if (r.isCollection() && r.getProperty(this.hiddenPropDef) == null) {
-                subCollections.add(r);
-            }
-        }
-
+        List<PropertySet> subCollections = listCollections(uri, token);
+        
         Locale locale = new org.springframework.web.servlet.support.RequestContext(
                 request).getLocale();
         Collections.sort(subCollections, new ResourcePropertyComparator(
@@ -138,6 +143,22 @@ public abstract class AbstractCollectionListingController implements Controller 
         return new ModelAndView(this.viewName, model);
     }
 
+    protected List<PropertySet> listCollections(Path uri, String token) {
+
+        AndQuery query = new AndQuery();
+        query.add(new UriPrefixQuery(uri.toString()));
+        query.add(new UriDepthQuery(uri.getDepth() + 1));
+        query.add(new TypeTermQuery("collection", TermOperator.IN));
+        query.add(new PropertyExistsQuery(this.hiddenPropDef, true));
+        
+        Search search = new Search();
+        search.setLimit(this.collectionDisplayLimit);
+        search.setQuery(query);
+        
+        ResultSet result = this.searcher.execute(token, search);
+        return result.getAllResults();        
+    }
+    
     protected URL createURL(HttpServletRequest request, String... removeableParams) {
         URL url = URL.create(request);
         for (String removableParam : removeableParams) {
@@ -219,6 +240,11 @@ public abstract class AbstractCollectionListingController implements Controller 
     }
 
     @Required
+    public void setCollectionSearcher(Searcher searcher) {
+        this.searcher = searcher;
+    }
+    
+    @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
@@ -261,5 +287,9 @@ public abstract class AbstractCollectionListingController implements Controller 
 
     public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
         this.hideNumberOfComments = hideNumberOfComments;
+    }
+    
+    public void setCollectionDisplayLimit(int collectionDisplayLimit) {
+        this.collectionDisplayLimit = collectionDisplayLimit;
     }
 }

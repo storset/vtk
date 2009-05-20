@@ -51,6 +51,7 @@
     <property name="lockManager" ref="repository.lockManager" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
     <property name="tempDir" value="${repository.tempDir}" />
+    <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
   </bean>
   
   <!--  Repository cache purge control wrapper hack -->

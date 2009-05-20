@@ -86,6 +86,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private String id;
     private int maxComments = 1000;
     private PeriodicThread periodicThread;
+    private int maxResourceChildren = 3000;
 
 
     public boolean isReadOnly() {
@@ -237,6 +238,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         this.authorizationManager.authorizeCopy(srcUri, destUri, principal, overwrite);
+        checkMaxChildren(destParent);
 
         if (dest != null) {
             this.dao.delete(dest);
@@ -296,6 +298,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         this.authorizationManager.authorizeMove(srcUri, destUri, principal, overwrite);
+        checkMaxChildren(destParent);
 
         // Performing delete operation
         if (dest != null) {
@@ -829,7 +832,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         this.authorizationManager.authorizeCreate(parent.getURI(), principal);
-
+        checkMaxChildren(parent);
+        
         ResourceImpl newResource = this.resourceHelper.create(principal, uri, collection);
 
         try {
@@ -866,6 +870,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
 
+    private void checkMaxChildren(ResourceImpl resource) {
+        if (resource.getChildURIs().length >= this.maxResourceChildren ) {
+            throw new AuthorizationException(
+                    "Resource " + resource.getURI() + " has too many children");
+        }
+    }
+    
     /**
      * Writes to a temporary file (used to avoid lengthy blocking on file
      * uploads).
@@ -981,6 +992,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.maxComments = maxComments;
     }
 
+    
+    public void setMaxResourceChildren(int maxResourceChildren) {
+        if (maxResourceChildren < 1) {
+            throw new IllegalArgumentException("Argument must be an integer >= 1");
+        }
+        this.maxResourceChildren = maxResourceChildren;
+    }
 
     public void init() {
         this.periodicThread = new PeriodicThread(600);

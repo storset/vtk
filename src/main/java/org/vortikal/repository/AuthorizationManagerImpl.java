@@ -362,6 +362,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      *   <li>Privilege ALL in ACL + parent not locked
      *   <li>Action WRITE on parent
      *   <li>+ resource tree not locked by another principal
+     *   <li>Resource is not the root resource '/'.
      * </ul>
      * @return is authorized
      * @throws IOException
@@ -376,11 +377,18 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
         
         this.lockManager.lockAuthorize(resource, principal, true);
         
+        if (uri.isRoot()) {
+            // Not allowed to delete root resource.
+            // Avoid sending null as Path to DAO layer (uri.getParent() below ..),
+            // which results in a NullPointerException in Cache, hidden by catch(Exception) below.
+            throw new AuthorizationException();
+        }
+        
         try {
             authorizeWrite(uri.getParent(), principal);
             return;
         } catch (Exception e) {
-            // Continue..
+            // Continue..          <--- XXX: Missing explanation for this. Some comments would be nice. 
         }
 
         aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);

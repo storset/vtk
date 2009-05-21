@@ -31,6 +31,7 @@
 package org.vortikal.web.service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
@@ -122,7 +123,7 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion
         if (resource == null || !resource.isCollection()) {
             return false;
         }
-        Path[] childURIs = resource.getChildURIs();
+        List<Path> childURIs = resource.getChildURIs();
         for (Path childURI: childURIs) {
             if (this.childNameSet.contains(childURI.getName())) {
                 if (this.childResourceAssertions == null) {
@@ -145,8 +146,7 @@ public class ResourceChildAssertion extends AbstractRepositoryAssertion
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        
+        StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append("; childNames = ").append(this.childNameSet);
         if (this.childResourceAssertions != null) {

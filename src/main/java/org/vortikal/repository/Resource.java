@@ -33,6 +33,7 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -120,7 +121,7 @@ public interface Resource extends PropertySet, Cloneable {
      * @return the children's URIs, or <code>null</code> if the
      * resource is not a collection
      */
-    public Path[] getChildURIs();
+    public List<Path> getChildURIs();
 
     /**
      * Returns a lock for the resource, if one is set.

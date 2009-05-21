@@ -179,7 +179,7 @@ public class Cache implements DataAccessor, InitializingBean {
         List<ResourceImpl> found = new ArrayList<ResourceImpl>();
         List<Path> notFound = new ArrayList<Path>();
         
-        Path[] childUris = parent.getChildURIs();
+        List<Path> childUris = parent.getChildURIs();
 
         for (Path uri: childUris) {
 
@@ -212,7 +212,7 @@ public class Cache implements DataAccessor, InitializingBean {
         
         List<Path> obtainedLocks = this.lockManager.lock(childUris);
         
-        float notFoundRatio = (float)notFound.size() / childUris.length;
+        float notFoundRatio = (float)notFound.size() / childUris.size();
         
         if (notFoundRatio <= this.loadChildrenSelectivelyThreshold) {
             if (this.logger.isDebugEnabled()) {
@@ -238,16 +238,16 @@ public class Cache implements DataAccessor, InitializingBean {
             }
             
             return found.toArray(new ResourceImpl[found.size()]);
-            
+
         } else {
             // Above threshold of children missing from cache or child too list too large
             // for current cache size. Load everything in one go.
             try {
 
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Loading all children of URI '" 
+                    this.logger.debug("loadChildren(): Loading all children of URI '" 
                             + parent.getURI() + "' from database, " 
-                            + parent.getChildURIs().length + " resources.");
+                            + parent.getChildURIs().size() + " resources.");
                 }
 
                 resources = this.wrappedAccessor.loadChildren(parent);
@@ -283,16 +283,16 @@ public class Cache implements DataAccessor, InitializingBean {
         long start = System.currentTimeMillis();
 
         ResourceImpl r = this.items.get(uri);
-
-        boolean lockTimedOut =
+        
+        boolean davLockTimedOut =
             (r != null && r.getLock() != null
              && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-        if (this.logger.isInfoEnabled() && lockTimedOut) {
-            this.logger.info("Dropping cached copy of " + r.getURI()  + " (lock timed out)");
+        if (this.logger.isInfoEnabled() && davLockTimedOut) {
+            this.logger.info("Dropping cached copy of " + r.getURI()  + " (DAV lock timed out)");
         }
 
-        if (r != null && ! lockTimedOut) {
+        if (r != null && !davLockTimedOut) {
             if (this.gatherStatistics) {
                 updateStatistics(1, 0);
             }
@@ -303,16 +303,16 @@ public class Cache implements DataAccessor, InitializingBean {
             updateStatistics(0, 1);
         }
 
-        List<Path> lock = this.lockManager.lock(new Path[]{uri});
+        List<Path> lock = this.lockManager.lock(uri);
 
         try {
             r = this.items.get(uri);
 
-            lockTimedOut =
+            davLockTimedOut =
                 (r != null && r.getLock() != null
                  && r.getLock().getTimeout().getTime() < System.currentTimeMillis());
 
-            if (r != null && ! lockTimedOut) {
+            if (r != null && ! davLockTimedOut) {
                 return r;
             }
 

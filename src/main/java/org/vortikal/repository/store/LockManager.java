@@ -31,7 +31,9 @@
 package org.vortikal.repository.store;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,27 +41,32 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentReaderHashMap;
-
 
 /**
  * Manager for locks on cache items (URIs).
  */
 public class LockManager {
     private int maxIterations = 15;
-    private long iterationWaitTimeout = 5000; // 5 seconds
+    private long iterationWaitTimeout = 4000; // 4 seconds
 
     @SuppressWarnings("unchecked")
-    private Map locks = new ConcurrentReaderHashMap();
+
+    /* All access to this map must be synchronized on the map object itself */
+    private Map<Path, Lock> locks = new HashMap<Path, Lock>();
+
     private Log logger = LogFactory.getLog(LockManager.class);
 
-
-
-    public List<Path> lock(Path[] uris) {
-        List<Path> list = java.util.Arrays.asList(uris);
-        return lock(list);
+    /**
+     * Aquires lock on URI. Blocks until lock is
+     * obtained, or throws an exception (leaving no locks) if it could not
+     * be obtained.
+     *
+     * @param uri the URI to lock
+     * @throws RuntimeException if URI could not be locked.
+     */
+    public List<Path> lock(Path uri) {
+        return lockInternal(new Path[]{uri});
     }
-    
 
     /**
      * Aquires locks for a list of URIs. Blocks until all locks are
@@ -72,9 +79,16 @@ public class LockManager {
      */
     public List<Path> lock(List<Path> uris) {
 
-        Collections.sort(uris);
-
-        List<Path> claimedLocks = new ArrayList<Path>();
+        // Do a shallow copy of URI list because we need to sort it
+        // (not nice to directly modify input list).
+        return lockInternal(uris.toArray(new Path[uris.size()]));
+    }
+    
+    private List<Path> lockInternal(Path[] uris) {
+        
+        Arrays.sort(uris); // Always try to lock a set of URIs in the same order to prevent deadlocking.
+        
+        List<Path> claimedLocks = new ArrayList<Path>(uris.length);
         for (Path uri: uris) {
             Lock lock = null;
             boolean haveLock = false;
@@ -129,6 +143,7 @@ public class LockManager {
                 iterations++;
             }
         }
+
         return Collections.unmodifiableList(claimedLocks);
     }
 
@@ -140,7 +155,6 @@ public class LockManager {
      * @param uris the URIs to unlock.
      */
     public void unlock(List<Path> uris) {
-
         for (Path uri: uris) {
             Lock lock = getLock(uri);
             lock.release();
@@ -150,28 +164,33 @@ public class LockManager {
 
     /**
      * Gets a lock instance. The instance maps one to one to resource
-     * URIs.
+     * URIs. This method itself never blocks for a long time.
      *
      * @param uri the URI for which to get the lock
      * @return the lock object corresponding to the URI
      */
     @SuppressWarnings("unchecked")
-    private synchronized Lock getLock(Path uri) {
-
-        if (!this.locks.containsKey(uri)) {
-            Lock lock = new Lock(uri);
-            this.locks.put(uri, lock);
+    private Lock getLock(Path uri) {
+        Lock lock = null;
+        synchronized(this.locks) {
+            lock = this.locks.get(uri);
+            if (lock == null) {
+                lock = new Lock(uri);
+                this.locks.put(uri, lock);
+            }
         }
-        return (Lock) this.locks.get(uri);
+
+        return lock;
     }
 
     /**
      * Removes a lock from the lock table.
+     * This method itself never blocks for a long time.
      * 
      * @param uri a <code>String</code> value
      */
-    private synchronized void disposeLock(Path uri) {
-        if (this.locks.containsKey(uri)) {
+    private void disposeLock(Path uri) {
+        synchronized (this.locks) {
             this.locks.remove(uri);
         }
     }
@@ -232,10 +251,9 @@ public class LockManager {
                     " owned by thread " + this.owner.getName());
             }
 
-            disposeLock(this.uri);
+            LockManager.this.disposeLock(this.uri);
             notifyAll();
         }
-
 
 
         /**

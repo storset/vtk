@@ -124,7 +124,7 @@ public class ResourceWrapper implements Resource {
         return this.resource.getCharacterEncoding();
     }
 
-    public Path[] getChildURIs() {
+    public List<Path> getChildURIs() {
         return this.resource.getChildURIs();
     }
 

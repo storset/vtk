@@ -236,7 +236,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         }
     }
 
-    private Path[] getChildUris(Node node) throws RepositoryException {
+    private List<Path> getChildUris(Node node) throws RepositoryException {
         List<Path> children = new ArrayList<Path>();
 
         for (NodeIterator i = node.getNodes(); i.hasNext();) {
@@ -247,7 +247,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
             String uri = JcrPathUtil.pathToUri(child.getPath());
             children.add(Path.fromString(uri));
         }
-        return children.toArray(new Path[children.size()]);
+        return children;
     }
 
     private PropertySet versionToResource(Version v, Path uri) throws RepositoryException {

@@ -871,9 +871,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
 
     private void checkMaxChildren(ResourceImpl resource) {
-        if (resource.getChildURIs().length >= this.maxResourceChildren ) {
+        if (resource.getChildURIs().size() > this.maxResourceChildren ) {
             throw new AuthorizationException(
-                    "Resource " + resource.getURI() + " has too many children");
+                    "Collection " + resource.getURI() 
+                    + " has too many children, maximum is " + this.maxResourceChildren);
         }
     }
     

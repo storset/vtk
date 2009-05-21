@@ -103,7 +103,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         }
 
         loadACLs(new ResourceImpl[] {resource});
-        loadChildUris(resource);
+        
+        if (resource.isCollection()) { 
+            loadChildUris(resource);
+        }
 
         return resource;
     }
@@ -569,17 +572,18 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         @SuppressWarnings("unchecked")
         List<Path> resourceUriList = getSqlMapClientTemplate().queryForList(sqlMap, parameters);
 
-        Path[] childUris = resourceUriList.toArray(new Path[resourceUriList.size()]);
-        parent.setChildURIs(childUris);
+        parent.setChildURIs(resourceUriList);
     }
 
 
     private void loadChildUrisForChildren(ResourceImpl parent, ResourceImpl[] children) {
         
-        // Initialize a map from child.URI to the list of grandchildren's URIs:
+        // Initialize a map from child collection URI to the list of grandchildren's URIs:
         Map<Path, List<Path>> childMap = new HashMap<Path, List<Path>>();
-        for (int i = 0; i < children.length; i++) {
-            childMap.put(children[i].getURI(), new ArrayList<Path>());
+        for (ResourceImpl child: children) {
+            if (child.isCollection()) {
+                childMap.put(child.getURI(), new ArrayList<Path>());
+            }
         }
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -596,14 +600,20 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         for (Path uri: resourceUris) {
             Path parentUri = uri.getParent();
             if (parentUri != null) {
-                childMap.get(parentUri).add(uri);
+                List<Path> childUriList = childMap.get(parentUri);
+                // Again, watch for children added in database while this transaction is ongoing
+                // (child map is populated before doing database query).
+                if (childUriList != null) { 
+                    childUriList.add(uri);
+                }
             }
         }
-
-        for (int i = 0; i < children.length; i++) {
-            if (!children[i].isCollection()) continue;
-            List<Path> childURIs = childMap.get(children[i].getURI());
-            children[i].setChildURIs(childURIs.toArray(new Path[childURIs.size()]));
+        
+        for (ResourceImpl child: children) {
+            if (!child.isCollection()) continue;
+            
+            List<Path> childURIs = childMap.get(child.getURI());
+            child.setChildURIs(childURIs);
         }
     }
 

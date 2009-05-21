@@ -31,10 +31,14 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.jcr.nodetype.PropertyDefinition;
 
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -52,7 +56,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     
     private Acl acl;
     private Lock lock = null;
-    private Path[] childURIs = null;
+    private List<Path> childURIs = null;
     
     private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
@@ -170,12 +174,16 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return getPropValue(PropertyType.CONTENTLOCALE_PROP_NAME);
     }
 
-    public void setChildURIs(Path[] childURIs) {
+    public void setChildURIs(List<Path> childURIs) {
         this.childURIs = childURIs;
     }
-
-    public Path[] getChildURIs() {
-        return this.childURIs;
+    
+    public List<Path> getChildURIs() {
+        if (this.childURIs != null) {
+            return Collections.unmodifiableList(this.childURIs);
+        }
+            
+        return null; // Not a collection
     }
 
     public Acl getAcl() {
@@ -407,16 +415,37 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      *
      * @param childURI a <code>String</code> value
      */
+//    public synchronized void addChildURI(Path childURI) {
+//            Path[] newChildren = new Path[this.childURIs.length + 1];
+//            
+//            System.arraycopy(this.childURIs, 0, 
+//                             newChildren,    0,
+//                             this.childURIs.length);
+//            
+//            newChildren[this.childURIs.length] = childURI;
+//            
+//            this.childURIs = newChildren;
+//    }
+   
+    // Mumble mumble. this.childURIs should never be null if this method is called.
+    // However, this method is only called from RepositoryImpl.create*(). Keeping old behaviour for now.
     public synchronized void addChildURI(Path childURI) {
-            Path[] newChildren = new Path[this.childURIs.length + 1];
-            
-            System.arraycopy(this.childURIs, 0, 
-                             newChildren,    0,
-                             this.childURIs.length);
-            
-            newChildren[this.childURIs.length] = childURI;
-            
-            this.childURIs = newChildren;
+        if (this.childURIs == null) {
+            this.childURIs = new ArrayList<Path>();
+        }
+        
+        this.childURIs.add(childURI);
+    }
+    
+    // Mumble mumble. this.childURIs should never be null if this method is called.
+    // However, this method is only called from RepositoryImpl.delete(). Keeping old behaviour for now.
+    public synchronized void removeChildURI(Path childURI) {
+        if (this.childURIs == null) { // 
+            this.childURIs = new ArrayList<Path>(); 
+            return;
+        }
+        
+        this.childURIs.remove(childURI);
     }
     
     /**
@@ -424,25 +453,25 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
      * 
      * @param childURI
      */
-    public synchronized void removeChildURI(Path childURI) {
-        for (int i=0; i<this.childURIs.length; i++) {
-            if (this.childURIs[i].equals(childURI)) {
-                Path[] newChildren = new Path[this.childURIs.length-1];
-                
-                if (i > 0) {
-                    System.arraycopy(this.childURIs, 0, newChildren, 0, i);
-                }
-                
-                if (i+1 < this.childURIs.length) {
-                    System.arraycopy(this.childURIs, i+1, newChildren, i, 
-                                                (this.childURIs.length-i-1));
-                }
-                
-                this.childURIs = newChildren;
-                return;
-            }
-        }
-    }
+//    public synchronized void removeChildURI(Path childURI) {
+//        for (int i=0; i<this.childURIs.length; i++) {
+//            if (this.childURIs[i].equals(childURI)) {
+//                Path[] newChildren = new Path[this.childURIs.length-1];
+//                
+//                if (i > 0) {
+//                    System.arraycopy(this.childURIs, 0, newChildren, 0, i);
+//                }
+//                
+//                if (i+1 < this.childURIs.length) {
+//                    System.arraycopy(this.childURIs, i+1, newChildren, i, 
+//                                                (this.childURIs.length-i-1));
+//                }
+//                
+//                this.childURIs = newChildren;
+//                return;
+//            }
+//        }
+//    }
 
     public boolean equals(Object obj) {
         if (!(obj instanceof ResourceImpl)) return false;
@@ -452,10 +481,18 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (this.lock == null && other.lock != null) return false;
         if (this.lock != null && other.lock == null) return false;
         if (this.lock != null && !this.lock.equals(other.lock)) return false;
-        if (this.childURIs.length != other.childURIs.length) return false;
-        for (int i = 0; i < this.childURIs.length; i++) {
-            if (!this.childURIs[i].equals(other.childURIs[i])) return false;
+        
+        if ((this.childURIs == null && other.childURIs != null) 
+                ||  (this.childURIs != null && other.childURIs == null)) return false;
+        
+        if (this.childURIs != null && other.childURIs != null) {
+            if (this.childURIs.size() != other.childURIs.size()) return false;
+            for (int i = 0; i < this.childURIs.size(); i++) {
+                if (!this.childURIs.get(i).equals(other.childURIs.get(i)))
+                    return false;
+            }
         }
+        
         return true;
     }
 

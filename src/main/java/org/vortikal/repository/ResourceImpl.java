@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.jcr.nodetype.PropertyDefinition;
-
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -50,7 +48,6 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.LocaleHelper;
-
 
 public class ResourceImpl extends PropertySetImpl implements Resource {
     
@@ -110,7 +107,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     /**
      * Creates and adds a property with a given namespace, name
      * and value. The type is set according to its {@link
-     * PropertyDefinition property definition}, or {@link
+     * PropertyTypeDefinition property definition}, or {@link
      * PropertyType.TYPE_STRING} if it has no definition
      *
      * @param namespace the namespace

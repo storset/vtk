@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,7 +72,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         ResourceImpl resource = new ResourceImpl(uri, this.resourceTypeTree,
                 this.authorizationManager);
         if (collection) {
-            resource.setChildURIs(new Path[] {});
+            resource.setChildURIs(new ArrayList<Path>());
         }
         PropertyEvaluationContext ctx = PropertyEvaluationContext.createResourceContext(resource, collection, principal);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());

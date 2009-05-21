@@ -138,8 +138,10 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         }
 
         try {
-            resource = this.repository.retrieve(
-                    securityContext.getToken(), uri, true);
+            if (uri != null) { // Will be null for root resource if this.linkToParent is true
+                resource = this.repository.retrieve(
+                        securityContext.getToken(), uri, true);
+            }
         } catch (Throwable t) { }
 
         Map urlMap = (Map) model.get(this.modelName);

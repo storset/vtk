@@ -299,7 +299,7 @@
       <li class="users">
       <fieldset>
       <legend><@vrtx.msg code="permissions.users" default="Users"/></legend>
-      <ul class="users">
+      <ul class="users"> 
       <@spring.bind formName + ".removeUserURLs" />
       <#assign removeUserURLs=spring.status.value />
       <@spring.bind formName + ".users" />
@@ -342,10 +342,10 @@
       </#if>
       </#if>
       <span class="addUser">
-        <input type="text" size="15"
+        <input class="addUserField" type="text" size="15"
                name="${spring.status.expression}"
-               value="${value}">&nbsp;
-	    <input type="submit" name="addUserAction"
+               value="${value}" />&nbsp;
+	    <input class="addUserButton" type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>
       </fieldset>
@@ -379,10 +379,10 @@
       </#if>
       </#if>
       <span class="addGroup">
-	<input type="text" size="15"
+	<input class="addGroupField" type="text" size="15"
                name="${spring.status.expression}"
-               value="${value}">&nbsp;
-        <input type="submit" name="addGroupAction"
+               value="${value}" />&nbsp;
+        <input class="addGroupButton" type="submit" name="addGroupAction"
                value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
       </span>
     </fieldset>

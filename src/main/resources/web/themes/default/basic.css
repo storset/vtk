@@ -606,12 +606,13 @@ td.expandedForm div.submitButtons {
 }
 
 .expandedForm ul.principalList li.users {
-	float: left;
+  /* 	float: left; */
+    margin-bottom: 10px;
 	margin-right: 20px;
 }
 
 .expandedForm ul.principalList li.groups {
-	float: left;
+  /* float: left; */
 	clear: right;
 }
 
@@ -639,9 +640,21 @@ td.expandedForm div.submitButtons {
 	padding: 3px;
 }
 
-.expandedForm span.addGroup,.expandedForm span.addUser {
-	white-space: nowrap;
+.expandedForm span.addGroup,
+.expandedForm span.addUser {
+	white-space: nowrap; 
 }
+
+.expandedForm span.addGroup input.addGroupField,
+.expandedForm span.addUser input.addUserField {
+  width: 200px;	
+}
+
+.expandedForm span.addGroup input.addGroupButton,
+.expandedForm span.addUser input.addUserButton {
+  width: 100px; 
+}
+
 
 /* Directory listing section: */
 table.directoryListing {

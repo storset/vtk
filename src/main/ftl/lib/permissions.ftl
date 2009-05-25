@@ -46,8 +46,12 @@
    <#else>
 
       <h3 class="${privilegeName}">${privilegeHeading}</h3>
-      <div id="<@returnStringIfNotReadableByAll privilegeName=privilegeName/>" class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
-   </#if>
+      <#if privilegeName == "read">
+         <div id="<@returnStringIfNotReadableByAll privilegeName=privilegeName/>" class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
+      <#else>
+         <div class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
+      </#if>
+    </#if>
 </#macro>
 
 

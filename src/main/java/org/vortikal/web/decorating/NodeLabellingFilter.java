@@ -36,7 +36,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.vortikal.text.html.HtmlAttribute;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
@@ -94,6 +93,11 @@ public class NodeLabellingFilter implements HtmlNodeFilter, InitializingBean {
                             }
                             public boolean hasValue() {
                                 return true;
+                            }
+                            public boolean isSingleQuotes() {
+                                return false;
+                            }
+                            public void setSingleQuotes(boolean singleQuotes) {                                
                             }
                         });
                 }

@@ -159,7 +159,7 @@ public class HtmlPageImpl implements HtmlPage {
         if (value == null) {
             throw new IllegalArgumentException("Illegal attribute value: NULL");
         }
-        return new HtmlAttributeImpl(name, value);
+        return new HtmlAttributeImpl(name, value, false);
     }
 }
 

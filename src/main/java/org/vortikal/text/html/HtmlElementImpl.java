@@ -184,10 +184,13 @@ public class HtmlElementImpl implements HtmlElement {
         if (attributes.length > 0) {
             for (HtmlAttribute attr : attributes) {
                 if (attr.hasValue()) {
-                    sb.append(" ").append(attr.getName()).append("=\"");
-                    sb.append(attr.getValue()).append("\"");
+                    sb.append(" ").append(attr.getName()).append("=");
+                    sb.append(attr.isSingleQuotes() ? "'" : "\"");
+                    sb.append(attr.getValue());
+                    sb.append(attr.isSingleQuotes() ? "'" : "\"");
                 } else if (this.xhtml) {
-                    sb.append(" ").append(attr.getName()).append("=\"\"");
+                    sb.append(" ").append(attr.getName()).append("=");
+                    sb.append(attr.isSingleQuotes() ? "''" : "\"\"");
                 } else {
                     sb.append(" ").append(attr.getName());
                 }
@@ -212,10 +215,13 @@ public class HtmlElementImpl implements HtmlElement {
         if (attributes.length > 0) {
             for (HtmlAttribute attr : attributes) {
                 if (attr.hasValue()) {
-                    sb.append(" ").append(attr.getName()).append("=\"");
-                    sb.append(attr.getValue()).append("\"");
+                    sb.append(" ").append(attr.getName()).append("=");
+                    sb.append(attr.isSingleQuotes() ? "'" : "\"");
+                    sb.append(attr.getValue());
+                    sb.append(attr.isSingleQuotes() ? "'" : "\"");
                 } else if (this.xhtml) {
-                    sb.append(" ").append(attr.getName()).append("=\"\"");
+                    sb.append(" ").append(attr.getName()).append("=");
+                    sb.append(attr.isSingleQuotes() ? "''" : "\"\"");
                 } else {
                     sb.append(" ").append(attr.getName());
                 }

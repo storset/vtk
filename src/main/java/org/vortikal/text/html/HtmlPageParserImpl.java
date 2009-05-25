@@ -270,7 +270,8 @@ public class HtmlPageParserImpl implements HtmlPageParser {
                 String attrName = attr.getName();
                 if (attrName != null && !name.equals(attrName) && !"/".equals(attrName)) {
                     String attrValue = attr.getValue();
-                    element.addAttribute(new HtmlAttributeImpl(attrName, attrValue));
+                    boolean single = attr.getQuote() == '\'';
+                    element.addAttribute(new HtmlAttributeImpl(attrName, attrValue, single));
                 }
             }
         }

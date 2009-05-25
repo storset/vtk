@@ -199,6 +199,17 @@ public class HtmlPageParserImplTestCase extends TestCase {
         assertEquals("The <div>page</div>", page.getRootElement().getContent());
     }
 
+    private static final String SINGLE_DOUBLE_ATTR_QUOTES =
+        "<body attr1=\"value'1\"><div attr2='value\"2'></div></body>";
+    
+    public void testAttrQuotes() throws Exception {
+        HtmlPage page = parse(SINGLE_DOUBLE_ATTR_QUOTES);
+        assertEquals("value'1", page.getRootElement().getAttribute("attr1").getValue());
+        assertEquals("value\"2", page.getRootElement().getChildElements()[0].getAttribute("attr2").getValue());
+        assertFalse(page.getRootElement().getAttribute("attr1").isSingleQuotes());
+        assertTrue(page.getRootElement().getChildElements()[0].getAttribute("attr2").isSingleQuotes());
+    }
+
 
     String VALID_HTML_401_TRANS = 
         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"

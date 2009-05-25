@@ -96,13 +96,17 @@ public class HtmlAttributesComponent extends AbstractDecoratorComponent {
             }
         }
         Writer out = response.getWriter();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (HtmlAttribute htmlAttribute: element.getAttributes()) {
             if (exclude != null && excludedAttributes.contains(htmlAttribute.getName())) {
                 continue;
             }
-            sb.append(" ").append(htmlAttribute.getName()).append("=\"");
-            sb.append(htmlAttribute.getValue()).append("\"");
+            if (htmlAttribute.hasValue()) {
+                sb.append(" ").append(htmlAttribute.getName()).append("=");
+                sb.append(htmlAttribute.isSingleQuotes() ? "'" : "\"");
+                sb.append(htmlAttribute.getValue());
+                sb.append(htmlAttribute.isSingleQuotes() ? "'" : "\"");
+            }
         }
         out.write(sb.toString());
         out.flush();

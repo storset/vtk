@@ -35,10 +35,12 @@ package org.vortikal.text.html;
 public class HtmlAttributeImpl implements HtmlAttribute {
     private String name;
     private String value;
+    private boolean singleQuotes = false;
         
-    public HtmlAttributeImpl(String name, String value) {
+    public HtmlAttributeImpl(String name, String value, boolean singleQuotes) {
         this.name = name.toLowerCase();
         this.value = value;
+        this.singleQuotes = singleQuotes;
     }
         
     public String getName() {
@@ -59,6 +61,14 @@ public class HtmlAttributeImpl implements HtmlAttribute {
     
     public boolean hasValue() {
         return this.value != null;
+    }
+    
+    public void setSingleQuotes(boolean singleQuotes) {
+        this.singleQuotes = singleQuotes;
+    }
+    
+    public boolean isSingleQuotes() {
+        return this.singleQuotes;
     }
     
     public String toString() {

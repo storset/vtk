@@ -42,4 +42,8 @@ public interface HtmlAttribute {
     public void setValue(String value);
 
     public boolean hasValue();
+    
+    public boolean isSingleQuotes();
+    
+    public void setSingleQuotes(boolean singleQuotes);
 }

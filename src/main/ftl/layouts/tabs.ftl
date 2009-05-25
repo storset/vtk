@@ -18,7 +18,7 @@
     <#if tab.url?exists>
       <#if tab.active>
         
-        <#if tab.readProcessedAll>
+        <#if tab.readProcessedAll && tab.label == "permissionsService">
            <li class="current activeTab readProcessedAll ${tab.label}">
              <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
            </li>
@@ -28,7 +28,7 @@
            </li>
         </#if>
       <#else>
-       <#if tab.readProcessedAll>
+       <#if tab.readProcessedAll && tab.label == "permissionsService">
           <li class="${tab.label} readProcessedAll"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
        <#else>
          <li class="${tab.label}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>

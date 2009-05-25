@@ -307,7 +307,7 @@
                value="false"
                <#if !spring.status.value>checked="checked"</#if>> 
       <label id="permissions.selectedPrincipals" for="permissions.selectedPrincipals">
-        <@vrtx.msg code="permissions.selectedPrincipals" default="Allowed for"/></label>
+        <@vrtx.msg code="permissions.selectedPrincipals" default="Access limited to"/></label>
     </li>
     </ul>
 

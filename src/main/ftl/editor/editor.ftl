@@ -107,8 +107,8 @@
       </#if>
 
       <div id="submit" class="save-cancel">
-          <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
           <input type="submit" id="saveAndQuitButton" onClick="formatFeaturedArticlesData();performSave();" name="savequit"  value="${vrtx.getMsg("editor.saveAndQuit")}">
+          <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();cSave();" name="save" value="${vrtx.getMsg("editor.save")}">
           <input type="submit" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
 

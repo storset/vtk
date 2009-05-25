@@ -58,7 +58,7 @@ div.tabs ul li a:hover {
         border-color: #999;
         padding-bottom: 5px;
 }
-
+/*
 div.tabs ul li.editService a, div.tabs ul li.editService a:hover{
         padding-left: 20px;
         background: url(icons/edit.gif) no-repeat 7px 5px;
@@ -83,6 +83,7 @@ div.tabs ul li.editor\.unstructuredXhtmlEditService a, div.tabs ul li.editor\.un
         padding-left: 20px;
         background: url(icons/edit.gif) no-repeat 7px 5px;
 }
+*/
 
 /* Override this class to get different colors and size on a specific tab */
 
@@ -92,4 +93,23 @@ div.tabs ul li.editor\.unstructuredXhtmlEditService a, div.tabs ul li.editor\.un
 
 div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 	background-color: #efefef;;
+}
+
+/* Readable for all */
+div.tabs ul li a#permissionsService {
+   background: #fff url(icons/globe.png) no-repeat 2px 3px;
+   padding-left: 24px;   
+}
+
+div.tabs ul li.activeTab a#permissionsService {
+   background: #efefef url(icons/globe.png) no-repeat 2px 3px;
+}
+
+/* Read permissions set */
+div.tabs ul li.readProcessedAll a#permissionsService {
+   background: #fff url(icons/users.png) no-repeat 2px 3px;  
+}
+
+div.tabs ul li.activeTab.readProcessedAll a#permissionsService {
+   background: #efefef url(icons/users.png) no-repeat 2px 3px;
 }

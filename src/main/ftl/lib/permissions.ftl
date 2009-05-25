@@ -44,8 +44,9 @@
       </div>
     </div>
    <#else>
+
       <h3 class="${privilegeName}">${privilegeHeading}</h3>
-      <div><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
+      <div id="<@returnStringIfNotReadableByAll privilegeName=privilegeName/>" class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
    </#if>
 </#macro>
 
@@ -245,6 +246,21 @@
   </#if>
 </#macro>
 
+<#--
+ * returnStringIfNotReadableByAll
+ *
+ * Returns the string="readProcessedAll" if not readable by all (pseudo:all)
+ *
+ * @param privilegeName
+ *
+-->
+
+<#macro returnStringIfNotReadableByAll privilegeName>
+<#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
+<#assign oneOfThemIsPseudoAll = false />
+<#list pseudoPrincipals as pseudoPrincipal><#if pseudoPrincipal.name == "pseudo:all"><#assign oneOfThemIsPseudoAll = true /></#if></#list>
+<#compress><#if oneOfThemIsPseudoAll = false>readProcessedAll</#if></#compress><#t/>
+</#macro>
 
 
 <#--
@@ -271,7 +287,7 @@
   <@spring.bind formName + ".submitURL" /> 
   <form class="aclEdit" action="${spring.status.value?html}" method="post">
     <h3>${privilegeHeading}</h3>
-    <ul class="everyoneOrSelectedUsers">
+    <ul class="everyoneOrSelectedUsers" id="${privilegeHeading}">
     <@spring.bind formName + ".grouped" /> 
     <#assign grouped = spring.status.value />
     <li>
@@ -280,7 +296,7 @@
              type="radio"
              name="${spring.status.expression}"
              value="true" <#if spring.status.value>checked="checked"</#if>> 
-      <label for="permissions.grouped">
+      <label id="permissions.grouped" for="permissions.grouped">
         <@vrtx.msg code="permissions.allowedFor.${groupingPrincipal.name}"
                    default="${groupingPrincipal.name}" /></label>
     </li>
@@ -290,8 +306,8 @@
                name="${spring.status.expression}"
                value="false"
                <#if !spring.status.value>checked="checked"</#if>> 
-      <label for="permissions.selectedPrincipals">
-        <@vrtx.msg code="permissions.selectedPrincipals" default="Selected users and groups"/></label>
+      <label id="permissions.selectedPrincipals" for="permissions.selectedPrincipals">
+        <@vrtx.msg code="permissions.selectedPrincipals" default="Allowed for"/></label>
     </li>
     </ul>
 

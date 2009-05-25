@@ -35,12 +35,14 @@ import org.vortikal.web.service.URL;
 /**
  * Bean representing a view menu item.
  * 
- * <p>Configurable JavaBean properties:
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
  * <li><code>title</code> - the display title string
  * <li><code>url</code> - the URL string to the item
  * <li><code>label</code> - string identifying the menu item type
  * <li><code>active</code> - boolean flag set if this is the current shown item
+ * <li><code>readProcessedAll</code> - boolean flag set if it has read restrictions
  * </ul>
  */
 public class MenuItem<T> {
@@ -50,82 +52,87 @@ public class MenuItem<T> {
     private String title;
     private String label;
     private boolean active = false;
+    private boolean readProcessedAll = false;
     private ListMenu<T> subMenu;
-    
+
+
     public MenuItem(T value) {
-        if (value == null) throw new IllegalArgumentException(
-                "Constructor argument cannot be null");
+        if (value == null) throw new IllegalArgumentException("Constructor argument cannot be null");
         this.value = value;
     }
-    
+
+
     public T getValue() {
         return this.value;
     }
-    
+
+
     public String getTitle() {
         if (this.title == null) return this.value.toString();
         return this.title;
     }
-    
+
+
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
+
     public boolean isActive() {
         return this.active;
     }
-   
+
+
     public void setActive(boolean active) {
         this.active = active;
     }
-    
+
+
     public String getLabel() {
         return this.label;
     }
-    
+
+
     public void setLabel(String label) {
         this.label = label;
     }
-    
+
+
     public URL getUrl() {
         return this.url;
     }
-    
+
+
     public void setUrl(URL url) {
         this.url = url;
     }
-    
+
+
     public void setSubMenu(ListMenu<T> subMenu) {
         this.subMenu = subMenu;
     }
 
+
     public ListMenu<T> getMenu() {
         return this.subMenu;
     }
-    
+
+
     @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
         if (!(o instanceof MenuItem)) return false;
         MenuItem other = (MenuItem) o;
-        if (!this.value.equals(other.value))
-            return false;
-        if ((this.url == null || other.url == null) && this.url != other.url)
-            return false;
-        if (this.url != null && !this.url.equals(other.url))
-            return false;
-        if ((this.title == null || other.title == null) && this.title != other.title)
-            return false;
-        if (this.title != null && !this.title.equals(other.title))
-            return false;
-        if ((this.label == null || other.label == null) && this.label != other.label)
-            return false;
-        if (this.label != null && !this.label.equals(other.label))
-            return false;
-        if (this.active != other.active)
-            return false;
+        if (!this.value.equals(other.value)) return false;
+        if ((this.url == null || other.url == null) && this.url != other.url) return false;
+        if (this.url != null && !this.url.equals(other.url)) return false;
+        if ((this.title == null || other.title == null) && this.title != other.title) return false;
+        if (this.title != null && !this.title.equals(other.title)) return false;
+        if ((this.label == null || other.label == null) && this.label != other.label) return false;
+        if (this.label != null && !this.label.equals(other.label)) return false;
+        if (this.active != other.active) return false;
         return true;
     }
-    
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -137,5 +144,15 @@ public class MenuItem<T> {
 
         return sb.toString();
     }
-    
+
+
+    public boolean isReadProcessedAll() {
+        return this.readProcessedAll;
+    }
+
+
+    public void setReadProcessedAll(boolean readProcessedAll) {
+        this.readProcessedAll = readProcessedAll;
+    }
+
 }

@@ -454,6 +454,8 @@ div.resourceInfo {
 	font-size: 90%;
 }
 
+
+
 .smaller {
 	font-size: 80%;
 }
@@ -463,6 +465,18 @@ div.resourceInfo {
 	font-size: 80%;
 	border-collapse: collapse;
 	width: 100%;
+}
+
+/* Readable for all */
+.resourceInfo div.read, 
+.resourceInfo div.lese {
+    background: #fff url(icons/globe.png) no-repeat left 3px;
+    padding-left: 22px; 
+}
+
+.resourceInfo div.read#readProcessedAll, 
+.resourceInfo div.lese#readProcessedAll {
+    background: #fff url(icons/users.png) no-repeat left 3px;
 }
 
 .resourceInfo tr {
@@ -595,6 +609,24 @@ td.expandedForm div.submitButtons {
 .expandedForm ul.everyoneOrSelectedUsers li {
 	padding: 4px 0px 4px 0px;
 	margin: 0;
+}
+
+.expandedForm ul.everyoneOrSelectedUsers#Read label,
+.expandedForm ul.everyoneOrSelectedUsers#Lese label {
+	padding-left:22px; 
+    margin-top: -2px;
+    padding-top: 2px;
+}
+
+/* Readable for all */
+.expandedForm ul.everyoneOrSelectedUsers#Read label#permissions\.grouped,
+.expandedForm ul.everyoneOrSelectedUsers#Lese label#permissions\.grouped {
+	background: url(icons/globe.png) no-repeat left 0px;
+}
+
+.expandedForm ul.everyoneOrSelectedUsers#Read label#permissions\.selectedPrincipals,
+.expandedForm ul.everyoneOrSelectedUsers#Lese label#permissions\.selectedPrincipals {
+    background: url(icons/users.png) no-repeat left 0px;
 }
 
 .expandedForm ul.principalList {

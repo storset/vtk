@@ -8,6 +8,7 @@
   - NOTE: this template wll be deprecated by list-menu.ftl
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
+
 <#if !tabs?exists>
   <#stop "Unable to render model: required submodel 'tabs' missing">
 </#if>
@@ -16,11 +17,22 @@
   <#list tabs.items as tab>
     <#if tab.url?exists>
       <#if tab.active>
-        <li class="current activeTab ${tab.label}">
-          <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
-        </li>
+        
+        <#if tab.readProcessedAll>
+           <li class="current activeTab readProcessedAll ${tab.label}">
+             <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
+           </li>
+        <#else>
+           <li class="current activeTab ${tab.label}">
+             <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
+           </li>
+        </#if>
       <#else>
-        <li class="${tab.label}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
+       <#if tab.readProcessedAll>
+          <li class="${tab.label} readProcessedAll"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
+       <#else>
+         <li class="${tab.label}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
+       </#if>
       </#if>
     </#if>
   </#list>

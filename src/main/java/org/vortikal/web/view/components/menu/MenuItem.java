@@ -30,6 +30,11 @@
  */
 package org.vortikal.web.view.components.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.vortikal.web.service.URL;
 
 /**
@@ -42,7 +47,7 @@ import org.vortikal.web.service.URL;
  * <li><code>url</code> - the URL string to the item
  * <li><code>label</code> - string identifying the menu item type
  * <li><code>active</code> - boolean flag set if this is the current shown item
- * <li><code>readProcessedAll</code> - boolean flag set if it has read restrictions
+ * <li><code>attributes</code> - holds a list of attributes
  * </ul>
  */
 public class MenuItem<T> {
@@ -52,13 +57,14 @@ public class MenuItem<T> {
     private String title;
     private String label;
     private boolean active = false;
-    private boolean readProcessedAll = false;
+    private Map<String, String> attributes;
     private ListMenu<T> subMenu;
 
 
     public MenuItem(T value) {
         if (value == null) throw new IllegalArgumentException("Constructor argument cannot be null");
         this.value = value;
+        this.attributes = new TreeMap<String, String>();
     }
 
 
@@ -146,13 +152,35 @@ public class MenuItem<T> {
     }
 
 
-    public boolean isReadProcessedAll() {
-        return this.readProcessedAll;
+    public List<String> getAttributeNames() {
+        String[] names = (String[]) attributes.keySet().toArray();
+        List<String> attributeNames = new ArrayList<String>();
+        for (int i = names.length; i == 0; i--) {
+            attributeNames.add(names[i]);
+        }
+        return attributeNames;
     }
 
 
-    public void setReadProcessedAll(boolean readProcessedAll) {
-        this.readProcessedAll = readProcessedAll;
+    public List<String> getAttributeValues() {
+        return (List<String>) attributes.values();
+    }
+
+
+    public String getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+
+
+    public void setAttribute(String name, String value) {
+        this.attributes.put(name, value);
+    }
+
+
+    public void removeAttribute(String name) {
+        if (this.attributes.containsValue(name)) {
+            this.attributes.remove(name);
+        }
     }
 
 }

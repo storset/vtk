@@ -16,23 +16,15 @@
 <ul class="${tabs.label}">
   <#list tabs.items as tab>
     <#if tab.url?exists>
+    
+      <#assign additionalLabels = tab.getAttribute("additionalLabels") />
+    
       <#if tab.active>
-        
-        <#if tab.readProcessedAll && tab.label == "permissionsService">
-           <li class="current activeTab readProcessedAll ${tab.label}">
+           <li class="current activeTab ${additionalLabels} ${tab.label}">
              <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
            </li>
-        <#else>
-           <li class="current activeTab ${tab.label}">
-             <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
-           </li>
-        </#if>
       <#else>
-       <#if tab.readProcessedAll && tab.label == "permissionsService">
-          <li class="${tab.label} readProcessedAll"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
-       <#else>
-         <li class="${tab.label}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
-       </#if>
+          <li class="${tab.label} ${additionalLabels}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
       </#if>
     </#if>
   </#list>

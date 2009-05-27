@@ -62,7 +62,18 @@
         <Style name="Image right" element="div">
                 <Attribute name="class" value="vrtx-img-container vrtx-container-right" />
         </Style>
-
+      <Style name="Img &amp; capt left (800px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xxl vrtx-container-left" />
+        </Style>
+        <Style name="Img &amp; capt left (700px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xl vrtx-container-left" />
+        </Style>
+        <Style name="Img &amp; capt left (600px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-l vrtx-container-left" />
+        </Style>
+       <Style name="Img &amp; capt left (500px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-m vrtx-container-left" />
+        </Style>        
        <Style name="Img &amp; capt left (400px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-s vrtx-container-left" />
         </Style>
@@ -72,7 +83,6 @@
         <Style name="Img &amp; capt left (200px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-xxs vrtx-container-left" />
         </Style>
-
         <Style name="Img &amp; capt center (800px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-xxl vrtx-container-middle" />
         </Style>
@@ -88,6 +98,18 @@
         <Style name="Img &amp; capt center (400px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-s vrtx-container-middle" />
         </Style>
+        <Style name="Img &amp; capt right (800px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xxl vrtx-container-right" />
+        </Style>
+        <Style name="Img &amp; capt right (700px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-xl vrtx-container-right" />
+        </Style>
+        <Style name="Img &amp; capt right (600px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-l vrtx-container-right" />
+        </Style>
+       <Style name="Img &amp; capt right (500px)" element="div">
+                <Attribute name="class" value="vrtx-container vrtx-container-size-m vrtx-container-right" />
+        </Style>
         <Style name="Img &amp; capt right (400px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-s vrtx-container-right" />
         </Style>
@@ -97,8 +119,6 @@
         <Style name="Img &amp; capt right (200px)" element="div">
                 <Attribute name="class" value="vrtx-container vrtx-container-size-xxs vrtx-container-right" />
         </Style>
-
-
 
 	<!--
 	# These are core styles available as toolbar buttons.

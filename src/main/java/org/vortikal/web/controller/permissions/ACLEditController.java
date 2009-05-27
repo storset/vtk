@@ -60,8 +60,6 @@ import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
-
 public class ACLEditController extends SimpleFormController implements InitializingBean {
 
     private Repository repository;
@@ -71,88 +69,85 @@ public class ACLEditController extends SimpleFormController implements Initializ
     private Map<RepositoryAction, Principal> privilegePrincipalMap;
 
     private Principal groupingPrincipal = PrincipalFactory.ALL;
-    
+
     public ACLEditController() {
         setSessionForm(true);
     }
-    
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(java.lang.String[].class, new StringArrayPropertyEditor());
+
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+            throws Exception {
+        binder.registerCustomEditor(java.lang.String[].class,
+                new StringArrayPropertyEditor());
     }
-
-
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
-    public void setPrivilegePrincipalMap(Map<RepositoryAction, Principal> privilegePrincipalMap) {
+    public void setPrivilegePrincipalMap(
+            Map<RepositoryAction, Principal> privilegePrincipalMap) {
         this.privilegePrincipalMap = privilegePrincipalMap;
     }
-    
 
     public void afterPropertiesSet() {
         if (this.repository == null) {
             throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
+                    "Bean property 'repository' must be set");
         }
         if (this.groupingPrincipal == null) {
             throw new BeanInitializationException(
-                "Bean property 'groupingPrincipal' must be set");
+                    "Bean property 'groupingPrincipal' must be set");
         }
 
         if (!Privilege.PRIVILEGES.contains(this.privilege)) {
             throw new BeanInitializationException(
-                "Legal values for bean property 'privilege' are defined by " +
-                "Privilege.PRIVILEGES. Value is '" + this.privilege + "'.");
+                    "Legal values for bean property 'privilege' are defined by "
+                            + "Privilege.PRIVILEGES. Value is '" + this.privilege + "'.");
         }
         if (this.privilegePrincipalMap == null) {
             throw new BeanInitializationException(
-                "Bean property 'privilegePrincipalMap' must be set");
+                    "Bean property 'privilegePrincipalMap' must be set");
         }
         Principal p = this.privilegePrincipalMap.get(this.privilege);
-        if (p != null) this.groupingPrincipal = p;
+        if (p != null)
+            this.groupingPrincipal = p;
     }
-    
 
     public void setPrivilege(RepositoryAction privilege) {
         this.privilege = privilege;
     }
-    
 
-    protected Object formBackingObject(HttpServletRequest request)
-        throws Exception {
-        
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
-        
+
         Resource resource = this.repository.retrieve(token, uri, false);
         return getACLEditCommand(resource);
     }
-
-    
 
     private ACLEditCommand getACLEditCommand(Resource resource) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-        
-        String submitURL = service.constructLink(resource, securityContext.getPrincipal());
+
+        String submitURL = service
+                .constructLink(resource, securityContext.getPrincipal());
         ACLEditCommand command = new ACLEditCommand(submitURL);
-        
+
         command.setResource(resource);
 
         Acl acl = resource.getAcl();
         command.setGrouped(acl.containsEntry(this.privilege, this.groupingPrincipal));
         command.setOwner(resource.getOwner().getName());
 
-        List<Principal> authorizedUsers = 
-            new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedUsers(this.privilege)));
-        authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
+        List<Principal> authorizedUsers = new ArrayList<Principal>(Arrays.asList(acl
+                .listPrivilegedUsers(this.privilege)));
+        authorizedUsers.addAll(Arrays.asList(acl
+                .listPrivilegedPseudoPrincipals(this.privilege)));
 
-        List<Principal> authorizedGroups = 
-            new ArrayList<Principal>(Arrays.asList(acl.listPrivilegedGroups(this.privilege)));
+        List<Principal> authorizedGroups = new ArrayList<Principal>(Arrays.asList(acl
+                .listPrivilegedGroups(this.privilege)));
 
         command.setUsers(authorizedUsers);
         command.setGroups(authorizedGroups);
@@ -160,18 +155,18 @@ public class ACLEditController extends SimpleFormController implements Initializ
         Map<String, String> removeUserURLs = new HashMap<String, String>();
         command.setRemoveUserURLs(removeUserURLs);
 
-        for (Principal authorizedUser: authorizedUsers) {
+        for (Principal authorizedUser : authorizedUsers) {
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeUserAction", "true");
             parameters.put("userNames", authorizedUser.getName());
             // Switch grouping when removing individual groups:
             parameters.put("grouped", "false");
 
-            if (!(PrincipalFactory.OWNER.equals(authorizedUser)
-                  || this.groupingPrincipal.equals(authorizedUser))) {
+            if (!(PrincipalFactory.OWNER.equals(authorizedUser) || this.groupingPrincipal
+                    .equals(authorizedUser))) {
 
-                String url = service.constructLink(
-                    resource, securityContext.getPrincipal(), parameters);
+                String url = service.constructLink(resource, securityContext
+                        .getPrincipal(), parameters);
                 removeUserURLs.put(authorizedUser.getName(), url);
             }
         }
@@ -179,36 +174,33 @@ public class ACLEditController extends SimpleFormController implements Initializ
         Map<String, String> removeGroupURLs = new HashMap<String, String>();
         command.setRemoveGroupURLs(removeGroupURLs);
 
-        for (Principal authorizedGroup: authorizedGroups) {
+        for (Principal authorizedGroup : authorizedGroups) {
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("removeGroupAction", "true");
             parameters.put("groupNames", authorizedGroup.getName());
             // Switch grouping when removing individual groups:
             parameters.put("grouped", "false");
-            String url = service.constructLink(
-                resource, securityContext.getPrincipal(), parameters);
+            String url = service.constructLink(resource, securityContext.getPrincipal(),
+                    parameters);
             removeGroupURLs.put(authorizedGroup.getName(), url);
         }
 
         return command;
     }
-    
 
     protected boolean isFormSubmission(HttpServletRequest request) {
         return "POST".equals(request.getMethod())
-            || ("GET".equals(request.getMethod())
-                && (request.getParameter("removeUserAction") != null
-                    || request.getParameter("removeGroupAction") != null));
+                || ("GET".equals(request.getMethod()) && (request
+                        .getParameter("removeUserAction") != null || request
+                        .getParameter("removeGroupAction") != null));
     }
-    
-    
 
     /**
      * Override to reset actions in case of errors.
      */
-    protected ModelAndView processFormSubmission(
-        HttpServletRequest req, HttpServletResponse resp,
-        Object command, BindException errors) throws Exception {
+    protected ModelAndView processFormSubmission(HttpServletRequest req,
+            HttpServletResponse resp, Object command, BindException errors)
+            throws Exception {
         if (errors.hasErrors()) {
             ACLEditCommand editCommand = (ACLEditCommand) command;
             editCommand.setAddGroupAction(null);
@@ -219,37 +211,34 @@ public class ACLEditController extends SimpleFormController implements Initializ
         return super.processFormSubmission(req, resp, command, errors);
     }
 
-
     protected ModelAndView onSubmit(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    Object command, BindException errors) throws Exception {
+            HttpServletResponse response, Object command, BindException errors)
+            throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         ACLEditCommand editCommand = (ACLEditCommand) command;
 
         Resource resource = editCommand.getResource();
         Acl acl = resource.getAcl();
-        
+
         String token = securityContext.getToken();
 
         // did the user cancel?
         if (editCommand.getCancelAction() != null) {
             return new ModelAndView(getSuccessView());
         }
-        
+
         // Setting or unsetting the grouping principal:
         if (editCommand.isGrouped()) {
             acl.addEntry(this.privilege, this.groupingPrincipal);
         } else if (acl.containsEntry(this.privilege, this.groupingPrincipal)) {
             acl.removeEntry(this.privilege, this.groupingPrincipal);
         }
-        
+
         // Has the user asked to save?
-        if (editCommand.getSaveAction() != null) {            
-            for (String userName: editCommand.getUserNames()) {
-                Principal principal = principalFactory.getPrincipal(userName, Principal.Type.USER);
-                acl.addEntry(this.privilege, principal);
-            }
+        if (editCommand.getSaveAction() != null) {
+            addToAcl(acl, editCommand.getUserNames(), Type.USER);
+            addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             this.repository.storeACL(token, resource);
             return new ModelAndView(getSuccessView());
         }
@@ -257,54 +246,51 @@ public class ACLEditController extends SimpleFormController implements Initializ
         // doing remove or add actions
         if (editCommand.getRemoveUserAction() != null) {
 
-            for (String userName: editCommand.getUserNames()) {
+            for (String userName : editCommand.getUserNames()) {
                 Principal principal = null;
                 if (userName.startsWith("pseudo")) {
                     principal = principalFactory.getPrincipal(userName, Type.PSEUDO);
                 } else {
-                    principal = principalFactory.getPrincipal(userName, Principal.Type.USER);
+                    principal = principalFactory.getPrincipal(userName, Type.USER);
                 }
                 if (!PrincipalFactory.OWNER.equals(principal)) {
                     acl.removeEntry(this.privilege, principal);
                 }
             }
-            
+
             return showForm(request, response, new BindException(
-                                getACLEditCommand(editCommand.getResource()),
-                                this.getCommandName()));
+                    getACLEditCommand(editCommand.getResource()), this.getCommandName()));
 
         } else if (editCommand.getRemoveGroupAction() != null) {
             String[] groupNames = editCommand.getGroupNames();
-            
+
             for (int i = 0; i < groupNames.length; i++) {
-                Principal group = principalFactory.getPrincipal(groupNames[i], Principal.Type.GROUP);
+                Principal group = principalFactory
+                        .getPrincipal(groupNames[i], Type.GROUP);
                 acl.removeEntry(this.privilege, group);
             }
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource), this.getCommandName()));
-            
+
         } else if (editCommand.getAddUserAction() != null) {
-            for (String userName: editCommand.getUserNames()) {
-                Principal principal = principalFactory.getPrincipal(userName, Principal.Type.USER);
-                acl.addEntry(this.privilege, principal);
-            }
-            ModelAndView mv =  showForm(
-                request, response, new BindException(
-                    getACLEditCommand(resource),
-                    this.getCommandName()));
-            return mv;
+            addToAcl(acl, editCommand.getUserNames(), Type.USER);
+            return showForm(request, response, new BindException(
+                    getACLEditCommand(resource), this.getCommandName()));
 
         } else if (editCommand.getAddGroupAction() != null) {
-            for (String groupName: editCommand.getGroupNames()) {
-                Principal group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
-                acl.addEntry(this.privilege, group);
-            }
+            addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             return showForm(request, response, new BindException(
-                                getACLEditCommand(resource),
-                                this.getCommandName()));
+                    getACLEditCommand(resource), this.getCommandName()));
 
         } else {
             return new ModelAndView(getSuccessView());
+        }
+    }
+
+    private void addToAcl(Acl acl, String[] values, Type type) {
+        for (String value : values) {
+            Principal principal = principalFactory.getPrincipal(value, type);
+            acl.addEntry(this.privilege, principal);
         }
     }
 
@@ -314,4 +300,3 @@ public class ACLEditController extends SimpleFormController implements Initializ
     }
 
 }
-

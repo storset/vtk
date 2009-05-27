@@ -71,7 +71,7 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("userNames", "permissions.user.missing.value",
                         "You must type a value");
             }
-            
+
             validateUserNames(userNames, errors);
 
         } else if (editCommand.getAddGroupAction() != null) {
@@ -81,15 +81,14 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("groupNames", "permissions.group.missing.value",
                         "You must type a value");
             }
-            
+
             validateGroupNames(groupNames, errors);
         }
 
     }
 
     private void validateUserNames(String[] userNames, Errors errors) {
-        for (int i = 0; i < userNames.length; i++) {
-            String userName = userNames[i];
+        for (String userName : userNames) {
             if (!userName.toLowerCase().equals(userName)) {
                 errors.rejectValue("userNames", "permissions.user.uppercase.value",
                         "You must use lower case characters");
@@ -113,14 +112,12 @@ public class ACLEditCommandValidator implements Validator {
             }
         }
     }
-    
+
     private void validateGroupNames(String[] groupNames, Errors errors) {
-        for (int i = 0; i < groupNames.length; i++) {
-            String groupName = groupNames[i];
+        for (String groupName : groupNames) {
             Principal group = null;
             try {
-                group = principalFactory
-                        .getPrincipal(groupName, Principal.Type.GROUP);
+                group = principalFactory.getPrincipal(groupName, Principal.Type.GROUP);
             } catch (InvalidPrincipalException e) {
                 errors.rejectValue("groupNames", "permissions.group.illegal.value",
                         new Object[] { groupName }, "String '" + groupName

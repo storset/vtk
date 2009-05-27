@@ -1,0 +1,10 @@
+/* Override default styling of classes for autocomplete */
+
+.properties .tags input.ac_input {
+  width: 320px;
+}
+
+.expandedForm span.addGroup input.ac_input,
+.expandedForm span.addUser input.ac_input {
+  width: 200px; 
+}

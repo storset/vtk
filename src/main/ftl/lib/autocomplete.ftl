@@ -3,10 +3,17 @@
   
   <script type='text/javascript' src='${srcBase}/jquery/jquery.autocomplete.js'></script>
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.autocomplete.css" />
+  <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.override.css" />
 
 </#macro>
 
-<#macro createAutoCompleteInputField appSrcBase service id value="" multiple=true width="" minChars=2 hasDescription=false>
+<#macro createAutoCompleteInputField appSrcBase service id
+                                     value=""
+                                     minChars=2
+                                     multiple=true
+                                     width=""
+                                     hasDescription=false
+                                     max=20>
 
   <#-- id might contain '.' (dot) -->
   <#local elementId = "" />  
@@ -25,14 +32,12 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $("#${elementId}").autocomplete('${appSrcBase}?vrtx=admin&action=autocomplete&service=${service}', 
-          { minChars:${minChars}
-            <#if multiple>,
-              multiple:true
-            </#if>
-            <#if width != "">,
-              width:${width}
-            </#if>
-            <#if hasDescription>,
+          { minChars:${minChars},
+            max:${max}<#if multiple>,
+            multiple:true
+            </#if><#if width != "">,
+            width:${width}
+            </#if><#if hasDescription>,
               formatItem: function(data, i, n, value) {
                 return value.split(";")[0] + " (" + value.split(";")[1] + ")";
               },

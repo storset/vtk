@@ -84,7 +84,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
         Set<String> excludedElements = new HashSet<String>();
         if (exclude != null && !exclude.trim().equals("")) {
             for (String str: exclude.split(",")) {
-                excludedElements.add(str);
+                excludedElements.add(str.toLowerCase());
             }
         }
 
@@ -104,7 +104,7 @@ public class HtmlElementComponent extends AbstractHtmlSelectComponent {
             for (HtmlContent childNode: element.getChildNodes()) {
                 if (childNode instanceof HtmlElement) {
                     HtmlElement childElement = (HtmlElement) childNode;
-                    if (!excludedElements.contains(childElement.getName())) {
+                    if (!excludedElements.contains(childElement.getName().toLowerCase())) {
                         resultingContent.add(childElement);
                     }
                 } else {

@@ -178,7 +178,7 @@ public class MenuItem<T> {
 
 
     public void removeAttribute(String name) {
-        if (this.attributes.containsValue(name)) {
+        if (this.attributes.containsKey(name)) {
             this.attributes.remove(name);
         }
     }

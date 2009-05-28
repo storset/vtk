@@ -52,6 +52,7 @@ public class HtmlPageParserImplTestCase extends TestCase {
         compositeTags.add("tfoot");
         compositeTags.add("tbody");
         compositeTags.add("fieldset");
+        compositeTags.add("colgroup");
         compositeTags.add("optgroup");
         compositeTags.add("small");
         compositeTags.add("big");
@@ -334,13 +335,19 @@ public class HtmlPageParserImplTestCase extends TestCase {
 
         HtmlElement table2 = body.getChildElements()[1];
         assertEquals("table", table2.getName());
-        assertEquals(3, table2.getChildElements().length);
-        HtmlElement thead1 = table2.getChildElements()[0];
+        assertEquals(4, table2.getChildElements().length);
+        HtmlElement colgroup = table2.getChildElements()[0];
+        assertEquals("colgroup", colgroup.getName());
+        assertEquals(2, colgroup.getChildElements().length);
+        HtmlElement col = colgroup.getChildElements()[0];
+        assertEquals("col", col.getName());
+        
+        HtmlElement thead1 = table2.getChildElements()[1];
         assertEquals("thead", thead1.getName());
-        HtmlElement tfoot1 = table2.getChildElements()[1];
+        HtmlElement tfoot1 = table2.getChildElements()[2];
         assertEquals("tfoot", tfoot1.getName());
 
-        HtmlElement tbody1 = table2.getChildElements()[2];
+        HtmlElement tbody1 = table2.getChildElements()[3];
         assertEquals("tbody", tbody1.getName());
     }
 

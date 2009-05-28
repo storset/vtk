@@ -222,6 +222,7 @@
         <value>tfoot</value>
         <value>tbody</value>
         <value>fieldset</value>
+        <value>colgroup</value>
         <value>optgroup</value>
         <value>small</value>
         <value>big</value>

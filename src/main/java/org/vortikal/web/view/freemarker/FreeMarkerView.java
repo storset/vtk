@@ -89,13 +89,6 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
         ServletOutputStream outStream = response.getOutputStream();
         byte[] content = wrapper.getContentBuffer();
         response.setContentLength(content.length);
-        if (false && "HEAD".equals(request.getMethod())) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Request is HEAD, not writing content");
-            }
-            response.flushBuffer();
-            return;
-        }
 
         outStream.write(content);
         outStream.flush();

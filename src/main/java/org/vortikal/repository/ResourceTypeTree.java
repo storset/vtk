@@ -44,6 +44,8 @@ public interface ResourceTypeTree extends HierarchicalVocabulary<String> {
 
     public String getResourceTypeTreeAsString();
 
+    public void registerDynamicResourceType(PrimaryResourceTypeDefinition def);
+
     public PrimaryResourceTypeDefinition getRoot();
     
     public List<MixinResourceTypeDefinition> getMixinTypes(PrimaryResourceTypeDefinition def);

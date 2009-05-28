@@ -32,6 +32,7 @@
   <import resource="controllers.xml" />
   <import resource="service.xml" />
   <import resource="article.xml" />
+  <import resource="structured-resources.xml" />
   <import resource="view-collection-listing.xml" />
   <import resource="view-article-listing.xml" />
   <import resource="view-event-listing.xml" />

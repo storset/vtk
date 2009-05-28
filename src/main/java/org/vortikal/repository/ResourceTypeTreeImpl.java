@@ -373,6 +373,39 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return list.toArray(new String[list.size()]);
     }
 
+    public void registerDynamicResourceType(PrimaryResourceTypeDefinition def) {
+        List<PrimaryResourceTypeDefinition> tmp = 
+            new ArrayList<PrimaryResourceTypeDefinition>();
+        tmp.addAll(this.primaryTypes);
+        tmp.add(def);
+        this.primaryTypes = tmp;
+        List<String> primaryTypeNames = new ArrayList<String>();
+        for (String name: this.primaryResourceTypeNames) {
+            primaryTypeNames.add(name);
+        }
+        primaryTypeNames.add(def.getName());
+        this.primaryResourceTypeNames = primaryTypeNames.toArray(new String[primaryTypeNames.size()]);
+        this.resourceTypeNameMap.put(def.getName(), def);
+        if (def.getNamespace() == null) {
+            throw new IllegalArgumentException(
+                "Definition's namespace is null: " + def);
+        }
+        
+        addNamespacesAndProperties(def);
+        PrimaryResourceTypeDefinition parent = def.getParentTypeDefinition();
+        if (parent == null) {
+            throw new IllegalStateException("Must register resource type under an existing resource type");
+        }
+        List<PrimaryResourceTypeDefinition> children = this.parentChildMap.get(parent);
+        if (children == null) {
+            children = new ArrayList<PrimaryResourceTypeDefinition>();
+            this.parentChildMap.put(parent, children);
+        }
+        children.add(def);
+        addMixins(def);
+        injectTypeLocalizationProvider(def);
+    }
+    
     @SuppressWarnings("unchecked")
     private  void init() {
 
@@ -428,28 +461,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 } 
                 children.add(def);
             }
-            
-            List<MixinResourceTypeDefinition> mixinTypes = def.getMixinTypeDefinitions();
-            
-            if (mixinTypes != null) {
-                for (MixinResourceTypeDefinition mix: mixinTypes) {
-                    if (!this.namespaceUriMap.containsKey(mix.getNamespace().getUri()))
-                        this.namespaceUriMap.put(mix.getNamespace().getUri(), mix.getNamespace());                    
-                }
-            }        
 
-            // Do something else...
-            this.mixinTypeDefinitionMap.put(def, mixinTypes);
-        
-            // Populate map from mixin types to all applicable primary types:
-            for (MixinResourceTypeDefinition mixin: mixinTypes) {
-                Set<PrimaryResourceTypeDefinition> set = this.mixinTypePrimaryTypesMap.get(mixin);
-                if (set == null) {
-                    set = new HashSet<PrimaryResourceTypeDefinition>();
-                    this.mixinTypePrimaryTypesMap.put(mixin, set);     
-                }
-                set.addAll(getDescendantsAndSelf(def));
-            }
+            addMixins(def);
             
             // Inject localized type name provider
             // XXX: I wanted to avoid having to explicitly configure the dependency for
@@ -457,9 +470,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
             injectTypeLocalizationProvider(def);
         }
 
-        
-
-        for (MixinResourceTypeDefinition def: this.mixins) {
+         for (MixinResourceTypeDefinition def: this.mixins) {
             this.resourceTypeNameMap.put(def.getName(), def);
             addNamespacesAndProperties(def);
             
@@ -474,6 +485,31 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
 
     }
 
+    private void addMixins(PrimaryResourceTypeDefinition def) {
+        List<MixinResourceTypeDefinition> mixinTypes = def.getMixinTypeDefinitions();
+        
+        if (mixinTypes != null) {
+            for (MixinResourceTypeDefinition mix: mixinTypes) {
+                if (!this.namespaceUriMap.containsKey(mix.getNamespace().getUri()))
+                    this.namespaceUriMap.put(mix.getNamespace().getUri(), mix.getNamespace());                    
+            }
+        }        
+
+        // Do something else...
+        this.mixinTypeDefinitionMap.put(def, mixinTypes);
+    
+        // Populate map from mixin types to all applicable primary types:
+        for (MixinResourceTypeDefinition mixin: mixinTypes) {
+            Set<PrimaryResourceTypeDefinition> set = this.mixinTypePrimaryTypesMap.get(mixin);
+            if (set == null) {
+                set = new HashSet<PrimaryResourceTypeDefinition>();
+                this.mixinTypePrimaryTypesMap.put(mixin, set);     
+            }
+            set.addAll(getDescendantsAndSelf(def));
+        }
+        
+    }
+    
     private void addPropertyTypeDefinitions(Set<String> encounteredIds, List<PropertyTypeDefinition> propertyTypes, 
                                             PropertyTypeDefinition[] propDefs) {
         for (PropertyTypeDefinition propDef: propDefs) {
@@ -501,7 +537,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
     }
 
     private void addNamespacesAndProperties(ResourceTypeDefinition def) {
-
         if (!this.namespaceUriMap.containsKey(def.getNamespace().getUri())) {
             this.namespaceUriMap.put(def.getNamespace().getUri(), def.getNamespace());
         }        
@@ -509,7 +544,7 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         if (!this.namespacePrefixMap.containsKey(def.getNamespace().getPrefix())) {            
             this.namespacePrefixMap.put(def.getNamespace().getPrefix(), def.getNamespace());
         }
-        
+
         // Populate map of property type definitions
         for (PropertyTypeDefinition propDef : def.getPropertyTypeDefinitions()) {
             // XXX: Should be removed
@@ -524,7 +559,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 propDefMap = new HashMap<String, PropertyTypeDefinition>();
                 this.propertyTypeDefinitions.put(namespace, propDefMap);
             }
-
             if (propDefMap.get(propDef.getName()) == null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Registering property type definition "

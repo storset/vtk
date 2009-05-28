@@ -22,6 +22,7 @@
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
   <import resource="odf.xml" />  
+  <import resource="json.xml" />
 
   <!-- Studinfo -->
   <import resource="emne.xml" />

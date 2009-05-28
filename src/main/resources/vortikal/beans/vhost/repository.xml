@@ -183,6 +183,9 @@
   <bean id="audioFileContentFactory"
         class="org.vortikal.repository.content.AudioFileContentFactory" />
 
+  <bean id="jsonObjectContentFactory"
+        class="org.vortikal.repository.content.JSONObjectContentFactory" />
+
   <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManagerImpl">
     <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />

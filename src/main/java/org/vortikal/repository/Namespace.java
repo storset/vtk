@@ -48,6 +48,9 @@ public class Namespace {
     public static final Namespace CUSTOM_NAMESPACE = 
         new Namespace("custom", CUSTOM_NAMESPACE_URI);
     
+    public static final Namespace STRUCTURED_RESOURCE_NAMESPACE = 
+        new Namespace("resource", "http://www.uio.no/vrtx/__vrtx/ns/structured-resources");
+    
     private String prefix;
     private String uri;
 

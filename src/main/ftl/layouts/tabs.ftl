@@ -17,14 +17,19 @@
   <#list tabs.items as tab>
     <#if tab.url?exists>
     
-      <#assign additionalLabels = tab.getAttribute("additionalLabels") />
+      <#assign tabClass =  tab.label />
+      <#assign tabTitleKey = "describe." + tab.label>
+      <#if tab.getAttribute("additionalLabels")?exists>
+        <#assign tabClass = tabClass + " " + tab.getAttribute("additionalLabels")>
+        <#assign tabTitleKey = tabTitleKey + "." + tab.getAttribute("additionalLabels")>
+      </#if>
     
       <#if tab.active>
-           <li class="current activeTab ${additionalLabels} ${tab.label}">
-             <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a>
+           <li class="current activeTab ${tabClass}">
+             <a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="${tabTitleKey}" default="${tab.title}"/>">${tab.title}</a>
            </li>
       <#else>
-          <li class="${tab.label} ${additionalLabels}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="describe.${tab.label}" default="${tab.title}"/>">${tab.title}</a></li>
+          <li class="${tabClass}"><a id="${tab.label}" href="${tab.url?html}" title="<@vrtx.msg code="${tabTitleKey}" default="${tab.title}"/>">${tab.title}</a></li>
       </#if>
     </#if>
   </#list>

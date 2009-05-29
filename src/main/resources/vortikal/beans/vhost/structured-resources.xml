@@ -54,8 +54,16 @@
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="structuredResources.displayView" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="templateManager" ref="structuredResources.templateManager" />
   </bean>
 
+
+  <bean id="structuredResources.templateManager"
+        class="org.vortikal.spezialentwicklung.DecoratorTemplateManager">
+    <property name="templateFactory" ref="article.decoratorTemplateFactory" />
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
+  </bean>
 
   <bean id="structuredResources.editHandler"
         class="org.vortikal.spezialentwicklung.StructuredResourceEditor">
@@ -159,6 +167,8 @@
 
 
           desc.setPropertyDescriptions(props);
+          desc.setDisplayTemplate(new DisplayTemplate(
+          <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>));
           mgr.register(desc);
 
           /* ************** jperson ***************** */
@@ -180,6 +190,8 @@
           props.add(p);
 
           desc.setPropertyDescriptions(props);
+          desc.setDisplayTemplate(new DisplayTemplate(
+          <![CDATA["<html><head><title>person.template</title></head><body>person</body></html>"]]>));
           mgr.register(desc);
 
 

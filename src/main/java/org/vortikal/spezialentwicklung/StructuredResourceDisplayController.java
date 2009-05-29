@@ -30,26 +30,39 @@
  */
 package org.vortikal.spezialentwicklung;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.HtmlPageContent;
+import org.vortikal.web.decorating.ParsedHtmlDecoratorTemplate;
+import org.vortikal.web.decorating.Template;
+import org.vortikal.web.decorating.TemplateManager;
 
-public class StructuredResourceDisplayController implements Controller {
+public class StructuredResourceDisplayController implements Controller, InitializingBean {
 
     private Repository repository;
     private String viewName;
     private StructuredResourceManager resourceManager;
+    private TemplateManager templateManager;
+    private HtmlPageParser htmlParser;
     
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -67,17 +80,16 @@ public class StructuredResourceDisplayController implements Controller {
         StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
         StructuredResource res = new StructuredResource(desc);
         res.parse(source);
-        
-        response.setContentType("text/plain;charset=utf-8");
-        PrintWriter writer = response.getWriter();
 
-        writer.println("desc: " + desc);
+        HtmlPageContent content = render(res, new HashMap<String, Object>(), request);
+//        Map<String, Object> model = new HashMap<String, Object>();
+//        model.put("page", content.getHtmlContent());
+//        return new ModelAndView(this.viewName, model);
+
         
-        for (PropertyDescription def: desc.getAllPropertyDescriptions()) {
-            writer.println("prop: " + def.getName() + ": " + res.getProperty(def.getName()) + "\n");
-        }
-        
-        writer.println("serialized: " + res.toJSON().toString());
+        response.setContentType("text/html;charset=utf-8");
+        PrintWriter writer = response.getWriter();
+        writer.write(content.getContent());
         writer.close();
         
         response.flushBuffer();
@@ -95,4 +107,57 @@ public class StructuredResourceDisplayController implements Controller {
     public void setResourceManager(StructuredResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
+    
+    @SuppressWarnings("unchecked")
+    public HtmlPageContent render(StructuredResource res, Map model, HttpServletRequest request) throws Exception {
+        String html = "<html><head><title></title></head><body></body></html>";
+        ByteArrayInputStream in = new ByteArrayInputStream(html.getBytes("utf-8"));
+        final HtmlPage dummy = this.htmlParser.parse(in, "utf-8");
+        
+        HtmlPageContent content = new HtmlPageContent() {
+            public HtmlPage getHtmlContent() {
+                return dummy;
+            }
+            public String getContent() {
+                return dummy.getStringRepresentation();
+            }
+            public String getOriginalCharacterEncoding() {
+                return dummy.getCharacterEncoding();
+            }
+        };
+
+        String templateRef = res.getType().getName();
+        Template t = this.templateManager.getTemplate(templateRef);
+        if (!(t instanceof ParsedHtmlDecoratorTemplate)) {
+            throw new IllegalStateException("Template must be of class " 
+                    + ParsedHtmlDecoratorTemplate.class.getName());
+        }
+        ParsedHtmlDecoratorTemplate template = (ParsedHtmlDecoratorTemplate) t;
+        content = template.render(content, request, model);
+        return content;
+    }
+
+    public void afterPropertiesSet() {
+//        try {
+//            Template t = this.templateManager.getTemplate(this.templateRef);
+//            if (!(t instanceof ParsedHtmlDecoratorTemplate)) {
+//                throw new IllegalStateException("Template must be of class " 
+//                        + ParsedHtmlDecoratorTemplate.class.getName());
+//            }
+//            this.template = (ParsedHtmlDecoratorTemplate) t;
+//        } catch (Throwable t) {
+//            throw new BeanInitializationException(
+//                    "Unable to instantiate template '" + this.templateRef + "'", t);
+//        }
+    }
+
+    @Required public void setTemplateManager(TemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+
+    @Required public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
+        
+    
 }

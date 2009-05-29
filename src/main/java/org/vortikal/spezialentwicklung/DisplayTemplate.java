@@ -30,6 +30,21 @@
  */
 package org.vortikal.spezialentwicklung;
 
-public class DisplayTemplate {
+import java.util.Date;
 
+public class DisplayTemplate {
+    private String content;
+    private Date lastModified = new Date();
+    
+    public DisplayTemplate(String content) {
+        this.content = content;
+    }
+    
+    public String getTemplate() {
+        return this.content;
+    }
+    
+    public Date getLastModified() {
+        return this.lastModified;
+    }
 }

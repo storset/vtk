@@ -91,4 +91,8 @@ public final class StructuredResourceDescription {
     public DisplayTemplate getDisplayTemplate() {
         return this.displayTemplate;
     }
+    
+    public void setDisplayTemplate(DisplayTemplate displayTemplate) {
+        this.displayTemplate = displayTemplate;
+    }
 }

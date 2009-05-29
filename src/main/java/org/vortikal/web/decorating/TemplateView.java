@@ -69,7 +69,7 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
                 return page.getCharacterEncoding();
             }
         };
-        content = template.render(content, request, model);
+        content = this.template.render(content, request, model);
         return content;
     }
     

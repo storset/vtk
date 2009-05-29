@@ -30,23 +30,13 @@
  */
 package org.vortikal.web.decorating;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.annotation.Required;
 
-public class StaticTemplateManager implements TemplateManager {
+public class StaticTemplateManager extends AbstractCachingTemplateManager {
 
-    private TemplateFactory templateFactory;
     private String uriPrefix;
     private String characterEncoding = "utf-8";
     
-    private Map<String, Template> templatesMap = new ConcurrentHashMap<String, Template>();
-    
-    @Required public void setTemplateFactory(TemplateFactory templateFactory) {
-        this.templateFactory = templateFactory;
-    }
-
     @Required public void setUriPrefix(String uriPrefix) {
         this.uriPrefix = uriPrefix;
     }
@@ -55,17 +45,9 @@ public class StaticTemplateManager implements TemplateManager {
         this.characterEncoding = characterEncoding;
     }
 
-    public Template getTemplate(String name) throws Exception {
-        if (name == null) throw new IllegalArgumentException("Name cannot be null");
-
-        if (this.templatesMap.containsKey(name)) {
-            return this.templatesMap.get(name);
-        }
+    protected TemplateSource resolve(String name) {
         String uri = this.uriPrefix + "/" + name;
-        TemplateSource templateSource = new URLTemplateSource(uri, this.characterEncoding);
-        Template template = this.templateFactory.newTemplate(templateSource);
-        this.templatesMap.put(name, template);
-        return template;
+        return new URLTemplateSource(uri, this.characterEncoding);
     }
 
 }

@@ -86,9 +86,7 @@ public class StructuredResourceManager {
 
         PrimaryResourceTypeDefinition def = createResourceType(description);
         this.resourceTypeTree.registerDynamicResourceType(def);
-        
-        System.out.println(this.resourceTypeTree.getResourceTypeTreeAsString());
-        
+                
         this.types.put(name, description);
     }
 

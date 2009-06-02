@@ -470,13 +470,13 @@ div.resourceInfo {
 /* Readable for all */
 .resourceInfo div.read, 
 .resourceInfo div.lese {
-    background: #fff url(icons/globe.png) no-repeat left 3px;
+    background: #fff url(icons/globe.ico) no-repeat left 7px;
     padding-left: 22px; 
 }
 
 .resourceInfo div.read#readProcessedAll, 
 .resourceInfo div.lese#readProcessedAll {
-    background: #fff url(icons/users.png) no-repeat left 3px;
+    background: #fff url(icons/users.ico) no-repeat left 7px;
 }
 
 .resourceInfo tr {
@@ -621,12 +621,12 @@ td.expandedForm div.submitButtons {
 /* Readable for all */
 .expandedForm ul.everyoneOrSelectedUsers#Read label#permissions\.grouped,
 .expandedForm ul.everyoneOrSelectedUsers#Lese label#permissions\.grouped {
-	background: url(icons/globe.png) no-repeat left 0px;
+	background: transparent url(icons/globe.ico) no-repeat left 1px;
 }
 
 .expandedForm ul.everyoneOrSelectedUsers#Read label#permissions\.selectedPrincipals,
 .expandedForm ul.everyoneOrSelectedUsers#Lese label#permissions\.selectedPrincipals {
-    background: url(icons/users.png) no-repeat left 0px;
+    background: transparent url(icons/users.ico) no-repeat left 1px;
 }
 
 .expandedForm ul.principalList {

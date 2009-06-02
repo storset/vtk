@@ -62,9 +62,12 @@ public class StructuredResourceDescriptionParserTest extends TestCase {
                     + (inheritsFrom != null ? (" > " + srd.getInheritsFrom()) : ""));
             List<PropertyDescription> propertyDescriptions = srd
                     .getPropertyDescriptions();
-            for (PropertyDescription pd : propertyDescriptions) {
-                System.out.println("\t" + pd.getName() + ": " + pd.getType() + " "
-                        + pd.isRequired() + " " + pd.isNoExtract());
+            if (propertyDescriptions != null) {
+                for (PropertyDescription pd : propertyDescriptions) {
+                    System.out.println("\t" + pd.getName() + ": " + pd.getType() + " "
+                            + pd.isRequired() + " " + pd.isNoExtract() + " "
+                            + pd.getOverrides());
+                }
             }
             DisplayTemplate displayTemplate = srd.getDisplayTemplate();
             if (displayTemplate != null) {

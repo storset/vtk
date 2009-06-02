@@ -2,8 +2,10 @@
 resourcetype jarticle {
   properties {
     title : string required,
-    jauthor : string,
+    author : string,
     content : string
+  }
+  edit-rules {
   }
   view-definition {
     <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>
@@ -14,6 +16,9 @@ resourcetype jperson : jarticle {
   properties {
     username : string required,
     officenr : string
+    description : string (overrides : content) 
+  }
+  edit-rules {
   }
   view-definition {
     <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>

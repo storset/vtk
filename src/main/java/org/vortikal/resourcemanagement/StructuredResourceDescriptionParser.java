@@ -92,24 +92,28 @@ public class StructuredResourceDescriptionParser {
         srd.setName(resource.getText());
 
         List<CommonTree> resourceDescription = ((CommonTree) resource).getChildren();
-        for (CommonTree desciptionEntry : resourceDescription) {
-            switch (desciptionEntry.getType()) {
-            case ResourcetreeLexer.PARENT:
-                srd.setInheritsFrom(desciptionEntry.getChild(0).getText());
-                break;
-            case ResourcetreeLexer.PROPERTIES:
-                handlePropertyDescriptions(srd, desciptionEntry.getChildren());
-                break;
-            case ResourcetreeLexer.EDITRULES:
-                handleEditRulesDescriptions(srd, desciptionEntry.getChildren());
-                break;
-            case ResourcetreeLexer.VIEWDEFINITION:
-                srd.setDisplayTemplate(new DisplayTemplate(desciptionEntry.getChild(0)
-                        .getText()));
-                break;
-            default:
-                // XXX throw exception? -> uknown token type
-                break;
+        if (hasContent(resourceDescription)) {
+            for (CommonTree desciptionEntry : resourceDescription) {
+                switch (desciptionEntry.getType()) {
+                case ResourcetreeLexer.PARENT:
+                    srd.setInheritsFrom(desciptionEntry.getChild(0).getText());
+                    break;
+                case ResourcetreeLexer.PROPERTIES:
+                    handlePropertyDescriptions(srd, desciptionEntry.getChildren());
+                    break;
+                case ResourcetreeLexer.EDITRULES:
+                    handleEditRulesDescriptions(srd, desciptionEntry.getChildren());
+                    break;
+                case ResourcetreeLexer.VIEWDEFINITION:
+                    if (desciptionEntry.getChild(0) != null) {
+                        srd.setDisplayTemplate(new DisplayTemplate(desciptionEntry
+                                .getChild(0).getText()));
+                    }
+                    break;
+                default:
+                    // XXX throw exception? -> uknown token type
+                    break;
+                }
             }
         }
 
@@ -120,16 +124,19 @@ public class StructuredResourceDescriptionParser {
     private void handlePropertyDescriptions(StructuredResourceDescription srd,
             List<CommonTree> propertyDescriptions) {
         List<PropertyDescription> props = new ArrayList<PropertyDescription>();
-        for (CommonTree propDesc : propertyDescriptions) {
-            PropertyDescription p = new PropertyDescription();
-            p.setName(propDesc.getText());
-            setPropertyDescription(p, propDesc.getChildren());
-            props.add(p);
+        if (hasContent(propertyDescriptions)) {
+            for (CommonTree propDesc : propertyDescriptions) {
+                PropertyDescription p = new PropertyDescription();
+                p.setName(propDesc.getText());
+                setPropertyDescription(p, propDesc.getChildren());
+                props.add(p);
+            }
+            srd.setPropertyDescriptions(props);
         }
-        srd.setPropertyDescriptions(props);
     }
 
-    private void setPropertyDescription(PropertyDescription p, List<CommonTree> propertyDescription) {
+    private void setPropertyDescription(PropertyDescription p,
+            List<CommonTree> propertyDescription) {
         for (CommonTree descEntry : propertyDescription) {
             switch (descEntry.getType()) {
             case ResourcetreeLexer.PROPTYPE:
@@ -142,10 +149,10 @@ public class StructuredResourceDescriptionParser {
                 p.setNoExtract(true);
                 break;
             case ResourcetreeLexer.OVERRIDES:
-                // XXX implement
+                p.setOverrides(descEntry.getChild(0).getText());
                 break;
             default:
-                // XXX throw exception? -> uknown token type 
+                // XXX throw exception? -> uknown token type
                 break;
             }
         }
@@ -153,11 +160,13 @@ public class StructuredResourceDescriptionParser {
 
     private void handleEditRulesDescriptions(StructuredResourceDescription srd,
             List<CommonTree> editRuleDescriptions) {
-        for (CommonTree editRuleDescription : editRuleDescriptions) {
-            if (ResourcetreeLexer.GROUP == editRuleDescription.getType()) {
-                handleGroupedEditRuleDescription(srd, editRuleDescription);
-            } else {
-                // XXX implement
+        if (hasContent(editRuleDescriptions)) {
+            for (CommonTree editRuleDescription : editRuleDescriptions) {
+                if (ResourcetreeLexer.GROUP == editRuleDescription.getType()) {
+                    handleGroupedEditRuleDescription(srd, editRuleDescription);
+                } else {
+                    // XXX implement
+                }
             }
         }
     }
@@ -165,6 +174,10 @@ public class StructuredResourceDescriptionParser {
     private void handleGroupedEditRuleDescription(StructuredResourceDescription srd,
             CommonTree editRuleDescription) {
         // XXX implement
+    }
+    
+    private boolean hasContent(List<CommonTree> tree) {
+        return tree != null && tree.size() > 0;
     }
 
     private ResourcetreeParser createParser(String filename) throws IOException {

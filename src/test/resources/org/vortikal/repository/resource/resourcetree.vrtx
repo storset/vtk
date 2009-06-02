@@ -20,6 +20,7 @@ resourcetype article : file {
 
 resourcetype event : article {
   properties {
+    event-title : string (overrides : title),
     start-date : datetime required,
     end-date : datetime required,
     location : string required,

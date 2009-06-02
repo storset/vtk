@@ -36,8 +36,13 @@ resourceprops
         ;
 
 propertytypedef
-	:	NAME COLON PROPTYPE (REQUIRED)? (NOEXTRACT)?
-	        -> ^(NAME PROPTYPE (REQUIRED)? (NOEXTRACT)?)
+	:	NAME COLON PROPTYPE (REQUIRED)? (NOEXTRACT)? (overrides)?
+	        -> ^(NAME PROPTYPE (REQUIRED)? (NOEXTRACT)? (overrides)?)
+	;
+
+overrides
+	:	LP OVERRIDES COLON NAME RP
+	        -> ^(OVERRIDES NAME)
 	;
 
 editrules

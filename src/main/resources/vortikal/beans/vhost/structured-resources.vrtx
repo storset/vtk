@@ -1,24 +1,20 @@
 
-resourcetype file {
+resourcetype jfile {
   properties {
     contenttype : string required,
     contentlength : int noextract
   }
 }
 
-resourcetype article : file {
+resourcetype jarticle : jfile {
   properties {
     title : string,
     introduction : html,
     content : html
   }
-  edit-rules {
-  }
-  view-definition {
-  }
 }
 
-resourcetype event : article {
+resourcetype jevent : jarticle {
   properties {
     start-date : datetime required,
     end-date : datetime required,

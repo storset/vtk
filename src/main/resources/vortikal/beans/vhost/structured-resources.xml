@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
+  
   <bean id="structuredResources.displayService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="displayResourceService" />
     <property name="assertions">
@@ -34,13 +34,16 @@
       </set>
     </property>
     <property name="attributes">
-      <map><entry key="tabOrder"><value type="java.lang.Integer">152</value></entry></map>
+      <map>
+        <entry key="tabOrder">
+          <value type="java.lang.Integer">152</value>
+        </entry>
+      </map>
     </property>
     <property name="handler" ref="structuredResources.editHandler" />
   </bean>
-
-  <bean id="structuredResources.resourceManager"
-        class="org.vortikal.spezialentwicklung.StructuredResourceManager">
+  
+  <bean id="structuredResources.resourceManager" class="org.vortikal.resourcemanagement.StructuredResourceManager">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="baseType" ref="json.managedObjectResourceType" />
     <property name="valueFactory" ref="valueFactory" />
@@ -48,58 +51,51 @@
     <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
   </bean>
 
-
-
-  <bean id="structuredResources.displayHandler"  class="org.vortikal.spezialentwicklung.StructuredResourceDisplayController"
-        parent="requestLocalRepositoryAware">
+  <bean id="structuredResources.displayHandler" class="org.vortikal.resourcemanagement.StructuredResourceDisplayController"
+    parent="requestLocalRepositoryAware">
     <property name="viewName" value="structuredResources.displayView" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateManager" ref="structuredResources.templateManager" />
   </bean>
 
-
-  <bean id="structuredResources.templateManager"
-        class="org.vortikal.spezialentwicklung.DecoratorTemplateManager">
+  <bean id="structuredResources.templateManager" class="org.vortikal.resourcemanagement.DecoratorTemplateManager">
     <property name="templateFactory" ref="article.decoratorTemplateFactory" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
-
-  <bean id="structuredResources.editHandler"
-        class="org.vortikal.spezialentwicklung.StructuredResourceEditor">
+  
+  <bean id="structuredResources.editHandler" class="org.vortikal.resourcemanagement.StructuredResourceEditor">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="repository" ref="repository" />
     <property name="formView" value="structuredResources.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
   
-
   <bean id="structuredResources.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="structuredResources.displayView"  value-ref="structuredResources.displayView" />
+        <entry key="structuredResources.displayView" value-ref="structuredResources.displayView" />
       </map>
     </property>
   </bean>
-
+  
   <bean id="structuredResources.wrappingViewResolver" parent="adminViewResolver">
     <property name="views">
       <map>
-        <entry key="structuredResources.editView"  value-ref="structuredResources.editView" />
+        <entry key="structuredResources.editView" value-ref="structuredResources.editView" />
       </map>
     </property>
   </bean>
-
+  
   <bean id="structuredResources.displayView" class="org.vortikal.web.decorating.TemplateView">
     <!--
     <property name="templateManager" ref="structuredResources.templateManager" />
-    <property name="templateRef"  value="structuredResources.template" />
+    <property name="templateRef" value="structuredResources.template" />
     -->
     <property name="templateManager" ref="article.templateManager" />
-    <property name="templateRef"  value="article.template" />
+    <property name="templateRef" value="article.template" />
   </bean>
-
-
+  
   <bean id="structuredResources.editView" parent="freemarkerView">
     <property name="url" value="structured-resources/editor.ftl" />
     <!--
@@ -110,97 +106,15 @@
     </property>
     -->
   </bean>
-
-
-  <!-- XXX: everything below here is to be replaced by the resource type definition parser -->
-
- <bean id="structuredResource.sysout"
-       class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-   <property name="staticField" value="java.lang.System.out"/>
- </bean>
-
-  <bean id="structuredResources.tmpDefinitions" depends-on="structuredResources.resourceManager"
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="beanShellEvaluator" />
-    <property name="targetMethod" value="eval" />
-    <property name="arguments">
-      <list>
-        <value>
-          import java.util.*;
-          import org.vortikal.repository.Repository;
-          import org.vortikal.repository.Path;
-          import org.vortikal.repo2.NodeID;
-          import org.vortikal.spezialentwicklung.*;
-
-          setAccessibility(true);
-
-
-          repo = context.getBean("repository");
-          token = context.getBean("writeAllToken");
-
-          mgr = context.getBean("structuredResources.resourceManager");
-
-
-          /* ************** jarticle ***************** */
-
-          desc = new StructuredResourceDescription(mgr);
-          desc.setName("jarticle");
-
-          props = new ArrayList();
-
-          p = new PropertyDescription();
-          p.setName("title");
-          p.setType("string");
-          p.setRequired(true);
-          p.setOverrides("title");
-          props.add(p);
-
-          p = new PropertyDescription();
-          p.setName("jauthor");
-          p.setType("string");
-          props.add(p);
-
-          p = new PropertyDescription();
-          p.setName("content");
-          p.setType("string");
-          props.add(p);
-
-
-          desc.setPropertyDescriptions(props);
-          desc.setDisplayTemplate(new DisplayTemplate(
-          <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>));
-          mgr.register(desc);
-
-          /* ************** jperson ***************** */
-
-          desc = new StructuredResourceDescription(mgr);
-          desc.setName("jperson");
-          desc.setInheritsFrom("jarticle");
-
-          props = new ArrayList();
-
-          p = new PropertyDescription();
-          p.setName("brukernavn");
-          p.setType("string");
-          props.add(p);
-
-          p = new PropertyDescription();
-          p.setName("romnummer");
-          p.setType("string");
-          props.add(p);
-
-          desc.setPropertyDescriptions(props);
-          desc.setDisplayTemplate(new DisplayTemplate(
-          <![CDATA["<html><head><title>person.template</title></head><body>person</body></html>"]]>));
-          mgr.register(desc);
-
-
-          print(context.getBean("resourceTypeTree").getResourceTypeTreeAsString());
-        </value>
-        <ref bean="structuredResource.sysout" />
-      </list>
-    </property>
-
+  
+  <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.StructuredResourceParser">
+    <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
+    <property name="resourceDescriptionParser" ref="structuredResource.descriptionParser" />
   </bean>
-
+  
+  <bean id="structuredResource.descriptionParser" class="org.vortikal.resourcemanagement.StructuredResourceDescriptionParser">
+    <property name="defaultResourceTypeDefinitions" value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
+    <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
+  </bean>
+  
 </beans>

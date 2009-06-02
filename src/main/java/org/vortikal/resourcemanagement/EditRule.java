@@ -28,22 +28,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.spezialentwicklung;
+package org.vortikal.resourcemanagement;
 
-public class ValidationError {
-    private String propertyName;
-    private String message;
-   
-    public ValidationError(String propertyName, String message) {
-        this.propertyName = propertyName;
-        this.message = message;
-    }
-    
-    public String getPropertyName() {
-        return this.propertyName;
-    }
+public class EditRule {
 
-    public String getMessage() {
-        return this.message;
-    }
 }

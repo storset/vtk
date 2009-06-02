@@ -1,5 +1,10 @@
 lexer grammar ResourcetreeLexer;
 
+tokens {
+  /* Imaginary token used for intermediate handling of AST */
+  PARENT;
+}
+
 @header {
 package org.vortikal.repository.resource;
 }
@@ -22,6 +27,10 @@ COMMA	:	',' ;
 
 PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME);
 REQUIRED:	'required';
+NOEXTRACT
+	:	'noextract';
+OVERRIDES
+	:	'overrides';
 GROUP	:	'group';
 BEFORE	:	'before';
 AFTER	:	'after';

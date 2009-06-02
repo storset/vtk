@@ -5,11 +5,6 @@ options {
   output = AST;
 }
 
-tokens {
-  /* Imaginary token used for intermediate handling of AST */
-  PARENT;
-}
-
 @header {
 package org.vortikal.repository.resource;
 }
@@ -41,7 +36,9 @@ resourceprops
         ;
 
 propertytypedef
-	:	NAME COLON PROPTYPE (REQUIRED)? -> ^(NAME PROPTYPE (REQUIRED)?);
+	:	NAME COLON PROPTYPE (REQUIRED)? (NOEXTRACT)?
+	        -> ^(NAME PROPTYPE (REQUIRED)? (NOEXTRACT)?)
+	;
 
 editrules
 	:	EDITRULES LCB

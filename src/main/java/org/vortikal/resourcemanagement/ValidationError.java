@@ -28,28 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.spezialentwicklung;
+package org.vortikal.resourcemanagement;
 
-import java.util.Collections;
-import java.util.List;
-
-public class ValidationResult {
-
-    private List<ValidationError> errors;
-    
-    public ValidationResult(List<ValidationError> errors) {
-        this.errors = errors;
-        if (errors != null) {
-            this.errors = Collections.unmodifiableList(errors);
-        }
+public class ValidationError {
+    private String propertyName;
+    private String message;
+   
+    public ValidationError(String propertyName, String message) {
+        this.propertyName = propertyName;
+        this.message = message;
     }
     
-    public boolean isValid() {
-        return this.errors == null || this.errors.isEmpty();    
+    public String getPropertyName() {
+        return this.propertyName;
     }
 
-    public List<ValidationError> getErrors() {
-        return this.errors;
+    public String getMessage() {
+        return this.message;
     }
-
 }

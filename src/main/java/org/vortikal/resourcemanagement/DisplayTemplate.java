@@ -28,8 +28,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.spezialentwicklung;
+package org.vortikal.resourcemanagement;
 
-public class ComponentDefinition {
+import java.util.Date;
 
+public class DisplayTemplate {
+    private String content;
+    private Date lastModified = new Date();
+    
+    public DisplayTemplate(String content) {
+        this.content = content;
+    }
+    
+    public String getTemplate() {
+        return this.content;
+    }
+    
+    public Date getLastModified() {
+        return this.lastModified;
+    }
 }

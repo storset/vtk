@@ -6,8 +6,7 @@ options {
 }
 
 tokens {
-  /* Imaginary token used for intermediate handeling 
-     of proper child-parent relationship */
+  /* Imaginary token used for intermediate handling of AST */
   PARENT;
 }
 
@@ -65,7 +64,7 @@ grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
 
 viewdefinition
 	:	VIEWDEFINITION LCB
-                   // viewdef
+                   (VIEWDEF)*
                  RCB
-                 -> ^(VIEWDEFINITION)
+                 -> ^(VIEWDEFINITION (VIEWDEF)*)
         ;

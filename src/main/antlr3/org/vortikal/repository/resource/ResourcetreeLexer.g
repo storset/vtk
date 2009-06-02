@@ -27,6 +27,7 @@ BEFORE	:	'before';
 AFTER	:	'after';
 LETTERS	:	('a'..'z' | 'A'..'Z');
 NAME	:	(LETTERS | '-')+;
+VIEWDEF	:	CDATA?;
 WS	:	(' ' | '\t' | '\n')+ {$channel=HIDDEN;};
 
 fragment STRING
@@ -39,3 +40,6 @@ fragment INT
 	:	'int';
 fragment DATETIME
 	:	'datetime';
+fragment CDATA
+	:	'<![CDATA[' (options {greedy=false;} : .)* ']]>'
+	;

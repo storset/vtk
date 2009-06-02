@@ -19,7 +19,7 @@ public class ResourcetreeGrammarTest {
         ResourcetreeParser.resources_return resources = parser.resources();
         Assert.assertEquals(0, parser.getNumberOfSyntaxErrors());
 
-        CommonTree resourcetree = (CommonTree) resources.tree;
+        CommonTree resourcetree = (CommonTree) resources.getTree();
         Assert.assertNotNull(resourcetree);
         Assert.assertTrue(resourcetree.getChildren().size() > 0);
 

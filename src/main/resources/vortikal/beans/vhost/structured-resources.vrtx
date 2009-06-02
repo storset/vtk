@@ -16,7 +16,6 @@ resourcetype jperson : jarticle {
   properties {
     username : string required,
     officenr : string
-    description : string (overrides : content) 
   }
   edit-rules {
   }

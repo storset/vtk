@@ -176,7 +176,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
             ACLInheritedFromQuery aclIHFQuery = (ACLInheritedFromQuery)query;
             
             return new ACLInheritedFromQueryBuilder(
-                          getResouceIdFromIndex(aclIHFQuery.getUri(), reader), 
+                          getResourceIdFromIndex(aclIHFQuery.getUri(), reader), 
                               aclIHFQuery.isInverted());
         }
 
@@ -244,11 +244,11 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         throws QueryBuilderException {
         
         return new Term(FieldNameMapping.ID_FIELD_NAME, 
-                            String.valueOf(getResouceIdFromIndex(uri, reader)));
+                            String.valueOf(getResourceIdFromIndex(uri, reader)));
 
     }
     
-    private int getResouceIdFromIndex(String uri, IndexReader reader) 
+    private int getResourceIdFromIndex(String uri, IndexReader reader) 
         throws QueryBuilderException {
         
         TermDocs td = null;

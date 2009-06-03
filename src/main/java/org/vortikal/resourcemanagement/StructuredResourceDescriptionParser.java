@@ -93,20 +93,20 @@ public class StructuredResourceDescriptionParser {
 
         List<CommonTree> resourceDescription = ((CommonTree) resource).getChildren();
         if (hasContent(resourceDescription)) {
-            for (CommonTree desciptionEntry : resourceDescription) {
-                switch (desciptionEntry.getType()) {
+            for (CommonTree descriptionEntry : resourceDescription) {
+                switch (descriptionEntry.getType()) {
                 case ResourcetreeLexer.PARENT:
-                    srd.setInheritsFrom(desciptionEntry.getChild(0).getText());
+                    srd.setInheritsFrom(descriptionEntry.getChild(0).getText());
                     break;
                 case ResourcetreeLexer.PROPERTIES:
-                    handlePropertyDescriptions(srd, desciptionEntry.getChildren());
+                    handlePropertyDescriptions(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.EDITRULES:
-                    handleEditRulesDescriptions(srd, desciptionEntry.getChildren());
+                    handleEditRulesDescriptions(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.VIEWDEFINITION:
-                    if (desciptionEntry.getChild(0) != null) {
-                        srd.setDisplayTemplate(new DisplayTemplate(desciptionEntry
+                    if (descriptionEntry.getChild(0) != null) {
+                        srd.setDisplayTemplate(new DisplayTemplate(descriptionEntry
                                 .getChild(0).getText()));
                     }
                     break;

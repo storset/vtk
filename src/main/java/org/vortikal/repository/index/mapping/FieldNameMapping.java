@@ -58,6 +58,7 @@ public final class FieldNameMapping {
     public static final String RESOURCETYPE_FIELD_NAME = "resourceType";
     public static final String ANCESTORIDS_FIELD_NAME =  "ANCESTORIDS";
     public static final String ID_FIELD_NAME =           "ID";
+    public static final String ACL_INHERITED_FROM_FIELD_NAME = "ACL_INHERITED_FROM";
     public static final String ACL_READ_PRINCIPALS_FIELD_NAME = "ACL_READ_PRINCIPALS";
     
     public static final String STORED_ACL_READ_PRINCIPALS_FIELD_NAME = 
@@ -69,10 +70,6 @@ public final class FieldNameMapping {
     public static final String STORED_ACL_INHERITED_FROM_FIELD_NAME = 
         STORED_BINARY_FIELD_PREFIX + "ACL_INHERITED_FROM";
     
-    /* Owner property field name (used by authorization) */
-    public static final String OWNER_PROPERTY_STORED_FIELD_NAME =
-        STORED_BINARY_FIELD_PREFIX + PropertyType.OWNER_PROP_NAME;
-
     private static final Set<String> RESERVED_FIELD_NAMES = new HashSet<String>();
 
     static {

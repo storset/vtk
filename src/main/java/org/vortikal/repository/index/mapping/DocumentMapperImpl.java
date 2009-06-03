@@ -155,9 +155,12 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         doc.add(storedIdField);
 
         // ACL_INHERITED_FROM (index system field)
-        Field aclField = this.fieldValueMapper.getStoredBinaryIntegerField(
-                FieldNameMapping.STORED_ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
+        Field aclField = this.fieldValueMapper.getKeywordField(
+                FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
         doc.add(aclField);
+        Field storedAclField = this.fieldValueMapper.getStoredBinaryIntegerField(
+                FieldNameMapping.STORED_ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
+        doc.add(storedAclField);
         
         // ACL_READ_PRINCIPALS (index system field)
         if (aclReadPrincipals != null) {
@@ -213,32 +216,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         }
         
         return doc;
-
-//            if (property == null || property.getType() == Type.BINARY)
-//                continue;
-//
-            // The field used for searching on the property (also tokenized single Field instance for multi-values)
-//            Field indexedField = getIndexedFieldFromProperty(property, false);
-//            doc.add(indexedField);
-//            
-            // Lower-case version of searchable field (only for property types
-            // STRING and HTML)
-//            switch (property.getDefinition().getType()) {
-//            case HTML: // XXX: Do we really need to add a searchable lowercase version of HTML fragment values ??????
-//            case STRING:
-//                Field lowercaseIndexedField = getIndexedFieldFromProperty(property, true);
-//                doc.add(lowercaseIndexedField);
-//            default:
-//                // Don't add lowercase-versions for other types
-//            }
-//
-            // The field(s) used for storing the property value(s) (in binary
-            // form)
-//            Field[] storedFields = getStoredFieldsFromProperty(property);
-//            for (Field storedField : storedFields) {
-//                doc.add(storedField);
-//            }
-
     }
 
 

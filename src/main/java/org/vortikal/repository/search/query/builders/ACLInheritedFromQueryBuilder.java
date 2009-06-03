@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,45 +28,50 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.search.query;
+package org.vortikal.repository.search.query.builders;
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.TermQuery;
+import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.search.query.InversionFilter;
+import org.vortikal.repository.search.query.QueryBuilder;
+import org.vortikal.repository.search.query.QueryBuilderException;
 
 /**
- * Simple generic visitor interface for concrete query node implementations. 
- *
+ * Used both for building ACLExistsQuery and ACLInheritedFromQuery.
  */
-public interface QueryTreeVisitor {
+public class ACLInheritedFromQueryBuilder implements QueryBuilder {
 
-    public Object visit(AndQuery andQuery, Object data);
+    private int resourceId;
+    private boolean invert = false;
     
-    public Object visit(OrQuery orQuery, Object data);
+    public ACLInheritedFromQueryBuilder(int resourceId) {
+        this.resourceId = resourceId;
+    }
+    
+    public ACLInheritedFromQueryBuilder(int resourceId, boolean invert) {
+        this.resourceId = resourceId;
+        this.invert = invert;
+    }
 
-    public Object visit(NamePrefixQuery npQuery, Object data);
-    
-    public Object visit(NameRangeQuery nrQuery, Object data);
-    
-    public Object visit(NameWildcardQuery nwQuery, Object data);
+    public Query buildQuery() throws QueryBuilderException {
+        
+        Term aclInheritedFromTerm = 
+            new Term(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME, 
+                    String.valueOf(this.resourceId));
+            
+        Query query = new TermQuery(aclInheritedFromTerm);
+        
+        if (this.invert) {
+            query = new ConstantScoreQuery(
+                      new InversionFilter(
+                        new QueryWrapperFilter(query)));
+        }
 
-    public Object visit(NameTermQuery ntQuery, Object data);
-    
-    public Object visit(PropertyExistsQuery peQuery, Object data);
-    
-    public Object visit(PropertyPrefixQuery ppQuery, Object data);
-    
-    public Object visit(PropertyRangeQuery prQuery, Object data);
-    
-    public Object visit(PropertyTermQuery ptQuery, Object data);
-    
-    public Object visit(PropertyWildcardQuery pwQuery, Object data);
-    
-    public Object visit(TypeTermQuery ttQuery, Object data);
-    
-    public Object visit(UriDepthQuery udQuery, Object data);
-    
-    public Object visit(UriPrefixQuery upQuery, Object data);
-    
-    public Object visit(UriTermQuery utQuery, Object data);
-    
-    public Object visit(ACLExistsQuery aclQuery, Object data);
-    
-    public Object visit(ACLInheritedFromQuery aclIHFQuery, Object data);
+        return query;
+    }
+
 }

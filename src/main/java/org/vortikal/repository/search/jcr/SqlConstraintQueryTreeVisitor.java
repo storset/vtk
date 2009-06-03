@@ -35,6 +35,8 @@ import java.util.List;
 
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.ACLExistsQuery;
+import org.vortikal.repository.search.query.ACLInheritedFromQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NamePrefixQuery;
 import org.vortikal.repository.search.query.NameRangeQuery;
@@ -313,7 +315,17 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
     public Object visit(UriDepthQuery udQuery, Object data) throws UnsupportedQueryException {
         throw new UnsupportedQueryException("UriDepthQuery is currently not supported.");
     }
+    
+    public Object visit(ACLExistsQuery aclExistsQuery, Object data) throws
+        UnsupportedOperationException {
+        throw new UnsupportedQueryException("ACLExistsQuery is currently not supported.");
+    }
 
+    public Object visit(ACLInheritedFromQuery aclIHFQuery, Object data) throws
+        UnsupportedOperationException {
+        throw new UnsupportedQueryException("ACLInheritedFromQuery is currently not supported.");
+    }
+    
     public Object visit(UriPrefixQuery upQuery, Object data) throws UnsupportedQueryException {
         // XXX: Descendant or self does not work because of JCR query limitations on the jcr:path 
         //      pseudo property.

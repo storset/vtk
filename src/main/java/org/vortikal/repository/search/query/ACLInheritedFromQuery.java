@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,43 +30,30 @@
  */
 package org.vortikal.repository.search.query;
 
-/**
- * Simple generic visitor interface for concrete query node implementations. 
- *
- */
-public interface QueryTreeVisitor {
+public class ACLInheritedFromQuery implements ACLQuery {
 
-    public Object visit(AndQuery andQuery, Object data);
+    private String uri;
+    private boolean inverted = false;
     
-    public Object visit(OrQuery orQuery, Object data);
+    public ACLInheritedFromQuery(String uri) {
+        this.uri = uri;
+    }
+    
+    public ACLInheritedFromQuery(String uri, boolean inverted) {
+        this.uri = uri;
+        this.inverted = inverted;
+    }
+    
+    public boolean isInverted() {
+        return this.inverted;
+    }
 
-    public Object visit(NamePrefixQuery npQuery, Object data);
+    public String getUri() {
+        return this.uri;
+    }
     
-    public Object visit(NameRangeQuery nrQuery, Object data);
-    
-    public Object visit(NameWildcardQuery nwQuery, Object data);
+    public Object accept(QueryTreeVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 
-    public Object visit(NameTermQuery ntQuery, Object data);
-    
-    public Object visit(PropertyExistsQuery peQuery, Object data);
-    
-    public Object visit(PropertyPrefixQuery ppQuery, Object data);
-    
-    public Object visit(PropertyRangeQuery prQuery, Object data);
-    
-    public Object visit(PropertyTermQuery ptQuery, Object data);
-    
-    public Object visit(PropertyWildcardQuery pwQuery, Object data);
-    
-    public Object visit(TypeTermQuery ttQuery, Object data);
-    
-    public Object visit(UriDepthQuery udQuery, Object data);
-    
-    public Object visit(UriPrefixQuery upQuery, Object data);
-    
-    public Object visit(UriTermQuery utQuery, Object data);
-    
-    public Object visit(ACLExistsQuery aclQuery, Object data);
-    
-    public Object visit(ACLInheritedFromQuery aclIHFQuery, Object data);
 }

@@ -323,4 +323,21 @@ public class DumpQueryTreeVisitor implements QueryTreeVisitor {
         return buf.toString();
     }
 
+    public Object visit(ACLExistsQuery aclExistsQuery, Object data) {
+        if (data == null) data = "";
+        StringBuilder buf = new StringBuilder((String)data);
+        buf.append(aclExistsQuery.getClass().getName()).append("\n");
+        buf.append(data).append("Inverted: " + aclExistsQuery.isInverted()).append("\n");
+
+        return buf.toString();
+    }
+
+    public Object visit(ACLInheritedFromQuery aclIHFQuery, Object data) {
+        if (data == null) data = "";
+        StringBuilder buf = new StringBuilder((String)data);
+        buf.append(aclIHFQuery.getClass().getName()).append("\n");
+        buf.append(data).append("Inverted: " + aclIHFQuery.isInverted()).append("\n");
+
+        return buf.toString();
+    }
 }

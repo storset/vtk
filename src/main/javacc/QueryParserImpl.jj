@@ -29,6 +29,7 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
+import org.vortikal.repository.search.query.ACLExistsQuery;
 
 
 /**
@@ -103,10 +104,11 @@ PARSER_END(QueryParserImpl)
 <DEFAULT, Value> SKIP : {" " | "\t" | "\n" | "\r" }
 
 TOKEN : {
-    <URI: "uri">
+          <URI: "uri">
         | <NAME: "name">
         | <TYPE: "type">
         | <DEPTH: "depth">
+        | <ACL: "acl" >
 
         | <EQ: "="> : Value
         | <EQ_IGNORECASE: "=~"> : Value
@@ -213,7 +215,8 @@ Query SimpleQuery() :
         | LOOKAHEAD(2) q=NameQuery() 
         | LOOKAHEAD(2) q=UriQuery() 
         | LOOKAHEAD(2) q=TypeQuery()
-        | LOOKAHEAD(2) q=DepthQuery() 
+        | LOOKAHEAD(2) q=DepthQuery()
+        | LOOKAHEAD(2) q=ACLQuery()
         | q=PropertyQuery()
     )
         { return q; }
@@ -247,6 +250,19 @@ Query DepthQuery() :
         	 	
         	return new UriDepthQuery(depth); 
         }
+}
+
+Query ACLQuery() :
+{
+   Token ex=null;
+}
+{
+    /* Currently only support for "acl exists" or "acl not exists"/"acl !exists" */
+    <ACL> (ex=<EXISTS> | <NOTEXISTS>)
+    {
+      boolean inverted = (ex == null);
+      return new ACLExistsQuery(inverted);
+    }
 }
 
 Query UriQuery() : 

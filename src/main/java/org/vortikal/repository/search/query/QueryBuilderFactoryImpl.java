@@ -55,6 +55,7 @@ import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.query.builders.ACLInheritedFromQueryBuilder;
 import org.vortikal.repository.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.NameRangeQueryBuilder;
@@ -149,6 +150,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                 builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, 
                         ttq.getOperator(), FieldNameMapping.RESOURCETYPE_FIELD_NAME, ttq.getTerm());
             }
+        } 
+        
+        else if (query instanceof ACLQuery) {
+            builder = getACLQueryBuilder(query, reader);
         }
        
         if (builder == null) {
@@ -157,6 +162,25 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
         }
         
         return builder;
+    }
+    
+    private QueryBuilder getACLQueryBuilder(Query query, IndexReader reader) {
+        if (query instanceof ACLExistsQuery) {
+            ACLExistsQuery aclExistsQuery = (ACLExistsQuery)query;
+            
+            return new ACLInheritedFromQueryBuilder(PropertySetImpl.NULL_RESOURCE_ID, 
+                                                    aclExistsQuery.isInverted());
+        }
+        
+        if (query instanceof ACLInheritedFromQuery) {
+            ACLInheritedFromQuery aclIHFQuery = (ACLInheritedFromQuery)query;
+            
+            return new ACLInheritedFromQueryBuilder(
+                          getResouceIdFromIndex(aclIHFQuery.getUri(), reader), 
+                              aclIHFQuery.isInverted());
+        }
+
+        return null;
     }
     
     private QueryBuilder getAbstractPropertyQueryBuilder(Query query)
@@ -219,6 +243,14 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     private Term getPropertySetIdTermFromIndex(String uri, IndexReader reader) 
         throws QueryBuilderException {
         
+        return new Term(FieldNameMapping.ID_FIELD_NAME, 
+                            String.valueOf(getResouceIdFromIndex(uri, reader)));
+
+    }
+    
+    private int getResouceIdFromIndex(String uri, IndexReader reader) 
+        throws QueryBuilderException {
+        
         TermDocs td = null;
         try {
             td = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, 
@@ -228,16 +260,10 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
                 Field field= reader.document(td.doc(), ID_FIELD_SELECTOR).getField(
                                             FieldNameMapping.STORED_ID_FIELD_NAME);
                 
-                String value = 
-                    Integer.toString(
-                            this.fieldValueMapper.getIntegerFromStoredBinaryField(field));
-                
-                return new Term(FieldNameMapping.ID_FIELD_NAME, value);
-                
+                return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
             }
-            // URI not found, so the query should produce zero hits.
-            return new Term(FieldNameMapping.ID_FIELD_NAME, String.valueOf(
-                    PropertySetImpl.NULL_RESOURCE_ID));
+            
+            return PropertySetImpl.NULL_RESOURCE_ID; // URI not found in index
         } catch (IOException io) {
             throw new QueryBuilderException("IOException while building query: " + io.getMessage());
         } finally {

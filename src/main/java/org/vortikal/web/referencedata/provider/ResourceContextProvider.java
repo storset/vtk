@@ -169,7 +169,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
 
             if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
                     && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
-                readPermission = "readProcessedAll";
+                readPermission = "readPermissionRestricted";
             } else {
                 readPermission = "";
             }

@@ -263,7 +263,7 @@
 <#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
 <#assign oneOfThemIsPseudoAll = false />
 <#list pseudoPrincipals as pseudoPrincipal><#if pseudoPrincipal.name == "pseudo:all"><#assign oneOfThemIsPseudoAll = true /></#if></#list>
-<#compress><#if oneOfThemIsPseudoAll = false>readProcessedAll</#if></#compress><#t/>
+<#compress><#if oneOfThemIsPseudoAll = false>readPermissionRestricted</#if></#compress><#t/>
 </#macro>
 
 

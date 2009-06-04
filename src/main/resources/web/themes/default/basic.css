@@ -318,7 +318,7 @@ ul.read-permission li {
     background: transparent url(icons/green-square.png) no-repeat 0px 3px;
 }
 
-ul.read-permission li.readProcessedAll {
+ul.read-permission li.readPermissionRestricted {
     background: transparent url(icons/red-square.png) no-repeat 0px 3px;
 }
 
@@ -495,8 +495,8 @@ div.resourceInfo {
     padding-left: 17px; 
 }
 
-.resourceInfo div.read.readProcessedAll, 
-.resourceInfo div.lese.readProcessedAll {
+.resourceInfo div.read.readPermissionRestricted, 
+.resourceInfo div.lese.readPermissionRestricted {
     background: url(icons/red-square.png) no-repeat left 8px;
 }
 

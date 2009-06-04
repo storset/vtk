@@ -14,8 +14,8 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign readPermission=""/>
-<#if resourceContext.readPermission?exists && resourceContext.readPermission == "readProcessedAll">
-  <#assign readPermission="readProcessedAll" />
+<#if resourceContext.readPermission?exists && resourceContext.readPermission == "readPermissionRestricted">
+  <#assign readPermission="readPermissionRestricted" />
 </#if>
 
   <ul class="read-permission">

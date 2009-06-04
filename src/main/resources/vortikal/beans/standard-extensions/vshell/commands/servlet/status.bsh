@@ -1,0 +1,28 @@
+getDescription() {
+    return "Displays status information about the servlet";
+}
+
+getUsage() {
+    return "servlet status";
+}
+
+void execute(context, args, out) {
+
+    java.text.DecimalFormat df = new java.text.DecimalFormat("0.00");
+    listener = context.get("context").getBean("requestLoadListener");
+
+    msg = "Application startup: " + 
+        new java.util.Date(context.get("context").getStartupDate());
+    out.println(msg);
+
+    msg = "Request load (avg reqs per second): " +
+        df.format((float) listener.getLoad(60)/60) + " (1m), " +
+        df.format((float) listener.getLoad(600)/600) + " (10m), " +
+        df.format((float) listener.getLoad(3600)/3600) + " (1h)";
+    out.println(msg);
+
+    msg = "Total requests served: " +
+        context.get("context").getBean("requestLoadListener").getTotalRequests();
+    out.println(msg);
+    
+}

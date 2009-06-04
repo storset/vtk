@@ -144,5 +144,10 @@
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 
+   <lang:bsh id="vshell.servlet.status"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/servlet/status.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
 
 </beans>

@@ -35,10 +35,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -163,12 +161,6 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             item.setLabel(label);
             item.setTitle(title);
             item.setUrl(url);
-
-            if (label.equals("permissionsService")
-                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
-                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
-                item.setAttribute("additionalLabels", "readProcessedAll");
-            }
 
             if (activeItem == null && isActiveService(currentService, service)) {
                 item.setActive(true);

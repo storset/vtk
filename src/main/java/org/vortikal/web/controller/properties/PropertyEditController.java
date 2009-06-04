@@ -205,7 +205,7 @@ public class PropertyEditController extends SimpleFormController
 
         Vocabulary<Value> vocabulary = definition.getVocabulary();
         if (vocabulary != null) {
-            if ((vocabulary instanceof HierarchicalVocabulary) && this.vocabularyChooserService != null) {
+            if ((vocabulary instanceof HierarchicalVocabulary<?>) && this.vocabularyChooserService != null) {
                 hierarchicalHelpUrl = this.vocabularyChooserService.constructLink(resource, securityContext.getPrincipal(), urlParameters);
             } else {
                 Value[] definitionAllowedValues = vocabulary.getAllowedValues();

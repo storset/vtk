@@ -150,6 +150,8 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         Resource resource = null;
         Path parent = null;
 
+        String readPermission = null;
+
         if (model != null && this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
         }
@@ -164,6 +166,13 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         }
         if (resource != null) {
             parent = resource.getURI().getParent();
+
+            if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
+                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
+                readPermission = "readProcessedAll";
+            } else {
+                readPermission = "";
+            }
         }
 
         if (this.resourceWrapperManager != null && resource != null) {
@@ -180,16 +189,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("repositoryId", this.repository.getId());
         resourceContextModel.put("requestContext", requestContext);
         resourceContextModel.put("repositoryReadOnly", this.repository.isReadOnly());
-
-        if (resource != null) {
-
-            if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
-                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
-                resourceContextModel.put("readPermission", "readProcessedAll");
-            } else {
-                resourceContextModel.put("readPermission", "");
-            }
-        }
+        resourceContextModel.put("readPermission", readPermission);
 
         model.put(this.modelName, resourceContextModel);
     }

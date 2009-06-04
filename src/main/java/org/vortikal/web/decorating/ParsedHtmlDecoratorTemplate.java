@@ -141,12 +141,14 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             if (transformedContent.size() != 1) {
                 throw new IllegalStateException("Invalid HTML result");
             }
-
-            if (!(transformedContent.get(0) instanceof HtmlElement)) {
-                throw new IllegalStateException("Invalid HTML result");
+            
+            Object firstElem = transformedContent.get(0);
+            if (!(firstElem instanceof HtmlElement)) {
+                throw new IllegalStateException("Invalid HTML result: expected element, found " 
+                        + firstElem.getClass().getName());
             }
 
-            HtmlElement newRoot = ((HtmlElement) transformedContent.get(0));
+            HtmlElement newRoot = (HtmlElement) firstElem;
             userPage.getRootElement().setChildNodes(newRoot.getChildNodes());
             return userPage;
         }

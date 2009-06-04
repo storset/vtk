@@ -40,52 +40,46 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
- * Standard resource context model builder. Creates a model map with
- *  "standard" model data for the current resource.
- *
- * <p>Configurable properties:
+ * Standard resource context model builder. Creates a model map with "standard" model data for the current resource.
+ * 
+ * <p>
+ * Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the {@link Repository content
- *   repository}
- *   <li><code>retrieveForProcessing</code> - boolean indicating
- *   whether to retrieve resources using the
- *   <code>forProcessing</code> flag set to <code>false</code> or
- *   false. The default is <code>true</code>.
- *   <li><code>getResourceFromModel</code> - boolean indicating if the
- *   provider should use the resource from the model provided
- *   (<code>true</code>), or get it from the repository from the URI
- *   specified in the RequestContext. Default is <code>false</code>.
- *   <li><code>resourceFromModelKey</code> (only applicable when
- *   <code>getResourceFromModel</code> is <code>true</code>) - the key
- *   to use when looking up the resource from the model. Default is
- *   <code>resource</code>.
- *   <li><code>modelName</code> - the name to use for the submodel
- *   (default is <code>resourceContext</code>).
- *   <li><code>resourceWrapperManager</code> - optional resource wrapper
- *   manager. If set, the resource will be wrapped in a {@ref ResourceWrapper}
+ * <li><code>repository</code> - the {@link Repository content repository}
+ * <li><code>retrieveForProcessing</code> - boolean indicating whether to retrieve resources using the
+ * <code>forProcessing</code> flag set to <code>false</code> or false. The default is <code>true</code>.
+ * <li><code>getResourceFromModel</code> - boolean indicating if the provider should use the resource from the model
+ * provided (<code>true</code>), or get it from the repository from the URI specified in the RequestContext. Default is
+ * <code>false</code>.
+ * <li><code>resourceFromModelKey</code> (only applicable when <code>getResourceFromModel</code> is <code>true</code>) -
+ * the key to use when looking up the resource from the model. Default is <code>resource</code>.
+ * <li><code>modelName</code> - the name to use for the submodel (default is <code>resourceContext</code>).
+ * <li><code>resourceWrapperManager</code> - optional resource wrapper manager. If set, the resource will be wrapped in
+ * a {@ref ResourceWrapper}
  * </ul>
  * 
- * <p>Model data provided:
+ * <p>
+ * Model data provided:
  * <ul>
- *   <li><code>principal</code> - the current principal
- *   <li><code>currentServiceName</code> - the name of the current
- *   service
- *   <li><code>currentURI</code> - the URI of the requested resource
- *   <li><code>parentURI</code> - the parent URI of the requested
- *   resource (<code>null</code>) if the current resource is the root
- *   resource ('/').
- *   <li><code>currentResource</code> - the requested resource
- *   <li><code>repositoryId</code> - the repository id
+ * <li><code>principal</code> - the current principal
+ * <li><code>currentServiceName</code> - the name of the current service
+ * <li><code>currentURI</code> - the URI of the requested resource
+ * <li><code>parentURI</code> - the parent URI of the requested resource (<code>null</code>) if the current resource is
+ * the root resource ('/').
+ * <li><code>currentResource</code> - the requested resource
+ * <li><code>repositoryId</code> - the repository id
  * </ul>
  */
 public class ResourceContextProvider implements InitializingBean, ReferenceDataProvider {
@@ -96,7 +90,8 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     private String resourceFromModelKey = "resource";
     private String modelName = "resourceContext";
     private ResourceWrapperManager resourceWrapperManager;
-    
+
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -105,22 +100,22 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     public void setRetrieveForProcessing(boolean retrieveForProcessing) {
         this.retrieveForProcessing = retrieveForProcessing;
     }
-    
-    
+
+
     public void setGetResourceFromModel(boolean getResourceFromModel) {
         this.getResourceFromModel = getResourceFromModel;
     }
-	
-	
+
+
     public void setResourceFromModelKey(String resourceFromModelKey) {
         this.resourceFromModelKey = resourceFromModelKey;
     }
-    
+
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
-    
+
 
     public void setResourceWrapperManager(ResourceWrapperManager resourceWrapperManager) {
         this.resourceWrapperManager = resourceWrapperManager;
@@ -129,58 +124,54 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
 
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' must be set");
+            throw new BeanInitializationException("Bean property 'repository' must be set");
         }
         if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "Bean property 'modelName' must be set");
+            throw new BeanInitializationException("Bean property 'modelName' must be set");
         }
         if (this.getResourceFromModel && null == this.resourceFromModelKey) {
-            throw new BeanInitializationException(
-                "Bean property 'resourceFromModelKey' cannot be null when "
-                + "'getResourceFromModel' is set");
+            throw new BeanInitializationException("Bean property 'resourceFromModelKey' cannot be null when "
+                    + "'getResourceFromModel' is set");
         }
     }
 
-    
+
     @SuppressWarnings("unchecked")
-    public void referenceData(Map model, HttpServletRequest request)
-        throws Exception {
+    public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> resourceContextModel = new HashMap<String, Object>();
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         RequestContext requestContext = RequestContext.getRequestContext();
         Service currentService = requestContext.getService();
-        
+
         Principal principal = securityContext.getPrincipal();
 
         Resource resource = null;
         Path parent = null;
-        
+
         if (model != null && this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
         }
 
         if (resource == null) {
             try {
-                resource = this.repository.retrieve(
-                    securityContext.getToken(), requestContext.getResourceURI(),
-                    this.retrieveForProcessing);
-       
-            } catch (RepositoryException e) { }
+                resource = this.repository.retrieve(securityContext.getToken(), requestContext.getResourceURI(),
+                        this.retrieveForProcessing);
+
+            } catch (RepositoryException e) {
+            }
         }
         if (resource != null) {
             parent = resource.getURI().getParent();
         }
-        
+
         if (this.resourceWrapperManager != null && resource != null) {
             if (!(resource instanceof ResourceWrapper)) {
                 resource = this.resourceWrapperManager.createResourceWrapper(resource);
             }
         }
-        	   
+
         resourceContextModel.put("principal", principal);
         resourceContextModel.put("currentResource", resource);
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
@@ -189,9 +180,17 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("repositoryId", this.repository.getId());
         resourceContextModel.put("requestContext", requestContext);
         resourceContextModel.put("repositoryReadOnly", this.repository.isReadOnly());
-        
+
+        if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
+                && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
+            resourceContextModel.put("readPermission", "readProcessedAll");
+        } else {
+            resourceContextModel.put("readPermission", "");
+        }
+
         model.put(this.modelName, resourceContextModel);
     }
+
 
     public String toString() {
         StringBuffer sb = new StringBuffer(this.getClass().getName());

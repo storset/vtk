@@ -97,19 +97,19 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 
 /* Readable for all */
 div.tabs ul li a#permissionsService {
-   background: #fff url(icons/globe.ico) no-repeat 4px 5px;
+   background: #fff url(icons/globe.png) no-repeat 4px 5px;
    padding-left: 24px;   
 }
 
 div.tabs ul li.activeTab a#permissionsService {
-   background: #efefef url(icons/globe.ico) no-repeat 4px 5px;
+   background: #efefef url(icons/globe.png) no-repeat 4px 5px;
 }
 
 /* Read permissions set */
 div.tabs ul li.readProcessedAll a#permissionsService {
-   background: #fff url(icons/users.ico) no-repeat 4px 5px;  
+   background: #fff url(icons/users.png) no-repeat 4px 5px;  
 }
 
 div.tabs ul li.activeTab.readProcessedAll a#permissionsService {
-   background: #efefef url(icons/users.ico) no-repeat 4px 5px;
+   background: #efefef url(icons/users.png) no-repeat 4px 5px;
 }

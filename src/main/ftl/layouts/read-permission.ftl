@@ -13,8 +13,13 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#assign readPermission=""/>
+<#if resourceContext.readPermission?exists && resourceContext.readPermission == "readProcessedAll">
+  <#assign readPermission="readProcessedAll" />
+</#if>
+
   <ul class="read-permission">
-    <li class="${resourceContext.readPermission}">
-      <@vrtx.msg code="readPermission${resourceContext.readPermission}" default="Allowed for all" />
+    <li class="${readPermission}">
+      <@vrtx.msg code="readPermission${readPermission}" default="Allowed for all" />
     </li>
   </ul>

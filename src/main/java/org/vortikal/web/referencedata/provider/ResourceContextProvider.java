@@ -181,11 +181,14 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("requestContext", requestContext);
         resourceContextModel.put("repositoryReadOnly", this.repository.isReadOnly());
 
-        if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
-                && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
-            resourceContextModel.put("readPermission", "readProcessedAll");
-        } else {
-            resourceContextModel.put("readPermission", "");
+        if (resource != null) {
+
+            if (!resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
+                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
+                resourceContextModel.put("readPermission", "readProcessedAll");
+            } else {
+                resourceContextModel.put("readPermission", "");
+            }
         }
 
         model.put(this.modelName, resourceContextModel);

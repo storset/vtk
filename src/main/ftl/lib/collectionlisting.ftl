@@ -67,6 +67,11 @@
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.owner" default="Owner"/></a>
             <#break>
+            
+          <#case "permissions">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
+              <@vrtx.msg code="collectionListing.permissions" default="Permissions"/></a>
+            <#break>
 
           <#case "content-length">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
@@ -98,7 +103,7 @@
       <td style="height:35px;text-align:center;" class="emptycollection" colspan="7">
         <@vrtx.msg code="collectionListing.empty" default="This collection is empty"/>.
       </td>
-    </tr>   
+    </tr>
   </#if>
 
   <#assign rowType = "odd">
@@ -108,6 +113,17 @@
       <#assign class = item >
       <#if item = "locked" && child.lock?exists>
         <#assign class = class + " activeLock">
+      </#if>
+      <#local restricted = "" />
+      <#if item = "permissions">
+        <#local principal_all = statics["org.vortikal.security.PrincipalFactory"].ALL />
+        <#local read_action = statics["org.vortikal.repository.RepositoryAction"].READ />
+        <#local read_processed_action = statics["org.vortikal.repository.RepositoryAction"].READ_PROCESSED />
+        <#if !(child.getAcl().hasPrivilege(read_action, principal_all) 
+             || child.getAcl().hasPrivilege(read_processed_action, principal_all)) >
+          <#assign class = class + " restricted" />
+          <#local restricted = "restricted">
+        </#if>
       </#if>
       <td class="${class}">
         <#switch item>
@@ -161,12 +177,20 @@
 
           <#case "content-type">
             <#if child.contentType != "application/x-vortex-collection">
-              ${child.contentType}              
+              ${child.contentType}
             </#if>
             <#break>
 
           <#case "owner">
             ${child.owner.name}
+            <#break>
+            
+          <#case "permissions">
+             <#if restricted != "restricted" >
+               ${vrtx.getMsg("collectionListing.permissions.readAll")}
+             <#else>
+               ${vrtx.getMsg("collectionListing.permissions.restricted")}
+             </#if>
             <#break>
         </#switch>
       </td>

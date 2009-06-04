@@ -317,6 +317,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         if ("owner".equals(sortBy)) {
             order = ResourceSorter.ORDER_BY_OWNER;
         }
+        if ("permissions".equals(sortBy)) {
+            order = ResourceSorter.ORDER_BY_PERMISSIONS;
+        }
         
         ResourceSorter.sort(children, order, invert);
     }

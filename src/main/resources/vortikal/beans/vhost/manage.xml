@@ -1549,6 +1549,7 @@
       <list>
         <value>name</value>
         <value>owner</value>
+        <value>permissions</value>
         <value>content-length</value>
         <value>locked</value>
         <value>last-modified</value>

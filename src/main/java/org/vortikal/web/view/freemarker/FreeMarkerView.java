@@ -44,6 +44,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponseWrapper;
 
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -115,6 +116,7 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
         }
 
         model.put("repositoryID", this.repositoryID);
+        model.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 
         super.processTemplate(template, model, response);
     }

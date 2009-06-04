@@ -728,6 +728,17 @@ table.directoryListing td {
 	padding-right: 15px;
 }
 
+table.directoryListing td.permissions {
+	padding-left: 20px;
+    background-position: left;
+    background-image: url(icons/globe.ico);
+    background-repeat: no-repeat;
+}
+
+table.directoryListing td.permissions.restricted {
+	background-image: url(icons/users.ico);
+}
+
 table.directoryListing td.activeLock {
 	background-position: center;
 	background-image: url(icons/lock.gif);
@@ -739,6 +750,11 @@ table.directoryListing th.locked {
 }
 
 table.directoryListing tr:hover {
+    background-color: #d5d5f5;
+}
+
+/* For IE6, class toggled by JQuery (ie-6-table-tr-hover.js) */
+table.directoryListing tr.hover {
     background-color: #d5d5f5;
 }
 

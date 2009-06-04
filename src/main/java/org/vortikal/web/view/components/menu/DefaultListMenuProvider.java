@@ -165,7 +165,8 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             item.setUrl(url);
 
             if (label.equals("permissionsService")
-                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)) {
+                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ, PrincipalFactory.ALL)
+                    && !resource.getAcl().hasPrivilege(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
                 item.setAttribute("additionalLabels", "readProcessedAll");
             }
 

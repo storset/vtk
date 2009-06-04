@@ -94,22 +94,3 @@ div.tabs ul li.editor\.unstructuredXhtmlEditService a, div.tabs ul li.editor\.un
 div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 	background-color: #efefef;;
 }
-
-/* Readable for all */
-div.tabs ul li a#permissionsService {
-   background: #fff url(icons/globe.png) no-repeat 4px 5px;
-   padding-left: 24px;   
-}
-
-div.tabs ul li.activeTab a#permissionsService {
-   background: #efefef url(icons/globe.png) no-repeat 4px 5px;
-}
-
-/* Read permissions set */
-div.tabs ul li.readProcessedAll a#permissionsService {
-   background: #fff url(icons/users.png) no-repeat 4px 5px;  
-}
-
-div.tabs ul li.activeTab.readProcessedAll a#permissionsService {
-   background: #efefef url(icons/users.png) no-repeat 4px 5px;
-}

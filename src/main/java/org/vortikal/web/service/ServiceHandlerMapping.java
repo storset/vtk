@@ -78,10 +78,8 @@ public class ServiceHandlerMapping implements HandlerMapping {
         Object handler = getController(service);
 
         if (handler == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unable resolve handler: "
-                             + " requestContext: " + requestContext);
-            }
+            logger.warn("Unable resolve handler: "
+                         + " requestContext: " + requestContext);
             return null;
         }
 

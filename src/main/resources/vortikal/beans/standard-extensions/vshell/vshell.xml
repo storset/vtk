@@ -108,42 +108,6 @@
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 
-   <lang:bsh id="vshell.jcr.info"
-             refresh-check-delay="1000"
-             script-source="${vshell.commandsLocation}/jcr/info.bsh"
-             script-interfaces="org.vortikal.shell.vshell.VCommand">
-   </lang:bsh>
-
-   <lang:bsh id="vshell.jcr.search"
-             refresh-check-delay="1000"
-             script-source="${vshell.commandsLocation}/jcr/search.bsh"
-             script-interfaces="org.vortikal.shell.vshell.VCommand">
-   </lang:bsh>
-
-   <lang:bsh id="vshell.jcr.propset"
-             refresh-check-delay="1000"
-             script-source="${vshell.commandsLocation}/jcr/propset.bsh"
-             script-interfaces="org.vortikal.shell.vshell.VCommand">
-   </lang:bsh>
-
-   <lang:bsh id="vshell.jcr.checkin"
-             refresh-check-delay="1000"
-             script-source="${vshell.commandsLocation}/jcr/checkin.bsh"
-             script-interfaces="org.vortikal.shell.vshell.VCommand">
-   </lang:bsh>
-
-   <lang:bsh id="vshell.jcr.checkout"
-             refresh-check-delay="1000"
-             script-source="${vshell.commandsLocation}/jcr/checkout.bsh"
-             script-interfaces="org.vortikal.shell.vshell.VCommand">
-   </lang:bsh>
-
-   <lang:bsh id="vshell.jcr.restore"
-             refresh-check-delay="1000"
-             script-source="${vshell.commandsLocation}/jcr/restore.bsh"
-             script-interfaces="org.vortikal.shell.vshell.VCommand">
-   </lang:bsh>
-
    <lang:bsh id="vshell.servlet.status"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/servlet/status.bsh"

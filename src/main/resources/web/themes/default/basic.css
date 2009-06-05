@@ -312,14 +312,10 @@ ul.read-permission {
 }
 
 ul.read-permission li {
-	display: inline;
+    display: inline;
     font-size: 80%;
     padding-left: 18px;
-    background: transparent url(icons/green-square.png) no-repeat 0px 3px;
-}
-
-ul.read-permission li.readPermissionRestricted {
-    background: transparent url(icons/red-square.png) no-repeat 0px 3px;
+    background: url(icons/read-permission.png) no-repeat 0px 3px;
 }
 
 /* End resource title section: */ /*  Start of 'TabMenuLine' section: */
@@ -488,18 +484,6 @@ div.resourceInfo {
 	width: 100%;
 }
 
-/* Readable for all */
-.resourceInfo div.read, 
-.resourceInfo div.lese {
-    background: url(icons/green-square.png) no-repeat left 8px;
-    padding-left: 17px; 
-}
-
-.resourceInfo div.read.readPermissionRestricted, 
-.resourceInfo div.lese.readPermissionRestricted {
-    background: url(icons/red-square.png) no-repeat left 8px;
-}
-
 .resourceInfo tr {
 	background: #eeeeee;
 	border-bottom: solid 1px #ccc;
@@ -632,23 +616,6 @@ td.expandedForm div.submitButtons {
 	margin: 0;
 }
 
-.expandedForm ul.everyoneOrSelectedUsers#Read label,
-.expandedForm ul.everyoneOrSelectedUsers#Lese label {
-	padding-left:18px; 
-   
-}
-
-/* Readable for all */
-.expandedForm ul.everyoneOrSelectedUsers#Read label#permissions\.grouped,
-.expandedForm ul.everyoneOrSelectedUsers#Lese label#permissions\.grouped {
-	background: transparent url(icons/green-square.png) no-repeat left 2px;
-}
-
-.expandedForm ul.everyoneOrSelectedUsers#Read label#permissions\.selectedPrincipals,
-.expandedForm ul.everyoneOrSelectedUsers#Lese label#permissions\.selectedPrincipals {
-    background: transparent url(icons/red-square.png) no-repeat left 2px;
-}
-
 .expandedForm ul.principalList {
 	float: left;
 	clear: both;
@@ -746,17 +713,6 @@ table tr.even {
 table.directoryListing td {
 	padding: 3px;
 	padding-right: 15px;
-}
-
-table.directoryListing td.permissions {
-	padding-left: 17px;
-    background-position: left;
-    background-image: url(icons/green-square.png);
-    background-repeat: no-repeat;
-}
-
-table.directoryListing td.permissions.restricted {
-	background-image: url(icons/red-square.png);
 }
 
 table.directoryListing td.activeLock {

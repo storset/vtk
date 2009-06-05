@@ -31,6 +31,6 @@ resourcetype event : article {
     mapref after event:location
   }
   view-definition {
-    <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>
+    $$<html><head><title>article.template</title></head><body>article</body></html>$$
   }
 }

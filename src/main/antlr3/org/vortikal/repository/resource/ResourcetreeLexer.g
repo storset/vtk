@@ -18,12 +18,12 @@ EDITRULES
 VIEWDEFINITION
 	:	'view-definition';
 
-LCB	:	'{' ;
-RCB	:	'}' ;
-LP	:	'(' ;
-RP	:	')' ;
-COLON	:	':' ;
-COMMA	:	',' ;
+LCB	:	'{';
+RCB	:	'}';
+LP	:	'(';
+RP	:	')';
+COLON	:	':';
+COMMA	:	',';
 
 PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME);
 REQUIRED:	'required';
@@ -36,7 +36,13 @@ BEFORE	:	'before';
 AFTER	:	'after';
 LETTERS	:	('a'..'z' | 'A'..'Z');
 NAME	:	(LETTERS | '-')+;
-VIEWDEF	:	CDATA?;
+VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
+		{
+		  String s = getText();
+		  s = s.replaceAll("\\s+", " ");
+		  s = s.replace("$$", "");
+		  setText(s.trim());
+		};
 WS	:	(' ' | '\t' | '\n')+ {$channel=HIDDEN;};
 
 fragment STRING
@@ -49,6 +55,3 @@ fragment INT
 	:	'int';
 fragment DATETIME
 	:	'datetime';
-fragment CDATA
-	:	'<![CDATA[' (options {greedy=false;} : .)* ']]>'
-	;

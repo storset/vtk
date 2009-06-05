@@ -7,9 +7,9 @@ resourcetype jarticle {
   }
   edit-rules {
   }
-  view-definition {
-    <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>
-  }
+  view-definition {$$
+    <html><head><title>article.template</title></head><body>article</body></html>
+  $$}
 }
 
 resourcetype jperson : jarticle {
@@ -20,6 +20,5 @@ resourcetype jperson : jarticle {
   edit-rules {
   }
   view-definition {
-    <![CDATA["<html><head><title>article.template</title></head><body>article</body></html>"]]>
   }
 }

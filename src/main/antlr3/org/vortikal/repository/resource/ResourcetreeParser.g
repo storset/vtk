@@ -66,7 +66,7 @@ grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
 
 viewdefinition
 	:	VIEWDEFINITION LCB
-                   (VIEWDEF)*
-                 RCB
-                 -> ^(VIEWDEFINITION (VIEWDEF)*)
+                  (VIEWDEF)?
+                RCB
+                -> ^(VIEWDEFINITION (VIEWDEF)?)
         ;

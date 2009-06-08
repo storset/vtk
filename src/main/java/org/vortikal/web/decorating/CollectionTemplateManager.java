@@ -130,16 +130,18 @@ public class CollectionTemplateManager implements TemplateManager, InitializingB
     }
 
 
-    private void loadRecursively(Resource r, Set<Resource> result) throws Exception {
+    private void loadRecursively(Resource r, Set<Resource> result) {
         if (r.isOfType(this.templateResourceType)) {
             result.add(r);
         }
         if (r.isCollection()) {
-            Resource[] children =
-                this.repository.listChildren(null, r.getURI(), true);
-            for (Resource child : children) {
-                loadRecursively(child, result);
-            }           
+            try {
+                Resource[] children =
+                    this.repository.listChildren(null, r.getURI(), true);
+                for (Resource child : children) {
+                    loadRecursively(child, result);
+                }
+            } catch (Throwable t) { }
         }
     }
     

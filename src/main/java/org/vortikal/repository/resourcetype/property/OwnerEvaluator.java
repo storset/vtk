@@ -36,7 +36,6 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.AuthorizationManager;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyValidator;
@@ -88,32 +87,37 @@ public class OwnerEvaluator
     }
 
 
-    public void validate(Principal principal, PropertySet ancestorPropertySet, 
-                         Property property) throws ConstraintViolationException {
+    public void validate(Property property, PropertyEvaluationContext ctx)
+        throws ConstraintViolationException {
 
         if (property.getPrincipalValue() == null) {
             throw new ConstraintViolationException("All resources must have an owner.");
         }
-
-       Principal owner = property.getPrincipalValue();
-       if (principal == null || !this.principalManager.validatePrincipal(owner)) {
+        
+        Principal owner = property.getPrincipalValue();
+        if (owner == null || !this.principalManager.validatePrincipal(owner)) {
            throw new ConstraintViolationException(
                    "Unable to set owner of resource to invalid value: '" 
                    + owner + "'");
        }
 
        try {
-           this.authorizationManager.authorizeRootRoleAction(principal);
+           this.authorizationManager.authorizeRootRoleAction(ctx.getPrincipal());
            // Principal is root, allow any value:
            return;
        } catch (AuthorizationException e) { }
 
-       // Principals other than root may only TAKE ownership:
-       if (!principal.equals(property.getPrincipalValue())) {
-           throw new ConstraintViolationException(
-                   "Unable to set owner of resource to invalid value: '" 
-                   + owner + "'");
+       if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.PropertiesChange) {
+
+           // Principals other than root may only TAKE ownership:
+           // XXX: this rule is no longer enforced, see VTK-1360
+
+//           if (!ctx.getPrincipal().equals(property.getPrincipalValue())) {
+//               throw new ConstraintViolationException(
+//                       "Unable to set owner of resource to invalid value: '" 
+//                       + owner + "'");
+//           }
+
        }
     }
-    
 }

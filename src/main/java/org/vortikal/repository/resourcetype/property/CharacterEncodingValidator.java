@@ -33,16 +33,14 @@ package org.vortikal.repository.resourcetype.property;
 import java.nio.charset.Charset;
 
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyValidator;
-import org.vortikal.security.Principal;
 
 public class CharacterEncodingValidator implements PropertyValidator {
 
-    public void validate(Principal principal, PropertySet ancestorPropertySet, 
-                         Property property) throws ConstraintViolationException {
-
+    public void validate(Property property, PropertyEvaluationContext ctx)
+    throws ConstraintViolationException {
         if (property.getValue() == null) {
             throw new ConstraintViolationException("Character encoding must have a value");
         }
@@ -54,5 +52,6 @@ public class CharacterEncodingValidator implements PropertyValidator {
            throw new ConstraintViolationException(e);
        }
     }
+
     
 }

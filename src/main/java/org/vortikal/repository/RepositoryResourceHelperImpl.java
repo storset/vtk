@@ -68,7 +68,6 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     public ResourceImpl create(Principal principal, Path uri, boolean collection)
             throws IOException {
-
         ResourceImpl resource = new ResourceImpl(uri, this.resourceTypeTree,
                 this.authorizationManager);
         if (collection) {
@@ -273,7 +272,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
 
         if (propDef.getValidator() != null && evaluatedProp != null) {
-            propDef.getValidator().validate(ctx.getPrincipal(), ctx.getOriginalResource(), evaluatedProp);
+            propDef.getValidator().validate(evaluatedProp, ctx);
         }
         if (evaluatedProp != null) {
             newResource.addProperty(evaluatedProp);

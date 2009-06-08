@@ -46,11 +46,8 @@
    <#else>
 
       <h3 class="${privilegeName}">${privilegeHeading}</h3>
-      <#if privilegeName == "read">
-         <div class="${privilegeName} <@returnStringIfNotReadableByAll privilegeName=privilegeName/>"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
-      <#else>
-         <div class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
-      </#if>
+      <div class="${privilegeName}"><@listPrincipals privilegeName=privilegeName /><#if aclInfo.aclEditURLs[privilegeName]?exists>(&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)</#if></div>
+    
     </#if>
 </#macro>
 
@@ -250,22 +247,6 @@
   </#if>
 </#macro>
 
-<#--
- * returnStringIfNotReadableByAll
- *
- * Returns the string="readProcessedAll" if not readable by all (pseudo:all)
- *
- * @param privilegeName
- *
--->
-
-<#macro returnStringIfNotReadableByAll privilegeName>
-<#assign pseudoPrincipals = aclInfo.privilegedPseudoPrincipals[privilegeName] />
-<#assign oneOfThemIsPseudoAll = false />
-<#list pseudoPrincipals as pseudoPrincipal><#if pseudoPrincipal.name == "pseudo:all"><#assign oneOfThemIsPseudoAll = true /></#if></#list>
-<#compress><#if oneOfThemIsPseudoAll = false>readPermissionRestricted</#if></#compress><#t/>
-</#macro>
-
 
 <#--
  * editACLForm
@@ -311,7 +292,7 @@
                value="false"
                <#if !spring.status.value>checked="checked"</#if>> 
       <label id="permissions.selectedPrincipals" for="permissions.selectedPrincipals">
-        <@vrtx.msg code="permissions.selectedPrincipals" default="Access limited to"/></label>
+        <@vrtx.msg code="permissions.selectedPrincipals" default="Restricted to"/></label>
     </li>
     </ul>
 

@@ -314,8 +314,8 @@ ul.read-permission {
 ul.read-permission li {
     display: inline;
     font-size: 80%;
-    padding-left: 18px;
-    background: url(icons/read-permission.png) no-repeat 0px 3px;
+    padding-left: 22px;
+    background: url(icons/read-permission.png) no-repeat 0px 1px;
 }
 
 /* End resource title section: */ /*  Start of 'TabMenuLine' section: */

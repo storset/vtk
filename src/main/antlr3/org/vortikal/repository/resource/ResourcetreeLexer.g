@@ -3,6 +3,7 @@ lexer grammar ResourcetreeLexer;
 tokens {
   /* Imaginary token used for intermediate handling of AST */
   PARENT;
+  PROPERTY;
 }
 
 @header {
@@ -15,6 +16,7 @@ PROPERTIES
 	:	'properties';
 EDITRULES
 	:	'edit-rules';
+POSITION:	'position';
 VIEWDEFINITION
 	:	'view-definition';
 
@@ -22,10 +24,13 @@ LCB	:	'{';
 RCB	:	'}';
 LP	:	'(';
 RP	:	')';
+LB	:	'[';
+RB	:	']';
 COLON	:	':';
 COMMA	:	',';
 
 PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME);
+EDITHINT:	(TEXTFIELD (LB NUMBER RB)? | TEXTAREA | RADIO (LB VALUELIST RB)? | DROPDOWN (LB VALUELIST RB)?);
 REQUIRED:	'required';
 NOEXTRACT
 	:	'noextract';
@@ -34,8 +39,12 @@ OVERRIDES
 GROUP	:	'group';
 BEFORE	:	'before';
 AFTER	:	'after';
-LETTERS	:	('a'..'z' | 'A'..'Z');
-NAME	:	(LETTERS | '-')+;
+LETTER	:	('a'..'z' | 'A'..'Z');
+NUMBER	:	('0'..'9')+;
+// XXX write rule
+VALUELIST
+	:	;
+NAME	:	(LETTER | '-')+;
 VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
 		{
 		  String s = getText();
@@ -55,3 +64,11 @@ fragment INT
 	:	'int';
 fragment DATETIME
 	:	'datetime';
+fragment TEXTFIELD
+	:	'textfield';
+fragment TEXTAREA
+	:	'textarea';
+fragment RADIO
+	:	'radio';
+fragment DROPDOWN
+	:	'dropdown';

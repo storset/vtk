@@ -47,10 +47,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
 
-/**
- * XXX TEMP solution (?) Convert resourcetree to list of
- * StructuredResourceDescriptions Use the walker (ResourcetreeWalker) instead
- */
 public class StructuredResourceDescriptionParser {
 
     private String resourceDescriptionFileLocation;

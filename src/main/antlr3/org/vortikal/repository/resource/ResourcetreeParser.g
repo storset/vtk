@@ -17,56 +17,66 @@ parent	:	COLON NAME -> ^(PARENT NAME);
 
 resourcetypedef
 	:	RESOURCETYPE NAME (parent)? LCB
-                  resourcedef
-                RCB
-                -> ^(RESOURCETYPE ^(NAME (parent)? (resourcedef)?))
-        ;
+		  resourcedef
+		RCB
+		-> ^(RESOURCETYPE ^(NAME (parent)? (resourcedef)?))
+	;
 
 resourcedef
 	:	(resourceprops)?
-                (editrules)?
-                (viewdefinition)?
-        ;
+		(editrules)?
+		(viewdefinition)?
+	;
 
 resourceprops
 	:	PROPERTIES LCB
-                  (propertytypedef (COMMA propertytypedef)*)*
-                RCB
-                -> ^(PROPERTIES (propertytypedef)*)
-        ;
+		  (propertytypedef (COMMA propertytypedef)*)*
+		RCB
+		-> ^(PROPERTIES (propertytypedef)*)
+	;
 
 propertytypedef
 	:	NAME COLON PROPTYPE (REQUIRED)? (NOEXTRACT)? (overrides)?
-	        -> ^(NAME PROPTYPE (REQUIRED)? (NOEXTRACT)? (overrides)?)
+		-> ^(NAME PROPTYPE (REQUIRED)? (NOEXTRACT)? (overrides)?)
 	;
 
 overrides
 	:	LP OVERRIDES COLON NAME RP
-	        -> ^(OVERRIDES NAME)
+		-> ^(OVERRIDES NAME)
+	;
+
+
+editruledef
+	:	NAME (position)? (edithint)?
+		-> ^(NAME ^(position)? ^(edithint)?)
+	|	GROUP NAME grouping position
+		-> ^(GROUP ^(NAME grouping) ^(position))
 	;
 
 editrules
 	:	EDITRULES LCB
-                  (editruledef (COMMA editruledef)*)*
-                RCB
-                -> ^(EDITRULES (editruledef)*)
-        ;
-
-editruledef
-	:	NAME position -> ^(NAME position)
-	|	GROUP NAME grouping (position)? -> ^(GROUP ^(NAME grouping) ^(position)?)
+		  (editruledef (COMMA editruledef)*)*
+		RCB
+		-> ^(EDITRULES (editruledef)*)
 	;
 
+
 position
-	:	pos NAME COLON NAME -> ^(pos ^(NAME NAME));
+	:	LP pos NAME RP -> ^(pos NAME);
 
 pos	:	(BEFORE | AFTER);
+
+edithint:	LP EDITHINT RP -> ^(EDITHINT);
+
+// XXX write rult
+displayhint
+	:	;
 
 grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
 
 viewdefinition
 	:	VIEWDEFINITION LCB
-                  (VIEWDEF)?
-                RCB
-                -> ^(VIEWDEFINITION (VIEWDEF)?)
-        ;
+		  (VIEWDEF)?
+		RCB
+		-> ^(VIEWDEFINITION (VIEWDEF)?)
+	;

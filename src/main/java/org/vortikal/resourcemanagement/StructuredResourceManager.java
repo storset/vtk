@@ -98,7 +98,7 @@ public class StructuredResourceManager {
 
         ResourceTypeDefinition parentDefinition = this.baseType;
 
-         PropertyTypeDefinition[] propertyTypeDefinitions = createPropDefs(description);
+        PropertyTypeDefinition[] propertyTypeDefinitions = createPropDefs(description);
         def.setPropertyTypeDefinitions(propertyTypeDefinitions);
         
         List<RepositoryAssertion> assertions = createAssertions(description);

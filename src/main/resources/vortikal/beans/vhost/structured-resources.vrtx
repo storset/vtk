@@ -18,6 +18,7 @@ resourcetype jperson : jarticle {
     officenr : string
   }
   edit-rules {
+    username (before content)
   }
   view-definition {
   }

@@ -14,7 +14,8 @@ dbname=> \i /Users/evenh/vortikal/trunk/src/sql/postgresql-schema.sql
 * Change 'vrtx' to <jdbcUsername> in the following grant statement if they differ.
 */
 
-GRANT DELETE, SELECT, INSERT, UPDATE ON acl_entry, acl_entry_seq_pk, action_type, changelog_entry, changelog_entry_seq_pk, extra_prop_entry, extra_prop_entry_seq_pk, prop_type, vortex_lock, vortex_lock_seq_pk, vortex_resource, vortex_resource_seq_pk, vortex_tmp_session_id_seq, vortex_tmp TO vrtx;
+GRANT DELETE, SELECT, INSERT, UPDATE ON acl_entry, action_type, changelog_entry, extra_prop_entry, prop_type, vortex_lock, vortex_resource, vortex_tmp, vortex_comment TO vrtx;
+GRANT SELECT, UPDATE ON acl_entry_seq_pk, changelog_entry_seq_pk, extra_prop_entry_seq_pk, vortex_lock_seq_pk, vortex_resource_seq_pk, vortex_tmp_session_id_seq, vortex_comment_seq_pk TO vrtx;
 
 /*
 dbname=> \z (show access privileges for database "dbname")

@@ -58,7 +58,7 @@ div.tabs ul li a:hover {
         border-color: #999;
         padding-bottom: 5px;
 }
-/*
+
 div.tabs ul li.editService a, div.tabs ul li.editService a:hover{
         padding-left: 20px;
         background: url(icons/edit.gif) no-repeat 7px 5px;
@@ -83,7 +83,6 @@ div.tabs ul li.editor\.unstructuredXhtmlEditService a, div.tabs ul li.editor\.un
         padding-left: 20px;
         background: url(icons/edit.gif) no-repeat 7px 5px;
 }
-*/
 
 /* Override this class to get different colors and size on a specific tab */
 

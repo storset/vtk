@@ -29,7 +29,7 @@ RB	:	']';
 COLON	:	':';
 COMMA	:	',';
 
-PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME);
+PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME | IMAGEREF);
 EDITHINT:	(TEXTFIELD (LB NUMBER RB)? | TEXTAREA | RADIO (LB VALUELIST RB)? | DROPDOWN (LB VALUELIST RB)?);
 REQUIRED:	'required';
 NOEXTRACT
@@ -54,6 +54,7 @@ VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
 		};
 WS	:	(' ' | '\t' | '\n')+ {$channel=HIDDEN;};
 
+// Propertytypes
 fragment STRING
 	:	'string';
 fragment HTML
@@ -64,6 +65,10 @@ fragment INT
 	:	'int';
 fragment DATETIME
 	:	'datetime';
+fragment IMAGEREF
+	:	'image_ref';
+
+// Edithints
 fragment TEXTFIELD
 	:	'textfield';
 fragment TEXTAREA

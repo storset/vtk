@@ -43,6 +43,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -241,14 +242,23 @@ public class StructuredResourceManager {
     private PropertyType.Type mapType(PropertyDescription d) {
         String type = d.getType();
         
-        if ("text".equals(type)) {
+        if (StructuredResourceParser.PROPTYPE_STRING.equals(type)) {
             return PropertyType.Type.STRING;
         }
-        if ("int".equals(type)) {
+        if (StructuredResourceParser.PROPTYPE_HTML.equals(type)) {
+            return PropertyType.Type.HTML;
+        }
+        if (StructuredResourceParser.PROPTYPE_BOOLEAN.equals(type)) {
+            return PropertyType.Type.BOOLEAN;
+        }
+        if (StructuredResourceParser.PROPTYPE_INT.equals(type)) {
             return PropertyType.Type.INT;
         }
-        if ("date".equals(type)) {
-            return PropertyType.Type.DATE;
+        if (StructuredResourceParser.PROPTYPE_DATETIME.equals(type)) {
+            return PropertyType.Type.TIMESTAMP;
+        }
+        if (StructuredResourceParser.PROPTYPE_IMAGEREF.equals(type)) {
+            return PropertyType.Type.IMAGE_REF;
         }
         return PropertyType.Type.STRING;
     }

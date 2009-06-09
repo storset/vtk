@@ -15,7 +15,8 @@ resourcetype jarticle {
 resourcetype jperson : jarticle {
   properties {
     username : string required,
-    officenr : string
+    officenr : string,
+    picture : image_ref
   }
   edit-rules {
     username (before content)

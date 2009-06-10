@@ -16,7 +16,6 @@ PROPERTIES
 	:	'properties';
 EDITRULES
 	:	'edit-rules';
-POSITION:	'position';
 VIEWDEFINITION
 	:	'view-definition';
 

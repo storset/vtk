@@ -31,12 +31,13 @@
 package org.vortikal.resourcemanagement;
 
 public class PropertyDescription {
+    
     private String name;
     private String type;
     private boolean required;
     private String overrides;
     private boolean noExtract;
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -44,27 +45,27 @@ public class PropertyDescription {
     public String getName() {
         return name;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     public void setOverrides(String overrides) {
         this.overrides = overrides;
     }
-    
+
     public String getOverrides() {
         return overrides;
     }
-    
+
     public void setNoExtract(boolean noExtract) {
         this.noExtract = noExtract;
     }
-    
+
     public boolean isNoExtract() {
         return noExtract;
     }

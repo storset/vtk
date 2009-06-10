@@ -43,7 +43,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -65,35 +64,34 @@ public class StructuredResourceManager {
     private PrimaryResourceTypeDefinition baseType;
     private JSONObjectSelectAssertion assertion;
     private Namespace namespace = Namespace.STRUCTURED_RESOURCE_NAMESPACE;
-    
-    private Map<String, StructuredResourceDescription> types = 
-        new HashMap<String, StructuredResourceDescription>();
+
+    private Map<String, StructuredResourceDescription> types = new HashMap<String, StructuredResourceDescription>();
     private ValueFactory valueFactory;
     private ValueFormatterRegistry valueFormatterRegistry;
-    
+
     public void register(StructuredResourceDescription description) {
         String name = description.getName();
         ResourceTypeDefinition existing = null;
         try {
-            existing =
-            resourceTypeTree.getResourceTypeDefinitionByName(name);
+            existing = resourceTypeTree.getResourceTypeDefinitionByName(name);
         } catch (Exception e) {
             // Ignore
         }
         if (existing != null) {
-            throw new IllegalArgumentException("Resource type of name " 
-                    + name + " already exists");
+            throw new IllegalArgumentException("Resource type of name " + name
+                    + " already exists");
         }
 
         PrimaryResourceTypeDefinition def = createResourceType(description);
         this.resourceTypeTree.registerDynamicResourceType(def);
-                
+
         this.types.put(name, description);
     }
 
-    private PrimaryResourceTypeDefinition createResourceType(StructuredResourceDescription description) {
+    private PrimaryResourceTypeDefinition createResourceType(
+            StructuredResourceDescription description) {
         PrimaryResourceTypeDefinitionImpl def = new PrimaryResourceTypeDefinitionImpl();
-    
+
         def.setName(description.getName());
         def.setNamespace(this.namespace);
 
@@ -101,7 +99,7 @@ public class StructuredResourceManager {
 
         PropertyTypeDefinition[] propertyTypeDefinitions = createPropDefs(description);
         def.setPropertyTypeDefinitions(propertyTypeDefinitions);
-        
+
         List<RepositoryAssertion> assertions = createAssertions(description);
         def.setAssertions(assertions.toArray(new RepositoryAssertion[assertions.size()]));
 
@@ -111,20 +109,20 @@ public class StructuredResourceManager {
                 throw new IllegalArgumentException(
                         "Can only inherit from other structured resource types.");
             }
-            parentDefinition = 
-                this.resourceTypeTree.getResourceTypeDefinitionByName(parent);
+            parentDefinition = this.resourceTypeTree
+                    .getResourceTypeDefinitionByName(parent);
         }
 
         if (parentDefinition instanceof PrimaryResourceTypeDefinitionImpl) {
-            def.setParentTypeDefinition((PrimaryResourceTypeDefinitionImpl)parentDefinition);
+            def.setParentTypeDefinition((PrimaryResourceTypeDefinitionImpl) 
+                    parentDefinition);
             updateAssertions(parentDefinition, description.getName());
         }
 
-       
         def.afterPropertiesSet();
         return def;
     }
-    
+
     private void updateAssertions(ResourceTypeDefinition parent, String name) {
 
         while (true) {
@@ -147,29 +145,32 @@ public class StructuredResourceManager {
             parent = impl.getParentTypeDefinition();
         }
     }
-    
-    private List<RepositoryAssertion> createAssertions(StructuredResourceDescription description) {
+
+    private List<RepositoryAssertion> createAssertions(
+            StructuredResourceDescription description) {
         List<RepositoryAssertion> assertions = new ArrayList<RepositoryAssertion>();
-        JSONObjectSelectAssertion typeElementAssertion = 
-            this.assertion.createAssertion("resourcetype", description.getName());
+        JSONObjectSelectAssertion typeElementAssertion = this.assertion.createAssertion(
+                "resourcetype", description.getName());
         assertions.add(typeElementAssertion);
 
-        for (PropertyDescription propDesc: description.getPropertyDescriptions()) {
+        for (PropertyDescription propDesc : description.getPropertyDescriptions()) {
             if (propDesc.isRequired()) {
-                JSONObjectSelectAssertion propAssertion = 
-                    this.assertion.createAssertion("properties." + propDesc.getName());
+                JSONObjectSelectAssertion propAssertion = this.assertion
+                        .createAssertion("properties." + propDesc.getName());
                 assertions.add(propAssertion);
             }
         }
-        return assertions;        
+        return assertions;
     }
-    
-    private PropertyTypeDefinition[] createPropDefs(StructuredResourceDescription description) {
-        
-        List<PropertyDescription> propertyDescriptions = description.getPropertyDescriptions();
+
+    private PropertyTypeDefinition[] createPropDefs(
+            StructuredResourceDescription description) {
+
+        List<PropertyDescription> propertyDescriptions = description
+                .getPropertyDescriptions();
         List<PropertyTypeDefinition> result = new ArrayList<PropertyTypeDefinition>();
-        
-        for (PropertyDescription d: propertyDescriptions) {
+
+        for (PropertyDescription d : propertyDescriptions) {
             PropertyTypeDefinition def = createPropDef(d);
             result.add(def);
         }
@@ -181,25 +182,22 @@ public class StructuredResourceManager {
         if (d.getOverrides() != null) {
             Namespace namespace = Namespace.DEFAULT_NAMESPACE; // XXX
             String name = d.getOverrides();
-            
-            PropertyTypeDefinition original = 
-                this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
+
+            PropertyTypeDefinition original = this.resourceTypeTree
+                    .getPropertyTypeDefinition(namespace, name);
             if (!(original instanceof OverridablePropertyTypeDefinitionImpl)) {
                 throw new IllegalArgumentException("Cannot override property " + name);
             }
-            OverridablePropertyTypeDefinitionImpl overridableDef = 
-                (OverridablePropertyTypeDefinitionImpl) original;
-            OverridingPropertyTypeDefinitionImpl overridingDef = 
-                new OverridingPropertyTypeDefinitionImpl();
+            OverridablePropertyTypeDefinitionImpl overridableDef = (OverridablePropertyTypeDefinitionImpl) original;
+            OverridingPropertyTypeDefinitionImpl overridingDef = new OverridingPropertyTypeDefinitionImpl();
             overridingDef.setOverriddenPropDef(overridableDef);
             if (!d.isNoExtract()) {
                 overridingDef.setPropertyEvaluator(createPropertyEvaluator());
             }
             return overridingDef;
         } else {
-            OverridablePropertyTypeDefinitionImpl def = 
-            new OverridablePropertyTypeDefinitionImpl();
-        
+            OverridablePropertyTypeDefinitionImpl def = new OverridablePropertyTypeDefinitionImpl();
+
             def.setName(d.getName());
             def.setNamespace(this.namespace);
             def.setType(mapType(d));
@@ -207,7 +205,7 @@ public class StructuredResourceManager {
             def.setMandatory(d.isRequired());
             def.setValueFactory(this.valueFactory);
             def.setValueFormatterRegistry(this.valueFormatterRegistry);
-        
+
             if (!d.isNoExtract()) {
                 def.setPropertyEvaluator(createPropertyEvaluator());
             }
@@ -218,30 +216,29 @@ public class StructuredResourceManager {
     private PropertyEvaluator createPropertyEvaluator() {
         return new PropertyEvaluator() {
 
-            public boolean evaluate(Property property,
-                    PropertyEvaluationContext ctx)
-            throws PropertyEvaluationException {
+            public boolean evaluate(Property property, PropertyEvaluationContext ctx)
+                    throws PropertyEvaluationException {
                 try {
-                    JSONObject json = (JSONObject) 
-                    ctx.getContent().getContentRepresentation(JSONObject.class);
-                    String expression = "properties." 
-                        + property.getDefinition().getName();
+                    JSONObject json = (JSONObject) ctx.getContent()
+                            .getContentRepresentation(JSONObject.class);
+                    String expression = "properties."
+                            + property.getDefinition().getName();
                     Object value = JSONUtil.select(json, expression);
                     if (value == null) {
                         return false;
                     }
                     property.setStringValue(value.toString());
-                return true;
+                    return true;
                 } catch (Exception e) {
                     return false;
                 }
             }
-        };        
+        };
     }
-    
+
     private PropertyType.Type mapType(PropertyDescription d) {
         String type = d.getType();
-        
+
         if (StructuredResourceParser.PROPTYPE_STRING.equals(type)) {
             return PropertyType.Type.STRING;
         }
@@ -262,34 +259,37 @@ public class StructuredResourceManager {
         }
         return PropertyType.Type.STRING;
     }
-    
+
     public StructuredResourceDescription get(String name) {
         StructuredResourceDescription description = this.types.get(name);
         if (description == null) {
-            throw new IllegalArgumentException("No resource type definition found for name '" + name + "'");
+            throw new IllegalArgumentException(
+                    "No resource type definition found for name '" + name + "'");
         }
         return description;
     }
 
-    @Required public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-    
-    @Required public void setBaseType(PrimaryResourceTypeDefinition baseType) {
+
+    @Required
+    public void setBaseType(PrimaryResourceTypeDefinition baseType) {
         this.baseType = baseType;
     }
-    
+
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
 
-    @Required 
+    @Required
     public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
-    
-    @Required 
+
+    @Required
     public void setAssertion(JSONObjectSelectAssertion assertion) {
         this.assertion = assertion;
     }
@@ -297,6 +297,5 @@ public class StructuredResourceManager {
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
     }
-    
-    
+
 }

@@ -142,11 +142,6 @@
   </bean>
   
   <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.StructuredResourceParser">
-    <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
-    <property name="resourceDescriptionParser" ref="structuredResource.descriptionParser" />
-  </bean>
-  
-  <bean id="structuredResource.descriptionParser" class="org.vortikal.resourcemanagement.StructuredResourceDescriptionParser">
     <property name="defaultResourceTypeDefinitions" value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
     <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
   </bean>

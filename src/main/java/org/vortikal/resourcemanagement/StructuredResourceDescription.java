@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class StructuredResourceDescription {
+
     private StructuredResourceManager manager;
     private String name;
     private String inheritsFrom;
@@ -57,7 +58,7 @@ public final class StructuredResourceDescription {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return this.name;
     }
@@ -65,11 +66,11 @@ public final class StructuredResourceDescription {
     public List<PropertyDescription> getPropertyDescriptions() {
         return this.propertyDescriptions;
     }
-    
+
     public void setPropertyDescriptions(List<PropertyDescription> propertyDescriptions) {
         this.propertyDescriptions = propertyDescriptions;
     }
-    
+
     public List<PropertyDescription> getAllPropertyDescriptions() {
         List<PropertyDescription> result = new ArrayList<PropertyDescription>();
         if (this.inheritsFrom != null) {
@@ -78,6 +79,13 @@ public final class StructuredResourceDescription {
         }
         result.addAll(this.getPropertyDescriptions());
         return result;
+    }
+
+    public void addEditRule(EditRule editRule) {
+        if (this.editRules == null) {
+            this.editRules = new ArrayList<EditRule>();
+        }
+        this.editRules.add(editRule);
     }
 
     public List<EditRule> getEditRules() {
@@ -91,7 +99,7 @@ public final class StructuredResourceDescription {
     public DisplayTemplate getDisplayTemplate() {
         return this.displayTemplate;
     }
-    
+
     public void setDisplayTemplate(DisplayTemplate displayTemplate) {
         this.displayTemplate = displayTemplate;
     }

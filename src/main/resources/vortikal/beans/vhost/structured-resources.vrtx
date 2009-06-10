@@ -12,11 +12,10 @@ resourcetype jarticle {
   $$}
 }
 
-resourcetype jperson {
+resourcetype jperson : jarticle {
   properties {
     username : string required,
     getExternalPersonInfo : boolean,
-    title : string,
     firstName : string,
     surname : string,
     postalAddress : string,
@@ -28,11 +27,11 @@ resourcetype jperson {
     picture : image_ref,
     tags : string,
  	getExternalScientificInformation : boolean,
- 	scientificInformation : html,
-    content : html
+ 	scientificInformation : html
   }
   edit-rules {
-    username (before content)
+    username (before content),
+    officeNumber (textfield[5])
   }
   view-definition {
   }

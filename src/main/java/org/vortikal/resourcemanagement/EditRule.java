@@ -32,4 +32,34 @@ package org.vortikal.resourcemanagement;
 
 public class EditRule {
 
+    public enum Type {
+        POSITION_BEFORE, POSITION_AFTER, GROUP, EDITHINT;
+    }
+
+    private String name;
+    private Type type;
+    private Object value;
+
+    public EditRule(String name, Type type, Object value) {
+        this.name = name;
+        this.type = type;
+        setValue(value);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Object getValue() {
+        return this.value;
+    }
+
+    private void setValue(Object value) {
+        this.value = value;
+    }
+
 }

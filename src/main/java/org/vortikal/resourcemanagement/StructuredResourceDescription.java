@@ -80,6 +80,19 @@ public final class StructuredResourceDescription {
         result.addAll(this.getPropertyDescriptions());
         return result;
     }
+    
+    public PropertyDescription getPropertyDescription(String name) {
+        List<PropertyDescription> allPropertyDescriptions = getAllPropertyDescriptions();
+        if (allPropertyDescriptions.size() == 0) {
+            return null;
+        }
+        for (PropertyDescription propertyDescription : allPropertyDescriptions) {
+            if (propertyDescription.getName().equals(name)) {
+                return propertyDescription;
+            }
+        }
+        return null;
+    }
 
     public void addEditRule(EditRule editRule) {
         if (this.editRules == null) {

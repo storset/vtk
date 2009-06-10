@@ -94,6 +94,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     	this.metadata = metadata;
     }
     
+    public void addMetadata(String key, Object value) {
+        this.metadata.put(key, value);
+    }
+    
     public Map<String, Object> getMetadata() {
     	return Collections.unmodifiableMap(this.metadata);
     }

@@ -30,6 +30,9 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PropertyDescription {
     
     private String name;
@@ -37,6 +40,7 @@ public class PropertyDescription {
     private boolean required;
     private String overrides;
     private boolean noExtract;
+    private Map<String, Object> edithints;
 
     public void setName(String name) {
         this.name = name;
@@ -76,5 +80,16 @@ public class PropertyDescription {
 
     public boolean isRequired() {
         return required;
+    }
+    
+    public Map<String, Object> getEdithints() {
+        return edithints;
+    }
+
+    public void addEdithint(String key, Object value) {
+        if (edithints == null) {
+            edithints = new HashMap<String, Object>();
+        }
+        edithints.put(key, value);
     }
 }

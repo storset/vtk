@@ -209,6 +209,12 @@ public class StructuredResourceManager {
             if (!d.isNoExtract()) {
                 def.setPropertyEvaluator(createPropertyEvaluator());
             }
+            
+            Map<String, Object> edithints = d.getEdithints();
+            if (edithints != null) {
+                def.addMetadata("editingHints", edithints);
+            }
+            
             return def;
         }
     }

@@ -31,6 +31,7 @@
 package org.vortikal.resourcemanagement;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -92,22 +93,29 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
                 + (inheritsFrom != null ? (" > " + srd.getInheritsFrom()) : ""));
         List<PropertyDescription> propertyDescriptions = srd.getAllPropertyDescriptions();
         if (propertyDescriptions != null) {
+            System.out.println("\tProperties:");
             for (PropertyDescription pd : propertyDescriptions) {
-                System.out.println("\t" + pd.getName() + ": " + pd.getType() + " "
+                System.out.println("\t\t" + pd.getName() + ": " + pd.getType() + " "
                         + pd.isRequired() + " " + pd.isNoExtract() + " "
                         + pd.getOverrides());
+                Map<String, Object> edithints = pd.getEdithints();
+                if (edithints != null) {
+                    System.out.println("\t\t\tEdithints: " + edithints);
+                }
             }
         }
         List<EditRule> editRules = srd.getEditRules();
         if (editRules != null) {
+            System.out.println("\tEditRules:");
             for (EditRule editRule : editRules) {
-                System.out.println("\t" + editRule.getName() + " " + editRule.getType()
+                System.out.println("\t\t" + editRule.getName() + " " + editRule.getType()
                         + " " + editRule.getValue());
             }
         }
         DisplayTemplate displayTemplate = srd.getDisplayTemplate();
         if (displayTemplate != null) {
-            System.out.println("\t" + displayTemplate.getTemplate());
+            System.out.println("\tViewDefinition:");
+            System.out.println("\t\t" + displayTemplate.getTemplate());
         }
     }
 

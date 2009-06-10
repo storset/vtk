@@ -105,6 +105,40 @@
       </list>
     </property>
     -->
+    
+        <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="service" ref="staticResourceService" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="url" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+                <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="documentURL" />
+        </bean>
+        
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+    
   </bean>
   
   <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.StructuredResourceParser">

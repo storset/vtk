@@ -38,14 +38,31 @@ import org.vortikal.util.repository.MimeHelper;
 
 public class ContentTypeEvaluator implements PropertyEvaluator {
 
+    private static final String X_VORTEX_COLLECTION = "application/x-vortex-collection";
+    private static final String OCTET_STREAM = "application/octet-stream";
+
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         Type evalType = ctx.getEvaluationType();
+
         if (evalType == Type.NameChange || evalType == Type.Create) { 
-            if (!ctx.isCollection()) {
-                property.setStringValue(MimeHelper.map(ctx.getNewResource().getName()));
-            } else {
-                property.setStringValue("application/x-vortex-collection");
+            if (ctx.isCollection()) {
+                property.setStringValue(X_VORTEX_COLLECTION);
+                return true;
             }
+            
+            String guessedContentType = MimeHelper.map(ctx.getNewResource().getName());
+
+            if (evalType == Type.NameChange) {
+                // Avoid evaluating to "application/octet-stream" 
+                // when previous content type was something more specific:
+                String prevContentType = ctx.getOriginalResource().getContentType();
+                if (OCTET_STREAM.equals(guessedContentType) 
+                        && !OCTET_STREAM.equals(prevContentType)) {
+                    property.setStringValue(prevContentType);
+                    return true;
+                }
+            }
+            property.setStringValue(guessedContentType);
         }
         return true;
     }

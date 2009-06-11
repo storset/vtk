@@ -91,6 +91,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     private String label;
     private Repository repository;
     private Service[] services;
+    private ReferenceDataProvider[] referenceDataProviders;
     private boolean matchAncestorServices = false;
     private boolean matchAssertions;
     private boolean retrieveForProcessing = false;
@@ -105,9 +106,13 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this(label, modelName, true, services, repository);
     }
 
-
     public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
             Repository repository) {
+        this(label, modelName, matchAssertions, services, null, repository);
+    }
+
+    public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
+            ReferenceDataProvider[] referenceDataProviders, Repository repository) {
         if (label == null) throw new IllegalArgumentException("Argument 'label' cannot be null");
         if (modelName == null) throw new IllegalArgumentException("Argument 'modelName' cannot be null");
         if (repository == null) throw new IllegalArgumentException("Argument 'repository' cannot be null");
@@ -118,9 +123,9 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this.services = services;
         this.repository = repository;
         this.matchAssertions = matchAssertions;
+        this.referenceDataProviders = referenceDataProviders;
     }
-
-
+    
     public void setMatchAncestorServices(boolean matchAncestorServices) {
         this.matchAncestorServices = matchAncestorServices;
     }
@@ -172,6 +177,12 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
 
         menu.setActiveItem(activeItem);
         model.put(this.modelName, menu);
+        
+        if (this.referenceDataProviders != null) {
+            for (ReferenceDataProvider provider : this.referenceDataProviders) {
+                provider.referenceData(model, request);
+            }
+        }
     }
 
 

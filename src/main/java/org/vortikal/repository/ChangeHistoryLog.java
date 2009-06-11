@@ -43,17 +43,17 @@ public class ChangeHistoryLog {
     
     public static void change(String operation, boolean security, Path uri, String description,
             boolean collection, Principal principal) {
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append(operation);
         msg.append(", uri: ").append(uri);
         msg.append(", desc: ").append(description);
         msg.append(", coll: ").append(collection);
         msg.append(", principal: ").append(principal);
-        if (logger.isDebugEnabled()) {
-            logger.debug(msg.toString());
+        if (logger.isInfoEnabled()) {
+            logger.info(msg.toString());
         }
-        if (securityLogger.isDebugEnabled() && security) {
-        	securityLogger.debug(msg.toString());
+        if (securityLogger.isInfoEnabled() && security) {
+        	securityLogger.info(msg.toString());
         }
     }
 }

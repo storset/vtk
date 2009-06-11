@@ -44,7 +44,7 @@ public class OperationLog {
 
     public static void info(RepositoryOperation operation, String parameters,
                             String token, Principal principal) {
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append(operation).append(parameters);
         msg.append(", principal: ").append(principal);
         msg.append(", token: ").append(token);
@@ -58,7 +58,7 @@ public class OperationLog {
 
     public static void success(RepositoryOperation operation, String parameters,
                                String token, Principal principal) {
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append(operation).append(parameters);
         msg.append(" succeeded, principal: ").append(principal);
         msg.append(", token: ").append(token);
@@ -73,7 +73,7 @@ public class OperationLog {
     public static void failure(RepositoryOperation operation, String parameters,
                                String message, String token,
         Principal principal) {
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
 
         msg.append(operation).append(parameters);
         msg.append(" failed: ").append(message);

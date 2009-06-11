@@ -71,7 +71,7 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
     public void modified(Resource resource, Resource originalResource) {
 		Principal changer = SecurityContext.getSecurityContext().getPrincipal();
     	boolean security = false;
-    	StringBuffer desc = new StringBuffer();
+    	StringBuilder desc = new StringBuilder();
     	if (!resource.getOwner().equals(originalResource.getOwner())) {
     		security = true;
     		desc.append("Owner_CHANGE: ").append(originalResource.getOwner());

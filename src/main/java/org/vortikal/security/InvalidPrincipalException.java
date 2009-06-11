@@ -37,6 +37,10 @@ public class InvalidPrincipalException extends RuntimeException {
 
     private static final long serialVersionUID = 3257004350076368948L;
 
+    public InvalidPrincipalException(Principal principal) {
+        super(principal.getQualifiedName());
+    }
+    
     public InvalidPrincipalException(String message) {
         super(message);
     }

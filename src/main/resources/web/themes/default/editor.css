@@ -1,24 +1,18 @@
-/* Vortex overriding section */
-
-/* ****** START: tab styling */
-
-div.activeTab { 
+/* Vortex overriding section */ /* ****** START: tab styling */
+div.activeTab {
   background-color: #efefef;
-  border-bottom: 0px; 
+  border-bottom: 0px;
 }
 
-div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
+div.tabs ul li.activeTab a,div.tabs ul li.activeTab a:hover {
   background-color: #efefef;
 }
 
 /* ****** END: tab styling */
-
-
-/* ****** START: content and generic styling */
-
+  /* ****** START: content and generic styling */
 #contents {
   background-color: #efefef;
-  overflow:visible;
+  overflow: visible;
 }
 
 #contents h2 {
@@ -30,13 +24,13 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
   margin-bottom: 1.5em;
 }
 
-#help-link{
-  float: right; 
-  font-size: 80%; 
+#help-link {
+  float: right;
+  font-size: 80%;
 }
 
 form.editor {
-  padding:0; 
+  padding: 0;
   margin: 0;
   margin-top: -14px;
 }
@@ -49,181 +43,164 @@ iframe {
   margin: -1px; /* Fix for vertical scrollbar in IE6 */
 }
 
-span.error{
+span.error {
   color: red;
 }
 
 label {
-  display: block; 
+  display: block;
   margin-bottom: .2em;
   /*white-space: nowrap;
   width:1%;*/
   font-size: .9em;
 }
 
-.recursive-listing-subfolders label{
-	display:inline;
-}
-resource\.recursive-listing.false{
- clear:left;
- }
- 
- div.resource\.page-limit{
- 	float:left;
-	margin-right:6px;
- }
-
-div.recursive-listing-subfolders{
-	margin-top:-10px;
-	margin-left:20px;
+.recursive-listing-subfolders label {
+  display: inline;
 }
 
-#vrtx-featured-articles-remove,
-#vrtx-featured-articles-browse {
-	margin-left:4px;
+resource\.recursive-listing.false {
+  clear: left;
 }
 
-.vrtx-featured-articles-style{
-	margin: 6px 0;
+div.resource\.page-limit {
+  float: left;
+  margin-right: 6px;
 }
 
-label.resource\.hide-number-of-comments,
-label.resource\.recursive-listing, 
-label.resource\.hide-last-modified, 
-label.resource\.hide-published-date,
-label.resource\.hide-introduction, 
-label.resource\.hide-introduction-image, 
-label.resource\.hide-end-date, 
-label.resource\.hide-location {
-	display: inline;
+div.recursive-listing-subfolders {
+  margin-top: -10px;
+  margin-left: 20px;
+}
+
+#vrtx-featured-articles-remove,#vrtx-featured-articles-browse {
+  margin-left: 4px;
+}
+
+.vrtx-featured-articles-style {
+  margin: 6px 0;
+}
+
+label.resource\.hide-number-of-comments,label.resource\.recursive-listing,label.resource\.hide-last-modified,label.resource\.hide-published-date,label.resource\.hide-introduction,label.resource\.hide-introduction-image,label.resource\.hide-end-date,label.resource\.hide-location
+  {
+  display: inline;
 }
 
 div.properties {
- clear:both;
- height: 1%; /* For IE */
+  clear: both;
+  height: 1%; /* For IE */
 }
 
-div.save-cancel{
-  /* margin-top: 0.5em; */
+div.save-cancel { /* margin-top: 0.5em; */
+  
 }
 
-* html div.save-cancel{
-	margin-top:0;
+* html div.save-cancel {
+  margin-top: 0;
 }
 
 div.properties:after {
-  clear:both;
-  content:".";
-  display:block;
-  visibility:hidden;
+  clear: both;
+  content: ".";
+  display: block;
+  visibility: hidden;
   height: 0;
 }
 
-div.property-item {
-  /* XXX: temporary clear: both;*/ 
+div.property-item { /* XXX: temporary clear: both;*/
   margin-bottom: 1em;
 }
 
 /* ****** END: content and generic styling */
-
-
-/* ****** START: collection- event and articlelisting parameters styling */
-
-/* START Navigation */
-
-/* Margin-top */
+  /* ****** START: collection- event and articlelisting parameters styling */
+  /* START Navigation */ /* Margin-top */
 div#vrtx-resource\.navigationTitle {
-	float:left;
-	clear: left;
-	margin: 0 0 0.5em 0;
-	width: 317px;
-	position: relative;
+  float: left;
+  clear: left;
+  margin: 0 0 0.5em 0;
+  width: 317px;
+  position: relative;
 }
 
-div#vrtx-resource\.navigationTitle input,
-div#vrtx-resource\.navigationTitle div {
-	width: 317px;
-	display: inline;
-	}
+div#vrtx-resource\.navigationTitle input,div#vrtx-resource\.navigationTitle div
+  {
+  width: 317px;
+  display: inline;
+}
 
 div#vrtx-resource\.importance {
-     float: left;  
-     margin: 0.5em 0 0.5em 0;
-     width: 180px;
-     clear: left;
+  float: left;
+  margin: 0.5em 0 0.5em 0;
+  width: 180px;
+  clear: left;
 }
 
 div#vrtx-resource\.hidden {
-    float: left;
-    clear: left;
-    margin: 0.5em 0 1em 0;
-    width: 155px;
+  float: left;
+  clear: left;
+  margin: 0.5em 0 1em 0;
+  width: 155px;
 }
 
 /* Override breaks in options */
 div#vrtx-resource\.hidden br {
-   display: none;	
+  display: none;
 }
 
 div#vrtx-resource\.hidden #resource\.hidden\.true {
-     float: left; 
+  float: left;
 }
 
 div#vrtx-resource\.hidden #resource\.hidden\.unspecified {
-     float: left;
+  float: left;
 }
 
 label.resource\.hidden {
-     float: left;
-     margin-right: 0px;
+  float: left;
+  margin-right: 0px;
 }
 
 /* END Navigation */
-
-
 div#allowedValues {
-   margin-bottom: 1em;	
+  margin-bottom: 1em;
 }
 
 div.page-limit {
-	clear:both;
-	padding-bottom:1em;
+  clear: both;
+  padding-bottom: 1em;
 }
 
-.page-limit label{
-	margin-top:0;
-	padding-top:0;
-	padding-right:6px;
-	width:auto;
-	float:left;
-	clear:left;
+.page-limit label {
+  margin-top: 0;
+  padding-top: 0;
+  padding-right: 6px;
+  width: auto;
+  float: left;
+  clear: left;
 }
 
-.page-limit select{
-	float:left;
+.page-limit select {
+  float: left;
 }
 
-div.sorting,
-div.recursive-listing{
-	clear:both;
-	/*height:80px;*/
-} 
-
-* html div.sorting,
-* html div.recursive-listing{
-	padding: 0;
-	float:none;
+div.sorting,div.recursive-listing {
+  clear: both;
+  /*height:80px;*/
 }
 
-.property-label{
-	font-size:.9em;
+* html div.sorting,* html div.recursive-listing {
+  padding: 0;
+  float: none;
 }
 
-.sorting input,
-.recursive-listing input{
-		float:left;
-		clear:left;
-/*	display:block;
+.property-label {
+  font-size: .9em;
+}
+
+.sorting input,.recursive-listing input {
+  float: left;
+  clear: left;
+  /*	display:block;
 	float:left;
 	clear:left;
 	margin:0;
@@ -231,126 +208,96 @@ div.recursive-listing{
 	height:22px;*/
 }
 
-* html .sorting input,
-* html  .recursive-listing input{
-	margin-right:0;
-	margin-top:0;
-	height:auto;
+* html .sorting input,* html  .recursive-listing input {
+  margin-right: 0;
+  margin-top: 0;
+  height: auto;
 }
 
- * html #vrtx-resource\.start-date,
- * html #vrtx-resource\.end-date
- {
- 	width:400px;
- }	
+* html #vrtx-resource\.start-date,* html #vrtx-resource\.end-date {
+  width: 400px;
+}
 
-
-.sorting label,
-.recursive-listing label{
-/*	margin:0;
+.sorting label,.recursive-listing label { /*	margin:0;
 	padding:0;
 	display:block;
 	float:left;
 	clear:right;
 	margin-top:2px;
 	height:20px; */
-	display:inline;
+  display: inline;
 }
 
-* html .sorting label,
-* html .recursive-listing label {
-	
-	float:none;
-	height:auto;
+* html .sorting label,* html .recursive-listing label {
+  float: none;
+  height: auto;
 }
 
-div.hide-last-modified,
-div.hide-published-date,
-div.hide-introduction,
-div.hide-end-date,
-div.hide-location,
-div.hide-introduction-image{
-	margin-bottom:0px !important;
-	clear:both;
+div.hide-last-modified,div.hide-published-date,div.hide-introduction,div.hide-end-date,div.hide-location,div.hide-introduction-image
+  {
+  margin-bottom: 0px !important;
+  clear: both;
 }
 
-.hide-number-of-comments label,
-.hide-location label,
-.hide-end-date label,
-.hide-published-date label,
-.hide-last-modified label, 
-.hide-introduction label,
-.hide-introduction-image label{
-	margin:0;
-	margin-top:.3em;
+.hide-number-of-comments label,.hide-location label,.hide-end-date label,.hide-published-date label,.hide-last-modified label,.hide-introduction label,.hide-introduction-image label
+  {
+  margin: 0;
+  margin-top: .3em;
 }
-.hide-number-of-comments input,
-.hide-location input,
-.hide-end-date input,
-.hide-published-date input,
-.hide-last-modified input, 
-.hide-introduction input, 
-.hide-introduction-image input{
-	margin:0;
-	margin-right:.2em;
+
+.hide-number-of-comments input,.hide-location input,.hide-end-date input,.hide-published-date input,.hide-last-modified input,.hide-introduction input,.hide-introduction-image input
+  {
+  margin: 0;
+  margin-right: .2em;
 }
 
 /* ****** END: collection- event and articlelisting parameters styling */
-
-
-/* ****** START: Introduction styling */
-
+  /* ****** START: Introduction styling */
 #resource\.userTitle {
-  width: 498px;	
+  width: 498px;
 }
 
 #resource\.htmlTitle {
-  width: 498px;	
+  width: 498px;
 }
 
-span.input-description{
-    font-size: .8em;
+span.input-description {
+  font-size: .8em;
 }
 
 div.introduction {
-  clear:left;
-  float: left; 
-  width: 500px;  
+  clear: left;
+  float: left;
+  width: 500px;
   margin-right: 1.2em;
-  margin-bottom: 1em;/*1em;*/
+  margin-bottom: 1em; /*1em;*/
 }
 
 div.introduction textarea {
   height: 22.5ex; /* Used when fck-editor is disabled */
-  width: 500px;  
+  width: 500px;
 }
 
 /* div.introduction iframe {
   height: 13ex;
 } */
-
-
 #resource\.introduction___Frame {
   height: 133px;
 }
-
 
 * html #resource\.introduction___Frame {
   height: 133px;
 }
 
 /* ****** END: Introduction styling */
-
-
-/* ****** START: Picture (input, button, preview) and caption styling */
-
+  /* ****** START: Picture (input, button, preview) and caption styling */
 div.picture {
   width: 530px;
   float: left;
   position: relative;
   clear: right; /*IE7*/
   margin-bottom: 0;
-  overflow:hidden;
+  overflow: hidden;
 }
 
 #input-and-button-container {
@@ -358,21 +305,21 @@ div.picture {
   float: left;
   position: absolute;
   left: 0;
-  top:18px;
-  overflow: hidden; 
+  top: 18px;
+  overflow: hidden;
   margin: 0;
   padding: 0;
 }
 
 * html #input-and-button-container {
-  top:0.9em;
+  top: 0.9em;
 }
 
 * html #input-and-button-container {
-  width: 325px; 
+  width: 325px;
 }
 
-div.picture input{
+div.picture input {
   width: 180px;
   float: left;
   position: relative;
@@ -382,18 +329,18 @@ div.picture input{
 }
 
 * html div.picture input {
-  width:161px;
-  margin-top: 0.2em;	
+  width: 161px;
+  margin-top: 0.2em;
 }
 
-div.picture button{
+div.picture button {
   float: left;
   position: relative;
   margin: 0;
 }
 
 * html div.picture button {
-  margin-top: 0.1em;	
+  margin-top: 0.1em;
 }
 
 /* Fix for wide images not breaking */
@@ -408,12 +355,13 @@ div.picture button{
   margin-top: 0.1em;
 }
 
-div.picture img { 
+div.picture img {
   height: 135px;
   float: left;
   position: relative;
 }
-* html div.picture img { 
+
+* html div.picture img {
   height: 135px;
 }
 
@@ -427,99 +375,90 @@ div.picture div {
   height: 71pt;
 }
 */
-
 div.caption {
   width: 327px;
   float: left;
   position: relative;
   margin-top: -105px;
-  margin-bottom:1em;
+  margin-bottom: 1em;
 }
 
 /* IE6 fix */
 * html div.caption {
-   margin-top: -106px;
+  margin-top: -106px;
 }
 
-div.caption textarea{
-	height: 86px;
+div.caption textarea {
+  height: 86px;
 }
+
 #resource\.caption___Frame {
-	height: 86px;
+  height: 86px;
 }
 
 /* ****** END Picture: (input, button, preview) and caption styling */
-
-
-/* ****** START: (Main) Content styling */
-
+  /* ****** START: (Main) Content styling */
 div.html-content {
- clear:both;
- margin-bottom: 1em; 
+  clear: both;
+  margin-bottom: 1em;
 }
 
 div.html-content textarea {
- width: 100%;
- height: 20em;
+  width: 100%;
+  height: 20em;
 }
 
 * html div.html-content iframe {
-  height: 28em; 
-} 
+  height: 28em;
+}
 
-#resource\.content___Frame{
+#resource\.content___Frame {
   height: 28em;
 }
 
 /* ****** END: (Main) Content styling */
-
-
-/* ****** START: Event and Article specific styling */
-
-div.authors { 
+  /* ****** START: Event and Article specific styling */
+div.authors {
   clear: left;
   float: left;
   white-space: nowrap;
   /*margin-top: 1em;*/
 }
 
-div.published-date {  
+div.published-date {
   clear: left;
   float: left;
-  white-space: nowrap;  
-} 
-
-div.resource\.end-date, 
-div.resource\.location{
-	
+  white-space: nowrap;
 }
 
-/* START time and place */
-
-/* ie7 hack */
-*:first-child+html div.start-date, *:first-child+html div.end-date, *:first-child+html div.location, *:first-child+html div.mapurl {
-	width: 100%;
+div.resource\.end-date,div.resource\.location {
+  
 }
 
-div.start-date, div.end-date, div.location, div.mapurl {
-  float:left;
+/* START time and place */ /* ie7 hack */
+* :first-child+html div.start-date,* :first-child+html div.end-date,*
+  :first-child+html div.location,* :first-child+html div.mapurl {
+  width: 100%;
+}
+
+div.start-date,div.end-date,div.location,div.mapurl {
+  float: left;
   margin-right: 1em;
-/*margin-top: 1em;*/                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+  /*margin-top: 1em;*/
 }
 
-* html div.end-date, * html div.location {
+* html div.end-date,* html div.location {
   clear: left;
   padding-bottom: 1em;
 }
 
 /* There is IE7-specific conditional comments in editor.ftl for time and place elements */
-
 div.start-date {
-  clear:left;
+  clear: left;
 }
 
-*:first-child+html div.mapurl {
-  clear:left;
+* :first-child+html div.mapurl {
+  clear: left;
 }
 
 input.date {
@@ -530,13 +469,8 @@ input.date {
   width: 5em;
 }
 
-input.hours, input.minutes {
+input.hours,input.minutes {
   width: 1.5em;
-}
-
-
-div.yui-skin-sam {
-    display: none;
 }
 
 span.colon {
@@ -544,96 +478,30 @@ span.colon {
 }
 
 /* END: time and place */
-
-
-/* START: YUI calendar */
-
-a.calendar {
-  width: 19px;
-  height: 19px;
-  background: url(icons/cal.gif) no-repeat 0 0;
+  /* ****** END: Event and Article specific styling */
+  /* ****** START: Tooltip jQuery */
+a.show-tooltip {
   text-decoration: none;
+  color: #efefef;
+  background: url(icons/help.gif) no-repeat;
 }
 
-a.calendar span {
-  visibility:hidden;
+span.show-tooltip-text {
+  display: none;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 300px;
+  font-size: 0.9em;
+  background-color: #fff580;
+  padding: 6px;
+  padding-left: 12px;
+  padding-right: 12px;
+  color: #333;
+  border: 1px solid #aaa;
 }
 
-.yui-calcontainer {
-   font-size: 11px;
-   position:absolute; 
-   float: none;
-   margin-left: 10.5em;
-   margin-top: -18.5em; 
-   background-color:#f7f7f7;
-   padding-top: 5px;
-   padding-left: 0px;
-   padding-right: 0px;
-   padding-bottom: 0px;
-   border: 1px solid #ccc;   
-}
-
-* html .yui-calcontainer { 
-   margin-left: 0em;
-   margin-top: -16.5em; 
-}
-
-/* Fix for wierd IE6-bug on mouseover on datepicker */
-
-* html .yui-calcontainer td a { 
-  padding-left: 0.4em !important;
-  padding-right: 0.4em !important;
-}
-
-/* There is IE7-specific conditional comments in editor.ftl for .yui-calcontainer */
-
-a.calnavleft {
-  left: 0 !important;
-}
-
-a.calnavright {
-  right: 0 !important;
-}
-
-td.calcell.oom {
-  background-color:#eee !important;
-  color: #666 !important;
-}
-
-.calheader {
-  margin-bottom: 0 !important;
-}
- 
-/* END: YUI calendar */
-
-/* ****** END: Event and Article specific styling */
-
-
-/* ****** START: Tooltip jQuery */
-
-        a.show-tooltip {
-           text-decoration: none;
-           color: #efefef;
-           background: url(icons/help.gif) no-repeat;
-        }
-        span.show-tooltip-text { 
-           display: none;
-           position: absolute;
-           top: 0px;
-           left: 0px;
-           width: 300px;
-           font-size: 0.9em;
-           background-color: #fff580;
-           padding: 6px; 
-           padding-left: 12px; 
-           padding-right: 12px; 
-           color: #333;
-           border: 1px solid #aaa;
-         }
-         
 /* ****** END: Tooltip jQuery */
-
 #ui-datepicker-div {
-	font-size:10px;
+  font-size: 10px;
 }
-

@@ -1,13 +1,13 @@
 <#ftl strip_whitespace=true>
 
 <#--
-  - File: tags.ftl
+  - File: confirm-delete.ftl
   - 
-  - Description: Article view
+  - Description: Displays a delete confirmation dialog
   - 
   - Required model data:
-  -   resource
-  -   tag
+  -   url
+  -   name
 -->
 
 <#import "/spring.ftl" as spring />

@@ -58,7 +58,9 @@ import org.vortikal.repository.store.CommentDAO;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.token.TokenManager;
 
 /**
@@ -81,6 +83,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private LockManager lockManager;
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
+    private PrincipalManager principalManager;
     private URIValidator uriValidator = new URIValidator();
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private String id;
@@ -571,7 +574,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 r.setInheritedAcl(false);
                 r.setAcl(newAcl);
             }
-
+            
+            validateACL(r.getAcl(), original.getAcl());
+            
             this.dao.storeACL(r);
 
             ACLModificationEvent event = new ACLModificationEvent(this, (Resource) r.clone(),
@@ -877,6 +882,30 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     + " has too many children, maximum is " + this.maxResourceChildren);
         }
     }
+
+    private void validateACL(Acl acl, Acl originalAcl) throws InvalidPrincipalException {
+        Set<RepositoryAction> actions = acl.getActions();
+        for (RepositoryAction action: actions) {
+            Set<Principal> principals = acl.getPrincipalSet(action);
+            for (Principal principal: principals) {
+                boolean valid = false;
+                if (principal.getType() == Principal.Type.USER) {
+                    valid = this.principalManager.validatePrincipal(principal);
+                } else if (principal.getType() == Principal.Type.GROUP) {
+                    valid = this.principalManager.validateGroup(principal);
+                } else {
+                    valid = true;
+                }
+                if (!valid) {
+                    // Preserve invalid principals already in ACL
+                    if (!originalAcl.containsEntry(action, principal)) {
+                        throw new InvalidPrincipalException(principal);
+                    }
+                }
+            }
+        }
+    }
+
     
     /**
      * Writes to a temporary file (used to avoid lengthy blocking on file
@@ -957,6 +986,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
+    }
+
+
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
 
 

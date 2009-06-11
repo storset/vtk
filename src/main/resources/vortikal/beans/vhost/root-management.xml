@@ -374,7 +374,7 @@
   </bean>
 
   <bean id="repositoryReadOnlyController"
-        class="org.vortikal.web.controller.repository.RepositoryReadOnlyController">
+        class="org.vortikal.web.actions.repo.RepositoryReadOnlyController">
     <property name="repository" ref="repository" />
     <property name="viewName" value="repositoryReadOnly" />
     <property name="parameterName" value="read-only" />

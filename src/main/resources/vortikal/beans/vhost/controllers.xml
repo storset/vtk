@@ -8,30 +8,30 @@
   <!-- WEB controllers -->
 
   <bean id="logoutHandler" 
-    class="org.vortikal.web.controller.LogoutController" parent="requestLocalRepositoryAware">
+    class="org.vortikal.web.actions.logout.LogoutController" parent="requestLocalRepositoryAware">
     <property name="service" ref="viewService" />
     <property name="securityInitializer" ref="securityInitializer" />
   </bean>
 
   <bean id="redirectHandler" 
-    class="org.vortikal.web.controller.RedirectController">
+    class="org.vortikal.web.http.RedirectController">
     <property name="viewName" value="collectionRedirect" />
   </bean>
 
   <bean id="httpOptionsHandler"
-        class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
         parent="requestLocalRepositoryAware">
     <property name="supportedMethods" value="OPTIONS" />
     <property name="viewName" value="httpOptions" />
   </bean>
   
-  <bean id="displayIndexFileHandler" class="org.vortikal.web.controller.IndexFileController"
+  <bean id="displayIndexFileHandler" class="org.vortikal.web.display.index.IndexFileController"
         parent="requestLocalRepositoryAware">
     <property name="uriCharacterEncoding" value="${indexFileHandlerURIEncoding}" />
   </bean>
 
   <bean id="collectionListingAsFeedHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="collectionListingAsFeed" />
   </bean>
@@ -41,13 +41,13 @@
   
   
   <bean id="displayResourceHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
+    class="org.vortikal.web.display.file.DisplayResourceController"
     parent="requestLocalRepositoryAware">
     <property name="displayProcessed" value="true" />
   </bean>
 
   <bean id="displayHTMLResourceHandler" 
-    class="org.vortikal.web.controller.DisplayResourceController"
+    class="org.vortikal.web.display.file.DisplayResourceController"
     parent="requestLocalRepositoryAware">
     <property name="displayProcessed" value="true" />
     <property name="viewName" value="displayHTMLResource" />

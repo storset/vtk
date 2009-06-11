@@ -34,7 +34,7 @@
 	</bean>
 	
 	<bean id="manage.createArchiveHandler"
-		class="org.vortikal.web.controller.repository.copy.CopyController"
+		class="org.vortikal.web.actions.convert.CopyController"
 		parent="requestLocalRepositoryAware">
 		<property name="extension" value=".jar" />
 		<property name="parentViewOnSuccess" value="true" />
@@ -43,16 +43,16 @@
 		<property name="successView" value="redirectToManage" />
 		<property name="cancelView" value="redirectToManage" />
 		<property name="commandClass"
-			value="org.vortikal.web.controller.repository.copy.CopyCommand" />
+			value="org.vortikal.web.actions.convert.CopyCommand" />
 		<property name="validator">
 			<bean
-				class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
+				class="org.vortikal.web.actions.convert.CopyCommandValidator"
 				parent="requestLocalRepositoryAware" />
 		</property>
 	</bean>
 	
 	<bean id="manage.createArchiveAction"
-		class="org.vortikal.web.controller.repository.copy.CreateArchiveAction">
+		class="org.vortikal.web.actions.convert.CreateArchiveAction">
 		<property name="repository" ref="repository" />
 		<property name="archiver" ref="manage.archiver" />
 		<property name="tempDir" value="${repository.tempDir}" />
@@ -90,7 +90,7 @@
 	</bean>
 	
 	<bean id="manage.expandArchiveHandler"
-		class="org.vortikal.web.controller.repository.copy.CopyController"
+		class="org.vortikal.web.actions.convert.CopyController"
 		parent="requestLocalRepositoryAware">
     	<property name="parentViewOnSuccess" value="true" />
 		<property name="copyAction" ref="manage.expandArchiveAction" />
@@ -98,16 +98,16 @@
 		<property name="successView" value="redirectToManage" />
 		<property name="cancelView" value="redirectToManage" />
 		<property name="commandClass"
-			value="org.vortikal.web.controller.repository.copy.CopyCommand" />
+			value="org.vortikal.web.actions.convert.CopyCommand" />
 		<property name="validator">
 			<bean
-				class="org.vortikal.web.controller.repository.copy.CopyCommandValidator"
+				class="org.vortikal.web.actions.convert.CopyCommandValidator"
 				parent="requestLocalRepositoryAware" />
 		</property>
 	</bean>
 	
 	<bean id="manage.expandArchiveAction"
-		class="org.vortikal.web.controller.repository.copy.ExpandArchiveAction">
+		class="org.vortikal.web.actions.convert.ExpandArchiveAction">
 		<property name="repository" ref="repository" />
 		<property name="archiver" ref="manage.archiver" />
 	</bean>

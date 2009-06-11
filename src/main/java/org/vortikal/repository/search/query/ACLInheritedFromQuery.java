@@ -55,5 +55,16 @@ public class ACLInheritedFromQuery implements ACLQuery {
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";uri=").append(this.uri);
+        if (this.inverted) {
+            sb.append(";uri!=").append(this.uri);
+        } else {
+            sb.append(";uri=").append(this.uri);
+        }
+        return sb.toString();
+    }
 
 }

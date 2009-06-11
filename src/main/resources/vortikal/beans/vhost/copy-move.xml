@@ -51,12 +51,12 @@
     <property name="order" value="-996" />
     <property name="categories">
       <set>
-        <value>resourceMenu</value>
+        <value>globalMenu</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">200</value></entry>
+        <entry key="globalMenuOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
     <property name="assertions">
@@ -81,12 +81,12 @@
     <property name="order" value="-996" />
     <property name="categories">
       <set>
-        <value>resourceMenu</value>
+        <value>globalMenu</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">200</value></entry>
+        <entry key="globalMenuOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
 
@@ -107,23 +107,23 @@
   </bean>
 
   <bean id="copyHandler" 
-    class="org.vortikal.web.controller.CopyMoveController">
+    class="org.vortikal.web.actions.copymove.CopyMoveController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
   <bean id="moveHandler" 
-    class="org.vortikal.web.controller.CopyMoveController">
+    class="org.vortikal.web.actions.copymove.CopyMoveController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
   <bean id="copyToSelectedFolderHandler" 
-    class="org.vortikal.web.controller.repository.CopyMoveToSelectedFolderController"
+    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
   <bean id="moveToSelectedFolderHandler" 
-    class="org.vortikal.web.controller.repository.CopyMoveToSelectedFolderController"
+    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>

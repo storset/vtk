@@ -47,4 +47,11 @@ public class ACLExistsQuery implements ACLQuery {
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(";inverted=").append(this.inverted);
+        return sb.toString();
+    }
+
 }

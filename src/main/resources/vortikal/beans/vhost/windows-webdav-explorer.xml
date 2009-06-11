@@ -9,12 +9,12 @@
 
     <property name="categories">
       <set>
-        <value>resourceMenu</value>
+        <value>globalMenu</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">1000</value></entry>
+        <entry key="globalMenuOrder"><value type="java.lang.Integer">1000</value></entry>
       </map>
     </property>
     <property name="assertions">

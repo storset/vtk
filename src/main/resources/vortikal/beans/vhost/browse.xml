@@ -37,7 +37,7 @@
 
 
   <bean id="defaultBrowseHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="browse" />
   </bean>

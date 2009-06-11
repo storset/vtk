@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.commenting;
 
-import org.vortikal.web.controller.UpdateCancelCommand;
+import org.vortikal.web.actions.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
 
 public class PostCommentCommand extends UpdateCancelCommand {

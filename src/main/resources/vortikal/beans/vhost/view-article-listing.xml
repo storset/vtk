@@ -33,7 +33,7 @@
   
 
   <bean id="articleListing.handler" 
-        class="org.vortikal.web.controller.ArticleListingController"
+        class="org.vortikal.web.display.collection.ArticleListingController"
         parent="requestLocalRepositoryAware">
     <property name="collectionSearcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
@@ -66,7 +66,7 @@
     </property>
   </bean>
 
-  <bean id="articleListing.atomHandler" class="org.vortikal.web.controller.feed.ArticleListingAsFeedController"
+  <bean id="articleListing.atomHandler" class="org.vortikal.web.display.collection.ArticleListingAsFeedController"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
@@ -75,7 +75,7 @@
     <property name="authorPropDef" ref="authorsPropDef" />
   </bean>
   
-  <bean id="articleListingSearcher" class="org.vortikal.web.controller.article.ArticleListingSearcher">
+  <bean id="articleListingSearcher" class="org.vortikal.web.display.article.ArticleListingSearcher">
     <property name="defaultSearch" ref="articleListing.searchComponent" />
     <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
     <property name="subfoldersSearch" ref="articleListing.subfoldersSearchComponent" />

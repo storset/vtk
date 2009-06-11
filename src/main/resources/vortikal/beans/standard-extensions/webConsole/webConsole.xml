@@ -32,14 +32,14 @@
 
 
   <bean id="webConsoleHandler"
-        class="org.vortikal.web.controller.CommandExecutorController"
+        class="org.vortikal.web.display.shell.CommandExecutorController"
         parent="requestLocalRepositoryAware">
 
     <property name="formView" value="webConsole" />
     <property name="successView" value="webConsole" />
     <property name="commandName" value="commandForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.ExecutorCommand" />
+              value="org.vortikal.web.display.shell.ExecutorCommand" />
     <property name="console" ref="beanShellWebConsole" />
   </bean>
 

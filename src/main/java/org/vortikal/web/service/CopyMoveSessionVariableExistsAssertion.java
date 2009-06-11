@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.CopyMoveSessionBean;
+import org.vortikal.web.actions.copymove.CopyMoveSessionBean;
 
 /**
  * Assertion that matches when a named sessionVariable exists 

@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.controller.AbstractCollectionListingController;
+import org.vortikal.web.display.collection.AbstractCollectionListingController;
 
 public class CollectionListingViewServiceNameProvider implements ServiceNameProvider {
 

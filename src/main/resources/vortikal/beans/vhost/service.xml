@@ -23,7 +23,7 @@
      <property name="handlerInterceptors">
        <list>
          <!-- Redirect to a different protocol: -->
-         <bean class="org.vortikal.web.controller.ProtocolInvertRedirectInterceptor" />
+         <bean class="org.vortikal.web.interceptors.ProtocolInvertRedirectInterceptor" />
        </list>
      </property>
      <!-- Dummy handler that is never invoked (the handler interceptor will prevent it): -->
@@ -122,7 +122,7 @@
     <property name="handler" ref="requireAuthenticationController" />
   </bean>
 
-  <bean id="requireAuthenticationController" class="org.vortikal.web.controller.RequireAuthenticationController">
+  <bean id="requireAuthenticationController" class="org.vortikal.web.actions.auth.RequireAuthenticationController">
     <property name="redirectService" ref="viewService" />
   </bean>
 
@@ -255,7 +255,7 @@
   </bean>
 
   <bean id="displayClassPathResourceHandler"
-        class="org.vortikal.web.controller.DisplayClassPathResourceController">
+        class="org.vortikal.web.display.classpath.DisplayClassPathResourceController">
     <property name="expiresSeconds" value="${staticResourcesCacheSeconds}" />
   </bean>
 
@@ -275,7 +275,7 @@
   </bean>
 
   <bean id="displayThumbnailHandler"
-    class="org.vortikal.web.controller.graphics.DisplayThumbnailController">
+    class="org.vortikal.web.display.thumbnail.DisplayThumbnailController">
     <property name="repository" ref="repository" />
   </bean>
   
@@ -322,7 +322,7 @@
   <!-- Not comfortable with this. This interceptor will also be added
   for child services. -->
   <bean id="noCacheViewHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
         parent="requestLocalRepositoryAware">
     <property name="staticHeaders">
       <map>

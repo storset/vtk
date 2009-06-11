@@ -37,7 +37,7 @@
   
   
   <bean id="collectionListing.handler" 
-        class="org.vortikal.web.controller.CollectionListingController"
+        class="org.vortikal.web.display.collection.CollectionListingController"
         parent="requestLocalRepositoryAware">
     <property name="collectionSearcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="resourceManager" />
@@ -75,7 +75,7 @@
 
   
   <bean id="collectionListing.atomHandler" 
-    class="org.vortikal.web.controller.feed.CollectionListingAsAtomFeed"
+    class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />

@@ -26,7 +26,7 @@
     <property name="handler" ref="icalHandler" />
   </bean>
   
-  <bean id="icalHandler" class="org.vortikal.web.controller.ical.ICalController" parent="requestLocalRepositoryAware">
+  <bean id="icalHandler" class="org.vortikal.web.display.ical.ICalController" parent="requestLocalRepositoryAware">
     <property name="startDatePropDef" ref="startDatePropDef" />
     <property name="endDatePropDef" ref="endDatePropDef" />
     <property name="locationPropDef" ref="locationPropDef" />

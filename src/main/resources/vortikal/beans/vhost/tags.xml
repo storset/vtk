@@ -47,7 +47,7 @@
   </bean>
   
   <bean id="tags.handler" 
-        class="org.vortikal.web.controller.TagsController"
+        class="org.vortikal.web.display.tags.TagsController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="tags.tags" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
@@ -66,7 +66,7 @@
   </bean>
 
   <bean id="tags.atomHandler" 
-    class="org.vortikal.web.controller.feed.TagsAsFeedController"
+    class="org.vortikal.web.display.tags.TagsAsFeedController"
     parent="requestLocalRepositoryAware">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />

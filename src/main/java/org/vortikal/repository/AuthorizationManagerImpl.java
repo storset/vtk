@@ -388,10 +388,12 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             authorizeWrite(uri.getParent(), principal);
             return;
         } catch (Exception e) {
+            aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
+            // Kanskje "unlink"?
             // Continue..          <--- XXX: Missing explanation for this. Some comments would be nice. 
         }
 
-        aclAuthorize(principal, resource, DELETE_AUTH_PRIVILEGES);
+        
     }
     
 

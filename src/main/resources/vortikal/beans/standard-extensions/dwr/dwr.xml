@@ -27,7 +27,7 @@
     </property>
   </bean>
   
-  <bean class="org.vortikal.web.controller.ServletPathMappingRequestFilter" 
+  <bean class="org.vortikal.web.filter.ServletPathMappingRequestFilter" 
         parent="defaultRequestFilterCategoryBean">
     <property name="servletPath" value="/vrtx/dwr" />
   </bean>

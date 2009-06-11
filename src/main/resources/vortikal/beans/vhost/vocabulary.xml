@@ -17,7 +17,7 @@
    
          
    <bean id="defaultVocabularyHandler" 
-      class="org.vortikal.web.controller.properties.VocabularyResolvingController">
+      class="org.vortikal.web.actions.properties.VocabularyResolvingController">
       <property name="viewName" value="vocabulary" />
       <property name="resourceTypeTree" ref="resourceTypeTree" />
    </bean>

@@ -49,7 +49,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.controller.properties.EnumerationPropertyDescriptor;
+import org.vortikal.web.actions.properties.EnumerationPropertyDescriptor;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;

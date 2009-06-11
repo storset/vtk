@@ -4,7 +4,7 @@
 <beans>
 
   <bean id="transformXmlHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
         parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="false" />
@@ -49,7 +49,7 @@
     <property name="handler" ref="rawXmlQueryHandler" />
   </bean>
 
-  <bean id="rawXmlQueryHandler" class="org.vortikal.web.controller.index.XmlQueryController"
+  <bean id="rawXmlQueryHandler" class="org.vortikal.web.display.search.XmlQueryController"
         parent="requestLocalRepositoryAware">
     <property name="xmlSearcher" ref="xmlSearcher" />
   </bean>
@@ -334,7 +334,7 @@
    
 
   <bean id="previewXmlResourceHandler" 
-    class="org.vortikal.web.controller.ResourceServiceURLController"
+    class="org.vortikal.web.display.url.ResourceServiceURLController"
     parent="requestLocalRepositoryAware">
     <!--property name="service" ref="displayResourceService" /-->
     <property name="service" ref="displayResourceService" />
@@ -344,7 +344,7 @@
 
   <!--
   <bean id="displayXmlResourceHandler" 
-    class="org.vortikal.web.controller.DisplayXmlResourceController"
+    class="org.vortikal.web.display.xml.DisplayXmlResourceController"
     parent="requestLocalRepositoryAware">
     <property name="handleLastModified" value="false" />
     <property name="transformerManager" ref="transformerManager" />
@@ -353,7 +353,7 @@
   -->
 
   <bean id="displayXmlResourceHandler"
-        class="org.vortikal.web.controller.DisplayXmlResourceController"
+        class="org.vortikal.web.display.xml.DisplayXmlResourceController"
         parent="requestLocalRepositoryAware">
     <description>This is used as parent for all similar handlers</description>
     <property name="transformerManager" ref="transformerManager" />
@@ -363,7 +363,7 @@
   </bean> 
 
   <bean id="displayXmlHandlerLastModifiedEvaluator"
-        class="org.vortikal.web.controller.LastModifiedEvaluatorImpl">
+        class="org.vortikal.web.display.xml.LastModifiedEvaluatorImpl">
     <property name="propertyDefinition" ref="schemaPropDef" />
     <property name="handleLastModifiedForValuesInList" value="true" />
     <property name="lookupList" ref="displayXmlHandleLastModifiedList" />
@@ -379,7 +379,7 @@
 
 
   <bean id="displayRssResourceHandler" 
-    class="org.vortikal.web.controller.DisplayXmlResourceController"
+    class="org.vortikal.web.display.xml.DisplayXmlResourceController"
     parent="requestLocalRepositoryAware">
     <property name="transformerManager" ref="rssTransformerManager" />
     <property name="viewName" value="transformRssResource" />

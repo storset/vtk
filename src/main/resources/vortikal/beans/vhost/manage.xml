@@ -247,12 +247,12 @@
     <property name="order" value="-1000" />
     <property name="categories">
       <set>
-        <value>resourceMenu</value>
+        <value>globalMenu</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuOrder"><value type="java.lang.Integer">0</value></entry>
+        <entry key="globalMenuOrder"><value type="java.lang.Integer">0</value></entry>
       </map>
     </property>
     <property name="assertions">
@@ -463,16 +463,16 @@
   </bean>
 
   <bean id="manage.refreshLockHandler"
-        class="org.vortikal.web.controller.repository.LockRefreshController"
+        class="org.vortikal.web.actions.lock.LockRefreshController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="manage.refreshLockView" />
   </bean>
 
   <bean id="tidyCopyAction" 
-        class="org.vortikal.web.controller.repository.copy.SimpleFilteringCopyAction"
+        class="org.vortikal.web.actions.convert.SimpleFilteringCopyAction"
         parent="requestLocalRepositoryAware">
     <property name="filter">
-      <bean class="org.vortikal.web.controller.repository.tidy.JTidyTransformer">
+      <bean class="org.vortikal.web.actions.convert.JTidyTransformer">
         <property name="insertedCssReference" value="${tidyConvertInsertedCssRef}" />
       </bean>
     </property>
@@ -481,7 +481,7 @@
   <!-- Locale controllers -->
 
   <bean id="setNorwegianNBLocaleController"
-        class="org.vortikal.web.controller.SetLocaleController">
+        class="org.vortikal.web.actions.locale.SetLocaleController">
     <property name="locale">
       <bean class="java.util.Locale">
         <constructor-arg value="no" />
@@ -492,7 +492,7 @@
   </bean>
 
   <bean id="setNorwegianNNLocaleController"
-        class="org.vortikal.web.controller.SetLocaleController">
+        class="org.vortikal.web.actions.locale.SetLocaleController">
     <property name="locale">
       <bean class="java.util.Locale">
         <constructor-arg value="nn" />
@@ -503,7 +503,7 @@
   </bean>
 
   <bean id="setEnglishLocaleController"
-        class="org.vortikal.web.controller.SetLocaleController">
+        class="org.vortikal.web.actions.locale.SetLocaleController">
     <property name="locale">
       <bean class="java.util.Locale">
         <constructor-arg value="en" />
@@ -609,7 +609,7 @@
   <!-- MANAGE controllers -->
 
   <bean id="aboutResourceHandler" 
-        class="org.vortikal.web.controller.properties.PropertyEditController"
+        class="org.vortikal.web.actions.properties.PropertyEditController"
         parent="requestLocalRepositoryAware">
     <property name="propertyTypeDefinitions">
       <list>
@@ -662,7 +662,7 @@
     <property name="vocabularyChooserService" ref="vocabularyHelpService" />
     <property name="valueFactory" ref="valueFactory"/>
     <property name="validator">
-      <bean class="org.vortikal.web.controller.properties.PropertyEditValidator">
+      <bean class="org.vortikal.web.actions.properties.PropertyEditValidator">
         <property name="valueFactory" ref="valueFactory" />
         <property name="principalManager" ref="principalManager" />
       </bean>
@@ -670,43 +670,43 @@
   </bean>
 
   <bean id="fileUploadHandler" 
-    class="org.vortikal.web.controller.repository.FileUploadController"
+    class="org.vortikal.web.actions.create.FileUploadController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="uploadForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.repository.FileUploadCommand" />
+              value="org.vortikal.web.actions.create.FileUploadCommand" />
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
  
 
   <bean id="lockResourceHandler" 
-    class="org.vortikal.web.controller.repository.LockResourceController"
+    class="org.vortikal.web.actions.lock.LockResourceController"
     parent="requestLocalRepositoryAware" />
 
   <bean id="unlockResourceHandler" 
-    class="org.vortikal.web.controller.repository.UnlockResourceController"
+    class="org.vortikal.web.actions.lock.UnlockResourceController"
     parent="requestLocalRepositoryAware" />
 
   <bean id="createDocumentHandler" 
-    class="org.vortikal.web.controller.repository.TemplateBasedCreateController"
+    class="org.vortikal.web.actions.create.TemplateBasedCreateController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="createDocumentForm" />
     <property name="commandClass"
-      value="org.vortikal.web.controller.repository.CreateDocumentCommand" />
+      value="org.vortikal.web.actions.create.CreateDocumentCommand" />
     <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.CreateDocumentCommandValidator"
+      <bean class="org.vortikal.web.actions.create.CreateDocumentCommandValidator"
             parent="requestLocalRepositoryAware" />
     </property>
     <property name="templateManager" ref="templates.resourceTemplateManager" />
   </bean>
 
   <bean id="defaultDocumentTemplates" 
-    class="org.vortikal.web.controller.repository.DefaultDocumentTemplates">
+    class="org.vortikal.web.actions.create.DefaultDocumentTemplates">
     <property name="templatesCollection"
               value="${documentTemplatesCollection}" />
     <property name="repository" ref="repository" />
@@ -726,13 +726,13 @@
   </bean>
 
   <bean id="createCollectionHandler" 
-    class="org.vortikal.web.controller.repository.TemplateBasedCreateCollectionController"
+    class="org.vortikal.web.actions.create.TemplateBasedCreateCollectionController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="manageCollectionListing" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="createCollectionForm" />
     <property name="commandClass"
-      value="org.vortikal.web.controller.repository.CreateCollectionCommand" />
+      value="org.vortikal.web.actions.create.CreateCollectionCommand" />
     <property name="userTitlePropDef" ref="userTitlePropDef" />
     <property name="downcaseCollectionNames" value="true" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
@@ -747,46 +747,46 @@
   </bean>
 
   <bean id="renameHandler" 
-    class="org.vortikal.web.controller.repository.RenameController"
+    class="org.vortikal.web.actions.copymove.RenameController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="renameForm" />
     <property name="commandClass"
-      value="org.vortikal.web.controller.repository.RenameCommand" />
+      value="org.vortikal.web.actions.copymove.RenameCommand" />
     <property name="validator">
-      <bean class="org.vortikal.web.controller.repository.RenameCommandValidator"
+      <bean class="org.vortikal.web.actions.copymove.RenameCommandValidator"
             parent="requestLocalRepositoryAware">
       </bean>
     </property>
   </bean>
 
   <bean id="ownershipHandler" 
-    class="org.vortikal.web.controller.properties.OwnershipController"
+    class="org.vortikal.web.actions.properties.OwnershipController"
     parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirect" />
     <property name="commandName" value="ownershipForm" />
     <property name="commandClass" 
-              value="org.vortikal.web.controller.properties.OwnershipCommand" />
+              value="org.vortikal.web.actions.properties.OwnershipCommand" />
     <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <bean id="aclInheritanceHandler" 
-    class="org.vortikal.web.controller.permissions.ToggleAclInheritanceController"
+    class="org.vortikal.web.actions.permissions.ToggleAclInheritanceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="redirectToPermissions" />
   </bean>
 
   <bean id="abstractPermissionsHandler"
         abstract="true"
-        class="org.vortikal.web.controller.permissions.ACLEditController"
+        class="org.vortikal.web.actions.permissions.ACLEditController"
         parent="requestLocalRepositoryAware">
     <property name="privilegePrincipalMap" ref="editPrivilegePrincipalMap" />
     <property name="formView" value="permissions" />
-    <property name="commandClass" value="org.vortikal.web.controller.permissions.ACLEditCommand" />
+    <property name="commandClass" value="org.vortikal.web.actions.permissions.ACLEditCommand" />
     <property name="validator">
-      <bean class="org.vortikal.web.controller.permissions.ACLEditCommandValidator">
+      <bean class="org.vortikal.web.actions.permissions.ACLEditCommandValidator">
         <property name="principalManager" ref="principalManager" />
         <property name="principalFactory" ref="principalFactory" />
       </bean>
@@ -831,7 +831,7 @@
   </bean>
 
   <bean id="permissionsHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="permissions" />
   </bean>
@@ -850,43 +850,43 @@
   </bean>
 
   <bean id="setResourcePropertyController"
-        class="org.vortikal.web.controller.properties.SetResourcePropertyController"
+        class="org.vortikal.web.actions.properties.SetResourcePropertyController"
         parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirect" />
     <property name="commandName" value="setResourcePropertyForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.properties.ResourcePropertyCommand" />
+              value="org.vortikal.web.actions.properties.ResourcePropertyCommand" />
   </bean>
 
   <bean id="deleteResourcePropertyController"
-        class="org.vortikal.web.controller.properties.DeleteResourcePropertyController"
+        class="org.vortikal.web.actions.properties.DeleteResourcePropertyController"
         parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirect" />
     <property name="commandName" value="deleteResourcePropertyForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.properties.ResourcePropertyCommand" />
+              value="org.vortikal.web.actions.properties.ResourcePropertyCommand" />
   </bean>
 
   <bean id="setContentTypeController" 
-        class="org.vortikal.web.controller.properties.ContentTypeController"
+        class="org.vortikal.web.actions.properties.ContentTypeController"
         parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirect" />
     <property name="commandName" value="editContentTypeForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.properties.ContentTypeCommand" />
+              value="org.vortikal.web.actions.properties.ContentTypeCommand" />
   </bean>
 
   <bean id="setContentLanguageController" 
-        class="org.vortikal.web.controller.properties.ContentLanguageController"
+        class="org.vortikal.web.actions.properties.ContentLanguageController"
         parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirect" />
     <property name="commandName" value="editContentLanguageForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.properties.ContentLanguageCommand" />
+              value="org.vortikal.web.actions.properties.ContentLanguageCommand" />
     <!-- Using java locale codes to store language -->
     <property name="possibleLanguages">
       <list>
@@ -899,37 +899,37 @@
   </bean>
 
   <bean id="setCharacterEncodingController" 
-        class="org.vortikal.web.controller.properties.CharacterEncodingController"
+        class="org.vortikal.web.actions.properties.CharacterEncodingController"
         parent="requestLocalRepositoryAware">
     <property name="formView" value="admin" />
     <property name="successView" value="redirect" />
     <property name="commandName" value="editCharacterEncodingForm" />
     <property name="commandClass"
-              value="org.vortikal.web.controller.properties.CharacterEncodingCommand" />
+              value="org.vortikal.web.actions.properties.CharacterEncodingCommand" />
   </bean>
 
   <bean id="manageCollectionListingHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
   <bean id="previewIframeHandler"
-        class="org.vortikal.web.controller.ResourceServiceURLController"
+        class="org.vortikal.web.display.url.ResourceServiceURLController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="previewIframe" />
     <property name="service" ref="viewService"/>
   </bean>
 
   <bean id="previewImageHandler"
-        class="org.vortikal.web.controller.ResourceServiceURLController"
+        class="org.vortikal.web.display.url.ResourceServiceURLController"
         parent="requestLocalRepositoryAware">
     <property name="viewName" value="previewImage" />
     <property name="service" ref="viewService"/>
   </bean>
 
   <bean id="previewTextHandler"
-        class="org.vortikal.web.controller.DisplayResourceController"
+        class="org.vortikal.web.display.file.DisplayResourceController"
         parent="requestLocalRepositoryAware">
     <!-- XXX preview size limit.. -->
     <property name="ignoreLastModified" value="true" />
@@ -938,7 +938,7 @@
   </bean>
 
   <bean id="previewFallbackHandler"
-        class="org.vortikal.web.controller.DisplayResourceController"
+        class="org.vortikal.web.display.file.DisplayResourceController"
         parent="requestLocalRepositoryAware">
     <property name="ignoreLastModified" value="true" />
     <property name="viewName" value="previewFallback" />
@@ -1069,7 +1069,7 @@
             <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
             <value>${jsBaseURL}/featured-articles-multiple-properties.js</value>
             <value>${jsBaseURL}/admin-edit-display-articles.js</value>
-			<value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
+            <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>
@@ -1284,7 +1284,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="resourceMenuProvider" />
+        <ref bean="globalMenuProvider" />
       </list>
     </property>
   </bean>
@@ -1584,8 +1584,8 @@
 
   <bean id="collectionMenuProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider" lazy-init="true">
-    <constructor-arg ref="collectionActionServicesFactory" />
     <constructor-arg value="tabMenu2" />
+    <constructor-arg ref="collectionActionServicesFactory" />
     <constructor-arg ref="repository.requestLocal" />
   </bean>
 
@@ -1596,22 +1596,31 @@
     <property name="category" value="collectionMenu" />
   </bean>
 
-  <bean id="resourceMenuProvider" 
+  <bean id="globalMenuProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
-    <constructor-arg ref="resourceActionServicesFactory" />
     <constructor-arg value="globalMenu" />
+    <constructor-arg value="globalMenu" />
+    <constructor-arg value="true" />
+    <constructor-arg ref="globalMenuActionServicesFactory" />
+    <constructor-arg ref="globalMenu.referenceDataProviders" />
     <constructor-arg ref="repository.requestLocal" />
   </bean>
 
-  <bean id="resourceActionServicesFactory"
+  <bean id="globalMenuActionServicesFactory"
     class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.service.Service" />
-    <property name="category" value="resourceMenu" />
+    <property name="category" value="globalMenu" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">
-        <property name="attributeName" value="resourceMenuOrder" />
+        <property name="attributeName" value="globalMenuOrder" />
       </bean>
     </property>
+  </bean>
+
+  <bean id="globalMenu.referenceDataProviders"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
+    <property name="category" value="globalMenu.referenceDataProvider" />
   </bean>
 
   <bean id="manageBreadCrumbProvider" 
@@ -1740,7 +1749,7 @@
         <ref bean="manageBreadCrumbProvider" />
         <ref bean="lockUnlockActionsProvider" />      
         <ref bean="switchLocaleActionsProvider" />
-        <ref bean="resourceMenuProvider" /> 
+        <ref bean="globalMenuProvider" /> 
         <ref bean="resourceDetailProvider" />
         <ref bean="readPermissionsProvider" />
       </list>
@@ -1819,7 +1828,7 @@
   </bean>
 
   <bean id="noCacheHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
         parent="requestLocalRepositoryAware">
     <property name="staticHeaders">
       <map>

@@ -50,7 +50,7 @@
   </bean>
 
   <bean id="webdav.davMountHandler" 
-    class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+    class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="webdav.davMount" />
   </bean>
@@ -388,10 +388,10 @@
   <!-- WebDAV controllers -->
 
   <bean id="methodNotImplementedHandler" 
-        class="org.vortikal.web.controller.HttpMethodNotImplementedHandler"/>
+        class="org.vortikal.web.http.HttpMethodNotImplementedHandler"/>
 
   <bean id="webdavCollectionListingHandler"
-        class="org.vortikal.web.controller.ResourceAwareParameterizableViewController"
+        class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController"
         parent="requestLocalRepositoryAware" >
     <property name="viewName" value="webdavCollectionListingView" />
   </bean>
@@ -399,7 +399,7 @@
   <bean id="webdavOptionsHandler" class="org.vortikal.webdav.OptionsController"
     parent="requestLocalRepositoryAware" />
 
-  <bean id="webdavGetHandler" class="org.vortikal.web.controller.DisplayResourceController"
+  <bean id="webdavGetHandler" class="org.vortikal.web.display.file.DisplayResourceController"
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="webdavDisplayResource" />
     <property name="ignoreLastModified" value="true" />
@@ -583,7 +583,7 @@
   <bean id="webdavCollectionListingHeadView" parent="webdavCollectionListingView" />
 
   <bean id="webdavDisplayResourceHandlerInterceptor"
-        class="org.vortikal.web.controller.HeaderControlHandlerInterceptor"
+        class="org.vortikal.web.interceptors.HeaderControlHandlerInterceptor"
         parent="requestLocalRepositoryAware">
     <property name="includeLastModifiedHeader" value="false" />
     <property name="includeEtagHeader" value="${webdavSupportETags}" />

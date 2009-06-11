@@ -14,6 +14,7 @@
       <map>
         <entry key="Cache-Control" value="no-cache, must-revalidate, max-age=0" />
         <entry key="Pragma" value="no-cache" />
+        <entry key="Vary" value="Cookie" />
       </map>
     </property>
   </bean>
@@ -221,14 +222,14 @@
     <property name="handler" ref="listDocumentComponentsHandler" />
   </bean>
 
-  <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">
+  <bean name="listDecoratorComponentsHandler" class="org.vortikal.web.display.MethodInvokingController">
     <property name="targetObject" ref="decorating.defaultComponentResolver" />
     <property name="targetMethod" value="listComponents" />
     <property name="modelName" value="componentList" />
     <property name="viewName" value="listDecoratorComponents" />
   </bean>
 
-  <bean name="listDocumentComponentsHandler" class="org.vortikal.web.controller.MethodInvokingController">
+  <bean name="listDocumentComponentsHandler" class="org.vortikal.web.display.MethodInvokingController">
     <property name="targetObject" ref="decorating.documentComponentResolver" />
     <property name="targetMethod" value="listComponents" />
     <property name="modelName" value="componentList" />

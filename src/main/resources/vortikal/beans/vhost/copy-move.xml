@@ -106,6 +106,39 @@
     <property name="handler" ref="moveToSelectedFolderHandler" />
   </bean>
 
+  <bean id="copyMove.warningProvider"
+        class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider"
+        parent="requestLocalRepositoryAware">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="confirmationService" ref="copyMove.confirmationService" />
+    <property name="categories">
+      <set>
+        <value>globalMenu.referenceDataProvider</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="copyMove.confirmationService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageCollectionListingService" />
+    <property name="order" value="-980" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="copy-move-warning" />
+        </bean>
+        <ref bean="resourceInCollection" />
+      </list>
+    </property>
+    <property name="handler" ref="copyMove.warningHandler" />
+  </bean>        
+
+  <bean id="copyMove.warningHandler" 
+    class="org.vortikal.web.display.file.DisplayResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="copyMove.warningView" />
+  </bean>
+
   <bean id="copyHandler" 
     class="org.vortikal.web.actions.copymove.CopyMoveController">
     <property name="viewName" value="manageCollectionListing" />
@@ -127,5 +160,37 @@
     parent="requestLocalRepositoryAware">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
+
+  <bean id="copyMove.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="copyMove.warningView"
+               value-ref="copyMove.warningView" />
+     </map>
+    </property>
+  </bean> 
+
+  <bean id="copyMove.warningView" parent="freemarkerView">
+    <property name="url" value="pages/copy-move-warning.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="copyMove.warningProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="copyToSelectedFolderService" />
+          <property name="modelName" value="copy" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="moveToSelectedFolderService" />
+          <property name="modelName" value="move" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
 
 </beans>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- Log events whenever changes to Vortex resources occur. -->
+  <bean id="changeHistoryEventDumper" 
+    class="org.vortikal.repository.ChangeHistoryEventDumper">
+    <property name="reportAll" value="true" />
+    <property name="repository" ref="repository"/>
+    <property name="loggerType" value="4" />
+    <property name="loggerId" value="1" />
+  </bean>
+
+</beans>

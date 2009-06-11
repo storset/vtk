@@ -29,6 +29,7 @@
   <logger name="org.vortikal.edit"><level value="info" /></logger>
   <logger name="org.vortikal.repository"><level value="info" /></logger>
   <logger name="org.vortikal.repository.OperationLog"><level value="info" /></logger>
+  <logger name="org.vortikal.repository.ChangeHistoryLog"><level value="debug" /></logger>
   <logger name="org.vortikal.repository.store.db.SqlMapIndexDao"><level value="info" /></logger>
   <logger name="org.vortikal.repository.search.SearcherImpl"><level value="info" /></logger>
 

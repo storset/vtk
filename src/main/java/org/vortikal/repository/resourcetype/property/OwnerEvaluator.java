@@ -43,10 +43,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 
 /**
- * An evaluator and validator for the resource owner property. Sets
- * the resource owner on creation to the principal performing the
- * operation. Enforces that principals can only TAKE ownership of an
- * existing resource (except root principals).
+ * An evaluator and validator for the resource owner property. 
  *
  * <p>Further restrictions, such as associating certain privileges to
  * the operation of taking ownership should be configured as a
@@ -106,18 +103,5 @@ public class OwnerEvaluator
            // Principal is root, allow any value:
            return;
        } catch (AuthorizationException e) { }
-
-       if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.PropertiesChange) {
-
-           // Principals other than root may only TAKE ownership:
-           // XXX: this rule is no longer enforced, see VTK-1360
-
-//           if (!ctx.getPrincipal().equals(property.getPrincipalValue())) {
-//               throw new ConstraintViolationException(
-//                       "Unable to set owner of resource to invalid value: '" 
-//                       + owner + "'");
-//           }
-
-       }
     }
 }

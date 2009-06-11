@@ -1,0 +1,11 @@
+getDescription() {
+    return "Display information about the configured web services";
+}
+
+getUsage() {
+    return "servlet services";
+}
+
+void execute(context, args, out) {
+    out.print(context.get("context").getBean("requestContextInitializer").printServiceTree());
+}

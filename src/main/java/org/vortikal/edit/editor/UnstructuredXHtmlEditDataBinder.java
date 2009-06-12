@@ -67,6 +67,7 @@ public class UnstructuredXHtmlEditDataBinder extends ResourceEditDataBinder {
             }
             command.setContent(page);
             command.setContentChange(true);
+            command.setPropChange(false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

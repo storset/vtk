@@ -41,6 +41,10 @@ public class IllegalOperationException extends RepositoryException {
     public IllegalOperationException(String message) {
         super(message);
     }
+    
+    public IllegalOperationException(Throwable cause) {
+        super(cause);
+    }
 
     public IllegalOperationException(String message, Throwable cause) {
         super(message, cause);

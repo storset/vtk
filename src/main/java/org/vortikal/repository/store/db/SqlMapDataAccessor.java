@@ -897,7 +897,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
             else
                 p = principalFactory.getPrincipal(name, Type.USER);
             RepositoryAction action = Privilege.getActionByName(privilege);
-            acl.addEntry(action, p);
+            acl.addEntryNoValidation(action, p);
         }
     }
 

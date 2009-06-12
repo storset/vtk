@@ -53,15 +53,13 @@ public interface Acl extends Cloneable {
 
     public void clear();
 
-    public void addEntry(RepositoryAction action, Principal principal) 
-        throws IllegalArgumentException;
-
-    public void removeEntry(RepositoryAction privilegeName, Principal principal) 
-        throws IllegalArgumentException;
-
-    public boolean containsEntry(RepositoryAction privilegeName, Principal principal)
-        throws IllegalArgumentException;
+    public boolean isValidEntry(RepositoryAction action, Principal principal);
     
+    public void addEntry(RepositoryAction action, Principal principal);
+
+    public void removeEntry(RepositoryAction privilegeName, Principal principal);
+
+    public boolean containsEntry(RepositoryAction privilegeName, Principal principal);
 
     public Object clone() throws CloneNotSupportedException;
     

@@ -76,21 +76,35 @@ public class AclImpl implements Acl {
         addEntry(Privilege.ALL, PrincipalFactory.OWNER);
     }
     
-
-    public void addEntry(RepositoryAction action, Principal p) throws IllegalArgumentException {
+    public boolean isValidEntry(RepositoryAction action, Principal principal) {
+        if (!Privilege.PRIVILEGES.contains(action))
+            throw new IllegalArgumentException("Unknown acl privilege");
+            
+        if (principal == null)
+            throw new IllegalArgumentException("Null principal");
+            
+        if (PrincipalFactory.ALL.equals(principal)) {
+            if (Privilege.ALL.equals(action) || Privilege.WRITE.equals(action)
+                || Privilege.BIND.equals(action) || Privilege.ADD_COMMENT.equals(action)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    
+    public void addEntry(RepositoryAction action, Principal p) {
         if (!Privilege.PRIVILEGES.contains(action))
             throw new IllegalArgumentException("Unknown acl privilege");
             
         if (p == null)
             throw new IllegalArgumentException("Null principal");
             
-        Principal all = PrincipalFactory.ALL;
-        
-        if ((Privilege.ALL.equals(action) || Privilege.WRITE.equals(action)) 
-                && all.equals(p))
-                throw new IllegalArgumentException(
+        if (!isValidEntry(action, p)) {
+            throw new IllegalArgumentException(
                     "Not allowed to add principal '" + p + "' to privilege '"
                     + action + "'" );
+        }
         
         Set<Principal> actionEntry = this.actionSets.get(action);
         if (actionEntry == null) {
@@ -99,7 +113,22 @@ public class AclImpl implements Acl {
         }
         
         actionEntry.add(p);
-
+    }
+    
+    public void addEntryNoValidation(RepositoryAction action, Principal p) {
+        if (!Privilege.PRIVILEGES.contains(action))
+            throw new IllegalArgumentException("Unknown acl privilege");
+            
+        if (p == null)
+            throw new IllegalArgumentException("Null principal");
+        
+        Set<Principal> actionEntry = this.actionSets.get(action);
+        if (actionEntry == null) {
+            actionEntry = new HashSet<Principal>();
+            this.actionSets.put(action, actionEntry);
+        }
+        
+        actionEntry.add(p);
     }
     
     public void removeEntry(RepositoryAction action, Principal principal)
@@ -258,7 +287,7 @@ public class AclImpl implements Acl {
             RepositoryAction action = entry.getKey();
 
             for (Principal p: entry.getValue()) {
-                clone.addEntry(action, p);
+                clone.addEntryNoValidation(action, p);
             }
         }
         return clone;

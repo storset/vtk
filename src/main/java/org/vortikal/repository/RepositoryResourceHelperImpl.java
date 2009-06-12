@@ -296,7 +296,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                         throw new AuthorizationException(
                                 "Principal " + ctx.getPrincipal() 
                                 + " not authorized to set property " 
-                                + property + " on resource " 
+                                + property + " (protectionLevel=" 
+                                + propDef.getProtectionLevel() 
+                                + ") on resource " 
                                 + ctx.getNewResource(), e);
                     }
                 }

@@ -67,10 +67,15 @@ public abstract class AbstractJerichoHtmlContentEvaluator
 
     
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        
+
         if (ctx.getContent() == null) {
             return false;
         }
+        
+        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            return false;
+        }
+        
         InputStream stream = null;
         String encoding = determineCharacterEncoding(ctx.getPrincipal(), property, 
                 ctx.getNewResource(), ctx.getContent(), ctx.getTime());

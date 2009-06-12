@@ -159,6 +159,12 @@ public class ValueFactoryImpl implements ValueFactory {
         private String objRef;
         
         public ValueRefImpl(BinaryContentDataAccessor dao, String objRef) {
+            if (dao == null) {
+                throw new IllegalArgumentException("Constructor arg 'dao' cannot be NULL");
+            }
+            if (objRef == null) {
+                throw new IllegalArgumentException("Constructor arg 'objRef' cannot be NULL");
+            }
             this.dao = dao;
             this.objRef = objRef;
         }
@@ -177,6 +183,13 @@ public class ValueFactoryImpl implements ValueFactory {
 
         public String toString() {
             return "ref#" + this.getID();
+        }
+        
+        public boolean equals(Object obj) {
+            if (obj == null || !(obj instanceof BinaryValue.ValueRef)) {
+                return false;
+            }
+            return this.getID().equals(((BinaryValue.ValueRef) obj).getID());
         }
     }
 

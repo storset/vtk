@@ -375,9 +375,9 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
         try {
             // Added
-            if (originalProp == null && suppliedProp != null)
+            if (originalProp == null && suppliedProp != null) {
                 return (Property) suppliedProp.clone();
-
+            }
             // Changed
             if (originalProp != null && suppliedProp != null && !originalProp.equals(suppliedProp)) {
                 return (Property) suppliedProp.clone();

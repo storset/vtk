@@ -422,7 +422,6 @@ div.authors {
   clear: left;
   float: left;
   white-space: nowrap;
-  /*margin-top: 1em;*/
 }
 
 div.published-date {
@@ -431,25 +430,26 @@ div.published-date {
   white-space: nowrap;
 }
 
-div.resource\.end-date,div.resource\.location {
-  
-}
-
-/* START time and place */ /* ie7 hack */
-* :first-child+html div.start-date,* :first-child+html div.end-date,*
-  :first-child+html div.location,* :first-child+html div.mapurl {
-  width: 100%;
-}
-
 div.start-date,div.end-date,div.location,div.mapurl {
   float: left;
   margin-right: 1em;
-  /*margin-top: 1em;*/
 }
 
-* html div.end-date,* html div.location {
-  clear: left;
-  padding-bottom: 1em;
+/* IE7 */
+div.start-date,div.end-date {
+  white-space: nowrap; 
+}
+
+/* START time and place ie7 hack */
+*:first-child+html div.start-date,
+*:first-child+html div.end-date,
+*:first-child+html div.location,
+*:first-child+html div.mapurl {
+  width: 100%;
+}
+
+div.resource\.mapurl {
+  white-space: nowrap;	
 }
 
 /* There is IE7-specific conditional comments in editor.ftl for time and place elements */
@@ -457,9 +457,11 @@ div.start-date {
   clear: left;
 }
 
-* :first-child+html div.mapurl {
+* html div.end-date,
+* html div.location,
+* html div.mapurl {
   clear: left;
-}
+} 
 
 input.date {
   width: 6.5em;
@@ -478,8 +480,8 @@ span.colon {
 }
 
 /* END: time and place */
-  /* ****** END: Event and Article specific styling */
-  /* ****** START: Tooltip jQuery */
+/* ****** END: Event and Article specific styling */
+/* ****** START: Tooltip jQuery */
 a.show-tooltip {
   text-decoration: none;
   color: #efefef;

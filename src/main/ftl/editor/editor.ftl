@@ -43,17 +43,9 @@
     
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
 
-    <!--[if IE 6]>
-      <style type="text/css">
-        div.start-date {
-          padding-bottom: 1em;
-        }
-      </style>
-    <![endif]-->
-
     <!--[if IE 7]>
      <style type="text/css">
-         div.properties div.start-date, div.properties div.end-date, div.properties div.location {
+         div.properties div.start-date, div.properties div.end-date, div.properties div.location, div.properties div.mapurl {
            clear: both;
          }
         </style>

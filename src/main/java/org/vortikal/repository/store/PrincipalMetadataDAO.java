@@ -30,7 +30,11 @@
  */
 package org.vortikal.repository.store;
 
+import java.util.List;
+
 import org.vortikal.repository.RepositoryException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 
 public interface PrincipalMetadataDAO {
 
@@ -51,5 +55,15 @@ public interface PrincipalMetadataDAO {
      * @return
      */
     public String getUrl(String uid, String domain);
+    
+
+    /**
+     * Searches for a set of principals that satisfy the supplied search string
+     * @param searchString String to use in search
+     * @param type Type of search to perform (users or groups)
+     * @return List of principals who satisfy the given search string
+     * @throws RepositoryException
+     */
+    public List<Principal> search(String searchString, Type type) throws RepositoryException;
     
 }

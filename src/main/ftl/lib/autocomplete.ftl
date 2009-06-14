@@ -10,7 +10,8 @@
 <#macro createAutoCompleteInputField appSrcBase service id
                                      value=""
                                      minChars=2
-                                     multiple=true
+                                     multiple="true"
+                                     selectFirst="true"
                                      width=""
                                      hasDescription=false
                                      max=20>
@@ -32,20 +33,36 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $("#${elementId}").autocomplete('${appSrcBase}?vrtx=admin&action=autocomplete&service=${service}', 
-          { minChars:${minChars},
-            max:${max}<#if multiple>,
-            multiple:true
-            </#if><#if width != "">,
-            width:${width}
-            </#if><#if hasDescription>,
-              formatItem: function(data, i, n, value) {
-                return value.split(";")[0] + " (" + value.split(";")[1] + ")";
-              },
-              formatResult: function(data, value) {
-                return value.split(";")[1];
-              }
-            </#if>
-          });
+        { minChars:${minChars},
+          max:${max},
+          multiple:${multiple},
+          selectFirst:${selectFirst}
+          <#if width != "">,
+          width:${width}
+          </#if><#if hasDescription>,
+            formatItem: function(data, i, n, value) {
+              return value.split(";")[0] + " (" + value.split(";")[1] + ")";
+            },
+            formatResult: function(data, value) {
+              return value.split(";")[0];
+            }
+          </#if>
+        });
+        
+      <#-- For permissions, move to own js-file -->
+      <#if elementId = 'userNames'>
+      $("#${elementId}").result(function(event, data, formatted) {
+        if (formatted) {
+          var existingValue = document.getElementById("ac_${elementId}").value;
+          if (existingValue != "") {
+            document.getElementById("ac_${elementId}").value = existingValue + ", " + formatted;
+          } else {
+            document.getElementById("ac_${elementId}").value = formatted;
+          }
+        }
+      });
+      </#if>
+      
     });
   </script>
   <input type="text" id="${id}" name="${id}" value="${value?html}" />

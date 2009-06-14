@@ -54,11 +54,14 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String groupNames[] = new String[0];
     private Resource resource;
     private String saveAction = null;
-    
+
+    private String ac_userNames[] = new String[0];
+    private List<String> userNameEntries = new ArrayList<String>();
+
     public ACLEditCommand(String submitURL) {
         super(submitURL);
     }
-    
+
     public String getAddUserAction() {
         return this.addUserAction;
     }
@@ -90,12 +93,12 @@ public class ACLEditCommand extends UpdateCancelCommand {
     public void setRemoveGroupAction(String removeGroupAction) {
         this.removeGroupAction = removeGroupAction;
     }
-    
+
     public boolean isGrouped() {
         return this.grouped;
     }
 
-    public void setGrouped(boolean grouped)  {
+    public void setGrouped(boolean grouped) {
         this.grouped = grouped;
     }
 
@@ -103,7 +106,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
         return this.users;
     }
 
-    public void setUsers(List<Principal> users)  {
+    public void setUsers(List<Principal> users) {
         this.users = users;
     }
 
@@ -111,15 +114,15 @@ public class ACLEditCommand extends UpdateCancelCommand {
         return this.groups;
     }
 
-    public void setGroups(List<Principal> groups)  {
+    public void setGroups(List<Principal> groups) {
         this.groups = groups;
     }
-    
+
     public String getOwner() {
         return this.owner;
     }
 
-    public void setOwner(String owner)  {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
@@ -127,7 +130,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
         return this.removeUserURLs;
     }
 
-    public void setRemoveUserURLs(Map<String, String> removeUserURLs)  {
+    public void setRemoveUserURLs(Map<String, String> removeUserURLs) {
         this.removeUserURLs = removeUserURLs;
     }
 
@@ -135,11 +138,11 @@ public class ACLEditCommand extends UpdateCancelCommand {
         return this.removeGroupURLs;
     }
 
-    public void setRemoveGroupURLs(Map<String, String> removeGroupURLs)  {
+    public void setRemoveGroupURLs(Map<String, String> removeGroupURLs) {
         this.removeGroupURLs = removeGroupURLs;
     }
 
-    public void setResource(Resource resource)  {
+    public void setResource(Resource resource) {
         this.resource = resource;
     }
 
@@ -192,14 +195,28 @@ public class ACLEditCommand extends UpdateCancelCommand {
         return sb.toString();
     }
 
-	public String getSaveAction() {
-		return saveAction;
-	}
+    public String getSaveAction() {
+        return saveAction;
+    }
 
-	public void setSaveAction(String saveAction) {
-		this.saveAction = saveAction;
-	}
-    
+    public void setSaveAction(String saveAction) {
+        this.saveAction = saveAction;
+    }
+
+    public String[] getAc_userNames() {
+        return ac_userNames;
+    }
+
+    public void setAc_userNames(String[] ac_userNames) {
+        this.ac_userNames = ac_userNames;
+    }
+
+    public List<String> getUserNameEntries() {
+        return userNameEntries;
+    }
+
+    public void addUserNameEntry(String userNameEntry) {
+        this.userNameEntries.add(userNameEntry);
+    }
 
 }
-

@@ -30,8 +30,11 @@
  */
 package org.vortikal.security;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.security.Principal.Type;
 
@@ -93,6 +96,13 @@ public class PrincipalFactory {
         }
         
         return principal;
+    }
+    
+    public List<Principal> search(String filter, Type type) throws RepositoryException {
+        if (this.principalMetadataDao != null) {
+            return this.principalMetadataDao.search(filter, type);
+        }
+        return null;
     }
 
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {

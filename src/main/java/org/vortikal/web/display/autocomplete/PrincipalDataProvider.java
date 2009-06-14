@@ -31,15 +31,22 @@
 package org.vortikal.web.display.autocomplete;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
 public class PrincipalDataProvider implements VocabularyDataProvider<Principal> {
-    
+
+    private static final Logger logger = Logger.getLogger(PrincipalDataProvider.class);
+
     private Principal.Type type;
+    private PrincipalFactory principalFactory;
 
     public List<Principal> getCompletions(Path scopeUri, String token) {
         return null;
@@ -47,14 +54,38 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
 
     public List<Principal> getPrefixCompletions(String prefix, Path contextUri,
             String token) {
-        
-        // XXX implement
-        return new ArrayList<Principal>(0);
+
+        List<Principal> result = new ArrayList<Principal>(0);
+
+        try {            
+            List<Principal> searchResult = principalFactory.search(prefix, type);
+            if (searchResult != null && searchResult.size() > 0) {
+                result.addAll(searchResult);
+                Collections.sort(result, new PrincipalComparator());
+            }
+        } catch (Exception e) {
+            logger.error("An error occured while getting prefixcompilations", e);
+        }
+
+        return result;
     }
-    
+
+    private final class PrincipalComparator implements Comparator<Principal> {
+
+        public int compare(Principal p1, Principal p2) {
+            return p1.getDescription().compareToIgnoreCase(p2.getDescription());
+        }
+
+    }
+
     @Required
     public void setType(Principal.Type type) {
         this.type = type;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

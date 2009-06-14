@@ -237,7 +237,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         // Has the user asked to save?
         if (editCommand.getSaveAction() != null) {
-            addToAcl(acl, editCommand.getUserNames(), Type.USER);
+            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             addToAcl(acl, editCommand.getGroupNames(), Type.GROUP);
             this.repository.storeACL(token, resource);
             return new ModelAndView(getSuccessView());
@@ -273,7 +273,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     getACLEditCommand(resource), this.getCommandName()));
 
         } else if (editCommand.getAddUserAction() != null) {
-            addToAcl(acl, editCommand.getUserNames(), Type.USER);
+            addToAcl(acl, editCommand.getUserNameEntries(), Type.USER);
             return showForm(request, response, new BindException(
                     getACLEditCommand(resource), this.getCommandName()));
 
@@ -284,6 +284,13 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         } else {
             return new ModelAndView(getSuccessView());
+        }
+    }
+
+    private void addToAcl(Acl acl, List<String> values, Type type) {
+        for (String value : values) {
+            Principal p = principalFactory.getPrincipal(value, type);
+            acl.addEntry(this.privilege, p);
         }
     }
 

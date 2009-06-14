@@ -59,6 +59,7 @@
   <bean id="userNamesAutoCompleteDataProvider"
     class="org.vortikal.web.display.autocomplete.PrincipalDataProvider">
     <property name="type" value="USER" />
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
   
   <bean id="autoComplete.appResourceAssertion"

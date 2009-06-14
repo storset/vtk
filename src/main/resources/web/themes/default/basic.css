@@ -132,11 +132,16 @@ div.webdavmessage {
   margin-bottom: 5px;
 }
 
+div.errorContainer {
+  width: 300px;
+}
+
 ul.errors {
   padding: 0 0 7px 0;
   margin: 0;
   list-style-type: none;
   color: red;
+  white-space: normal;
 }
 
 /* Banner section: */

@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.actions.permissions;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -37,6 +39,7 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 
@@ -59,20 +62,23 @@ public class ACLEditCommandValidator implements Validator {
             return;
         }
 
+        // Remove all previously set usernameentries
+        editCommand.getUserNameEntries().removeAll(editCommand.getUserNameEntries());
+
         if (editCommand.getSaveAction() != null) {
-            validateUserNames(editCommand.getUserNames(), errors);
+            validateUserNames(editCommand, errors);
             validateGroupNames(editCommand.getGroupNames(), errors);
         }
 
         if (editCommand.getAddUserAction() != null) {
-            String userNames[] = editCommand.getUserNames();
+            String[] userNames = editCommand.getUserNames();
 
             if (userNames.length == 0) {
                 errors.rejectValue("userNames", "permissions.user.missing.value",
                         "You must type a value");
             }
 
-            validateUserNames(userNames, errors);
+            validateUserNames(editCommand, errors);
 
         } else if (editCommand.getAddGroupAction() != null) {
             String[] groupNames = editCommand.getGroupNames();
@@ -87,30 +93,92 @@ public class ACLEditCommandValidator implements Validator {
 
     }
 
-    private void validateUserNames(String[] userNames, Errors errors) {
-        for (String userName : userNames) {
-            if (!userName.toLowerCase().equals(userName)) {
-                errors.rejectValue("userNames", "permissions.user.uppercase.value",
-                        "You must use lower case characters");
-            } else {
-                try {
-                    Principal principal = principalFactory.getPrincipal(userName,
-                            Principal.Type.USER);
+    private void validateUserNames(ACLEditCommand editCommand, Errors errors) {
 
-                    if (!this.principalManager.validatePrincipal(principal)) {
+        String[] userNames = editCommand.getUserNames();
 
-                        errors.rejectValue("userNames", "permissions.user.wrong.value",
-                                new Object[] { userName }, "User '" + userName
-                                        + "' does not exist");
+        if (userNames.length > 0) {
+            for (String userName : userNames) {
+
+                userName = userName.trim();
+                String uid = userName;
+
+                if (!userName.matches("[\\p{L}+ @\\-]+")) {
+                    errors.rejectValue("userNames", "permissions.invalid.chars",
+                            new Object[] { userName }, "Username '" + userName
+                                    + "' contains invalid charachters");
+                } else if (!userName.contains(" ")) {
+                    // assume a username and validate it as such
+                    validateUserName(userName, errors);
+                } else {
+                    // assume a full name and look for a match in ac_userNames
+                    // if match found, validate corresponsding username
+                    // if no match found, assume full name entered without
+                    // selecting from autocomplete suggestions
+                    // i.e. no username provided -> validate as full name
+                    try {
+                        String ac_userName = getAc_userName(userName, editCommand
+                                .getAc_userNames());
+                        if (ac_userName != null && !"".equals(ac_userName)) {
+                            // Entered name is selected from autocomplete
+                            // suggestions and we have username
+                            validateUserName(ac_userName, errors);
+                            uid = ac_userName;
+                        } else {
+                            List<Principal> matches = this.principalFactory.search(
+                                    userName, Type.USER);
+                            if (matches == null || matches.size() == 0) {
+                                errors.rejectValue("userNames",
+                                        "permissions.user.wrong.value",
+                                        new Object[] { userName }, "User '" + userName
+                                                + "' does not exist");
+                            } else if (matches.size() > 1) {
+                                errors.rejectValue("userNames",
+                                        "permissions.user.too.many.matches",
+                                        new Object[] { userName }, userName
+                                                + " yielded too many matches.");
+                            } else {
+                                uid = matches.get(0).getName();
+                            }
+                        }
+                    } catch (Exception e) {
+                        errors.rejectValue("userNames", "permissions.exception",
+                                        new Object[] { userName }, "Cannot find user "
+                                                + userName);
                     }
-
-                } catch (InvalidPrincipalException e) {
-                    errors.rejectValue("userNames", "permissions.user.wrong.value",
-                            new Object[] { userName }, "User '" + userName
-                                    + "' is illegal");
                 }
+                editCommand.addUserNameEntry(uid);
             }
         }
+    }
+
+    private void validateUserName(String userName, Errors errors) {
+        try {
+            Principal principal = principalFactory.getPrincipal(userName,
+                    Principal.Type.USER);
+
+            if (!this.principalManager.validatePrincipal(principal)) {
+                errors.rejectValue("userNames", "permissions.user.wrong.value",
+                        new Object[] { userName }, "User '" + userName
+                                + "' does not exist");
+            }
+
+        } catch (InvalidPrincipalException e) {
+            errors.rejectValue("userNames", "permissions.user.wrong.value",
+                    new Object[] { userName }, "User '" + userName + "' is illegal");
+        }
+    }
+
+    private String getAc_userName(String userName, String[] ac_userNames) {
+        for (String ac_userName : ac_userNames) {
+            String[] s = ac_userName.split(";");
+            String ac_fullName = s[0];
+            String ac_uid = s[1];
+            if (userName.equals(ac_fullName)) {
+                return ac_uid;
+            }
+        }
+        return null;
     }
 
     private void validateGroupNames(String[] groupNames, Errors errors) {

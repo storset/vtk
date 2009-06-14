@@ -330,22 +330,28 @@
           </#switch>
         </#list>
       </ul>
-      <@spring.bind formName + ".userNames" /> 
+      <@spring.bind formName + ".userNames" />
       <#assign value=""/>
       <#if spring.status.errorMessages?size &gt; 0>
-      <ul class="errors">
-      <#list spring.status.errorMessages as error> 
-        <li>${error}</li> 
-      </#list>
-      </ul>
+      <div class="errorContainer">
+        <ul class="errors">
+          <#list spring.status.errorMessages as error> 
+          <li>${error}</li> 
+          </#list>
+        </ul>
+      </div>
       <#if spring.status.value?exists>
         <#assign value = spring.status.value />
       </#if>
       </#if>
       <span class="addUser">
-        <input class="addUserField" type="text" size="15"
-               name="${spring.status.expression}"
-               value="${value}" />&nbsp;
+        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
+                    id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
+                    hasDescription=true max="30" />&nbsp;
+        
+        <@spring.bind formName + ".ac_userNames" />
+        <input type="hidden" id="ac_userNames" name="ac_userNames" value="" />
+        
 	    <input class="addUserButton" type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>
@@ -405,7 +411,7 @@
 <#macro displayUserPrincipal principal>
 <#compress>
 <#if principal.URL?exists>
-  <a title="${principal.description?html}" href="${principal.URL?html}">${principal.name?html}</a>
+  <a title="${principal.name?html}" href="${principal.URL?html}">${principal.description?html}</a>
 <#else>
   ${principal.name?html}
 </#if>

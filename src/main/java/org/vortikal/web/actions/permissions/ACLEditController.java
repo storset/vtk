@@ -207,6 +207,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
             editCommand.setAddUserAction(null);
             editCommand.setRemoveUserAction(null);
             editCommand.setRemoveGroupAction(null);
+            editCommand.setSaveAction(null);
+            editCommand.getUserNameEntries().removeAll(editCommand.getUserNameEntries());
         }
         return super.processFormSubmission(req, resp, command, errors);
     }

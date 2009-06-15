@@ -62,9 +62,6 @@ public class ACLEditCommandValidator implements Validator {
             return;
         }
 
-        // Remove all previously set usernameentries
-        editCommand.getUserNameEntries().removeAll(editCommand.getUserNameEntries());
-
         if (editCommand.getSaveAction() != null) {
             validateUserNames(editCommand, errors);
             validateGroupNames(editCommand.getGroupNames(), errors);

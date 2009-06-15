@@ -78,6 +78,12 @@
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 
+   <lang:bsh id="vshell.repo.delete"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/delete.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
    <lang:bsh id="vshell.repo.cache"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/repo/cache.bsh"

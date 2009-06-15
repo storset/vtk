@@ -16,15 +16,16 @@ void execute(context, args, out) {
     file = args.get("file");
     uri = args.get("uri");
 
-    org.vortikal.util.repository.ResourceArchiver.EventListener listener =
-        new org.vortikal.util.repository.ResourceArchiver.EventListener() {
-            
-            archived(org.vortikal.repository.Path uri) {
-                out.println(uri);
-            }
-            expanded(org.vortikal.repository.Path uri) {
-                out.println(uri);
-            }
+    listener = new org.vortikal.util.repository.ResourceArchiver.EventListener() {
+        archived(org.vortikal.repository.Path uri) {
+           out.println("add: " + uri);
+        }
+        expanded(org.vortikal.repository.Path uri) {
+            out.println("exp: " + uri);
+        }
+        warn(org.vortikal.repository.Path uri, String msg) {
+            out.println("warn: " + uri + ": " + msg);
+        }
     };
 
     if (!new java.io.File(file).exists()) {
@@ -32,7 +33,20 @@ void execute(context, args, out) {
         return;
     }
 
-    stream = new java.io.FileInputStream(file);
-    archiver.expandArchive(token, stream, uri, listener);
+    try {
+        stream = new java.io.FileInputStream(file);
+    } catch (e) {
+        out.println("Unable to open archive file: " + file
+                    + ": " + e.getMessage());
+        return;
+    }
+
+    try {
+        archiver.expandArchive(token, stream, uri, listener);
+    } catch (e) {
+        out.println("Unable to expand archive: " + file
+                    + ": " + e.getMessage());
+        return;
+    }
 }
 

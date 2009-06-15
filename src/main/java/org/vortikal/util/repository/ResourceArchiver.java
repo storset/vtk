@@ -91,6 +91,7 @@ public class ResourceArchiver {
     public interface EventListener {
         public void expanded(Path uri);
         public void archived(Path uri);
+        public void warn(Path uri, String msg);
     }
 
     public void createArchive(String token, Resource r, OutputStream out) throws Exception {
@@ -167,7 +168,7 @@ public class ResourceArchiver {
             if (!entry.isDirectory()) {
                 writeFile(token, uri, jarIn);
             }
-            storePropsAndPermissions(token, entry, uri, decodeValues);
+            storePropsAndPermissions(token, entry, uri, decodeValues, listener);
             if (listener != null)
                 listener.expanded(uri);
         }
@@ -182,7 +183,6 @@ public class ResourceArchiver {
             	t.printStackTrace();
             }
         }
-        
     }
     
     private Comment getArchivedComment(JarInputStream jarIn, Path base) throws Exception {
@@ -463,7 +463,7 @@ public class ResourceArchiver {
 	}
 
     private void storePropsAndPermissions(String token, JarEntry entry,
-            Path resourceURI, boolean decode) throws Exception {
+            Path resourceURI, boolean decode, EventListener listener) throws Exception {
         Attributes attributes = entry.getAttributes();
         if (attributes == null) {
             return;
@@ -481,11 +481,11 @@ public class ResourceArchiver {
 
             String name = key.toString();
             if (name.startsWith("X-vrtx-prop-")) {
-                if (setProperty(resource, name, attributes, decode)) {
+                if (setProperty(resource, name, attributes, decode, listener)) {
                     propsModified = true;
                 }
             } else if (name.startsWith("X-vrtx-acl")) {
-                if (setAclEntry(resource, name, attributes, decode)) {
+                if (setAclEntry(resource, name, attributes, decode, listener)) {
                     aclModified = true;
                 }
             }
@@ -500,12 +500,12 @@ public class ResourceArchiver {
             // twice.
             this.repository.storeACL(token, resource); // Switch inheritance off
             this.repository.storeACL(token, resource); // Store new ACL
-
         }
     }
 
     private boolean setProperty(Resource resource, String name,
-            Attributes attributes, boolean decode) throws Exception {
+            Attributes attributes, boolean decode, EventListener listener) 
+    throws Exception {
         String valueString = attributes.getValue(name);
         if (decode) {
             valueString = decodeValue(valueString);
@@ -517,9 +517,14 @@ public class ResourceArchiver {
             return false;
         }
         String rawValue = parseRawValue(valueString);
-        if (rawValue == null || "".equals(rawValue))
+        if (rawValue == null || "".equals(rawValue.trim())) {
+            if (listener != null) {
+                listener.warn(resource.getURI(), 
+                        "empty value for property '" 
+                        + propDef.getName() + "', skipping");
+            }
             return false;
-
+        }
         Property prop = resource.getProperty(propDef);
         if (prop == null) {
             prop = resource.createProperty(propDef);
@@ -593,7 +598,7 @@ public class ResourceArchiver {
     }
 
     private boolean setAclEntry(Resource resource, String name,
-            Attributes attributes, boolean decode) throws Exception {
+            Attributes attributes, boolean decode, EventListener listener) throws Exception {
         String actionName = name.substring("X-vrtx-acl-".length());
         RepositoryAction action = Privilege.getActionByName(actionName);
 
@@ -626,7 +631,20 @@ public class ResourceArchiver {
             if (p != null) {
                 resource.setInheritedAcl(false);
                 if (isValidPrincipal(p, p.getType())) {
-                    acl.addEntry(action, p);
+                    if (acl.isValidEntry(action, p)) {
+                        acl.addEntry(action, p);
+                    } else {
+                        if (listener != null) {
+                            listener.warn(resource.getURI(), 
+                                    "Invalid acl entry: " 
+                                    + p + ":" + action + ", skipping");
+                        }
+                    }
+                } else {
+                    if (listener != null) {
+                        listener.warn(resource.getURI(), 
+                                "Invalid principal: " + p + ", skipping");
+                    }
                 }
             }
         }

@@ -33,13 +33,16 @@ package org.vortikal.repository;
 public class ResourceOverwriteException extends RepositoryException {
 
     private static final long serialVersionUID = 3906087841133049657L;
-
-    public ResourceOverwriteException() {
-        super();
+    private Path uri;
+    
+    public ResourceOverwriteException(Path uri) {
+        super("Resource " + uri + " already exists");
+        this.uri = uri;
     }
-
-    public ResourceOverwriteException(String message) {
-        super(message);
+    
+    public Path getURI() {
+        return this.uri;
     }
+    
 
 }

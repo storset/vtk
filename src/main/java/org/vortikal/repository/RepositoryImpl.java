@@ -230,7 +230,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest == null) {
             overwrite = false;
         } else if (!overwrite) {
-            throw new ResourceOverwriteException("Copy: cannot overwrite resource " + destUri);
+            throw new ResourceOverwriteException(destUri);
         }
 
         Path destParentUri = destUri.getParent();
@@ -291,7 +291,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest == null) {
             overwrite = false;
         } else if (!overwrite) {
-            throw new ResourceOverwriteException();
+            throw new ResourceOverwriteException(destUri);
         }
 
         // checking destParent
@@ -828,7 +828,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
         ResourceImpl resource = this.dao.load(uri);
         if (resource != null) {
-            throw new ResourceOverwriteException("Resource already exists");
+            throw new ResourceOverwriteException(uri);
         }
         ResourceImpl parent = this.dao.load(uri.getParent());
         if ((parent == null) || !parent.isCollection()) {

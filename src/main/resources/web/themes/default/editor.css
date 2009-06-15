@@ -437,7 +437,7 @@ div.start-date,div.end-date,div.location,div.mapurl {
 
 /* IE7 */
 div.start-date,div.end-date {
-  white-space: nowrap; 
+   white-space: nowrap;
 }
 
 /* START time and place ie7 hack */
@@ -448,6 +448,10 @@ div.start-date,div.end-date {
   width: 100%;
 }
 
+*:first-child+html div.mapurl {
+  padding-bottom: 1em;	
+}
+
 div.resource\.mapurl {
   white-space: nowrap;	
 }
@@ -456,12 +460,6 @@ div.resource\.mapurl {
 div.start-date {
   clear: left;
 }
-
-* html div.end-date,
-* html div.location,
-* html div.mapurl {
-  clear: left;
-} 
 
 input.date {
   width: 6.5em;

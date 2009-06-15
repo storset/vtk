@@ -43,13 +43,6 @@
     
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
 
-    <!--[if IE 7]>
-     <style type="text/css">
-         div.properties div.start-date, div.properties div.end-date, div.properties div.location, div.properties div.mapurl {
-           clear: both;
-         }
-        </style>
-    <![endif]-->
     
   </head>
   

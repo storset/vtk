@@ -205,9 +205,9 @@
                              "Are you sure you want to " + item + " " + child.name + "?", 
                              [child.name]) />
         <#if child.isCollection()>
-        	<#assign titleMsg = vrtx.getMsg("confirm-delete.title") + " " + vrtx.getMsg("confirm-delete.folder")  />
+          <#assign titleMsg = vrtx.getMsg("confirm-delete.title.folder") />
         <#else>
-        	 <#assign titleMsg = vrtx.getMsg("confirm-delete.title") + " " + vrtx.getMsg("confirm-delete.file")  />
+          <#assign titleMsg = vrtx.getMsg("confirm-delete.title.file") />
         </#if>
       	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}&amp;showAsHtml=true&amp;height=80&amp;width=230"
       	   class="thickbox" title="${titleMsg}">${actionName}</a>&nbsp;)

@@ -87,17 +87,19 @@ public class OwnerEvaluator
     public void validate(Property property, PropertyEvaluationContext ctx)
         throws ConstraintViolationException {
 
-        if (property.getPrincipalValue() == null) {
-            throw new ConstraintViolationException("All resources must have an owner.");
-        }
-        
         Principal owner = property.getPrincipalValue();
-        if (owner == null || !this.principalManager.validatePrincipal(owner)) {
+        if (owner == null) {
            throw new ConstraintViolationException(
+                   "Unable to set owner of resource to NULL");
+       }
+       if (!this.principalManager.validatePrincipal(owner)) {
+           // Keep existing, invalid owner principals, disallow new ones:
+           if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+               throw new ConstraintViolationException(
                    "Unable to set owner of resource to invalid value: '" 
                    + owner + "'");
+           }
        }
-
        try {
            this.authorizationManager.authorizeRootRoleAction(ctx.getPrincipal());
            // Principal is root, allow any value:

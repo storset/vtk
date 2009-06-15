@@ -73,7 +73,8 @@ public abstract class AbstractJerichoHtmlContentEvaluator
         }
         
         if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
-            return false;
+            boolean exists = ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
+            return exists; 
         }
         
         InputStream stream = null;

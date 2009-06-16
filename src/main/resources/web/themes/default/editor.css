@@ -92,7 +92,7 @@ div.properties {
 }
 
 div.save-cancel { /* margin-top: 0.5em; */
-  
+	
 }
 
 * html div.save-cancel {
@@ -459,6 +459,12 @@ div.resource\.mapurl {
 /* There is IE7-specific conditional comments in editor.ftl for time and place elements */
 div.start-date {
   clear: left;
+}
+
+* html div.end-date,
+* html div.location,
+* html div.mapurl {
+	clear: left;
 }
 
 input.date {

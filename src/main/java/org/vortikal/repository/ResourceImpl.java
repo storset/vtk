@@ -49,6 +49,12 @@ import org.vortikal.security.Principal;
 import org.vortikal.util.codec.MD5;
 import org.vortikal.util.repository.LocaleHelper;
 
+/**
+ * 
+ * XXX: Handling of child URI list should be improved/done differently.
+ *      Currently fragile and ugly (there are too many hidden
+ *      assumptions).
+ */
 public class ResourceImpl extends PropertySetImpl implements Resource {
     
     private Acl acl;
@@ -180,7 +186,7 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
             return Collections.unmodifiableList(this.childURIs);
         }
             
-        return null; // Not a collection
+        return null; // Not a collection (external client code expects this, and it is stated in Resource interface).
     }
 
     public Acl getAcl() {
@@ -430,8 +436,12 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (this.childURIs == null) {
             this.childURIs = new ArrayList<Path>();
         }
-        
-        this.childURIs.add(childURI);
+
+        // Don't modify current child URI list, create copy and replace instead.
+        // This is because the current list might be read simultaneously out there in the wild 
+        ArrayList<Path> copy = new ArrayList<Path>(this.childURIs);
+        copy.add(childURI);
+        this.childURIs = copy;
     }
     
     // Mumble mumble. this.childURIs should never be null if this method is called.
@@ -442,7 +452,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
             return;
         }
         
-        this.childURIs.remove(childURI);
+        // Don't modify current child URI list, create copy and replace instead.
+        // This is because the current list might be read simultaneously out there in the wild 
+        ArrayList<Path> copy = new ArrayList<Path>(this.childURIs);
+        copy.remove(childURI);
+        this.childURIs = copy;
     }
     
     /**
@@ -479,14 +493,18 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         if (this.lock != null && other.lock == null) return false;
         if (this.lock != null && !this.lock.equals(other.lock)) return false;
         
-        if ((this.childURIs == null && other.childURIs != null) 
-                ||  (this.childURIs != null && other.childURIs == null)) return false;
+        // Copy refs to current child URI list objects, because 'this.childURIs' is not a stable reference.
+        // It might be swapped to new list while this method is executing.
+        List<Path> thisChildURIs = this.childURIs; 
+        List<Path> otherChildURIs = other.childURIs;
         
-        if (this.childURIs != null && other.childURIs != null) {
-            if (this.childURIs.size() != other.childURIs.size()) return false;
-            for (int i = 0; i < this.childURIs.size(); i++) {
-                if (!this.childURIs.get(i).equals(other.childURIs.get(i)))
-                    return false;
+        if ((thisChildURIs == null && otherChildURIs != null) 
+                ||  (thisChildURIs != null && otherChildURIs == null)) return false;
+        
+        if (thisChildURIs != null && otherChildURIs != null) {
+            if (thisChildURIs.size() != otherChildURIs.size()) return false;
+            for (int i = 0; i < thisChildURIs.size(); i++) {
+                if (!thisChildURIs.get(i).equals(otherChildURIs.get(i))) return false;
             }
         }
         

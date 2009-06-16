@@ -104,9 +104,12 @@ public class ACLEditCommandValidator implements Validator {
                     errors.rejectValue("userNames", "permissions.invalid.chars",
                             new Object[] { userName }, "Username '" + userName
                                     + "' contains invalid charachters");
+                    continue;
                 } else if (!userName.contains(" ")) {
                     // assume a username and validate it as such
-                    validateUserName(userName, errors);
+                    if (!validateUserName(userName, errors)) {
+                        continue;
+                    }
                 } else {
                     // assume a full name and look for a match in ac_userNames
                     // if match found, validate corresponsding username
@@ -115,11 +118,13 @@ public class ACLEditCommandValidator implements Validator {
                     // i.e. no username provided -> validate as full name
                     try {
                         String ac_userName = getAc_userName(userName, editCommand
-                                .getAc_userNames());
+                                .getAc_userNames(), editCommand.getUserNameEntries());
                         if (ac_userName != null && !"".equals(ac_userName)) {
                             // Entered name is selected from autocomplete
                             // suggestions and we have username
-                            validateUserName(ac_userName, errors);
+                            if (!validateUserName(ac_userName, errors)) {
+                                continue;
+                            }
                             uid = ac_userName;
                         } else {
                             List<Principal> matches = this.principalFactory.search(
@@ -129,19 +134,22 @@ public class ACLEditCommandValidator implements Validator {
                                         "permissions.user.wrong.value",
                                         new Object[] { userName }, "User '" + userName
                                                 + "' does not exist");
+                                continue;
                             } else if (matches.size() > 1) {
                                 errors.rejectValue("userNames",
                                         "permissions.user.too.many.matches",
                                         new Object[] { userName }, userName
                                                 + " yielded too many matches.");
-                            } else {
-                                uid = matches.get(0).getName();
+                                continue;
                             }
+                            uid = matches.get(0).getName();
                         }
                     } catch (Exception e) {
-                        errors.rejectValue("userNames", "permissions.exception",
+                        errors
+                                .rejectValue("userNames", "permissions.exception",
                                         new Object[] { userName }, "Cannot find user "
                                                 + userName);
+                        continue;
                     }
                 }
                 editCommand.addUserNameEntry(uid);
@@ -149,7 +157,7 @@ public class ACLEditCommandValidator implements Validator {
         }
     }
 
-    private void validateUserName(String userName, Errors errors) {
+    private boolean validateUserName(String userName, Errors errors) {
         try {
             Principal principal = principalFactory.getPrincipal(userName,
                     Principal.Type.USER);
@@ -158,20 +166,24 @@ public class ACLEditCommandValidator implements Validator {
                 errors.rejectValue("userNames", "permissions.user.wrong.value",
                         new Object[] { userName }, "User '" + userName
                                 + "' does not exist");
+                return false;
             }
 
         } catch (InvalidPrincipalException e) {
             errors.rejectValue("userNames", "permissions.user.wrong.value",
                     new Object[] { userName }, "User '" + userName + "' is illegal");
+            return false;
         }
+        return true;
     }
 
-    private String getAc_userName(String userName, String[] ac_userNames) {
+    private String getAc_userName(String userName, String[] ac_userNames,
+            List<String> userNameEntries) {
         for (String ac_userName : ac_userNames) {
             String[] s = ac_userName.split(";");
-            String ac_fullName = s[0];
-            String ac_uid = s[1];
-            if (userName.equals(ac_fullName)) {
+            String ac_fullName = s[0].trim();
+            String ac_uid = s[1].trim();
+            if (!userNameEntries.contains(ac_uid) && userName.equals(ac_fullName)) {
                 return ac_uid;
             }
         }

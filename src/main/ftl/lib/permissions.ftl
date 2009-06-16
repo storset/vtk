@@ -332,17 +332,19 @@
       </ul>
       <@spring.bind formName + ".userNames" />
       <#assign value=""/>
+      <#assign errorsExist = false>
       <#if spring.status.errorMessages?size &gt; 0>
-      <div class="errorContainer">
-        <ul class="errors">
-          <#list spring.status.errorMessages as error> 
-          <li>${error}</li> 
-          </#list>
-        </ul>
-      </div>
-      <#if spring.status.value?exists>
-        <#assign value = spring.status.value />
-      </#if>
+        <#assign errorsExist = true>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+          </ul>
+        </div>
+        <#if spring.status.value?exists>
+          <#assign value = spring.status.value />
+        </#if>
       </#if>
       <span class="addUser">
         <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
@@ -350,7 +352,11 @@
                     hasDescription=true max="30" />&nbsp;
         
         <@spring.bind formName + ".ac_userNames" />
-        <input type="hidden" id="ac_userNames" name="ac_userNames" value="" />
+        <#assign value=""/>
+        <#if errorsExist>
+          <#assign value = spring.status.value />
+        </#if>        
+        <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         
 	    <input class="addUserButton" type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>

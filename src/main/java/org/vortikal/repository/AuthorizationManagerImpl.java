@@ -599,7 +599,6 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     private boolean groupMatch(Set<Principal> principalList, Principal principal) {
 
         for (Principal p: principalList) {
-
             if (p.getType() == Principal.Type.GROUP) {
                 if (this.principalManager.isMember(principal, p)) {
                     return true;

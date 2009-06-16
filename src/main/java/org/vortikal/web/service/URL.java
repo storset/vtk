@@ -251,6 +251,8 @@ public class URL {
             String param = i.next();
             List<String> values = this.parameters.get(param);
             for (String val: values) {
+                param = URLUtil.urlEncode(param);
+                val = URLUtil.urlEncode(val);
                 qs.append(param).append("=").append(val);
             }
             if (i.hasNext()) {
@@ -282,7 +284,6 @@ public class URL {
         this.characterEncoding = characterEncoding;
     }
 
-
     public String toString() {
         if (this.pathOnly) return this.getPathRepresentation();
         
@@ -300,6 +301,7 @@ public class URL {
 
         return url.toString();
     }
+
     
     /**
      * Generates an "absolute path" representation of this URL (a

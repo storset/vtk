@@ -57,7 +57,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
-
+    
     public void authorizeRootRoleAction(Principal principal) throws AuthorizationException {
         if (!this.roleManager.hasRole(principal, RoleManager.ROOT)) {
             throw new AuthorizationException(
@@ -137,8 +137,9 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      * @throws IOException
      */
     public void authorizeReadProcessed(Path uri, Principal principal) 
-        throws AuthenticationException, AuthorizationException, IOException {
-        ResourceImpl resource = this.dao.load(uri);
+        throws AuthenticationException, AuthorizationException, IOException, ResourceNotFoundException {
+
+        ResourceImpl resource = loadResource(uri);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
@@ -162,9 +163,9 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeRead(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
 
         if (this.roleManager.hasRole(principal, RoleManager.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.READ_EVERYTHING))
@@ -188,11 +189,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeCreate(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
         
@@ -217,11 +218,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeWrite(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
 
@@ -245,11 +246,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeAddComment(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
 
@@ -275,11 +276,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeEditComment(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
 
@@ -307,11 +308,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeAll(Path uri, Principal principal)
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
         
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
         
@@ -338,14 +339,14 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeUnlock(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
         
         if (this.roleManager.hasRole(principal, RoleManager.ROOT))
             return;
         
-        ResourceImpl resource = this.dao.load(uri);
+        ResourceImpl resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, false);
 
@@ -369,11 +370,11 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizeDelete(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException, 
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
-        Resource resource = this.dao.load(uri);
+        Resource resource = loadResource(uri);
         
         this.lockManager.lockAuthorize(resource, principal, true);
         
@@ -412,7 +413,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
      */
     public void authorizePropertyEditAdminRole(Path uri, Principal principal) 
         throws AuthenticationException, AuthorizationException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
         if (principal == null) {
             throw new AuthorizationException(
                 "NULL principal not authorized to edit properties using admin privilege ");
@@ -422,7 +423,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             return;
         }
 
-        Resource resource = this.dao.load(uri);
+        Resource resource = loadResource(uri);
         aclAuthorize(principal, resource, ADMIN_AUTH_PRIVILEGES);
         authorizeWrite(uri, principal);
         
@@ -462,13 +463,13 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     public void authorizeCopy(Path srcUri, Path destUri, 
             Principal principal, boolean deleteDestination) 
         throws AuthenticationException, AuthorizationException, ReadOnlyException,
-        ResourceLockedException, IOException {
+        ResourceLockedException, IOException, ResourceNotFoundException {
 
         checkReadOnly(principal);
 
         authorizeRead(srcUri, principal);
 
-        Resource resource = this.dao.load(srcUri);
+        Resource resource = loadResource(srcUri);
 
         if (resource.isCollection()) {
             Path[] uris = this.dao.discoverACLs(srcUri);
@@ -583,6 +584,17 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
        throw new AuthorizationException();
     }
     
+    // Temporary fix for problems with DAO returning null for resources not found
+    // and this class does not handle it. Throw ResourceNotFoundException(Path) instead
+    // of NullPointerException.
+    private ResourceImpl loadResource(Path uri) 
+        throws ResourceNotFoundException {
+        ResourceImpl resource = this.dao.load(uri);
+        if (resource == null) {
+            throw new ResourceNotFoundException(uri);
+        }
+        return resource;
+    }
 
     private boolean groupMatch(Set<Principal> principalList, Principal principal) {
 

@@ -46,8 +46,8 @@ import org.vortikal.repository.Path;
  * Manager for locks on cache items (URIs).
  */
 public class LockManager {
-    private int maxIterations = 15;
-    private long iterationWaitTimeout = 4000; // 4 seconds
+    private int maxIterations = 25;
+    private long iterationWaitTimeout = 2500; // 2,5 seconds
 
     @SuppressWarnings("unchecked")
 

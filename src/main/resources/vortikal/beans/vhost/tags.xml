@@ -61,6 +61,7 @@
   </bean>
 
   <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
+    <property name="tagService" ref="tags.viewService" />
     <property name="tagsReporter" ref="tagsReporter" />
     <property name="servesRoot" value="${servesWebRoot}" />
   </bean>

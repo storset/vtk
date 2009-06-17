@@ -45,8 +45,8 @@ function copyMoveAction(action, unCheckedMessage) {
 
 function interceptEnterKey(rewiredName) {
 	$("form").bind("keypress", function(e) {
-            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-               $("form " + rewiredName).click();
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {          	
+             // $("form " + rewiredName).click();
                return false; //cancel the default browser click
            }
       });

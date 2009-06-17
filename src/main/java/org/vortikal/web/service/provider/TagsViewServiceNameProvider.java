@@ -1,7 +1,6 @@
 package org.vortikal.web.service.provider;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.web.URLUtil;
 
 public class TagsViewServiceNameProvider implements ServiceNameProvider {
 
@@ -22,7 +22,7 @@ public class TagsViewServiceNameProvider implements ServiceNameProvider {
         String tag = request.getParameter("tag");
         boolean noTagSpecified = StringUtils.isBlank(tag);
         try {
-            tag = noTagSpecified ? tag : URLDecoder.decode(tag, "UTF-8");
+            tag = URLUtil.urlDecode(tag, "utf-8");
         } catch (UnsupportedEncodingException e) {
             // Don't break the entire breadcrumb if uridecoding fails
         }

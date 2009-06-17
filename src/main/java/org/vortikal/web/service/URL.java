@@ -375,12 +375,13 @@ public class URL {
             url.setProtocol(PROTOCOL_HTTPS);
         }
 
-        Map<String, String[]> queryStringMap = URLUtil.splitQueryString(request);
+        Map<String, String[]> queryStringMap = URLUtil.splitQueryString(request.getQueryString());
 
         for (String key: queryStringMap.keySet()) {
+            key = URLUtil.urlDecode(key);
             String[] values = queryStringMap.get(key);
             for (String value: values) {
-                url.addParameter(key, value);
+                url.addParameter(key, URLUtil.urlDecode(value));
             }
         }
         return url;

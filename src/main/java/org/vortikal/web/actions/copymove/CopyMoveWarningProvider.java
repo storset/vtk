@@ -71,7 +71,11 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
                     || destAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL)) {
                 for (String uri : sessionBean.getFilesToBeCopied()) {
                     Resource srcAclResource = findNearestAcl(token, Path.fromString(uri));
-                    if (!srcAclResource.isInheritedAcl()) {
+                    Acl srcAcl = srcAclResource.getAcl();
+                    if (!srcAclResource.isInheritedAcl() 
+                            && !(srcAcl.containsEntry(RepositoryAction.READ, PrincipalFactory.ALL)
+                                    || srcAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL))) {
+                        
                         URL url = this.confirmationService.constructURL(destinationUri);
                         model.put("resourcesDisclosed", Boolean.TRUE);
                         model.put("warningDialogURL", url);

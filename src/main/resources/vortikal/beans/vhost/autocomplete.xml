@@ -62,6 +62,29 @@
     <property name="principalFactory" ref="principalFactory" />
   </bean>
   
+  <bean id="groupNamesAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="groupNames" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="groupNamesAutoCompleteHandler" />
+  </bean>
+  
+  <bean id="groupNamesAutoCompleteHandler"
+    class="org.vortikal.web.display.autocomplete.PrincipalAutoCompleteController">
+    <property name="dataProvider" ref="groupNamesAutoCompleteDataProvider" />
+  </bean>
+  
+  <bean id="groupNamesAutoCompleteDataProvider"
+    class="org.vortikal.web.display.autocomplete.PrincipalDataProvider">
+    <property name="type" value="GROUP" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+  
   <bean id="autoComplete.appResourceAssertion"
     class="org.vortikal.web.service.RequestURIRegexpAssertion">
     <property name="pattern" value="${autoComplete.appResourceURL}" />

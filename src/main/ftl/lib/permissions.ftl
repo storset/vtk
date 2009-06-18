@@ -349,7 +349,7 @@
       <span class="addUser">
         <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
                     id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
-                    hasDescription=true max="30" delay="1000" />&nbsp;
+                    hasDescription=true max="30" delay="800" />&nbsp;
         
         <@spring.bind formName + ".ac_userNames" />
         <#assign value=""/>
@@ -392,9 +392,11 @@
       </#if>
       </#if>
       <span class="addGroup">
-	<input class="addGroupField" type="text" size="15"
-               name="${spring.status.expression}"
-               value="${value}" />&nbsp;
+      
+        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
+                    id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
+                    hasDescription=true max="30" delay="800" />&nbsp;
+                    
         <input class="addGroupButton" type="submit" name="addGroupAction"
                value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
       </span>

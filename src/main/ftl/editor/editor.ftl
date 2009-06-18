@@ -497,7 +497,7 @@
           <#-- AutoComplete only for the tags inputfield -->
           <#if name = 'tags'>
             <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${name}" 
-                    id="resource.${name}" value="${value?html}" minChars=1/>
+                    id="resource.${name}" value="${value?html}" minChars=1 selectFirst="false" />
           <#else>
             <#if name = 'recursive-listing-subfolders'>
             	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>

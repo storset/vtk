@@ -45,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
@@ -121,7 +122,9 @@ public class CopyMoveToSelectedFolderController implements Controller {
         // Getting the selected files from Session
         List<String> filesToBeCopied = sessionBean.getFilesToBeCopied();
 
-        for (String uri: filesToBeCopied) {
+        boolean authorizationFailed = false;
+
+        for (String uri : filesToBeCopied) {
             Path resourceUri = Path.fromString(uri);
             String resourceFilename = resourceUri.getName();
 
@@ -158,6 +161,13 @@ public class CopyMoveToSelectedFolderController implements Controller {
                         this.repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
                     }
                 }
+            } catch (AuthorizationException e) {
+                filesFailed.add(resourceUri);
+                authorizationFailed = true;
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Copy/Move action failed because of restricted files", e);
+                }
 
             } catch (Exception e) {
                 filesFailed.add(resourceUri);
@@ -173,10 +183,18 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
             String msgCode = "";
 
-            if (action.equals("move-resources")) {
-                msgCode = "manage.create.copyMove.error.moveFailed";
+            if (authorizationFailed = false) {
+                if (action.equals("move-resources")) {
+                    msgCode = "manage.create.copyMove.error.moveFailed";
+                } else {
+                    msgCode = "manage.create.copyMove.error.copyFailed";
+                }
             } else {
-                msgCode = "manage.create.copyMove.error.copyFailed";
+                if (action.equals("move-resources")) {
+                    msgCode = "manage.create.copyMove.error.authorization.moveFailed";
+                } else {
+                    msgCode = "manage.create.copyMove.error.authorization.copyFailed";
+                }
             }
 
             Message msg = new Message(msgCode);

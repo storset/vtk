@@ -349,7 +349,7 @@
       <span class="addUser">
         <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
                     id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
-                    hasDescription=true max="30" />&nbsp;
+                    hasDescription=true max="30" delay="1000" />&nbsp;
         
         <@spring.bind formName + ".ac_userNames" />
         <#assign value=""/>

@@ -14,7 +14,8 @@
                                      selectFirst="true"
                                      width=""
                                      hasDescription=false
-                                     max=20>
+                                     max=20
+                                     delay="">
 
   <#-- id might contain '.' (dot) -->
   <#local elementId = "" />  
@@ -39,6 +40,8 @@
           selectFirst:${selectFirst}
           <#if width != "">,
           width:${width}
+          </#if><#if delay != "">,
+          delay:${delay}
           </#if><#if hasDescription>,
             formatItem: function(data, i, n, value) {
               return value.split(";")[0] + " (" + value.split(";")[1] + ")";

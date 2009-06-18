@@ -183,17 +183,17 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
             String msgCode = "";
 
-            if (authorizationFailed = false) {
-                if (action.equals("move-resources")) {
-                    msgCode = "manage.create.copyMove.error.moveFailed";
-                } else {
-                    msgCode = "manage.create.copyMove.error.copyFailed";
-                }
-            } else {
+            if (authorizationFailed) {
                 if (action.equals("move-resources")) {
                     msgCode = "manage.create.copyMove.error.authorization.moveFailed";
                 } else {
                     msgCode = "manage.create.copyMove.error.authorization.copyFailed";
+                }
+            } else {
+                if (action.equals("move-resources")) {
+                    msgCode = "manage.create.copyMove.error.moveFailed";
+                } else {
+                    msgCode = "manage.create.copyMove.error.copyFailed";
                 }
             }
 

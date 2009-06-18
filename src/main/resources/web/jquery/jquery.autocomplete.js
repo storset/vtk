@@ -166,10 +166,6 @@
           select.hide();
           break;
 
-        case KEY.SPACE:
-          select.hide();
-          break;
-
         default:
           clearTimeout(timeout);
           timeout = setTimeout(onChange, options.delay);

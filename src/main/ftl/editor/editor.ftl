@@ -38,7 +38,7 @@
 
     <script type="text/javascript">
       $(document).ready(function() {
-          interceptEnterKey("input#saveButton");
+          interceptEnterKey();
        }); 
     </script>
 

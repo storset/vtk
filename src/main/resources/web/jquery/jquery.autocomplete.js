@@ -252,7 +252,17 @@
 
       if (!skipPrevCheck && currentValue == previousValue)
         return;
-
+      
+      var whitespaceRegex = /[\s\xA0]+$/;
+      var delimiter = options.multipleSeparator;
+      delimiter = delimiter.replace(whitespaceRegex, "");
+      currentValue = currentValue.replace(whitespaceRegex, "");
+      if (currentValue.match(delimiter+"$") == delimiter) {
+        stopLoading();
+        select.hide();
+        return;
+      }
+ 
       previousValue = currentValue;
 
       currentValue = lastWord(currentValue);

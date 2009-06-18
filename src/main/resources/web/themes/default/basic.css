@@ -125,6 +125,17 @@ div.infomessage {
   margin-bottom: 5px;
 }
 
+div.errormessage {
+  font-size: 110%;
+  font-weight: bold;
+  padding: 5px;
+  border: 1px solid #CCCCCC;
+  color: #333;
+  text-align: center;
+  margin-bottom: 5px;	
+  background-color: #ffe;
+} 
+
 div.webdavmessage {
   font-size: 110%;
   padding: 10px;

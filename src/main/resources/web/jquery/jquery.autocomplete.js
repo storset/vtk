@@ -139,20 +139,9 @@
           }
           break;
 
-        // matches also semicolon
-        case options.multiple && $.trim(options.multipleSeparator) == ","
-            && KEY.COMMA:
+        case KEY.RIGHTARROW:
         case KEY.TAB:
         case KEY.RETURN:
-          if (selectCurrent()) {
-            // stop default to prevent a form submit, Opera needs special
-            // handling
-            event.preventDefault();
-            blockSubmit = true;
-            return false;
-          }
-          break;
-        case KEY.RIGHTARROW:
           if (selectCurrent()) {
             // stop default to prevent a form submit, Opera needs special
             // handling
@@ -253,10 +242,8 @@
       if (!skipPrevCheck && currentValue == previousValue)
         return;
       
-      var whitespaceRegex = /[\s\xA0]+$/;
-      var delimiter = options.multipleSeparator;
-      delimiter = delimiter.replace(whitespaceRegex, "");
-      currentValue = currentValue.replace(whitespaceRegex, "");
+      var delimiter = $.trim(options.multipleSeparator);
+      currentValue = $.trim(currentValue);
       if (currentValue.match(delimiter+"$") == delimiter) {
         stopLoading();
         select.hide();

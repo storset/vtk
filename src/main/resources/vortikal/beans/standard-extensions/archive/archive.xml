@@ -7,12 +7,12 @@
 		<property name="order" value="-997" />
 		<property name="categories">
 			<set>
-				<value>resourceMenu</value>
+				<value>globalMenu</value>
 			</set>
 		</property>
 		<property name="attributes">
 			<map>
-				<entry key="resourceMenuOrder">
+				<entry key="globalMenuOrder">
 					<value type="java.lang.Integer">999</value>
 				</entry>
 			</map>
@@ -63,12 +63,12 @@
 		<property name="order" value="-997" />
 		<property name="categories">
 			<set>
-				<value>resourceMenu</value>
+				<value>globalMenu</value>
 			</set>
 		</property>
 		<property name="attributes">
 			<map>
-				<entry key="resourceMenuOrder">
+				<entry key="globalMenuOrder">
 					<value type="java.lang.Integer">999</value>
 				</entry>
 			</map>

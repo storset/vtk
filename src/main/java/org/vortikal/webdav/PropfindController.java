@@ -57,6 +57,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.BoundedInputStream;
 import org.vortikal.util.io.SizeLimitException;
+import org.vortikal.util.repository.ResourceSorter;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 
@@ -359,7 +360,8 @@ public class PropfindController extends AbstractWebdavController {
 
             /* List immediate children: */
 
-            resourceArray = repository.listChildren(token, uri, false);
+            resourceArray = repository.listChildren(token, uri, false);          
+            ResourceSorter.sort(resourceArray, ResourceSorter.ORDER_BY_NAME, false);
             this.logger.debug("Number of children: " + resourceArray.length);
 
         } else if (depth.equals("infinity")) {
@@ -368,6 +370,7 @@ public class PropfindController extends AbstractWebdavController {
 
             this.logger.warn("NOT IMPLEMENTED: listChildrenRecursively()");
             resourceArray = repository.listChildren(token, uri, false);
+            ResourceSorter.sort(resourceArray, ResourceSorter.ORDER_BY_NAME, false);
         }
         
         for (int i = 0;  i < resourceArray.length; i++) {

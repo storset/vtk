@@ -30,14 +30,42 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType;
 
 public class LastModifiedByEvaluator implements PropertyEvaluator {
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        property.setPrincipalValue(ctx.getPrincipal());
+
+    	PropertySet ancestorPropertySet = ctx.getNewResource();
+
+        Property contentLastModified = ancestorPropertySet.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+
+        Property contentModifiedBy = ancestorPropertySet.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
+
+        Property propertiesLastModified = ancestorPropertySet.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME);
+        
+        Property propertiesModifiedBy = ancestorPropertySet.getProperty(
+            Namespace.DEFAULT_NAMESPACE, PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME);
+        
+        if (contentLastModified == null || contentModifiedBy == null || propertiesLastModified == null || propertiesModifiedBy == null) {
+            throw new PropertyEvaluationException(
+                "contentLastModified, contentModifiedBy, propertiesLastModified, propertiesModifiedBy are all needed for evaluation");
+        }
+
+        if (propertiesLastModified.getDateValue().getTime() > contentLastModified.getDateValue().getTime()) {
+            property.setPrincipalValue(propertiesModifiedBy.getPrincipalValue());            
+        } else {
+            property.setPrincipalValue(contentModifiedBy.getPrincipalValue());
+        }
+
         return true;
     }
 }

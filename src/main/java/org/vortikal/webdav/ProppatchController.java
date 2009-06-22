@@ -67,6 +67,7 @@ import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.web.HttpUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -112,6 +113,7 @@ public class ProppatchController extends AbstractWebdavController  {
                 this.logger.debug("storing modified Resource");
             }
             resource = this.repository.store(token, resource);
+
             XMLOutputter xmlOutputter = new XMLOutputter(format);
             String xml = xmlOutputter.outputString(doc);
             byte[] buffer = null;
@@ -143,11 +145,9 @@ public class ProppatchController extends AbstractWebdavController  {
             
         } catch (InvalidRequestException e) {
             this.logger.info("Invalid request on URI '" + uri + "'", e);
-
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_BAD_REQUEST));
-
+            writeDavErrorResponse(response, new Integer(HttpServletResponse.SC_BAD_REQUEST), e);
+            return null;
+            
         } catch (ResourceNotFoundException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ResourceNotFoundException for URI "
@@ -162,27 +162,24 @@ public class ProppatchController extends AbstractWebdavController  {
                 this.logger.debug("Caught ConstraintViolationException for URI "
                              + uri, e);
             }
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
-
+            writeDavErrorResponse(response, new Integer(HttpServletResponse.SC_FORBIDDEN), e);
+            return null;
+            
         } catch (IllegalOperationException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught IllegalOperationException for URI "
                              + uri, e);
             }
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+            writeDavErrorResponse(response, new Integer(HttpServletResponse.SC_FORBIDDEN), e);
+            return null;
 
         } catch (ReadOnlyException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Caught ReadOnlyException for URI "
                              + uri);
             }
-            model.put(WebdavConstants.WEBDAVMODEL_ERROR, e);
-            model.put(WebdavConstants.WEBDAVMODEL_HTTP_STATUS_CODE,
-                      new Integer(HttpServletResponse.SC_FORBIDDEN));
+            writeDavErrorResponse(response, new Integer(HttpServletResponse.SC_FORBIDDEN), e);
+            return null;
 
         } catch (ResourceLockedException e) {
             if (this.logger.isDebugEnabled()) {
@@ -196,9 +193,50 @@ public class ProppatchController extends AbstractWebdavController  {
         return new ModelAndView("PROPPATCH", model);
     }
    
+    
+    
+    
+    @SuppressWarnings("deprecation")
+    private void writeDavErrorResponse(HttpServletResponse response, Integer status, Exception e) throws Exception { 
+        Element error = new Element("error", WebdavConstants.DAV_NAMESPACE);
+        Element errormsg = new Element("errormsg", WebdavConstants.DEFAULT_NAMESPACE);
+        errormsg.setText(HtmlUtil.escapeHtmlString(e.getMessage()));
+        error.addContent(errormsg);
 
+        Document doc = new Document(error);
+        Format format = Format.getPrettyFormat();
+        format.setEncoding("utf-8");
 
+        XMLOutputter xmlOutputter = new XMLOutputter(format);
+        String xml = xmlOutputter.outputString(doc);
+        byte[] buffer = null;
+        try {
+            buffer = xml.getBytes("utf-8");
+        } catch (UnsupportedEncodingException ex) {
+            logger.warn("Warning: UTF-8 encoding not supported", ex);
+            throw new RuntimeException("UTF-8 encoding not supported");
+        }
+        response.setHeader("Content-Type", "text/xml;charset=utf-8");
+        response.setContentLength(buffer.length);
+        response.setStatus(status, WebdavUtil.getStatusMessage(status));
+        OutputStream out = null;
+        try {
+            out = response.getOutputStream();
+            out.write(buffer, 0, buffer.length);
+            out.flush();
+            out.close();
 
+        } finally {
+            if (out != null) {
+                out.flush();
+                out.close();
+            }
+        }       
+    }
+
+    
+    
+    
     /**
      * Builds a JDOM tree from the XML request body.
      *

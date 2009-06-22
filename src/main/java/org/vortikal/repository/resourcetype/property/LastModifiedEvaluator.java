@@ -42,9 +42,9 @@ import org.vortikal.repository.resourcetype.PropertyType;
 public class LastModifiedEvaluator implements PropertyEvaluator {
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-
+    
         PropertySet ancestorPropertySet = ctx.getNewResource();
-        
+
         Property contentLastModified = ancestorPropertySet.getProperty(
             Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
 

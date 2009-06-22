@@ -82,6 +82,7 @@ public class VShell extends AbstractConsole {
         }
         
         addCommand(new HelpCommand());
+        addCommand(new QuitCommand());
         addCommands();
     }
     
@@ -298,6 +299,22 @@ public class VShell extends AbstractConsole {
         return result;
     }
 
+    private class QuitCommand implements VCommand {
+        public String getDescription() {
+            return "Quit VShell session";
+        }
+        
+        public String getUsage() {
+            return "quit";
+        }
+        
+        public void execute(VShellContext c, Map<String, Object> args,
+                PrintStream out) {
+            out.println("Goodbye.");
+            out.flush();
+            Thread.currentThread().interrupt();
+        }
+    }
     
     private class HelpCommand implements VCommand {
         public String getDescription() {

@@ -170,7 +170,9 @@ public abstract class AtomFeedController implements Controller {
 
         if (this.publishedDatePropDef != null) {
             prop = result.getProperty(this.publishedDatePropDef);
-            entry.setPublished(prop.getDateValue());
+            if (prop != null) {
+                entry.setPublished(prop.getDateValue());
+            }
         }
 
         prop = result.getProperty(NS, PropertyType.LASTMODIFIED_PROP_NAME);

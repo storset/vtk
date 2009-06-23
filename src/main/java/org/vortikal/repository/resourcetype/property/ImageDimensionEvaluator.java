@@ -49,8 +49,11 @@ public class ImageDimensionEvaluator implements PropertyEvaluator {
     }
     
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+        if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
             return false;
+        } else if (property.isValueInitialized()
+                && ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+            return true;
         }
         try {
 

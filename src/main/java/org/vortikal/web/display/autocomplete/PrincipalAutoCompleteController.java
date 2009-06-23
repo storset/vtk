@@ -39,6 +39,7 @@ import org.vortikal.security.Principal;
 public class PrincipalAutoCompleteController extends AutoCompleteController {
 
     private VocabularyDataProvider<Principal> dataProvider;
+    private boolean invert;
 
     @Override
     protected String getAutoCompleteSuggestions(String prefix, Path contextUri,
@@ -50,8 +51,13 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
         StringBuilder result = new StringBuilder();
 
         for (Principal principal : completions) {
-            result.append(principal.getDescription() + SUGGESTION_SEPERATOR
-                    + principal.getName() + SUGGESTION_DELIMITER);
+            if (invert) {
+                result.append(principal.getName() + SUGGESTION_SEPERATOR 
+                        + principal.getDescription() + SUGGESTION_DELIMITER);
+            } else {
+                result.append(principal.getDescription() + SUGGESTION_SEPERATOR
+                        + principal.getName() + SUGGESTION_DELIMITER);
+            }
         }
 
         return result.toString();
@@ -60,6 +66,10 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
     @Required
     public void setDataProvider(VocabularyDataProvider<Principal> dataProvider) {
         this.dataProvider = dataProvider;
+    }
+
+    public void setInvert(boolean invert) {
+        this.invert = invert;
     }
 
 }

@@ -649,12 +649,12 @@ td.expandedForm div.submitButtons {
 
 .expandedForm ul.principalList li.users {
   float: left;
-  margin-right: 20px;
+  clear: right;
 }
 
 .expandedForm ul.principalList li.groups {
   float: left;
-  clear: right;
+  margin-right: 20px;
 }
 
 .expandedForm ul.principalList ul.users {

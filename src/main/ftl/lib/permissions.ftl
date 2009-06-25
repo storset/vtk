@@ -297,7 +297,46 @@
     </ul>
 
     <ul class="principalList" id="principalList">
-      <li class="users">
+      <li class="groups">
+      <fieldset>
+      <legend><@vrtx.msg code="permissions.groups" default="Groups"/></legend>
+      <ul class="groups">
+      <@spring.bind formName + ".removeGroupURLs" />
+      <#assign removeGroupURLs=spring.status.value />
+      <@spring.bind formName + ".groups" /> 
+      <#list spring.status.value as group>
+        <li>
+          <#compress>
+          ${group.name}&nbsp;(&nbsp;<a href="${removeGroupURLs[group.name]?html}"><#t/>
+            <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
+          </#compress>
+        </li>
+      </#list>
+      </ul>
+      <@spring.bind formName + ".groupNames" /> 
+      <#assign value=""/>
+      <#if spring.status.errorMessages?size &gt; 0>
+      <ul class="errors">
+      <#list spring.status.errorMessages as error> 
+        <li>${error}</li> 
+      </#list>
+      </ul>
+      <#if spring.status.value?exists>
+        <#assign value=spring.status.value />
+      </#if>
+      </#if>
+      <span class="addGroup">
+      
+        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
+                    id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
+                    hasDescription=true max="30" delay="800" />&nbsp;
+                    
+        <input class="addGroupButton" type="submit" name="addGroupAction"
+               value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
+      </span>
+    </fieldset>
+    </li>
+    <li class="users">
       <fieldset>
       <legend><@vrtx.msg code="permissions.users" default="Users"/></legend>
       <ul class="users"> 
@@ -358,50 +397,11 @@
         </#if>        
         <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         
-	    <input class="addUserButton" type="submit" name="addUserAction"
+        <input class="addUserButton" type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>
       </fieldset>
       </li>
-      <li class="groups">
-      <fieldset>
-      <legend><@vrtx.msg code="permissions.groups" default="Groups"/></legend>
-      <ul class="groups">
-      <@spring.bind formName + ".removeGroupURLs" />
-      <#assign removeGroupURLs=spring.status.value />
-      <@spring.bind formName + ".groups" /> 
-      <#list spring.status.value as group>
-        <li>
-          <#compress>
-          ${group.name}&nbsp;(&nbsp;<a href="${removeGroupURLs[group.name]?html}"><#t/>
-            <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
-          </#compress>
-        </li>
-      </#list>
-      </ul>
-      <@spring.bind formName + ".groupNames" /> 
-      <#assign value=""/>
-      <#if spring.status.errorMessages?size &gt; 0>
-      <ul class="errors">
-      <#list spring.status.errorMessages as error> 
-        <li>${error}</li> 
-      </#list>
-      </ul>
-      <#if spring.status.value?exists>
-        <#assign value=spring.status.value />
-      </#if>
-      </#if>
-      <span class="addGroup">
-      
-        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
-                    id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
-                    hasDescription=true max="30" delay="800" />&nbsp;
-                    
-        <input class="addGroupButton" type="submit" name="addGroupAction"
-               value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
-      </span>
-    </fieldset>
-    </li>
     </ul>
     <#-- Disable input if 'everyone' has permission: -->
     <#if grouped><script type="text/javascript">disableInput()</script></#if>

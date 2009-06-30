@@ -56,7 +56,7 @@ public abstract class AbstractLuceneIndex {
     private final Log logger = LogFactory.getLog(AbstractLuceneIndex.class);
 
     /* Lucene tunables */
-    private int mergeFactor = 10;
+    private int mergeFactor = 5;
 
     private int maxBufferedDocs = 100;
 
@@ -248,11 +248,6 @@ public abstract class AbstractLuceneIndex {
         if (this.directory == null) {
             throw new IOException("Index is closed");
         }
-
-        // if (!IndexWriter.isLocked(this.directory)) {
-        // return; // If there is no lock on index, there are no pending
-        // // changes.
-        // }
 
         if (this.reader != null) {
             this.reader.close();

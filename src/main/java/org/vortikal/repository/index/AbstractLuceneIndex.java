@@ -56,7 +56,7 @@ public abstract class AbstractLuceneIndex {
     private final Log logger = LogFactory.getLog(AbstractLuceneIndex.class);
 
     /* Lucene tunables */
-    private int mergeFactor = 5;
+    private int mergeFactor = 6;
 
     private int maxBufferedDocs = 100;
 

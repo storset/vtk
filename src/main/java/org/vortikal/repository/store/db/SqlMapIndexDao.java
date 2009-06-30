@@ -124,16 +124,23 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
                     public Object doInSqlMapClient(SqlMapExecutor sqlMapExec)
                             throws SQLException {
 
+                        int rowsUpdated = 0;
+                        int statementCount = 0;
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("sessionId", sessionId);
                         sqlMapExec.startBatch();
                         for (Path uri : uris) {
-                            Map<String, Object> params = new HashMap<String, Object>();
-                            params.put("sessionId", sessionId);
                             params.put("uri", uri.toString());
-                            sqlMapExec.insert(insertUriTempTableStatement,
-                                    params);
+                            sqlMapExec.insert(insertUriTempTableStatement, params);
+                            
+                            if (++statementCount % UPDATE_BATCH_SIZE_LIMIT == 0) {
+                            	// Reached limit of how many inserts we batch, execute current batch immediately
+                            	rowsUpdated += sqlMapExec.executeBatch();
+                            	sqlMapExec.startBatch();
+                            }
                         }
-                        int batchCount = sqlMapExec.executeBatch();
-                        return new Integer(batchCount);
+                        rowsUpdated += sqlMapExec.executeBatch();
+                        return new Integer(rowsUpdated);
                     }
                 });
 

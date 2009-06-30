@@ -25,7 +25,7 @@
 
     <isNotNull property="limit">
       <!--  Needed for Oracle, renders to empty block by default. -->
-      <include refid="dataReportingLimitPrepend"/>
+      <include refid="limitPrepend"/>
     </isNotNull>
     
     <isGreaterThan property="minValueFrequency" compareValue="1">
@@ -90,9 +90,9 @@
     </isGreaterThan>
         
     <isNotNull property="limit" >
-       <include refid="dataReportingLimitAppend"/>
+       <include refid="limitAppend"/>
     </isNotNull>
   </select>
-  
+
 
 </sqlMap>

@@ -78,11 +78,11 @@
   </sql>
 
 
-  <sql id="dataReportingLimitPrepend">
+  <sql id="limitPrepend">
     SELECT * FROM (
   </sql>
 
-  <sql id="dataReportingLimitAppend">
+  <sql id="limitAppend">
     <!--  Oracle query limiting appendix -->
     ) WHERE ROWNUM &lt;= #limit#
   </sql>

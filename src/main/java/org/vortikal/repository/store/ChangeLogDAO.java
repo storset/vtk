@@ -39,6 +39,9 @@ public interface ChangeLogDAO {
     public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId)
         throws DataAccessException;
 
+    public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId, int limit)
+    	throws DataAccessException;
+
     public void removeChangeLogEntries(List<ChangeLogEntry> entries)
         throws DataAccessException;
     

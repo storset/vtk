@@ -54,6 +54,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     private ChangeLogDAO changeLogDAO;
     private int loggerType;
     private int loggerId;
+    private int maxChangelogEntriesPerPoll = 20000;
     
     /**
      * This method should be periodically called to poll for resource changes.
@@ -61,8 +62,10 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     public synchronized void pollChanges() {
         
         try {
-            List<ChangeLogEntry> changes = this.changeLogDAO.getChangeLogEntries(this.loggerType, 
-                                                                                 this.loggerId);
+            List<ChangeLogEntry> changes = 
+            	this.changeLogDAO.getChangeLogEntries(this.loggerType, 
+                                                      this.loggerId,
+                                                      this.maxChangelogEntriesPerPoll);
             
             if (logger.isDebugEnabled() && changes.size() > 0) {
                 logger.debug("");
@@ -160,5 +163,12 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     public void setLoggerId(int loggerId) {
         this.loggerId = loggerId;
     }
+
+	public void setMaxChangelogEntriesPerPoll(int maxChangelogEntriesPerPoll) {
+		if (maxChangelogEntriesPerPoll <= 0) {
+			throw new IllegalArgumentException("Number must be greater than zero");
+		}
+		this.maxChangelogEntriesPerPoll = maxChangelogEntriesPerPoll;
+	}
 
 }

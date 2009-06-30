@@ -45,11 +45,11 @@ import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor 
     implements ChangeLogDAO {
-
+	
     @SuppressWarnings("unchecked")
     public void removeChangeLogEntries(final List<ChangeLogEntry> entries) 
         throws DataAccessException {
-
+    	
         final SqlMapClientTemplate client = getSqlMapClientTemplate();
         
         String statement = getSqlMap("nextTempTableSessionId");
@@ -64,14 +64,25 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
                 Map params = new HashMap();
                 params.put("sessionId", sessionId);
                 String statement = getSqlMap("insertChangelogEntryIdIntoTempTable");
+                
+                // Batch inserts into temporary table and respect UPDATE_BATCH_SIZE_LIMIT
+                int statementCount = 0;
+                int rowsUpdated = 0;
                 executor.startBatch();
                 for (ChangeLogEntry entry: entries) {
                     params.put("changelogEntryId", entry.getChangeLogEntryId());
                     executor.insert(statement, params);
+                    
+                    if (++statementCount % UPDATE_BATCH_SIZE_LIMIT == 0) {
+                    	// Reached limit of how many inserts we batch, execute current batch immediately
+                    	rowsUpdated += executor.executeBatch();
+                    	executor.startBatch(); // Start new batch immediately
+                    }
                 }
-                int batchCount = executor.executeBatch();
+                // Execute anything remaining in last batch
+                rowsUpdated += executor.executeBatch();
                 
-                return new Integer(batchCount);
+                return new Integer(rowsUpdated);
             }
         };
         
@@ -87,7 +98,7 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
         client.delete(statement, sessionId);
         
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId) 
         throws DataAccessException {
@@ -104,6 +115,23 @@ public class SqlMapChangeLogDAO extends AbstractSqlMapDataAccessor
     }
 
     @SuppressWarnings("unchecked")
+    public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId, int limit) 
+        throws DataAccessException {
+        
+        SqlMapClientTemplate client = getSqlMapClientTemplate();
+
+        Map params = new HashMap();
+        params.put("loggerType", loggerType);
+        params.put("loggerId", loggerId);
+        params.put("limit", limit);
+        
+        String statement = getSqlMap("getChangeLogEntries");
+        
+        List<ChangeLogEntry> retlist = client.queryForList(statement, params);
+        
+        return retlist;
+    }
+
     public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse) 
         throws DataAccessException {
         String sqlMap = null;

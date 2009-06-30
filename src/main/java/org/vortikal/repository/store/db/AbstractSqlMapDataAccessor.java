@@ -36,7 +36,17 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 public abstract class AbstractSqlMapDataAccessor extends SqlMapClientDaoSupport {
 
+	/**
+	 * The escape character used in SQL.
+	 */
     public static final char SQL_ESCAPE_CHAR = '@';
+    
+    /**
+     * General limit on size of SQL batch updates (number of statements in batch).
+     * Respecting this limit helps to avoid hangs on batched inserts through JDBC 
+     * (observed on Oracle in test, at least).
+     */
+    public static final int UPDATE_BATCH_SIZE_LIMIT = 512;
 
     private Map<String, String> sqlMaps;
 

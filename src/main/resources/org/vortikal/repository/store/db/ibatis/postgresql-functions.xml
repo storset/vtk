@@ -74,11 +74,11 @@
     limit #max#
   </sql>
 
-  <sql id="dataReportingLimitPrepend">
+  <sql id="limitPrepend">
     <!-- By default, nothing is prepend to query for limiting. --> 
   </sql>
   
-  <sql id="dataReportingLimitAppend">
+  <sql id="limitAppend">
     <!--  Default (supported by at least PostgreSQL and MySQL) -->
     LIMIT #limit# OFFSET 0
   </sql>

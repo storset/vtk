@@ -776,9 +776,16 @@
 
   <select id="getChangeLogEntries" parameterClass="java.util.Map" 
                                    resultMap="ChangeLogEntry">
+    <isNotNull property="limit">
+      <!--  Needed for Oracle, renders to empty string by default. -->
+      <include refid="limitPrepend"/>
+    </isNotNull>
     select * from changelog_entry
       where logger_type=#loggerType# and logger_id=#loggerId# 
       order by changelog_entry_id
+    <isNotNull property="limit" >
+       <include refid="limitAppend"/>
+    </isNotNull>
   </select>
 
   <select id="getContextList"  

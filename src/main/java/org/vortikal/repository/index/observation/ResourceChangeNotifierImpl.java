@@ -54,7 +54,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
     private ChangeLogDAO changeLogDAO;
     private int loggerType;
     private int loggerId;
-    private int maxChangelogEntriesPerPoll = 20000;
+    private int maxChangelogEntriesPerPoll = 30000;
     
     /**
      * This method should be periodically called to poll for resource changes.

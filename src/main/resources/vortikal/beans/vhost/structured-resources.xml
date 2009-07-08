@@ -17,6 +17,17 @@
     <property name="handler" ref="structuredResources.displayHandler" />
   </bean>
   
+  <bean id="structuredResources.previewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="json.contentTypeAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="previewIframeHandler" />
+  </bean>
+
+
   <bean id="structuredResources.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />

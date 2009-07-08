@@ -91,17 +91,38 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     }
 
 
-    public HtmlPageContent render(HtmlPageContent html, HttpServletRequest request,
+    public TemplateExecution newTemplateExecution(HtmlPageContent html, HttpServletRequest request,
             Map<Object, Object> model) throws Exception {
-
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
-        HtmlPage resultPage = 
-            this.compiledTemplate.generate(html.getHtmlContent(), request, model);
-        return new HtmlPageContentImpl(resultPage.getCharacterEncoding(), resultPage);
+        return new Execution(this.compiledTemplate, html, request, model);
     }
+    
+    public class Execution implements TemplateExecution {
+        
+        private CompiledTemplate compiledTemplate;
+        private HtmlPageContent html;
+        private HttpServletRequest request;
+        private Map<Object, Object> model;
 
+        public Execution(CompiledTemplate compiledTemplate, HtmlPageContent html, 
+                HttpServletRequest request, Map<Object, Object> model) {
+            this.compiledTemplate = compiledTemplate;
+            this.html = html;
+            this.request = request;
+            this.model = model;
+        }
+
+        public HtmlPageContent render() throws Exception {
+            HtmlPage resultPage = 
+                this.compiledTemplate.generate(html.getHtmlContent(), 
+                        request, model);
+            return new HtmlPageContentImpl(resultPage.getCharacterEncoding(), 
+                    resultPage);
+        }
+    }
+    
     private synchronized void compile() throws Exception {
         if (this.compiledTemplate != null && 
                 this.lastModified == this.templateSource.getLastModified()) {
@@ -285,7 +306,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 List<HtmlContent> nodes = 
                     renderComponentAsHtml(this.elementComponent.getComponent(), 
                             decoratorRequest);
-                result.addAll(nodes);
+                if (nodes != null) {
+                    result.addAll(nodes);
+                }
             }
             return result;
         }

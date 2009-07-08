@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,8 @@
  */
 package org.vortikal.web.decorating;
 
-import java.util.Map;
+public interface TemplateExecution {
 
-import javax.servlet.http.HttpServletRequest;
+    public PageContent render() throws Exception;
 
-public interface Template {
-
-    public TemplateExecution newTemplateExecution(
-            HtmlPageContent html, HttpServletRequest request,
-            Map<Object, Object> model) throws Exception;
 }

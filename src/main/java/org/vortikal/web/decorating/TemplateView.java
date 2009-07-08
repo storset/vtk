@@ -45,7 +45,6 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
     
     private TemplateManager templateManager;
     private String templateRef;
-    private ParsedHtmlDecoratorTemplate template;
     
     public String getContentType() {
         return null;
@@ -69,8 +68,11 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
                 return page.getCharacterEncoding();
             }
         };
-        content = this.template.render(content, request, model);
-        return content;
+        
+        ParsedHtmlDecoratorTemplate template = getTemplate();
+        ParsedHtmlDecoratorTemplate.Execution execution = 
+            (ParsedHtmlDecoratorTemplate.Execution) template.newTemplateExecution(content, request, model);
+        return execution.render();
     }
     
 
@@ -97,18 +99,25 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
     @Required public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
     }
-    
+
     public void afterPropertiesSet() {
+        if (this.templateRef == null) {
+            throw new BeanInitializationException("Unable to get template: no templateRef specified");
+        }
         try {
-            Template t = this.templateManager.getTemplate(this.templateRef);
-            if (!(t instanceof ParsedHtmlDecoratorTemplate)) {
-                throw new IllegalStateException("Template must be of class " 
-                        + ParsedHtmlDecoratorTemplate.class.getName());
-            }
-            this.template = (ParsedHtmlDecoratorTemplate) t;
+            getTemplate();
         } catch (Throwable t) {
             throw new BeanInitializationException(
                     "Unable to instantiate template '" + this.templateRef + "'", t);
         }
+    }
+
+    private ParsedHtmlDecoratorTemplate getTemplate() throws Exception {
+        Template t = this.templateManager.getTemplate(this.templateRef);
+        if (!(t instanceof ParsedHtmlDecoratorTemplate)) {
+            throw new IllegalStateException("Template must be of class " 
+                    + ParsedHtmlDecoratorTemplate.class.getName());
+        }
+        return (ParsedHtmlDecoratorTemplate) t;
     }
 }

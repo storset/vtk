@@ -116,7 +116,8 @@ public class TemplateDecorator implements Decorator {
                         + " using template '" + template + "'");
             }
             HtmlPageContent c = parseHtml(content, filter);
-            content = template.render(c, request, model);
+            TemplateExecution execution = template.newTemplateExecution(c, request, model);
+            content = execution.render();
             
             if (descriptor.tidy()) {
                 content = tidyContent(content);

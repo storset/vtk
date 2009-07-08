@@ -145,6 +145,7 @@
         <ref bean="decorating.cssNamespace" />
         <ref bean="article.componentNamespace" />
         <ref bean="event.componentNamespace" />
+        <ref bean="structuredResources.componentNamespace" />
       </set>
     </property>
   </bean>

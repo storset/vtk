@@ -1,18 +1,46 @@
 
 resourcetype jarticle {
   properties {
-    title : string required,
+    title : string (overrides : title),
     author : string,
-    content : string
+    published-date : string,
+    content : html
   }
   edit-rules {
   }
-  view-definition {$$
-    <html><head><title>article.template</title></head><body>article</body></html>
-  $$}
+  view-definition {
+  $$
+    <html>
+      <head>
+        <title><json:field select="title" /></title>
+      </head>
+      <body>
+        <h1><json:field select="title" /></h1>
+        <json:field select="author" />
+        <json:field select="date" />
+        <json:field select="content" />
+      </body>
+    </html>
+  $$
+  }
 }
 
-resourcetype jperson : jarticle {
+
+
+resourcetype jevent : jarticle {
+  properties {
+    start-date : string,
+    end-date : string,
+    location : string,
+    map-url : string
+  }
+  edit-rules {
+  }
+}
+
+
+
+resourcetype jperson {
   properties {
     username : string required,
     getExternalPersonInfo : boolean,
@@ -26,13 +54,31 @@ resourcetype jperson : jarticle {
     availableHours : string,
     picture : image_ref,
     tags : string,
- 	getExternalScientificInformation : boolean,
- 	scientificInformation : html
+    getExternalScientificInformation : boolean,
+    scientificInformation : html
   }
   edit-rules {
     username (before content),
     officeNumber (textfield[5])
   }
   view-definition {
+  $$
+    <html>
+      <head>
+        <title><json:field select="firstName" /> <json:field select="surname" /></title>
+      </head>
+      <body>
+        <h1><json:field select="firstName" /> <json:field select="surname" /></h1>
+        <p>Postal adress: <json:field select="postalAddress" /></p>
+        <p>Visiting address: <json:field select="postalAddress" /></p>
+        <p>Email: <json:field select="email" /></p>
+        <p>Webpage: <json:field select="webPage" /></p>
+        <p>Office: <json:field select="officeNumber" /></p>
+        <p>Visiting hours: <json:field select="availableHours" /></p>
+        <p>Tags: <json:field select="tags" /></p>
+        <p>Scientific information: <json:field select="scientificInformation" /></p>
+      </body>
+    </html>
+  $$ 
   }
 }

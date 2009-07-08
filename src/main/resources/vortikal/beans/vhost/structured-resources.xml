@@ -57,13 +57,34 @@
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateManager" ref="structuredResources.templateManager" />
+    <property name="resourceModelKey" value="structured-resource" />
   </bean>
 
   <bean id="structuredResources.templateManager" class="org.vortikal.resourcemanagement.DecoratorTemplateManager">
-    <property name="templateFactory" ref="article.decoratorTemplateFactory" />
+    <property name="templateFactory" ref="structuredResources.decoratorTemplateFactory" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
   
+  <bean id="structuredResources.decoratorTemplateFactory"
+        class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
+    <property name="componentParser" ref="decorating.dollarSyntaxTemplateParser" />
+  </bean>
+
+
+  <bean id="structuredResources.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="json" />
+  </bean>
+
+
+  <bean id="structuredResources.fieldSelectComponent"
+        class="org.vortikal.resourcemanagement.StructuredResourceFieldComponent">
+    <property name="namespace" ref="structuredResources.componentNamespace" />
+    <property name="name" value="field" />
+    <property name="resourceModelKey" value="structured-resource" />
+  </bean>
+
   <bean id="structuredResources.editHandler" class="org.vortikal.resourcemanagement.StructuredResourceEditor">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="repository" ref="repository" />
@@ -90,10 +111,13 @@
   <bean id="structuredResources.displayView" class="org.vortikal.web.decorating.TemplateView">
     <!--
     <property name="templateManager" ref="structuredResources.templateManager" />
-    <property name="templateRef" value="structuredResources.template" />
     -->
+    <property name="templateRef" value="structured-resources.template" />
+
     <property name="templateManager" ref="article.templateManager" />
+    <!--
     <property name="templateRef" value="article.template" />
+    -->
   </bean>
   
   <bean id="structuredResources.editView" parent="freemarkerView">

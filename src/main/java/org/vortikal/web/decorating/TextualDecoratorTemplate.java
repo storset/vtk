@@ -137,45 +137,6 @@ public class TextualDecoratorTemplate implements Template {
         return new Execution(html, this.fragments, request, model);
     }
 
-//    public PageContent render(HtmlPageContent content, HttpServletRequest request,
-//                       Map<Object, Object> model) throws Exception {
-
-
-//        HtmlPage html = content.getHtmlContent();
-//
-//        StringBuilder sb = new StringBuilder();
-//        for (ComponentInvocation fragment: this.fragments) {
-//            try {
-//                String doctype = html.getDoctype();
-//                if (doctype == null) {
-//                    doctype = DEFAULT_DOCTYPE;
-//                }
-//                
-//                Locale locale = 
-//                    new org.springframework.web.servlet.support.RequestContext(request).getLocale();
-//                DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-//                    html, request, model, fragment.getParameters(), doctype, locale);
-//
-//                String chunk = renderComponent(fragment.getComponent(), decoratorRequest);
-//                if (logger.isDebugEnabled()) {
-//                    logger.debug("Included component: " + fragment
-//                                 + " with result [" + chunk + "]");
-//                }
-//                sb.append(chunk);
-//
-//            } catch (Throwable t) {
-//                logger.warn("Error including component: " + fragment, t);
-//                String msg = t.getMessage();
-//                if (msg == null) {
-//                    msg = t.getClass().getName();
-//                }
-//                sb.append(fragment.getComponent().getName());
-//                sb.append(": ").append(msg);
-//            }
-//        }
-//        return new ContentImpl(sb.toString(), 
-//                content.getOriginalCharacterEncoding());
-//    }
     
     private String renderComponent(DecoratorComponent c, DecoratorRequest request)
         throws Exception {

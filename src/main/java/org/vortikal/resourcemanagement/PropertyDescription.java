@@ -92,4 +92,8 @@ public class PropertyDescription {
         }
         edithints.put(key, value);
     }
+    
+    public String toString() {
+        return this.getClass().getName() + ": " + this.name;
+    }
 }

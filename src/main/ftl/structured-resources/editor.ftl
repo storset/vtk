@@ -12,6 +12,7 @@
 <head>
   <title>Edit structured resource</title>
  <@fckEditor.setup />
+<#--
  <script language="javascript">
 	$(document).ready(function() {
 		
@@ -77,6 +78,7 @@
 			$("label[for=" + key +"]").text(elmTitles[key][lang_index]);
 	}
 </script>
+-->
 <style type="text/css">
 .vrtx-html, .vrtx-string, .vrtx-date, .vrtx-image-ref, .vrtx-checkbox, .vrtx-dropdownlist, .vrtx-radio {
 	padding: 5px 10px;
@@ -107,7 +109,6 @@
 <form action="${form.URL?html}" method="POST">
 
 <#list form.formElements as elem>
-  
 	<#switch elem.description.type>
 	  <#case "string">
 	 	<@vrtxString.printPropertyEditView 

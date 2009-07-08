@@ -67,6 +67,16 @@ public class StructuredResourceParser implements InitializingBean {
 
         ResourcetreeParser parser = createParser(resourceDescriptionFileLocation);
         ResourcetreeParser.resources_return resources = parser.resources();
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            List<String> messages = parser.getErrorMessages();
+            StringBuilder mainMessage = new StringBuilder();
+            for (String m : messages) {
+                mainMessage.append(m);
+            }
+            throw new IllegalStateException(
+                    "Unable to parse resource tree description: " 
+                    + resourceDescriptionFileLocation + ": " + mainMessage.toString());
+        }
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
 

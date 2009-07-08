@@ -9,6 +9,18 @@ options {
 package org.vortikal.repository.resource;
 }
 
+@members {
+    private java.util.List<String> messages = new java.util.ArrayList<String>();
+
+    public void emitErrorMessage(String msg) {
+        this.messages.add(msg);
+    }
+
+    public java.util.List<String> getErrorMessages() {
+        return this.messages;
+    }
+}
+
 resources
 	:	(resourcetypedef)+;
 

@@ -154,6 +154,9 @@ public class StructuredResourceParser implements InitializingBean {
                 case ResourcetreeLexer.EDITRULES:
                     handleEditRulesDescriptions(srd, descriptionEntry.getChildren());
                     break;
+                case ResourcetreeLexer.VIEWCOMPONENTS:
+                    handleViewComponents(srd, descriptionEntry.getChildren());
+                    break;
                 case ResourcetreeLexer.VIEWDEFINITION:
                     if (descriptionEntry.getChild(0) != null) {
                         srd.setDisplayTemplate(new DisplayTemplate(descriptionEntry
@@ -243,6 +246,22 @@ public class StructuredResourceParser implements InitializingBean {
         // XXX implement
     }
 
+    private void handleViewComponents(StructuredResourceDescription srd,
+            List<CommonTree> viewComponentDefinitions) {
+        if (!hasContent(viewComponentDefinitions)) {
+            return;
+        }
+        for (CommonTree viewComponentDescription : viewComponentDefinitions) {
+
+            if (viewComponentDescription.getChildren().size() == 1) {
+                String name = viewComponentDescription.getText();
+                String def = viewComponentDescription.getChild(0).getText();
+                srd.addComponentDefinition(new ComponentDefinition(name, def));
+            }
+        }
+    }
+
+    
     private boolean hasContent(List<CommonTree> tree) {
         return tree != null && tree.size() > 0;
     }

@@ -16,6 +16,8 @@ PROPERTIES
 	:	'properties';
 EDITRULES
 	:	'edit-rules';
+VIEWCOMPONENTS
+	:	'view-components';
 VIEWDEFINITION
 	:	'view-definition';
 
@@ -51,6 +53,12 @@ VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
 		  s = s.replace("$$", "");
 		  setText(s.trim());
 		};
+VIEWCOMPDEF	:	'##' .* '##'
+        {
+		  String s = getText();
+		  setText(s.trim());
+        };
+
 WS	:	(' ' | '\t' | '\n')+ {$channel=HIDDEN;};
 
 // Propertytypes

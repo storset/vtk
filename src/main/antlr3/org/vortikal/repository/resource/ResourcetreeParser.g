@@ -37,6 +37,7 @@ resourcetypedef
 resourcedef
 	:	(resourceprops)?
 		(editrules)?
+		(viewcomponents)?
 		(viewdefinition)?
 	;
 
@@ -85,6 +86,20 @@ displayhint
 	:	;
 
 grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
+
+viewcomponents
+	:	VIEWCOMPONENTS LCB
+		  (viewcomponent)*
+		RCB
+		-> ^(VIEWCOMPONENTS (viewcomponent)*)
+	;
+
+viewcomponent
+    :   NAME LCB
+		  VIEWCOMPDEF
+        RCB
+        -> ^(NAME (VIEWCOMPDEF)?)
+    ;
 
 viewdefinition
 	:	VIEWDEFINITION LCB

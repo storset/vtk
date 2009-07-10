@@ -31,5 +31,23 @@
 package org.vortikal.resourcemanagement;
 
 public class ComponentDefinition {
-
+    private String name;
+    private String definition;
+    
+    public ComponentDefinition(String name, String definition) {
+        this.name = name;
+        this.definition = definition;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public String getDefinition() {
+        return this.definition;
+    }
+    
+    public String toString() {
+        return this.getClass().getName() + ":" + this.name;
+    }
 }

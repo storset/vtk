@@ -40,7 +40,7 @@ public final class StructuredResourceDescription {
     private String inheritsFrom;
     private List<PropertyDescription> propertyDescriptions;
     private List<EditRule> editRules;
-    private List<ComponentDefinition> componentDefinitions;
+    private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private DisplayTemplate displayTemplate;
 
     StructuredResourceDescription(StructuredResourceManager manager) {
@@ -107,6 +107,10 @@ public final class StructuredResourceDescription {
 
     public List<ComponentDefinition> getComponentDefinitions() {
         return this.componentDefinitions;
+    }
+
+    public void addComponentDefinition(ComponentDefinition def) {
+        this.componentDefinitions.add(def);
     }
 
     public DisplayTemplate getDisplayTemplate() {

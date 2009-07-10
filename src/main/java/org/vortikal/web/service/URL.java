@@ -378,8 +378,8 @@ public class URL {
         Map<String, String[]> queryStringMap = URLUtil.splitQueryString(request.getQueryString());
 
         for (String key: queryStringMap.keySet()) {
-            key = URLUtil.urlDecode(key);
             String[] values = queryStringMap.get(key);
+            key = URLUtil.urlDecode(key);
             for (String value: values) {
                 url.addParameter(key, URLUtil.urlDecode(value));
             }

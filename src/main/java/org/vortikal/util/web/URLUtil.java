@@ -48,36 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 public class URLUtil {
 
     /**
-     * Get the request URI stripped of the context path.
-     *
-     * @param requestURI
-     * @param contextPath  
-     * @return the stripped URI
-     */
-    public static String getRequestURI(String requestURI, String contextPath) {
-        String strippedURI = null;
-        try {
-            strippedURI = java.net.URLDecoder.decode(requestURI, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(
-                "Java doesn't seem to support utf-8. Not much to do about that.");
-        }
-        strippedURI = strippedURI.substring(contextPath.length(),
-                                          strippedURI.length());
-        
-        if (strippedURI == null || strippedURI.trim().equals("")) {
-            strippedURI = "/";
-        }
-        
-        if (!strippedURI.equals("/") && strippedURI.endsWith("/")) {
-            strippedURI = strippedURI.substring(0, strippedURI.length() - 1);
-        }
-        
-        return strippedURI;
-    }
-
-
-    /**
      * Splits a URI into path elements. For example, the URI
      * <code>/foo/bar</code> would be split into the following
      * components: <code>{"/", "foo", "bar"}</code>
@@ -268,8 +238,8 @@ public class URLUtil {
     public static Map<String, String[]> splitQueryString(String queryString) {
         Map<String, String[]> queryMap = new HashMap<String, String[]>();
         if (queryString != null) {
-            if (queryString.indexOf("?") != -1) { 
-                queryString = queryString.substring(queryString.indexOf("?") + 1);
+            if (queryString.startsWith("?")) { 
+                queryString = queryString.substring(1);
             }
             String[] pairs = queryString.split("&");
             for (int i = 0; i < pairs.length; i++) {

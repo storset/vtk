@@ -29,6 +29,18 @@
      <property name="principal" ref="rootPrincipal" />
    </bean>
 
+   <!-- used by command vshell.bsh.eval: -->
+   <bean id="vshell.bsh.console" class="org.vortikal.shell.BeanShellConsole">
+     <property name="runEvalLoop" value="false" />
+   </bean>
+
+
+   <lang:bsh id="vshell.repo.id"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/id.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
    <lang:bsh id="vshell.repo.cat"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/repo/cat.bsh"
@@ -129,6 +141,12 @@
    <lang:bsh id="vshell.servlet.services"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/servlet/services.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.bsh.eval"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/bsh/eval.bsh"
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 

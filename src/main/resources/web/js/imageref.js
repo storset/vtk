@@ -5,7 +5,7 @@ function previewImage(urlobj) {
         var url = document.getElementById(urlobj).value;
         if (url) {
             document.getElementById(previewobj).innerHTML = 
-                '<img src="' + url + '" alt="preview">';
+                '<img src="' + url + '?vrtx=thumbnail" alt="preview">';
         } else {
             document.getElementById(previewobj).innerHTML = 
                 '<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">';

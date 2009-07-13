@@ -1,4 +1,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/ping.ftl" as ping />
 
 <#import "vrtx-types/vrtx-boolean.ftl" as vrtxBoolean />
 <#import "vrtx-types/vrtx-datetime.ftl" as vrtxDateTime />
@@ -13,6 +14,14 @@
 <head>
   <title>Edit structured resource</title>
   <@fckEditor.setup />
+  <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
+  <script language="Javascript" type="text/javascript">
+	window.onbeforeunload = checkPropChange;
+	PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+	function save(){
+		NEED_TO_CONFIRM = false;
+	}
+  </script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   <!-- JQuery UI (used for datepicker) -->
   <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
@@ -183,7 +192,7 @@
 
 </#list>
 
-<input type="submit" class="submit" />
+<input type="submit" class="submit" onclick="save();" />
 
 </form>
 </body>

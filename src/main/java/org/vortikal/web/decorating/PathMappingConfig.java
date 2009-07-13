@@ -176,16 +176,6 @@ public class PathMappingConfig {
         private Map<String, Node> children = new HashMap<String, Node>();
         private List<ConfigEntry> entries = null;
         
-        public String tree(String offset) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.entries);
-            for (String child: this.children.keySet()) {
-                sb.append(offset).append(child);
-                sb.append(": ").append(this.children.get(child).tree(offset + "  "));
-            }
-            return sb.toString();
-        }
-        
         public String toString() {
            StringBuilder sb = new StringBuilder();
            sb.append("(");

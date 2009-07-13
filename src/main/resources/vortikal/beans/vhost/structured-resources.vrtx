@@ -3,7 +3,7 @@ resourcetype jarticle {
   properties {
     title : string (overrides : title),
     author : string,
-    published-date : string,
+    published-date : datetime,
     content : html
   }
   edit-rules {
@@ -29,8 +29,8 @@ resourcetype jarticle {
 
 resourcetype jevent : jarticle {
   properties {
-    start-date : string,
-    end-date : string,
+    start-date : datetime,
+    end-date : datetime,
     location : string,
     map-url : string
   }

@@ -168,6 +168,7 @@
           <property name="modelDataMap">
             <map>
               <entry key="jsBaseURL" value="${jsBaseURL}" />
+              <entry key="webResources" value="${webResources.baseURL}" />
             </map>
           </property>
         </bean>

@@ -1,6 +1,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#import "vrtx-types/vrtx-boolean.ftl" as vrtxBoolean />
+<#import "vrtx-types/vrtx-datetime.ftl" as vrtxDateTime />
 <#import "vrtx-types/vrtx-file-ref.ftl" as vrtxFileRef />
 <#import "vrtx-types/vrtx-html.ftl" as vrtxHtml />
 <#import "vrtx-types/vrtx-image-ref.ftl" as vrtxImageRef />
@@ -12,8 +13,12 @@
 <head>
   <title>Edit structured resource</title>
  <@fckEditor.setup />
+  <!-- JQuery UI (used for datepicker) -->
+  <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+  <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
 <#--
- <script language="javascript">
+ <script language="javascript">	
 	$(document).ready(function() {
 		
 		setLang("<@vrtx.requestLanguage />");
@@ -73,6 +78,7 @@
 		 											,"Get external scientific information");
 		 elmTitles['content'] = new Array("Innhold","Content");
 		 elmTitles['scientificInformation'] = new Array("Vitenskaplig informasjon","Scientific information");
+		 elmTitles['email'] = new Array("E-post","E-mail");
 		 											
 		for(key in elmTitles)
 			$("label[for=" + key +"]").text(elmTitles[key][lang_index]);
@@ -111,13 +117,23 @@
 <#list form.formElements as elem>
 	<#switch elem.description.type>
 	  <#case "string">
+	  	<#assign fieldSize="20" />
+	  	<#if elem.description.edithints?exists && elem.description.edithints['textfield']?exists >
+	  		<#assign fieldSize=elem.description.edithints['textfield'] />
+	  	</#if>
 	 	<@vrtxString.printPropertyEditView 
 	 		title=elem.description.name 
 	 		inputFieldName=elem.description.name 
 	 		value=elem.value 
-	 		classes=elem.description.name />
+	 		classes=elem.description.name
+	 		inputFieldSize=fieldSize />
 	    <#break>
 	  <#case "html">
+	  	<#if elem.description.edithints?exists>
+		 		<#list elem.description.edithints?keys as hint>
+		 			${hint} <br />
+		 		</#list>
+	 	</#if>
 	    <@vrtxHtml.printPropertyEditView 
 	    	title=elem.description.name 
 	    	inputFieldName=elem.description.name 
@@ -137,6 +153,13 @@
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value 
 	  		baseFolder=resourceContext.parentURI />
+	  	<#break>
+	  <#case "datetime">
+		 <@vrtxDateTime.printPropertyEditView 
+			title=elem.description.name 
+			inputFieldName=elem.description.name 
+			value=elem.value 
+			classes=elem.description.name />
 	  	<#break>
 	  <#default>
 	    ny type property ${elem.description.type}

@@ -47,6 +47,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.resourcemanagement.EditRule.Type;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
@@ -56,7 +57,7 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     private StructuredResourceManager resourceManager;
     private Repository repository;
-    
+
     public StructuredResourceEditor() {
         super();
         setCommandName("form");
@@ -66,32 +67,34 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
-        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
+        StructuredResourceDescription description = this.resourceManager.get(resource
+                .getResourceType());
 
         InputStream stream = this.repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
         String encoding = resource.getCharacterEncoding();
-        if (encoding == null) encoding = "utf-8";
+        if (encoding == null)
+            encoding = "utf-8";
         String source = new String(buff, encoding);
         StructuredResource structuredResource = new StructuredResource(description);
         structuredResource.parse(source);
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
-        
+
         return new Form(structuredResource, url);
     }
-    
+
     protected ModelAndView onSubmit(Object command) throws Exception {
         Form form = (Form) command;
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("form", command);
         form.sync();
-        
+
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
-        InputStream stream = new ByteArrayInputStream(
-                form.getResource().toJSON().toString().getBytes("utf-8"));
+        InputStream stream = new ByteArrayInputStream(form.getResource().toJSON()
+                .toString().getBytes("utf-8"));
         this.repository.storeContent(token, uri, stream);
 
         return new ModelAndView(getFormView(), model);
@@ -106,9 +109,11 @@ public class StructuredResourceEditor extends SimpleFormController {
     }
 
     @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request,
+            Object command) throws Exception {
         Form form = (Form) command;
-        FormDataBinder binder = new FormDataBinder(command, getCommandName(), form.getResource().getType());
+        FormDataBinder binder = new FormDataBinder(command, getCommandName(), form
+                .getResource().getType());
         prepareBinder(binder);
         initBinder(request, binder);
         return binder;
@@ -116,51 +121,97 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     private class FormDataBinder extends ServletRequestDataBinder {
         private StructuredResourceDescription description;
-        
-        public FormDataBinder(Object target, String objectName, 
+
+        public FormDataBinder(Object target, String objectName,
                 StructuredResourceDescription description) {
             super(target, objectName);
             this.description = description;
         }
-        
+
         @Override
         public void bind(ServletRequest request) {
-            List<PropertyDescription> props = this.description.getAllPropertyDescriptions();
+            List<PropertyDescription> props = this.description
+                    .getAllPropertyDescriptions();
             Form form = (Form) getTarget();
             for (PropertyDescription desc : props) {
                 String posted = request.getParameter(desc.getName());
-                form.bind(desc.getName(), posted);                
+                form.bind(desc.getName(), posted);
             }
             super.bind(request);
         }
     }
-    
+
     public class Form {
         private URL url;
         private StructuredResource resource;
         private List<FormElement> elements = new ArrayList<FormElement>();
-        
+
         public Form(StructuredResource resource, URL url) {
             this.resource = resource;
             this.url = url;
             StructuredResourceDescription type = resource.getType();
-            for (PropertyDescription def: type.getAllPropertyDescriptions()) {
-                this.elements.add(new FormElement(def, null, resource.getProperty(def.getName())));
+            for (PropertyDescription def : type.getAllPropertyDescriptions()) {
+                this.elements.add(new FormElement(def, null, resource.getProperty(def
+                        .getName())));
+            }
+
+            List<EditRule> editRules = type.getEditRules();
+            if (editRules != null && editRules.size() > 0) {
+                for (EditRule editRule : editRules) {
+                    Type ruleType = editRule.getType();
+                    if (Type.POSITION_BEFORE.equals(ruleType)) {
+                        rearrangePosition(elements, editRule, Type.POSITION_BEFORE);
+                    } else if (Type.POSITION_AFTER.equals(ruleType)) {
+                        rearrangePosition(elements, editRule, Type.POSITION_AFTER);
+                    } else if (Type.GROUP.equals(ruleType)) {
+                        // XXX group and remove singel props
+                    } else if (Type.EDITHINT.equals(ruleType)) {
+                        // XXX add the edithints to the property
+                    }
+                }
+            }
+
+        }
+
+        private void rearrangePosition(List<FormElement> elements, EditRule editRule,
+                Type ruleType) {
+            int indexOfpropToMove = -1;
+            int indexToMoveToo = -1;
+            for (int i = 0; i < elements.size(); i++) {
+                FormElement formElement = elements.get(i);
+                if (editRule.getName().equals(formElement.getDescription().getName())) {
+                    indexOfpropToMove = i;
+                }
+                if (editRule.getValue().toString().equals(
+                        formElement.getDescription().getName())) {
+                    indexToMoveToo = i;
+                }
+            }
+            if (indexOfpropToMove != -1 && indexToMoveToo != -1
+                    && indexOfpropToMove != indexToMoveToo) {
+                int rotation = Type.POSITION_BEFORE.equals(ruleType) ? 0 : 1;
+                if (indexToMoveToo < indexOfpropToMove) {
+                    Collections.rotate(elements.subList(indexToMoveToo + rotation,
+                            indexOfpropToMove + 1), 1);
+                } else {
+                    Collections.rotate(elements.subList(indexOfpropToMove, indexToMoveToo
+                            + rotation), -1);
+                }
             }
         }
-        
+
         public List<FormElement> getFormElements() {
             return Collections.unmodifiableList(this.elements);
         }
-        
+
         public StructuredResource getResource() {
             return this.resource;
         }
-        
+
         public URL getURL() {
             return this.url;
         }
-        
+
         public void bind(String name, String value) {
             FormElement elem = findElement(name);
             if (elem == null) {
@@ -168,7 +219,7 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
             elem.setValue(value);
         }
-        
+
         private FormElement findElement(String name) {
             for (FormElement elem : this.elements) {
                 if (elem.getDescription().getName().equals(name)) {
@@ -177,11 +228,11 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
             return null;
         }
-        
+
         public void sync() {
-            List<PropertyDescription> descriptions = 
-                this.resource.getType().getAllPropertyDescriptions();
-            for (PropertyDescription desc: descriptions) {
+            List<PropertyDescription> descriptions = this.resource.getType()
+                    .getAllPropertyDescriptions();
+            for (PropertyDescription desc : descriptions) {
                 String name = desc.getName();
                 FormElement elem = findElement(name);
                 Object value = elem.getValue();
@@ -194,13 +245,13 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     }
 
-    
     public class FormElement {
         private PropertyDescription description;
         private ValidationError error;
         private Object value;
-        
-        public FormElement(PropertyDescription description, ValidationError error, Object value) {
+
+        public FormElement(PropertyDescription description, ValidationError error,
+                Object value) {
             this.description = description;
             this.error = error;
             this.value = value;
@@ -230,6 +281,5 @@ public class StructuredResourceEditor extends SimpleFormController {
             return value;
         }
     }
-    
-    
+
 }

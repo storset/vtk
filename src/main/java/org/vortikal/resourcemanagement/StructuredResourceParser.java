@@ -74,65 +74,26 @@ public class StructuredResourceParser implements InitializingBean {
             for (String m : messages) {
                 mainMessage.append(m);
             }
-            throw new IllegalStateException(
-                    "Unable to parse resource tree description: " 
+            throw new IllegalStateException("Unable to parse resource tree description: "
                     + resourceDescriptionFileLocation + ": " + mainMessage.toString());
         }
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
 
         if (children.size() == 1) {
-            StructuredResourceDescription srd = getStructuredResourceDescription(children
+            StructuredResourceDescription srd = createStructuredResourceDescription(children
                     .get(0));
             this.structuredResourceManager.register(srd);
         } else {
             for (CommonTree child : children) {
                 if (ResourcetreeLexer.RESOURCETYPE == child.getType()) {
-                    StructuredResourceDescription srd = getStructuredResourceDescription(child
+                    StructuredResourceDescription srd = createStructuredResourceDescription(child
                             .getChild(0));
                     this.structuredResourceManager.register(srd);
                 }
             }
         }
 
-    }
-
-    private StructuredResourceDescription getStructuredResourceDescription(Tree commonTree) {
-        StructuredResourceDescription srd = createStructuredResourceDescription(commonTree);
-        test(srd);
-        return srd;
-    }
-
-    private void test(StructuredResourceDescription srd) {
-        List<EditRule> editRules = srd.getEditRules();
-        if (editRules != null && editRules.size() > 0) {
-            for (EditRule editRule : editRules) {
-                Type type = editRule.getType();
-                if (Type.POSITION_BEFORE.equals(type)) {
-                    // XXX rearrange position
-                } else if (Type.POSITION_AFTER.equals(type)) {
-                    // XXX rearrange position
-                } else if (Type.GROUP.equals(type)) {
-                    // XXX group and remove singel props
-                } else if (Type.EDITHINT.equals(type)) {
-                    PropertyDescription propertyDescription = srd
-                            .getPropertyDescription(editRule.getName());
-                    if (propertyDescription != null) {
-                        // XXX handle different types of edithints
-                        // do proper parsing of value (own grammar for this?)
-                        Object value = editRule.getValue();
-                        
-                        // XXX TEMP -> for testing
-                        String s = (String) value;
-                        String key = s.substring(0, s.indexOf("["));
-                        Object v = s.substring(s.indexOf("[") + 1, s.length() -1);
-                        // END TEMP
-                        
-                        propertyDescription.addEdithint(key, v);
-                    }
-                }
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -262,7 +223,6 @@ public class StructuredResourceParser implements InitializingBean {
         }
     }
 
-    
     private boolean hasContent(List<CommonTree> tree) {
         return tree != null && tree.size() > 0;
     }

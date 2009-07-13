@@ -63,7 +63,7 @@ resourcetype jevent : jarticle {
 
 
 
-resourcetype jperson {
+resourcetype jperson : jarticle {
   properties {
     username : string required,
     getExternalPersonInfo : boolean,
@@ -81,8 +81,10 @@ resourcetype jperson {
     scientificInformation : html
   }
   edit-rules {
-    username (before content),
-    officeNumber (textfield[5])
+    username (before title),
+    email (after username),
+    picture (after surname),
+    tags (after scientificInformation)
   }
   view-definition {
   $$

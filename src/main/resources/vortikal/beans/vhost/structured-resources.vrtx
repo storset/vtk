@@ -2,6 +2,8 @@
 resourcetype jarticle {
   properties {
     title : string (overrides : title),
+    introduction : simple_html,
+    introduction-img : image_ref,
     author : string,
     published-date : datetime,
     content : html

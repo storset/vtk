@@ -128,6 +128,19 @@
 	 		classes=elem.description.name
 	 		inputFieldSize=fieldSize />
 	    <#break>
+	  <#case "simple_html">
+	  	<#if elem.description.edithints?exists>
+		 		<#list elem.description.edithints?keys as hint>
+		 			${hint} <br />
+		 		</#list>
+	 	</#if>
+	    <@vrtxHtml.printPropertyEditView 
+	    	title=elem.description.name 
+	    	inputFieldName=elem.description.name 
+	    	value=elem.value 
+	    	classes=elem.description.name />
+	    <@fckEditor.insert elem.description.name />
+	  	<#break>
 	  <#case "html">
 	  	<#if elem.description.edithints?exists>
 		 		<#list elem.description.edithints?keys as hint>

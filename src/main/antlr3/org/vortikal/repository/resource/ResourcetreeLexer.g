@@ -30,7 +30,7 @@ RB	:	']';
 COLON	:	':';
 COMMA	:	',';
 
-PROPTYPE:	(STRING | HTML | BOOLEAN | INT | DATETIME | IMAGEREF);
+PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF);
 EDITHINT:	(TEXTFIELD (LB NUMBER RB)? | TEXTAREA | RADIO (LB VALUELIST RB)? | DROPDOWN (LB VALUELIST RB)?);
 REQUIRED:	'required';
 NOEXTRACT
@@ -66,6 +66,8 @@ fragment STRING
 	:	'string';
 fragment HTML
 	:	'html';
+fragment SIMPLEHTML
+	:	'simple_html';
 fragment BOOLEAN
 	:	'boolean';
 fragment INT

@@ -111,6 +111,7 @@ public class ICalController implements Controller {
         sb.append("BEGIN:VCALENDAR\n");
         sb.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
         sb.append("VERSION:2.0\n");
+        sb.append("METHOD:PUBLISH\n");
         sb.append("BEGIN:VEVENT\n");
         sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
         sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");

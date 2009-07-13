@@ -251,6 +251,9 @@ public class StructuredResourceManager {
         if (StructuredResourceParser.PROPTYPE_HTML.equals(type)) {
             return PropertyType.Type.HTML;
         }
+        if (StructuredResourceParser.PROPTYPE_SIMPLEHTML.equals(type)) {
+            return PropertyType.Type.HTML;
+        }
         if (StructuredResourceParser.PROPTYPE_BOOLEAN.equals(type)) {
             return PropertyType.Type.BOOLEAN;
         }

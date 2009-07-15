@@ -21,6 +21,12 @@
   <head>
     <title>Permissions on resource</title>
     
+    <script type="text/javascript">
+      $(document).ready(function() {
+          interceptEnterKeyAndReroute("input#userNames", "input.addUserButton"); 
+       }); 
+    </script>
+    
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
   </head>

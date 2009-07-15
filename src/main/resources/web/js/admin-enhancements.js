@@ -50,3 +50,12 @@ function interceptEnterKey() {
            }
       });
 }
+
+function interceptEnterKeyAndReroute(txt, btn) {
+	$("form " + txt).bind("keypress", function(e) {
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) { 
+              $(btn).click(); //click the associated button
+              return false; //cancel the default browser click
+           }
+      });
+}

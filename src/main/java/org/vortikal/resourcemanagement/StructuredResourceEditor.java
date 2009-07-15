@@ -47,7 +47,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.resourcemanagement.EditRule.Type;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
@@ -65,6 +67,7 @@ public class StructuredResourceEditor extends SimpleFormController {
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        lock();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
@@ -88,6 +91,7 @@ public class StructuredResourceEditor extends SimpleFormController {
     protected ModelAndView onSubmit(Object command) throws Exception {
         Form form = (Form) command;
         if(form.getCancelAction() != null){
+            unlock();
             return new ModelAndView(getSuccessView()); 
         }
         Map<String, Object> model = new HashMap<String, Object>();
@@ -101,6 +105,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         this.repository.storeContent(token, uri, stream);
         
         if(form.getUpdateQuitAction() != null){
+            unlock();
             return new ModelAndView(getSuccessView());    
         }
         return new ModelAndView(getFormView(), model);
@@ -282,6 +287,19 @@ public class StructuredResourceEditor extends SimpleFormController {
         public Object getValue() {
             return value;
         }
+    }
+    
+    public void unlock() throws Exception {
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        this.repository.unlock(token, uri, null);
+    }
+
+    public void lock() throws Exception {
+        String token = SecurityContext.getSecurityContext().getToken();
+        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
     }
 
 }

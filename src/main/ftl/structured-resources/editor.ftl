@@ -18,9 +18,13 @@
   <script language="Javascript" type="text/javascript">
 	window.onbeforeunload = checkPropChange;
 	PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
-	function save(){
+	function performSave(){
 		NEED_TO_CONFIRM = false;
 	}
+	function cSave() {
+	    document.getElementById("form").setAttribute("action", "#submit");
+	    performSave();
+    }
   </script>
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   <!-- JQuery UI (used for datepicker) -->
@@ -122,7 +126,7 @@
 </head>
 <body>
 
-<form action="${form.URL?html}" method="POST">
+<form action="${form.submitURL?html}" method="POST">
 
 <#list form.formElements as elem>
 	<#switch elem.description.type>
@@ -187,13 +191,12 @@
 	  <#default>
 	    ny type property ${elem.description.type}
 	</#switch>
-
-	
-
 </#list>
-
-<input type="submit" class="submit" onclick="save();" />
-
+<div class="submit">
+	  <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction"  value="${vrtx.getMsg("editor.saveAndQuit")}" />
+	  <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+	  <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+</div>
 </form>
 </body>
 </html>

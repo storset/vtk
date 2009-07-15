@@ -51,6 +51,7 @@ import org.vortikal.resourcemanagement.EditRule.Type;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
 
 public class StructuredResourceEditor extends SimpleFormController {
@@ -86,17 +87,22 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     protected ModelAndView onSubmit(Object command) throws Exception {
         Form form = (Form) command;
+        if(form.getCancelAction() != null){
+            return new ModelAndView(getSuccessView()); 
+        }
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("form", command);
         form.sync();
-
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
         InputStream stream = new ByteArrayInputStream(form.getResource().toJSON()
                 .toString().getBytes("utf-8"));
         this.repository.storeContent(token, uri, stream);
-
+        
+        if(form.getUpdateQuitAction() != null){
+            return new ModelAndView(getSuccessView());    
+        }
         return new ModelAndView(getFormView(), model);
     }
 
@@ -137,18 +143,18 @@ public class StructuredResourceEditor extends SimpleFormController {
                 String posted = request.getParameter(desc.getName());
                 form.bind(desc.getName(), posted);
             }
+            
             super.bind(request);
         }
     }
 
-    public class Form {
-        private URL url;
+    public class Form extends UpdateCancelCommand {
         private StructuredResource resource;
         private List<FormElement> elements = new ArrayList<FormElement>();
 
         public Form(StructuredResource resource, URL url) {
+            super(url.toString());
             this.resource = resource;
-            this.url = url;
             StructuredResourceDescription type = resource.getType();
             for (PropertyDescription def : type.getAllPropertyDescriptions()) {
                 this.elements.add(new FormElement(def, null, resource.getProperty(def
@@ -206,10 +212,6 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         public StructuredResource getResource() {
             return this.resource;
-        }
-
-        public URL getURL() {
-            return this.url;
         }
 
         public void bind(String name, String value) {

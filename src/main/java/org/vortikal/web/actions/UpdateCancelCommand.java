@@ -40,6 +40,8 @@ public class UpdateCancelCommand {
 
     private String updateAction = null;
     private String cancelAction = null;
+    private String updateQuitAction = null;
+
     private String submitURL;
     private boolean done = false;
 
@@ -96,6 +98,23 @@ public class UpdateCancelCommand {
         this.cancelAction = cancelAction;
     }
     
+    /**
+     * Gets the value of updateQuitAction
+     *
+     * @return the value of updateQuitAction
+     */
+    public String getUpdateQuitAction() {
+        return updateQuitAction;
+    }
+
+    /**
+     * Sets the value of updateQuitAction
+     *
+     * @param updateQuitAction Value to assign to this.updateQuitAction
+     */
+    public void setUpdateQuitAction(String updateQuitAction) {
+        this.updateQuitAction = updateQuitAction;
+    }
 
     /**
      * Gets the value of submitURL

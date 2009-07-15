@@ -427,6 +427,7 @@ TV.prototype = {
 	buildTreeFromMarkup: function (id) {
 		var build = function (parent,markup) {
 			var el, node, child, text;
+			var tmp = 2;
 			for (el = Dom.getFirstChild(markup); el; el = Dom.getNextSibling(el)) {
 				if (el.nodeType == 1) {
 					switch (el.tagName.toUpperCase()) {
@@ -436,7 +437,8 @@ TV.prototype = {
 									text = Lang.trim(child.nodeValue);
 									if (text.length) {
 										eId = el.getAttribute('id');
-										checked = (parent.checkState == 2 || selected.search(eId) != -1);
+										if(parent.checkState === 0) { tmp = 0; } //if one child has checkState=0, prevent parent to be checked
+                                        checked = ((parent.checkState === 2 && tmp === 2) || (selected.search(eId) != -1));
 										node = new Widget.TaskNode(text, parent, eId, false, checked);
 									}
 								} else {

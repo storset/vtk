@@ -319,14 +319,17 @@
         return;
       }
       var dirty = false;
+      var userLang = (navigator.language) ? navigator.language : navigator.userLanguage;
       if (propChange()) dirty = true;
+            
       <#if (resource.resourceType != 'event-listing' &&
          resource.resourceType != 'article-listing' && resource.resourceType != 'collection')>
       if (FCKeditorAPI.GetInstance('resource.content') .IsDirty()) dirty = true;
       </#if>
       
       if (dirty) {
-        return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
+        // return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
+        return '<@vrtx.localizeMessage code='manage.unsavedChangesConfirmation' default='code' args=[] />';
       }
     }
 

@@ -1,0 +1,145 @@
+/* Copyright (c) 2009, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.repository.store;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+
+/**
+ * Basic impl of <code>PrincipalMetadata</code>.
+ *
+ */
+public class PrincipalMetadataImpl implements PrincipalMetadata {
+    
+    // Maps attribute name to list of values.
+    private Map<String, List<Object>> attributes = new HashMap<String,List<Object>>();
+    private String qualifiedName;
+    private String description;
+    private String url;
+    
+    public PrincipalMetadataImpl(String qualifiedName) {
+        if (qualifiedName == null) {
+            throw new IllegalArgumentException("Qualified name cannot be null");
+        }
+        this.qualifiedName = qualifiedName;
+    }
+    
+    public void addAttributeValue(String attribute, Object value) {
+        List<Object> values = this.attributes.get(attribute);
+        if (values == null) {
+            values = new ArrayList<Object>();
+            this.attributes.put(attribute, values);
+        }
+        values.add(value);
+    }
+    
+    public void setAttributeValues(String name, List<Object> values) {
+        if (values == null) {
+            this.attributes.remove(name);
+        } else {
+            this.attributes.put(name, values);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.vortikal.repository.store.PrincipalMetadata#getValue(java.lang.String)
+     */
+    public Object getValue(String attributeName) {
+        List<Object> values = this.attributes.get(attributeName);
+        if (values == null || values.size() == 0) {
+            return null;
+        }
+        return values.get(0);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.vortikal.repository.store.PrincipalMetadata#getValues(java.lang.String)
+     */
+    public List<Object> getValues(String attributeName) {
+        List<Object> values = this.attributes.get(attributeName);
+        if (values != null) {
+            return Collections.unmodifiableList(values);
+        }
+        
+        return null;
+    }
+    
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet(this.attributes.keySet());
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    
+    public String getQualifiedName() {
+        return this.qualifiedName;
+    }
+    
+    public String toString() {
+        StringBuilder buffer = new StringBuilder(getClass().getName());
+        buffer.append("PrincipalMetadataImpl[qualifiedName=").append(qualifiedName);
+        buffer.append(", description=").append(this.description);
+        if (this.url != null) {
+            buffer.append(", URL=").append(this.url);
+        }
+        buffer.append("]");
+        return buffer.toString();
+    }
+    
+    public boolean equals(Object other) {
+        if (! (other instanceof PrincipalMetadataImpl)) return false;
+        
+        return this.qualifiedName.equals(((PrincipalMetadataImpl)other).qualifiedName);
+    }
+    
+    public int hashCode() {
+        return this.qualifiedName.hashCode();
+    }
+    
+}

@@ -30,12 +30,15 @@
  */
 package org.vortikal.security;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.RepositoryException;
+import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
+import org.vortikal.repository.store.UnsupportedPrincipalDomainException;
 import org.vortikal.security.Principal.Type;
 
 public class PrincipalFactory {
@@ -75,22 +78,19 @@ public class PrincipalFactory {
         PrincipalImpl principal = new PrincipalImpl(id, type);
         if (principal.getType() == Type.USER) {
             if (this.principalMetadataDao != null) {
+                
                 // Set description (full name)
                 try {
-                    // DAO may return null as description, that's ok.
-                    String desc = this.principalMetadataDao.getDescription(
-                                                                principal.getName());
-                    
-                    principal.setDescription(desc);
-                
-                    // Set URL (only for users existing in LDAP)
-                    // DAO may return null as URL, that's ok.
-                    String url = this.principalMetadataDao.getUrl(principal.getName(), 
-                                                                  principal.getDomain());
-                    principal.setURL(url);
+                    PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
+                    if (metadata != null) {
+                        principal.setDescription(metadata.getDescription());
+                        principal.setURL(metadata.getUrl());
+                    }
+                } catch (UnsupportedPrincipalDomainException d) {
+                    // Ignore
                 } catch (Exception e) {
                     LOG.warn(
-                      "Exception while fetching principal description", e);
+                      "Exception while fetching principal metadata", e);
                 }
             }
         }
@@ -98,11 +98,29 @@ public class PrincipalFactory {
         return principal;
     }
     
+    /**
+     * XXX: Use this, or use {@link PrincipalMetadataDAO#search(String, Type)} directly ?
+     *      Difference is, this factory creates real Principal instances, while PrincipalMetadataDAO
+     *      creates PrincipalMetadata-instances. 
+     * 
+     */
     public List<Principal> search(String filter, Type type) throws RepositoryException {
+        List<Principal> retval = null;
         if (this.principalMetadataDao != null) {
-            return this.principalMetadataDao.search(filter, type);
+            List<PrincipalMetadata> results = this.principalMetadataDao.search(filter, type);
+            if (results != null) {
+                retval = new ArrayList<Principal>(results.size());
+                for (PrincipalMetadata metadata: results) {
+                    PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
+                    principal.setType(type);
+                    principal.setDescription(metadata.getDescription());
+                    principal.setURL(metadata.getUrl());
+                    
+                    retval.add(principal);
+                }
+            }
         }
-        return null;
+        return retval;
     }
 
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {

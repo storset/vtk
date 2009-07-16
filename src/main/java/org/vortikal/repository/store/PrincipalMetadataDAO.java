@@ -32,38 +32,49 @@ package org.vortikal.repository.store;
 
 import java.util.List;
 
-import org.vortikal.repository.RepositoryException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 
+/**
+ * This interface contains methods for acquiring metadata about a system's 
+ * principals. 
+ *
+ */
 public interface PrincipalMetadataDAO {
 
     /**
-     * Get principal description.
+     * Get metadata instance for principal with the given
+     * fully qualified name (username/id+domain).
      * 
-     * @param The <code>Principal</code> id to get the description for.
-     * @return A <code>String</code> with description or <code>null</code> if none found.
      * 
-     * @throws RepositoryException
+     * @param qualifiedName The fully qualified name of the principal to get the description for.
+     * @return A <code>PrincipalMetadata</code> instance with description
+     *         or <code>null</code> if no metadata could be found.
+     * 
      */
-    public String getDescription(String uid) throws RepositoryException;
-    
+    public PrincipalMetadata getMetadata(String qualifiedName);
     
     /**
-     * Returns a URL for given principal id, or <code>null</code> if unknown.
-     * @param principal
-     * @return
+     * Get metadata instance for given principal instance.
+     * 
+     * @param principal The <code>Principal</code> instance to get the description for.
+     * @return A <code>PrincipalMetadata</code> instance or <code>null</code> if none found.
+     * 
      */
-    public String getUrl(String uid, String domain);
+    public PrincipalMetadata getMetadata(Principal principal);
     
-
     /**
-     * Searches for a set of principals that satisfy the supplied search string
+     * Searches for principals which satisfy the supplied search criteria, represented as an 
+     * implementation-specific <code>String</code>.
+     * 
      * @param searchString String to use in search
-     * @param type Type of search to perform (users or groups)
-     * @return List of principals who satisfy the given search string
-     * @throws RepositoryException
+     * @param type Type of {@link org.vortikal.security.Principal} to search for.
+     * @see org.vortikal.security.Principal.Type
+     * 
+     * @return List of metadata-instances (<code>PrincipalMetadata</code>) 
+     *         for each principal that satisfies the search criteria.
      */
-    public List<Principal> search(String searchString, Type type) throws RepositoryException;
-    
+    public List<PrincipalMetadata> search(String searchString, Type type);
+
+
 }

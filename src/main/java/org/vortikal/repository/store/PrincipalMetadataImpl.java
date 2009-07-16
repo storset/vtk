@@ -123,7 +123,7 @@ public class PrincipalMetadataImpl implements PrincipalMetadata {
     
     public String toString() {
         StringBuilder buffer = new StringBuilder(getClass().getName());
-        buffer.append("PrincipalMetadataImpl[qualifiedName=").append(qualifiedName);
+        buffer.append("[qualifiedName=").append(qualifiedName);
         buffer.append(", description=").append(this.description);
         if (this.url != null) {
             buffer.append(", URL=").append(this.url);

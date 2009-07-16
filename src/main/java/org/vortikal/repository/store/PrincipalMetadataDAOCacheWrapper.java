@@ -79,7 +79,6 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
         
         CacheItem item = this.cache.get(qualifiedName);
         if (item != null) {
-            System.out.println("Found the following value in cache for " + qualifiedName + ":" + item.value);
             return item.value;
         }
 

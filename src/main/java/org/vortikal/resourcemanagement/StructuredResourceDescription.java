@@ -31,9 +31,14 @@
 package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-public final class StructuredResourceDescription {
+import org.antlr.runtime.tree.CommonTree;
+
+public final class StructuredResourceDescription<x> {
 
     private StructuredResourceManager manager;
     private String name;
@@ -42,9 +47,11 @@ public final class StructuredResourceDescription {
     private List<EditRule> editRules;
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private DisplayTemplate displayTemplate;
+    private HashMap<String, HashMap<String, String>> localization; //TODO: Gjøre om til .. <String, HashMap <Locale, String>.... 
 
     StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
+        this.localization = new HashMap<String, HashMap<String, String>>();
     }
 
     public void setInheritsFrom(String inheritsFrom) {
@@ -119,5 +126,14 @@ public final class StructuredResourceDescription {
 
     public void setDisplayTemplate(DisplayTemplate displayTemplate) {
         this.displayTemplate = displayTemplate;
+    }
+    
+    public void addLocalization(String name, Map<String,String> m){
+        localization.put(name,(HashMap<String, String>) m);
+    }
+    
+    public String getLocalizedMsg(String key, Locale locale, Object[] param){
+        HashMap<String,String> m = localization.get(key);
+        return m.get(locale.getLanguage().toLowerCase());
     }
 }

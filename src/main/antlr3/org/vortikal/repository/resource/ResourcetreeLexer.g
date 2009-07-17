@@ -20,6 +20,8 @@ VIEWCOMPONENTS
 	:	'view-components';
 VIEWDEFINITION
 	:	'view-definition';
+LOCALIZATIONPROPERTIES
+	:	'localization-properties';
 
 LCB	:	'{';
 RCB	:	'}';
@@ -29,6 +31,7 @@ LB	:	'[';
 RB	:	']';
 COLON	:	':';
 COMMA	:	',';
+DQ		:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF);
 EDITHINT:	(TEXTFIELD (LB NUMBER RB)? | TEXTAREA | RADIO (LB VALUELIST RB)? | DROPDOWN (LB VALUELIST RB)?);
@@ -45,7 +48,7 @@ NUMBER	:	('0'..'9')+;
 // XXX write rule
 VALUELIST
 	:	;
-NAME	:	(LETTER | '-')+;
+NAME	:	(LETTER | '-' | '_')+;
 VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
 		{
 		  String s = getText();

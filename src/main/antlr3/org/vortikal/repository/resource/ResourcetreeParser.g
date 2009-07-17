@@ -39,8 +39,26 @@ resourcedef
 		(editrules)?
 		(viewcomponents)?
 		(viewdefinition)?
+		(localization)?
 	;
 
+localization
+	:	LOCALIZATIONPROPERTIES LCB
+		  (localizationentry (COMMA localizationentry)*)*
+		RCB
+		-> ^(LOCALIZATIONPROPERTIES (localizationentry)*)
+	;
+
+localizationentry
+	:	NAME COLON LP (localizationdef (COMMA localizationdef)*) RP
+		-> ^(NAME (localizationdef)*)
+	;
+	
+localizationdef
+	:	NAME COLON DQ (NAME)+ DQ
+		-> ^(NAME (NAME)+)
+	;	
+	
 resourceprops
 	:	PROPERTIES LCB
 		  (propertytypedef (COMMA propertytypedef)*)*

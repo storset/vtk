@@ -36,7 +36,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -79,8 +81,7 @@ public class StructuredResourceParser implements InitializingBean {
         }
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
-
-        if (children.size() == 1) {
+        if (children.size() == 1)    {
             StructuredResourceDescription srd = createStructuredResourceDescription(children
                     .get(0));
             this.structuredResourceManager.register(srd);
@@ -125,6 +126,9 @@ public class StructuredResourceParser implements InitializingBean {
                                 .getChild(0).getText()));
                     }
                     break;
+                case ResourcetreeLexer.LOCALIZATIONPROPERTIES:
+                    handleLocalization(srd, descriptionEntry.getChildren());
+                    break;
                 default:
                     // XXX throw exception? -> uknown token type
                     break;
@@ -147,6 +151,22 @@ public class StructuredResourceParser implements InitializingBean {
                 props.add(p);
             }
             srd.setPropertyDescriptions(props);
+        }
+    }
+    
+    private void handleLocalization(StructuredResourceDescription srd,
+            List<CommonTree> propertyDescriptions){
+        if (hasContent(propertyDescriptions)) {
+            for (CommonTree propDesc : propertyDescriptions) {
+                //TODO: Gjøre om til HashMap <Locale, String>.... 
+                HashMap <String,String> m = new HashMap <String,String>();
+                for(CommonTree lang : (List<CommonTree>) propDesc.getChildren() ){
+                    for(CommonTree label : (List<CommonTree>) lang.getChildren()){
+                        m.put(lang.getText(), label.getText());
+                    }
+                }
+                srd.addLocalization(propDesc.getText(), (Map<String,String>) m);
+            }
         }
     }
 

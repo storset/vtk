@@ -25,6 +25,10 @@ resourcetype jarticle {
     </html>
   $$
   }
+  localization-properties {
+  	title : (no : "Tittel", en : "Title", nn : "Tittel"),
+   	introduction : (no : "Introduksjon", en : "Introduction", nn : "Intro")
+  }
 }
 
 

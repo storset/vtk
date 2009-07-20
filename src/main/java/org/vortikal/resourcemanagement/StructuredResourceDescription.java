@@ -132,6 +132,9 @@ public final class StructuredResourceDescription {
     
     public String getLocalizedMsg(String key, Locale locale, Object[] param){
         HashMap<String,String> m = localization.get(key);
+        if (m == null) {
+            throw new RuntimeException("Localization key not found: " + key);
+        }
         return m.get(locale.getLanguage().toLowerCase());
     }
 }

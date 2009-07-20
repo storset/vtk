@@ -51,6 +51,7 @@ import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.resourcemanagement.EditRule.Type;
 
+@SuppressWarnings("unchecked")
 public class StructuredResourceParser implements InitializingBean {
 
     private String resourceDescriptionFileLocation;
@@ -65,7 +66,6 @@ public class StructuredResourceParser implements InitializingBean {
     public static final String PROPTYPE_DATETIME = "datetime";
     public static final String PROPTYPE_IMAGEREF = "image_ref";
 
-    @SuppressWarnings("unchecked")
     public void registerStructuredResources() throws Exception {
 
         ResourcetreeParser parser = createParser(resourceDescriptionFileLocation);
@@ -81,7 +81,7 @@ public class StructuredResourceParser implements InitializingBean {
         }
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
-        if (children.size() == 1)    {
+        if (children.size() == 1) {
             StructuredResourceDescription srd = createStructuredResourceDescription(children
                     .get(0));
             this.structuredResourceManager.register(srd);
@@ -97,7 +97,6 @@ public class StructuredResourceParser implements InitializingBean {
 
     }
 
-    @SuppressWarnings("unchecked")
     private StructuredResourceDescription createStructuredResourceDescription(
             Tree resource) {
         StructuredResourceDescription srd = new StructuredResourceDescription(
@@ -130,8 +129,8 @@ public class StructuredResourceParser implements InitializingBean {
                     handleLocalization(srd, descriptionEntry.getChildren());
                     break;
                 default:
-                    // XXX throw exception? -> uknown token type
-                    break;
+                    throw new IllegalStateException("Unknown token type: "
+                            + descriptionEntry.getType());
                 }
             }
         }
@@ -139,7 +138,6 @@ public class StructuredResourceParser implements InitializingBean {
         return srd;
     }
 
-    @SuppressWarnings("unchecked")
     private void handlePropertyDescriptions(StructuredResourceDescription srd,
             List<CommonTree> propertyDescriptions) {
         List<PropertyDescription> props = new ArrayList<PropertyDescription>();
@@ -153,19 +151,19 @@ public class StructuredResourceParser implements InitializingBean {
             srd.setPropertyDescriptions(props);
         }
     }
-    
+
     private void handleLocalization(StructuredResourceDescription srd,
-            List<CommonTree> propertyDescriptions){
+            List<CommonTree> propertyDescriptions) {
         if (hasContent(propertyDescriptions)) {
             for (CommonTree propDesc : propertyDescriptions) {
-                //TODO: Gjøre om til HashMap <Locale, String>.... 
-                HashMap <String,String> m = new HashMap <String,String>();
-                for(CommonTree lang : (List<CommonTree>) propDesc.getChildren() ){
-                    for(CommonTree label : (List<CommonTree>) lang.getChildren()){
+                // TODO: Gjøre om til HashMap <Locale, String>....
+                HashMap<String, String> m = new HashMap<String, String>();
+                for (CommonTree lang : (List<CommonTree>) propDesc.getChildren()) {
+                    for (CommonTree label : (List<CommonTree>) lang.getChildren()) {
                         m.put(lang.getText(), label.getText());
                     }
                 }
-                srd.addLocalization(propDesc.getText(), (Map<String,String>) m);
+                srd.addLocalization(propDesc.getText(), (Map<String, String>) m);
             }
         }
     }
@@ -187,8 +185,8 @@ public class StructuredResourceParser implements InitializingBean {
                 p.setOverrides(descEntry.getChild(0).getText());
                 break;
             default:
-                // XXX throw exception? -> uknown token type
-                break;
+                throw new IllegalStateException("Unknown token type: "
+                        + descEntry.getType());
             }
         }
     }
@@ -224,8 +222,35 @@ public class StructuredResourceParser implements InitializingBean {
     }
 
     private void handleGroupedEditRuleDescription(StructuredResourceDescription srd,
-            CommonTree editRuleDescription) {
-        // XXX implement
+            CommonTree groupRuleDescription) {
+
+        CommonTree groupingNameElement = (CommonTree) groupRuleDescription.getChild(0);
+        if (ResourcetreeLexer.NAME != groupingNameElement.getType()) {
+            throw new IllegalStateException(
+                    "Firs element in a grouping definition must be a name");
+        }
+        String groupingName = groupingNameElement.getText();
+        List<String> groupedProps = new ArrayList<String>();
+        for (CommonTree prop : (List<CommonTree>) groupingNameElement.getChildren()) {
+            groupedProps.add(prop.getText());
+        }
+        srd.addEditRule(new EditRule(groupingName, Type.GROUP, groupedProps));
+
+        CommonTree positioningElement = (CommonTree) groupRuleDescription.getChild(1);
+        int groupingType = positioningElement.getType();
+        if (ResourcetreeLexer.AFTER == groupingType
+                || ResourcetreeLexer.BEFORE == groupingType) {
+            Type positioningType = ResourcetreeLexer.AFTER == groupingType ? Type.POSITION_AFTER
+                    : Type.POSITION_BEFORE;
+            srd.addEditRule(new EditRule(groupingName, positioningType,
+                    positioningElement.getChild(0).getText()));
+        }
+
+        CommonTree oriantationElement = (CommonTree) groupRuleDescription.getChild(2);
+        if (oriantationElement != null) {
+            srd.addEditRule(new EditRule(groupingName, Type.EDITHINT, oriantationElement
+                    .getText()));
+        }
     }
 
     private void handleViewComponents(StructuredResourceDescription srd,

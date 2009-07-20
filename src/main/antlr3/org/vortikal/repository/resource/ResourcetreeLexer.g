@@ -41,6 +41,8 @@ NOEXTRACT
 OVERRIDES
 	:	'overrides';
 GROUP	:	'group';
+ORIANTATION
+	:	HORISONTAL;
 BEFORE	:	'before';
 AFTER	:	'after';
 LETTER	:	('a'..'z' | 'A'..'Z');
@@ -89,3 +91,5 @@ fragment RADIO
 	:	'radio';
 fragment DROPDOWN
 	:	'dropdown';
+fragment HORISONTAL 
+	:	'horisontal';

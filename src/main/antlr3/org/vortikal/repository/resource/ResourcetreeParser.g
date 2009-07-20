@@ -80,8 +80,8 @@ overrides
 editruledef
 	:	NAME (position)? (edithint)?
 		-> ^(NAME ^(position)? ^(edithint)?)
-	|	GROUP NAME grouping position
-		-> ^(GROUP ^(NAME grouping) ^(position))
+	|	GROUP NAME grouping position (ORIANTATION)?
+		-> ^(GROUP ^(NAME grouping) ^(position) ^(ORIANTATION)?)
 	;
 
 editrules

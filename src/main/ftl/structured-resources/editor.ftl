@@ -128,7 +128,8 @@
 
 <form action="${form.submitURL?html}" method="POST">
 
-<#list form.formElements as elem>
+<#list form.elements as elementBox>
+  <#list elementBox.formElements as elem>
 	<#switch elem.description.type>
 	  <#case "string">
 	  	<#assign fieldSize="20" />
@@ -191,6 +192,7 @@
 	  <#default>
 	    ny type property ${elem.description.type}
 	</#switch>
+  </#list>
 </#list>
 <div class="submit">
 	  <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction"  value="${vrtx.getMsg("editor.saveAndQuit")}" />

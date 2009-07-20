@@ -86,9 +86,10 @@ resourcetype jperson : jarticle {
   }
   edit-rules {
     username (before title),
-    email (after username),
     picture (after surname),
-    tags (after scientificInformation)
+    tags (after scientificInformation),
+    officeNumber (textfield[5]),
+    group contactInfo (email, officeNumber, availableHours) (after username) horisontal
   }
   view-definition {
   $$

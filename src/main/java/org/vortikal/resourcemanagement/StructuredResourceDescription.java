@@ -36,9 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.antlr.runtime.tree.CommonTree;
-
-public final class StructuredResourceDescription<x> {
+public final class StructuredResourceDescription {
 
     private StructuredResourceManager manager;
     private String name;

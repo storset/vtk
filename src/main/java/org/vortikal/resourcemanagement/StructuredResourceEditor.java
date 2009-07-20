@@ -90,9 +90,9 @@ public class StructuredResourceEditor extends SimpleFormController {
 
     protected ModelAndView onSubmit(Object command) throws Exception {
         Form form = (Form) command;
-        if(form.getCancelAction() != null){
+        if (form.getCancelAction() != null) {
             unlock();
-            return new ModelAndView(getSuccessView()); 
+            return new ModelAndView(getSuccessView());
         }
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("form", command);
@@ -103,10 +103,10 @@ public class StructuredResourceEditor extends SimpleFormController {
         InputStream stream = new ByteArrayInputStream(form.getResource().toJSON()
                 .toString().getBytes("utf-8"));
         this.repository.storeContent(token, uri, stream);
-        
-        if(form.getUpdateQuitAction() != null){
+
+        if (form.getUpdateQuitAction() != null) {
             unlock();
-            return new ModelAndView(getSuccessView());    
+            return new ModelAndView(getSuccessView());
         }
         return new ModelAndView(getFormView(), model);
     }
@@ -148,53 +148,64 @@ public class StructuredResourceEditor extends SimpleFormController {
                 String posted = request.getParameter(desc.getName());
                 form.bind(desc.getName(), posted);
             }
-            
+
             super.bind(request);
         }
     }
 
     public class Form extends UpdateCancelCommand {
         private StructuredResource resource;
-        private List<FormElement> elements = new ArrayList<FormElement>();
+        private List<Box> elements = new ArrayList<Box>();
 
         public Form(StructuredResource resource, URL url) {
             super(url.toString());
             this.resource = resource;
             StructuredResourceDescription type = resource.getType();
             for (PropertyDescription def : type.getAllPropertyDescriptions()) {
-                this.elements.add(new FormElement(def, null, resource.getProperty(def
-                        .getName())));
+                Box elementBox = new Box(def.getName());
+                elementBox.addFormElement(new FormElement(def, null, resource
+                        .getProperty(def.getName())));
+                this.elements.add(elementBox);
             }
 
             List<EditRule> editRules = type.getEditRules();
             if (editRules != null && editRules.size() > 0) {
                 for (EditRule editRule : editRules) {
                     Type ruleType = editRule.getType();
-                    if (Type.POSITION_BEFORE.equals(ruleType)) {
+                    if (Type.GROUP.equals(ruleType)) {
+                        // XXX group and remove single props
+                    } else if (Type.POSITION_BEFORE.equals(ruleType)) {
                         rearrangePosition(elements, editRule, Type.POSITION_BEFORE);
                     } else if (Type.POSITION_AFTER.equals(ruleType)) {
                         rearrangePosition(elements, editRule, Type.POSITION_AFTER);
-                    } else if (Type.GROUP.equals(ruleType)) {
-                        // XXX group and remove singel props
                     } else if (Type.EDITHINT.equals(ruleType)) {
-                        // XXX add the edithints to the property
+                        for (Box elementBox : elements) {
+                            for (FormElement formElement : elementBox.getFormElements()) {
+                                PropertyDescription pd = formElement.getDescription();
+                                if (pd.getName().equals(editRule.getName())) {
+                                    Object edithint = editRule.getValue();
+                                    // XXX parse and add the edithint to the
+                                    // property description
+                                    // pd.addEdithint(key, value);
+                                }
+                            }
+                        }
                     }
                 }
             }
 
         }
 
-        private void rearrangePosition(List<FormElement> elements, EditRule editRule,
+        private void rearrangePosition(List<Box> elements, EditRule editRule,
                 Type ruleType) {
             int indexOfpropToMove = -1;
             int indexToMoveToo = -1;
             for (int i = 0; i < elements.size(); i++) {
-                FormElement formElement = elements.get(i);
-                if (editRule.getName().equals(formElement.getDescription().getName())) {
+                Box elementBox = elements.get(i);
+                if (editRule.getName().equals(elementBox.getName())) {
                     indexOfpropToMove = i;
                 }
-                if (editRule.getValue().toString().equals(
-                        formElement.getDescription().getName())) {
+                if (editRule.getValue().toString().equals(elementBox.getName())) {
                     indexToMoveToo = i;
                 }
             }
@@ -211,7 +222,7 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
         }
 
-        public List<FormElement> getFormElements() {
+        public List<Box> getElements() {
             return Collections.unmodifiableList(this.elements);
         }
 
@@ -228,9 +239,11 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
 
         private FormElement findElement(String name) {
-            for (FormElement elem : this.elements) {
-                if (elem.getDescription().getName().equals(name)) {
-                    return elem;
+            for (Box elementBox : this.elements) {
+                for (FormElement formElement : elementBox.getFormElements()) {
+                    if (formElement.getDescription().getName().equals(name)) {
+                        return formElement;
+                    }
                 }
             }
             return null;
@@ -248,6 +261,29 @@ public class StructuredResourceEditor extends SimpleFormController {
                     this.resource.addProperty(name, value);
                 }
             }
+        }
+
+    }
+
+    public class Box {
+
+        private String name;
+        private List<FormElement> formElements = new ArrayList<FormElement>();
+
+        public Box(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public void addFormElement(FormElement formElement) {
+            this.formElements.add(formElement);
+        }
+
+        public List<FormElement> getFormElements() {
+            return this.formElements;
         }
 
     }
@@ -288,7 +324,7 @@ public class StructuredResourceEditor extends SimpleFormController {
             return value;
         }
     }
-    
+
     public void unlock() throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
@@ -299,7 +335,8 @@ public class StructuredResourceEditor extends SimpleFormController {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
+        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600,
+                null);
     }
 
 }

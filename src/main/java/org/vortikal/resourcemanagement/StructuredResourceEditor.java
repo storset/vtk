@@ -153,6 +153,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public class Form extends UpdateCancelCommand {
         private StructuredResource resource;
         private List<Box> elements = new ArrayList<Box>();
@@ -173,31 +174,33 @@ public class StructuredResourceEditor extends SimpleFormController {
                 for (EditRule editRule : editRules) {
                     Type ruleType = editRule.getType();
                     if (Type.GROUP.equals(ruleType)) {
-                        // XXX group and remove single props
+                        groupElements(editRule);
                     } else if (Type.POSITION_BEFORE.equals(ruleType)) {
-                        rearrangePosition(elements, editRule, Type.POSITION_BEFORE);
+                        rearrangePosition(editRule, Type.POSITION_BEFORE);
                     } else if (Type.POSITION_AFTER.equals(ruleType)) {
-                        rearrangePosition(elements, editRule, Type.POSITION_AFTER);
+                        rearrangePosition(editRule, Type.POSITION_AFTER);
                     } else if (Type.EDITHINT.equals(ruleType)) {
-                        for (Box elementBox : elements) {
-                            for (FormElement formElement : elementBox.getFormElements()) {
-                                PropertyDescription pd = formElement.getDescription();
-                                if (pd.getName().equals(editRule.getName())) {
-                                    Object edithint = editRule.getValue();
-                                    // XXX parse and add the edithint to the
-                                    // property description
-                                    // pd.addEdithint(key, value);
-                                }
-                            }
-                        }
+                        setEditHints(editRule);
                     }
                 }
             }
 
         }
 
-        private void rearrangePosition(List<Box> elements, EditRule editRule,
-                Type ruleType) {
+        private void groupElements(EditRule editRule) {
+            Box elementBox = new Box(editRule.getName());
+            List<String> groupedProps = (List<String>) editRule.getValue();
+            for (String groupedProp : groupedProps) {
+                FormElement formElement = this.findElement(groupedProp);
+                if (formElement != null) {
+                    elementBox.addFormElement(formElement);
+                    this.removeElementBox(formElement);
+                }
+            }
+            this.elements.add(elementBox);
+        }
+
+        private void rearrangePosition(EditRule editRule, Type ruleType) {
             int indexOfpropToMove = -1;
             int indexToMoveToo = -1;
             for (int i = 0; i < elements.size(); i++) {
@@ -218,6 +221,22 @@ public class StructuredResourceEditor extends SimpleFormController {
                 } else {
                     Collections.rotate(elements.subList(indexOfpropToMove, indexToMoveToo
                             + rotation), -1);
+                }
+            }
+        }
+
+        private void setEditHints(EditRule editRule) {
+            for (Box elementBox : elements) {
+                if (elementBox.getName().equals(editRule.getName())) {
+                    elementBox.addMetaData(editRule.getEditHintKey(), editRule
+                            .getEditHintValue());
+                }
+                for (FormElement formElement : elementBox.getFormElements()) {
+                    PropertyDescription pd = formElement.getDescription();
+                    if (pd.getName().equals(editRule.getName())) {
+                        pd.addEdithint(editRule.getEditHintKey(), editRule
+                                .getEditHintValue());
+                    }
                 }
             }
         }
@@ -249,6 +268,20 @@ public class StructuredResourceEditor extends SimpleFormController {
             return null;
         }
 
+        private void removeElementBox(FormElement formElement) {
+            Box elementBoxToRemove = null;
+            for (Box elementBox : this.elements) {
+                List<FormElement> formElements = elementBox.getFormElements();
+                if (formElements.size() == 1 && formElement.equals(formElements.get(0))) {
+                    elementBoxToRemove = elementBox;
+                    break;
+                }
+            }
+            if (elementBoxToRemove != null) {
+                this.elements.remove(elementBoxToRemove);
+            }
+        }
+
         public void sync() {
             List<PropertyDescription> descriptions = this.resource.getType()
                     .getAllPropertyDescriptions();
@@ -269,6 +302,7 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         private String name;
         private List<FormElement> formElements = new ArrayList<FormElement>();
+        private Map<String, Object> metaData = new HashMap<String, Object>();
 
         public Box(String name) {
             this.name = name;
@@ -284,6 +318,14 @@ public class StructuredResourceEditor extends SimpleFormController {
 
         public List<FormElement> getFormElements() {
             return this.formElements;
+        }
+
+        public void addMetaData(String key, Object metaData) {
+            this.metaData.put(key, metaData);
+        }
+
+        public Map<String, Object> getMetaData() {
+            return this.metaData;
         }
 
     }

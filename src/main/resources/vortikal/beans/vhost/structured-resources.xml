@@ -133,15 +133,7 @@
   
   <bean id="structuredResources.editView" parent="freemarkerView">
     <property name="url" value="structured-resources/editor.ftl" />
-    <!--
     <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-    -->
-    
-        <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
@@ -169,12 +161,12 @@
             <map>
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />
+              <entry key="themeBaseURL" value="${themeBaseURL}" />
             </map>
           </property>
         </bean>
       </list>
     </property>
-    
   </bean>
   
   <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.StructuredResourceParser">

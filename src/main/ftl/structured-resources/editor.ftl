@@ -99,42 +99,30 @@
 	}
 </script>
 -->
-<style type="text/css">
-.vrtx-html, .vrtx-string, .vrtx-date, .vrtx-image-ref, .vrtx-checkbox, .vrtx-dropdownlist, .vrtx-radio {
-	padding: 5px 10px;
-	clear:left;
-	float:left;
-	overflow:auto;
-}
 
-.vrtx-html {
-	width:98%!important;
-}
-
-#contents{
-	overflow:auto;
-	background-color:#efefef;
-}
-
-.submit {
-	clear:left;
-	display:block;
-}
-
-</style>
-
+  <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
+  
 </head>
 <body>
 
 <form action="${form.submitURL?html}" method="POST">
 
 <#list form.elements as elementBox>
+
+  <#if elementBox.formElements?size &gt; 1>
+    <#assign groupClass = "vrtx-grouped" />
+    <#if elementBox.metaData['horisontal']?exists>
+      <#assign groupClass = groupClass + "-horisontal" />
+    </#if>
+    <div class=${groupClass}>
+  </#if>
+
   <#list elementBox.formElements as elem>
 	<#switch elem.description.type>
 	  <#case "string">
 	  	<#assign fieldSize="20" />
-	  	<#if elem.description.edithints?exists && elem.description.edithints['textfield']?exists >
-	  		<#assign fieldSize=elem.description.edithints['textfield'] />
+	  	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
+	  		<#assign fieldSize=elem.description.edithints['size'] />
 	  	</#if>
 	 	<@vrtxString.printPropertyEditView 
 	 		title=elem.description.name 
@@ -193,6 +181,11 @@
 	    ny type property ${elem.description.type}
 	</#switch>
   </#list>
+  
+  <#if elementBox.formElements?size &gt; 1>
+    </div>
+  </#if>
+  
 </#list>
 <div class="submit">
 	  <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction"  value="${vrtx.getMsg("editor.saveAndQuit")}" />

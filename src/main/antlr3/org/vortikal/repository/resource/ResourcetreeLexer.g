@@ -34,7 +34,7 @@ COMMA	:	',';
 DQ		:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF);
-EDITHINT:	(TEXTFIELD (LB NUMBER RB)? | TEXTAREA | RADIO (LB VALUELIST RB)? | DROPDOWN (LB VALUELIST RB)?);
+EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN );
 REQUIRED:	'required';
 NOEXTRACT
 	:	'noextract';
@@ -83,6 +83,8 @@ fragment IMAGEREF
 	:	'image_ref';
 
 // Edithints
+fragment SIZE
+    :   'size';
 fragment TEXTFIELD
 	:	'textfield';
 fragment TEXTAREA

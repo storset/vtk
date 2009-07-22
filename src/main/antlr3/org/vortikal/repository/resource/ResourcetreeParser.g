@@ -99,9 +99,10 @@ pos	:	(BEFORE | AFTER);
 
 edithint:	LP EDITHINT RP -> ^(EDITHINT);
 
-// XXX write rult
+// XXX write rule
 displayhint
-	:	;
+	:
+	;
 
 grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
 

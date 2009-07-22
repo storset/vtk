@@ -45,7 +45,8 @@ public final class StructuredResourceDescription {
     private List<EditRule> editRules;
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private DisplayTemplate displayTemplate;
-    private HashMap<String, HashMap<String, String>> localization; //TODO: Gjøre om til .. <String, HashMap <Locale, String>.... 
+    // TODO: Gjøre om til .. <String, HashMap <Locale, String>....
+    private HashMap<String, HashMap<String, String>> localization;
 
     StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
@@ -85,7 +86,7 @@ public final class StructuredResourceDescription {
         result.addAll(this.getPropertyDescriptions());
         return result;
     }
-    
+
     public PropertyDescription getPropertyDescription(String name) {
         List<PropertyDescription> allPropertyDescriptions = getAllPropertyDescriptions();
         if (allPropertyDescriptions.size() == 0) {
@@ -125,13 +126,13 @@ public final class StructuredResourceDescription {
     public void setDisplayTemplate(DisplayTemplate displayTemplate) {
         this.displayTemplate = displayTemplate;
     }
-    
-    public void addLocalization(String name, Map<String,String> m){
-        localization.put(name,(HashMap<String, String>) m);
+
+    public void addLocalization(String name, Map<String, String> m) {
+        localization.put(name, (HashMap<String, String>) m);
     }
-    
-    public String getLocalizedMsg(String key, Locale locale, Object[] param){
-        HashMap<String,String> m = localization.get(key);
+
+    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
+        HashMap<String, String> m = localization.get(key);
         if (m == null) {
             throw new RuntimeException("Localization key not found: " + key);
         }

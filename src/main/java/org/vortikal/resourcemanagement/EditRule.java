@@ -36,6 +36,9 @@ public class EditRule {
         POSITION_BEFORE, POSITION_AFTER, GROUP, EDITHINT;
     }
 
+    private static final String LB = "[";
+    private static final String RB = "]";
+
     private String name;
     private Type type;
     private Object value;
@@ -43,7 +46,7 @@ public class EditRule {
     public EditRule(String name, Type type, Object value) {
         this.name = name;
         this.type = type;
-        setValue(value);
+        this.value = value;
     }
 
     public String getName() {
@@ -58,8 +61,27 @@ public class EditRule {
         return this.value;
     }
 
-    private void setValue(Object value) {
-        this.value = value;
+    public String getEditHintKey() {
+        return parseEditHint(true);
+    }
+
+    public String getEditHintValue() {
+        return parseEditHint(false);
+    }
+
+    private String parseEditHint(boolean returnKey) {
+        if (Type.EDITHINT.equals(this.type)) {
+            if (this.value instanceof String) {
+                String stringValue = (String) this.value;
+                if (stringValue.contains(LB) && stringValue.contains(RB)) {
+                    return returnKey ? stringValue.substring(0, stringValue.indexOf(LB))
+                            : stringValue.substring(stringValue.indexOf(LB) + 1,
+                                    stringValue.indexOf(RB));
+                }
+                return stringValue;
+            }
+        }
+        return null;
     }
 
 }

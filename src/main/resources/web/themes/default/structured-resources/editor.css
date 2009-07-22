@@ -1,0 +1,33 @@
+
+.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio
+  {
+  padding: 5px 10px;
+  clear: left;
+  /*float: left;*/
+  overflow: auto;
+}
+
+.vrtx-html {
+  width: 98% !important;
+}
+
+.vrtx-grouped {
+  /*XXX Temp border to indicate grouped props*/
+  border: 1px solid #a9a9a9;
+}
+
+.vrtx-grouped-horisontal {
+  /*XXX Temp border to indicate grouped props*/
+  border: 1px solid #a9a9a9;
+  /*XXX implement*/
+}
+
+#contents {
+  overflow: auto;
+  background-color: #efefef;
+}
+
+.submit {
+  clear: left;
+  display: block;
+}

@@ -1,18 +1,11 @@
-
-resourcetype jarticle {
+resourcetype jdocument {
 
   properties {
     title : string (overrides : title),
     introduction : simple_html,
     introduction-img : image_ref,
     image-caption : simple_html,
-    media-ref : media_ref,
-    author : string,
-    published-date : datetime,
     content : html noextract
-  }
-
-  edit-rules {
   }
 
   view-components {
@@ -77,6 +70,48 @@ resourcetype jarticle {
       [endif]
       ##
     }
+  }
+
+  view-definition {
+  $$
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title><comp:title /></title>
+      </head>
+      <body>
+        <h1><comp:title /></h1>
+        <comp:introduction-image />
+        <comp:introduction />
+        <json:field select="content" />
+        <resource:tags />
+        <resource:comments />
+      </body>
+    </html>
+  $$
+  }
+
+  localization-properties {
+  	title : (en : "Title", no : "Tittel", nn : "Tittel"),
+   	introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),
+        introduction-image-alt : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete")
+  }
+}
+
+
+resourcetype jarticle : jdocument {
+
+  properties {
+    media-ref : media_ref,
+    author : string,
+    published-date : datetime
+  }
+
+  edit-rules {
+  }
+
+
+  view-components {
 
     media-refs {
       ##
@@ -167,9 +202,6 @@ resourcetype jarticle {
   }
 
   localization-properties {
-  	title : (en : "Title", no : "Tittel", nn : "Tittel"),
-   	introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),
-        introduction-image-alt : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete"),
         photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
         by-line : (en : "By", no : "Av", nn : "Av"),
         published : (en : "Published", no : "Publisert", nn : "Publisert"),
@@ -179,7 +211,7 @@ resourcetype jarticle {
 
 
 
-resourcetype jevent : jarticle {
+resourcetype jevent : jdocument {
   properties {
     start-date : datetime,
     end-date : datetime,
@@ -215,7 +247,8 @@ resourcetype jevent : jarticle {
 
 
 
-resourcetype jperson : jarticle {
+resourcetype jperson : jdocument {
+
   properties {
     username : string required,
     getExternalPersonInfo : boolean,

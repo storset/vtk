@@ -33,7 +33,7 @@ COLON	:	':';
 COMMA	:	',';
 DQ		:	'"';
 
-PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF);
+PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN );
 REQUIRED:	'required';
 NOEXTRACT
@@ -42,7 +42,7 @@ OVERRIDES
 	:	'overrides';
 GROUP	:	'group';
 ORIANTATION
-	:	HORISONTAL;
+	:	HORIZONTAL;
 BEFORE	:	'before';
 AFTER	:	'after';
 LETTER	:	('a'..'z' | 'A'..'Z');
@@ -51,6 +51,15 @@ NUMBER	:	('0'..'9')+;
 VALUELIST
 	:	;
 NAME	:	(LETTER | '-' | '_')+;
+ESC_SEQ : '\\' ('\"'|'\''|'\\') ;
+QTEXT    :  '"'  ( ESC_SEQ | ~('\\'|'"') )* '"'
+        {
+            String s = getText();
+            if (s.length() > 2) {
+                s = s.substring(1, s.length() - 1);
+                setText(s);
+            }
+        };
 VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
 		{
 		  String s = getText();
@@ -61,6 +70,7 @@ VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
 VIEWCOMPDEF	:	'##' .* '##'
         {
 		  String s = getText();
+		  s = s.replace("##", "");
 		  setText(s.trim());
         };
 
@@ -81,6 +91,8 @@ fragment DATETIME
 	:	'datetime';
 fragment IMAGEREF
 	:	'image_ref';
+fragment MEDIAREF
+	:	'media_ref';
 
 // Edithints
 fragment SIZE
@@ -93,5 +105,5 @@ fragment RADIO
 	:	'radio';
 fragment DROPDOWN
 	:	'dropdown';
-fragment HORISONTAL 
-	:	'horisontal';
+fragment HORIZONTAL 
+	:	'horizontal';

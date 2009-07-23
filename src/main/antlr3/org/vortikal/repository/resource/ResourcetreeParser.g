@@ -55,8 +55,8 @@ localizationentry
 	;
 	
 localizationdef
-	:	NAME COLON DQ (NAME)+ DQ
-		-> ^(NAME (NAME)+)
+	:	NAME COLON QTEXT
+		-> ^(NAME (QTEXT)+)
 	;	
 	
 resourceprops

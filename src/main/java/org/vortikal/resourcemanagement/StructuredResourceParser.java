@@ -65,6 +65,7 @@ public class StructuredResourceParser implements InitializingBean {
     public static final String PROPTYPE_INT = "int";
     public static final String PROPTYPE_DATETIME = "datetime";
     public static final String PROPTYPE_IMAGEREF = "image_ref";
+    public static final String PROPTYPE_MEDIAREF = "media_ref";
 
     public void registerStructuredResources() throws Exception {
 
@@ -156,7 +157,7 @@ public class StructuredResourceParser implements InitializingBean {
             List<CommonTree> propertyDescriptions) {
         if (hasContent(propertyDescriptions)) {
             for (CommonTree propDesc : propertyDescriptions) {
-                // TODO: Gjøre om til HashMap <Locale, String>....
+                // TODO: convert to HashMap<Locale, String>:
                 HashMap<String, String> m = new HashMap<String, String>();
                 for (CommonTree lang : (List<CommonTree>) propDesc.getChildren()) {
                     for (CommonTree label : (List<CommonTree>) lang.getChildren()) {
@@ -227,7 +228,7 @@ public class StructuredResourceParser implements InitializingBean {
         CommonTree groupingNameElement = (CommonTree) groupRuleDescription.getChild(0);
         if (ResourcetreeLexer.NAME != groupingNameElement.getType()) {
             throw new IllegalStateException(
-                    "Firs element in a grouping definition must be a name");
+                    "First element in a grouping definition must be a name");
         }
         String groupingName = groupingNameElement.getText();
         List<String> groupedProps = new ArrayList<String>();

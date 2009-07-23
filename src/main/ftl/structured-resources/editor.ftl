@@ -6,6 +6,7 @@
 <#import "vrtx-types/vrtx-file-ref.ftl" as vrtxFileRef />
 <#import "vrtx-types/vrtx-html.ftl" as vrtxHtml />
 <#import "vrtx-types/vrtx-image-ref.ftl" as vrtxImageRef />
+<#import "vrtx-types/vrtx-media-ref.ftl" as vrtxMediaRef />
 <#import "vrtx-types/vrtx-radio.ftl" as vrtxRadio />
 <#import "vrtx-types/vrtx-string.ftl" as vrtxString />
 
@@ -165,6 +166,13 @@
 	  	<#break>
 	  <#case "image_ref">
 	  	<@vrtxImageRef.printPropertyEditView 
+	  		title=elem.description.name 
+	  		inputFieldName=elem.description.name 
+	  		value=elem.value 
+	  		baseFolder=resourceContext.parentURI />
+	  	<#break>          
+	  <#case "media_ref">
+	  	<@vrtxMediaRef.printPropertyEditView 
 	  		title=elem.description.name 
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value 

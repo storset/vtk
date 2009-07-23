@@ -96,28 +96,39 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
-        return new Execution(this.compiledTemplate, html, request, model);
+        return new Execution(this.compiledTemplate, this.componentResolver, html, request, model);
     }
     
     public class Execution implements TemplateExecution {
         
         private CompiledTemplate compiledTemplate;
+        private ComponentResolver componentResolver;
         private HtmlPageContent html;
         private HttpServletRequest request;
         private Map<Object, Object> model;
 
-        public Execution(CompiledTemplate compiledTemplate, HtmlPageContent html, 
+        public Execution(CompiledTemplate compiledTemplate, 
+                ComponentResolver componentResolver, HtmlPageContent html, 
                 HttpServletRequest request, Map<Object, Object> model) {
             this.compiledTemplate = compiledTemplate;
+            this.componentResolver = componentResolver;
             this.html = html;
             this.request = request;
             this.model = model;
+        }
+        
+        public ComponentResolver getComponentResolver() {
+            return this.componentResolver;
+        }
+        
+        public void setComponentResolver(ComponentResolver componentResolver) {
+            this.componentResolver = componentResolver;
         }
 
         public HtmlPageContent render() throws Exception {
             HtmlPage resultPage = 
                 this.compiledTemplate.generate(html.getHtmlContent(), 
-                        request, model);
+                        this.componentResolver, request, model);
             return new HtmlPageContentImpl(resultPage.getCharacterEncoding(), 
                     resultPage);
         }
@@ -130,7 +141,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
         this.compiledTemplate = new CompiledTemplate(
                 this.htmlParser, this.componentParser, 
-                this.componentResolver, this.templateSource);
+                this.templateSource);
         this.lastModified = this.templateSource.getLastModified();
     }
     
@@ -139,7 +150,6 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
         public CompiledTemplate(HtmlPageParser htmlParser, 
                 TextualComponentParser componentParser,
-                ComponentResolver componentResolver,
                 TemplateSource templateSource) throws InvalidTemplateException {
 
             HtmlPage page = null;
@@ -151,16 +161,15 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 throw new InvalidTemplateException(
                         "Error parsing template " + templateSource, e);
             }
-            this.root = createNode(page.getRootElement(), componentParser, componentResolver);
+            this.root = createNode(page.getRootElement(), componentParser);
         }
 
-        public HtmlPage generate(HtmlPage userPage, 
+        public HtmlPage generate(HtmlPage userPage, ComponentResolver componentResolver, 
                 HttpServletRequest request, Map<Object, Object> model) throws Exception {
             List<HtmlContent> transformedContent = 
-                this.root.generate(userPage, request, model);
-
+                this.root.generate(userPage, componentResolver, request, model);
             if (transformedContent.size() != 1) {
-                throw new IllegalStateException("Invalid HTML result");
+                throw new IllegalStateException("Invalid HTML result: " + transformedContent);
             }
             
             Object firstElem = transformedContent.get(0);
@@ -177,8 +186,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
 
     private Node createNode(HtmlContent c, 
-            TextualComponentParser componentParser, 
-            ComponentResolver componentResolver) {
+            TextualComponentParser componentParser) {
 
         if (c instanceof HtmlElement) {
             HtmlElement e = (HtmlElement) c;
@@ -187,7 +195,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             }
             List<Node> children = new ArrayList<Node>();
             for (HtmlContent child: e.getChildNodes()) {
-                children.add(createNode(child, componentParser, componentResolver));
+                children.add(createNode(child, componentParser));
             }
             return new ElementNode(e, children);
         } 
@@ -203,9 +211,10 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     
     private abstract class Node {
 
-        public abstract List<HtmlContent> 
-            generate(HtmlPage userPage, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception;
+        public abstract List<HtmlContent> generate(HtmlPage userPage, 
+                ComponentResolver componentResolver,
+                HttpServletRequest req, Map<Object, Object> model) 
+                throws Exception;
 
         protected List<HtmlContent> renderComponentAsHtml(DecoratorComponent c, DecoratorRequest request) {
             if (c instanceof HtmlDecoratorComponent) {
@@ -283,17 +292,10 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             for (HtmlAttribute attr: elem.getAttributes()) {
                 parameters.put(attr.getName(), attr.getValue());    
             }
-            
-            DecoratorComponent component = 
-                componentResolver.resolveComponent(namespace, name);
-            if (component == null) {
-                this.error = new Throwable("Unknown component: " + namespace + ":" + name);
-                return;
-            }
-            this.elementComponent = new ComponentInvocationImpl(component, parameters);
+            this.elementComponent = new ComponentInvocationImpl(namespace, name, parameters);
         }
         
-        public List<HtmlContent> generate(HtmlPage userPage, HttpServletRequest req, 
+        public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
@@ -303,9 +305,20 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                     new org.springframework.web.servlet.support.RequestContext(req).getLocale();
                 DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                         userPage, req, model, this.elementComponent.getParameters(), userPage.getDoctype(), locale);
+
+                String namespace = this.elementComponent.getNamespace();
+                String name = this.elementComponent.getName();
+                
+                DecoratorComponent component = 
+                    componentResolver.resolveComponent(namespace, name);
+                if (component == null) {
+                    result.add(userPage.createTextNode(
+                            "Unknown component: " + namespace + ":" + name));
+                    return result;
+                }
+
                 List<HtmlContent> nodes = 
-                    renderComponentAsHtml(this.elementComponent.getComponent(), 
-                            decoratorRequest);
+                    renderComponentAsHtml(component, decoratorRequest);
                 if (nodes != null) {
                     result.addAll(nodes);
                 }
@@ -365,7 +378,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             }
         }
         
-        public List<HtmlContent> generate(HtmlPage userPage, HttpServletRequest req, 
+        public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
@@ -402,9 +415,25 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                         Locale locale = 
                             new org.springframework.web.servlet.support.RequestContext(req).getLocale();
                         for (ComponentInvocation inv: invocations) {
-                            DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                                    userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
-                            value.append(renderComponentAsString(inv.getComponent(), decoratorRequest));
+
+                            if (inv instanceof StaticTextFragment) {
+                                value.append(((StaticTextFragment) inv).buffer);
+                            } else {
+                                DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
+                                        userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
+                                
+                                String compNamespace = inv.getNamespace();
+                                String compName = inv.getName();
+                                
+                                DecoratorComponent component = 
+                                    componentResolver.resolveComponent(compNamespace, compName);
+                                if (component == null) {
+                                    value.append("Unknown component: " + compNamespace + ":" + compName);
+                                    return result;
+                                } else {
+                                    value.append(renderComponentAsString(component, decoratorRequest));
+                                }
+                            }
                         }
                         HtmlAttribute attr = userPage.createAttribute(name, value.toString());
                         newAttrs.add(attr);
@@ -415,7 +444,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
                 List<HtmlContent> newElementContent = new ArrayList<HtmlContent>();
                 for (Node childNode: this.children) {
-                    newElementContent.addAll(childNode.generate(userPage, req, model));
+                    newElementContent.addAll(childNode.generate(userPage, componentResolver, req, model));
                 }
                 newElem.setChildNodes(newElementContent.toArray(new HtmlContent[newElementContent.size()]));
                 result.add(newElem);
@@ -440,7 +469,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             }
         }
         
-        public List<HtmlContent> generate(HtmlPage userPage, HttpServletRequest req, 
+        public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
@@ -448,12 +477,26 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             } else {
               StringBuilder sb = new StringBuilder();
               for (ComponentInvocation inv: this.parsedContent) {
-                  Locale locale = 
-                      new org.springframework.web.servlet.support.RequestContext(req).getLocale();
-                  DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                          userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
-                  String renderedContent = renderComponentAsString(inv.getComponent(), decoratorRequest);
-                  sb.append(renderedContent);
+                  if (inv instanceof StaticTextFragment) {
+                      sb.append(((StaticTextFragment) inv).buffer);
+                  } else {
+                  
+                      Locale locale = 
+                          new org.springframework.web.servlet.support.RequestContext(req).getLocale();
+                      DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
+                              userPage, req, model, inv.getParameters(), userPage.getDoctype(), locale);
+
+                      String compNamespace = inv.getNamespace();
+                      String compName = inv.getName();
+
+                      DecoratorComponent component = 
+                          componentResolver.resolveComponent(compNamespace, compName);
+                      if (component == null) {
+                          sb.append("Unknown component: " + compNamespace + ":" + compName);
+                      } else {
+                          sb.append(renderComponentAsString(component, decoratorRequest));
+                      }
+                  }
               }
               HtmlText newText = userPage.createTextNode(sb.toString());
               result.add(newText);
@@ -472,7 +515,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             this.comment = comment.getContent();
         }
 
-        public List<HtmlContent> generate(HtmlPage userPage, HttpServletRequest req, 
+        public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             result.add(userPage.createComment(this.comment));
@@ -490,7 +533,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             this.content = c.getContent();
         }
         
-        public List<HtmlContent> generate(HtmlPage userPage, HttpServletRequest req, 
+        public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
                 Map<Object, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             result.add(userPage.createTextNode(this.content));

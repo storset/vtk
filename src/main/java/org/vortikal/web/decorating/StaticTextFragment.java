@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,29 +32,20 @@ package org.vortikal.web.decorating;
 
 import java.util.Map;
 
+public class StaticTextFragment implements ComponentInvocation {
 
-/**
- * A "runtime" representation of a component (a component and its
- * parameter values).
- */
-public interface ComponentInvocation {
+    public StringBuilder buffer = new StringBuilder();
+    
+    public String getNamespace() {
+        throw new IllegalStateException("Static text fragment");
+    }
 
-    /**
-     * Gets the decorator component namespace
-     *
-     */
-    public String getNamespace();
+    public String getName() {
+        throw new IllegalStateException("Static text fragment");
+    }
 
-    /**
-     * Gets the decorator component name
-     *
-     */
-    public String getName();
-
-    /**
-     * Gets the decorator component's parameters as (name, value)
-     * pairs.
-     */
-    public Map<String, Object> getParameters();
+    public Map<String, Object> getParameters() {
+        throw new IllegalStateException("Static text fragment");
+    }
 
 }

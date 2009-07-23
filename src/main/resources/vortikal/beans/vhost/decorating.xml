@@ -38,6 +38,7 @@
   </bean>
 
   <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentHandlingNodeFilter">
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="ssiDirectiveComponentMap">
       <map>
         <entry key="include" value-ref="decorating.includeComponent" />
@@ -123,10 +124,10 @@
   <bean id="decorating.dollarSyntaxTemplateFactory"
             class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
     <property name="parser" ref="decorating.dollarSyntaxTemplateParser" />
+    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
   <bean id="decorating.dollarSyntaxTemplateParser" class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
-    <property name="componentResolver" ref="decorating.defaultComponentResolver" />
   </bean>
 
   <bean name="decorating.defaultComponentResolver"

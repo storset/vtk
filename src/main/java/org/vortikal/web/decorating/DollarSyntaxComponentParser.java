@@ -45,12 +45,6 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
 
     private static Log logger = LogFactory.getLog(DollarSyntaxComponentParser.class);
 
-    private ComponentResolver componentResolver;
-    
-    public void setComponentResolver(ComponentResolver componentResolver) {
-        this.componentResolver = componentResolver;
-    }
-    
     public ComponentInvocation[] parse(Reader reader) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(reader);
         
@@ -139,15 +133,6 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         	return null;
         }
 
-        DecoratorComponent component = this.componentResolver.resolveComponent(
-            namespace, name);
-        if (component == null) {
-        	if (logger.isInfoEnabled()) {
-        		logger.info("Unable to resolve component '" + namespace + "' : '" + name + "'");
-        	}
-        	return null;
-        } 
-
         LinkedHashMap<String, Object> parameters = splitParameterList(s);
         if (parameters == null) {
         	if (logger.isInfoEnabled()) {
@@ -155,7 +140,7 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         	}
         	return null;
         }
-        return new ComponentInvocationImpl(component, new HashMap<String, Object>(parameters));
+        return new ComponentInvocationImpl(namespace, name, new HashMap<String, Object>(parameters));
     }
 
 
@@ -314,15 +299,15 @@ public class DollarSyntaxComponentParser implements TextualComponentParser {
         }
         if (fragmentList.size() > 0) {
             ComponentInvocation inv = fragmentList.get(fragmentList.size() - 1);
-            DecoratorComponent c = inv.getComponent();
-            if (c instanceof StaticTextComponent) {
-                // Append to existing static text at end:
-                ((StaticTextComponent) c).getBuffer().append(s);
+            if (inv instanceof StaticTextFragment) {
+                StaticTextFragment f = (StaticTextFragment) inv;
+                f.buffer.append(s);
                 return;
             }
         }
-        StaticTextComponent c = new StaticTextComponent(new StringBuilder(s));
-        fragmentList.add(new ComponentInvocationImpl(c, new HashMap<String, Object>()));
+        StaticTextFragment f = new StaticTextFragment();
+        f.buffer.append(s);
+        fragmentList.add(f);
     }
 
     

@@ -51,20 +51,26 @@ public class TextualDecoratorTemplate implements Template {
 
     private TextualComponentParser parser;
     private ComponentInvocation[] fragments;
+    private ComponentResolver componentResolver;
     private TemplateSource templateSource;
     private long lastModified = -1;
     
 
     public TextualDecoratorTemplate(TextualComponentParser parser,
-                                     TemplateSource templateSource) throws InvalidTemplateException {
+                                     TemplateSource templateSource,
+                                     ComponentResolver componentResolver) throws InvalidTemplateException {
         if (parser == null) {
             throw new IllegalArgumentException("Argument 'parser' is NULL");
         }
         if (templateSource == null) {
             throw new IllegalArgumentException("Argument 'templateSource' is NULL");
         }
+        if (componentResolver == null) {
+            throw new IllegalArgumentException("Argument 'componentResolver' is NULL");
+        }
         this.parser = parser;
         this.templateSource = templateSource;
+        this.componentResolver = componentResolver;
         try {
             compile();
         } catch (Exception e) {
@@ -76,16 +82,26 @@ public class TextualDecoratorTemplate implements Template {
     public class Execution implements TemplateExecution {
         private HtmlPageContent content;
         private ComponentInvocation[] fragments;
+        private ComponentResolver componentResolver;
         private HttpServletRequest request;
         private Map<Object, Object> model;
 
-        public Execution(HtmlPageContent content,
-                ComponentInvocation[] fragments, HttpServletRequest request,
+        public Execution(HtmlPageContent content, ComponentInvocation[] fragments, 
+                ComponentResolver componentResolver, HttpServletRequest request,
                 Map<Object, Object> model) {
             this.content = content;
+            this.componentResolver = componentResolver;
             this.fragments = fragments;
             this.request = request;
             this.model = model;
+        }
+        
+        public void setComponentResolver(ComponentResolver componentResolver) {
+            this.componentResolver = componentResolver;
+        }
+        
+        public ComponentResolver getComponentResolver() {
+            return this.componentResolver;
         }
 
         public PageContent render() throws Exception {
@@ -99,12 +115,21 @@ public class TextualDecoratorTemplate implements Template {
                         doctype = DEFAULT_DOCTYPE;
                     }
                     
+                    if (fragment instanceof StaticTextFragment) {
+                        StaticTextFragment f = (StaticTextFragment) fragment;
+                        sb.append(f.buffer.toString());
+                        continue;
+                    }
+                    
                     Locale locale = 
                         new org.springframework.web.servlet.support.RequestContext(this.request).getLocale();
                     DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                        html, this.request, this.model, fragment.getParameters(), doctype, locale);
-
-                    String chunk = renderComponent(fragment.getComponent(), decoratorRequest);
+                            html, this.request, this.model, fragment.getParameters(), doctype, locale);
+                    
+                    DecoratorComponent component = this.componentResolver.resolveComponent(
+                            fragment.getNamespace(), fragment.getName());
+                    
+                    String chunk = renderComponent(component, decoratorRequest);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Included component: " + fragment
                                      + " with result [" + chunk + "]");
@@ -117,7 +142,8 @@ public class TextualDecoratorTemplate implements Template {
                     if (msg == null) {
                         msg = t.getClass().getName();
                     }
-                    sb.append(fragment.getComponent().getName());
+                    sb.append(fragment.getNamespace());
+                    sb.append(":").append(fragment.getName());
                     sb.append(": ").append(msg);
                 }
             }
@@ -134,7 +160,7 @@ public class TextualDecoratorTemplate implements Template {
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
         }
-        return new Execution(html, this.fragments, request, model);
+        return new Execution(html, this.fragments, this.componentResolver, request, model);
     }
 
     

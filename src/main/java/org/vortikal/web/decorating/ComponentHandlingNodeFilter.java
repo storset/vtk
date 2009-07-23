@@ -64,12 +64,17 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
 
     private static Log logger = LogFactory.getLog(ComponentHandlingNodeFilter.class);
 
+    private ComponentResolver componentResolver;
+    
     private Map<String, DecoratorComponent> ssiDirectiveComponentMap;
     private Set<String> availableComponentNamespaces = new HashSet<String>();
     private Set<String> prohibitedComponentNamespaces = new HashSet<String>();
     private TextualComponentParser contentComponentParser;
     private boolean parseAttributes = false;
-    
+
+    public void setComponentResolver(ComponentResolver componentResolver) {
+        this.componentResolver = componentResolver;
+    }
 
     public void setSsiDirectiveComponentMap(Map<String, DecoratorComponent> ssiDirectiveComponentMap) {
         this.ssiDirectiveComponentMap = ssiDirectiveComponentMap;
@@ -92,6 +97,10 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     }
 
     public void afterPropertiesSet() {
+        if (this.componentResolver == null) {
+            throw new BeanInitializationException(
+                "JavaBean property 'componentResolver' not specified");
+        }
         if (this.ssiDirectiveComponentMap == null) {
             throw new BeanInitializationException(
                 "JavaBean property 'ssiDirectiveComponentMap' not specified");
@@ -191,8 +200,11 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             public Map<String, Object> getParameters() {
                 return invocationParams;
             }
-            public DecoratorComponent getComponent() {
-                return component;
+            public String getNamespace() {
+                return component.getNamespace();
+            }
+            public String getName() {
+                return component.getName();
             }
             public String toString() {
                 StringBuilder sb = new StringBuilder(this.getClass().getName());
@@ -236,7 +248,8 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
                 doctype, locale, "utf-8");
             String result = null;
             try {
-                DecoratorComponent component = invocation.getComponent();
+                DecoratorComponent component = this.componentResolver.resolveComponent(
+                        invocation.getNamespace(), invocation.getName());
                 boolean render = true;
                 if (component.getNamespace() != null) {
                 	if (!this.availableComponentNamespaces.contains(component.getNamespace()) 

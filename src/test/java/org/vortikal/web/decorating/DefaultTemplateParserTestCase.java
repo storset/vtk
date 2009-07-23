@@ -34,8 +34,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -70,8 +68,8 @@ public class DefaultTemplateParserTestCase extends TestCase {
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(3, parsedTemplate.length);
         
-        String begin = renderComponent(parsedTemplate[0].getComponent());
-        String end = renderComponent(parsedTemplate[2].getComponent());
+        String begin = renderComponent(parsedTemplate[0]);
+        String end = renderComponent(parsedTemplate[2]);
         assertEquals("<html>", begin);
         assertEquals("</html>", end);
 
@@ -90,7 +88,7 @@ public class DefaultTemplateParserTestCase extends TestCase {
         Reader reader = new StringReader(MALFORMED_TEMPLATE);
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(1, parsedTemplate.length);
-        String result = renderComponent(parsedTemplate[0].getComponent());
+        String result = renderComponent(parsedTemplate[0]);
         assertEquals(MALFORMED_TEMPLATE, result);
     }
 
@@ -102,9 +100,8 @@ public class DefaultTemplateParserTestCase extends TestCase {
         Reader reader = new StringReader(NESTED_DIRECTIVES);
         ComponentInvocation[] parsedTemplate = parser.parse(reader);
         assertEquals(3, parsedTemplate.length);
-        assertEquals(DummyComponent.class, parsedTemplate[1].getComponent().getClass());
-        String begin = renderComponent(parsedTemplate[0].getComponent());
-        String end = renderComponent(parsedTemplate[2].getComponent());
+        String begin = renderComponent(parsedTemplate[0]);
+        String end = renderComponent(parsedTemplate[2]);
         assertEquals("${", begin);
         assertEquals("}", end);
     }
@@ -126,26 +123,21 @@ public class DefaultTemplateParserTestCase extends TestCase {
 
     private DollarSyntaxComponentParser createParser() {
         DollarSyntaxComponentParser parser = new DollarSyntaxComponentParser();
-        parser.setComponentResolver(new DummyComponentResolver());
+        //parser.setComponentResolver(new DummyComponentResolver());
         return parser;
     }
     
-    private String renderComponent(DecoratorComponent c) throws Exception {
+    private String renderComponent(ComponentInvocation inv) throws Exception {
         final Writer writer = new StringWriter();
         context.checking(new Expectations() {{ one(mockResponse).getWriter(); will(returnValue(writer)); }});
+        if (inv instanceof StaticTextFragment) {
+            return ((StaticTextFragment) inv).buffer.toString();
+        }
+        DecoratorComponent c = new DummyComponent(inv.getNamespace(), inv.getName());
         c.render(mockRequest, mockResponse);
         return writer.toString();
     }
     
-
-    private class DummyComponentResolver implements ComponentResolver {
-        public DecoratorComponent resolveComponent(String namespace, String name) {
-            return new DummyComponent(namespace, name);
-        }
-        public List<DecoratorComponent> listComponents() {
-            return new ArrayList<DecoratorComponent>();
-        }
-    }
 
     private class DummyComponent implements DecoratorComponent {
         private String namespace, name;

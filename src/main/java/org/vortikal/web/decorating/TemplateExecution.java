@@ -34,4 +34,8 @@ public interface TemplateExecution {
 
     public PageContent render() throws Exception;
 
+    public ComponentResolver getComponentResolver();
+    
+    public void setComponentResolver(ComponentResolver componentResolver);
+    
 }

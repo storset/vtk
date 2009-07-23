@@ -39,22 +39,30 @@ import java.util.Map;
  * instance and request).
  */
 public class ComponentInvocationImpl implements ComponentInvocation {
-    private DecoratorComponent component;
+
+    private String namespace;
+    private String name;
+    
     private Map<String, Object> parameters;
     
-    public ComponentInvocationImpl(DecoratorComponent component, Map<String, Object> parameters) {
-        if (component == null) {
-            throw new IllegalArgumentException("Component argument is NULL");
+    public ComponentInvocationImpl(String namespace, String name, Map<String, Object> parameters) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name argument is NULL");
         }
         if (parameters == null) {
             throw new IllegalArgumentException("Parameters argument is NULL");
         }
-        this.component = component;
+        this.namespace = namespace;
+        this.name = name;
         this.parameters = parameters;
     }
     
-    public DecoratorComponent getComponent() {
-        return this.component;
+    public String getNamespace() {
+        return this.namespace;
+    }
+    
+    public String getName() {
+        return this.name;
     }
 
     public Map<String, Object> getParameters() {
@@ -64,8 +72,8 @@ public class ComponentInvocationImpl implements ComponentInvocation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(":");
-        sb.append(this.component.toString()).append(" [");
-        sb.append(this.parameters.toString()).append("]");
+        sb.append(this.namespace).append(":").append(this.name);
+        sb.append(" [").append(this.parameters.toString()).append("]");
         return sb.toString();
     }
 }

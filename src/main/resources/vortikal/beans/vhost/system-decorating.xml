@@ -55,10 +55,6 @@
     <bean id="system.decoratorTemplateFactory"
           class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
       <property name="parser" ref="system.decoratorTemplateParser" />
-    </bean>
-
-    <bean id="system.decoratorTemplateParser"
-          class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
       <property name="componentResolver">
         <bean name="system.decoratorComponentResolver"
               class="org.vortikal.web.decorating.BeanContextComponentResolver">
@@ -69,6 +65,10 @@
           </property>
         </bean>
       </property>
+    </bean>
+
+    <bean id="system.decoratorTemplateParser"
+          class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
     </bean>
 
 

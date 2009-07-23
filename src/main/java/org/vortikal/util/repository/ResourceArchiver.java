@@ -72,7 +72,6 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.security.PrincipalImpl;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
@@ -214,7 +213,7 @@ public class ResourceArchiver {
     	
 		Comment comment = new Comment();
     	comment.setURI(Path.fromString(getExpandedEntryUri(base, path)));
-    	comment.setAuthor(new PrincipalImpl(author, Type.USER));
+    	comment.setAuthor(this.principalFactory.getPrincipal(author, Type.USER));
     	comment.setTitle(title);
     	comment.setTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time.toString()));
     	comment.setContent(content.toString());

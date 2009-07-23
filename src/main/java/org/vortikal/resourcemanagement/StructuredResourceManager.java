@@ -291,6 +291,12 @@ public class StructuredResourceManager {
         }
         return description;
     }
+    
+    public List<StructuredResourceDescription> list() {
+        List<StructuredResourceDescription> result = new ArrayList<StructuredResourceDescription>();
+        result.addAll(this.types.values());
+        return result;
+    }
 
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {

@@ -62,8 +62,10 @@
     <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
   </bean>
 
-  <bean id="structuredResources.displayHandler" class="org.vortikal.resourcemanagement.StructuredResourceDisplayController"
-    parent="requestLocalRepositoryAware">
+  <bean id="structuredResources.displayHandler"
+        class="org.vortikal.resourcemanagement.StructuredResourceDisplayController"
+    parent="requestLocalRepositoryAware"
+    depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="htmlParser" ref="decorating.htmlParser" />

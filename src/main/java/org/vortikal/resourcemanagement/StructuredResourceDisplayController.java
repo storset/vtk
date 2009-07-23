@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -173,7 +174,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         final ComponentResolver resolver = execution.getComponentResolver();
         final Map<String, TemplateLanguageDecoratorComponent> components = 
             this.components.get(res.getType());
-            
         execution.setComponentResolver(new ComponentResolver() {
             public List<DecoratorComponent> listComponents() {
                 return null;
@@ -198,7 +198,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         Map<String, TemplateLanguageDecoratorComponent> comps = 
             new HashMap<String, TemplateLanguageDecoratorComponent>();
 
-        List<ComponentDefinition> defs = desc.getComponentDefinitions();
+        List<ComponentDefinition> defs = desc.getAllComponentDefinitions();
         for (ComponentDefinition def : defs) {
             String name = def.getName();
             TemplateLanguageDecoratorComponent comp = 
@@ -231,6 +231,19 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         directiveHandlers.put("localized", new LocalizationNodeFactory());
         
         this.directiveHandlers = directiveHandlers;
+        
+        List<StructuredResourceDescription> allDescriptions = 
+            this.resourceManager.list();
+
+        for (StructuredResourceDescription desc: allDescriptions) {
+            try {
+                initComponentDefs(desc);
+            } catch (Exception e) {
+                throw new BeanInitializationException(
+                        "Unable to initialize component definitions "
+                        + "for resource type " + desc, e);
+            }
+        }
     }
 
     public void setRepository(Repository repository) {

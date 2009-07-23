@@ -119,6 +119,16 @@ public final class StructuredResourceDescription {
         this.componentDefinitions.add(def);
     }
 
+    public List<ComponentDefinition> getAllComponentDefinitions() {
+        List<ComponentDefinition> result = new ArrayList<ComponentDefinition>();
+        if (this.inheritsFrom != null) {
+            StructuredResourceDescription ancestor = this.manager.get(this.inheritsFrom);
+            result.addAll(ancestor.getAllComponentDefinitions());
+        }
+        result.addAll(this.getComponentDefinitions());
+        return result;
+    }
+    
     public DisplayTemplate getDisplayTemplate() {
         return this.displayTemplate;
     }
@@ -138,4 +148,9 @@ public final class StructuredResourceDescription {
         }
         return m.get(locale.getLanguage().toLowerCase());
     }
+    
+    public String toString() {
+        return this.getClass().getName() + ":" + this.name;
+    }
+    
 }

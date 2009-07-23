@@ -4,9 +4,11 @@ resourcetype jarticle {
     title : string (overrides : title),
     introduction : simple_html,
     introduction-img : image_ref,
+    image-caption : simple_html,
+    media-ref : media_ref,
     author : string,
     published-date : datetime,
-    content : html
+    content : html noextract
   }
   edit-rules {
   }

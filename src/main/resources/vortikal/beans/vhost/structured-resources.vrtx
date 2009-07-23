@@ -1,5 +1,6 @@
 
 resourcetype jarticle {
+
   properties {
     title : string (overrides : title),
     introduction : simple_html,
@@ -10,26 +11,169 @@ resourcetype jarticle {
     published-date : datetime,
     content : html noextract
   }
+
   edit-rules {
   }
+
+  view-components {
+
+    title {
+      ##
+      [def v resource-prop "." "title"]
+      [val v]
+      ##
+    }
+
+    introduction-image {
+      ##
+      [def img-uri resource-prop "." "introduction-img"]
+      [if img-uri]
+        [def img resource img-uri]
+        [def caption resource-prop "." "image-caption"]
+        [def pixel-width resource-prop img-uri "pixelWidth"]
+        [def img-author resource-prop img-uri "authorName"]
+
+        [if pixel-width]
+          [def style concat "width:" pixel-width "px"]
+        [endif]
+
+        [if ! img]
+          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [else]
+           [if caption]
+             <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+               <img src="[val img-uri]" alt="[val caption unescaped "flattened"]"/>
+                 <div class="vrtx-imagetext">
+                   <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                     [if img-author]
+                       <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                     [endif]
+                 </div>
+             </div>
+           [else]
+             [if img-author]
+               <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+               <img src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+               <div class="vrtx-imagetext">
+                <span class="vrtx-photo">
+                  <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                </span>
+               </div>
+             [else]
+               <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+             [endif]
+           [endif]
+        [endif]
+      [endif]
+      <br/>
+      ##
+    }
+
+    introduction {
+      ##
+      [def intro resource-prop "." "introduction"]
+      [if intro]
+        <div class="vrtx-introduction">[val intro unescaped]</div>
+      [endif]
+      ##
+    }
+
+    media-refs {
+      ##
+      [def media-ref resource-prop "." "media-ref"]
+      [if media-ref]
+        [def media resource media-ref]
+        [if media]
+          [def type field media "resourceType"]
+          [if type = "audio"]
+            [def flashplayer-js-url config "flashPlayer" "jsURL"]
+            [def flashplayer-flash-url config "flashPlayer" "flashURL"]
+            <script type="text/javascript" language="JavaScript" src="[val flashplayer-js-url]/"></script>
+            <object type="application/x-shockwave-flash" data="[val flashplayer-flash-url]" id="audioplayer1" height="24" width="290">
+              <param name="movie" value="[val flashplayer-flash-url]"/>
+              <param name="FlashVars" value="playerID=1&amp;soundFile=[val media-ref]"/>
+              <param name="quality" value="high"/>
+              <param name="menu" value="false"/>
+              <param name="wmode" value="transparent"/>
+            </object>
+          [else]
+            [if type = "video"]
+              [def content-type resource-prop media-ref "contentType"]
+              [if content-type = "video/quicktime"]
+                <object id="videoplayer1" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="320" height="255" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+                  <param name="src" value="[val media-ref]"/>
+                  <param name="autoplay" value="false"/>
+                  <param name="controller" value="true"/>
+                  <param name="loop" value="false"/>
+                  <param name="scale" value="aspect" />         
+                  <embed id="videoplayer1" src="[val media-ref]" width="320" height="255" autoplay="false" controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
+                  </embed>
+                </object>
+              [else]
+                <a class="vrtx-media" href="[val media-ref]">[localized 'download-media-file']</a>
+              [endif]
+            [endif]
+          [endif]
+        [endif]
+      [endif]
+      ##
+    }
+
+    author {
+      ##
+      [def authors resource-prop "." "author"]
+      [if authors]
+      <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span> [val authors]</span>
+      [endif]
+      ##
+    }
+
+    published-date {
+      ##
+      [def published-date resource-prop "." "published-date"]
+      [if published-date]
+        <span class="vrtx-published-date">[localized "published"]&nbsp;[val published]</span>
+      [endif]
+      ##
+    }
+  }
+
   view-definition {
   $$
-    <html>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><json:field select="title" /></title>
+        <resource:comments-feed-link />
+        <!-- begin css -->
+        <article:css />
+        <!-- end css -->
+        <title><comp:title /></title>
       </head>
       <body>
-        <h1><json:field select="title" /></h1>
-        <json:field select="author" />
-        <json:field select="date" />
+        <h1><comp:title /></h1>
+        <comp:introduction-image />
+        <comp:introduction />
+        <comp:media-refs />
+        <div class="vrtx-byline">
+          <comp:author />
+          <comp:published-date />
+        </div>
         <json:field select="content" />
+        <resource:tags />
+        <resource:comments />
       </body>
     </html>
   $$
   }
+
   localization-properties {
-  	title : (no : "Tittel", en : "Title", nn : "Tittel"),
-   	introduction : (no : "Introduksjon", en : "Introduction", nn : "Intro")
+  	title : (en : "Title", no : "Tittel", nn : "Tittel"),
+   	introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),
+        introduction-image-alt : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete"),
+        photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+        by-line : (en : "By", no : "Av", nn : "Av"),
+        published : (en : "Published", no : "Publisert", nn : "Publisert"),
+        download-media-file : (en : "Download media file", no : "Last ned mediafil", nn : "Last ned mediafil")
   }
 }
 
@@ -42,8 +186,10 @@ resourcetype jevent : jarticle {
     location : string,
     map-url : string
   }
+
   edit-rules {
   }
+
   view-definition {
   $$
     <html>
@@ -86,14 +232,16 @@ resourcetype jperson : jarticle {
     getExternalScientificInformation : boolean,
     scientificInformation : html
   }
+
   edit-rules {
     username (before title),
     picture (after surname),
     tags (after scientificInformation),
     officeNumber (size[5]),
     getExternalScientificInformation (dropdown),
-    group contactInfo (email, officeNumber, availableHours) (after username) horisontal
+    group contactInfo (email, officeNumber, availableHours) (after username) horizontal
   }
+
   view-definition {
   $$
     <html>

@@ -294,7 +294,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         
         // Get list of descendant type names
         // XXX: method in ResourceTypeTree is named wrongly, it does not return self, only descendants.
-        List<String> descendantNames = this.resourceTypeTree.getDescendantsAndSelf(typeName);
+        List<String> descendantNames = this.resourceTypeTree.getResourceTypeDescendants(typeName);
         if (descendantNames != null && !descendantNames.isEmpty()) {
             buffer.append(" ").append(SqlConstraintOperator.OR).append(" ");
             Iterator<String> iterator = descendantNames.iterator();

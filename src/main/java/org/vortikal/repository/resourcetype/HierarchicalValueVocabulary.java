@@ -47,7 +47,7 @@ public class HierarchicalValueVocabulary implements HierarchicalVocabulary<Value
     private Value[] allowedValues;
     private ValueFormatter valueFormatter;
     
-    public List<Value> getDescendantsAndSelf(Value entry) {
+    public List<Value> getResourceTypeDescendants(Value entry) {
         return this.descendantsAndSelfMap.get(entry);
     }
 

@@ -79,7 +79,7 @@ public class HierarchicalTermQueryBuilder<T> implements QueryBuilder {
         bq.add(new TermQuery(new Term(fieldName, this.term.toString())),
                             BooleanClause.Occur.SHOULD);
 
-        List<T> descendantNames = this.hierarchicalVocabulary.getDescendantsAndSelf(this.term);
+        List<T> descendantNames = this.hierarchicalVocabulary.getResourceTypeDescendants(this.term);
         
         if (descendantNames != null && !descendantNames.isEmpty()) {
             for (T o: descendantNames) {

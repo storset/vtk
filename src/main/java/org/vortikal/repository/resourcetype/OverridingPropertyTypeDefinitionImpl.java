@@ -115,8 +115,9 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         }
 
         if (!RepositoryAction.UNEDITABLE_ACTION.equals(this.overriddenPropDef.getProtectionLevel())) {
-            throw new BeanInitializationException("Java bean property 'overriddenPropDef' must have" +
-                    " protection level RepositoryAction.UNEDITABLE_ACTION");
+            throw new BeanInitializationException("Attempting to override property: " + this.overriddenPropDef 
+                    + " with protection level " + this.overriddenPropDef.getProtectionLevel()
+                    + ", should be " + RepositoryAction.UNEDITABLE_ACTION);
         }
     }
 
@@ -174,4 +175,11 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     public ValueSeparator getValueSeparator(String format) {
         return this.overriddenPropDef.getValueSeparator(format);
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
+        sb.append(": [name=").append(getName()).append("]");
+        return sb.toString();
+    }
+
 }

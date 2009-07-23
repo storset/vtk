@@ -21,14 +21,30 @@ void execute(context, args, out) {
     r = repo.retrieve(token, uri, true);
 
     out.println("type: " + r.getResourceType());
+
+    out.println("");
     out.println("props:");
+    namespaces = new HashSet();
     for (p: r.getProperties()) {
-        out.print(p.getDefinition().getName() + ": " );
+        def = p.getDefinition();
+        ns = def.getNamespace();
+        namespaces.add(ns);
+        if (ns.getPrefix() != null) {
+            out.print(ns.getPrefix() + ":" + def.getName() + ": ");
+        } else {
+            out.print(ns + ":" + p.getDefinition().getName() + ": " );
+        }
 	if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
 	    out.println(" [binary]");
 	} else {
 	    out.println(p.getFormattedValue());
 	}
+    }
+
+    out.println("");
+    out.println("prop namespaces:");
+    for (ns: namespaces) {
+        out.println(ns.toString());
     }
 
     acl = r.getAcl();

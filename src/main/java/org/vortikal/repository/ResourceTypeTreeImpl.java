@@ -215,10 +215,8 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         return children;
     }
 
-    // XXX: This method shouldn't be named "descendantsAndSelf" because it 
-    //      DOES NOT return self, only the descendants.
-    public List<String> getDescendantsAndSelf(String entry) {
-         return this.resourceTypeDescendantNames.get(entry);
+    public List<String> getResourceTypeDescendants(String name) {
+         return this.resourceTypeDescendantNames.get(name);
     }
 
     public String[] getAllowedValues() {
@@ -404,6 +402,11 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
         children.add(def);
         addMixins(def);
         injectTypeLocalizationProvider(def);
+        
+        mapPropertyDefinitionsToPrimaryTypes();
+
+        this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
+        //logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
     }
     
     @SuppressWarnings("unchecked")
@@ -590,8 +593,6 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
      */
     private Map<String, List<String>> buildResourceTypeDescendantsMap() {
         Map<String, List<String>> resourceTypeDescendantNames = new HashMap<String, List<String>>();
-        
-        
         for (PrimaryResourceTypeDefinition def: this.primaryTypes) {
             List<String> descendantNames = new LinkedList<String>();
             resourceTypeDescendantNames.put(def.getName(), descendantNames);
@@ -718,18 +719,24 @@ public class ResourceTypeTreeImpl implements InitializingBean, ApplicationContex
                 if (definition.isMultiple())
                     sb.append("[]");
                 sb.append(") ");
+                if (definition.getProtectionLevel() == RepositoryAction.UNEDITABLE_ACTION) {
+                    sb.append("(readonly) ");
+                }
+                if (definition.getPropertyEvaluator() != null) {
+                    sb.append("(evaluated) ");
+                }
                 if (definition instanceof OverridablePropertyTypeDefinition) {
                     if (definition instanceof OverridablePropertyTypeDefinitionImpl) {
-                        sb.append(" (overridable)");
+                        sb.append("(overridable)");
                     } else {
-                        sb.append(" (overriding)");
+                        sb.append("(overriding)");
                     }
                 }
                 sb.append("\n");
             }
         }
     }
-
+    
     public List<HierarchicalNode<String>> getRootNodes() {
         // XXX: Not implemented yet.
         return null;

@@ -289,8 +289,8 @@ public class StructuredResourceEditor extends SimpleFormController {
                 String name = desc.getName();
                 FormElement elem = findElement(name);
                 Object value = elem.getValue();
+                this.resource.removeProperty(name);
                 if (value != null) {
-                    this.resource.removeProperty(name);
                     this.resource.addProperty(name, value);
                 }
             }

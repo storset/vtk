@@ -69,7 +69,7 @@ public class StructuredResourceManager {
     private ValueFactory valueFactory;
     private ValueFormatterRegistry valueFormatterRegistry;
 
-    public void register(StructuredResourceDescription description) {
+    public void register(StructuredResourceDescription description) throws Exception {
         String name = description.getName();
         ResourceTypeDefinition existing = null;
         try {
@@ -89,7 +89,7 @@ public class StructuredResourceManager {
     }
 
     private PrimaryResourceTypeDefinition createResourceType(
-            StructuredResourceDescription description) {
+            StructuredResourceDescription description) throws Exception {
         PrimaryResourceTypeDefinitionImpl def = new PrimaryResourceTypeDefinitionImpl();
 
         def.setName(description.getName());
@@ -164,7 +164,7 @@ public class StructuredResourceManager {
     }
 
     private PropertyTypeDefinition[] createPropDefs(
-            StructuredResourceDescription description) {
+            StructuredResourceDescription description) throws Exception {
 
         List<PropertyDescription> propertyDescriptions = description
                 .getPropertyDescriptions();
@@ -172,13 +172,19 @@ public class StructuredResourceManager {
 
         for (PropertyDescription d : propertyDescriptions) {
             PropertyTypeDefinition def = createPropDef(d);
-            result.add(def);
+            if (def != null) {
+                result.add(def);
+            }
         }
         return result.toArray(new PropertyTypeDefinition[result.size()]);
     }
 
-    private PropertyTypeDefinition createPropDef(PropertyDescription d) {
+    private PropertyTypeDefinition createPropDef(PropertyDescription d) throws Exception {
 
+        if (d.isNoExtract()) {
+            return null;
+        }
+        
         if (d.getOverrides() != null) {
             Namespace namespace = Namespace.DEFAULT_NAMESPACE; // XXX
             String name = d.getOverrides();
@@ -191,9 +197,8 @@ public class StructuredResourceManager {
             OverridablePropertyTypeDefinitionImpl overridableDef = (OverridablePropertyTypeDefinitionImpl) original;
             OverridingPropertyTypeDefinitionImpl overridingDef = new OverridingPropertyTypeDefinitionImpl();
             overridingDef.setOverriddenPropDef(overridableDef);
-            if (!d.isNoExtract()) {
-                overridingDef.setPropertyEvaluator(createPropertyEvaluator());
-            }
+            overridingDef.setPropertyEvaluator(createPropertyEvaluator());
+            overridingDef.afterPropertiesSet();
             return overridingDef;
         } else {
             OverridablePropertyTypeDefinitionImpl def = new OverridablePropertyTypeDefinitionImpl();
@@ -205,16 +210,13 @@ public class StructuredResourceManager {
             def.setMandatory(d.isRequired());
             def.setValueFactory(this.valueFactory);
             def.setValueFormatterRegistry(this.valueFormatterRegistry);
-
-            if (!d.isNoExtract()) {
-                def.setPropertyEvaluator(createPropertyEvaluator());
-            }
+            def.setPropertyEvaluator(createPropertyEvaluator());
             
             Map<String, Object> edithints = d.getEdithints();
             if (edithints != null) {
                 def.addMetadata("editingHints", edithints);
             }
-            
+            def.afterPropertiesSet();
             return def;
         }
     }
@@ -224,6 +226,12 @@ public class StructuredResourceManager {
 
             public boolean evaluate(Property property, PropertyEvaluationContext ctx)
                     throws PropertyEvaluationException {
+                if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+                    return false;
+                }
+                if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+                    return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
+                }
                 try {
                     JSONObject json = (JSONObject) ctx.getContent()
                             .getContentRepresentation(JSONObject.class);
@@ -231,6 +239,9 @@ public class StructuredResourceManager {
                             + property.getDefinition().getName();
                     Object value = JSONUtil.select(json, expression);
                     if (value == null) {
+                        return false;
+                    }
+                    if (value.toString().trim().equals("")) {
                         return false;
                     }
                     property.setStringValue(value.toString());
@@ -264,6 +275,9 @@ public class StructuredResourceManager {
             return PropertyType.Type.TIMESTAMP;
         }
         if (StructuredResourceParser.PROPTYPE_IMAGEREF.equals(type)) {
+            return PropertyType.Type.IMAGE_REF;
+        }
+        if (StructuredResourceParser.PROPTYPE_MEDIAREF.equals(type)) {
             return PropertyType.Type.IMAGE_REF;
         }
         return PropertyType.Type.STRING;

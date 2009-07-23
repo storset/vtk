@@ -57,7 +57,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.repository.TextResourceContentHelper;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.util.text.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;

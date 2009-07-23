@@ -97,7 +97,7 @@ public class VocabularyResolvingController implements Controller {
 
         while (st.hasMoreTokens()) {
             String s = st.nextToken().trim();
-            if (hv.getDescendantsAndSelf(new Value(s)) != null) {
+            if (hv.getResourceTypeDescendants(new Value(s)) != null) {
                 result.add(s);
             }
         }

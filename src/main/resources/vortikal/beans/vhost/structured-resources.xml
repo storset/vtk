@@ -69,6 +69,27 @@
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateManager" ref="structuredResources.templateManager" />
     <property name="resourceModelKey" value="structured-resource" />
+    <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
+    <property name="configProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${flash.baseURL}/audioplayer.swf" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="flashURL" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.FixedResourceServiceURLProvider">
+          <property name="repository" ref="repository" />
+          <property name="uri" value="/" />
+          <property name="appendPath" value="${jsBaseURL}/audio-player.js" />
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="flashPlayer" />
+          <property name="urlName" value="jsURL" />
+        </bean>
+      </list>
+    </property>
   </bean>
 
   <bean id="structuredResources.templateManager" class="org.vortikal.resourcemanagement.DecoratorTemplateManager">
@@ -169,9 +190,12 @@
     </property>
   </bean>
   
-  <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.StructuredResourceParser">
-    <property name="defaultResourceTypeDefinitions" value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
-    <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
+  <bean id="structuredResource.parser"
+        class="org.vortikal.resourcemanagement.StructuredResourceParser">
+    <property name="defaultResourceTypeDefinitions"
+              value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
+    <property name="structuredResourceManager"
+              ref="structuredResources.resourceManager" />
   </bean>
   
 </beans>

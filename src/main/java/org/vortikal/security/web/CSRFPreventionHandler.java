@@ -57,7 +57,7 @@ import org.vortikal.web.RequestContext;
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
     implements HandlerInterceptor {
 
-    private String ALGORITHM = "HmacMD5";
+    private String ALGORITHM = "HmacSHA1";
     
     public boolean preHandle(HttpServletRequest request,
             HttpServletResponse response, Object handler) throws Exception {
@@ -84,14 +84,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                     "Missing CSRF prevention token in request");
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(request.getRequestURL().toString());
-        String qs = request.getQueryString();
-        if (qs != null) {
-            sb.append("?").append(qs);
-        }
-        String requestURL = sb.toString();
-        
+        String requestURL = getRequestURL(request);        
         String computed =  generateToken(requestURL, secret, session.getId());
 
         if (!computed.equals(suppliedToken)) {
@@ -119,12 +112,16 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         if (!"form".equals(element.getName().toLowerCase())) {
             return NodeResult.keep;
         }
+        String url;
         HtmlAttribute action = element.getAttribute("action");
         if (action == null || action.getValue() == null 
                 || "".equals(action.getValue().trim())) {
-            return NodeResult.keep;
+            HttpServletRequest req = 
+                RequestContext.getRequestContext().getServletRequest();
+            url = getRequestURL(req);
+        } else {
+            url = HtmlUtil.unescapeHtmlString(action.getValue());
         }
-        String url = HtmlUtil.unescapeHtmlString(action.getValue());
 
         RequestContext requestContext = RequestContext.getRequestContext();
         HttpSession session = requestContext.getServletRequest().getSession(false);
@@ -153,6 +150,16 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         return NodeResult.keep;
     }
 
+    private String getRequestURL(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(request.getRequestURL().toString());
+        String qs = request.getQueryString();
+        if (qs != null) {
+            sb.append("?").append(qs);
+        }
+        return sb.toString();
+    }
+    
     private SecretKey generateSecret() {
         try {
             KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM);

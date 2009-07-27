@@ -191,10 +191,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         new SecurityContext(token, this.tokenManager.getPrincipal(token));
                         
                     SecurityContext.setSecurityContext(securityContext);
-                    req.getSession(true).setAttribute(
+                    session = req.getSession(true);
+                    session.setAttribute(
                         SecurityContext.SECURITY_TOKEN_ATTRIBUTE,
                         token);
-
+                    
                     if (!handler.postAuthentication(req, resp)) {
                         if (logger.isDebugEnabled()) {
                             logger.debug(

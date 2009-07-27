@@ -37,5 +37,16 @@ public interface HtmlPageFilter {
         keep, exclude, skip
     }
     
+    /**
+     * Filter a single HTML node.
+     * 
+     * @param node the current node being filtered
+     * @return <code>keep</code> if the node should be included in 
+     * the result, <code>exclude</code> if the node and all its 
+     * descendants should be excluded from the result, and 
+     * <code>skip</code> if the node itself should be excluded, 
+     * but processing should continue on its descendants.
+     * 
+     */
     public NodeResult filter(HtmlContent node);
 }

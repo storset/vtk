@@ -135,7 +135,6 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         if (session != null) {
 
             String csrfPreventionToken = generateToken(url, secret, session.getId());
-            System.out.println("__gen_csrf_token: url: " + url + ", secret: " + secret + ", session: " + session.getId() + " -> [" + csrfPreventionToken + "]");
             
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();

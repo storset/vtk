@@ -152,7 +152,7 @@
                loadEditor();
              }
           }
-           -->
+          // -->
         </script>
       </div>
       <form action="${postCommentURL?string?html}#comment-form" method="post">

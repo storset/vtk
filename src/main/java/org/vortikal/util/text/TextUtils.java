@@ -38,6 +38,20 @@ import org.apache.commons.lang.WordUtils;
 
 public class TextUtils {
 
+    private static final char[] HEX = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f'
+        };
+
+    public static char[] toHex(byte[] buffer) {
+        char[] result = new char[buffer.length * 2];
+        for (int i = 0; i < buffer.length; i++) {
+            result[i << 1] = HEX[(buffer[i] & 0xF0) >>> 4];
+            result[(i << 1)+1] = HEX[buffer[i] & 0x0F];
+        }
+        return result;
+    }
+    
     /**
      * Extracts a field from a string using the character <code>,</code> as field delimiter.
      * 

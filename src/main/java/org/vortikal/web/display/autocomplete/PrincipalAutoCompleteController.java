@@ -52,11 +52,11 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
 
         for (Principal principal : completions) {
             if (invert) {
-                result.append(principal.getName() + SUGGESTION_SEPERATOR 
+                result.append(principal.getUnqualifiedName() + SUGGESTION_SEPERATOR 
                         + principal.getDescription() + SUGGESTION_DELIMITER);
             } else {
                 result.append(principal.getDescription() + SUGGESTION_SEPERATOR
-                        + principal.getName() + SUGGESTION_DELIMITER);
+                        + principal.getUnqualifiedName() + SUGGESTION_DELIMITER);
             }
         }
 

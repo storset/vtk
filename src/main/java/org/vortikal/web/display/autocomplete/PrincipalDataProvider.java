@@ -40,12 +40,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.Principal.Type;
 
 public class PrincipalDataProvider implements VocabularyDataProvider<Principal> {
 
     private static final Logger logger = Logger.getLogger(PrincipalDataProvider.class);
 
-    private Principal.Type type;
+    private Type type;
     private PrincipalFactory principalFactory;
 
     public List<Principal> getCompletions(Path scopeUri, String token) {
@@ -57,7 +58,7 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
 
         List<Principal> result = new ArrayList<Principal>(0);
 
-        try {            
+        try {
             List<Principal> searchResult = principalFactory.search(prefix, type);
             if (searchResult != null && searchResult.size() > 0) {
                 result.addAll(searchResult);
@@ -73,7 +74,10 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
     private final class PrincipalComparator implements Comparator<Principal> {
 
         public int compare(Principal p1, Principal p2) {
-            return p1.getDescription().compareToIgnoreCase(p2.getDescription());
+            if (Type.USER.equals(type)) {
+                return p1.getDescription().compareToIgnoreCase(p2.getDescription());
+            }
+            return p1.getUnqualifiedName().compareToIgnoreCase(p2.getUnqualifiedName());
         }
 
     }

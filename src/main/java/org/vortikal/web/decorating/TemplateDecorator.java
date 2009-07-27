@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
+import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 
 public class TemplateDecorator implements Decorator {
@@ -63,7 +64,8 @@ public class TemplateDecorator implements Decorator {
     private DecorationResolver decorationResolver;
     boolean tidyXhtml = true;
     
-    private List<HtmlNodeFilter> htmlNodeFilters;
+    private List<HtmlNodeFilter> parseFilters;
+    private List<HtmlPageFilter> postFilters;
 
     private static final String DECORATION_DESCRIPTOR_REQ_ATTR = 
         TemplateDecorator.class.getName() + ".DecorationDescriptor";
@@ -123,6 +125,17 @@ public class TemplateDecorator implements Decorator {
                 content = tidyContent(content);
             }
         }
+        
+        if (this.postFilters != null) {
+            htmlContent = parseHtml(content, false);
+            HtmlPage p = htmlContent.getHtmlContent();
+            for (HtmlPageFilter f: this.postFilters) {
+                p.filter(f);
+            }
+            content = new HtmlPageContentImpl(
+                    content.getOriginalCharacterEncoding(), p);
+        }
+        
         return content;
     }
 
@@ -139,20 +152,22 @@ public class TemplateDecorator implements Decorator {
         String encoding = content.getOriginalCharacterEncoding();
         String source = content.getContent();
 
-        // Best-effort attempt to parse empty and "non-markup"
+        // Best-effort attempt to parse empty and garbled
         // documents:
         if (source == null || "".equals(source.trim())) {
             source = EMPTY_DOCUMENT;
         } else if (!source.trim().startsWith("<")) {
             StringBuilder sb = new StringBuilder();
-            sb.append(EMPTY_DOCUMENT_START).append(source).append(EMPTY_DOCUMENT_END);
+            sb.append(EMPTY_DOCUMENT_START);
+            sb.append(source);
+            sb.append(EMPTY_DOCUMENT_END);
             source = sb.toString();
         }
 
         InputStream stream = new ByteArrayInputStream(source.getBytes(encoding));
         HtmlPage html = null;
-        if (filter && this.htmlNodeFilters != null) {
-            html = this.htmlParser.parse(stream, encoding, this.htmlNodeFilters);
+        if (filter && this.parseFilters != null) {
+            html = this.htmlParser.parse(stream, encoding, this.parseFilters);
         } else {
             html = this.htmlParser.parse(stream, encoding);
         }
@@ -191,8 +206,12 @@ public class TemplateDecorator implements Decorator {
         return this.decorationResolver.resolve(request, response);
     }
         
-    public void setHtmlNodeFilters(List<HtmlNodeFilter> htmlNodeFilters) {
-        this.htmlNodeFilters = htmlNodeFilters;
+    public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
+        this.parseFilters = parseFilters;
+    }
+    
+    public void setPostFilters(List<HtmlPageFilter> postFilters) {
+        this.postFilters = postFilters;
     }
 
     public void setDecorationResolver(DecorationResolver decorationResolver) {

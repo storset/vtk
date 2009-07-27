@@ -30,6 +30,7 @@
       <map>
         <entry key="globalMenuOrder"><value type="java.lang.Integer">100</value></entry>
         <entry key="decorating.servicePredicateName" value="delete" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="plain-template.html" />
       </map>
     </property>
   </bean>
@@ -56,6 +57,7 @@
       <map>
         <entry key="globalMenuOrder"><value type="java.lang.Integer">100</value></entry>
         <entry key="decorating.servicePredicateName" value="delete" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="plain-template.html" />
       </map>
     </property>
   </bean>
@@ -63,26 +65,26 @@
   <bean id="delete.fromResourceMenuHandler" 
         class="org.vortikal.web.actions.delete.ConfirmDeleteController"
         parent="requestLocalRepositoryAware">
-    <property name="viewName" value="delete.delete" />
+    <property name="viewName" value="delete.confirm" />
     <property name="deleteService" ref="deleteFromResourceMenuHandlerResourceService" />
   </bean>
   
   <bean id="delete.handler" 
         class="org.vortikal.web.actions.delete.ConfirmDeleteController"
         parent="requestLocalRepositoryAware">
-    <property name="viewName" value="delete.delete" />
+    <property name="viewName" value="delete.confirm" />
     <property name="deleteService" ref="deleteResourceService" />
   </bean>
   
-  <bean id="delete.viewResolver" parent="viewResolver">
+  <bean id="delete.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
-        <entry key="delete.delete"  value-ref="delete.deleteview" />
+        <entry key="delete.confirm"  value-ref="delete.confirmView" />
       </map>
     </property>
   </bean> 
 
-  <bean id="delete.deleteview" parent="freemarkerView">
+  <bean id="delete.confirmView" parent="freemarkerView">
     <property name="url" value="pages/confirm-delete.ftl" />
     <property name="referenceDataProviders">
       <list>
@@ -93,15 +95,14 @@
 
   
   <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="webService" />
+    <property name="parent" ref="manageService" />
     <property name="order" value="490" />
     <property name="assertions">
       <list>
-        <bean id="Post" class="org.vortikal.web.service.RequestMethodAssertion">
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="POST" />
         </bean>
         <ref local="resourceNotRootAssertion" />
-        <ref local="adminVrtxParameterRule" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="delete" />
@@ -117,12 +118,13 @@
     <property name="handler" ref="deleteResourceHandler" />
   </bean> 
   
-  <bean id="deleteFromResourceMenuHandlerResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="deleteFromResourceMenuHandlerResourceService"
+        class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
     <property name="order" value="490" />
     <property name="assertions">
       <list>
-        <bean id="Post2" class="org.vortikal.web.service.RequestMethodAssertion">
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
           <property name="method" value="POST" />
         </bean>
         <ref local="resourceNotRootAssertion" />

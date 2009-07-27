@@ -45,7 +45,7 @@
   <bean id="article.displayHandler"  class="org.vortikal.web.decorating.HtmlController"
         parent="requestLocalRepositoryAware">
     <property name="parser" ref="decorating.htmlParser" />
-    <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
+    <property name="parseFilters" ref="decorating.nodeFilters" />
     <property name="parseableContentPropDef" ref="containsSSIDirectivesPropDef" />
     <property name="viewName" value="displayArticle" />
     <property name="exposedModelElements">

@@ -56,7 +56,7 @@ public class HtmlController implements Controller {
 
     private Repository repository;
     private HtmlPageParser parser;
-    private List<HtmlNodeFilter> htmlNodeFilters;
+    private List<HtmlNodeFilter> parseFilters;
     private PropertyTypeDefinition parseableContentPropDef;
     private String viewName;
     private Map<String, String> exposedModelElements;
@@ -73,14 +73,14 @@ public class HtmlController implements Controller {
         InputStream is = this.repository.getInputStream(token, uri, true);
 
         boolean filter =
-            this.htmlNodeFilters != null
+            this.parseFilters != null
             && this.parseableContentPropDef != null 
             && resource.getProperty(this.parseableContentPropDef) != null;
         
         HtmlPage page = null;
         if (filter) {
             page = this.parser.parse(is, resource.getCharacterEncoding(), 
-                    this.htmlNodeFilters);
+                    this.parseFilters);
         } else {
             page = this.parser.parse(is, resource.getCharacterEncoding());
         }
@@ -115,8 +115,8 @@ public class HtmlController implements Controller {
         this.exposedModelElements = exposedModelElements;
     }
 
-    public void setHtmlNodeFilters(List<HtmlNodeFilter> htmlNodeFilters) {
-        this.htmlNodeFilters = htmlNodeFilters;
+    public void setParseFilters(List<HtmlNodeFilter> parseFilters) {
+        this.parseFilters = parseFilters;
     }
 
     public void setParseableContentPropDef(PropertyTypeDefinition parseableContentPropDef) {

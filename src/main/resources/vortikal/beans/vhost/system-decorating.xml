@@ -21,55 +21,66 @@
     <property name="decorators">
       <list>
         <ref bean="system.templateDecorator" />
+        <!--
+            <ref bean="system.formTokenDecorator" />
+        -->
       </list>
     </property>
   </bean>
 
-
-    <bean id="system.templateDecorator"
-          class="org.vortikal.web.decorating.TemplateDecorator">
-      <property name="htmlParser" ref="decorating.htmlParser" />
-      <property name="decorationResolver" ref="system.decorationResolver" />
-      <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
-      <property name="tidyXhtml" value="false" />
-    </bean>
-
-    <bean id="system.decorationResolver"
-          class="org.vortikal.web.decorating.ServiceAttributeDecorationResolver">
-      <property name="attributeName" ref="system.decoratorTemplateAttribute" />
-      <property name="templateManager" ref="system.decoratorTemplateManager" />
-    </bean>
-
-    <bean id="system.decoratorTemplateAttribute" class="java.lang.String">
-      <constructor-arg type="java.lang.String" value="manage.decoratorTemplateAttribute" />
-    </bean>
+  <bean id="system.csrfPreventionHandler"
+        class="org.vortikal.security.web.CSRFPreventionHandler" />
 
 
-    <bean id="system.decoratorTemplateManager"
-          class="org.vortikal.web.decorating.StaticTemplateManager">
-      <property name="templateFactory" ref="system.decoratorTemplateFactory" />
-      <property name="uriPrefix" value="${manage.decoratorTemplatesLocation}" />
-      <property name="characterEncoding" value="utf-8" />
-    </bean>
+  <bean id="system.templateDecorator"
+        class="org.vortikal.web.decorating.TemplateDecorator">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="decorationResolver" ref="system.decorationResolver" />
+    <property name="parseFilters" ref="decorating.nodeFilters" />
+    <property name="postFilters">
+      <list>
+        <ref bean="system.csrfPreventionHandler" />
+      </list>
+    </property>
+    <property name="tidyXhtml" value="false" />
+  </bean>
 
-    <bean id="system.decoratorTemplateFactory"
-          class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
-      <property name="parser" ref="system.decoratorTemplateParser" />
-      <property name="componentResolver">
-        <bean name="system.decoratorComponentResolver"
-              class="org.vortikal.web.decorating.BeanContextComponentResolver">
-          <property name="availableComponentNamespaces">
-            <set>
-              <value>*</value>
-            </set>
-          </property>
-        </bean>
-      </property>
-    </bean>
+  <bean id="system.decorationResolver"
+        class="org.vortikal.web.decorating.ServiceAttributeDecorationResolver">
+    <property name="attributeName" ref="system.decoratorTemplateAttribute" />
+    <property name="templateManager" ref="system.decoratorTemplateManager" />
+  </bean>
 
-    <bean id="system.decoratorTemplateParser"
-          class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
-    </bean>
+  <bean id="system.decoratorTemplateAttribute" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="manage.decoratorTemplateAttribute" />
+  </bean>
+
+
+  <bean id="system.decoratorTemplateManager"
+        class="org.vortikal.web.decorating.StaticTemplateManager">
+    <property name="templateFactory" ref="system.decoratorTemplateFactory" />
+    <property name="uriPrefix" value="${manage.decoratorTemplatesLocation}" />
+    <property name="characterEncoding" value="utf-8" />
+  </bean>
+
+  <bean id="system.decoratorTemplateFactory"
+        class="org.vortikal.web.decorating.TextualDecoratorTemplateFactory">
+    <property name="parser" ref="system.decoratorTemplateParser" />
+    <property name="componentResolver">
+      <bean name="system.decoratorComponentResolver"
+            class="org.vortikal.web.decorating.BeanContextComponentResolver">
+        <property name="availableComponentNamespaces">
+          <set>
+            <value>*</value>
+          </set>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="system.decoratorTemplateParser"
+        class="org.vortikal.web.decorating.DollarSyntaxComponentParser">
+  </bean>
 
 
 </beans>

@@ -22,6 +22,7 @@
     </property>
     <property name="handlerInterceptors">
       <list>
+        <ref bean="system.csrfPreventionHandler" />
         <ref bean="noCacheHandlerInterceptor" />
       </list>
     </property>

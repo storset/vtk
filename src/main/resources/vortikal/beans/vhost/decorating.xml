@@ -23,7 +23,7 @@
         class="org.vortikal.web.decorating.TemplateDecorator">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="decorationResolver" ref="decorating.decorationResolver" />
-    <property name="htmlNodeFilters" ref="decorating.nodeFilters" />
+    <property name="parseFilters" ref="decorating.nodeFilters" />
     <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
   </bean>
 

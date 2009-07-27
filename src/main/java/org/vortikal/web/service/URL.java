@@ -249,11 +249,15 @@ public class URL {
         StringBuilder qs = new StringBuilder();
         for (Iterator<String> i = this.parameters.keySet().iterator(); i.hasNext();) {
             String param = i.next();
+            String encodedParam = URLUtil.urlEncode(param);
             List<String> values = this.parameters.get(param);
-            for (String val: values) {
-                param = URLUtil.urlEncode(param);
+            for (Iterator<String> j = values.iterator(); j.hasNext();) {
+                String val = j.next();
                 val = URLUtil.urlEncode(val);
-                qs.append(param).append("=").append(val);
+                qs.append(encodedParam).append("=").append(val);
+                if (j.hasNext()) {
+                    qs.append("&");
+                }
             }
             if (i.hasNext()) {
                 qs.append("&");

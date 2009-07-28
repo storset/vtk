@@ -37,7 +37,6 @@ import org.vortikal.repository.search.query.ACLExistsQuery;
 * <p>Try the parser out with:
 * <p>java -cp target/classes org.vortikal.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
 */
-@SuppressWarnings({"all"})
 public class QueryParserImpl implements QueryParser {
 
     private ResourceTypeTree resourceTypeTree;

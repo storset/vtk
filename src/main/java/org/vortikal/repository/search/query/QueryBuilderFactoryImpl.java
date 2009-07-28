@@ -192,7 +192,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
 
             if (ptq.getOperator() == TermOperator.IN || ptq.getOperator() == TermOperator.NI) {
                 Vocabulary<Value> vocabulary = propDef.getVocabulary();
-                if (vocabulary == null || !(vocabulary instanceof HierarchicalVocabulary)) {
+                if (vocabulary == null || !(vocabulary instanceof HierarchicalVocabulary<?>)) {
                     throw new QueryBuilderException("Property type doesn't have a hierachical vocabulary: " + propDef);
                 }
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
@@ -231,6 +231,8 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     
     // Lucene FieldSelector for only loading ID field
     private static final FieldSelector ID_FIELD_SELECTOR = new FieldSelector() {
+        private static final long serialVersionUID = 3456052507152239972L;
+
         public FieldSelectorResult accept(String fieldName) {
             if (FieldNameMapping.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison
                 return FieldSelectorResult.LOAD;

@@ -36,7 +36,6 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.Token;
-import org.vortikal.repository.index.mapping.EscapedMultiValueFieldTokenizer;
 
 public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
     
@@ -50,6 +49,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
         super.tearDown();
     }
 
+    @SuppressWarnings("deprecation")
     public void testTokenizer() throws IOException {
         
         String testString = 
@@ -98,6 +98,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
         
     }
     
+    @SuppressWarnings("deprecation")
     public void testEmptyInput() throws IOException {
 
         EscapedMultiValueFieldTokenizer tokenizer = 
@@ -107,6 +108,7 @@ public class EscapedMultiValueFieldTokenizerTestCase extends TestCase {
         assertNull(t);
     }
     
+    @SuppressWarnings("deprecation")
     public void testOnlySplitCharsInput() throws IOException {
         
         EscapedMultiValueFieldTokenizer tokenizer = 

@@ -2,6 +2,7 @@
 <#macro addAutoCompleteScripts srcBase>
   
   <script type='text/javascript' src='${srcBase}/jquery/jquery.autocomplete.js'></script>
+  <script type='text/javascript' src='${srcBase}/jquery/jquery.autocomplete.override.js'></script>
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.autocomplete.css" />
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.override.css" />
 
@@ -51,21 +52,6 @@
             }
           </#if>
         });
-        
-      <#-- For permissions, move to own js-file -->
-      <#if elementId = 'userNames'>
-      $("#${elementId}").result(function(event, data, formatted) {
-        if (formatted) {
-          var existingValue = document.getElementById("ac_${elementId}").value;
-          if (existingValue != "") {
-            document.getElementById("ac_${elementId}").value = existingValue + ", " + formatted;
-          } else {
-            document.getElementById("ac_${elementId}").value = formatted;
-          }
-        }
-      });
-      </#if>
-      
     });
   </script>
   <input type="text" id="${id}" name="${id}" value="${value?html}" />

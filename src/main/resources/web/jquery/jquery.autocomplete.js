@@ -241,15 +241,15 @@
 
       if (!skipPrevCheck && currentValue == previousValue)
         return;
-      
+
       var delimiter = $.trim(options.multipleSeparator);
       currentValue = $.trim(currentValue);
-      if (currentValue.match(delimiter+"$") == delimiter) {
+      if (currentValue.match(delimiter + "$") == delimiter) {
         stopLoading();
         select.hide();
         return;
       }
- 
+
       previousValue = currentValue;
 
       currentValue = lastWord(currentValue);
@@ -442,9 +442,24 @@
     multiple :false,
     multipleSeparator :", ",
     highlight : function(value, term) {
-      return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)("
-          + term.replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1")
-          + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
+      var splitValue = value.split("(");
+      var valueArray = splitValue[0].split(" ");
+      var termArray = term.split(" ");
+      var returnValue = "";
+      for (v in valueArray) {
+        var val = valueArray[v];
+        for (t in termArray) {
+          val = val.replace(new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
+              + termArray[t].replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi,
+                  "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"),
+              "<strong>$1</strong>");
+        }
+        returnValue = (returnValue == "") ? val : (returnValue + " " + val);
+      }
+      if (splitValue.length > 1) {
+        return returnValue + " (" + splitValue[1];
+      }
+      return returnValue;
     },
     scroll :true,
     scrollHeight :180
@@ -618,7 +633,7 @@
         $(target(event)).addClass(CLASSES.ACTIVE);
         select();
         // TODO provide option to avoid setting focus again after selection?
-        // useful for cleanup-on-focus
+          // useful for cleanup-on-focus
           input.focus();
           return false;
         }).mousedown( function() {

@@ -316,14 +316,16 @@
       <@spring.bind formName + ".groupNames" /> 
       <#assign value=""/>
       <#if spring.status.errorMessages?size &gt; 0>
-      <ul class="errors">
-      <#list spring.status.errorMessages as error> 
-        <li>${error}</li> 
-      </#list>
-      </ul>
-      <#if spring.status.value?exists>
-        <#assign value=spring.status.value />
-      </#if>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+          </ul>
+        </div>
+        <#if spring.status.value?exists>
+          <#assign value=spring.status.value />
+        </#if>
       </#if>
       <span class="addGroup">
       

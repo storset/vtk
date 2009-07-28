@@ -58,8 +58,7 @@ public abstract class AbstractQueryAuthorizationFilterFactory implements
     private RoleManager roleManager;
     
     
-    public abstract Filter authorizationQueryFilter(String token, IndexReader reader)
-        throws QueryAuthorizationException;
+    public abstract Filter authorizationQueryFilter(String token, IndexReader reader);
     
     protected Principal getPrincipal(String token) {
         return this.tokenManager.getPrincipal(token);

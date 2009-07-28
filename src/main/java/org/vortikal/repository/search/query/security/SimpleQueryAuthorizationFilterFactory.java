@@ -60,8 +60,7 @@ public class SimpleQueryAuthorizationFilterFactory extends
             new ACLReadForAllFilter();
     
     @Override
-    public Filter authorizationQueryFilter(String token, IndexReader reader)
-            throws QueryAuthorizationException {
+    public Filter authorizationQueryFilter(String token, IndexReader reader) {
 
         if (token == null) {
             // Generate a filter which only allows read-for-all documents
@@ -109,6 +108,8 @@ public class SimpleQueryAuthorizationFilterFactory extends
      */
     private static class ACLReadForAllFilter extends Filter {
         
+        private static final long serialVersionUID = -1927640174374225525L;
+
         @Override
         public BitSet bits(IndexReader reader) throws IOException {
             BitSet bits = new BitSet(reader.maxDoc());

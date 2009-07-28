@@ -5,6 +5,17 @@
 <#elseif logoutURL?exists>
 <div class="vrtx-logout">
   <span class="vrtx-user">${principal.description?html}</span>
-  ( <a href="${logoutURL?html}"><@vrtx.msg code="decorating.authenticationComponent.logout" default="Log out"/></a> )
+  <form id="logoutForm" action="${logoutURL?html}" method="post" style="display:inline;">
+    <input style="display:inline;"
+           type="submit"
+           value="<@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/>"
+           id="logoutAction" name="logoutAction" />
+  </form>
+  <#-- Hide submit button, display a link instead: -->
+  <script type="text/javascript" language="Javascript"><!--
+    document.getElementById('logoutAction').style.display = 'none';
+    document.write("(&nbsp;<a href=\"${logoutURL?html}\" onclick=\"javascript:document.getElementById('logoutForm').submit();\"><@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/></a>&nbsp;)");
+    //-->
+  </script>
 </div>
 </#if>

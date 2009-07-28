@@ -97,6 +97,9 @@
       <list>
         <ref bean="logoutIsSupported" />
         <ref bean="vrtxParameterEqualsLogout" />
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean>
       </list>
     </property>
     <property name="handler" ref="logoutHandler" />

@@ -113,6 +113,7 @@ public class ICalController implements Controller {
         sb.append("VERSION:2.0\n");
         sb.append("METHOD:PUBLISH\n");
         sb.append("BEGIN:VEVENT\n");
+        sb.append("DTSTAMP:" + getDtstamp() + "\n");
         sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
         sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");
 
@@ -135,6 +136,13 @@ public class ICalController implements Controller {
         sb.append("END:VEVENT\n");
         sb.append("END:VCALENDAR");
         return sb.toString();
+    }
+
+
+    private String getDtstamp() {
+        String dateFormat = "yyyyMMdd'T'HHmmss'Z'";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        return sdf.format(Calendar.getInstance().getTime());
     }
 
 

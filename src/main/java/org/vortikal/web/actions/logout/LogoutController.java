@@ -138,8 +138,13 @@ public class LogoutController extends SimpleFormController implements Initializi
     protected ModelAndView onSubmit(HttpServletRequest request,
             HttpServletResponse response, Object command, BindException errors)
             throws Exception {
-
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Principal principal = securityContext.getPrincipal();
         RequestContext requestContext = RequestContext.getRequestContext();
+        
+        Resource resource = this.repository.retrieve(
+                securityContext.getToken(), requestContext.getResourceURI(), true);
+
         LogoutCommand logoutCommand = (LogoutCommand) command;
 
         boolean responseWritten = this.securityInitializer.logout(request, response);
@@ -148,7 +153,7 @@ public class LogoutController extends SimpleFormController implements Initializi
         }
 
         if (logoutCommand.getUseRedirectService() != null) {
-            String url = this.redirectService.constructLink(requestContext.getResourceURI());
+            String url = this.redirectService.constructLink(resource, principal);
             sendRedirect(url, request, response);
             return null;
         }
@@ -156,7 +161,7 @@ public class LogoutController extends SimpleFormController implements Initializi
         String referrer = request.getHeader("Referer");
         String url = referrer;
         if (url == null) {
-            url = this.redirectService.constructLink(requestContext.getResourceURI());
+            url = this.redirectService.constructLink(resource, principal);
         }
         sendRedirect(url, request, response);
         return null;

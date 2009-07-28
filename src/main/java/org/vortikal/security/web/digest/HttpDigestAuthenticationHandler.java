@@ -41,6 +41,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.InvalidPrincipalException;
@@ -144,7 +145,7 @@ public class HttpDigestAuthenticationHandler
 
 
     public boolean isLogoutSupported() {
-        return false;
+        return true;
     }
 
 
@@ -449,6 +450,7 @@ public class HttpDigestAuthenticationHandler
     
 
 
+    @SuppressWarnings("unused")
     private class StateEntry {
         private String username;
         private Date timestamp;

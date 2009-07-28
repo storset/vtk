@@ -144,14 +144,11 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         // fast group membership lookup
         private SimpleCache<Principal, GroupItem> cache;
 
-        public ChainedGroupStore(List<GroupStore> managers) {
-            this.managers = managers;
-        }
-
         public ChainedGroupStore(List<GroupStore> managers, boolean cache) {
             this.managers = managers;
-            if (cache)
+            if (cache) {
                 this.cache = new SimpleCacheImpl<Principal, GroupItem>(60);
+            }
         }
         
         public boolean validateGroup(Principal group)

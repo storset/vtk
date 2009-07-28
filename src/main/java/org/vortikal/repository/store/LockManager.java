@@ -49,8 +49,6 @@ public class LockManager {
     private int maxIterations = 20;
     private long iterationWaitTimeout = 4000;
 
-    @SuppressWarnings("unchecked")
-
     /* All access to this map must be synchronized on the map object itself */
     private Map<Path, Lock> locks = new HashMap<Path, Lock>();
 
@@ -169,7 +167,6 @@ public class LockManager {
      * @param uri the URI for which to get the lock
      * @return the lock object corresponding to the URI
      */
-    @SuppressWarnings("unchecked")
     private Lock getLock(Path uri) {
         Lock lock = null;
         synchronized(this.locks) {

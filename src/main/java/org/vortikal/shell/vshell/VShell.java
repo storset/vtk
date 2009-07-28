@@ -384,10 +384,6 @@ public class VShell extends AbstractConsole {
         public String getName() {
             return this.name;
         }
-        
-        public Set<PathNode> getChildren() {
-            return this.children;
-        }
     }
 
     private class CommandNode extends PathNode {
@@ -426,10 +422,6 @@ public class VShell extends AbstractConsole {
             this.rest = rest;
         }
         
-        public String getName() {
-            return this.name;
-        }
-
         public String getType() {
             return this.type;
         }

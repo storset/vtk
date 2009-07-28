@@ -149,9 +149,6 @@ public abstract class AbstractWebdavController implements Controller {
     }
     
 
-    /**
-     * @deprecated Will be moved into the mapping framework
-     */
     public String mapToResourceURI(String url) {
         String prefix = "";//getPrefix();
 

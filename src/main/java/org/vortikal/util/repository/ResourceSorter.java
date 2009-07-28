@@ -95,9 +95,6 @@ public class ResourceSorter {
     private static class ResourceNameComparator implements Comparator<Resource> {
         private boolean invert = false;
 
-        public ResourceNameComparator() {
-        }
-
         public ResourceNameComparator(boolean invert) {
             this.invert = invert;
         }
@@ -113,9 +110,6 @@ public class ResourceSorter {
     private static class ResourceDateComparator implements Comparator<Resource> {
         private boolean invert = false;
 
-        public ResourceDateComparator() {
-        }
-
         public ResourceDateComparator(boolean invert) {
             this.invert = invert;
         }
@@ -130,9 +124,6 @@ public class ResourceSorter {
 
     private static class ResourceOwnerComparator implements Comparator<Resource> {
         private boolean invert = false;
-
-        public ResourceOwnerComparator() {
-        }
 
         public ResourceOwnerComparator(boolean invert) {
             this.invert = invert;
@@ -150,9 +141,6 @@ public class ResourceSorter {
 
     private static class ResourceLockComparator implements Comparator<Resource> {
         private boolean invert = false;
-
-        public ResourceLockComparator() {
-        }
 
         public ResourceLockComparator(boolean invert) {
             this.invert = invert;
@@ -181,9 +169,6 @@ public class ResourceSorter {
     private static class FileSizeComparator implements Comparator<Resource> {
         private boolean invert = false;
 
-        public FileSizeComparator() {
-        }
-
         public FileSizeComparator(boolean invert) {
             this.invert = invert;
         }
@@ -201,9 +186,6 @@ public class ResourceSorter {
 
     private static class ContentTypeComparator implements Comparator<Resource> {
         private boolean invert = false;
-
-        public ContentTypeComparator() {
-        }
 
         public ContentTypeComparator(boolean invert) {
             this.invert = invert;
@@ -230,9 +212,6 @@ public class ResourceSorter {
 
     private static class PermissionsComparator implements Comparator<Resource> {
         private boolean invert = false;
-
-        public PermissionsComparator() {
-        }
 
         public PermissionsComparator(boolean invert) {
             this.invert = invert;

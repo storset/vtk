@@ -82,38 +82,34 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
         }
 
         public long position(byte[] pattern, long start) throws SQLException {
-            // TODO Auto-generated method stub
+            // TODO implement
             return 0;
         }
 
         public long position(Blob pattern, long start) throws SQLException {
-            // TODO Auto-generated method stub
+            // TODO implement
             return 0;
         }
 
         public OutputStream setBinaryStream(long pos) throws SQLException {
-            // TODO Auto-generated method stub
+            // TODO implement
             return null;
         }
 
         public int setBytes(long pos, byte[] bytes) throws SQLException {
-            // TODO Auto-generated method stub
+            // TODO implement
             return 0;
         }
 
         public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
-            // TODO Auto-generated method stub
+            // TODO implement
             return 0;
         }
 
         public void truncate(long len) throws SQLException {
-            // TODO Auto-generated method stub
+            // TODO implement
 
-        }
-        
-        private byte[] getSubset(int pos, int length) throws SQLException {
-            throw new IllegalStateException("TODO: implement getSubset(pos, length)");
-        }
+        }        
     }
 	
 	
@@ -151,32 +147,32 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 	    }
 
 	    public long position(byte[] pattern, long start) throws SQLException {
-	        // TODO Auto-generated method stub
+            // TODO implement
 	        return 0;
 	    }
 
 	    public long position(Blob pattern, long start) throws SQLException {
-	        // TODO Auto-generated method stub
+            // TODO implement
 	        return 0;
 	    }
 
 	    public OutputStream setBinaryStream(long pos) throws SQLException {
-	        // TODO Auto-generated method stub
+            // TODO implement
 	        return null;
 	    }
 
 	    public int setBytes(long pos, byte[] bytes) throws SQLException {
-	        // TODO Auto-generated method stub
+            // TODO implement
 	        return 0;
 	    }
 
 	    public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
-	        // TODO Auto-generated method stub
+            // TODO implement
 	        return 0;
 	    }
 
 	    public void truncate(long len) throws SQLException {
-	        // TODO Auto-generated method stub
+            // TODO implement
 
 	    }
 	    

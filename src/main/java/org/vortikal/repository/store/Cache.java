@@ -725,6 +725,7 @@ public class Cache implements DataAccessor, InitializingBean {
         }
 
         // XXX: Not in use, for LRU-style eviction list shuffling ?
+        @SuppressWarnings("unused")
         public synchronized void hit(Path uri) {
             Item i = this.map.get(uri);
 

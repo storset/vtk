@@ -52,6 +52,7 @@ public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> 
      * Construct an instance with a default maximum capacity
      *
      */
+    @SuppressWarnings("unchecked")
     public ReusableObjectArrayStackCache() {
         this.stack = (T[]) new Object[DEFAULT_CAPACITY];
     }
@@ -60,6 +61,7 @@ public class ReusableObjectArrayStackCache<T> implements ReusableObjectCache<T> 
      * Construct an instance with a configurable maximum capacity
      * @param capacity
      */
+    @SuppressWarnings("unchecked")
     public ReusableObjectArrayStackCache(int capacity) {
         this.stack = (T[]) new Object[capacity > 0 ? capacity : DEFAULT_CAPACITY];
     }

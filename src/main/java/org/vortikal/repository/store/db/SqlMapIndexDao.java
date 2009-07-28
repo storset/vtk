@@ -188,6 +188,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         String statement = getSqlMap("getAclReadPrincipalNames");
         SqlMapClientTemplate client = getSqlMapClientTemplate();
         
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> principalAttributeList = 
                                     client.queryForList(statement, aclResourceId);
 

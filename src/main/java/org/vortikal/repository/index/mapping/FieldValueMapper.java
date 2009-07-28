@@ -65,6 +65,7 @@ public final class FieldValueMapper {
     private static final String[] SUPPORTED_DATE_FORMATS = { "yyyy-MM-dd HH:mm:ss Z",
             "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM-dd" };
 
+    @SuppressWarnings("unchecked")
     private static final ReusableObjectCache<SimpleDateFormat>[] CACHED_DATE_FORMAT_PARSERS = 
         new ReusableObjectCache[SUPPORTED_DATE_FORMATS.length];
 

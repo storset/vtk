@@ -119,6 +119,8 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
     // Select ACL_READ_PRINCIPALS stored field
     private static final FieldSelector ACL_READ_PRINCIPALS_FIELD_SELECTOR
         = new FieldSelector() {
+            private static final long serialVersionUID = 7589928184323641722L;
+
             public FieldSelectorResult accept(String fieldName) {
                 if (FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName) { // Interned string comparison
                     return FieldSelectorResult.LOAD;

@@ -64,6 +64,7 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                                               // accessor.
     private DocumentMapper documentMapper;
 
+    @SuppressWarnings("unchecked")
     public void addPropertySet(PropertySet propertySet,
                                Set<Principal> aclReadPrincipals) throws IndexException {
 

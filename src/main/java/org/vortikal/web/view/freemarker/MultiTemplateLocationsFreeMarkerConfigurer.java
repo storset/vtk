@@ -141,7 +141,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
                 loaders.add(factory.createConfiguration().getTemplateLoader());
             }
             
-            loaders.add(new ClassTemplateLoader(FreeMarkerConfigurer.class));
+            loaders.add(new ClassTemplateLoader(FreeMarkerConfigurer.class, ""));
             
             TemplateLoader[] templateLoaders = (TemplateLoader[]) loaders.toArray(
                 new TemplateLoader[0]);

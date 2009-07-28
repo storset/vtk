@@ -31,17 +31,12 @@
 package org.vortikal.web.actions.properties;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.HierarchicalVocabulary;
@@ -57,8 +52,6 @@ import org.vortikal.repository.resourcetype.Value;
  * on resources.
  */
 public class VocabularyResolvingController implements Controller {
-
-    private static Log logger = LogFactory.getLog(VocabularyResolvingController.class);
 
     private String viewName;
     private ResourceTypeTree resourceTypeTree;
@@ -78,7 +71,7 @@ public class VocabularyResolvingController implements Controller {
         
         Map<String, Object> model = new HashMap<String, Object>();
         
-        if (vocabulary != null && (vocabulary instanceof HierarchicalVocabulary)) {
+        if (vocabulary != null && (vocabulary instanceof HierarchicalVocabulary<?>)) {
             HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
             model.put("propertyDefinition", propDef);
             model.put("rootNodes", hv.getRootNodes());
@@ -86,23 +79,6 @@ public class VocabularyResolvingController implements Controller {
         }
         
         return new ModelAndView(this.viewName, model );
-    }
-
-    private String[] getList(String selected, HierarchicalVocabulary<Value> hv) {
-        List<String> result = new ArrayList<String>();
-        if (selected == null || selected.equals("")) {
-            return result.toArray(new String[0]);
-        }
-        StringTokenizer st = new StringTokenizer(selected, ",");
-
-        while (st.hasMoreTokens()) {
-            String s = st.nextToken().trim();
-            if (hv.getResourceTypeDescendants(new Value(s)) != null) {
-                result.add(s);
-            }
-        }
-                
-        return result.toArray(new String[result.size()]);
     }
 
     public void setViewName(String viewName) {

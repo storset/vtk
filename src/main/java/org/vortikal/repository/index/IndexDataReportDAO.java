@@ -93,6 +93,7 @@ public class IndexDataReportDAO implements DataReportDAO {
     
     private static final Filter MATCH_NOTHING_FILTER = new MatchNothingFilter();
     
+    @SuppressWarnings("unchecked")
     public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(
             String token, PropertyValueFrequencyQuery query) 
             throws DataReportException {
@@ -189,6 +190,7 @@ public class IndexDataReportDAO implements DataReportDAO {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void addValue(Map valFreqMap, Value value) {
         Integer currentFreq = (Integer)valFreqMap.get(value);
         if (currentFreq == null) {
@@ -217,6 +219,8 @@ public class IndexDataReportDAO implements DataReportDAO {
             try {
                 if (tdocs.next()) {
                     Document doc = reader.document(tdocs.doc(), new FieldSelector() {
+                        private static final long serialVersionUID = 2294209998307991707L;
+
                         public FieldSelectorResult accept(String name) {
                             if (FieldNameMapping.STORED_ID_FIELD_NAME == name) { // Interned string comparison
                                 return FieldSelectorResult.LOAD;
@@ -253,6 +257,8 @@ public class IndexDataReportDAO implements DataReportDAO {
     }
     
     private static final class MatchNothingFilter extends Filter {
+        private static final long serialVersionUID = 5225305691186860115L;
+
         @Override
         public DocIdSet getDocIdSet(IndexReader reader) {
             return new OpenBitSet(reader.maxDoc());

@@ -248,14 +248,22 @@
                   <phase>compile</phase>
                   <configuration>
                     <tasks>
-                      <replace token="public class"
+                      <replace token='@SuppressWarnings("all") public class'
+                               value='public class'
+                               dir='target/generated-sources/javacc/org/vortikal/repository/search/'
+                               includes='*.java' />
+                      <replace token='public class'
                                value='@SuppressWarnings("all") public class'
-                               dir="target/generated-sources/javacc/org/vortikal/repository/search/"
-                               includes="*.java" />
-                      <replace token="public class"
+                               dir='target/generated-sources/javacc/org/vortikal/repository/search/'
+                               includes='*.java'/>
+                      <replace token='@SuppressWarnings("all") public class'
+                               value='public class'
+                               dir='target/generated-sources/antlr3/org/vortikal/repository/resource/'
+                               includes='*.java' />
+                      <replace token='public class'
                                value='@SuppressWarnings("all") public class'
-                               dir="target/generated-sources/antlr3/org/vortikal/repository/resource/"
-                               includes="*.java" />
+                               dir='target/generated-sources/antlr3/org/vortikal/repository/resource/'
+                               includes='*.java' />
                     </tasks>
                   </configuration>
                   <goals>

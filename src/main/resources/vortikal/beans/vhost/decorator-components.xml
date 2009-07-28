@@ -339,7 +339,8 @@
 
 
   <bean id="decorating.authenticationComponent"
-        class="org.vortikal.web.decorating.components.AuthenticationComponent">
+        class="org.vortikal.web.decorating.components.AuthenticationComponent"
+        parent="requestLocalRepositoryAware">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login" />
     <property name="view" ref="decorating.authenticationComponent.view" />

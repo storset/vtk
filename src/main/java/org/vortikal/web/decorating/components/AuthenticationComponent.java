@@ -35,13 +35,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 
 public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
@@ -50,6 +52,8 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
 
     private Service loginService;
     private Service logoutService;
+    private Repository repository;
+    
 
     @Required public void setLoginService(Service loginService) {
         if (loginService == null) {
@@ -63,6 +67,13 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
             throw new IllegalArgumentException("Argument cannot be null");
         }
         this.logoutService = logoutService;
+    }
+    
+    @Required public void setRepository(Repository repository) {
+        if (repository == null) {
+            throw new IllegalArgumentException("Argument cannot be null");
+        }
+        this.repository = repository;
     }
     
     protected String getDescriptionInternal() {
@@ -79,15 +90,19 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
 
         super.processModel(model, request, response);
         Path uri = RequestContext.getRequestContext().getResourceURI();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
         
-        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+        Principal principal = securityContext.getPrincipal();
+        String token = securityContext.getToken();
+        Resource resource = this.repository.retrieve(token, uri, true);
+        
         model.put("principal", principal);
 
         if (principal == null) {
-            URL loginURL = this.loginService.constructURL(uri);
+            URL loginURL = this.loginService.constructURL(resource, principal);
             model.put("loginURL", loginURL);
         } else {
-            URL logoutURL = this.logoutService.constructURL(uri);
+            URL logoutURL = this.logoutService.constructURL(resource, principal);
             model.put("logoutURL", logoutURL);
         }
     }

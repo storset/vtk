@@ -30,16 +30,14 @@
  */
 package org.vortikal.web.actions.logout;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -47,58 +45,41 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-
-
+import org.vortikal.web.service.URL;
 
 /**
  * Logs the current principal out from the security context. Does not
- * return a view, instead redirects to a given service.
+ * return a view, instead redirects to a given service or the referring URL, 
+ * depending on the form input.
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>repository</code> - the content {@link Repository repository}
  *   <li><code>securityInitializer</code> - the {@link SecurityInitializer}
- *   <li><code>service</code> - the {@link Service} to redirect to if
- *   the security initializer did not handle the request itself.
- *   <li><code>http10</code> - whether or not to use HTTP/1.0 style
- *   redirects (302). When set to <code>false</code>, a 303 status
- *   code is set instead. The default value is <code>true</code>.
+ *   <li><code>redirectService</code> - the {@link Service} to redirect to if
+ *   the security initializer did not handle the request itself and the form 
+ *   input <code>useRedirectService</code> is not specified.
  * </ul>
  */
-public class LogoutController implements Controller, InitializingBean {
-    private Log logger = LogFactory.getLog(this.getClass());
+public class LogoutController extends SimpleFormController implements InitializingBean {
 
-    private boolean http10 = true;
-    private Repository repository = null;
-    private Service service = null;
+    private Service redirectService = null;
     private SecurityInitializer securityInitializer = null;
+    private Repository repository;
 
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
+    public void setRedirectService(Service redirectService) {
+        this.redirectService = redirectService;
     }
     
-    public void setService(Service service) {
-        this.service = service;
-    }
-    
-
-    public void setHttp10(boolean http10) {
-        this.http10 = http10;
-    }
-    
-
     public void setSecurityInitializer(SecurityInitializer securityInitializer) {
         this.securityInitializer = securityInitializer;
     }
     
-
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
     public void afterPropertiesSet() {
-        if (this.repository == null) {
-            throw new BeanInitializationException(
-                "Bean property 'repository' not set");
-        }
-        if (this.service == null) {
+        if (this.redirectService == null) {
             throw new BeanInitializationException(
                 "Bean property 'service' not set");
         }
@@ -106,48 +87,88 @@ public class LogoutController implements Controller, InitializingBean {
             throw new BeanInitializationException(
                 "Bean property 'securityInitializer' not set");
         }
+        if (this.repository == null) {
+            throw new BeanInitializationException(
+                "Bean property 'repository' not set");
+        }
     }
-
-
-
-
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) 
-	throws Exception {
-
+    
+    public class LogoutCommand {
+        private URL submitURL;
+        private String logoutAction;
+        private String useRedirectService;
+        
+        public LogoutCommand(URL submitURL) {
+            this.submitURL = submitURL;
+        }
+        public URL getSubmitURL() {
+            return this.submitURL;
+        }
+        public void setLogoutAction(String logoutAction) {
+            this.logoutAction = logoutAction;
+        }
+        public String getLogoutAction() {
+            return this.logoutAction;
+        }
+        public void setUseRedirectService(String useRedirectService) {
+            this.useRedirectService = useRedirectService;
+        }
+        public String getUseRedirectService() {
+            return this.useRedirectService;
+        }
+    }
+    
+    @Override
+    protected Object formBackingObject(HttpServletRequest request)
+            throws Exception {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Principal principal = securityContext.getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        
+        Resource resource = this.repository.retrieve(
+                securityContext.getToken(), requestContext.getResourceURI(), true);
+                    
+        Service service = requestContext.getService();
+        URL submitURL = service.constructURL(resource, principal);
+        LogoutCommand logoutCommand = new LogoutCommand(submitURL);
+        return logoutCommand;
+    }
+
+    @Override
+    protected ModelAndView onSubmit(HttpServletRequest request,
+            HttpServletResponse response, Object command, BindException errors)
+            throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        Resource resource = this.repository.retrieve(
-            securityContext.getToken(), requestContext.getResourceURI(), true);
-        
+        LogoutCommand logoutCommand = (LogoutCommand) command;
 
-        if (this.securityInitializer.logout(request, response)) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Logout response was written by "
-                             + "security initializer, returning");
-            }
+        boolean responseWritten = this.securityInitializer.logout(request, response);
+        if (responseWritten) {
+            return null;
+        }
 
+        if (logoutCommand.getUseRedirectService() != null) {
+            String url = this.redirectService.constructLink(requestContext.getResourceURI());
+            sendRedirect(url, request, response);
             return null;
         }
         
-        String url = this.service.constructLink(resource, principal);
-
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Constructed redirect URL '" + url
-                         + "' using service " + this.service);
+        String referrer = request.getHeader("Referer");
+        String url = referrer;
+        if (url == null) {
+            url = this.redirectService.constructLink(requestContext.getResourceURI());
         }
-            
-        if (this.http10) {
-            // send status code 302
+        sendRedirect(url, request, response);
+        return null;
+    }
+    
+    private void sendRedirect(String url, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        boolean http10 = "HTTP/1.0".equals(request.getProtocol());
+        if (http10) {
             response.sendRedirect(url);
         } else {
-            // correct HTTP status code is 303, in particular for POST requests
             response.setStatus(303);
             response.setHeader("Location", url);
         }
-        return null;
     }
-
 }

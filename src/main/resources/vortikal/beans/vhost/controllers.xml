@@ -8,8 +8,8 @@
   <!-- WEB controllers -->
 
   <bean id="logoutHandler" 
-    class="org.vortikal.web.actions.logout.LogoutController">
-
+    class="org.vortikal.web.actions.logout.LogoutController"
+    parent="requestLocalRepositoryAware">
     <property name="redirectService" ref="viewService" />
     <property name="securityInitializer" ref="securityInitializer" />
     <property name="commandName" value="form" />

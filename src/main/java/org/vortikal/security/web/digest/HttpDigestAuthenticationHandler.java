@@ -145,7 +145,7 @@ public class HttpDigestAuthenticationHandler
 
 
     public boolean isLogoutSupported() {
-        return true;
+        return false;
     }
 
 

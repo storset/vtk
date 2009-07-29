@@ -38,12 +38,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -157,14 +159,14 @@ public class StructuredResourceParser implements InitializingBean {
             List<CommonTree> propertyDescriptions) {
         if (hasContent(propertyDescriptions)) {
             for (CommonTree propDesc : propertyDescriptions) {
-                // TODO: convert to HashMap<Locale, String>:
-                HashMap<String, String> m = new HashMap<String, String>();
+                Map<Locale, String> localizationMap = new HashMap<Locale, String>();
                 for (CommonTree lang : (List<CommonTree>) propDesc.getChildren()) {
                     for (CommonTree label : (List<CommonTree>) lang.getChildren()) {
-                        m.put(lang.getText(), label.getText());
+                        Locale locale = LocaleUtils.toLocale(lang.getText());
+                        localizationMap.put(locale, label.getText());
                     }
                 }
-                srd.addLocalization(propDesc.getText(), (Map<String, String>) m);
+                srd.addLocalization(propDesc.getText(), localizationMap);
             }
         }
     }

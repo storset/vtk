@@ -45,12 +45,10 @@ public final class StructuredResourceDescription {
     private List<EditRule> editRules;
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private DisplayTemplate displayTemplate;
-    // TODO: Gjøre om til .. <String, HashMap <Locale, String>....
-    private HashMap<String, HashMap<String, String>> localization;
+    private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
 
     StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
-        this.localization = new HashMap<String, HashMap<String, String>>();
     }
 
     public void setInheritsFrom(String inheritsFrom) {
@@ -128,7 +126,7 @@ public final class StructuredResourceDescription {
         result.addAll(this.getComponentDefinitions());
         return result;
     }
-    
+
     public DisplayTemplate getDisplayTemplate() {
         return this.displayTemplate;
     }
@@ -137,20 +135,31 @@ public final class StructuredResourceDescription {
         this.displayTemplate = displayTemplate;
     }
 
-    public void addLocalization(String name, Map<String, String> m) {
-        localization.put(name, (HashMap<String, String>) m);
+    public void addLocalization(String name, Map<Locale, String> m) {
+        localization.put(name, (HashMap<Locale, String>) m);
     }
 
-    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
-        HashMap<String, String> m = localization.get(key);
-        if (m == null) {
-            throw new RuntimeException("Localization key not found: " + key);
+    public Map<String, HashMap<Locale, String>> getAllLocalization() {
+        Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
+        if (this.inheritsFrom != null) {
+            StructuredResourceDescription parent = this.manager.get(this.inheritsFrom);
+            locales.putAll(parent.getAllLocalization());
         }
-        return m.get(locale.getLanguage().toLowerCase());
+        locales.putAll(this.localization);
+        return locales;
     }
-    
+
+    // XXX: handle parameters
+    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
+        HashMap<Locale, String> localizationMap = this.getAllLocalization().get(key);
+        if (localizationMap == null) {
+            return key;
+        }
+        return localizationMap.get(locale);
+    }
+
     public String toString() {
         return this.getClass().getName() + ":" + this.name;
     }
-    
+
 }

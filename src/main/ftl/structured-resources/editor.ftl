@@ -108,6 +108,8 @@
 
 <form action="${form.submitURL?html}" method="POST">
 
+<#assign locale = springMacroRequestContext.getLocale() />
+
 <#list form.elements as elementBox>
 
   <#if elementBox.formElements?size &gt; 1>
@@ -119,6 +121,9 @@
   </#if>
 
   <#list elementBox.formElements as elem>
+  
+    <#assign localizedTitle = form.resource.getLocalizedMsg(elem.description.name, locale, null) />
+    
 	<#switch elem.description.type>
 	  <#case "string">
 	  	<#assign fieldSize="20" />
@@ -126,7 +131,7 @@
 	  		<#assign fieldSize=elem.description.edithints['size'] />
 	  	</#if>
 	 	<@vrtxString.printPropertyEditView 
-	 		title=elem.description.name 
+	 		title=localizedTitle 
 	 		inputFieldName=elem.description.name 
 	 		value=elem.value 
 	 		classes=elem.description.name
@@ -139,7 +144,7 @@
 		 		</#list>
 	 	</#if>
 	    <@vrtxHtml.printPropertyEditView 
-	    	title=elem.description.name 
+	    	title=localizedTitle 
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
 	    	classes=elem.description.name />
@@ -152,7 +157,7 @@
 		 		</#list>
 	 	</#if>
 	    <@vrtxHtml.printPropertyEditView 
-	    	title=elem.description.name 
+	    	title=localizedTitle 
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
 	    	classes=elem.description.name />
@@ -160,27 +165,27 @@
 	    <#break>
 	  <#case "boolean">
 	  	<@vrtxBoolean.printPropertyEditView 
-	  		title=elem.description.name 
+	  		title=localizedTitle
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value />
 	  	<#break>
 	  <#case "image_ref">
 	  	<@vrtxImageRef.printPropertyEditView 
-	  		title=elem.description.name 
+	  		title=localizedTitle
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value 
 	  		baseFolder=resourceContext.parentURI />
 	  	<#break>          
 	  <#case "media_ref">
 	  	<@vrtxMediaRef.printPropertyEditView 
-	  		title=elem.description.name 
+	  		title=localizedTitle
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value 
 	  		baseFolder=resourceContext.parentURI />
 	  	<#break>
 	  <#case "datetime">
 		 <@vrtxDateTime.printPropertyEditView 
-			title=elem.description.name 
+			title=localizedTitle
 			inputFieldName=elem.description.name 
 			value=elem.value 
 			classes=elem.description.name />

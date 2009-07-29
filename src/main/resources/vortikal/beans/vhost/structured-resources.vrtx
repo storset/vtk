@@ -94,7 +94,9 @@ resourcetype jdocument {
   localization-properties {
   	title : (en : "Title", no : "Tittel", nn : "Tittel"),
    	introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),
-        introduction-image-alt : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete")
+    introduction-img : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete"),
+    image-caption : (en : "Image caption", no : "Tittel på bilde", nn : "Tittel på bilete"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 }
 
@@ -293,6 +295,21 @@ resourcetype jperson : jdocument {
         <p>Scientific information: <json:field select="scientificInformation" /></p>
       </body>
     </html>
-  $$ 
+  $$
+  }
+  
+  localization-properties {
+    username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
+    getExternalPersonInfo : (en : "Get external information (ldap)", no : "Hent ekstern informasjon (ldap)", nn : "Hent ekstern informasjon (ldap)"),
+    firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
+    surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
+    postalAddress : (en : "Address", no : "Adresse", nn : "Adresse"),
+    visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    email : (en : "Email", no : "E-post", nn : "E-post"),
+    webPage : (en : "Web page", no : "Webside", nn : "Webside"),
+    officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
+    availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
+    picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord")
   }
 }

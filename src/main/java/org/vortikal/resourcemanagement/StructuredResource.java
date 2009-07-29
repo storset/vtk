@@ -36,20 +36,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
 
 public class StructuredResource {
+
     private StructuredResourceDescription desc;
-//    private JSONObject json;
     private Map<String, Object> properties = new HashMap<String, Object>();
 
     public StructuredResource(StructuredResourceDescription desc) {
         this.desc = desc;
     }
 
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")
     public void parse(String source) {
         JSONObject json = JSONObject.fromObject(source);
         validate(json);
@@ -59,7 +60,7 @@ public class StructuredResource {
             this.properties.put(name, object.get(name));
         }
     }
-    
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("resourcetype", this.desc.getName());
@@ -71,18 +72,20 @@ public class StructuredResource {
         json.put("properties", props);
         return json;
     }
-    
+
     private ValidationResult validate(JSONObject json) {
         if (json == null) {
             throw new IllegalStateException("Input is NULL");
         }
         String type = json.getString("resourcetype");
         if (type == null) {
-            throw new IllegalStateException("Unable to validate: missing 'resourcetype' element");
+            throw new IllegalStateException(
+                    "Unable to validate: missing 'resourcetype' element");
         }
         JSONObject properties = json.getJSONObject("properties");
         if (properties == null) {
-            throw new IllegalStateException("Unable to validate: missing 'properties' element");
+            throw new IllegalStateException(
+                    "Unable to validate: missing 'properties' element");
         }
         List<ValidationError> errors = new ArrayList<ValidationError>();
         ValidationResult result = new ValidationResult(errors);
@@ -108,9 +111,13 @@ public class StructuredResource {
     public void removeProperty(String name) {
         this.properties.remove(name);
     }
-    
+
     public Collection<String> getPropertyNames() {
         return Collections.unmodifiableCollection(this.properties.keySet());
     }
-    
+
+    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
+        return this.desc.getLocalizedMsg(key, locale, param);
+    }
+
 }

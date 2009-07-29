@@ -24,15 +24,18 @@ package org.vortikal.repository.resource;
 resources
 	:	(resourcetypedef)+;
 
-
-parent	:	COLON NAME -> ^(PARENT NAME);
-
 resourcetypedef
 	:	RESOURCETYPE NAME (parent)? LCB
 		  resourcedef
 		RCB
 		-> ^(RESOURCETYPE ^(NAME (parent)? (resourcedef)?))
+	|
+		include
 	;
+
+include	:	INCLUDE FILENAME -> ^(INCLUDE FILENAME);
+
+parent	:	COLON NAME -> ^(PARENT NAME);
 
 resourcedef
 	:	(resourceprops)?

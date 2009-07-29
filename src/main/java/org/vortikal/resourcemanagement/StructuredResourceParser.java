@@ -49,6 +49,7 @@ import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.core.io.Resource;
 import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.resourcemanagement.EditRule.Type;
@@ -57,7 +58,7 @@ import org.vortikal.resourcemanagement.EditRule.Type;
 public class StructuredResourceParser implements InitializingBean {
 
     private String resourceDescriptionFileLocation;
-    private org.springframework.core.io.Resource defaultResourceTypeDefinitions;
+    private Resource defaultResourceTypeDefinitions;
     private StructuredResourceManager structuredResourceManager;
 
     public static final String PROPTYPE_STRING = "string";
@@ -70,8 +71,11 @@ public class StructuredResourceParser implements InitializingBean {
     public static final String PROPTYPE_MEDIAREF = "media_ref";
 
     public void registerStructuredResources() throws Exception {
+        ResourcetreeParser parser = createParser(null);
+        parseResourceTypeDefinition(parser);
+    }
 
-        ResourcetreeParser parser = createParser(resourceDescriptionFileLocation);
+    private void parseResourceTypeDefinition(ResourcetreeParser parser) throws Exception {
         ResourcetreeParser.resources_return resources = parser.resources();
         if (parser.getNumberOfSyntaxErrors() > 0) {
             List<String> messages = parser.getErrorMessages();
@@ -85,19 +89,23 @@ public class StructuredResourceParser implements InitializingBean {
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
         if (children.size() == 1) {
-            StructuredResourceDescription srd = createStructuredResourceDescription(children
-                    .get(0));
-            this.structuredResourceManager.register(srd);
+            handleResourceTypeDefinition(children.get(0));
         } else {
             for (CommonTree child : children) {
-                if (ResourcetreeLexer.RESOURCETYPE == child.getType()) {
-                    StructuredResourceDescription srd = createStructuredResourceDescription(child
-                            .getChild(0));
-                    this.structuredResourceManager.register(srd);
-                }
+                handleResourceTypeDefinition((CommonTree) child.getChild(0));
             }
         }
+    }
 
+    private void handleResourceTypeDefinition(CommonTree definition) throws Exception {
+        if (ResourcetreeLexer.RESOURCETYPE == definition.getParent().getType()) {
+            StructuredResourceDescription srd = createStructuredResourceDescription(definition);
+            this.structuredResourceManager.register(srd);
+        } else if (ResourcetreeLexer.INCLUDE == definition.getParent().getType()) {
+            String includeFileName = definition.getText();
+            ResourcetreeParser parser = createParser(includeFileName);
+            parseResourceTypeDefinition(parser);
+        }
     }
 
     private StructuredResourceDescription createStructuredResourceDescription(
@@ -276,26 +284,33 @@ public class StructuredResourceParser implements InitializingBean {
     }
 
     private ResourcetreeParser createParser(String filename) throws IOException {
-        InputStream in = getResourceTypeDefinitionAsStream(this.resourceDescriptionFileLocation);
+        InputStream in = getResourceTypeDefinitionAsStream(filename);
         ResourcetreeLexer lexer = new ResourcetreeLexer(new ANTLRInputStream(in));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ResourcetreeParser parser = new ResourcetreeParser(tokens);
         return parser;
     }
 
-    private InputStream getResourceTypeDefinitionAsStream(
-            String resourceTypeDefinitionsLocation) throws IOException {
+    private InputStream getResourceTypeDefinitionAsStream(String filename)
+            throws IOException {
         InputStream in = null;
-        if (!StringUtils.isBlank(resourceTypeDefinitionsLocation)) {
-            if (resourceTypeDefinitionsLocation.matches("^(http(s?)\\:\\/\\/|www)\\S*")) {
-                URL url = new URL(resourceTypeDefinitionsLocation);
+        if (!StringUtils.isBlank(this.resourceDescriptionFileLocation)) {
+            if (this.resourceDescriptionFileLocation
+                    .matches("^(http(s?)\\:\\/\\/|www)\\S*")) {
+                URL url = new URL(this.resourceDescriptionFileLocation);
                 in = url.openStream();
             } else {
                 in = new BufferedInputStream(new FileInputStream(
-                        resourceTypeDefinitionsLocation));
+                        this.resourceDescriptionFileLocation));
             }
         } else {
-            in = this.defaultResourceTypeDefinitions.getInputStream();
+            if (filename != null) {
+                Resource relativeResource = this.defaultResourceTypeDefinitions
+                        .createRelative(filename);
+                in = relativeResource.getInputStream();
+            } else {
+                in = this.defaultResourceTypeDefinitions.getInputStream();
+            }
         }
         return in;
     }
@@ -309,8 +324,7 @@ public class StructuredResourceParser implements InitializingBean {
     }
 
     @Required
-    public void setDefaultResourceTypeDefinitions(
-            org.springframework.core.io.Resource defaultResourceTypeDefinitions) {
+    public void setDefaultResourceTypeDefinitions(Resource defaultResourceTypeDefinitions) {
         this.defaultResourceTypeDefinitions = defaultResourceTypeDefinitions;
     }
 

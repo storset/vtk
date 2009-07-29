@@ -1,0 +1,64 @@
+resourcetype jperson : jdocument {
+
+  properties {
+    username : string required,
+    getExternalPersonInfo : boolean,
+    firstName : string,
+    surname : string,
+    postalAddress : string,
+    visitingAddress : string,
+    email : string,
+    webPage : string, 
+    officeNumber : string,
+    availableHours : string,
+    picture : image_ref,
+    tags : string,
+    getExternalScientificInformation : boolean,
+    scientificInformation : html
+  }
+
+  edit-rules {
+    username (before title),
+    picture (after surname),
+    tags (after scientificInformation),
+    officeNumber (size[5]),
+    getExternalScientificInformation (dropdown),
+    group contactInfo (email, officeNumber, availableHours) (after username) horizontal
+  }
+
+  view-definition {
+  $$
+    <html>
+      <head>
+        <title><json:field select="firstName" /> <json:field select="surname" /></title>
+      </head>
+      <body>
+        <h1><json:field select="firstName" /> <json:field select="surname" /></h1>
+        <p>Postal adress: <json:field select="postalAddress" /></p>
+        <p>Visiting address: <json:field select="postalAddress" /></p>
+        <p>Email: <json:field select="email" /></p>
+        <p>Webpage: <json:field select="webPage" /></p>
+        <p>Office: <json:field select="officeNumber" /></p>
+        <p>Visiting hours: <json:field select="availableHours" /></p>
+        <p>Tags: <json:field select="tags" /></p>
+        <p>Scientific information: <json:field select="scientificInformation" /></p>
+      </body>
+    </html>
+  $$
+  }
+  
+  localization-properties {
+    username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
+    getExternalPersonInfo : (en : "Get external information (ldap)", no : "Hent ekstern informasjon (ldap)", nn : "Hent ekstern informasjon (ldap)"),
+    firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
+    surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
+    postalAddress : (en : "Address", no : "Adresse", nn : "Adresse"),
+    visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
+    email : (en : "Email", no : "E-post", nn : "E-post"),
+    webPage : (en : "Web page", no : "Webside", nn : "Webside"),
+    officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
+    availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
+    picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord")
+  }
+}

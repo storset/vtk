@@ -1,0 +1,101 @@
+resourcetype jdocument {
+
+  properties {
+    title : string (overrides : title),
+    introduction : simple_html,
+    introduction-img : image_ref,
+    image-caption : simple_html,
+    content : html noextract
+  }
+
+  view-components {
+
+    title {
+      ##
+      [def v resource-prop "." "title"]
+      [val v]
+      ##
+    }
+
+    introduction-image {
+      ##
+      [def img-uri resource-prop "." "introduction-img"]
+      [if img-uri]
+        [def img resource img-uri]
+        [def caption resource-prop "." "image-caption"]
+        [def pixel-width resource-prop img-uri "pixelWidth"]
+        [def img-author resource-prop img-uri "authorName"]
+
+        [if pixel-width]
+          [def style concat "width:" pixel-width "px"]
+        [endif]
+
+        [if ! img]
+          <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [else]
+           [if caption]
+             <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+               <img src="[val img-uri]" alt="[val caption unescaped "flattened"]"/>
+                 <div class="vrtx-imagetext">
+                   <div class="vrtx-imagedescription">[val caption unescaped]</div>
+                     [if img-author]
+                       <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                     [endif]
+                 </div>
+             </div>
+           [else]
+             [if img-author]
+               <div class="vrtx-introduction-image" [if style]style="[val style]"[endif]>
+               <img src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+               <div class="vrtx-imagetext">
+                <span class="vrtx-photo">
+                  <span class="vrtx-photo-prefix">[localized "photo-prefix"]: </span>[val img-author]
+                </span>
+               </div>
+             [else]
+               <img class="vrtx-introduction-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+             [endif]
+           [endif]
+        [endif]
+      [endif]
+      <br/>
+      ##
+    }
+
+    introduction {
+      ##
+      [def intro resource-prop "." "introduction"]
+      [if intro]
+        <div class="vrtx-introduction">[val intro unescaped]</div>
+      [endif]
+      ##
+    }
+  }
+
+  view-definition {
+  $$
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title><comp:title /></title>
+      </head>
+      <body>
+        <h1><comp:title /></h1>
+        <comp:introduction-image />
+        <comp:introduction />
+        <json:field select="content" />
+        <resource:tags />
+        <resource:comments />
+      </body>
+    </html>
+  $$
+  }
+
+  localization-properties {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),
+    introduction-img : (en: "Introduction image", no: "Ingressbilde", nn : "Ingressbilete"),
+    image-caption : (en : "Image caption", no : "Tittel på bilde", nn : "Tittel på bilete"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
+  }
+}

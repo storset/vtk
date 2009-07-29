@@ -10,6 +10,7 @@ tokens {
 package org.vortikal.repository.resource;
 }
 
+INCLUDE	:	'include';
 RESOURCETYPE
 	:	'resourcetype';
 PROPERTIES
@@ -51,6 +52,7 @@ NUMBER	:	('0'..'9')+;
 VALUELIST
 	:	;
 NAME	:	(LETTER | '-' | '_')+;
+FILENAME:	(NAME | '.' | '/')+;
 ESC_SEQ : '\\' ('\"'|'\''|'\\') ;
 QTEXT    :  '"'  ( ESC_SEQ | ~('\\'|'"') )* '"'
         {

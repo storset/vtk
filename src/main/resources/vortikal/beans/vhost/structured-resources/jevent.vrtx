@@ -1,0 +1,33 @@
+resourcetype jevent : jdocument {
+  properties {
+    start-date : datetime,
+    end-date : datetime,
+    location : string,
+    map-url : string
+  }
+
+  edit-rules {
+  }
+
+  view-definition {
+  $$
+    <html>
+      <head>
+        <title><json:field select="title" /></title>
+      </head>
+      <body>
+        <h1><json:field select="title" /></h1>
+        <json:field select="author" />
+        <json:field select="date" />
+
+        <p>Start date: <json:field select="start-date" /></p>
+        <p>End date: <json:field select="end-date" /></p>
+        <p>Location: <json:field select="location" /></p>
+        <p>Map: <json:field select="map-url" /></p>
+      
+        <json:field select="content" />
+      </body>
+    </html>
+  $$
+  }
+}

@@ -98,13 +98,17 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
         
         model.put("principal", principal);
 
-        if (principal == null) {
-            URL loginURL = this.loginService.constructURL(resource, principal);
-            model.put("loginURL", loginURL);
-        } else {
-            URL logoutURL = this.logoutService.constructURL(resource, principal);
-            model.put("logoutURL", logoutURL);
-        }
+            if (principal == null) {
+                try {
+                    URL loginURL = this.loginService.constructURL(resource, principal);
+                    model.put("loginURL", loginURL);
+                } catch (Exception e) { }
+            } else {
+                try {
+                    URL logoutURL = this.logoutService.constructURL(resource, principal);
+                    model.put("logoutURL", logoutURL);
+                } catch (Exception e) { }
+            }
     }
 
 }

@@ -79,14 +79,16 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                     "Missing CSRF prevention secret in session");
         }
         String suppliedToken = request.getParameter("csrf-prevention-token");
+        
         if (suppliedToken == null) {
             throw new AuthorizationException(
                     "Missing CSRF prevention token in request");
         }
 
-        String requestURL = getRequestURL(request);        
+        String requestURL = getRequestURL(request);
         String computed =  generateToken(requestURL, secret, session.getId());
 
+        
         if (!computed.equals(suppliedToken)) {
             throw new AuthorizationException(
                     "CSRF prevention token mismatch");
@@ -126,12 +128,17 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         RequestContext requestContext = RequestContext.getRequestContext();
         HttpSession session = requestContext.getServletRequest().getSession(false);
 
-        // XXX:
-        SecretKey secret = generateSecret();
         
         if (session != null) {
 
+            SecretKey secret = (SecretKey) session.getAttribute("csrf-prevention-secret");
+            if (secret == null) {
+                secret = generateSecret();
+                session.setAttribute("csrf-prevention-secret", secret);
+            }
+            
             String csrfPreventionToken = generateToken(url, secret, session.getId());
+            
             
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();
@@ -139,13 +146,17 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             attrs.add(createAttribute("type", "hidden"));
             attrs.add(createAttribute("value", csrfPreventionToken));
             input.setAttributes(attrs.toArray(new HtmlAttribute[attrs.size()]));
+            element.addContent(0, input);
+            element.addContent(0, new HtmlText() {
+                public String getContent() {
+                    return "\r\n";
+                }
+            });
             element.addContent(new HtmlText() {
                 public String getContent() {
                     return "\r\n";
                 }
             });
-            element.addContent(0, input);
-            session.setAttribute("csrf-prevention-secret", secret);
         }
         return NodeResult.keep;
     }

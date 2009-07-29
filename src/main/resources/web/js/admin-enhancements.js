@@ -16,6 +16,7 @@ function enableInput() {
   document.getElementById('submitButtons').style.paddingTop = "10px";
 }
 
+/*
 // Used by copyResourceService available from "manageCollectionListingService"
 
 
@@ -31,21 +32,22 @@ function copyMoveAction(action, unCheckedMessage) {
 
  for (var e = 0; e < document.collectionListingForm.elements.length; e++) {
     if (document.collectionListingForm.elements[e].type == 'checkbox' && document.collectionListingForm.elements[e].checked) {
-       checked = true;       
+       checked = true;
     }
  }
 
- if (checked) { 
+ if (checked) {
    document.collectionListingForm.submit();
  } else {
    alert(unCheckedMessage);
  }
- 
+
 }
+*/
 
 function interceptEnterKey() {
 	$("form").bind("keypress", function(e) {
-            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {          	
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
                return false; //cancel the default browser click
            }
       });
@@ -53,7 +55,7 @@ function interceptEnterKey() {
 
 function interceptEnterKeyAndReroute(txt, btn) {
 	$("form " + txt).bind("keypress", function(e) {
-            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) { 
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
               $(btn).click(); //click the associated button
               return false; //cancel the default browser click
            }

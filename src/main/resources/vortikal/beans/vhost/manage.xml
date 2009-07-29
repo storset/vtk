@@ -1513,6 +1513,13 @@
         <ref bean="resourceContextProvider" />
         <ref bean="collectionMenuProvider" />
 
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"
+              parent="requestLocalRepositoryAware">
+          <property name="service" ref="manageCollectionListingService" />
+          <property name="modelName" value="action" />
+          <property name="urlName" value="submitURL" />
+        </bean>
+
       </list>
     </property>
   </bean>
@@ -1644,6 +1651,10 @@
   </bean>
 
   <!-- MANAGE assertions -->
+
+  <bean id="manage.postRequestAssertion" class="org.vortikal.web.service.RequestMethodAssertion">
+    <property name="method" value="POST" />
+  </bean>
 
   <bean id="requiresReadPermissionAssertion"
         parent="abstractResourcePrincipalPermissionAssertion">

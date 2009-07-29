@@ -20,6 +20,9 @@
   <title>Manage: collection listing</title>
 </head>
 <body>
-  <@col.listCollection withForm=true />
+  <@col.listCollection
+     withForm=true
+     action=action.submitURL?string
+     submitActions={"copy-resources":"Copy resources", "move-resources":"Move resources"}/>
 </body>
 </html>

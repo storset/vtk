@@ -20,7 +20,7 @@
 <#import "vortikal.ftl" as vrtx />
 
 
-<#macro listCollection withForm=false action="">
+<#macro listCollection withForm=false action="" submitActions={}>
 
 <#if !resourceContext.currentResource.collection>
   <#stop "This template only works with collection resources:
@@ -224,7 +224,18 @@
 </table>
 
 <#if withForm>
+  <div id="collectionListing.submit">
+    <#list submitActions?keys as actionName>
+      <button type="submit" value="${actionName?html}" id="collectionListing.action.${actionName?html}" name="action">
+        ${submitActions[actionName]?html}
+      </button>
+    </#list>
+  </div>
   </form>
+  <script type="text/javascript" language="Javascript"><!--
+    document.getElementById('collectionListing.submit').style.display = 'none';
+    //-->
+  </script>
 </#if>
 
 </#macro>

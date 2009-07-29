@@ -64,6 +64,10 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         if (!"POST".equals(request.getMethod())) {
             return true;
         }
+        if (request.getContentType().startsWith("multipart/form-data")) {
+            // XXX: skipping multipart requests for now
+            return true;
+        }
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         if (securityContext.getPrincipal() == null) {
             throw new AuthenticationException("Illegal anonymous action");
@@ -78,8 +82,9 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             throw new AuthorizationException(
                     "Missing CSRF prevention secret in session");
         }
-        String suppliedToken = request.getParameter("csrf-prevention-token");
         
+        String suppliedToken = request.getParameter("csrf-prevention-token");
+
         if (suppliedToken == null) {
             throw new AuthorizationException(
                     "Missing CSRF prevention token in request");
@@ -88,7 +93,6 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         String requestURL = getRequestURL(request);
         String computed =  generateToken(requestURL, secret, session.getId());
 
-        
         if (!computed.equals(suppliedToken)) {
             throw new AuthorizationException(
                     "CSRF prevention token mismatch");
@@ -138,7 +142,6 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             }
             
             String csrfPreventionToken = generateToken(url, secret, session.getId());
-            
             
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();

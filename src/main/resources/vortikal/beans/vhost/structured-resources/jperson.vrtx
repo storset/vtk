@@ -27,7 +27,7 @@ resourcetype jperson : jdocument {
   }
 
   view-definition {
-  $$
+    ##
     <html>
       <head>
         <title><json:field select="firstName" /> <json:field select="surname" /></title>
@@ -44,7 +44,7 @@ resourcetype jperson : jdocument {
         <p>Scientific information: <json:field select="scientificInformation" /></p>
       </body>
     </html>
-  $$
+    ##
   }
   
   localization-properties {

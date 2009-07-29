@@ -73,7 +73,7 @@ resourcetype jarticle : jdocument {
   }
 
   view-definition {
-  $$
+    ##
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -97,13 +97,13 @@ resourcetype jarticle : jdocument {
         <resource:comments />
       </body>
     </html>
-  $$
+    ##
   }
 
   localization-properties {
-        photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-        by-line : (en : "By", no : "Av", nn : "Av"),
-        published : (en : "Published", no : "Publisert", nn : "Publisert"),
-        download-media-file : (en : "Download media file", no : "Last ned mediafil", nn : "Last ned mediafil")
+    photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
+    by-line : (en : "By", no : "Av", nn : "Av"),
+    published : (en : "Published", no : "Publisert", nn : "Publisert"),
+    download-media-file : (en : "Download media file", no : "Last ned mediafil", nn : "Last ned mediafil")
   }
 }

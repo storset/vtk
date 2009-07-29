@@ -102,11 +102,6 @@ pos	:	(BEFORE | AFTER);
 
 edithint:	LP EDITHINT RP -> ^(EDITHINT);
 
-// XXX write rule
-displayhint
-	:
-	;
-
 grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
 
 viewcomponents
@@ -118,14 +113,14 @@ viewcomponents
 
 viewcomponent
     :   NAME LCB
-		  VIEWCOMPDEF
+		  DEF
         RCB
-        -> ^(NAME (VIEWCOMPDEF)?)
+        -> ^(NAME (DEF)?)
     ;
 
 viewdefinition
 	:	VIEWDEFINITION LCB
-		  (VIEWDEF)?
+		  (DEF)?
 		RCB
-		-> ^(VIEWDEFINITION (VIEWDEF)?)
+		-> ^(VIEWDEFINITION (DEF)?)
 	;

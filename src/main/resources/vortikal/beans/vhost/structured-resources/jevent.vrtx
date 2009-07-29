@@ -10,7 +10,7 @@ resourcetype jevent : jdocument {
   }
 
   view-definition {
-  $$
+    ##
     <html>
       <head>
         <title><json:field select="title" /></title>
@@ -28,6 +28,6 @@ resourcetype jevent : jdocument {
         <json:field select="content" />
       </body>
     </html>
-  $$
+    ##
   }
 }

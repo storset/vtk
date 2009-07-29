@@ -3,7 +3,6 @@ lexer grammar ResourcetreeLexer;
 tokens {
   /* Imaginary token used for intermediate handling of AST */
   PARENT;
-  PROPERTY;
 }
 
 @header {
@@ -48,13 +47,10 @@ BEFORE	:	'before';
 AFTER	:	'after';
 LETTER	:	('a'..'z' | 'A'..'Z');
 NUMBER	:	('0'..'9')+;
-// XXX write rule
-VALUELIST
-	:	;
 NAME	:	(LETTER | '-' | '_')+;
 FILENAME:	(NAME | '.' | '/')+;
-ESC_SEQ : '\\' ('\"'|'\''|'\\') ;
-QTEXT    :  '"'  ( ESC_SEQ | ~('\\'|'"') )* '"'
+ESC_SEQ	:	'\\' ('\"'|'\''|'\\') ;
+QTEXT	:	'"'  ( ESC_SEQ | ~('\\'|'"') )* '"'
         {
             String s = getText();
             if (s.length() > 2) {
@@ -62,14 +58,7 @@ QTEXT    :  '"'  ( ESC_SEQ | ~('\\'|'"') )* '"'
                 setText(s);
             }
         };
-VIEWDEF	:	'$$' (options {greedy=false;} : .)* '$$'
-		{
-		  String s = getText();
-		  s = s.replaceAll("\\s+", " ");
-		  s = s.replace("$$", "");
-		  setText(s.trim());
-		};
-VIEWCOMPDEF	:	'##' .* '##'
+DEF	:	'##' .* '##'
         {
 		  String s = getText();
 		  s = s.replace("##", "");

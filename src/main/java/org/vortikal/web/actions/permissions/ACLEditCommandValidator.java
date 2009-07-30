@@ -100,12 +100,7 @@ public class ACLEditCommandValidator implements Validator {
                 userName = userName.trim();
                 String uid = userName;
 
-                if (!userName.matches("[\\p{L}+ @\\- .]+")) {
-                    errors.rejectValue("userNames", "permissions.invalid.chars",
-                            new Object[] { userName }, "Username '" + userName
-                                    + "' contains invalid charachters");
-                    continue;
-                } else if (!userName.contains(" ")) {
+                if (!userName.contains(" ")) {
                     // assume a username and validate it as such
                     if (!validateUserName(userName, errors)) {
                         continue;

@@ -139,6 +139,9 @@ public class StructuredResourceParser implements InitializingBean {
                 case ResourcetreeLexer.LOCALIZATIONPROPERTIES:
                     handleLocalization(srd, descriptionEntry.getChildren());
                     break;
+                case ResourcetreeLexer.SCRIPTS:
+                    handleScripts(srd, descriptionEntry.getChildren());
+                    break;
                 default:
                     throw new IllegalStateException("Unknown token type: "
                             + descriptionEntry.getType());
@@ -177,6 +180,10 @@ public class StructuredResourceParser implements InitializingBean {
                 srd.addLocalization(propDesc.getText(), localizationMap);
             }
         }
+    }
+    
+    private void handleScripts(StructuredResourceDescription srd, List children) {
+        // XXX: implement
     }
 
     private void setPropertyDescription(PropertyDescription p,

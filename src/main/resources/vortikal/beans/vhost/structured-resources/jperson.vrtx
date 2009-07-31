@@ -26,6 +26,11 @@ resourcetype jperson : jdocument {
     group contactInfo (email, officeNumber, availableHours) (after username) horizontal
   }
 
+  scripts {
+    getExternalPersonInfo show-hide onclick (firstName, surname, email),
+    tags autocomplete (width : "200", minChars : "0")
+  }
+
   view-definition {
     ##
     <html>

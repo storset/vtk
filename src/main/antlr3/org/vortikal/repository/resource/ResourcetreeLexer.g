@@ -22,6 +22,7 @@ VIEWDEFINITION
 	:	'view-definition';
 LOCALIZATIONPROPERTIES
 	:	'localization-properties';
+SCRIPTS	:	'scripts';
 
 LCB	:	'{';
 RCB	:	'}';
@@ -31,10 +32,15 @@ LB	:	'[';
 RB	:	']';
 COLON	:	':';
 COMMA	:	',';
-DQ		:	'"';
+DQ	:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
-EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN );
+EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
+SHOWHIDE:	'show-hide';
+AUTOCOMPLETE
+	:	'autocomplete';
+SCRIPTTRIGGER 
+	:	 (ONCLICK | ONFOCUS | ONSELECT);
 REQUIRED:	'required';
 NOEXTRACT
 	:	'noextract';
@@ -87,7 +93,7 @@ fragment MEDIAREF
 
 // Edithints
 fragment SIZE
-    :   'size';
+	:	'size';
 fragment TEXTFIELD
 	:	'textfield';
 fragment TEXTAREA
@@ -98,3 +104,11 @@ fragment DROPDOWN
 	:	'dropdown';
 fragment HORIZONTAL 
 	:	'horizontal';
+
+// Scripting
+fragment ONCLICK
+	:	'onclick';
+fragment ONFOCUS
+	:	'onfocus';
+fragment ONSELECT
+	:	'onselect';

@@ -107,15 +107,16 @@ public class StructuredResourceManager {
             String parent = description.getInheritsFrom();
             if (!this.types.containsKey(parent)) {
                 throw new IllegalArgumentException(
-                        "Can only inherit from other structured resource types.");
+                        "Can only inherit from other structured resource types: ["
+                                + description.getName() + ":" + parent + "]");
             }
             parentDefinition = this.resourceTypeTree
                     .getResourceTypeDefinitionByName(parent);
         }
 
         if (parentDefinition instanceof PrimaryResourceTypeDefinitionImpl) {
-            def.setParentTypeDefinition((PrimaryResourceTypeDefinitionImpl) 
-                    parentDefinition);
+            def
+                    .setParentTypeDefinition((PrimaryResourceTypeDefinitionImpl) parentDefinition);
             updateAssertions(parentDefinition, description.getName());
         }
 
@@ -184,7 +185,7 @@ public class StructuredResourceManager {
         if (d.isNoExtract()) {
             return null;
         }
-        
+
         if (d.getOverrides() != null) {
             Namespace namespace = Namespace.DEFAULT_NAMESPACE; // XXX
             String name = d.getOverrides();
@@ -211,7 +212,7 @@ public class StructuredResourceManager {
             def.setValueFactory(this.valueFactory);
             def.setValueFormatterRegistry(this.valueFormatterRegistry);
             def.setPropertyEvaluator(createPropertyEvaluator());
-            
+
             Map<String, Object> edithints = d.getEdithints();
             if (edithints != null) {
                 def.addMetadata("editingHints", edithints);
@@ -230,7 +231,8 @@ public class StructuredResourceManager {
                     return false;
                 }
                 if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
-                    return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
+                    return ctx.getOriginalResource()
+                            .getProperty(property.getDefinition()) != null;
                 }
                 try {
                     JSONObject json = (JSONObject) ctx.getContent()
@@ -291,7 +293,7 @@ public class StructuredResourceManager {
         }
         return description;
     }
-    
+
     public List<StructuredResourceDescription> list() {
         List<StructuredResourceDescription> result = new ArrayList<StructuredResourceDescription>();
         result.addAll(this.types.values());

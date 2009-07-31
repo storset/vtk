@@ -29,8 +29,7 @@ resourcetypedef
 		  resourcedef
 		RCB
 		-> ^(RESOURCETYPE ^(NAME (parent)? (resourcedef)?))
-	|
-		include
+	|	include
 	;
 
 include	:	INCLUDE FILENAME -> ^(INCLUDE FILENAME);
@@ -40,6 +39,7 @@ parent	:	COLON NAME -> ^(PARENT NAME);
 resourcedef
 	:	(resourceprops)?
 		(editrules)?
+		(scripts)?
 		(viewcomponents)?
 		(viewdefinition)?
 		(localization)?
@@ -53,14 +53,9 @@ localization
 	;
 
 localizationentry
-	:	NAME COLON LP (localizationdef (COMMA localizationdef)*) RP
-		-> ^(NAME (localizationdef)*)
+	:	NAME COLON LP (namevaluepair (COMMA namevaluepair)*) RP
+		-> ^(NAME (namevaluepair)*)
 	;
-	
-localizationdef
-	:	NAME COLON QTEXT
-		-> ^(NAME (QTEXT)+)
-	;	
 	
 resourceprops
 	:	PROPERTIES LCB
@@ -83,8 +78,8 @@ overrides
 editruledef
 	:	NAME (position)? (edithint)?
 		-> ^(NAME ^(position)? ^(edithint)?)
-	|	GROUP NAME grouping position (ORIANTATION)?
-		-> ^(GROUP ^(NAME grouping) ^(position) ^(ORIANTATION)?)
+	|	GROUP NAME namelist position (ORIANTATION)?
+		-> ^(GROUP ^(NAME namelist) ^(position) ^(ORIANTATION)?)
 	;
 
 editrules
@@ -102,8 +97,6 @@ pos	:	(BEFORE | AFTER);
 
 edithint:	LP EDITHINT RP -> ^(EDITHINT);
 
-grouping:	LP NAME (COMMA NAME)+ RP -> ^(NAME) ^(NAME)+;
-
 viewcomponents
 	:	VIEWCOMPONENTS LCB
 		  (viewcomponent)*
@@ -112,11 +105,11 @@ viewcomponents
 	;
 
 viewcomponent
-    :   NAME LCB
+	:	NAME LCB
 		  DEF
-        RCB
-        -> ^(NAME (DEF)?)
-    ;
+		RCB
+		-> ^(NAME (DEF)?)
+	;
 
 viewdefinition
 	:	VIEWDEFINITION LCB
@@ -124,3 +117,22 @@ viewdefinition
 		RCB
 		-> ^(VIEWDEFINITION (DEF)?)
 	;
+
+scripts	:	SCRIPTS LCB
+		  (scriptdef (COMMA scriptdef)*)*
+		RCB
+		-> ^(SCRIPTS (scriptdef)*)
+	;
+
+scriptdef:	NAME SHOWHIDE SCRIPTTRIGGER namelist
+		-> ^(NAME ^(SHOWHIDE ^(SCRIPTTRIGGER namelist)))
+	|	NAME AUTOCOMPLETE LP (namevaluepair (COMMA namevaluepair)*) RP
+		-> ^(NAME ^(AUTOCOMPLETE (namevaluepair)*))
+	;
+
+namevaluepair
+	:	NAME COLON QTEXT
+		-> ^(NAME QTEXT)
+	;
+
+namelist:	LP NAME (COMMA NAME)* RP -> ^(NAME) ^(NAME)*;

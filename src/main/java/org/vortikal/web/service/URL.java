@@ -308,9 +308,37 @@ public class URL {
 
     
     /**
+     * Generates a string representation of this URL, including
+     * protocol, hostname and port information, excluding query string
+     * parameters.
+     */
+    public String getBase() {
+        StringBuilder url = new StringBuilder();
+        if (!this.pathOnly) {
+            url.append(this.protocol).append("://");
+            url.append(this.host);
+            if (this.port != null) {
+                if (!(this.port.equals(PORT_80) && PROTOCOL_HTTP.equals(this.protocol)
+                      || (this.port.equals(PORT_443) && PROTOCOL_HTTPS.equals(this.protocol)))) {
+                    url.append(":").append(this.port.intValue());
+                }
+            }
+        }
+        try {
+            url.append(URLUtil.urlEncode(this.path.toString(), this.characterEncoding));
+        } catch (java.io.UnsupportedEncodingException e) {
+            // Ignore, this.characterEncoding is supposed to be valid.
+        }
+        if (this.collection && !this.path.isRoot()) {
+            url.append("/");
+        }
+        return url.toString();
+    }
+    
+    /**
      * Generates an "absolute path" representation of this URL (a
      * string starting with '/', without protocol, hostname and port
-     * information).
+     * information), but including query string parameters.
      */
     public String getPathRepresentation() {
         StringBuilder sb = new StringBuilder();

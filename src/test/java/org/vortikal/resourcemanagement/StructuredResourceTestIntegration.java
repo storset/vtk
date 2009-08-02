@@ -79,7 +79,7 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
     }
 
     public void testGetResourceDescriptions() throws Exception {
-        String[] resourceNames = {"jarticle", "jperson"};
+        String[] resourceNames = { "jarticle", "jperson" };
         for (String resourceName : resourceNames) {
             StructuredResourceDescription srd = srdp.getResourceDescription(resourceName);
             assertNotNull(srd);

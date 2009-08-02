@@ -70,9 +70,36 @@ public class StructuredResourceParser implements InitializingBean {
     public static final String PROPTYPE_IMAGEREF = "image_ref";
     public static final String PROPTYPE_MEDIAREF = "media_ref";
 
+    private List<ParsedResourceDescription> parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
+
     public void registerStructuredResources() throws Exception {
         ResourcetreeParser parser = createParser(null);
         parseResourceTypeDefinition(parser);
+
+        List<ParsedResourceDescription> tmp = new ArrayList<ParsedResourceDescription>();
+        for (ParsedResourceDescription prd : this.parsedResourceDescriptions) {
+            if (prd.hasParent()) {
+                ParsedResourceDescription parent = getParent(
+                        this.parsedResourceDescriptions, prd);
+                if (parent != null) {
+                    parent.addChild(prd);
+                }
+                tmp.add(prd);
+            }
+        }
+        this.parsedResourceDescriptions.removeAll(tmp);
+        registerParsedResourceDescriptions(this.parsedResourceDescriptions);
+    }
+
+    private void registerParsedResourceDescriptions(List<ParsedResourceDescription> l)
+            throws Exception {
+        for (ParsedResourceDescription prd : l) {
+            this.structuredResourceManager.register(prd
+                    .getStructuredResourceDescription());
+            if (prd.hasChildren()) {
+                registerParsedResourceDescriptions(prd.getChildren());
+            }
+        }
     }
 
     private void parseResourceTypeDefinition(ResourcetreeParser parser) throws Exception {
@@ -100,7 +127,7 @@ public class StructuredResourceParser implements InitializingBean {
     private void handleResourceTypeDefinition(CommonTree definition) throws Exception {
         if (ResourcetreeLexer.RESOURCETYPE == definition.getParent().getType()) {
             StructuredResourceDescription srd = createStructuredResourceDescription(definition);
-            this.structuredResourceManager.register(srd);
+            parsedResourceDescriptions.add(new ParsedResourceDescription(srd));
         } else if (ResourcetreeLexer.INCLUDE == definition.getParent().getType()) {
             String includeFileName = definition.getText();
             ResourcetreeParser parser = createParser(includeFileName);
@@ -181,7 +208,7 @@ public class StructuredResourceParser implements InitializingBean {
             }
         }
     }
-    
+
     private void handleScripts(StructuredResourceDescription srd, List children) {
         // XXX: implement
     }
@@ -343,6 +370,64 @@ public class StructuredResourceParser implements InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         this.registerStructuredResources();
+    }
+
+    private class ParsedResourceDescription {
+
+        private StructuredResourceDescription srd;
+        private List<ParsedResourceDescription> children;
+
+        private ParsedResourceDescription(StructuredResourceDescription srd) {
+            this.srd = srd;
+        }
+
+        public StructuredResourceDescription getStructuredResourceDescription() {
+            return this.srd;
+        }
+
+        public void addChild(ParsedResourceDescription prd) {
+            if (this.children == null) {
+                this.children = new ArrayList<ParsedResourceDescription>();
+            }
+            children.add(prd);
+        }
+
+        public boolean hasChildren() {
+            return this.children != null && this.children.size() > 0;
+        }
+
+        public List<ParsedResourceDescription> getChildren() {
+            return this.children;
+        }
+
+        public String getName() {
+            return this.srd.getName();
+        }
+
+        public boolean hasParent() {
+            return this.srd.getInheritsFrom() != null;
+        }
+
+        public String getParentName() {
+            return this.srd.getInheritsFrom();
+        }
+
+        public String toString() {
+            return this.srd.getName() + (this.hasChildren() ? this.children : "");
+        }
+
+    }
+
+    private ParsedResourceDescription getParent(List<ParsedResourceDescription> l,
+            ParsedResourceDescription prd) {
+        for (ParsedResourceDescription p : l) {
+            if (p.getName().equals(prd.getParentName())) {
+                return p;
+            } else if (p.hasChildren()) {
+                getParent(p.getChildren(), prd);
+            }
+        }
+        return null;
     }
 
 }

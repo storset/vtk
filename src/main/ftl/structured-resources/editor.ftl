@@ -36,8 +36,6 @@
  <script language="javascript">	
 	$(document).ready(function() {
 		
-		setLang("<@vrtx.requestLanguage />");
-		
 		var fields1 = new Array("title","firstName","surname","postalAddress","visitingAddress","email","webPage","officeNumber");
 		var fields2 = new Array("scientificInformation");
 		
@@ -69,39 +67,10 @@
         }           
 	}
 	
-	/* TODO: Remove */
-	function setLang(lang){
-		var lang_index = 0;
-		if(lang == "en")
-			lang_index = 1;
-		
-		 var elmTitles = new Array();
-		 
-		 elmTitles['username'] = new Array("Brukernavn","Username");
-		 elmTitles['title'] = new Array("Tittel","Title");
-		 elmTitles['firstName'] = new Array("Fornavn","First name");
-		 elmTitles['surname'] = new Array("Etternavn","Surname");
-		 elmTitles['postalAddress'] = new Array("Postadresse","Postal Address");
-		 elmTitles['visitingAddress'] = new Array("Besøksadresse","Visisting Address");
-		 elmTitles['webPage'] = new Array("Hjemmeside","Web page");
-		 elmTitles['officeNumber'] = new Array("Kontornummer","Office number");
-		 elmTitles['getExternalPersonInfo'] = new Array("Hent ekstern person data","Get external person info");
-		 elmTitles['availableHours'] = new Array("Tilgjengelig i tidsrom","Available hours");
-		 elmTitles['picture'] = new Array("Bilde","Picture");
-		 elmTitles['tags'] = new Array("Emneord","Tags");
-		 elmTitles['getExternalScientificInformation'] = new Array("Hent ekstern informasjon om vitenskaplige arbeider"
-		 											,"Get external scientific information");
-		 elmTitles['content'] = new Array("Innhold","Content");
-		 elmTitles['scientificInformation'] = new Array("Vitenskaplig informasjon","Scientific information");
-		 elmTitles['email'] = new Array("E-post","E-mail");
-		 											
-		for(key in elmTitles)
-			$("label[for=" + key +"]").text(elmTitles[key][lang_index]);
-	}
 </script>
 -->
 
-  <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
+<link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
   
 </head>
 <body>
@@ -114,9 +83,9 @@
 
   <#if elementBox.formElements?size &gt; 1>
     <#assign groupClass = "vrtx-grouped" />
-    <#if elementBox.metaData['horisontal']?exists>
-      <#assign groupClass = groupClass + "-horisontal" />
-    </#if>
+    <#if elementBox.metaData['horizontal']?exists>
+      <#assign groupClass = groupClass + "-horizontal" />
+    </#if>	
     <div class=${groupClass}>
   </#if>
 
@@ -147,7 +116,7 @@
 	    	title=localizedTitle 
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
-	    	classes=elem.description.name />
+	    	classes="vrtx-simple-html" />
 	    <@fckEditor.insert elem.description.name />
 	  	<#break>
 	  <#case "html">
@@ -160,7 +129,7 @@
 	    	title=localizedTitle 
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
-	    	classes=elem.description.name />
+	    	classes="vrtx-html" />
 	    <@fckEditor.insert elem.description.name true false />
 	    <#break>
 	  <#case "boolean">

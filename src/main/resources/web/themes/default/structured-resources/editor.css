@@ -1,10 +1,31 @@
 
-.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio
-  {
+.
+vrtx-media-ref, .vrtx-simple-html, 
+.vrtx-html,.vrtx-string,.vrtx-date,.vrtx-image-ref,.vrtx-checkbox,.vrtx-dropdownlist,.vrtx-radio {
   padding: 5px 10px;
   clear: left;
-  /*float: left;*/
+  float: left;
   overflow: auto;
+}
+
+.vrtx-grouped-horizontal .vrtx-media-ref,
+.vrtx-grouped-horizontal .vrtx-simple-html, .vrtx-grouped-horizontal .vrtx-html,.vrtx-grouped-horizontal  .vrtx-string,.vrtx-grouped-horizontal .vrtx-date,.vrtx-grouped-horizontal .vrtx-image-ref,
+.vrtx-grouped-horizontal .vrtx-checkbox,.vrtx-grouped-horizontal .vrtx-dropdownlist,.vrtx-grouped-horizontal .vrtx-radio {
+    clear: none; 
+    float : left;
+}
+
+.vrtx-simple-html textarea{
+    height:22.5ex;
+    width:500px;
+}
+
+.vrtx-simple-html {
+    width:500px;
+}
+
+.vrtx-simple-html iframe{
+    height: 133px;
 }
 
 .vrtx-html {
@@ -16,10 +37,12 @@
   border: 1px solid #a9a9a9;
 }
 
-.vrtx-grouped-horisontal {
+.vrtx-grouped-horizontal {
   /*XXX Temp border to indicate grouped props*/
   border: 1px solid #a9a9a9;
-  /*XXX implement*/
+  clear: left;
+  float: left;  
+  overflow: auto;
 }
 
 #contents {

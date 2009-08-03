@@ -9,7 +9,7 @@ resourcetype jevent : jdocument {
   edit-rules {
   }
 
-  view-definition {
+  view {
     ##
     <html>
       <head>

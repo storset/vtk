@@ -18,11 +18,11 @@ EDITRULES
 	:	'edit-rules';
 VIEWCOMPONENTS
 	:	'view-components';
-VIEWDEFINITION
-	:	'view-definition';
-LOCALIZATIONPROPERTIES
-	:	'localization-properties';
+VIEW	:	'view';
+LOCALIZATION
+	:	'localization';
 SCRIPTS	:	'scripts';
+SERVICES:	'services';
 
 LCB	:	'{';
 RCB	:	'}';
@@ -41,6 +41,9 @@ AUTOCOMPLETE
 	:	'autocomplete';
 SCRIPTTRIGGER 
 	:	 (ONCLICK | ONFOCUS | ONSELECT);
+EXTERNAL:	'external';
+REQUIRES:	'requires';
+AFFECTS	:	'affects';
 REQUIRED:	'required';
 NOEXTRACT
 	:	'noextract';

@@ -156,17 +156,20 @@ public class StructuredResourceParser implements InitializingBean {
                 case ResourcetreeLexer.VIEWCOMPONENTS:
                     handleViewComponents(srd, descriptionEntry.getChildren());
                     break;
-                case ResourcetreeLexer.VIEWDEFINITION:
+                case ResourcetreeLexer.VIEW:
                     if (descriptionEntry.getChild(0) != null) {
                         srd.setDisplayTemplate(new DisplayTemplate(descriptionEntry
                                 .getChild(0).getText()));
                     }
                     break;
-                case ResourcetreeLexer.LOCALIZATIONPROPERTIES:
+                case ResourcetreeLexer.LOCALIZATION:
                     handleLocalization(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.SCRIPTS:
                     handleScripts(srd, descriptionEntry.getChildren());
+                    break;
+                case ResourcetreeLexer.SERVICES:
+                    // XXX Implement
                     break;
                 default:
                     throw new IllegalStateException("Unknown token type: "

@@ -31,8 +31,12 @@ resourcetype jperson : jdocument {
     getExternalPersonInfo show-hide onclick (firstName, surname, email),
     tags autocomplete (width : "200", minChars : "0")
   }
+  
+  services {
+    getExternalPersonInfo external requires(username) affects(firstName, surname, email) 
+  }
 
-  view-definition {
+  view {
     ##
     <html>
       <head>
@@ -53,7 +57,7 @@ resourcetype jperson : jdocument {
     ##
   }
   
-  localization-properties {
+  localization {
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
     getExternalPersonInfo : (en : "Get external information (ldap)", no : "Hent ekstern informasjon (ldap)", nn : "Hent ekstern informasjon (ldap)"),
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),

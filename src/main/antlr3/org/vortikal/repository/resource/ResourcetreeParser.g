@@ -40,16 +40,17 @@ resourcedef
 	:	(resourceprops)?
 		(editrules)?
 		(scripts)?
+		(services)?
 		(viewcomponents)?
 		(viewdefinition)?
 		(localization)?
 	;
 
 localization
-	:	LOCALIZATIONPROPERTIES LCB
+	:	LOCALIZATION LCB
 		  (localizationentry (COMMA localizationentry)*)*
 		RCB
-		-> ^(LOCALIZATIONPROPERTIES (localizationentry)*)
+		-> ^(LOCALIZATION (localizationentry)*)
 	;
 
 localizationentry
@@ -112,10 +113,10 @@ viewcomponent
 	;
 
 viewdefinition
-	:	VIEWDEFINITION LCB
+	:	VIEW LCB
 		  (DEF)?
 		RCB
-		-> ^(VIEWDEFINITION (DEF)?)
+		-> ^(VIEW (DEF)?)
 	;
 
 scripts	:	SCRIPTS LCB
@@ -128,6 +129,19 @@ scriptdef:	NAME SHOWHIDE SCRIPTTRIGGER namelist
 		-> ^(NAME ^(SHOWHIDE ^(SCRIPTTRIGGER namelist)))
 	|	NAME AUTOCOMPLETE LP (namevaluepair (COMMA namevaluepair)*) RP
 		-> ^(NAME ^(AUTOCOMPLETE (namevaluepair)*))
+	;
+
+services:	SERVICES LCB
+		  (servicedef (COMMA servicedef)*)*
+		RCB
+		-> ^(SERVICES ^(servicedef)*)
+	;
+
+// XXX Finish servicedef -> need to seperate concept of required field 
+// and affected fields, both are in effect NAME
+servicedef
+	:	NAME EXTERNAL (REQUIRES LP NAME RP)? (AFFECTS LP (NAME (COMMA NAME)*)) RP
+		-> ^(NAME ^(EXTERNAL))
 	;
 
 namevaluepair

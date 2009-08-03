@@ -35,7 +35,7 @@ COMMA	:	',';
 DQ	:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
-EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
+EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN | SMALL | LARGE);
 SHOWHIDE:	'show-hide';
 AUTOCOMPLETE
 	:	'autocomplete';
@@ -102,6 +102,10 @@ fragment RADIO
 	:	'radio';
 fragment DROPDOWN
 	:	'dropdown';
+fragment SMALL
+	:	'small';
+fragment LARGE
+	:	'large';
 fragment HORIZONTAL 
 	:	'horizontal';
 

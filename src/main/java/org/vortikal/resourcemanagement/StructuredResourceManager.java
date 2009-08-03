@@ -54,6 +54,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
+import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.text.JSONUtil;
 import org.vortikal.web.service.JSONObjectSelectAssertion;
 import org.vortikal.web.service.RepositoryAssertion;
@@ -258,28 +259,28 @@ public class StructuredResourceManager {
     private PropertyType.Type mapType(PropertyDescription d) {
         String type = d.getType();
 
-        if (StructuredResourceParser.PROPTYPE_STRING.equals(type)) {
+        if (ParserConstants.PROPTYPE_STRING.equals(type)) {
             return PropertyType.Type.STRING;
         }
-        if (StructuredResourceParser.PROPTYPE_HTML.equals(type)) {
+        if (ParserConstants.PROPTYPE_HTML.equals(type)) {
             return PropertyType.Type.HTML;
         }
-        if (StructuredResourceParser.PROPTYPE_SIMPLEHTML.equals(type)) {
+        if (ParserConstants.PROPTYPE_SIMPLEHTML.equals(type)) {
             return PropertyType.Type.HTML;
         }
-        if (StructuredResourceParser.PROPTYPE_BOOLEAN.equals(type)) {
+        if (ParserConstants.PROPTYPE_BOOLEAN.equals(type)) {
             return PropertyType.Type.BOOLEAN;
         }
-        if (StructuredResourceParser.PROPTYPE_INT.equals(type)) {
+        if (ParserConstants.PROPTYPE_INT.equals(type)) {
             return PropertyType.Type.INT;
         }
-        if (StructuredResourceParser.PROPTYPE_DATETIME.equals(type)) {
+        if (ParserConstants.PROPTYPE_DATETIME.equals(type)) {
             return PropertyType.Type.TIMESTAMP;
         }
-        if (StructuredResourceParser.PROPTYPE_IMAGEREF.equals(type)) {
+        if (ParserConstants.PROPTYPE_IMAGEREF.equals(type)) {
             return PropertyType.Type.IMAGE_REF;
         }
-        if (StructuredResourceParser.PROPTYPE_MEDIAREF.equals(type)) {
+        if (ParserConstants.PROPTYPE_MEDIAREF.equals(type)) {
             return PropertyType.Type.IMAGE_REF;
         }
         return PropertyType.Type.STRING;

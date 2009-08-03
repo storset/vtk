@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.parser;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -52,7 +52,15 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
-import org.vortikal.resourcemanagement.EditRule.Type;
+import org.vortikal.resourcemanagement.ComponentDefinition;
+import org.vortikal.resourcemanagement.DisplayTemplate;
+import org.vortikal.resourcemanagement.EditRule;
+import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.ScriptDefinition;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.resourcemanagement.EditRule.EditRuleType;
+import org.vortikal.resourcemanagement.ScriptDefinition.ScriptType;
 
 @SuppressWarnings("unchecked")
 public class StructuredResourceParser implements InitializingBean {
@@ -60,15 +68,6 @@ public class StructuredResourceParser implements InitializingBean {
     private String resourceDescriptionFileLocation;
     private Resource defaultResourceTypeDefinitions;
     private StructuredResourceManager structuredResourceManager;
-
-    public static final String PROPTYPE_STRING = "string";
-    public static final String PROPTYPE_HTML = "html";
-    public static final String PROPTYPE_SIMPLEHTML = "simple_html";
-    public static final String PROPTYPE_BOOLEAN = "boolean";
-    public static final String PROPTYPE_INT = "int";
-    public static final String PROPTYPE_DATETIME = "datetime";
-    public static final String PROPTYPE_IMAGEREF = "image_ref";
-    public static final String PROPTYPE_MEDIAREF = "media_ref";
 
     private List<ParsedResourceDescription> parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
 
@@ -209,8 +208,25 @@ public class StructuredResourceParser implements InitializingBean {
         }
     }
 
-    private void handleScripts(StructuredResourceDescription srd, List children) {
-        // XXX: implement
+    private void handleScripts(StructuredResourceDescription srd,
+            List<CommonTree> children) {
+        for (CommonTree scriptEntry : children) {
+            String propName = scriptEntry.getText();
+            Tree scriptType = scriptEntry.getChild(0);
+            switch (scriptType.getType()) {
+            case ResourcetreeLexer.SHOWHIDE:
+                // XXX finish parsing params
+                ScriptDefinition sd = new ScriptDefinition(propName, ScriptType.SHOWHIDE,
+                        null);
+                srd.addScriptDefinition(sd);
+                break;
+            case ResourcetreeLexer.AUTOCOMPLETE:
+                // XXX implement
+                break;
+            default:
+                break;
+            }
+        }
     }
 
     private void setPropertyDescription(PropertyDescription p,
@@ -247,16 +263,18 @@ public class StructuredResourceParser implements InitializingBean {
                     CommonTree editRule = (CommonTree) editRuleDescription.getChild(0);
                     switch (editRule.getType()) {
                     case ResourcetreeLexer.BEFORE:
-                        srd.addEditRule(new EditRule(propName, Type.POSITION_BEFORE,
-                                editRule.getChild(0).getText()));
+                        srd.addEditRule(new EditRule(propName,
+                                EditRuleType.POSITION_BEFORE, editRule.getChild(0)
+                                        .getText()));
                         break;
                     case ResourcetreeLexer.AFTER:
-                        srd.addEditRule(new EditRule(propName, Type.POSITION_AFTER,
-                                editRule.getChild(0).getText()));
+                        srd.addEditRule(new EditRule(propName,
+                                EditRuleType.POSITION_AFTER, editRule.getChild(0)
+                                        .getText()));
                         break;
                     case ResourcetreeLexer.EDITHINT:
-                        srd.addEditRule(new EditRule(propName, Type.EDITHINT, editRule
-                                .getText()));
+                        srd.addEditRule(new EditRule(propName, EditRuleType.EDITHINT,
+                                editRule.getText()));
                         break;
                     default:
                         break;
@@ -279,22 +297,22 @@ public class StructuredResourceParser implements InitializingBean {
         for (CommonTree prop : (List<CommonTree>) groupingNameElement.getChildren()) {
             groupedProps.add(prop.getText());
         }
-        srd.addEditRule(new EditRule(groupingName, Type.GROUP, groupedProps));
+        srd.addEditRule(new EditRule(groupingName, EditRuleType.GROUP, groupedProps));
 
         CommonTree positioningElement = (CommonTree) groupRuleDescription.getChild(1);
         int groupingType = positioningElement.getType();
         if (ResourcetreeLexer.AFTER == groupingType
                 || ResourcetreeLexer.BEFORE == groupingType) {
-            Type positioningType = ResourcetreeLexer.AFTER == groupingType ? Type.POSITION_AFTER
-                    : Type.POSITION_BEFORE;
+            EditRuleType positioningType = ResourcetreeLexer.AFTER == groupingType ? EditRuleType.POSITION_AFTER
+                    : EditRuleType.POSITION_BEFORE;
             srd.addEditRule(new EditRule(groupingName, positioningType,
                     positioningElement.getChild(0).getText()));
         }
 
         CommonTree oriantationElement = (CommonTree) groupRuleDescription.getChild(2);
         if (oriantationElement != null) {
-            srd.addEditRule(new EditRule(groupingName, Type.EDITHINT, oriantationElement
-                    .getText()));
+            srd.addEditRule(new EditRule(groupingName, EditRuleType.EDITHINT,
+                    oriantationElement.getText()));
         }
     }
 
@@ -325,6 +343,11 @@ public class StructuredResourceParser implements InitializingBean {
         return parser;
     }
 
+    /**
+     * XXX This is no good, need to properly resolve paths when including
+     * resourcedefinitions, e.g. nested inclusions -> a file includes another
+     * wich includes another and so on and so forth
+     */
     private InputStream getResourceTypeDefinitionAsStream(String filename)
             throws IOException {
         InputStream in = null;

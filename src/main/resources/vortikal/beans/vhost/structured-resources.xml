@@ -193,7 +193,7 @@
   </bean>
   
   <bean id="structuredResource.parser"
-        class="org.vortikal.resourcemanagement.StructuredResourceParser">
+        class="org.vortikal.resourcemanagement.parser.StructuredResourceParser">
     <property name="defaultResourceTypeDefinitions"
               value="classpath:/vortikal/beans/vhost/structured-resources.vrtx" />
     <property name="structuredResourceManager"

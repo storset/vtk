@@ -48,7 +48,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
-import org.vortikal.resourcemanagement.EditRule.Type;
+import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.StreamUtil;
@@ -172,14 +172,14 @@ public class StructuredResourceEditor extends SimpleFormController {
             List<EditRule> editRules = type.getEditRules();
             if (editRules != null && editRules.size() > 0) {
                 for (EditRule editRule : editRules) {
-                    Type ruleType = editRule.getType();
-                    if (Type.GROUP.equals(ruleType)) {
+                    EditRuleType ruleType = editRule.getType();
+                    if (EditRuleType.GROUP.equals(ruleType)) {
                         groupElements(editRule);
-                    } else if (Type.POSITION_BEFORE.equals(ruleType)) {
-                        rearrangePosition(editRule, Type.POSITION_BEFORE);
-                    } else if (Type.POSITION_AFTER.equals(ruleType)) {
-                        rearrangePosition(editRule, Type.POSITION_AFTER);
-                    } else if (Type.EDITHINT.equals(ruleType)) {
+                    } else if (EditRuleType.POSITION_BEFORE.equals(ruleType)) {
+                        rearrangePosition(editRule, EditRuleType.POSITION_BEFORE);
+                    } else if (EditRuleType.POSITION_AFTER.equals(ruleType)) {
+                        rearrangePosition(editRule, EditRuleType.POSITION_AFTER);
+                    } else if (EditRuleType.EDITHINT.equals(ruleType)) {
                         setEditHints(editRule);
                     }
                 }
@@ -200,7 +200,7 @@ public class StructuredResourceEditor extends SimpleFormController {
             this.elements.add(elementBox);
         }
 
-        private void rearrangePosition(EditRule editRule, Type ruleType) {
+        private void rearrangePosition(EditRule editRule, EditRuleType ruleType) {
             int indexOfpropToMove = -1;
             int indexToMoveToo = -1;
             for (int i = 0; i < elements.size(); i++) {
@@ -214,7 +214,7 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
             if (indexOfpropToMove != -1 && indexToMoveToo != -1
                     && indexOfpropToMove != indexToMoveToo) {
-                int rotation = Type.POSITION_BEFORE.equals(ruleType) ? 0 : 1;
+                int rotation = EditRuleType.POSITION_BEFORE.equals(ruleType) ? 0 : 1;
                 if (indexToMoveToo < indexOfpropToMove) {
                     Collections.rotate(elements.subList(indexToMoveToo + rotation,
                             indexOfpropToMove + 1), 1);

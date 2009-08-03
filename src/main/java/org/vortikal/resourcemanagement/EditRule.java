@@ -32,7 +32,7 @@ package org.vortikal.resourcemanagement;
 
 public class EditRule {
 
-    public enum Type {
+    public enum EditRuleType {
         POSITION_BEFORE, POSITION_AFTER, GROUP, EDITHINT;
     }
 
@@ -40,10 +40,10 @@ public class EditRule {
     private static final String RB = "]";
 
     private String name;
-    private Type type;
+    private EditRuleType type;
     private Object value;
 
-    public EditRule(String name, Type type, Object value) {
+    public EditRule(String name, EditRuleType type, Object value) {
         this.name = name;
         this.type = type;
         this.value = value;
@@ -53,7 +53,7 @@ public class EditRule {
         return name;
     }
 
-    public Type getType() {
+    public EditRuleType getType() {
         return type;
     }
 
@@ -70,7 +70,7 @@ public class EditRule {
     }
 
     private String parseEditHint(boolean returnKey) {
-        if (Type.EDITHINT.equals(this.type)) {
+        if (EditRuleType.EDITHINT.equals(this.type)) {
             if (this.value instanceof String) {
                 String stringValue = (String) this.value;
                 if (stringValue.contains(LB) && stringValue.contains(RB)) {

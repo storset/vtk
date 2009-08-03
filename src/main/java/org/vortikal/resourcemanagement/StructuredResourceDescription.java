@@ -46,8 +46,9 @@ public final class StructuredResourceDescription {
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private DisplayTemplate displayTemplate;
     private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
+    private List<ScriptDefinition> scripts;
 
-    StructuredResourceDescription(StructuredResourceManager manager) {
+    public StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
     }
 
@@ -160,6 +161,17 @@ public final class StructuredResourceDescription {
 
     public String toString() {
         return this.getClass().getName() + ":" + this.name;
+    }
+
+    public void addScriptDefinition(ScriptDefinition scriptDefinition) {
+        if (this.scripts == null) {
+            this.scripts = new ArrayList<ScriptDefinition>();
+        }
+        this.scripts.add(scriptDefinition);
+    }
+
+    public List<ScriptDefinition> getScripts() {
+        return this.scripts;
     }
 
 }

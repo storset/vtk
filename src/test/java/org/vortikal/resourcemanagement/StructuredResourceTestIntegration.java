@@ -40,6 +40,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
+import org.vortikal.resourcemanagement.parser.StructuredResourceParser;
 import org.vortikal.web.service.JSONObjectSelectAssertion;
 
 public class StructuredResourceTestIntegration extends AbstractBeanContextTestIntegration {
@@ -79,7 +80,7 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
     }
 
     public void testGetResourceDescriptions() throws Exception {
-        String[] resourceNames = { "jarticle", "jperson" };
+        String[] resourceNames = { "jperson" };
         for (String resourceName : resourceNames) {
             StructuredResourceDescription srd = srdp.getResourceDescription(resourceName);
             assertNotNull(srd);
@@ -104,7 +105,7 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
                 }
             }
         }
-        List<EditRule> editRules = srd.getEditRules();
+         List<EditRule> editRules = srd.getEditRules();
         if (editRules != null) {
             System.out.println("\tEditRules:");
             for (EditRule editRule : editRules) {
@@ -117,6 +118,13 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
             System.out.println("\tViewDefinition:");
             System.out.println("\t\t" + displayTemplate.getTemplate());
         }
+        List<ScriptDefinition> scripts = srd.getScripts();
+        if (scripts != null) {
+            System.out.println("\tScripts:");
+            for (ScriptDefinition sd : scripts) {
+                System.out.println("\t\t" + sd.getName() + " " + sd.getType() + " "
+                        + sd.getParams());
+            }
+        }
     }
-
 }

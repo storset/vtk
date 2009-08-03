@@ -35,7 +35,7 @@ COMMA	:	',';
 DQ	:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
-EDITHINT:	(SIZE LB NUMBER RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN | SMALL | LARGE);
+EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
 SHOWHIDE:	'show-hide';
 AUTOCOMPLETE
 	:	'autocomplete';
@@ -57,7 +57,7 @@ NAME	:	(LETTER | '-' | '_')+;
 FILENAME:	(NAME | '.' | '/')+;
 ESC_SEQ	:	'\\' ('\"'|'\''|'\\') ;
 QTEXT	:	'"'  ( ESC_SEQ | ~('\\'|'"') )* '"'
-        {
+        { 	
             String s = getText();
             if (s.length() > 2) {
                 s = s.substring(1, s.length() - 1);

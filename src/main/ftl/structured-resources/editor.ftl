@@ -107,16 +107,15 @@
 	 		inputFieldSize=fieldSize />
 	    <#break>
 	  <#case "simple_html">
-	  	<#if elem.description.edithints?exists>
-		 		<#list elem.description.edithints?keys as hint>
-		 			${hint} <br />
-		 		</#list>
-	 	</#if>
+	  	<#assign cssclass = "vrtx-simple-html" />
+	 	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
+	  		<#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
+	  	</#if>
 	    <@vrtxHtml.printPropertyEditView 
 	    	title=localizedTitle 
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
-	    	classes="vrtx-simple-html" />
+	    	classes=cssclass />
 	    <@fckEditor.insert elem.description.name />
 	  	<#break>
 	  <#case "html">

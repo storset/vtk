@@ -24,7 +24,7 @@ resourcetype jperson : jdocument {
     officeNumber (size[5]),
     getExternalScientificInformation (dropdown),
     group contactInfo (email, officeNumber, availableHours) (after username) horizontal,
-    image-caption (small)
+    image-caption (size[small])
   }
 
   scripts {

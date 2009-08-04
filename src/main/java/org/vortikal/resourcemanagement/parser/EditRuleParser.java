@@ -1,0 +1,79 @@
+package org.vortikal.resourcemanagement.parser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.antlr.runtime.tree.CommonTree;
+import org.vortikal.repository.resource.ResourcetreeLexer;
+import org.vortikal.resourcemanagement.EditRule;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.EditRule.EditRuleType;
+
+public class EditRuleParser {
+
+    public void parseEditRulesDescriptions(StructuredResourceDescription srd,
+            List<CommonTree> editRuleDescriptions) {
+        if (editRuleDescriptions != null) {
+            for (CommonTree editRuleDescription : editRuleDescriptions) {
+                if (ResourcetreeLexer.GROUP == editRuleDescription.getType()) {
+                    handleGroupedEditRuleDescription(srd, editRuleDescription);
+                } else {
+                    String propName = editRuleDescription.getText();
+                    CommonTree editRule = (CommonTree) editRuleDescription.getChild(0);
+                    switch (editRule.getType()) {
+                    case ResourcetreeLexer.BEFORE:
+                        srd.addEditRule(new EditRule(propName,
+                                EditRuleType.POSITION_BEFORE, editRule.getChild(0)
+                                        .getText()));
+                        break;
+                    case ResourcetreeLexer.AFTER:
+                        srd.addEditRule(new EditRule(propName,
+                                EditRuleType.POSITION_AFTER, editRule.getChild(0)
+                                        .getText()));
+                        break;
+                    case ResourcetreeLexer.EDITHINT:
+                        srd.addEditRule(new EditRule(propName, EditRuleType.EDITHINT,
+                                editRule.getText()));
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void handleGroupedEditRuleDescription(
+            StructuredResourceDescription srd, CommonTree groupRuleDescription) {
+
+        CommonTree groupingNameElement = (CommonTree) groupRuleDescription.getChild(0);
+        if (ResourcetreeLexer.NAME != groupingNameElement.getType()) {
+            throw new IllegalStateException(
+                    "First element in a grouping definition must be a name");
+        }
+        String groupingName = groupingNameElement.getText();
+        List<String> groupedProps = new ArrayList<String>();
+        for (CommonTree prop : (List<CommonTree>) groupingNameElement.getChildren()) {
+            groupedProps.add(prop.getText());
+        }
+        srd.addEditRule(new EditRule(groupingName, EditRuleType.GROUP, groupedProps));
+
+        CommonTree positioningElement = (CommonTree) groupRuleDescription.getChild(1);
+        int groupingType = positioningElement.getType();
+        if (ResourcetreeLexer.AFTER == groupingType
+                || ResourcetreeLexer.BEFORE == groupingType) {
+            EditRuleType positioningType = ResourcetreeLexer.AFTER == groupingType ? EditRuleType.POSITION_AFTER
+                    : EditRuleType.POSITION_BEFORE;
+            srd.addEditRule(new EditRule(groupingName, positioningType,
+                    positioningElement.getChild(0).getText()));
+        }
+
+        CommonTree oriantationElement = (CommonTree) groupRuleDescription.getChild(2);
+        if (oriantationElement != null) {
+            srd.addEditRule(new EditRule(groupingName, EditRuleType.EDITHINT,
+                    oriantationElement.getText()));
+        }
+    }
+
+}

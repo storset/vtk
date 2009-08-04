@@ -54,12 +54,8 @@ import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.repository.resource.ResourcetreeParser;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.DisplayTemplate;
-import org.vortikal.resourcemanagement.EditRule;
-import org.vortikal.resourcemanagement.PropertyDescription;
-import org.vortikal.resourcemanagement.ScriptDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
-import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.resourcemanagement.ScriptDefinition.ScriptType;
 
 @SuppressWarnings("unchecked")
@@ -68,8 +64,21 @@ public class StructuredResourceParser implements InitializingBean {
     private String resourceDescriptionFileLocation;
     private Resource defaultResourceTypeDefinitions;
     private StructuredResourceManager structuredResourceManager;
+    private List<ParsedResourceDescription> parsedResourceDescriptions;
 
-    private List<ParsedResourceDescription> parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
+    private PropertyDescriptionParser propertyDescriptionParser;
+    private EditRuleParser editRuleParser;
+    private ScriptDefinitionParser scriptDefinitionParser;
+
+    public void afterPropertiesSet() throws Exception {
+        this.parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
+
+        this.propertyDescriptionParser = new PropertyDescriptionParser();
+        this.editRuleParser = new EditRuleParser();
+        this.scriptDefinitionParser = new ScriptDefinitionParser();
+
+        this.registerStructuredResources();
+    }
 
     public void registerStructuredResources() throws Exception {
         ResourcetreeParser parser = createParser(null);
@@ -148,10 +157,12 @@ public class StructuredResourceParser implements InitializingBean {
                     srd.setInheritsFrom(descriptionEntry.getChild(0).getText());
                     break;
                 case ResourcetreeLexer.PROPERTIES:
-                    handlePropertyDescriptions(srd, descriptionEntry.getChildren());
+                    this.propertyDescriptionParser.parsePropertyDescriptions(srd,
+                            descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.EDITRULES:
-                    handleEditRulesDescriptions(srd, descriptionEntry.getChildren());
+                    this.editRuleParser.parseEditRulesDescriptions(srd, descriptionEntry
+                            .getChildren());
                     break;
                 case ResourcetreeLexer.VIEWCOMPONENTS:
                     handleViewComponents(srd, descriptionEntry.getChildren());
@@ -181,20 +192,6 @@ public class StructuredResourceParser implements InitializingBean {
         return srd;
     }
 
-    private void handlePropertyDescriptions(StructuredResourceDescription srd,
-            List<CommonTree> propertyDescriptions) {
-        List<PropertyDescription> props = new ArrayList<PropertyDescription>();
-        if (hasContent(propertyDescriptions)) {
-            for (CommonTree propDesc : propertyDescriptions) {
-                PropertyDescription p = new PropertyDescription();
-                p.setName(propDesc.getText());
-                setPropertyDescription(p, propDesc.getChildren());
-                props.add(p);
-            }
-            srd.setPropertyDescriptions(props);
-        }
-    }
-
     private void handleLocalization(StructuredResourceDescription srd,
             List<CommonTree> propertyDescriptions) {
         if (hasContent(propertyDescriptions)) {
@@ -215,110 +212,21 @@ public class StructuredResourceParser implements InitializingBean {
             List<CommonTree> children) {
         for (CommonTree scriptEntry : children) {
             String propName = scriptEntry.getText();
-            Tree scriptType = scriptEntry.getChild(0);
+            CommonTree scriptType = (CommonTree) scriptEntry.getChild(0);
             switch (scriptType.getType()) {
             case ResourcetreeLexer.SHOWHIDE:
-                // XXX finish parsing params
-                ScriptDefinition sd = new ScriptDefinition(propName, ScriptType.SHOWHIDE,
-                        null);
-                srd.addScriptDefinition(sd);
+                srd.addScriptDefinition(this.scriptDefinitionParser
+                        .parseScriptDefinition(propName, ScriptType.SHOWHIDE, scriptType
+                                .getChildren()));
                 break;
             case ResourcetreeLexer.AUTOCOMPLETE:
-                // XXX implement
+                srd.addScriptDefinition(this.scriptDefinitionParser
+                        .parseScriptDefinition(propName, ScriptType.AUTOCOMPLETE,
+                                scriptType.getChildren()));
                 break;
             default:
                 break;
             }
-        }
-    }
-
-    private void setPropertyDescription(PropertyDescription p,
-            List<CommonTree> propertyDescription) {
-        for (CommonTree descEntry : propertyDescription) {
-            switch (descEntry.getType()) {
-            case ResourcetreeLexer.PROPTYPE:
-                p.setType(descEntry.getText());
-                break;
-            case ResourcetreeLexer.REQUIRED:
-                p.setRequired(true);
-                break;
-            case ResourcetreeLexer.NOEXTRACT:
-                p.setNoExtract(true);
-                break;
-            case ResourcetreeLexer.OVERRIDES:
-                p.setOverrides(descEntry.getChild(0).getText());
-                break;
-            case ResourcetreeLexer.MULTIPLE:
-                p.setMultiple(true);
-                break;
-            default:
-                throw new IllegalStateException("Unknown token type: "
-                        + descEntry.getType());
-            }
-        }
-    }
-
-    private void handleEditRulesDescriptions(StructuredResourceDescription srd,
-            List<CommonTree> editRuleDescriptions) {
-        if (hasContent(editRuleDescriptions)) {
-            for (CommonTree editRuleDescription : editRuleDescriptions) {
-                if (ResourcetreeLexer.GROUP == editRuleDescription.getType()) {
-                    handleGroupedEditRuleDescription(srd, editRuleDescription);
-                } else {
-                    String propName = editRuleDescription.getText();
-                    CommonTree editRule = (CommonTree) editRuleDescription.getChild(0);
-                    switch (editRule.getType()) {
-                    case ResourcetreeLexer.BEFORE:
-                        srd.addEditRule(new EditRule(propName,
-                                EditRuleType.POSITION_BEFORE, editRule.getChild(0)
-                                        .getText()));
-                        break;
-                    case ResourcetreeLexer.AFTER:
-                        srd.addEditRule(new EditRule(propName,
-                                EditRuleType.POSITION_AFTER, editRule.getChild(0)
-                                        .getText()));
-                        break;
-                    case ResourcetreeLexer.EDITHINT:
-                        srd.addEditRule(new EditRule(propName, EditRuleType.EDITHINT,
-                                editRule.getText()));
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    private void handleGroupedEditRuleDescription(StructuredResourceDescription srd,
-            CommonTree groupRuleDescription) {
-
-        CommonTree groupingNameElement = (CommonTree) groupRuleDescription.getChild(0);
-        if (ResourcetreeLexer.NAME != groupingNameElement.getType()) {
-            throw new IllegalStateException(
-                    "First element in a grouping definition must be a name");
-        }
-        String groupingName = groupingNameElement.getText();
-        List<String> groupedProps = new ArrayList<String>();
-        for (CommonTree prop : (List<CommonTree>) groupingNameElement.getChildren()) {
-            groupedProps.add(prop.getText());
-        }
-        srd.addEditRule(new EditRule(groupingName, EditRuleType.GROUP, groupedProps));
-
-        CommonTree positioningElement = (CommonTree) groupRuleDescription.getChild(1);
-        int groupingType = positioningElement.getType();
-        if (ResourcetreeLexer.AFTER == groupingType
-                || ResourcetreeLexer.BEFORE == groupingType) {
-            EditRuleType positioningType = ResourcetreeLexer.AFTER == groupingType ? EditRuleType.POSITION_AFTER
-                    : EditRuleType.POSITION_BEFORE;
-            srd.addEditRule(new EditRule(groupingName, positioningType,
-                    positioningElement.getChild(0).getText()));
-        }
-
-        CommonTree oriantationElement = (CommonTree) groupRuleDescription.getChild(2);
-        if (oriantationElement != null) {
-            srd.addEditRule(new EditRule(groupingName, EditRuleType.EDITHINT,
-                    oriantationElement.getText()));
         }
     }
 
@@ -395,10 +303,6 @@ public class StructuredResourceParser implements InitializingBean {
     public void setStructuredResourceManager(
             StructuredResourceManager structuredResourceManager) {
         this.structuredResourceManager = structuredResourceManager;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        this.registerStructuredResources();
     }
 
     private class ParsedResourceDescription {

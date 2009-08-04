@@ -210,6 +210,7 @@ public class StructuredResourceManager {
             def.setType(mapType(d));
             def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);
             def.setMandatory(d.isRequired());
+            def.setMultiple(d.isMultiple());
             def.setValueFactory(this.valueFactory);
             def.setValueFormatterRegistry(this.valueFormatterRegistry);
             def.setPropertyEvaluator(createPropertyEvaluator());

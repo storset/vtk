@@ -12,7 +12,7 @@ resourcetype jperson : jdocument {
     officeNumber : string,
     availableHours : string,
     picture : image_ref,
-    tags : string,
+    tags : string multiple,
     getExternalScientificInformation : boolean,
     scientificInformation : html
   }

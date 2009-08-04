@@ -56,7 +56,6 @@ import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.DisplayTemplate;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
-import org.vortikal.resourcemanagement.ScriptDefinition.ScriptType;
 
 @SuppressWarnings("unchecked")
 public class StructuredResourceParser implements InitializingBean {
@@ -177,7 +176,8 @@ public class StructuredResourceParser implements InitializingBean {
                     handleLocalization(srd, descriptionEntry.getChildren());
                     break;
                 case ResourcetreeLexer.SCRIPTS:
-                    handleScripts(srd, descriptionEntry.getChildren());
+                    this.scriptDefinitionParser.parseScripts(srd, descriptionEntry
+                            .getChildren());
                     break;
                 case ResourcetreeLexer.SERVICES:
                     // XXX Implement
@@ -204,28 +204,6 @@ public class StructuredResourceParser implements InitializingBean {
                     }
                 }
                 srd.addLocalization(propDesc.getText(), localizationMap);
-            }
-        }
-    }
-
-    private void handleScripts(StructuredResourceDescription srd,
-            List<CommonTree> children) {
-        for (CommonTree scriptEntry : children) {
-            String propName = scriptEntry.getText();
-            CommonTree scriptType = (CommonTree) scriptEntry.getChild(0);
-            switch (scriptType.getType()) {
-            case ResourcetreeLexer.SHOWHIDE:
-                srd.addScriptDefinition(this.scriptDefinitionParser
-                        .parseScriptDefinition(propName, ScriptType.SHOWHIDE, scriptType
-                                .getChildren()));
-                break;
-            case ResourcetreeLexer.AUTOCOMPLETE:
-                srd.addScriptDefinition(this.scriptDefinitionParser
-                        .parseScriptDefinition(propName, ScriptType.AUTOCOMPLETE,
-                                scriptType.getChildren()));
-                break;
-            default:
-                break;
             }
         }
     }

@@ -39,7 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.util.web.URLUtil;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -86,27 +86,17 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
         }
         
         public String getRequestURI() {
-            
-            String uri = this.request.getRequestURI();
-            String uriBefore = uri;
-            boolean appendSlash = false;
-            if (uri == null || uri.endsWith("/")) {
-                appendSlash = true;
-            }
-
+            URL url = URL.create(this.request);
             try {
-                uri = URLUtil.urlDecode(uri, this.characterEncoding);
-            } catch (Exception e) {
-                
-            }
-            if (appendSlash && !"/".equals(uri)) {
-                uri += "/";
-            }
+                url.setCharacterEncoding(this.characterEncoding);
+            } catch (Exception e) { }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Translated uri: from '" + uriBefore + "' to '" + uri + "'");
+                logger.debug("Translated uri: from '" 
+                        + this.request.getRequestURI() 
+                        + "' to '" + url.getPathEncoded() + "'");
             }
-            return uri;
+            return url.getPathEncoded();
         }
     }
     

@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,9 +58,9 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.vortikal.repository.Path;
 import org.vortikal.util.repository.MimeHelper;
 import org.vortikal.util.web.HttpUtil;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.StaticResourceLocation;
+import org.vortikal.web.service.URL;
 
 
 
@@ -120,7 +121,7 @@ public class DisplayClassPathResourceController
         }
 
         Resource resource = resolveResource(request);
-        if (!resource.exists()) {
+        if (resource == null || !resource.exists()) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Unable to serve resource: " + resource
                                   + " from " + resource.getDescription()
@@ -195,15 +196,19 @@ public class DisplayClassPathResourceController
 
 
     private Resource resolveResource(HttpServletRequest request) {
-        String[] incrementalPath = URLUtil.splitUriIncrementally(request.getRequestURI());
+        URL url = URL.create(request);
+        List<Path> paths = url.getPath().getPaths();
+
         String uriPrefix = null;
         String resourceLocation = null;
-        for (int i = incrementalPath.length - 1; i > 0; i--) {
-            if (this.locationsMap.containsKey(incrementalPath[i])) {
-                resourceLocation = this.locationsMap.get(incrementalPath[i]);
-                uriPrefix = incrementalPath[i];
+        for (int i = paths.size() - 1; i >= 0; i--) {
+            String prefix = paths.get(i).toString();
+            if (this.locationsMap.containsKey(prefix)) {
+                resourceLocation = this.locationsMap.get(prefix);
+                uriPrefix = prefix;
             }
         }
+
         if (resourceLocation == null) {
             return null;
         }

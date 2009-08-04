@@ -30,15 +30,16 @@
  */
 package org.vortikal.web.service;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.Assert;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.util.web.URLUtil;
 
 public class ConfigurableRequestURIAssertion implements Assertion {
 
@@ -69,7 +70,7 @@ public class ConfigurableRequestURIAssertion implements Assertion {
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         boolean matches = true;
         if (match) {
-            matches = matchInternal(url.getPath().toString());
+            matches = matchInternal(url.getPath());
         }
         return matches;
     }
@@ -77,17 +78,18 @@ public class ConfigurableRequestURIAssertion implements Assertion {
 
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
-        return matchInternal(request.getRequestURI());
+        URL url = URL.create(request);
+        return matchInternal(url.getPath());
     }
 
-    private boolean matchInternal(String uri) {
+    private boolean matchInternal(Path uri) {
         if (this.configuration == null || this.configuration.isEmpty()) {
             return this.matchOnEmptyConfiguration;
         }
-
-        String[] path = URLUtil.splitUriIncrementally(uri);
-        for (int i = path.length - 1; i >= 0; i--) {
-            String prefix = path[i];
+        
+        List<Path> paths = uri.getPaths();
+        for (int i = paths.size() - 1; i >= 0; i--) {
+            String prefix = paths.get(i).toString();
             String value = this.configuration.getProperty(prefix);
             if (value != null) {
                 boolean match = this.matchValue.equals(value.trim());
@@ -95,7 +97,6 @@ public class ConfigurableRequestURIAssertion implements Assertion {
             }
         }
         return false;
-
     }
     
 

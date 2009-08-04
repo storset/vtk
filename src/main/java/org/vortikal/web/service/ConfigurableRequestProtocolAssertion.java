@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.service;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +39,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.util.web.URLUtil;
 
 /**
  * Assertion that matches on URI path prefixes.  Uses a {@link
@@ -106,14 +106,15 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
 
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
-        
-        String protocol = getProtocol(request);
         if (this.configuration == null || this.configuration.isEmpty()) {
             return this.invert ? false : true;
         }
-        String[] path = URLUtil.splitUriIncrementally(request.getRequestURI());
-        for (int i = path.length - 1; i >= 0; i--) {
-            String prefix = path[i];
+        URL url = URL.create(request);
+        String protocol = url.getProtocol();
+        Path path = url.getPath();
+        List<Path> paths = path.getPaths();
+        for (int i = paths.size() - 1; i >= 0; i--) {
+            String prefix = paths.get(i).toString();
             String value = this.configuration.getProperty(prefix);
             if (value != null) {
                 
@@ -122,11 +123,6 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
             }
         }
         return this.invert ? false : true;
-    }
-
-
-    private String getProtocol(HttpServletRequest request) {
-        return request.isSecure() ? PROTO_HTTPS : PROTO_HTTP;
     }
 
     private String invertProtocol(String protocol, boolean invert) {
@@ -138,6 +134,4 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
         }
         return PROTO_HTTPS;
     }
-    
-
 }

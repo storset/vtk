@@ -58,6 +58,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 /**
  * Request context initializer. On every request the {@link Service}
@@ -164,7 +165,8 @@ public class RequestContextInitializer implements ContextInitializer {
 
     public void createContext(HttpServletRequest request) throws Exception {
 
-        Path uri = getResourceURI(request);
+        URL url = URL.create(request);
+        Path uri = url.getPath();
         Resource resource = null;
 
         boolean inRepository = true;
@@ -322,26 +324,14 @@ public class RequestContextInitializer implements ContextInitializer {
     }
     
 
-    private Path getResourceURI(HttpServletRequest req) throws Exception {
-
-        String uri = req.getRequestURI();
-        if (uri == null || uri.equals("/")) {
-            return Path.fromString("/");
-        }
-        if (uri.endsWith("/")) {
-            uri = uri.substring(0, uri.length() - 1);
-        }
-        return Path.fromString(uri);
-    }
-
-    public StringBuffer printServiceTree() {
-        StringBuffer buffer = new StringBuffer();
+    public StringBuilder printServiceTree() {
+        StringBuilder buffer = new StringBuilder();
         String lineSeparator = System.getProperty("line.separator");
         printServiceList(this.rootServices, buffer, "->", lineSeparator);
         return buffer;
     }
 
-    private void printServiceList(List<Service> services, StringBuffer buffer,
+    private void printServiceList(List<Service> services, StringBuilder buffer,
                                   String indent, String lineSeparator) {
         if (services == null)
             return;

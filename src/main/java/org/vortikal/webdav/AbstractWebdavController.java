@@ -49,6 +49,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.web.service.URL;
 import org.vortikal.webdav.ifheader.IfHeader;
 
 
@@ -148,33 +149,11 @@ public abstract class AbstractWebdavController implements Controller {
         return DAV_PROPERTIES.contains(propertyName);
     }
     
-
-    public String mapToResourceURI(String url) {
-        String prefix = "";//getPrefix();
-
-        if (url.startsWith("/")) {
-            return url;
-        }
-
-        String uri = url;
-        
-        if (uri.indexOf("//") >= 0) {
-            uri = uri.substring(uri.indexOf("//") + "//".length(), uri.length());
-        }
-
-        if (uri.indexOf("/") > 0) {
-            uri = uri.substring(uri.indexOf("/"), uri.length());
-        }
-
-        if (uri.indexOf(prefix) == 0) {
-            uri = uri.substring(uri.indexOf(prefix) + prefix.length(),
-                                uri.length());
-        }
-        
-        return uri;
+    public Path mapToResourceURI(String value) {
+        URL url = URL.parse(value);
+        return url.getPath();
     }
 
-        
     protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {
         if (!this.supportIfHeaders) {
             return;

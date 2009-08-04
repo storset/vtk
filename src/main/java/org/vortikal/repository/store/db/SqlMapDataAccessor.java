@@ -69,7 +69,6 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
-import org.vortikal.util.web.URLUtil;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 
@@ -766,7 +765,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
 
     private int findNearestACL(Path uri) {
         
-        List<String> path = java.util.Arrays.asList(URLUtil.splitUriIncrementally(uri.toString()));
+//        List<String> path = java.util.Arrays.asList(URLUtil.splitUriIncrementally(uri.toString()));
+        List<Path> path = uri.getPaths();
         
         // Reverse list to get deepest URI first
         Collections.reverse(path);
@@ -784,7 +784,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor
         }
 
         int nearestResourceId = -1;
-        for (String candidateUri: path) {
+        for (Path p: path) {
+            String candidateUri = p.toString();
             if (uris.containsKey(candidateUri)) {
                 nearestResourceId = uris.get(candidateUri).intValue();
                 break;

@@ -59,7 +59,6 @@ import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.repository.ContentTypeHelper;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -149,7 +148,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
             uri = this.uriPreProcessor.process(uri);
         }
         
-        if (uri.startsWith("http") || uri.startsWith("https")) {
+        if (uri.startsWith("http:") || uri.startsWith("https:")) {
             handleHttpInclude(uri, request, response);
             return;
         }
@@ -242,13 +241,14 @@ public class IncludeComponent extends AbstractDecoratorComponent
         if (uri.indexOf("?") != -1) {
             queryString = uri.substring(uri.indexOf("?") + 1);
             decodedURI = uri.substring(0, uri.indexOf("?"));
-            queryMap = URLUtil.splitQueryString(queryString);
+            queryMap = URL.splitQueryString(queryString);
         }
 
-        decodedURI = URLUtil.urlDecode(decodedURI);
+        Path decodedPath = Path.fromString(decodedURI);
+        decodedPath = URL.decode(decodedPath);
         
         URL url = URL.create(servletRequest);
-        url.setPath(Path.fromString(decodedURI));
+        url.setPath(decodedPath);
         url.clearParameters();
         for (String param: queryMap.keySet()) {
             for (String value: queryMap.get(param)) {

@@ -32,6 +32,7 @@ package org.vortikal.web.service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,9 +42,9 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.StaticResourceLocation;
 
 
@@ -93,9 +94,11 @@ public class StaticResourceLocationsAssertion
 
 
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        String[] incrementalPath = URLUtil.splitUriIncrementally(request.getRequestURI());
-        for (int i = incrementalPath.length - 1; i > 0; i--) {
-            if (this.prefixes.contains(incrementalPath[i])) {
+        URL url = URL.create(request);
+        List<Path> paths = url.getPath().getPaths();
+        for (int i = paths.size() - 1; i >= 0; i--) {
+            String prefix = paths.get(i).toString();
+            if (this.prefixes.contains(prefix)) {
                 return true;
             }
         }

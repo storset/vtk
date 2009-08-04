@@ -45,7 +45,7 @@ import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
-import org.vortikal.util.web.URLUtil;
+import org.vortikal.web.service.URL;
 
 /**
  * File system content store implementation operating directly on the
@@ -213,8 +213,11 @@ public class SimpleFileSystemContentStore implements InitializingBean, ContentSt
     
 
     private String getLocalFilename(Path uri) {
-        return this.repositoryDataDirectory
-        + ((this.urlEncodeFileNames) ? URLUtil.urlEncode(uri.toString()) : uri);
+        Path path = uri;
+        if (this.urlEncodeFileNames) {
+            path = URL.encode(path);
+        }
+        return this.repositoryDataDirectory + path.toString();
     }
     
     public void setRepositoryDataDirectory(String repositoryDataDirectory) {

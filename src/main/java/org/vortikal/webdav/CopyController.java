@@ -49,7 +49,6 @@ import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
@@ -80,30 +79,15 @@ public class CopyController extends AbstractWebdavController {
 
         Path uri = requestContext.getResourceURI();
 
-        String destURI = request.getHeader("Destination");
+        String destHeader = request.getHeader("Destination");
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
             Resource resource = this.repository.retrieve(token, uri, false);
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, false);
-            
-            if (destURI == null || destURI.trim().equals("")) {
-                throw new InvalidRequestException(
-                    "Missing `Destination' request header");
-            }
 
-            destURI = mapToResourceURI(destURI);
-            
-            try {
-
-                destURI = URLUtil.urlDecode(destURI, "utf-8");
-
-            } catch (Exception e) {
-                throw new InvalidRequestException(
-                    "Error trying to URL decode uri" + destURI, e);
-            }
-
+            Path destURI = mapToResourceURI(destHeader);
             String depthString = request.getHeader("Depth");
             Repository.Depth depth;
             if (depthString == null) {
@@ -133,11 +117,10 @@ public class CopyController extends AbstractWebdavController {
                 preserveACL = true;
             }
 
-            Path destPath = Path.fromString(destURI);
-            boolean existed = this.repository.exists(token, destPath);
+            boolean existed = this.repository.exists(token, destURI);
             
             if (existed) {
-                Resource destination = this.repository.retrieve(token, destPath, false);
+                Resource destination = this.repository.retrieve(token, destURI, false);
                 verifyIfHeader(destination, true);
             }
 
@@ -147,7 +130,7 @@ public class CopyController extends AbstractWebdavController {
                              + ", preserveACL = " + preserveACL
                              + ", existed = " + existed);
             }
-            this.repository.copy(token, uri, destPath, depth, overwrite, preserveACL);
+            this.repository.copy(token, uri, destURI, depth, overwrite, preserveACL);
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Copying " + uri + " to " + destURI + " succeeded");
             }

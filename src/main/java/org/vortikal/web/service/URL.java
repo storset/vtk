@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -40,7 +43,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Path;
-import org.vortikal.util.web.URLUtil;
 
 
 /**
@@ -249,11 +251,11 @@ public class URL {
         StringBuilder qs = new StringBuilder();
         for (Iterator<String> i = this.parameters.keySet().iterator(); i.hasNext();) {
             String param = i.next();
-            String encodedParam = URLUtil.urlEncode(param);
+            String encodedParam = encode(param);
             List<String> values = this.parameters.get(param);
             for (Iterator<String> j = values.iterator(); j.hasNext();) {
                 String val = j.next();
-                val = URLUtil.urlEncode(val);
+                val = encode(val);
                 qs.append(encodedParam).append("=").append(val);
                 if (j.hasNext()) {
                     qs.append("&");
@@ -325,7 +327,8 @@ public class URL {
             }
         }
         try {
-            url.append(URLUtil.urlEncode(this.path.toString(), this.characterEncoding));
+            Path encodedPath = encode(this.path, this.characterEncoding);
+            url.append(encodedPath);
         } catch (java.io.UnsupportedEncodingException e) {
             // Ignore, this.characterEncoding is supposed to be valid.
         }
@@ -333,6 +336,21 @@ public class URL {
             url.append("/");
         }
         return url.toString();
+    }
+
+    public String getPathEncoded() {
+        try {
+            StringBuilder result = new StringBuilder();
+            result.append(encode(this.path, this.characterEncoding).toString());
+            if (this.collection && !this.path.isRoot()) {
+                result.append("/");
+            }
+            return result.toString();
+        } catch (java.io.UnsupportedEncodingException e) {
+            throw new IllegalStateException("Character encoding " 
+                    + this.characterEncoding 
+                    + " is not supported on this system");
+        }
     }
     
     /**
@@ -343,7 +361,8 @@ public class URL {
     public String getPathRepresentation() {
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append(URLUtil.urlEncode(this.path.toString(), this.characterEncoding));
+            Path encodedPath = encode(this.path, this.characterEncoding);
+            sb.append(encodedPath);
         } catch (java.io.UnsupportedEncodingException e) {
             // Ignore, this.characterEncoding is supposed to be valid.
         }
@@ -378,86 +397,330 @@ public class URL {
         newURL.port = url.port;
         newURL.characterEncoding = url.characterEncoding;
         newURL.parameters = new LinkedHashMap<String, List<String>>(url.parameters);
+        newURL.collection = url.collection;
         newURL.ref = url.ref;
         return newURL;
     }
 
 
     /**
-     * Utility method to create a URL from a servlet request.
+     * Utility method to create a URL from a servlet request. 
+     * Decodes the path and query string parameters using the 
+     * supplied encoding.
      *
      * @param request the servlet request
+     * @param encoding the character encoding to use
      * @return the generated URL
+     * @throws UnsupportedEncodingException if the specified 
+     * character encoding is not supported on this system
      */
-    public static URL create(HttpServletRequest request) {
-
+    public static URL create(HttpServletRequest request, String encoding) 
+    throws UnsupportedEncodingException {
         String path = request.getRequestURI();
         if (path == null || "".equals(path)) path = "/";
 
-        if (!path.equals("/") && path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
+        boolean collection = false;
+        if (path.endsWith("/")) {
+            collection = true;
+            if (!path.equals("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
         }
         
         String host = request.getServerName();
         int port = request.getServerPort();
 
-        URL url = new URL(PROTOCOL_HTTP, host, Path.fromString(path));
+        Path uri = Path.fromString(path);
+        uri = decode(uri, encoding);
+        
+        URL url = new URL(PROTOCOL_HTTP, host, uri);
         url.setPort(new Integer(port));
         if (request.isSecure()) {
             url.setProtocol(PROTOCOL_HTTPS);
         }
-
-        Map<String, String[]> queryStringMap = URLUtil.splitQueryString(request.getQueryString());
+        url.setCollection(collection);
+        Map<String, String[]> queryStringMap = splitQueryString(
+                request.getQueryString());
 
         for (String key: queryStringMap.keySet()) {
             String[] values = queryStringMap.get(key);
-            key = URLUtil.urlDecode(key);
+            key = decode(key, encoding);
             for (String value: values) {
-                url.addParameter(key, URLUtil.urlDecode(value));
+                url.addParameter(key, decode(value));
             }
         }
+        url.setCharacterEncoding(encoding);
         return url;
     }
     
-
-//     public static URL parse(String url) {
-//         if (url == null || "".equals(url.trim())) {
-//             throw new IllegalArgumentException("Illegal URL: " + url);
-//         }
-//         if (url.indexOf("://") < 1) {
-//             throw new IllegalArgumentException("Illegal URL: " + url);
-//         }
-//         String protocol = url.substring(0, url.indexOf("://"));
-
-//         String host = url.substring(url.indexOf("://") + 3);
-//         host = host.substring(0, host.indexOf("/"));
-//         if (host.indexOf(":") > 0) {
-//             host = host.substring(0, host.indexOf(":"));
-//         }
-        
-//         int pathStartIdx = 0;
-//         pathStartIdx = url.indexOf("://");
-//         pathStartIdx = url.indexOf("/", pathStartIdx + 1);
-//         int pathEndIdx = url.indexOf("?");
-//         if (pathEndIdx > 0) {
-//             pathEndIdx = url.length();
-//         }
-//         String path = url.substring(pathStartIdx, pathEndIdx);
-
-//         URL resultURL = new URL(protocol, host, path);
-
-//         Map<String, String[]> queryParams = new HashMap<String, String[]>();
-//         if (url.indexOf("?") > 0) {
-//             queryParams = URLUtil.splitQueryString(url.substring(url.indexOf("?")));
-//         }
-//         for (String param: queryParams.keySet()) {
-//             String[] values = queryParams.get(param);
-//             for (String value: values) {
-//                 resultURL.addParameter(param, value);
-//             }
-//         }
-//         return resultURL;
-//     }
     
+    /**
+     * Utility method to create a URL from a servlet request. 
+     * Decodes the uri and query string parameters using UTF-8 encoding.
+     *
+     * @param request the servlet request
+     * @return the generated URL
+     */
+    public static URL create(HttpServletRequest request) {
+        try {
+            return create(request, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(
+                    "UTF-8 encoding not supported on this system");
+        }
+    }
+    
+
+    /**
+     * Parses a URL from a string representation.
+     * @param url
+     * @return
+     */
+     public static URL parse(String url) {
+         if (url == null || "".equals(url.trim())) {
+             throw new IllegalArgumentException("Malformed URL: " + url);
+         }
+         if (url.indexOf("://") < 1) {
+             throw new IllegalArgumentException("Malformed URL: " + url);
+         }
+         String protocol = url.substring(0, url.indexOf("://"));
+         String host = url.substring(url.indexOf("://") + 3);
+         host = host.substring(0, host.indexOf("/"));
+         Integer port = null;
+         int colonIdx = host.indexOf(":");
+         if (colonIdx > 0) {
+             String portStr = host.substring(colonIdx + 1);
+             try {
+                 port = Integer.parseInt(portStr);
+             } catch (NumberFormatException e) {
+                 throw new IllegalArgumentException("Malformed URL: " + url 
+                         + ": port number must be an integer: " + portStr);
+             }
+             host = host.substring(0, host.indexOf(":"));
+         }
+        
+         int pathStartIdx = url.indexOf("://" + 3);
+         pathStartIdx = url.indexOf("/", pathStartIdx) + 2;
+         pathStartIdx = url.indexOf("/", pathStartIdx);
+         int pathEndIdx = url.indexOf("?");
+         if (pathEndIdx < 0) {
+             pathEndIdx = url.length();
+         }
+         
+         String pathString = url.substring(pathStartIdx, pathEndIdx);
+         boolean collection = false;
+         if (pathString.endsWith("/")) {
+             collection = true;
+             pathString = pathString.substring(0, pathString.length() - 1);
+         }
+         if ("".equals(pathString)) {
+             throw new IllegalArgumentException("Malformed URL: " + url);
+         }
+         Path path = Path.fromString(pathString);
+         Path resultPath = Path.ROOT;
+         for (String elem : path.getElements()) {
+            if (!"/".equals(elem)) {
+                String decoded = decode(elem);
+                resultPath = resultPath.expand(decoded);
+            }
+        }
+
+         String ref = null;
+         int refStartIdx = url.indexOf("#");
+         if (refStartIdx > 0) {
+             ref = url.substring(refStartIdx + 1);
+             url = url.substring(0, refStartIdx - 1);
+         }
+         
+         URL resultURL = new URL(protocol, host, resultPath);
+         if (port != null) {
+             resultURL.setPort(port);
+         }
+         
+         Map<String, String[]> queryParams = new LinkedHashMap<String, String[]>();
+         if (url.indexOf("?") > 0) {
+             queryParams = splitQueryString(url.substring(url.indexOf("?")));
+         }
+         for (String param: queryParams.keySet()) {
+             String[] values = queryParams.get(param);
+             for (String value: values) {
+                 resultURL.addParameter(param, decode(value));
+             }
+         }
+         if (ref != null) {
+             resultURL.setRef(ref);
+         }
+         resultURL.setCollection(collection);
+         return resultURL;
+     }
+    
+     /**
+      * Splits a query string into a map of (String, String[]). 
+      * Note: the values are not URL decoded.
+      */
+     public static Map<String, String[]> splitQueryString(String queryString) {
+         Map<String, String[]> queryMap = new LinkedHashMap<String, String[]>();
+         if (queryString != null) {
+             if (queryString.startsWith("?")) { 
+                 queryString = queryString.substring(1);
+             }
+             String[] pairs = queryString.split("&");
+             for (int i = 0; i < pairs.length; i++) {
+                 if (pairs[i].length() == 0) {
+                     continue;
+                 }
+                 int equalsIdx = pairs[i].indexOf("=");
+                 if (equalsIdx == -1) {
+                     String[] existing = queryMap.get(pairs[i]);
+                     if (existing == null) {
+                         queryMap.put(pairs[i], new String[]{""});
+                     } else {
+                         String[] newVal = new String[existing.length + 1];
+                         System.arraycopy(existing, 0, newVal, 0, existing.length);
+                         newVal[existing.length] = "";
+                         queryMap.put(pairs[i], newVal);
+                     }
+                 } else {
+                     String key = pairs[i].substring(0, equalsIdx);
+                     String value = pairs[i].substring(equalsIdx + 1);
+                     String[] existing = queryMap.get(key);
+                     if (existing == null) {
+                         queryMap.put(key, new String[]{value});
+                     } else {
+                         String[] newVal = new String[existing.length + 1];
+                         System.arraycopy(existing, 0, newVal, 0, existing.length);
+                         newVal[existing.length] = value;
+                         queryMap.put(key, newVal);
+                     }
+                 }
+             }
+         }
+         return queryMap;
+     }
+
+     /**
+      * URL encodes the elements of a path using encoding UTF-8.
+      *
+      * @param path the path to encode
+      * @return the encoded path
+      */
+     public static Path encode(Path path) {
+         try {
+             return encode(path, "utf-8");
+         } catch (UnsupportedEncodingException e) {
+             throw new IllegalStateException(
+             "UTF-8 encoding not supported on this system");
+         }
+     }
+
+     /**
+      * URL encodes the elements of a path using a 
+      * specified character encoding.
+      *
+      * @param path the path to encode
+      * @return the encoded path
+      * @throws UnsupportedEncodingException if the specified 
+      * encoding is not supported on this system
+      */
+     public static Path encode(Path path, String encoding) throws UnsupportedEncodingException {
+         Path result = Path.ROOT;
+         for (String elem : path.getElements()) {
+             if (!elem.equals("/")) {
+                 result = result.extend(encode(elem, encoding));
+             }
+         }
+         return result;
+     }
+     
+     /**
+      * URL encodes a string using encoding UTF-8.
+      *
+      * @param value a <code>String</code> value
+      * @return a <code>String</code>
+      */
+     public static String encode(String value) {
+         try {
+             return encode(value, "utf-8");
+         } catch (UnsupportedEncodingException e) {
+             throw new IllegalStateException(
+             "UTF-8 encoding not supported on this system");
+         }
+     }
+
+     /**
+      * URL encodes a string using a specified character encoding.
+      *
+      * @param value a <code>String</code> value
+      * @return a <code>String</code>
+      * @throws UnsupportedEncodingException if the specified 
+      * character encoding is not supported on this system
+      */
+     public static String encode(String value, String encoding) throws UnsupportedEncodingException {
+         String encoded = URLEncoder.encode(value, encoding);
+         // Force hex '%20' instead of '+' as space representation:
+         return encoded.replaceAll("\\+", "%20");
+     }
+
+     /**
+      * URL decodes the elements of a path using encoding UTF-8.
+      *
+      * @param path the path to encode
+      * @return the encoded path
+      */
+     public static Path decode(Path path) {
+         try {
+             return decode(path, "utf-8");
+         } catch (UnsupportedEncodingException e) {
+             throw new IllegalStateException(
+             "UTF-8 encoding not supported on this system");
+         }
+     }
+     
+     /**
+      * URL decodes the elements of a path using a 
+      * specified character encoding.
+      *
+      * @param value a string
+      * @return the decoded string
+      * @throws UnsupportedEncodingException if the specified 
+      * character encoding is not supported on this system
+      */
+     public static Path decode(Path path, String encoding) 
+     throws UnsupportedEncodingException {
+         Path result = Path.ROOT;
+         for (String elem : path.getElements()) {
+             if (!elem.equals("/")) {
+                 result = result.extend(decode(elem, encoding));
+             }
+         }
+         return result;
+     }
+     
+     /**
+      * URL decodes a string using encoding UTF-8.
+      *
+      * @param value a string
+      * @return the decoded string
+      */
+     public static String decode(String value) {
+         try {
+             return decode(value, "utf-8");
+         } catch (UnsupportedEncodingException e) {
+             throw new IllegalStateException(
+             "UTF-8 encoding not supported on this system");
+         }
+     }
+
+     /**
+      * URL decodes a string using a specified character encoding.
+      *
+      * @param value a string
+      * @return the decoded string
+      * @throws UnsupportedEncodingException if the specified 
+      * character encoding is not supported on this system
+      */
+     public static String decode(String value, String encoding) throws UnsupportedEncodingException {
+       return URLDecoder.decode(value, encoding);
+     }
 
 }

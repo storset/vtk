@@ -39,7 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.util.web.URLUtil;
+import org.vortikal.repository.Path;
+import org.vortikal.web.service.URL;
 
 
 /**
@@ -99,33 +100,25 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
         }
         
         public String getRequestURI() {
-            
-            String uri = this.request.getRequestURI();
-            String uriBefore = uri;
-            boolean appendSlash = false;
-            if (uri == null || (uri.endsWith("/") && ! "/".equals(uri))) {
-                appendSlash = true;
-            }
+            URL url = URL.create(this.request);
 
             try {
 
-                uri = URLUtil.urlEncode(uri, this.fromEncoding);
-                uri = URLUtil.urlDecode(uri, this.toEncoding);
-
+                Path p = url.getPath();
+                p = URL.decode(p, this.fromEncoding);
+                url.setCharacterEncoding(this.toEncoding);
+                url.setPath(p);
+                
             } catch (Exception e) {
                 
             }
-            if (appendSlash) {
-                uri += "/";
-            }
-
             if (logger.isDebugEnabled()) {
-                logger.debug("Translated uri: from '" + uriBefore + "' to '" + uri
+                logger.debug("Translated uri: from '" + this.request.getRequestURI() 
+                        + "' to '" + url.getPathEncoded()
                              + "' using encoding '" + this.toEncoding + "' (from '"
                              + this.fromEncoding + "')");
             }
-
-            return uri;
+            return url.getPathEncoded();
         }
         
         public String toString() {
@@ -134,7 +127,4 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
             return sb.toString();
         }
     }
-    
-
-
 }

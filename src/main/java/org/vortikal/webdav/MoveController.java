@@ -47,7 +47,6 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
-import org.vortikal.util.web.URLUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 
@@ -71,7 +70,7 @@ public class MoveController extends AbstractWebdavController {
         String token = securityContext.getToken();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        String dest = request.getHeader("Destination");
+        String destHeader = request.getHeader("Destination");
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
@@ -79,18 +78,11 @@ public class MoveController extends AbstractWebdavController {
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
-            if (dest == null || dest.trim().equals("")) {
+            if (destHeader == null || destHeader.trim().equals("")) {
                 throw new InvalidRequestException(
                     "Missing `Destination' request header");
             }
-            dest = mapToResourceURI(dest);
-            try {
-                dest = URLUtil.urlDecode(dest, "utf-8");
-            } catch (Exception e) {
-                throw new InvalidRequestException(
-                    "Error trying to URL decode uri" + dest, e);
-            }
-            Path destURI = Path.fromString(dest);
+            Path destURI = mapToResourceURI(destHeader);
             String depth = request.getHeader("Depth");
             if (depth == null) {
                 depth = "infinity";
@@ -109,14 +101,14 @@ public class MoveController extends AbstractWebdavController {
                 verifyIfHeader(destination, true);
             }
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Moving " + uri + " to " + dest + ", depth = "
+                this.logger.debug("Moving " + uri + " to " + destHeader + ", depth = "
                              + depth + ", overwrite = " + overwrite
                              + ", existed = " + existed);
             }
             this.repository.move(token, uri, destURI, overwrite);
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Moving " + uri + " to " + dest + " succeeded");
+                this.logger.debug("Moving " + uri + " to " + destHeader + " succeeded");
             }
 
             if (existed) {

@@ -57,7 +57,7 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
 
         srdp = new StructuredResourceParser();
         srdp.setDefaultResourceTypeDefinitions(new ClassPathResource(
-                "vortikal/beans/vhost/structured-resources.vrtx"));
+                "org/vortikal/structured-resources/resources.vrtx"));
 
         srm = new StructuredResourceManager();
         JSONObjectSelectAssertion assertion = (JSONObjectSelectAssertion) ctx
@@ -76,11 +76,11 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
         srm.setValueFormatterRegistry(valueFormatterRegistry);
         srdp.setStructuredResourceManager(srm);
 
-        srdp.registerStructuredResources();
+        srdp.afterPropertiesSet();
     }
 
     public void testGetResourceDescriptions() throws Exception {
-        String[] resourceNames = { "jperson" };
+        String[] resourceNames = { "person" };
         for (String resourceName : resourceNames) {
             StructuredResourceDescription srd = srdp.getResourceDescription(resourceName);
             assertNotNull(srd);

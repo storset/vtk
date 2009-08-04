@@ -1,0 +1,11 @@
+resourcetype person : article {
+  properties {
+    username : string required,
+    firstname : string,
+    surname : string,
+    tags : string multiple
+  }
+  scripts {
+    tags autocomplete (width : "200", minChars : "0")
+  }
+}

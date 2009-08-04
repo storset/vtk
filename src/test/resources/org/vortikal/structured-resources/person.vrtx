@@ -3,9 +3,17 @@ resourcetype person : article {
     username : string required,
     firstname : string,
     surname : string,
+    fetchExternal : boolean,
     tags : string multiple
+  }
+  edit-rules {
+    username (size[8]),
+    fetchExternal (radio)
   }
   scripts {
     tags autocomplete (width : "200", minChars : "0")
+  }
+  services {
+    fetchExternal external requires(username) affects(firstName, surname, email) 
   }
 }

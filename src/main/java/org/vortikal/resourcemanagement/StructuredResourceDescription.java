@@ -43,10 +43,12 @@ public final class StructuredResourceDescription {
     private String inheritsFrom;
     private List<PropertyDescription> propertyDescriptions;
     private List<EditRule> editRules;
-    private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private DisplayTemplate displayTemplate;
-    private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
     private List<ScriptDefinition> scripts;
+    private List<ServiceDefinition> services;
+
+    private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
+    private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
 
     public StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
@@ -159,10 +161,6 @@ public final class StructuredResourceDescription {
         return localizationMap.get(locale);
     }
 
-    public String toString() {
-        return this.getClass().getName() + ":" + this.name;
-    }
-
     public void addScriptDefinition(ScriptDefinition scriptDefinition) {
         if (this.scripts == null) {
             this.scripts = new ArrayList<ScriptDefinition>();
@@ -172,6 +170,21 @@ public final class StructuredResourceDescription {
 
     public List<ScriptDefinition> getScripts() {
         return this.scripts;
+    }
+
+    public void addServiceDefinition(ServiceDefinition serviceDefinition) {
+        if (this.services == null) {
+            this.services = new ArrayList<ServiceDefinition>();
+        }
+        this.services.add(serviceDefinition);
+    }
+
+    public List<ServiceDefinition> getServices() {
+        return this.services;
+    }
+
+    public String toString() {
+        return this.getClass().getName() + ":" + this.name;
     }
 
 }

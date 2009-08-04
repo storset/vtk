@@ -126,5 +126,13 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
                         + sd.getParams());
             }
         }
+        List<ServiceDefinition> services = srd.getServices();
+        if (services != null) {
+            System.out.println("\tServices:");
+            for (ServiceDefinition sd : services) {
+                System.out.println("\t\t" + sd.getName());
+            }
+        }
+
     }
 }

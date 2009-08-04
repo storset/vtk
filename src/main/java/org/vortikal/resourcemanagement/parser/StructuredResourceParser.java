@@ -68,6 +68,7 @@ public class StructuredResourceParser implements InitializingBean {
     private PropertyDescriptionParser propertyDescriptionParser;
     private EditRuleParser editRuleParser;
     private ScriptDefinitionParser scriptDefinitionParser;
+    private ServiceDefinitionParser serviceDefinitionParser;
 
     public void afterPropertiesSet() throws Exception {
         this.parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
@@ -75,6 +76,7 @@ public class StructuredResourceParser implements InitializingBean {
         this.propertyDescriptionParser = new PropertyDescriptionParser();
         this.editRuleParser = new EditRuleParser();
         this.scriptDefinitionParser = new ScriptDefinitionParser();
+        this.serviceDefinitionParser = new ServiceDefinitionParser();
 
         this.registerStructuredResources();
     }
@@ -180,7 +182,8 @@ public class StructuredResourceParser implements InitializingBean {
                             .getChildren());
                     break;
                 case ResourcetreeLexer.SERVICES:
-                    // XXX Implement
+                    this.serviceDefinitionParser.parseServices(srd,
+                            (CommonTree) descriptionEntry.getChild(0));
                     break;
                 default:
                     throw new IllegalStateException("Unknown token type: "

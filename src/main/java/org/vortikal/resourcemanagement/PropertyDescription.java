@@ -40,6 +40,7 @@ public class PropertyDescription {
     private boolean required;
     private String overrides;
     private boolean noExtract;
+    private boolean multiple;
     private Map<String, Object> edithints;
 
     public void setName(String name) {
@@ -72,6 +73,14 @@ public class PropertyDescription {
 
     public boolean isNoExtract() {
         return noExtract;
+    }
+    
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
+    }
+    
+    public boolean isMultiple() {
+        return this.multiple;
     }
 
     public void setRequired(boolean required) {

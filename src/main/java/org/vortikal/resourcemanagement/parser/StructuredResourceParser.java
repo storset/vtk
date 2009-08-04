@@ -248,6 +248,9 @@ public class StructuredResourceParser implements InitializingBean {
             case ResourcetreeLexer.OVERRIDES:
                 p.setOverrides(descEntry.getChild(0).getText());
                 break;
+            case ResourcetreeLexer.MULTIPLE:
+                p.setMultiple(true);
+                break;
             default:
                 throw new IllegalStateException("Unknown token type: "
                         + descEntry.getType());

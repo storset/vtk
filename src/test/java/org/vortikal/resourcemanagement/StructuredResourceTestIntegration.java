@@ -97,15 +97,15 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
             System.out.println("\tProperties:");
             for (PropertyDescription pd : propertyDescriptions) {
                 System.out.println("\t\t" + pd.getName() + ": " + pd.getType() + " "
-                        + pd.isRequired() + " " + pd.isNoExtract() + " "
-                        + pd.getOverrides());
+                        + pd.isMultiple() + " " + pd.isRequired() + " "
+                        + pd.isNoExtract() + " " + pd.getOverrides());
                 Map<String, Object> edithints = pd.getEdithints();
                 if (edithints != null) {
                     System.out.println("\t\t\tEdithints: " + edithints);
                 }
             }
         }
-         List<EditRule> editRules = srd.getEditRules();
+        List<EditRule> editRules = srd.getEditRules();
         if (editRules != null) {
             System.out.println("\tEditRules:");
             for (EditRule editRule : editRules) {

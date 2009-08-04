@@ -137,12 +137,14 @@ services:	SERVICES LCB
 		-> ^(SERVICES ^(servicedef)*)
 	;
 
-// XXX Finish servicedef -> need to seperate concept of required field 
-// and affected fields, both are in effect NAME
 servicedef
-	:	NAME EXTERNAL (REQUIRES LP NAME RP)? (AFFECTS LP (NAME (COMMA NAME)*)) RP
-		-> ^(NAME ^(EXTERNAL))
+	:	NAME EXTERNAL (requires)? (affects)?
+		-> ^(NAME ^(EXTERNAL (requires)? (affects)?))
 	;
+
+requires:	REQUIRES LP NAME RP -> ^(REQUIRES NAME);
+
+affects	:	AFFECTS namelist -> ^(AFFECTS namelist);
 
 namevaluepair
 	:	NAME COLON QTEXT

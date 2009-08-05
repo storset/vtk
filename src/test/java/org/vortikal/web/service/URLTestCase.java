@@ -45,6 +45,11 @@ public class URLTestCase extends TestCase {
             fail("Parsed malformed URL: " + s);
         } catch (Exception e) { }
         try {
+            String s = "/";
+            URL.parse(s);
+            fail("Parsed malformed URL: " + s);
+        } catch (Exception e) { }
+        try {
             String s = "http;//";
             URL.parse(s);
             fail("Parsed malformed URL: " + s);
@@ -67,6 +72,8 @@ public class URLTestCase extends TestCase {
         url = URL.parse("http://foo.bar:8080/baz/?xyz=abc#ref");
         assertEquals(Path.fromString("/baz"), url.getPath());
         assertEquals("ref", url.getRef());
+        
+        
     }
 
     public void testSplitQueryString() {
@@ -122,4 +129,13 @@ public class URLTestCase extends TestCase {
         assertEquals(Path.fromString("/abc(def)"), url.getPath());
         assertEquals("2+2=3", url.getParameter("xyz"));
     }
+    
+    public void testIsEncoded() {
+        assertFalse(URL.isEncoded("http://www.uio.no/detteÆerikkeencoda"));
+        assertFalse(URL.isEncoded("http://www.uio.no/dette%erikkeencoda"));
+        assertTrue(URL.isEncoded("http://www.uio.no/dette%20erencoda"));
+        assertTrue(URL.isEncoded("http://www.uio.no/?"));
+        assertFalse(URL.isEncoded("http://www.uio.no/er dette encoda?"));
+    }
+    
 }

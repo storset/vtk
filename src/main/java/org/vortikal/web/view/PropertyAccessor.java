@@ -42,7 +42,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 
 public class PropertyAccessor {
@@ -52,14 +51,17 @@ public class PropertyAccessor {
 
     public String propertyValue(String uri, String prefix, String name, String format) {
         
-            Path currentUri = RequestContext.getRequestContext().getResourceURI();
+            Path path = RequestContext.getRequestContext().getResourceURI();
             
-            if (uri == null || uri.equals("")) {
-                uri = currentUri.toString();
-            } else {
-                uri = URIUtil.getAbsolutePath(uri, currentUri.toString());
+            if (uri != null && !uri.equals("")) {
+                if (uri.startsWith("/")) {
+                    path = Path.fromString(uri);
+                } else {
+                    path = RequestContext.getRequestContext().getCurrentCollection();
+                    path = path.expand(uri);
+                }
             }
-            
+
             if (prefix != null && prefix.equals("")) {
                 prefix = null;
             }
@@ -81,7 +83,7 @@ public class PropertyAccessor {
                 new org.springframework.web.servlet.support.RequestContext(request).getLocale();
 
             try {
-                Resource resource = this.repository.retrieve(token, Path.fromString(uri), true);
+                Resource resource = this.repository.retrieve(token, path, true);
                 Property prop = resource.getProperty(def);
                 if (prop != null)
                     return prop.getFormattedValue(format, locale);

@@ -30,9 +30,7 @@
  */
 package org.vortikal.web.view;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,9 +41,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.vortikal.repository.Path;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class LinkConstructorImpl implements LinkConstructor, ApplicationContextAware {
 
@@ -55,22 +53,25 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
 	
     public String construct(String resourceUri, String parametersCSV, String serviceName) {
         try {
-            if (resourceUri != null && URIUtil.isUrl(resourceUri)) {
-                return getUrlFromUrl(resourceUri);
+            if (resourceUri != null && resourceUri.contains("://")) {
+                URL url = getUrlFromUrl(resourceUri);
+                return url.toString();
             }
 
-            String uri = RequestContext.getRequestContext().getResourceURI().toString();
-
+            Path uri = RequestContext.getRequestContext().getCurrentCollection();
             if (isSet(resourceUri)) {
-                uri = URIUtil.getAbsolutePath(resourceUri, uri);
+                if (resourceUri.startsWith("/")) {
+                    uri = Path.ROOT.expand(resourceUri.substring(1));
+                } else {
+                    uri = uri.expand(resourceUri);
+                }
             }
             
             Service service = RequestContext.getRequestContext().getService();
-
-            if (isSet(serviceName))
+            if (isSet(serviceName)) {
                 service = getService(serviceName);
-
-            return createUrl(service, uri, getParametersMap(parametersCSV));
+            }
+            return service.constructLink(uri, getParametersMap(parametersCSV));
 		
 		} catch (Exception e) {
             logger.info("Caught exception on link construction", e);
@@ -78,23 +79,12 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
 		}
 	}
 
-    private String getUrlFromUrl(String url)
+    private URL getUrlFromUrl(String url)
             throws UnsupportedEncodingException {
-        if (URIUtil.isEscaped(url)) 
-            return url;
-        
-        return URLEncoder.encode(url, "UTF-8");
-    }
-
-    private String createUrl(Service service, String uri,
-            Map<String, String> parameters) throws IOException {
-        
-//        String token = SecurityContext.getSecurityContext().getToken();
-//
-//        this.repository.retrieve(token, uri, true);
-
-        Path path = Path.fromString(uri);
-        return service.constructLink(path, parameters);
+        if (URL.isEncoded(url)) { 
+            url = URL.decode(url);
+        }
+        return URL.parse(url);
     }
 
     private boolean isSet(String value) {
@@ -130,6 +120,4 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 	    this.context = context;
 	}
-
-
 }

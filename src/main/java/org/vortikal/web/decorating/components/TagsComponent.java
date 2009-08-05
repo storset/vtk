@@ -39,7 +39,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -84,7 +83,6 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         return DESCRIPTION;
     }
 
-
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
 
@@ -96,7 +94,6 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
 
         return map;
     }
-
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -177,32 +174,17 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
 
     }
 
-
-
-
-    // XXX: this is typical util shit, done a lot of places..
     Path buildScopePath(Path base, String href) {
-        if (".".equals(href) || "./".equals(href)) {
-            return base;
+        if (href.startsWith("/")) {
+            return Path.fromString(href);
         }
-        
-        if (!href.startsWith("/")) {
-            Path requestURI = RequestContext.getRequestContext().getResourceURI();
-            href = requestURI.toString().substring(0, requestURI.toString().lastIndexOf("/") + 1)
-                    + href;
-            href = URIUtil.expandPath(href);
-        }
-        
-        return Path.fromString(href);
+        Path requestURI = RequestContext.getRequestContext().getResourceURI();
+        return requestURI.expand(href);
     }
-
-
 
     @Required
     public void setTagElementsProvider(
             RepositoryTagElementsDataProvider tagElementsProvider) {
         this.tagElementsProvider = tagElementsProvider;
     }
-
-
 }

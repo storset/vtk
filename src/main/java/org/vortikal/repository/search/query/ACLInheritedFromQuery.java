@@ -30,16 +30,18 @@
  */
 package org.vortikal.repository.search.query;
 
+import org.vortikal.repository.Path;
+
 public class ACLInheritedFromQuery implements ACLQuery {
 
-    private String uri;
+    private Path uri;
     private boolean inverted = false;
     
-    public ACLInheritedFromQuery(String uri) {
+    public ACLInheritedFromQuery(Path uri) {
         this.uri = uri;
     }
     
-    public ACLInheritedFromQuery(String uri, boolean inverted) {
+    public ACLInheritedFromQuery(Path uri, boolean inverted) {
         this.uri = uri;
         this.inverted = inverted;
     }
@@ -48,7 +50,7 @@ public class ACLInheritedFromQuery implements ACLQuery {
         return this.inverted;
     }
 
-    public String getUri() {
+    public Path getUri() {
         return this.uri;
     }
     

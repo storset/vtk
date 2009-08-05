@@ -35,7 +35,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
@@ -46,7 +45,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -143,14 +141,13 @@ public class DeleteResourceController extends SimpleFormController implements In
     	if (deleteResourceCommand.getDeleteResourceAction() == null) {
     		Resource currentResource = this.repository.retrieve(token, uri, false);
     		// Don't redirect on cancel regarding an collection
-    		if( currentResource.isCollection() && requestFromResourceMenu){ 
+    		if (currentResource.isCollection() && requestFromResourceMenu) { 
     			modelResource = currentResource;
     		}
-    	}else{ 
+    	} else { 
     		this.repository.delete(token, uri);
     		if (this.resourcePath != null) {
-    			Path newUri = Path.fromString(URIUtil
-    					.getAbsolutePath(this.resourcePath, uri.toString()));
+    		    Path newUri = uri.expand(this.resourcePath);
     			if (newUri != null) {
     				try {
     					modelResource = this.repository.retrieve(token, newUri, false);

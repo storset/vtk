@@ -186,7 +186,7 @@ public final class Path implements Comparable<Path> {
     public List<Path> getPaths() {
         return this.paths();
     }
-	
+
     /**
      * Gets the ancestor paths as a list. This method is identical to 
      * {@link #getPaths} except that the last element (the path itself)
@@ -200,6 +200,23 @@ public final class Path implements Comparable<Path> {
             List<Path> paths = this.paths();
             return paths.subList(0, paths.size() - 1); 
         }
+    }
+    
+    /**
+     * Gets an ancestor path of this path on a given level. 
+     * If the supplied level is 0, the root path is returned. 
+     * If the supplied level is equal to the number of elements 
+     * in this path minus 1, this path itself is returned.
+     * @return the ancestor path
+     * @throws IllegalArgumentException if the supplied level is 
+     * outside the bounds of the element list of this path
+     */
+    public Path getAncestor(int level) {
+        List<Path> paths = this.paths();
+        if (level < 0 || level >= paths.size()) {
+            throw new IllegalArgumentException("Index out of bounds: " + level);
+        }
+        return paths.get(level);
     }
 	
     /**
@@ -256,7 +273,10 @@ public final class Path implements Comparable<Path> {
                 return null;
             }
             char c = expansion.charAt(i);
-            if (c == '/') {
+            if (c == '/' || i == expansion.length() - 1) {
+                if (c != '/') {
+                    segment.append(c);
+                }
                 if ("..".equals(segment.toString())) {
                     cur = cur.getParent();
                     segment.delete(0, segment.length());
@@ -268,9 +288,6 @@ public final class Path implements Comparable<Path> {
                 }
             } else {
                 segment.append(c);
-                if (i == expansion.length() - 1) {
-                    cur = cur.extend(segment.toString());
-                }
             }
             i++;
         }

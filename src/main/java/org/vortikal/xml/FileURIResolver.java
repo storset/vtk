@@ -44,8 +44,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.vortikal.util.repository.URIUtil;
+import org.vortikal.util.repository.InvalidURIException;
 
 
 /**
@@ -55,19 +54,10 @@ import org.vortikal.util.repository.URIUtil;
  * (other than urlRegexp) to prevent files and http resources to be
  * fetched from anywhere.
  */
-public class FileURIResolver implements StylesheetURIResolver, InitializingBean {
+public class FileURIResolver implements StylesheetURIResolver {
 
     public static final String PROTOCOL_PREFIX = "file://";
-
-
     protected Log logger = LogFactory.getLog(this.getClass());
-    
-
-
-    public void afterPropertiesSet() throws Exception {
-        
-    }
-
     
     /**
      * Will only match paths starting with a '/' character.
@@ -84,23 +74,17 @@ public class FileURIResolver implements StylesheetURIResolver, InitializingBean 
         return false;
     }
     
-
-
     public Date getLastModified(String url) {
         url = url.substring(PROTOCOL_PREFIX.length());
         File f = new File(url);
         return new Date(f.lastModified());
     }
         
-
-
     protected InputStream getInputStream(String url) throws IOException {
         url = url.substring(PROTOCOL_PREFIX.length());
         return new FileInputStream(url);
     }
     
-    
-
     public final Source resolve(String href, String base) throws TransformerException {
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Resolving: [href = " + href + ", base: " + base + "]");
@@ -135,30 +119,25 @@ public class FileURIResolver implements StylesheetURIResolver, InitializingBean 
         }
     }
 
-
     private String getAbsolutePath(String href, String base) {
-
         if (this.matches(href)) {
             return href;
         }
-
         if (base != null && !base.startsWith(PROTOCOL_PREFIX)) {
             return null;
         }
-
         if (!this.matches(href) && base != null) {
             return null;
         }
-
         if (base != null) {
             base = base.substring(PROTOCOL_PREFIX.length());
             base = base.substring(0, base.lastIndexOf("/"));
         }
-            
+
         String uri = href;
 
         if (uri.indexOf("../") == 0) {
-            uri = URIUtil.expandPath(base + "/" + uri);
+            uri = expandPath(base + "/" + uri);
         } else if (uri.indexOf("../") > 0) {
             if (!uri.startsWith("/")) {
                 // Handle 'relative/path/../' type URIs:
@@ -166,7 +145,7 @@ public class FileURIResolver implements StylesheetURIResolver, InitializingBean 
                     base + uri :
                     base + "/" + uri;
             }
-            uri = URIUtil.expandPath(uri);
+            uri = expandPath(uri);
         } else if (!uri.startsWith("/")) {
             uri = (base.endsWith("/")) ? base + uri : base + "/" + uri;
         }
@@ -174,5 +153,32 @@ public class FileURIResolver implements StylesheetURIResolver, InitializingBean 
         uri = PROTOCOL_PREFIX + uri;
         return uri;
     }
+
+    private static String expandPath(String uri) throws InvalidURIException {
+
+        // Test to check that start of URI is legal path (e.g. UNIX '/', WINDOWS 'C:')
+        // [using string test and regex checking]
+        if ( !uri.startsWith("/") && (!uri.substring(0,2).matches("[c-zA-Z]:")) ) {
+            // XXX: throw something? 
+        }
+
+        if (uri.startsWith("/../")) {
+            throw new InvalidURIException(
+                "URI '" + uri + "' cannot be expanded: Too many '../'s");
+        }
+
+        int firstPos = uri.indexOf("../");
+        if (firstPos == -1) {
+            // Quickfix for trailing ../
+            if (!uri.equals("/") && uri.endsWith("/"))
+                return uri.substring(0, uri.length() -1);
+            return uri;
+        }
+        String base = uri.substring(0, firstPos - 1);
+        base = base.substring(0, base.lastIndexOf("/") + 1);
+        uri = base + uri.substring(firstPos + "../".length());
+        return expandPath(uri);
+    }
+    
 
 }

@@ -177,7 +177,7 @@ public class URL {
     }
 
     public boolean isPathOnly() {
-        return pathOnly;
+        return this.pathOnly;
     }
 
     public void setPath(Path path) {
@@ -291,7 +291,9 @@ public class URL {
     }
 
     public String toString() {
-        if (this.pathOnly) return this.getPathRepresentation();
+        if (this.pathOnly) {
+            return this.getPathRepresentation();
+        }
         
         StringBuilder url = new StringBuilder();
         
@@ -722,5 +724,30 @@ public class URL {
      public static String decode(String value, String encoding) throws UnsupportedEncodingException {
        return URLDecoder.decode(value, encoding);
      }
+     
+     /**
+      * Verify whether a given string is URL encoded or not
+      *
+      * @param original given characters
+      * @return true if the given character array is 7 bit ASCII-compatible.
+      */
+     public static boolean isEncoded(String value) {
+         char[] original = value.toCharArray();
+         for (int i = 0; i < original.length; i++) {
+             int c = original[i];
+             if (c > 128) {
+                 return false;
+             } else if (c == ' ') {
+                 return false;
+             } else if (c == '%') {
+                 if (Character.digit(original[++i], 16) == -1 
+                         || Character.digit(original[++i], 16) == -1) {
+                     return false;
+                 }
+             }
+         }
+         return true;
+     }
+     
 
 }

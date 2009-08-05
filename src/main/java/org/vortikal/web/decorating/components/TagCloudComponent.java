@@ -39,7 +39,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -118,7 +117,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
 
 
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
-            throws Exception {
+    throws Exception {
 
         super.processModel(model, request, response);
 
@@ -133,7 +132,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         int magnitudeMax = PARAMETER_MAGNITUDE_MAX_DEFAULT_VALUE;
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
         int tagOccurenceMin = PARAMETER_TAG_OCCURENCE_MIN_DEFAULT_VALUE;
-        
+
         try {
             if (request.getStringParameter(PARAMETER_MAGNITUDE_MIN) != null) {
                 magnitudeMin = Integer.parseInt(request.getStringParameter(PARAMETER_MAGNITUDE_MIN));
@@ -172,7 +171,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
                     + nfe.getMessage());
         }
 
-       
+
         // Legacy exception handling, should be refactored.
         try {
             List<TagElement> tagElements = 
@@ -187,26 +186,15 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
             throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SCOPE
                     + "', must be a valid URI.");
         }
-
-        }
-
+    }
 
 
-
-    // XXX: this is typical util shit, done a lot of places..
     Path buildScopePath(Path base, String href) {
-        if (".".equals(href) || "./".equals(href)) {
-            return base;
+        if (href.startsWith("/")) {
+            return Path.fromString(href);
         }
-        
-        if (!href.startsWith("/")) {
-            Path requestURI = RequestContext.getRequestContext().getResourceURI();
-            href = requestURI.toString().substring(0, requestURI.toString().lastIndexOf("/") + 1)
-                    + href;
-            href = URIUtil.expandPath(href);
-        }
-        
-        return Path.fromString(href);
+        Path requestURI = RequestContext.getRequestContext().getResourceURI();
+        return requestURI.expand(href);
     }
 
 

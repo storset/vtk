@@ -48,6 +48,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.HierarchicalVocabulary;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
@@ -71,7 +72,6 @@ import org.vortikal.repository.search.query.builders.TypeTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
-import org.vortikal.util.repository.URIUtil;
 
 /**
  * Factory that helps in building different Lucene queries 
@@ -244,19 +244,22 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
     
     private Term getPropertySetIdTermFromIndex(String uri, IndexReader reader) 
         throws QueryBuilderException {
-        
+        if (!"/".equals(uri) && uri.endsWith("/")) {
+            uri = uri.substring(0, uri.length() - 1);
+        }
+        Path p = Path.fromString(uri);
         return new Term(FieldNameMapping.ID_FIELD_NAME, 
-                            String.valueOf(getResourceIdFromIndex(uri, reader)));
+                            String.valueOf(getResourceIdFromIndex(p, reader)));
 
     }
     
-    private int getResourceIdFromIndex(String uri, IndexReader reader) 
+    private int getResourceIdFromIndex(Path uri, IndexReader reader) 
         throws QueryBuilderException {
         
         TermDocs td = null;
         try {
             td = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, 
-                                                URIUtil.stripTrailingSlash(uri)));
+                                                uri.toString()));
             
             if (td.next()) {
                 Field field= reader.document(td.doc(), ID_FIELD_SELECTOR).getField(

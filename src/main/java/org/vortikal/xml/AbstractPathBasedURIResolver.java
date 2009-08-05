@@ -40,7 +40,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
-import org.vortikal.util.repository.URIUtil;
 
 
 /**
@@ -105,7 +104,6 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
         } 
         return false;
     }
-    
 
     /**
      * Gets the last modified date for a path based resource.
@@ -121,8 +119,6 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
         return getLastModifiedInternal(path);
     }
     
-
-
     public final Source resolve(String href, String base) 
         throws TransformerException {
         if (this.logger.isDebugEnabled()) {
@@ -177,7 +173,6 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
         }
     }
 
-
     private String getAbsolutePath(String href, String base) {
 
         String uri = null;
@@ -185,25 +180,19 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
         if (href.startsWith("/")) {
             // hrefs starting with '/' don't care about base
             uri = href;
-
         } else if (href.matches(".+://.+") || base == null || !base.startsWith(PROTOCOL_PREFIX)) {
             // Fully qualified hrefs isn't handled.
             // Relative hrefs need to be resolved relative to a base with protocol 'PROTOCOL_PREFIX'
             return null;
-        
         } else {
-
             // Strip protocol and the name of the base resource    
             base = base.substring(PROTOCOL_PREFIX.length());
             base = base.substring(0, base.lastIndexOf("/") + 1);
-            
             uri = base + href;
         }
-        
-        if (uri.indexOf("../") > -1) {
-            uri = URIUtil.expandPath(uri);
-        }
-        return uri;
+
+        Path path = Path.ROOT.expand(uri.substring(1));
+        return path.toString();
     }
 
     
@@ -217,6 +206,4 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
         uri = this.prefix + uri;
         return uri;
     }
-    
-
 }

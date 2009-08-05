@@ -42,7 +42,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -116,7 +115,11 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
                     return;
                 }
             } else {
-                uri = Path.fromString(URIUtil.getAbsolutePath(uriString, uri.toString()));
+                if (uriString != null && uriString.startsWith("/")) {
+                    uri = Path.fromString(uriString);                    
+                } else {
+                    uri = uri.expand(uriString);
+                }
             }
         }
         
@@ -182,7 +185,7 @@ public class ResourcePropertiesDecoratorComponent extends AbstractDecoratorCompo
         if (uriLevel < 0) {
             throw new NumberFormatException("uri-level must be a positive integer");
         } 
-        return Path.fromString(URIUtil.getAncestorOrSelfAtLevel(uri.toString(), uriLevel));
+        return uri.getAncestor(uriLevel);
     }
 
     public void setForProcessing(boolean forProcessing) {

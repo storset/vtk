@@ -62,7 +62,6 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.repository.URIUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -298,8 +297,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         if (name.indexOf("/") != -1) {
             throw new DecoratorComponentException("Invalid child name: '" + name + "'");
         }
-        name = name.trim();
-        String childURI = URIUtil.makeAbsoluteURI(name, uri.toString());
+        String childURI = uri.extend(name.trim()).toString();
         return new UriTermQuery(childURI, TermOperator.EQ);
     }
 

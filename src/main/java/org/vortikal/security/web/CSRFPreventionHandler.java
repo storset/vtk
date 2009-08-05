@@ -40,6 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
@@ -53,10 +55,13 @@ import org.vortikal.text.html.HtmlText;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
     implements HandlerInterceptor {
 
+    private static Log logger = LogFactory.getLog(CSRFPreventionHandler.class);
+    
     private String ALGORITHM = "HmacSHA1";
     
     public boolean preHandle(HttpServletRequest request,
@@ -90,9 +95,14 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                     "Missing CSRF prevention token in request");
         }
 
-        String requestURL = getRequestURL(request);
+        String requestURL = URL.create(request).toString();
         String computed =  generateToken(requestURL, secret, session.getId());
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Check token: url: " + requestURL 
+                    + ", supplied token: " + suppliedToken 
+                    + ", computed token: " + computed + ", secret: " + secret);
+        }
         if (!computed.equals(suppliedToken)) {
             throw new AuthorizationException(
                     "CSRF prevention token mismatch");
@@ -122,13 +132,19 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         HtmlAttribute action = element.getAttribute("action");
         if (action == null || action.getValue() == null 
                 || "".equals(action.getValue().trim())) {
-            HttpServletRequest req = 
+            HttpServletRequest request = 
                 RequestContext.getRequestContext().getServletRequest();
-            url = getRequestURL(req);
+            url = URL.create(request).toString();
         } else {
             url = HtmlUtil.unescapeHtmlString(action.getValue());
         }
-
+        
+        HtmlAttribute method = element.getAttribute("method");
+        if (method == null || "".equals(method.getValue().trim()) 
+                || "get".equals(method.getValue().toLowerCase())) {
+            return NodeResult.keep;
+        }
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         HttpSession session = requestContext.getServletRequest().getSession(false);
 
@@ -142,7 +158,10 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             }
             
             String csrfPreventionToken = generateToken(url, secret, session.getId());
-            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Generate token: url: " + url + ", token: " 
+                        + csrfPreventionToken + ", secret: " + secret);
+            }            
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();
             attrs.add(createAttribute("name", "csrf-prevention-token"));
@@ -164,16 +183,6 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         return NodeResult.keep;
     }
 
-    private String getRequestURL(HttpServletRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(request.getRequestURL().toString());
-        String qs = request.getQueryString();
-        if (qs != null) {
-            sb.append("?").append(qs);
-        }
-        return sb.toString();
-    }
-    
     private SecretKey generateSecret() {
         try {
             KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM);

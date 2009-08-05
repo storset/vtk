@@ -21,6 +21,7 @@
 	window.onbeforeunload = checkPropChange;
 	PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
 	function performSave(){
+		saveDateAndTimeFields();
 		NEED_TO_CONFIRM = false;
 	}
 	function cSave() {
@@ -165,7 +166,7 @@
 			title=localizedTitle
 			inputFieldName=elem.description.name 
 			value=elem.value 
-			classes=elem.description.name />
+			classes=elem.description.name  />
 	  	<#break>
 	  <#default>
 	    ny type property ${elem.description.type}

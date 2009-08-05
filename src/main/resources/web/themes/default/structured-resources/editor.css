@@ -7,6 +7,18 @@
   overflow: auto;
 }
 
+.vrtx-string .date{
+    margin-right : 1em;
+}
+
+.vrtx-string .hours{
+     margin-right : .2em;
+}
+
+.vrtx-string .minutes{
+    margin-left : .2em;
+}
+
 .vrtx-grouped-horizontal .vrtx-media-ref, .vrtx-grouped-horizontal .vrtx-simple-html-small,
 .vrtx-grouped-horizontal .vrtx-simple-html, .vrtx-grouped-horizontal .vrtx-html,.vrtx-grouped-horizontal  .vrtx-string,.vrtx-grouped-horizontal .vrtx-date,.vrtx-grouped-horizontal .vrtx-image-ref,
 .vrtx-grouped-horizontal .vrtx-checkbox,.vrtx-grouped-horizontal .vrtx-dropdownlist,.vrtx-grouped-horizontal .vrtx-radio {

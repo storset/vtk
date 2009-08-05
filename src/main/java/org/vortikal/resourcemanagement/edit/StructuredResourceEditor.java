@@ -410,7 +410,6 @@ public class StructuredResourceEditor extends SimpleFormController {
             }
             return value;
         }
-        
     }
 
     public void unlock() throws Exception {

@@ -21,13 +21,15 @@
   <head>
     <title>Permissions on resource</title>
     
+    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+    <script type='text/javascript' src='${webResources?html}/autocomplete/autocomplete.permissions.js'></script>
+    
     <script type="text/javascript">
       $(document).ready(function() {
-          interceptEnterKeyAndReroute("input#userNames", "input.addUserButton"); 
-       }); 
+        interceptEnterKeyAndReroute("input#userNames", "input.addUserButton");
+        splitAutocompleteUserNames();
+      });
     </script>
-    
-    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
   </head>
   <body>

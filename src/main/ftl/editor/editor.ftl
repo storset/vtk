@@ -35,19 +35,18 @@
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/serverbrowsedialog.js"></script>
     
     <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
+    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
 
     <script type="text/javascript">
       $(document).ready(function() {
           interceptEnterKey();
-       }); 
+       });
     </script>
 
     <!-- JQuery UI (used for datepicker) -->
     <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
     <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
-
-    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     
   </head>
   

@@ -2,7 +2,7 @@
 <#macro addAutoCompleteScripts srcBase>
   
   <script type='text/javascript' src='${srcBase}/jquery/jquery.autocomplete.js'></script>
-  <script type='text/javascript' src='${srcBase}/jquery/jquery.autocomplete.override.js'></script>
+  <script type='text/javascript' src='${srcBase}/autocomplete/autocomplete.js'></script>
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.autocomplete.css" />
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.override.css" />
 

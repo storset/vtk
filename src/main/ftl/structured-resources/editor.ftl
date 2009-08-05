@@ -86,7 +86,6 @@
 <body>
 
 <form action="${form.submitURL?html}" method="POST">
-
 <#assign locale = springMacroRequestContext.getLocale() />
 
 <#list form.elements as elementBox>

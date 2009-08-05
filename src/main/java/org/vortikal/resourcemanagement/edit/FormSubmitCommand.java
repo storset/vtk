@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.IllegalClassException;
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ScriptDefinition;
@@ -132,7 +133,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         return this.resource;
     }
 
-    public void bind(String name, String value) {
+    public void bind(String name, String value) throws Exception {
         FormElement elem = findElement(name);
         if (elem == null) {
             throw new IllegalArgumentException("No such element: " + name);
@@ -221,7 +222,6 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     }
 
     public class FormElement {
-
         private PropertyDescription description;
         private ValidationError error;
         private Object value;
@@ -232,6 +232,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             this.description = description;
             this.error = error;
             this.value = value;
+
         }
 
         public void setDescription(PropertyDescription description) {
@@ -250,14 +251,47 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             return error;
         }
 
-        public void setValue(Object value) {
-            this.value = value;
+        public void setValue(Object value) throws Exception {
+            if (this.description.isMultiple()) {
+                if (value instanceof String) {
+                    String[] a = value.toString().split(",");
+                    ArrayList<String> b = new ArrayList <String>();
+                    for (int i = 0; i < a.length; i++) {
+                        b.add(a[i].toString());
+                    }
+                    this.value = b;
+                } else if (value instanceof List<?>) {
+                    this.value = value;
+                } else {
+                    throw new IllegalClassException(
+                            "Unknown value type: " + value.getClass() 
+                            + " for multiple-valued property " 
+                            + this.description.getName());
+                }
+            } else {
+                this.value = value;
+            }
         }
 
         public Object getValue() {
             return value;
         }
 
+        public Object getFormatedValue() {
+            if (value instanceof List) {
+                String result = "";
+                List<String> l = (List<String>) value;
+                for (int i = 0; i < l.size(); i++) {
+                    if (i > 0) {
+                        result += ",";
+                    }
+                    result += l.get(i); 
+                }
+                return result;
+            }
+            return value;
+        }
+        
         public void addScript(ScriptDefinition script) {
             this.scripts.add(script);
         }
@@ -265,7 +299,6 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         public List<ScriptDefinition> getScripts() {
             return this.scripts;
         }
-
+    
     }
-
 }

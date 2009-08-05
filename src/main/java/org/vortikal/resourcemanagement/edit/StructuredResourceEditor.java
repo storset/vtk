@@ -159,7 +159,6 @@ public class StructuredResourceEditor extends SimpleFormController {
                     throw new RuntimeException(e);
                 }
             }
-
             super.bind(request);
         }
     }
@@ -196,7 +195,6 @@ public class StructuredResourceEditor extends SimpleFormController {
                     }
                 }
             }
-
         }
 
         private void groupElements(EditRule editRule) {
@@ -372,21 +370,23 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
 
         public void setValue(Object value) throws Exception {
-            if(this.description.isMultiple()){
-                if(value instanceof String){
+            if (this.description.isMultiple()) {
+                if (value instanceof String) {
                     String[] a = value.toString().split(",");
                     ArrayList<String> b = new ArrayList <String>();
-                    for(int i = 0; i < a.length;i++){
+                    for (int i = 0; i < a.length; i++) {
                         b.add(a[i].toString());
                     }
                     this.value = b;
-                }else if(value instanceof List){
+                } else if (value instanceof List<?>) {
                     this.value = value;
-                }else{
-                    throw new IllegalClassException("Value must be of instance type String when" +
-                            " input value is multiple");
+                } else {
+                    throw new IllegalClassException(
+                            "Unknown value type: " + value.getClass() 
+                            + " for multiple-valued property " 
+                            + this.description.getName());
                 }
-            }else{
+            } else {
                 this.value = value;
             }
         }
@@ -396,12 +396,12 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
         
         @SuppressWarnings("unchecked")
-        public Object getFormatedValue(){
-            if(value instanceof List){
+        public Object getFormatedValue() {
+            if (value instanceof List) {
                 String result = "";
                 List<String> l = (List<String>) value;
-                for(int i = 0; i < l.size(); i++){
-                    if(i > 0){
+                for (int i = 0; i < l.size(); i++) {
+                    if (i > 0) {
                         result += ",";
                     }
                     result += l.get(i);

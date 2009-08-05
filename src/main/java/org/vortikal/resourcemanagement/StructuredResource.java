@@ -99,9 +99,9 @@ public class StructuredResource {
     public Object getProperty(String name) {
         return this.properties.get(name);
     }
-
+    
     public void addProperty(String name, Object value) {
-        this.properties.put(name, value);
+            this.properties.put(name, value);
     }
 
     public void addProperty(String name, Object[] values) {

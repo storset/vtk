@@ -102,7 +102,7 @@
 	 	<@vrtxString.printPropertyEditView 
 	 		title=localizedTitle 
 	 		inputFieldName=elem.description.name 
-	 		value=elem.value 
+	 		value=elem.getFormatedValue()
 	 		classes=elem.description.name
 	 		inputFieldSize=fieldSize />
 	    <#break>

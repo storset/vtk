@@ -221,7 +221,7 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         getStore().storeContent(Path.fromString("/a/b/file3.txt"), new ByteArrayInputStream(contentFile3));
 
 //         // Copy subtree '/d' to '/a/d', then check consistency      
-//         getStore().copy("/d", "/a/d");
+         getStore().copy(Path.fromString("/d"), Path.fromString("/a/d"));
 //         assertTrue(getStore().exists("/a/d"));
 //         assertTrue(getStore().isCollection("/a/d"));
 //         assertTrue(getStore().exists("/a/d/e"));
@@ -234,6 +234,7 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
 //         assertFalse(getStore().exists("/d"));
         
 //         // Rename/move subtree '/a/b' to '/a/x'
+        getStore().move(Path.fromString("/a/b"), Path.fromString("/a/x"));
 //         getStore().copy("/a/b", "/a/x");
 //         getStore().deleteResource("/a/b");
         
@@ -258,8 +259,10 @@ public abstract class AbstractContentStoreTestCase extends TestCase {
         // Verify content
         byte[] content = getContent(getStore().getInputStream(Path.fromString("/a/x/file1.txt")));
         assertTrue(equals(contentFile1, content));
+        System.out.println("__foofoo");
         content = getContent(getStore().getInputStream(Path.fromString("/a/x/file2.txt")));
         assertTrue(equals(contentFile2, content));
+        System.out.println("__foofoo");
         content = getContent(getStore().getInputStream(Path.fromString("/a/x/file3.txt")));
         assertTrue(equals(contentFile3, content));
         

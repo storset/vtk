@@ -78,7 +78,7 @@
   <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
   <script type="text/javascript">
     $(document).ready(function() {
-      setAutoComplete('tags', 'tags');
+      setAutoComplete('tags', 'tags', {minChars:1});
     });
   </script>
   

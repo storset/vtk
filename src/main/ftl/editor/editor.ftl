@@ -36,7 +36,7 @@
     <script type="text/javascript">
       $(document).ready(function() {
           interceptEnterKey();
-          setAutoComplete('resource\\.tags', 'tags');
+          setAutoComplete('resource\\.tags', 'tags', {minChars:1});
        });
     </script>
 

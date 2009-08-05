@@ -8,6 +8,8 @@ resourcetype person : article {
   }
   edit-rules {
     username (size[8]),
+    tags (before fetchExternal),
+    tags (size[24]),
     fetchExternal (radio)
   }
   scripts {

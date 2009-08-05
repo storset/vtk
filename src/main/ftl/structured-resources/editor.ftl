@@ -1,5 +1,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/ping.ftl" as ping />
+<#import "/lib/autocomplete.ftl" as autocomplete />
 
 <#import "vrtx-types/vrtx-boolean.ftl" as vrtxBoolean />
 <#import "vrtx-types/vrtx-datetime.ftl" as vrtxDateTime />
@@ -70,7 +71,15 @@
 </script>
 -->
 
-<link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
+  <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
+  
+  <#-- XXX testing only! -->
+  <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      setAutoComplete('tags', 'tags');
+    });
+  </script>
   
 </head>
 <body>

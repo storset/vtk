@@ -8,10 +8,6 @@
   -  fckSource.getURL
   -  fckCleanup.url
   -  fckBrowse.url
-  -  
-  - Optional model data:
-  -
-  -  autoCompleteBaseURL
   -
   -->
 <#import "/lib/ping.ftl" as ping />
@@ -40,6 +36,7 @@
     <script type="text/javascript">
       $(document).ready(function() {
           interceptEnterKey();
+          setAutoComplete('resource\\.tags', 'tags');
        });
     </script>
 
@@ -496,18 +493,12 @@
           </#if>
         <#else>
 
-          <#-- AutoComplete only for the tags inputfield -->
-          <#if name = 'tags'>
-            <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${name}" 
-                    id="resource.${name}" value="${value?html}" minChars=1 selectFirst="false" />
-          <#else>
-            <#if name = 'recursive-listing-subfolders'>
-            	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
-            </#if>
-            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
-            <#if name = 'recursive-listing-subfolders'>
-            	<label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
-            </#if>
+          <#if name = 'recursive-listing-subfolders'>
+            <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
+          </#if>
+          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+          <#if name = 'recursive-listing-subfolders'>
+            <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>
           <#if description != "">
             <span class="input-description">(${description})</span>

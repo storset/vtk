@@ -21,6 +21,7 @@ resourcetype jperson : jdocument {
     username (before title),
     picture (after surname),
     tags (after scientificInformation),
+    tags (size[32]),
     officeNumber (size[5]),
     getExternalScientificInformation (dropdown),
     group contactInfo (email, officeNumber, availableHours) (after username) horizontal,

@@ -6,3 +6,20 @@
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.autocomplete.css" />
   <link rel="stylesheet" type="text/css" href="${srcBase}/jquery/jquery.override.css" />
 </#macro>
+
+<#macro addAutocomplete script>
+  <#local serviceId = script.name />
+  <#local parameters = '' />
+  <#list script.params?keys as param>
+    <#if param == 'service'>
+      <#local serviceId = script.params[param] />
+    <#else>
+      <#if parameters == ''>
+        <#local parameters = param?string + ":" + script.params[param]?string />
+      <#else>
+        <#local parameters = parameters + ", " + param?string + ":" + script.params[param]?string />
+      </#if>
+    </#if>
+  </#list>
+  setAutoComplete('${script.name}', '${serviceId}', {${parameters}});
+</#macro>

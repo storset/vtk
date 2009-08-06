@@ -30,7 +30,7 @@
       <map>
         <entry key="globalMenuOrder"><value type="java.lang.Integer">100</value></entry>
         <entry key="decorating.servicePredicateName" value="delete" />
-        <entry key-ref="system.decoratorTemplateAttribute" value="plain-template.html" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>
   </bean>
@@ -57,7 +57,7 @@
       <map>
         <entry key="globalMenuOrder"><value type="java.lang.Integer">100</value></entry>
         <entry key="decorating.servicePredicateName" value="delete" />
-        <entry key-ref="system.decoratorTemplateAttribute" value="plain-template.html" />
+        <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>
   </bean>
@@ -99,9 +99,7 @@
     <property name="order" value="490" />
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.RequestMethodAssertion">
-          <property name="method" value="POST" />
-        </bean>
+        <ref bean="manage.postRequestAssertion" />
         <ref local="resourceNotRootAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
@@ -124,9 +122,7 @@
     <property name="order" value="490" />
     <property name="assertions">
       <list>
-        <bean class="org.vortikal.web.service.RequestMethodAssertion">
-          <property name="method" value="POST" />
-        </bean>
+        <ref bean="manage.postRequestAssertion" />
         <ref local="resourceNotRootAssertion" />
         <ref local="adminVrtxParameterRule" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">

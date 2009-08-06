@@ -10,6 +10,7 @@
   - Optional model data:
   -
   -->
+<#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/collectionlisting.ftl" as col />
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -20,9 +21,12 @@
   <title>Manage: collection listing</title>
 </head>
 <body>
+  <#assign copyTitle = vrtx.getMsg("tabMenu2.copyResourcesService") />
+  <#assign moveTitle = vrtx.getMsg("tabMenu2.moveResourcesService") />
+
   <@col.listCollection
      withForm=true
      action=action.submitURL?string
-     submitActions={"copy-resources":"Copy resources", "move-resources":"Move resources"}/>
+     submitActions={"copy-resources":copyTitle, "move-resources":moveTitle}/>
 </body>
 </html>

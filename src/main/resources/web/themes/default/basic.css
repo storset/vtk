@@ -278,7 +278,7 @@ div.image {
   background: transparent url(icons/image.png) no-repeat 0px 5px;
 }
 
-div#titleContainer form {
+div#titleContainer form.globalMenu {
   background: #ccccff;
   width: 95%;
   margin-top: 7px;
@@ -416,7 +416,7 @@ ul.tabMenu2 li.copyResourcesService a
 }
 
 /* Form items in tabMenu2 */
-div.activeTab form {
+div.activeTab form.vrtx-admin-form {
   background: #ccccff;
   width: 95%;
   margin-top: 5px;
@@ -426,7 +426,8 @@ div.activeTab form {
   float: left;
 }
 
-* html div.activeTab form {
+
+* html div.activeTab form.vrtx-admin-form {
   margin-top: -9px;
   width: 95% !important;
   height: 1% !important;
@@ -437,16 +438,17 @@ form div#submitButtons {
   padding-top: 10px;
 }
 
-div.activeTab form ul {
+div.activeTab form.vrtx-admin-form ul {
   list-style-type: none;
   margin: 0px 0 10px 0;
   padding: 2px;
 }
 
-div.activeTab form h3 {
+div.activeTab form.vrtx-admin-form h3 {
   font-size: 100%;
   padding-bottom: 10px;
 }
+
 
 /* Used to display messages like "This folder contains an index-file etc." */
 div.tabMessage {
@@ -936,4 +938,8 @@ div.vrtx-confirm-copy-move-explanation {
 
 div.vrtx-confirm-copy-move-explanation {
   
+}
+
+form.vrtx-admin-button { 
+   display: inline;
 }

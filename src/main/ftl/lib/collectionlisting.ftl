@@ -226,16 +226,20 @@
 <#if withForm>
   <div id="collectionListing.submit">
     <#list submitActions?keys as actionName>
-      <button type="submit" value="${actionName?html}" id="collectionListing.action.${actionName?html}" name="action">
+      <input type="submit"
+             value="${actionName?html}"
+             id="collectionListing.action.${actionName?html}"
+             name="action"
+             title="${submitActions[actionName]?html}" />
+      <#--
+      <button type="submit" value="${actionName?html}" 
+              id="collectionListing.action.${actionName?html}" name="action">
         ${submitActions[actionName]?html}
       </button>
+      -->
     </#list>
   </div>
   </form>
-  <script type="text/javascript" language="Javascript"><!--
-    document.getElementById('collectionListing.submit').style.display = 'none';
-    //-->
-  </script>
 </#if>
 
 </#macro>

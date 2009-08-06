@@ -1,6 +1,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/ping.ftl" as ping />
-<#import "/lib/autocomplete.ftl" as autocomplete />
 
 <#import "vrtx-types/vrtx-boolean.ftl" as vrtxBoolean />
 <#import "vrtx-types/vrtx-datetime.ftl" as vrtxDateTime />
@@ -10,6 +9,7 @@
 <#import "vrtx-types/vrtx-media-ref.ftl" as vrtxMediaRef />
 <#import "vrtx-types/vrtx-radio.ftl" as vrtxRadio />
 <#import "vrtx-types/vrtx-string.ftl" as vrtxString />
+<#import "include/scripts.ftl" as scripts />
 
 <#import "editor/fck.ftl" as fckEditor />
 <html>
@@ -34,53 +34,12 @@
   <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/admin-datepicker.js"></script>
-<#--
- <script language="javascript">	
-	$(document).ready(function() {
-		
-		var fields1 = new Array("title","firstName","surname","postalAddress","visitingAddress","email","webPage","officeNumber");
-		var fields2 = new Array("scientificInformation");
-		
-		showHide("getExternalPersonInfo", fields1);
-		showHide("getExternalScientificInformation", fields2);
-			
-	    $("input[name='getExternalPersonInfo']").click(
-	        function(){       	
-	        	showHide("getExternalPersonInfo", fields1);
-	        }
-	    );
-	    
-	    $("input[name='getExternalScientificInformation']").click(
-	        function(){   	
-	        	showHide("getExternalScientificInformation", fields2);
-	        }
-	    );
-	 
-	});
-	
-	function showHide(name,fields){
-        var checkSelect = $("input[name='" + name + "']:checked").val();
-        if(checkSelect == "false"){
-        	for(i in fields)
-            	$("." + fields[i]).show();
-        }else{
-        	for(i in fields)
-            	$("." + fields[i]).hide();
-        }           
-	}
-	
-</script>
--->
 
   <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
   
-  <#-- XXX testing only! -->
-  <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
-  <script type="text/javascript">
-    $(document).ready(function() {
-      setAutoComplete('tags', 'tags', {minChars:1});
-    });
-  </script>
+  <#if form.resource.type.scripts?exists>
+    <@scripts.includeScripts form.resource.type.scripts />
+  </#if>
   
 </head>
 <body>

@@ -48,8 +48,8 @@
   </button>
 </form>
 
-<script language="javascript">
-	function focus(){
+<script language="javascript"><!--
+	function f_focus(){
 		$("#confirmAction").focus();
 	}
 	
@@ -58,6 +58,7 @@
 	   $("#cancelAction").remove(); 
 	   $("#vrtx-confirm-copy-move").append('<button tabindex="2" type="button" onclick="tb_remove();" id="cancelAction" name="cancelAction">${vrtx.getMsg("copyMove.discloseWarning.cancel")}</button>');
 	});
+        //-->
 </script>
 
 </body>

@@ -1467,7 +1467,6 @@
           <property name="modelDataMap">
             <map>
               <entry key="webResources" value="${webResources.baseURL}" />
-              <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
             </map>
           </property>
         </bean>

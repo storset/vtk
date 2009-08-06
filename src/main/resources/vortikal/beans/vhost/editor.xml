@@ -194,7 +194,6 @@
             <map>
               <entry key="cssURLs" value-ref="editor.editCSSURLs" />
               <entry key="editorHelpURL" value="${editor.helpURL}" />
-              <entry key="autoCompleteBaseURL" value="${autoComplete.appResourceURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />

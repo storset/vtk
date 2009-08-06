@@ -137,8 +137,22 @@ function placeCopyButtonInActiveTab() {
     });
 }
 
+function unlockButtonAsLink() {
+    var btn = $('#vrtx-unlock-resource-form\\.submit');
+    if (btn.size() == 0) {
+        return;
+    }
+    btn.hide();
+    btn.after('(&nbsp;<a id="vrtx-unlock-resource-form.link" href="javascript:void(0);">' + btn.attr('value') + '</a>&nbsp;)');
+    $('#vrtx-unlock-resource-form\\.link').click(function() {
+        btn.click();
+        return false;
+    });
+}
+
 // Add callbacks for the above methods:
 
 $(document).ready(copyMoveButtonsAsLinks);
 $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
+$(document).ready(unlockButtonAsLink);

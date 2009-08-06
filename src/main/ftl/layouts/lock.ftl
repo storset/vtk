@@ -31,7 +31,13 @@
       <#if lockUnlockActions?exists>
         <#list lockUnlockActions.items as item>
           <#if item.label = 'unlockResourceService' && item.url?exists>
+            <#--
             ( <a href="${item.url?html}">${item.title}</a> )
+             -->
+            <form id="vrtx-unlock-resource-form" class="vrtx-admin-button"
+                  action="${item.url?html}" method="post" >
+              <input type="submit" id="vrtx-unlock-resource-form.submit" name="submit" value="${item.title?html}" />
+            </form>
           </#if>
         </#list>
       </#if>

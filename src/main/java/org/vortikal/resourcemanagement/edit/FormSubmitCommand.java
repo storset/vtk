@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.lang.IllegalClassException;
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.PropertyDescription;
-import org.vortikal.resourcemanagement.ScriptDefinition;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.ValidationError;
@@ -24,7 +23,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     private List<Box> elements = new ArrayList<Box>();
 
     public FormSubmitCommand(StructuredResource resource, URL url) {
-        
+
         super(url.toString());
         this.resource = resource;
         StructuredResourceDescription type = resource.getType();
@@ -50,24 +49,6 @@ public class FormSubmitCommand extends UpdateCancelCommand {
                 }
             }
         }
-
-        List<ScriptDefinition> scripts = resource.getType().getScripts();
-        if (scripts != null && scripts.size() > 0) {
-            for (ScriptDefinition sd : scripts) {
-                for (Box elementBox : this.elements) {
-                    if (elementBox.getName().equals(sd.getName())) {
-                        elementBox.addScript(sd);
-                    }
-                    for (FormElement formElement : elementBox.getFormElements()) {
-                        PropertyDescription pd = formElement.getDescription();
-                        if (pd.getName().equals(sd.getName())) {
-                            formElement.addScript(sd);
-                        }
-                    }
-                }
-            }
-        }
-
     }
 
     private void groupElements(EditRule editRule) {
@@ -185,7 +166,6 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         private String name;
         private List<FormElement> formElements = new ArrayList<FormElement>();
         private Map<String, Object> metaData = new HashMap<String, Object>();
-        private List<ScriptDefinition> scripts = new ArrayList<ScriptDefinition>();
 
         public Box(String name) {
             this.name = name;
@@ -211,21 +191,13 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             return this.metaData;
         }
 
-        public void addScript(ScriptDefinition script) {
-            this.scripts.add(script);
-        }
-
-        public List<ScriptDefinition> getScripts() {
-            return this.scripts;
-        }
-
     }
 
     public class FormElement {
+
         private PropertyDescription description;
         private ValidationError error;
         private Object value;
-        private List<ScriptDefinition> scripts = new ArrayList<ScriptDefinition>();
 
         public FormElement(PropertyDescription description, ValidationError error,
                 Object value) {
@@ -255,7 +227,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
             if (this.description.isMultiple()) {
                 if (value instanceof String) {
                     String[] a = value.toString().split(",");
-                    ArrayList<String> b = new ArrayList <String>();
+                    ArrayList<String> b = new ArrayList<String>();
                     for (int i = 0; i < a.length; i++) {
                         b.add(a[i].toString());
                     }
@@ -263,9 +235,8 @@ public class FormSubmitCommand extends UpdateCancelCommand {
                 } else if (value instanceof List<?>) {
                     this.value = value;
                 } else {
-                    throw new IllegalClassException(
-                            "Unknown value type: " + value.getClass() 
-                            + " for multiple-valued property " 
+                    throw new IllegalClassException("Unknown value type: "
+                            + value.getClass() + " for multiple-valued property "
                             + this.description.getName());
                 }
             } else {
@@ -285,20 +256,12 @@ public class FormSubmitCommand extends UpdateCancelCommand {
                     if (i > 0) {
                         result += ",";
                     }
-                    result += l.get(i); 
+                    result += l.get(i);
                 }
                 return result;
             }
             return value;
         }
-        
-        public void addScript(ScriptDefinition script) {
-            this.scripts.add(script);
-        }
 
-        public List<ScriptDefinition> getScripts() {
-            return this.scripts;
-        }
-    
     }
 }

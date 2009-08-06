@@ -327,12 +327,8 @@
           <#assign value=spring.status.value />
         </#if>
       </#if>
-      <span class="addGroup">
-      
-        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
-                    id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
-                    hasDescription=true max="30" delay="800" />&nbsp;
-                    
+      <span class="addGroup">      
+        <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
         <input class="addGroupButton" type="submit" name="addGroupAction"
                value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
       </span>
@@ -388,17 +384,13 @@
         </#if>
       </#if>
       <span class="addUser">
-        <@autocomplete.createAutoCompleteInputField appSrcBase="${autoCompleteBaseURL}" service="${spring.status.expression}" 
-                    id="${spring.status.expression}" value="${value?html}" minChars="4" selectFirst="false" width="300" 
-                    hasDescription=true max="30" delay="800" />&nbsp;
-        
+        <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
         <@spring.bind formName + ".ac_userNames" />
         <#assign value=""/>
         <#if errorsExist>
           <#assign value = spring.status.value />
         </#if>        
         <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
-        
         <input class="addUserButton" type="submit" name="addUserAction"
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>

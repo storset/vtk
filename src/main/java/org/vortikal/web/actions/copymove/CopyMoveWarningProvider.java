@@ -104,6 +104,7 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
                                     || srcAcl.containsEntry(RepositoryAction.READ_PROCESSED, PrincipalFactory.ALL))) {
                         
                         URL url = this.confirmationService.constructURL(destinationUri);
+                        url.setCollection(true);
                         model.put("resourcesDisclosed", Boolean.TRUE);
                         model.put("warningDialogURL", url);
                         model.put("action", sessionBean.getAction());

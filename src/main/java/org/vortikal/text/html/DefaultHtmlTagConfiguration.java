@@ -62,6 +62,7 @@ public final class DefaultHtmlTagConfiguration {
         compositeTags.add("samp");
         compositeTags.add("kbd");
         compositeTags.add("var");
+        compositeTags.add("iframe");
         
         emptyTags.add("br");
         emptyTags.add("area");

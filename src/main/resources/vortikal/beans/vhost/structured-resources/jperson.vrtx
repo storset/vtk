@@ -29,6 +29,7 @@ resourcetype jperson : jdocument {
 
   scripts {
     getExternalPersonInfo show-hide onclick (firstName, surname, email),
+    getExternalScientificInformation show-hide onclick (scientificInformation),
     tags autocomplete (minChars : "1")
   }
   

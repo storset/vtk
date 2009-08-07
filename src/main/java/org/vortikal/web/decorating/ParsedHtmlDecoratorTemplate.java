@@ -357,7 +357,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                     this.copyAttributesList = attr.getValue();
 
                 } else {
-                    if (name == null || !name.matches("[a-zA-Z0-9]+")) {
+                    if (name == null || !name.matches("[a-zA-Z0-9-_]+")) {
                         this.error = new InvalidTemplateException("Invalid attribute name: " + name);
                         return;
                     }

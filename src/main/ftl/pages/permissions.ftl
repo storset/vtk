@@ -50,6 +50,8 @@
       <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom permissions") />
 
 
+
+      <#if aclInfo.aclEditURLs?exists && aclInfo.aclEditURLs.inheritance?exists>
       <form action="${aclInfo.aclEditURLs.inheritance?html}" method="post"
             id="permissions.toggleInheritance" class="vrtx-admin-button">
         <#if resourceContext.currentResource.inheritedAcl>
@@ -74,6 +76,7 @@
           </#if>
         </#if>
       </form>
+      </#if>
 
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />

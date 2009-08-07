@@ -31,62 +31,17 @@
 package org.vortikal.text.html;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
-
 public class HtmlPageParserImplTestCase extends TestCase {
-
-    private static Set<String> compositeTags = new HashSet<String>();
-    private static Set<String> emptyTags = new HashSet<String>();
-    
-    static {
-        compositeTags.add("pre");
-        compositeTags.add("b");
-        compositeTags.add("address");
-        compositeTags.add("map");
-        compositeTags.add("thead");
-        compositeTags.add("tfoot");
-        compositeTags.add("tbody");
-        compositeTags.add("fieldset");
-        compositeTags.add("colgroup");
-        compositeTags.add("optgroup");
-        compositeTags.add("small");
-        compositeTags.add("big");
-        compositeTags.add("i");
-        compositeTags.add("tt");
-        compositeTags.add("em");
-        compositeTags.add("acronym");
-        compositeTags.add("strong");
-        compositeTags.add("code");
-        compositeTags.add("samp");
-        compositeTags.add("kbd");
-        compositeTags.add("var");
-
-        emptyTags.add("br");
-        emptyTags.add("area");
-        emptyTags.add("link");
-        emptyTags.add("img");
-        emptyTags.add("param");
-        emptyTags.add("hr");
-        emptyTags.add("input");
-        emptyTags.add("col");
-        emptyTags.add("base");
-        emptyTags.add("meta");
-    }
 
     private HtmlPageParserImpl parser;
 
     public void setUp() {
         this.parser =  new HtmlPageParserImpl();
-        this.parser.setCompositeTags(compositeTags);
-        this.parser.setEmptyTags(emptyTags);
     }
-    
-
 
     private static final String SIMPLE_XHTML_PAGE =
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
@@ -101,7 +56,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
         + "  </head>\n"
         + "  <body>The body</body>\n"
         + "</html>\n";
-
 
     public void testSimpleHtmlPage() throws Exception {
 
@@ -131,7 +85,6 @@ public class HtmlPageParserImplTestCase extends TestCase {
         HtmlElement head = page.getRootElement().getChildElements()[0];
         assertEquals(0, head.getChildElements("meta").length);
     }
-    
     
     private static final String SIMPLE_XHTML_PAGE_WITH_DIRECTIVES =
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"

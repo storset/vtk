@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -56,10 +55,9 @@ import org.htmlparser.util.NodeList;
 
 public class HtmlPageParserImpl implements HtmlPageParser {
 
-    private Set<String> compositeTags = new HashSet<String>();
-    private Set<String> emptyTags = new HashSet<String>();
+    private Set<String> compositeTags = DefaultHtmlTagConfiguration.compositeTags();
+    private Set<String> emptyTags = DefaultHtmlTagConfiguration.emptyTags();
     
-
     private String defaultDoctype =
         "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
         + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";

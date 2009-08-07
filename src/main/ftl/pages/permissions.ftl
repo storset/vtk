@@ -57,10 +57,8 @@
         <#if resourceContext.currentResource.inheritedAcl>
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
-              <button type="submit" id="permissions.toggleInheritance.submit"
-                      name="confirmation">
-                <@vrtx.msg code="permissions.setCustom" default="edit" />
-              </button>
+            <input type="submit" id="permissions.toggleInheritance.submit"
+                   name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="edit" />" />
           </#if>
         <#else>
           <#assign warning =
@@ -69,10 +67,10 @@
                    [resource.name]) />
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
-              <button onclick="return confirm('${warning?html?js_string}');" 
-                      type="submit" id="permissions.toggleInheritance.submit" name="confirmation">
-                <@vrtx.msg code="permissions.setInherited" default="edit" />
-              </button>
+            <input type="submit"
+                   onclick="return confirm('${warning?html?js_string}');" 
+                   id="permissions.toggleInheritance.submit"
+                   name="confirmation" value="<@vrtx.msg code="permissions.setInherited" default="edit" />" />
           </#if>
         </#if>
       </form>

@@ -156,7 +156,7 @@ function toggleAclInheritanceButtonAsLink() {
         return;
     }
     btn.hide();
-    btn.after('(&nbsp;<a id="permissions.toggleInheritance.link" href="javascript:void(0);">' + btn.text().trim() + '</a>&nbsp;)');
+    btn.after('(&nbsp;<a id="permissions.toggleInheritance.link" href="javascript:void(0);">' + btn.attr('value') + '</a>&nbsp;)');
     $('#permissions\\.toggleInheritance\\.link').click(function() {
         btn.click();
         return false;

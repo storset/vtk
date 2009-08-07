@@ -20,10 +20,16 @@ $(document).ready(function() {
 });
 
 function displayDateAsMultipleInputFields(name){
+    var hours = "";
+    var minutes="";
+    var date = new Array("");
     var a = $.find("#" + name);  
-    var hours = extractHoursFromDate(a[0].value);
-    var minutes = extractMinutesFromDate(a[0].value);
-    var date = new String(a[0].value).split(" ");
+   
+    if(a[0].value != null){
+        hours = extractHoursFromDate(a[0].value);
+        minutes = extractMinutesFromDate(a[0].value)
+        date = new String(a[0].value).split(" ");
+    }
     
     dateField = "<input type='text' size='12' id='" + name  + "-date' name='" + name  + "-date' value='" + date[0] + "' class='date' />"; 
     hoursField = "<input type='text' size='2' id='" + name  + "-hours' name='" + name  + "-hours' value='" + hours + "' class='hours' />";  
@@ -50,7 +56,8 @@ function extractHoursFromDate(datetime){
         if(c != null){
             return c[0];
         }
-    } 
+    }
+    return "";
 }
 
 function extractMinutesFromDate(datetime){
@@ -62,15 +69,25 @@ function extractMinutesFromDate(datetime){
             return c[1];
         }
     }
+    return ""
 }
 
 function saveDateAndTimeFields(){
     $(".date").each(
-        function(){
-            var hours = $.find("#" + this.name + "-hours"); 
-            var minutes = $.find("#" + this.name + "-minutes");
-            var date = $.find("#" + this.name + "-date");
-            this.value = date[0].value + " " + hours[0].value + ":" + minutes[0].value;
-        }
+            function(){
+                var hours = $.find("#" + this.name + "-hours"); 
+                var minutes = $.find("#" + this.name + "-minutes");
+                var date = $.find("#" + this.name + "-date");
+
+                if(date[0] != null){
+                    this.value = date[0].value 
+                    if(hours[0] != null){
+                        this.value += " " + hours[0].value 
+                        if(minutes[0] != null){
+                            this.value += ":" + minutes[0].value;
+                        }
+                    }
+                }
+            }
     );
 }

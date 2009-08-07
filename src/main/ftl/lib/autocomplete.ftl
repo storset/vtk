@@ -21,5 +21,5 @@
       </#if>
     </#if>
   </#list>
-  setAutoComplete('${script.name}', '${serviceId}', {${parameters}});
+	  setAutoComplete('${script.name}', '${serviceId}', {${parameters}});
 </#macro>

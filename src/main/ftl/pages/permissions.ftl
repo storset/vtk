@@ -49,19 +49,31 @@
 
       <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom permissions") />
 
-      <p>
+
+      <form action="${aclInfo.aclEditURLs.inheritance?html}" method="post"
+            id="permissions.toggleInheritance" class="vrtx-admin-button">
         <#if resourceContext.currentResource.inheritedAcl>
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
-          <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setCustom" default="edit" /></a>&nbsp;)</#if>
+          <#if aclInfo.aclEditURLs.inheritance?exists>
+              <button type="submit" id="permissions.toggleInheritance.submit"
+                      name="confirmation">
+                <@vrtx.msg code="permissions.setCustom" default="edit" />
+              </button>
+          </#if>
         <#else>
           <#assign warning =
                    vrtx.getMsg("permissions.removeAcl.warning", 
                    "Are you sure you want to set inherited permissions? This cannot be undone.",
                    [resource.name]) />
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
-          <#if aclInfo.aclEditURLs.inheritance?exists>(&nbsp;<a onclick="return confirm('${warning?html?js_string}');" href="${aclInfo.aclEditURLs.inheritance?html}"><@vrtx.msg code="permissions.setInherited" default="edit" /></a>&nbsp;)</#if>
+          <#if aclInfo.aclEditURLs.inheritance?exists>
+              <button onclick="return confirm('${warning?html?js_string}');" 
+                      type="submit" id="permissions.toggleInheritance.submit" name="confirmation">
+                <@vrtx.msg code="permissions.setInherited" default="edit" />
+              </button>
+          </#if>
         </#if>
-      </p>
+      </form>
 
       <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
       <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />

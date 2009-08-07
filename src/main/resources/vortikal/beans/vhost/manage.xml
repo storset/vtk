@@ -288,6 +288,7 @@
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
       <list>
+        <ref local="manage.postRequestAssertion" />
         <ref local="resourceNotRootAssertion" />
         <ref local="writeACLPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">

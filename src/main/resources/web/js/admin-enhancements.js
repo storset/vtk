@@ -150,9 +150,24 @@ function unlockButtonAsLink() {
     });
 }
 
+function toggleAclInheritanceButtonAsLink() {
+    var btn = $('#permissions\\.toggleInheritance\\.submit');
+    if (btn.size() == 0) {
+        return;
+    }
+    btn.hide();
+    btn.after('(&nbsp;<a id="permissions.toggleInheritance.link" href="javascript:void(0);">' + btn.text().trim() + '</a>&nbsp;)');
+    $('#permissions\\.toggleInheritance\\.link').click(function() {
+        btn.click();
+        return false;
+    });
+}
+
 // Add callbacks for the above methods:
 
 $(document).ready(copyMoveButtonsAsLinks);
 $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
 $(document).ready(unlockButtonAsLink);
+$(document).ready(toggleAclInheritanceButtonAsLink);
+

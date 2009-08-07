@@ -39,6 +39,7 @@ import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 
+@SuppressWarnings("unchecked")
 public class EditRuleParser {
 
     public void parseEditRulesDescriptions(StructuredResourceDescription srd,
@@ -49,33 +50,34 @@ public class EditRuleParser {
                     handleGroupedEditRuleDescription(srd, editRuleDescription);
                 } else {
                     String propName = editRuleDescription.getText();
-                    CommonTree editRule = (CommonTree) editRuleDescription.getChild(0);
-                    switch (editRule.getType()) {
-                    case ResourcetreeLexer.BEFORE:
-                        srd.addEditRule(new EditRule(propName,
-                                EditRuleType.POSITION_BEFORE, editRule.getChild(0)
-                                        .getText()));
-                        break;
-                    case ResourcetreeLexer.AFTER:
-                        srd.addEditRule(new EditRule(propName,
-                                EditRuleType.POSITION_AFTER, editRule.getChild(0)
-                                        .getText()));
-                        break;
-                    case ResourcetreeLexer.EDITHINT:
-                        srd.addEditRule(new EditRule(propName, EditRuleType.EDITHINT,
-                                editRule.getText()));
-                        break;
-                    default:
-                        break;
+                    List<CommonTree> editRules = editRuleDescription.getChildren();
+                    for (CommonTree editRule : editRules) {
+                        switch (editRule.getType()) {
+                        case ResourcetreeLexer.BEFORE:
+                            srd.addEditRule(new EditRule(propName,
+                                    EditRuleType.POSITION_BEFORE, editRule.getChild(0)
+                                            .getText()));
+                            break;
+                        case ResourcetreeLexer.AFTER:
+                            srd.addEditRule(new EditRule(propName,
+                                    EditRuleType.POSITION_AFTER, editRule.getChild(0)
+                                            .getText()));
+                            break;
+                        case ResourcetreeLexer.EDITHINT:
+                            srd.addEditRule(new EditRule(propName, EditRuleType.EDITHINT,
+                                    editRule.getText()));
+                            break;
+                        default:
+                            break;
+                        }
                     }
                 }
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void handleGroupedEditRuleDescription(
-            StructuredResourceDescription srd, CommonTree groupRuleDescription) {
+    private void handleGroupedEditRuleDescription(StructuredResourceDescription srd,
+            CommonTree groupRuleDescription) {
 
         CommonTree groupingNameElement = (CommonTree) groupRuleDescription.getChild(0);
         if (ResourcetreeLexer.NAME != groupingNameElement.getType()) {

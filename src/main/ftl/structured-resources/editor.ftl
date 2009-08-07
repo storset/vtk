@@ -15,7 +15,9 @@
 <html>
 <head>
   <title>Edit structured resource</title>
-  <@fckEditor.setup />
+  
+  <@fckEditor.addFckScripts />
+  
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript">
 	window.onbeforeunload = checkPropChange;
@@ -29,6 +31,7 @@
 	    performSave();
     }
   </script>
+  
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
   <!-- JQuery UI (used for datepicker) -->
   <link type="text/css" href="${webResources?html}/jquery-ui-1.7.1.custom/css/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
@@ -84,7 +87,7 @@
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
 	    	classes=cssclass />
-	    <@fckEditor.insert elem.description.name />
+	    <@fckEditor.insertEditor elem.description.name />
 	  	<#break>
 	  <#case "html">
 	  	<#if elem.description.edithints?exists>
@@ -97,7 +100,7 @@
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
 	    	classes="vrtx-html" />
-	    <@fckEditor.insert elem.description.name true false />
+	    <@fckEditor.insertEditor elem.description.name true false />
 	    <#break>
 	  <#case "boolean">
 	  	<@vrtxBoolean.printPropertyEditView 

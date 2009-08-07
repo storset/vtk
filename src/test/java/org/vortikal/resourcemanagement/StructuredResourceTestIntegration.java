@@ -130,7 +130,8 @@ public class StructuredResourceTestIntegration extends AbstractBeanContextTestIn
         if (services != null) {
             System.out.println("\tServices:");
             for (ServiceDefinition sd : services) {
-                System.out.println("\t\t" + sd.getName());
+                System.out.println("\t\t" + sd.getName() + " " + sd.getServiceName()
+                        + " " + sd.getRequires() + " " + sd.getAffects());
             }
         }
 

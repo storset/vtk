@@ -30,20 +30,41 @@
  */
 package org.vortikal.resourcemanagement.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.antlr.runtime.tree.CommonTree;
+import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 
 public class ServiceDefinitionParser {
 
+    @SuppressWarnings("unchecked")
     public void parseServices(StructuredResourceDescription srd,
             CommonTree serviceDescription) {
-        
         String propName = serviceDescription.getText();
-        
-        // XXX implement
-        
-        srd.addServiceDefinition(new ServiceDefinition(propName));
+        CommonTree service = (CommonTree) serviceDescription.getChild(0);
+        List<CommonTree> serviceParams = service.getChildren();
+        List<String> requires = null;
+        List<String> affects = null;
+        for (CommonTree param : serviceParams) {
+            if (ResourcetreeLexer.REQUIRES == param.getType()) {
+                requires = getList(param.getChildren());
+            } else if (ResourcetreeLexer.AFFECTS == param.getType()) {
+                affects = getList(param.getChildren());
+            }
+        }
+        srd.addServiceDefinition(new ServiceDefinition(propName, service.getText(),
+                requires, affects));
+    }
+
+    private List<String> getList(List<CommonTree> listParams) {
+        List<String> result = new ArrayList<String>();
+        for (CommonTree listParam : listParams) {
+            result.add(listParam.getText());
+        }
+        return result;
     }
 
 }

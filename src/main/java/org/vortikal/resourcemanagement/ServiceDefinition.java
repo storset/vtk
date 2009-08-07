@@ -30,18 +30,37 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.util.List;
+
 public class ServiceDefinition {
 
-    // XXX implement
-
     private String name;
+    private String serviceName;
+    private List<String> requires;
+    private List<String> affects;
 
-    public ServiceDefinition(String name) {
+    public ServiceDefinition(String name, String serviceName, List<String> requires,
+            List<String> affects) {
         this.name = name;
+        this.serviceName = serviceName;
+        this.requires = requires;
+        this.affects = affects;
     }
 
     public String getName() {
         return this.name;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public List<String> getRequires() {
+        return requires;
+    }
+
+    public List<String> getAffects() {
+        return affects;
     }
 
 }

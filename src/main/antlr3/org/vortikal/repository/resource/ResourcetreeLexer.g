@@ -42,7 +42,6 @@ AUTOCOMPLETE
 	:	'autocomplete';
 SCRIPTTRIGGER 
 	:	 (ONCLICK | ONFOCUS | ONSELECT);
-EXTERNAL:	'external';
 REQUIRES:	'requires';
 AFFECTS	:	'affects';
 REQUIRED:	'required';

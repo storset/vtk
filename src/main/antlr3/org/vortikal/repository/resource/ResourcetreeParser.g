@@ -138,11 +138,11 @@ services:	SERVICES LCB
 	;
 
 servicedef
-	:	NAME EXTERNAL (requires)? (affects)?
-		-> ^(NAME ^(EXTERNAL (requires)? (affects)?))
+	:	NAME NAME (requires)? (affects)?
+		-> ^(NAME ^(NAME (requires)? (affects)?))
 	;
 
-requires:	REQUIRES LP NAME RP -> ^(REQUIRES NAME);
+requires:	REQUIRES namelist -> ^(REQUIRES namelist);
 
 affects	:	AFFECTS namelist -> ^(AFFECTS namelist);
 

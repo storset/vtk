@@ -8,9 +8,9 @@
     $(document).ready(function() {
       <#list scripts as script>
         <#if script.type == 'AUTOCOMPLETE' >
-           <@autocomplete.addAutocomplete script/>
+          <@autocomplete.addAutocomplete script/>
         <#elseif script.type == 'SHOWHIDE' >
-        	<@showhide.addShowHide script />  	
+          <@showhide.addShowHide script />  	
         </#if>
       </#list>
     });

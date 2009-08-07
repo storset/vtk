@@ -153,7 +153,6 @@ public class PropertyEditController extends SimpleFormController
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return new ReferenceDataProvider[] {this};
     }
-    
 
     protected Object formBackingObject(HttpServletRequest request)
         throws Exception {
@@ -230,17 +229,6 @@ public class PropertyEditController extends SimpleFormController
         return new PropertyEditCommand(editURL, definition, value, formAllowedValues, hierarchicalHelpUrl);
     }
 
-
-
-    protected boolean isFormSubmission(HttpServletRequest request) {
-        boolean isFormSubmission = super.isFormSubmission(request);
-        if ("true".equals(request.getParameter(this.toggleRequestParameter))) {
-            isFormSubmission = true;
-        }
-        return isFormSubmission;
-    }
-    
- 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
                                     Object command, BindException errors) throws Exception {    
 
@@ -358,11 +346,9 @@ public class PropertyEditController extends SimpleFormController
     
     private boolean isApplicableProperty(PropertyTypeDefinition def,
                                          PrimaryResourceTypeDefinition resourceType) {
-
         return resourceType.hasPropertyDefinition(def);
     }
     
-
     @SuppressWarnings("unchecked")
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -447,7 +433,6 @@ public class PropertyEditController extends SimpleFormController
         model.put(this.propertyMapModelName, propsMap);
     }
     
-
     private boolean isToggleableProperty(PropertyTypeDefinition def) {
         Vocabulary<Value> vocabulary = def.getVocabulary();
         
@@ -489,7 +474,6 @@ public class PropertyEditController extends SimpleFormController
         throw new IllegalArgumentException("Property " + def + " is not a toggleable property");
     }
     
-
     private String getValueAsString(Value value) throws IllegalOperationException {
         String stringValue;
 
@@ -508,7 +492,6 @@ public class PropertyEditController extends SimpleFormController
         }
         return stringValue;
     }
-
 
     private boolean isFocusedProperty(PropertyTypeDefinition propDef,
                                       String inputNamespace, String inputName) {
@@ -542,5 +525,4 @@ public class PropertyEditController extends SimpleFormController
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
-
 }

@@ -486,6 +486,12 @@ div.resourceInfo {
   margin-top: 1em;
 }
 
+.resourceInfo form {
+  font-size: 90%;
+  margin-top: 0.4em;
+  margin-bottom: 0;
+}
+
 .resourceInfo p {
   font-size: 90%;
   margin-top: 0.4em;

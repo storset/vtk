@@ -84,7 +84,7 @@
 	 		inputFieldSize=fieldSize />
 	    <#break>
 	  <#case "simple_html">
-	  	<#assign cssclass = "vrtx-simple-html" />
+	  	<#assign cssclass = "vrtx-simple-html " + elem.description.name  + " " />
 	 	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
 	  		<#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
 	  	</#if>
@@ -105,28 +105,31 @@
 	    	title=localizedTitle 
 	    	inputFieldName=elem.description.name 
 	    	value=elem.value 
-	    	classes="vrtx-html" />
+	    	classes="vrtx-html " + elem.description.name  />
 	    <@fckEditor.insertEditor elem.description.name true false />
 	    <#break>
 	  <#case "boolean">
 	  	<@vrtxBoolean.printPropertyEditView 
 	  		title=localizedTitle
 	  		inputFieldName=elem.description.name 
-	  		value=elem.value />
+	  		value=elem.value
+	  		classes=elem.description.name  />
 	  	<#break>
 	  <#case "image_ref">
 	  	<@vrtxImageRef.printPropertyEditView 
 	  		title=localizedTitle
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value 
-	  		baseFolder=resourceContext.parentURI />
+	  		baseFolder=resourceContext.parentURI
+	  		classes=elem.description.name />
 	  	<#break>          
 	  <#case "media_ref">
 	  	<@vrtxMediaRef.printPropertyEditView 
 	  		title=localizedTitle
 	  		inputFieldName=elem.description.name 
 	  		value=elem.value 
-	  		baseFolder=resourceContext.parentURI />
+	  		baseFolder=resourceContext.parentURI
+	  		classes=elem.description.name  />
 	  	<#break>
 	  <#case "datetime">
 		 <@vrtxDateTime.printPropertyEditView 

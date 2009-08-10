@@ -14,9 +14,9 @@ function checkPropChange(){
     if(!NEED_TO_CONFIRM)
         return;
     var dirtyState = false;
-    currentStateOfInputFeelds = $("input");
+    currentStateOfInputFields = $("input");
     for(i = 0; i < INITIAL_INPUT_FIELDS.length; i++){
-        if(currentStateOfInputFeelds[i].value != INITIAL_INPUT_FIELDS[i]){
+        if(currentStateOfInputFields[i].value != INITIAL_INPUT_FIELDS[i]){
             dirtyState = true;
             break;
         }

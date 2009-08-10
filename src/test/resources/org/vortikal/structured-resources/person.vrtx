@@ -9,7 +9,8 @@ resourcetype person : article {
   edit-rules {
     username (size[8]),
     tags (before fetchExternal) (size[24]),
-    fetchExternal (radio)
+    fetchExternal (radio),
+    group name (firstname, surname) (after username)
   }
   scripts {
     tags autocomplete (width : "200", minChars : "0")

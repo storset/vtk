@@ -104,9 +104,9 @@ resourcetype jarticle : jdocument {
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
     by-line : (en : "By", no : "Av", nn : "Av"),
     published : (en : "Published", no : "Publisert", nn : "Publisert"),
-    download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil")
-    media-ref: (en : "Media file", no : "Mediefil", nn : "Mediefil")
-    author: (en : "Author", no : "Forfatter", nn : "Forfattar")
+    download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),
+    media-ref: (en : "Media file", no : "Mediefil", nn : "Mediefil"),
+    author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt")
   }
 }

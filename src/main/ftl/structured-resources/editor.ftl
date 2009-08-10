@@ -84,7 +84,7 @@
 	 		inputFieldSize=fieldSize />
 	    <#break>
 	  <#case "simple_html">
-	  	<#assign cssclass = "vrtx-simple-html " + elem.description.name  + " " />
+	  	<#assign cssclass =  elem.description.name + " vrtx-simple-html" />
 	 	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
 	  		<#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
 	  	</#if>

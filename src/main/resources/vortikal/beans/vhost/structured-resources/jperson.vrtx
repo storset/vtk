@@ -1,7 +1,7 @@
 resourcetype jperson : jdocument {
 
   properties {
-    username : string required,
+    username : string,
     getExternalPersonInfo : boolean,
     firstName : string,
     surname : string,
@@ -30,13 +30,13 @@ resourcetype jperson : jdocument {
   }
 
   scripts {
-    getExternalPersonInfo show-hide onclick (firstName, surname, email),
+    getExternalPersonInfo show-hide onclick (firstName, surname, email, postalAddress, visitingAddress),
     getExternalScientificInformation show-hide onclick (scientificInformation),
     tags autocomplete (minChars : "1")
   }
   
   services {
-    getExternalPersonInfo uio-ldap requires(username) affects(firstName, surname, email) 
+    getExternalPersonInfo uio-ldap requires(username) affects(firstName, surname, email, postalAddress, visitingAddress) 
   }
 
   view {
@@ -72,6 +72,8 @@ resourcetype jperson : jdocument {
     officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
     availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
+    getExternalScientificInformation : (en : "Get external scientific information (frida)", no : "Hent ekstern vitenskapelig informasjon (frida)", nn : "Hent ekstern vitenskapelig informasjon (frida)"),
+    scientificInformation : (en : "Scientific information", no : "Vitenskapelig informasjon", nn : "Vitenskapelig informasjon"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord")
   }
 }

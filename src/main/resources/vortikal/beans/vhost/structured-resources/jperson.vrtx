@@ -21,6 +21,8 @@ resourcetype jperson : jdocument {
     username (before title),
     picture (after surname),
     tags (after scientificInformation) (size[32]),
+    title (size[large]),
+    availableHours (size[small]),
     officeNumber (size[5]),
     getExternalScientificInformation (dropdown),
     group contactInfo (email, officeNumber, availableHours) (after username) horizontal,
@@ -40,7 +42,7 @@ resourcetype jperson : jdocument {
   view {
     ##
     <html>
-      <head>
+      <head>	
         <title><json:field select="firstName" /> <json:field select="surname" /></title>
       </head>
       <body>

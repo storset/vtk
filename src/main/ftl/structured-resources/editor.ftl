@@ -66,9 +66,15 @@
     
 	<#switch elem.description.type>
 	  <#case "string">
-	  	<#assign fieldSize="20" />
+	  	<#assign fieldSize="40" />
 	  	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-	  		<#assign fieldSize=elem.description.edithints['size'] />
+	  		<#if elem.description.edithints['size'] == "large" >
+	  			<#assign fieldSize="60" />
+	  		<#elseif elem.description.edithints['size'] == "small" >
+	  			<#assign fieldSize="20"/>
+	  		<#else>
+	  			<#assign fieldSize=elem.description.edithints['size'] />
+	  		</#if>
 	  	</#if>
 	 	<@vrtxString.printPropertyEditView 
 	 		title=localizedTitle 

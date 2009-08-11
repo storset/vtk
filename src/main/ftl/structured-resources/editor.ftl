@@ -62,7 +62,7 @@
 
   <#list elementBox.formElements as elem>
   
-    <#assign localizedTitle = form.resource.getLocalizedMsg(elem.description.name, locale, null) />
+    <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
     
 	<#switch elem.description.type>
 	  <#case "string">
@@ -78,22 +78,22 @@
 	  	</#if>
 	 	<@vrtxString.printPropertyEditView 
 	 		title=localizedTitle 
-	 		inputFieldName=elem.description.name 
+	 		inputFieldName=elem.name 
 	 		value=elem.getFormatedValue()
-	 		classes=elem.description.name
+	 		classes=elem.name
 	 		inputFieldSize=fieldSize />
 	    <#break>
 	  <#case "simple_html">
-	  	<#assign cssclass =  elem.description.name + " vrtx-simple-html" />
+	  	<#assign cssclass =  elem.name + " vrtx-simple-html" />
 	 	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
 	  		<#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
 	  	</#if>
 	    <@vrtxHtml.printPropertyEditView 
 	    	title=localizedTitle 
-	    	inputFieldName=elem.description.name 
+	    	inputFieldName=elem.name 
 	    	value=elem.value 
 	    	classes=cssclass />
-	    <@fckEditor.insertEditor elem.description.name />
+	    <@fckEditor.insertEditor elem.name />
 	  	<#break>
 	  <#case "html">
 	  	<#if elem.description.edithints?exists>
@@ -103,40 +103,40 @@
 	 	</#if>
 	    <@vrtxHtml.printPropertyEditView 
 	    	title=localizedTitle 
-	    	inputFieldName=elem.description.name 
+	    	inputFieldName=elem.name 
 	    	value=elem.value 
-	    	classes="vrtx-html " + elem.description.name  />
-	    <@fckEditor.insertEditor elem.description.name true false />
+	    	classes="vrtx-html " + elem.name  />
+	    <@fckEditor.insertEditor elem.name true false />
 	    <#break>
 	  <#case "boolean">
 	  	<@vrtxBoolean.printPropertyEditView 
 	  		title=localizedTitle
-	  		inputFieldName=elem.description.name 
+	  		inputFieldName=elem.name 
 	  		value=elem.value
-	  		classes=elem.description.name  />
+	  		classes=elem.name  />
 	  	<#break>
 	  <#case "image_ref">
 	  	<@vrtxImageRef.printPropertyEditView 
 	  		title=localizedTitle
-	  		inputFieldName=elem.description.name 
+	  		inputFieldName=elem.name 
 	  		value=elem.value 
 	  		baseFolder=resourceContext.parentURI
-	  		classes=elem.description.name />
+	  		classes=elem.name />
 	  	<#break>          
 	  <#case "media_ref">
 	  	<@vrtxMediaRef.printPropertyEditView 
 	  		title=localizedTitle
-	  		inputFieldName=elem.description.name 
+	  		inputFieldName=elem.name 
 	  		value=elem.value 
 	  		baseFolder=resourceContext.parentURI
-	  		classes=elem.description.name  />
+	  		classes=elem.name  />
 	  	<#break>
 	  <#case "datetime">
 		 <@vrtxDateTime.printPropertyEditView 
 			title=localizedTitle
-			inputFieldName=elem.description.name 
+			inputFieldName=elem.name 
 			value=elem.value 
-			classes=elem.description.name  />
+			classes=elem.name  />
 	  	<#break>
 	  <#default>
 	    ny type property ${elem.description.type}

@@ -8,15 +8,15 @@
 }
 
 .vrtx-string .date{
-    margin-right : 1em;
+    margin-right: 1em;
 }
 
 .vrtx-string .hours{
-     margin-right : .2em;
+     margin-right: .2em;
 }
 
 .vrtx-string .minutes{
-    margin-left : .2em;
+    margin-left: .2em;
 }
 
 .vrtx-grouped-horizontal .vrtx-media-ref, .vrtx-grouped-horizontal .vrtx-simple-html-small,
@@ -28,12 +28,12 @@
 }
 
 .vrtx-simple-html textarea{
-    height:22.5ex;
-    width:500px;
+    height: 22.5ex;
+    width: 500px;
 }
 
 .vrtx-simple-html {
-    width:500px;
+    width: 500px;
 }
 
 .vrtx-simple-html iframe{
@@ -41,12 +41,12 @@
 }
 
 .vrtx-simple-html-small textarea{
-    height:12.5ex;
-    width:350px;
+    height: 12.5ex;
+    width: 350px;
 }
 
 .vrtx-simple-html-small {
-    width:350px;
+    width: 350px;
 }
 
 .vrtx-simple-html-small iframe{
@@ -67,7 +67,7 @@
   border: 1px solid #a9a9a9;
   clear: left;
   float: left;
-  width:100%;
+  width: 100%;
 }
 
 #contents {

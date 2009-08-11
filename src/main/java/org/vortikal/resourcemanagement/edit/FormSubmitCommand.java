@@ -2,16 +2,12 @@ package org.vortikal.resourcemanagement.edit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang.IllegalClassException;
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
-import org.vortikal.resourcemanagement.ValidationError;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.web.actions.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
@@ -20,7 +16,7 @@ import org.vortikal.web.service.URL;
 public class FormSubmitCommand extends UpdateCancelCommand {
 
     private StructuredResource resource;
-    private List<Box> elements = new ArrayList<Box>();
+    private List<FormElementBox> elements = new ArrayList<FormElementBox>();
 
     public FormSubmitCommand(StructuredResource resource, URL url) {
 
@@ -28,7 +24,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         this.resource = resource;
         StructuredResourceDescription type = resource.getType();
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
-            Box elementBox = new Box(def.getName());
+            FormElementBox elementBox = new FormElementBox(def.getName());
             elementBox.addFormElement(new FormElement(def, null, resource.getProperty(def
                     .getName())));
             this.elements.add(elementBox);
@@ -52,7 +48,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     }
 
     private void groupElements(EditRule editRule) {
-        Box elementBox = new Box(editRule.getName());
+        FormElementBox elementBox = new FormElementBox(editRule.getName());
         List<String> groupedProps = (List<String>) editRule.getValue();
         for (String groupedProp : groupedProps) {
             FormElement formElement = this.findElement(groupedProp);
@@ -68,7 +64,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         int indexOfpropToMove = -1;
         int indexToMoveToo = -1;
         for (int i = 0; i < elements.size(); i++) {
-            Box elementBox = elements.get(i);
+            FormElementBox elementBox = elements.get(i);
             if (editRule.getName().equals(elementBox.getName())) {
                 indexOfpropToMove = i;
             }
@@ -90,7 +86,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     }
 
     private void setEditHints(EditRule editRule) {
-        for (Box elementBox : elements) {
+        for (FormElementBox elementBox : elements) {
             if (elementBox.getName().equals(editRule.getName())) {
                 elementBox.addMetaData(editRule.getEditHintKey(), editRule
                         .getEditHintValue());
@@ -106,7 +102,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         }
     }
 
-    public List<Box> getElements() {
+    public List<FormElementBox> getElements() {
         return Collections.unmodifiableList(this.elements);
     }
 
@@ -123,7 +119,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     }
 
     private FormElement findElement(String name) {
-        for (Box elementBox : this.elements) {
+        for (FormElementBox elementBox : this.elements) {
             for (FormElement formElement : elementBox.getFormElements()) {
                 if (formElement.getDescription().getName().equals(name)) {
                     return formElement;
@@ -134,8 +130,8 @@ public class FormSubmitCommand extends UpdateCancelCommand {
     }
 
     private void removeElementBox(FormElement formElement) {
-        Box elementBoxToRemove = null;
-        for (Box elementBox : this.elements) {
+        FormElementBox elementBoxToRemove = null;
+        for (FormElementBox elementBox : this.elements) {
             List<FormElement> formElements = elementBox.getFormElements();
             if (formElements.size() == 1 && formElement.equals(formElements.get(0))) {
                 elementBoxToRemove = elementBox;
@@ -161,107 +157,4 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         }
     }
 
-    public class Box {
-
-        private String name;
-        private List<FormElement> formElements = new ArrayList<FormElement>();
-        private Map<String, Object> metaData = new HashMap<String, Object>();
-
-        public Box(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public void addFormElement(FormElement formElement) {
-            this.formElements.add(formElement);
-        }
-
-        public List<FormElement> getFormElements() {
-            return this.formElements;
-        }
-
-        public void addMetaData(String key, Object metaData) {
-            this.metaData.put(key, metaData);
-        }
-
-        public Map<String, Object> getMetaData() {
-            return this.metaData;
-        }
-
-    }
-
-    public class FormElement {
-
-        private PropertyDescription description;
-        private ValidationError error;
-        private Object value;
-
-        public FormElement(PropertyDescription description, ValidationError error,
-                Object value) {
-            this.description = description;
-            this.error = error;
-            this.value = value;
-
-        }
-
-        public void setDescription(PropertyDescription description) {
-            this.description = description;
-        }
-
-        public PropertyDescription getDescription() {
-            return description;
-        }
-
-        public void setError(ValidationError error) {
-            this.error = error;
-        }
-
-        public ValidationError getError() {
-            return error;
-        }
-
-        public void setValue(Object value) throws Exception {
-            if (this.description.isMultiple()) {
-                if (value instanceof String) {
-                    String[] a = value.toString().split(",");
-                    ArrayList<String> b = new ArrayList<String>();
-                    for (int i = 0; i < a.length; i++) {
-                        b.add(a[i].toString());
-                    }
-                    this.value = b;
-                } else if (value instanceof List<?>) {
-                    this.value = value;
-                } else {
-                    throw new IllegalClassException("Unknown value type: "
-                            + value.getClass() + " for multiple-valued property "
-                            + this.description.getName());
-                }
-            } else {
-                this.value = value;
-            }
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        public Object getFormatedValue() {
-            if (value instanceof List) {
-                String result = "";
-                List<String> l = (List<String>) value;
-                for (int i = 0; i < l.size(); i++) {
-                    if (i > 0) {
-                        result += ",";
-                    }
-                    result += l.get(i);
-                }
-                return result;
-            }
-            return value;
-        }
-
-    }
 }

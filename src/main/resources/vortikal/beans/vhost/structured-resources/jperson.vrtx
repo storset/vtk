@@ -36,7 +36,7 @@ resourcetype jperson : jdocument {
   }
   
   services {
-    getExternalPersonInfo uio-ldap requires(username) affects(firstName, surname, email) 
+    getExternalPersonInfo external requires(username) affects(firstName, surname, email) 
   }
 
   view {

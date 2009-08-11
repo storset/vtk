@@ -16,6 +16,6 @@ resourcetype person : article {
     tags autocomplete (width : "200", minChars : "0")
   }
   services {
-    fetchExternal test-ldap requires(firstName, surname) affects(firstName, surname, email) 
+    fetchExternal external requires(firstName, surname) affects(firstName, surname, email) 
   }
 }

@@ -79,8 +79,8 @@ overrides
 editruledef
 	:	NAME (position)? (edithint)?
 		-> ^(NAME ^(position)? ^(edithint)?)
-	|	GROUP NAME namelist position (ORIANTATION)?
-		-> ^(GROUP ^(NAME namelist) ^(position) ^(ORIANTATION)?)
+	|	GROUP NAME namelist (position)? (ORIANTATION)?
+		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIANTATION)?)
 	;
 
 editrules

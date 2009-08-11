@@ -91,17 +91,23 @@ public class EditRuleParser {
         }
         srd.addEditRule(new EditRule(groupingName, EditRuleType.GROUP, groupedProps));
 
-        CommonTree positioningElement = (CommonTree) groupRuleDescription.getChild(1);
-        int groupingType = positioningElement.getType();
-        if (ResourcetreeLexer.AFTER == groupingType
-                || ResourcetreeLexer.BEFORE == groupingType) {
-            EditRuleType positioningType = ResourcetreeLexer.AFTER == groupingType ? EditRuleType.POSITION_AFTER
-                    : EditRuleType.POSITION_BEFORE;
-            srd.addEditRule(new EditRule(groupingName, positioningType,
-                    positioningElement.getChild(0).getText()));
+        int siblingIndex = 1;
+        CommonTree positioningElement = (CommonTree) groupRuleDescription
+                .getChild(siblingIndex);
+        if (positioningElement != null) {
+            int groupingType = positioningElement.getType();
+            if (ResourcetreeLexer.AFTER == groupingType
+                    || ResourcetreeLexer.BEFORE == groupingType) {
+                EditRuleType positioningType = ResourcetreeLexer.AFTER == groupingType ? EditRuleType.POSITION_AFTER
+                        : EditRuleType.POSITION_BEFORE;
+                srd.addEditRule(new EditRule(groupingName, positioningType,
+                        positioningElement.getChild(0).getText()));
+            }
+            siblingIndex++;
         }
 
-        CommonTree oriantationElement = (CommonTree) groupRuleDescription.getChild(2);
+        CommonTree oriantationElement = (CommonTree) groupRuleDescription
+                .getChild(siblingIndex);
         if (oriantationElement != null) {
             srd.addEditRule(new EditRule(groupingName, EditRuleType.EDITHINT,
                     oriantationElement.getText()));

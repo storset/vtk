@@ -2,8 +2,14 @@
 <#import "/lib/showhide.ftl" as showhide />
 
 <#macro includeScripts scripts>
-  <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
-  <@showhide.addShowHideScripts srcBase="${webResources?html}"/>
+  <#local containsAutoCompleteScripts = containsScripts(scripts, 'AUTOCOMPLETE') />
+  <#local containsShowHideScripts = containsScripts(scripts, 'SHOWHIDE') />
+  <#if containsAutoCompleteScripts>
+    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+  </#if>
+  <#if containsShowHideScripts>
+    <@showhide.addShowHideScripts srcBase="${webResources?html}"/>
+  </#if>
   <script type="text/javascript">
     $(document).ready(function() {
       <#list scripts as script>
@@ -16,3 +22,12 @@
     });
   </script>
 </#macro>
+
+<#function containsScripts scripts scriptType>
+  <#list scripts as script>
+    <#if script.type == scriptType >
+      <#return true />
+    </#if>
+  </#list>
+  <#return false />
+</#function>

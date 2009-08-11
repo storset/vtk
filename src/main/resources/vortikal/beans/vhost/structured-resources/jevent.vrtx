@@ -30,4 +30,11 @@ resourcetype jevent : jdocument {
     </html>
     ##
   }
+  
+  localization {
+    start-date : (en : "Starts", no : "Starter", nn : "Byrjar"),
+    end-date : (en : "Ends", no : "Slutter", nn : "Sluttar"),
+    location : (en : "Location", no : "Sted", nn : "Stad"),
+    map-url : (en : "Link to map", no : "Lenke til kart", nn : "Lenke til kart")
+  }
 }

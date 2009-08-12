@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.view;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageParser;

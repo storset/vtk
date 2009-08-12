@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.view;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -57,6 +57,10 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
+import org.vortikal.resourcemanagement.ComponentDefinition;
+import org.vortikal.resourcemanagement.StructuredResource;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;

@@ -63,7 +63,7 @@
   </bean>
 
   <bean id="structuredResources.displayHandler"
-        class="org.vortikal.resourcemanagement.StructuredResourceDisplayController"
+        class="org.vortikal.resourcemanagement.view.StructuredResourceDisplayController"
     parent="requestLocalRepositoryAware"
     depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
@@ -94,7 +94,7 @@
     </property>
   </bean>
 
-  <bean id="structuredResources.templateManager" class="org.vortikal.resourcemanagement.DecoratorTemplateManager">
+  <bean id="structuredResources.templateManager" class="org.vortikal.resourcemanagement.view.DecoratorTemplateManager">
     <property name="templateFactory" ref="structuredResources.decoratorTemplateFactory" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
@@ -113,7 +113,7 @@
 
 
   <bean id="structuredResources.fieldSelectComponent"
-        class="org.vortikal.resourcemanagement.StructuredResourceFieldComponent">
+        class="org.vortikal.resourcemanagement.view.StructuredResourceFieldComponent">
     <property name="namespace" ref="structuredResources.componentNamespace" />
     <property name="name" value="field" />
     <property name="resourceModelKey" value="structured-resource" />

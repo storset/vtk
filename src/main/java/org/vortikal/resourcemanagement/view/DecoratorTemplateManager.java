@@ -28,11 +28,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement;
+package org.vortikal.resourcemanagement.view;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.vortikal.resourcemanagement.DisplayTemplate;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.web.decorating.AbstractCachingTemplateManager;
 import org.vortikal.web.decorating.TemplateSource;
 

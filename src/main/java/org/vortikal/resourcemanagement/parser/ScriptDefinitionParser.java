@@ -57,6 +57,9 @@ public class ScriptDefinitionParser {
                 srd.addScriptDefinition(parseScriptDefinition(propName,
                         ScriptType.AUTOCOMPLETE, scriptType.getChildren()));
                 break;
+            case ResourcetreeLexer.MULTIPLEINPUTFIELDS:
+                srd.addScriptDefinition(parseScriptDefinition(propName,
+                        ScriptType.MULTIPLEINPUTFIELDS, scriptType.getChildren()));
             default:
                 break;
             }

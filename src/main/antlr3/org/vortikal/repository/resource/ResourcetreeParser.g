@@ -129,6 +129,8 @@ scriptdef:	NAME SHOWHIDE SCRIPTTRIGGER namelist
 		-> ^(NAME ^(SHOWHIDE ^(SCRIPTTRIGGER namelist)))
 	|	NAME AUTOCOMPLETE LP (namevaluepair (COMMA namevaluepair)*) RP
 		-> ^(NAME ^(AUTOCOMPLETE (namevaluepair)*))
+	|	NAME MULTIPLEINPUTFIELDS
+		-> ^(NAME ^(MULTIPLEINPUTFIELDS))
 	;
 
 services:	SERVICES LCB

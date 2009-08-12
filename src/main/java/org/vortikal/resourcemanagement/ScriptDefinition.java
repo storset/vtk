@@ -32,7 +32,7 @@ package org.vortikal.resourcemanagement;
 
 public class ScriptDefinition {
     
-    public enum ScriptType {SHOWHIDE, AUTOCOMPLETE};
+    public enum ScriptType {SHOWHIDE, AUTOCOMPLETE, MULTIPLEINPUTFIELDS};
     
     private String name;
     private ScriptType type;

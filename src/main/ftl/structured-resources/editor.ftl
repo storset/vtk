@@ -24,6 +24,7 @@
 	PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
 	function performSave(){
 		saveDateAndTimeFields();
+		saveMultipleInputFields();
 		NEED_TO_CONFIRM = false;
 	}
 	function cSave() {

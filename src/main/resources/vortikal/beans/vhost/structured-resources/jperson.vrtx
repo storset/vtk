@@ -7,7 +7,7 @@ resourcetype jperson : jdocument {
     surname : string,
     postalAddress : string,
     visitingAddress : string,
-    email : string,
+    email : string multiple,
     webPage : string, 
     officeNumber : string,
     availableHours : string,
@@ -32,7 +32,8 @@ resourcetype jperson : jdocument {
   scripts {
     getExternalPersonInfo show-hide onclick (firstName, surname, email),
     getExternalScientificInformation show-hide onclick (scientificInformation),
-    tags autocomplete (minChars : "1")
+    tags autocomplete (minChars : "1"),
+    email multipleinputfields
   }
   
   services {

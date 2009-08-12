@@ -13,7 +13,7 @@
     <@showhide.addShowHideScripts srcBase="${webResources?html}"/>
   </#if>
   <#if containsMultipleInputFieldScripts>
-  	<@multipleinputfields.addMultipleInputFieldsScripts srcBase="${webResources?html}" />
+    <@multipleinputfields.addMultipleInputFieldsScripts srcBase="${webResources?html}" />
   </#if>
   <script type="text/javascript">
     $(document).ready(function() {
@@ -23,7 +23,7 @@
         <#elseif script.type == 'SHOWHIDE' >
           <@showhide.addShowHide script />
         <#elseif script.type == 'MULTIPLEINPUTFIELDS' >
-			<@multipleinputfields.addMultipleInputFields script />
+          <@multipleinputfields.addMultipleInputFields script />
         </#if>
       </#list>
     });

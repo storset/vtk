@@ -11,18 +11,20 @@ function loadMultipleInputFields(name,addName, removeName) {
         MULTIPLE_INPUT_FIELD_NAMES[0] = name; 
     }
     
+    size = getInputFieldSize(id);
+    
     $(id).hide();
     $(id).after("<div id='vrtx-" + name + "-add'>" +
-            "<button  onClick=\"addFormField('"+ name + "',null, '"+ removeName +  "'); return false;\">" + addName + "</button></div>");
+            "<button  onClick=\"addFormField('"+ name + "',null, '"+ removeName +  "','" + size + "'); return false;\">" + addName + "</button></div>");
     $(id).after("<input type='hidden' id='id-" + name + "' name='id-" + name + "' value='1' />");
 
     var listOfFiles = document.getElementById(name).value.split(",");
     for (i in listOfFiles) {
-        addFormField(name,jQuery.trim(listOfFiles[i]), removeName);    
+        addFormField(name,jQuery.trim(listOfFiles[i]), removeName,size);    
     }
 }
 
-function addFormField(name, value, removeName) {
+function addFormField(name, value, removeName, size) {
     var idstr = "vrtx-" + name + "-";
     var i = document.getElementById("id-" + name).value;
     if (value == null)
@@ -36,12 +38,10 @@ function addFormField(name, value, removeName) {
             "\"); return false;'>" + removeName + "</button>";
     }
 
-    var browseServer = "";//"<button type=\"button\" id=\"" + idstr + "browse\" onclick=\"browseServer('" + idstr + id + "', '" + 
-            //editorBase + "', '" + baseFolder + "', '" + editorBrowseUrl + "', 'File');\">" + browsName + "</button>";
-    var classStr = " class='"  + idstr + "style' ";
+    var classStr = " class='vrtx-multipleinputfield' ";
 
-    $("<p " + classStr + " id='"+ idstr + "row-" + i + "'><input value='" + value +  "' type='text' size='20' id='" + 
-            idstr + i + "'> " + browseServer + deleteRow + "</p>").insertBefore("#vrtx-" + name + "-add");
+    $("<div " + classStr + " id='"+ idstr + "row-" + i + "'><input value='" + value +  "' type='text'  size='" + size +"' id='" + 
+            idstr + i + "'> " + deleteRow + "</div>").insertBefore("#vrtx-" + name + "-add");
 
     i++;
     document.getElementById("id-" + name).value = i;
@@ -70,4 +70,9 @@ function saveMultipleInputFields(){
     for(i in MULTIPLE_INPUT_FIELD_NAMES){
         formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
     }
+}
+
+function getInputFieldSize(id){
+   var a = $.find(id);
+   return a[0].size;
 }

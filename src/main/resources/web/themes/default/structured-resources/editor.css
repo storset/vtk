@@ -80,3 +80,7 @@
   clear: left;
   display: block;
 }
+
+div.vrtx-multipleinputfield{
+    padding-bottom:5px;
+}

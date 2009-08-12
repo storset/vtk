@@ -10,10 +10,12 @@ resourcetype person : article {
     username (size[8]),
     tags (before fetchExternal) (size[24]),
     fetchExternal (radio),
-    group name (firstname, surname) (after username)
+    group name (firstname, surname)
+    group description (name, content) (after username)
   }
   scripts {
-    tags autocomplete (width : "200", minChars : "0")
+    tags autocomplete (width : "200", minChars : "0"),
+    tags multipleinputfields
   }
   services {
     fetchExternal external requires(firstName, surname) affects(firstName, surname, email) 

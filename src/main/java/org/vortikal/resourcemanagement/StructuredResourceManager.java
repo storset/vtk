@@ -54,6 +54,7 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
+import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.text.JSONUtil;
 import org.vortikal.web.service.JSONObjectSelectAssertion;
@@ -82,7 +83,7 @@ public class StructuredResourceManager {
             throw new IllegalArgumentException("Resource type of name " + name
                     + " already exists");
         }
-
+        description.validate();
         PrimaryResourceTypeDefinition def = createResourceType(description);
         this.resourceTypeTree.registerDynamicResourceType(def);
 
@@ -156,10 +157,12 @@ public class StructuredResourceManager {
         assertions.add(typeElementAssertion);
 
         for (PropertyDescription propDesc : description.getPropertyDescriptions()) {
-            if (propDesc.isRequired()) {
-                JSONObjectSelectAssertion propAssertion = this.assertion
-                        .createAssertion("properties." + propDesc.getName());
-                assertions.add(propAssertion);
+            if (propDesc instanceof SimplePropertyDescription) {
+                if (((SimplePropertyDescription) propDesc).isRequired()) {
+                    JSONObjectSelectAssertion propAssertion = this.assertion
+                    .createAssertion("properties." + propDesc.getName());
+                    assertions.add(propAssertion);
+                }
             }
         }
         return assertions;
@@ -167,13 +170,12 @@ public class StructuredResourceManager {
 
     private PropertyTypeDefinition[] createPropDefs(
             StructuredResourceDescription description) throws Exception {
-
         List<PropertyDescription> propertyDescriptions = description
                 .getPropertyDescriptions();
         List<PropertyTypeDefinition> result = new ArrayList<PropertyTypeDefinition>();
 
         for (PropertyDescription d : propertyDescriptions) {
-            PropertyTypeDefinition def = createPropDef(d);
+            PropertyTypeDefinition def = createPropDef(d, description);
             if (def != null) {
                 result.add(def);
             }
@@ -181,15 +183,17 @@ public class StructuredResourceManager {
         return result.toArray(new PropertyTypeDefinition[result.size()]);
     }
 
-    private PropertyTypeDefinition createPropDef(PropertyDescription d) throws Exception {
+    private PropertyTypeDefinition createPropDef(
+            PropertyDescription propertyDescription, 
+            StructuredResourceDescription resourceDescription) throws Exception {
 
-        if (d.isNoExtract()) {
+        if (propertyDescription.isNoExtract()) {
             return null;
         }
 
-        if (d.getOverrides() != null) {
+        if (propertyDescription.getOverrides() != null) {
             Namespace namespace = Namespace.DEFAULT_NAMESPACE; // XXX
-            String name = d.getOverrides();
+            String name = propertyDescription.getOverrides();
 
             PropertyTypeDefinition original = this.resourceTypeTree
                     .getPropertyTypeDefinition(namespace, name);
@@ -199,32 +203,50 @@ public class StructuredResourceManager {
             OverridablePropertyTypeDefinitionImpl overridableDef = (OverridablePropertyTypeDefinitionImpl) original;
             OverridingPropertyTypeDefinitionImpl overridingDef = new OverridingPropertyTypeDefinitionImpl();
             overridingDef.setOverriddenPropDef(overridableDef);
-            overridingDef.setPropertyEvaluator(createPropertyEvaluator());
+            overridingDef.setPropertyEvaluator(
+                    createPropertyEvaluator(propertyDescription, resourceDescription));
             overridingDef.afterPropertiesSet();
             return overridingDef;
         } else {
-            OverridablePropertyTypeDefinitionImpl def = new OverridablePropertyTypeDefinitionImpl();
+            OverridablePropertyTypeDefinitionImpl def = 
+                new OverridablePropertyTypeDefinitionImpl();
 
-            def.setName(d.getName());
+            def.setName(propertyDescription.getName());
             def.setNamespace(this.namespace);
-            def.setType(mapType(d));
+            def.setType(mapType(propertyDescription));
             def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);
-            def.setMandatory(d.isRequired());
-            def.setMultiple(d.isMultiple());
+            boolean mandatory = false;
+            if (propertyDescription instanceof SimplePropertyDescription) {
+                mandatory = ((SimplePropertyDescription) propertyDescription).isRequired();
+            }
+            def.setMandatory(mandatory);
+            def.setMultiple(propertyDescription.isMultiple());
             def.setValueFactory(this.valueFactory);
             def.setValueFormatterRegistry(this.valueFormatterRegistry);
-            def.setPropertyEvaluator(createPropertyEvaluator());
+            def.setPropertyEvaluator(
+                    createPropertyEvaluator(propertyDescription, resourceDescription));
 
-            Map<String, Object> edithints = d.getEdithints();
-            if (edithints != null) {
-                def.addMetadata("editingHints", edithints);
+            if (propertyDescription instanceof SimplePropertyDescription) {
+                Map<String, Object> edithints = 
+                    ((SimplePropertyDescription) propertyDescription).getEdithints();
+                if (edithints != null) {
+                    def.addMetadata("editingHints", edithints);
+                }
             }
             def.afterPropertiesSet();
             return def;
         }
     }
 
-    private PropertyEvaluator createPropertyEvaluator() {
+    private PropertyEvaluator createPropertyEvaluator(PropertyDescription desc, 
+            StructuredResourceDescription resourceDesc) {
+        if (desc instanceof SimplePropertyDescription) {
+            return createSimplePropertyEvaluator((SimplePropertyDescription) desc);
+        }
+        return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc);        
+    }
+
+    private PropertyEvaluator createSimplePropertyEvaluator(SimplePropertyDescription desc) {
         return new PropertyEvaluator() {
 
             public boolean evaluate(Property property, PropertyEvaluationContext ctx)
@@ -256,7 +278,47 @@ public class StructuredResourceManager {
             }
         };
     }
+    
+    private PropertyEvaluator createDerivedPropertyEvaluator(final DerivedPropertyDescription desc) {
+        
+        return new PropertyEvaluator() {
 
+            public boolean evaluate(Property property, PropertyEvaluationContext ctx)
+                    throws PropertyEvaluationException {
+                if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
+                    return false;
+                }
+                if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
+                    return ctx.getOriginalResource()
+                            .getProperty(property.getDefinition()) != null;
+                }
+                try {
+                    StringBuilder value = new StringBuilder();
+                    for (EvalDescription evalDescription: desc.getEvalDescriptions()) {
+                        if (evalDescription.isString()) {
+                            value.append(evalDescription.getValue());
+                            continue;
+                        }
+                        String propName = evalDescription.getValue();
+                        Property p = ctx.getNewResource().getProperty(
+                                Namespace.STRUCTURED_RESOURCE_NAMESPACE, propName);
+                        if (p == null) {
+                            p = ctx.getNewResource().getProperty(
+                                    Namespace.DEFAULT_NAMESPACE, propName);
+                        }
+                        if (p == null) {
+                            return false;
+                        }
+                        value.append(p.getValue().toString());
+                    }
+                    property.setStringValue(value.toString());
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        };
+    }
     private PropertyType.Type mapType(PropertyDescription d) {
         String type = d.getType();
 

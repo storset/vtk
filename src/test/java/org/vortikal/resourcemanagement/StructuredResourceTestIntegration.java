@@ -55,13 +55,22 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
         List<PropertyDescription> propertyDescriptions = srd.getAllPropertyDescriptions();
         if (propertyDescriptions != null) {
             System.out.println("\tProperties:");
-            for (PropertyDescription pd : propertyDescriptions) {
-                System.out.println("\t\t" + pd.getName() + ": " + pd.getType() + " "
-                        + pd.isMultiple() + " " + pd.isRequired() + " "
-                        + pd.isNoExtract() + " " + pd.getOverrides());
-                Map<String, Object> edithints = pd.getEdithints();
-                if (edithints != null) {
-                    System.out.println("\t\t\tEdithints: " + edithints);
+            for (PropertyDescription d : propertyDescriptions) {
+                if (d instanceof DerivedPropertyDescription) {
+                    DerivedPropertyDescription dp = (DerivedPropertyDescription) d;
+                    System.out.println("\t\t" + dp.getName() + ": " + dp.getType() + " "
+                            + dp.isMultiple() + " derived from: " + dp.getDependentProperties() + " "
+                            + dp.getOverrides());
+                    
+                } else {
+                    SimplePropertyDescription sd = (SimplePropertyDescription) d;
+                    System.out.println("\t\t" + sd.getName() + ": " + sd.getType() + " "
+                            + sd.isMultiple() + " " + sd.isRequired() + " "
+                            + sd.isNoExtract() + " " + sd.getOverrides());
+                    Map<String, Object> edithints = sd.getEdithints();
+                    if (edithints != null) {
+                        System.out.println("\t\t\tEdithints: " + edithints);
+                    }
                 }
             }
         }

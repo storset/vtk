@@ -32,9 +32,13 @@ package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
+import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
 
 public final class StructuredResourceDescription {
 
@@ -77,14 +81,33 @@ public final class StructuredResourceDescription {
     public void setPropertyDescriptions(List<PropertyDescription> propertyDescriptions) {
         this.propertyDescriptions = propertyDescriptions;
     }
-
+    
     public List<PropertyDescription> getAllPropertyDescriptions() {
         List<PropertyDescription> result = new ArrayList<PropertyDescription>();
         if (this.inheritsFrom != null) {
             StructuredResourceDescription ancestor = this.manager.get(this.inheritsFrom);
             result.addAll(ancestor.getAllPropertyDescriptions());
         }
-        result.addAll(this.getPropertyDescriptions());
+        
+        Set<PropertyDescription> alreadyAdded = new HashSet<PropertyDescription>();
+        for (int i = 0; i < result.size(); i++) {
+            PropertyDescription ancestor = result.get(i);
+            for (int j = 0; j < this.propertyDescriptions.size(); j++) {
+                PropertyDescription d = this.propertyDescriptions.get(j);
+                if (d.getOverrides() != null) {
+                    if (d.getName().equals(ancestor.getName())) {
+                        result.remove(i);
+                        result.add(i, d);
+                        alreadyAdded.add(d);
+                    }
+                }
+            }
+        }
+        for (PropertyDescription propertyDescription: this.propertyDescriptions) {
+            if (!alreadyAdded.contains(propertyDescription)) {
+                result.add(propertyDescription);
+            }
+        }
         return result;
     }
 
@@ -186,5 +209,68 @@ public final class StructuredResourceDescription {
     public String toString() {
         return this.getClass().getName() + ":" + this.name;
     }
+
+    void validate() {
+      for (int i = 0; i < propertyDescriptions.size(); i++) {
+          PropertyDescription d = propertyDescriptions.get(i);
+          
+          if (d instanceof DerivedPropertyDescription) {
+              DerivedPropertyDescription derived = (DerivedPropertyDescription) d;
+
+              for (String propName : derived.getDependentProperties()) {
+                  boolean found = false;
+                  // Verify that each derived property is defined:
+                  for (int j = 0; j < i; j++) {
+                      if (propertyDescriptions.get(j).getName().equals(propName)) {
+                          found = true;
+                          break;
+                      }
+                  }
+                  if (!found) {
+                      // If not found in this definition, check parent:
+                      if (this.inheritsFrom != null) {
+                          StructuredResourceDescription parent = 
+                              this.manager.get(this.inheritsFrom);
+                          if (parent.getPropertyDescription(propName) != null) {
+                              found = true;
+                          }
+                      }
+                      if (!found) {
+                          throw new IllegalStateException(
+                                  "Property definition '" + d.getName() + 
+                                  "' is declared to be derived from property '" + 
+                                  propName + "', which is not defined");
+                      }
+                  }
+                  // Verify that properties do not derive from themselves:
+                  if (propName.equals(d.getName())) {
+                      throw new IllegalStateException(
+                              "Property definition '" + d.getName() + 
+                              "' is declared to be derived from itself");
+                  }
+              }
+              // Verify that derived properties evaluate using only
+              // declared properties:
+              for (EvalDescription eval: derived.getEvalDescriptions()) {
+                if (!eval.isString()) {
+                    boolean found = false;
+                    for (String propName: derived.getDependentProperties()) {
+                        if (propName.equals(eval.getValue())) {
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        throw new IllegalStateException(
+                                "Property definition '" + d.getName() + 
+                                "' is declared to evaluate using property '" + 
+                                eval.getValue() + 
+                                "', which is not listed in the derives clause");
+                    }
+                }
+            }
+          }
+      }
+      
+  }
 
 }

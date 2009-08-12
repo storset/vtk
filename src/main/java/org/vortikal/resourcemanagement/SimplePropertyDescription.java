@@ -30,55 +30,31 @@
  */
 package org.vortikal.resourcemanagement;
 
-public abstract class PropertyDescription {
-    
-    private String name;
-    private String type;
-    private String overrides;
-    private boolean noExtract;
-    private boolean multiple;
+import java.util.HashMap;
+import java.util.Map;
 
-    public final void setName(String name) {
-        this.name = name;
+public class SimplePropertyDescription extends PropertyDescription {
+
+    private boolean required;
+    private Map<String, Object> edithints;
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 
-    public final String getName() {
-        return name;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setOverrides(String overrides) {
-        this.overrides = overrides;
-    }
-
-    public String getOverrides() {
-        return overrides;
-    }
-
-    public void setNoExtract(boolean noExtract) {
-        this.noExtract = noExtract;
-    }
-
-    public boolean isNoExtract() {
-        return noExtract;
+    public boolean isRequired() {
+        return required;
     }
     
-    public void setMultiple(boolean multiple) {
-        this.multiple = multiple;
-    }
-    
-    public boolean isMultiple() {
-        return this.multiple;
+    public Map<String, Object> getEdithints() {
+        return edithints;
     }
 
-    public String toString() {
-        return this.getClass().getName() + ": " + this.name;
+    public void addEdithint(String key, Object value) {
+        if (edithints == null) {
+            edithints = new HashMap<String, Object>();
+        }
+        edithints.put(key, value);
     }
+    
 }

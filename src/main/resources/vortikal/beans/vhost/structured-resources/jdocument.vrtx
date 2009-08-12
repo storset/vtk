@@ -1,7 +1,7 @@
 resourcetype jdocument {
 
   properties {
-    title : string (overrides : title),
+    title : string overrides title,
     introduction : simple_html,
     introduction-img : image_ref,
     image-caption : simple_html,

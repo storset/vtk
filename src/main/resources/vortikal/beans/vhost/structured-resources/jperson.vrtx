@@ -5,6 +5,8 @@ resourcetype jperson : jdocument {
     getExternalPersonInfo : boolean,
     firstName : string,
     surname : string,
+    title : derived (firstName, surname) 
+            eval (firstName + " " + surname) overrides title,
     postalAddress : string,
     visitingAddress : string,
     email : string multiple,

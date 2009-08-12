@@ -47,6 +47,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
@@ -145,11 +146,13 @@ public class StructuredResourceEditor extends SimpleFormController {
                     .getAllPropertyDescriptions();
             FormSubmitCommand form = (FormSubmitCommand) getTarget();
             for (PropertyDescription desc : props) {
-                String posted = request.getParameter(desc.getName());
-                try {
-                    form.bind(desc.getName(), posted);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if (desc instanceof SimplePropertyDescription) {
+                    String posted = request.getParameter(desc.getName());
+                    try {
+                        form.bind(desc.getName(), posted);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
             super.bind(request);

@@ -30,55 +30,44 @@
  */
 package org.vortikal.resourcemanagement;
 
-public abstract class PropertyDescription {
-    
-    private String name;
-    private String type;
-    private String overrides;
-    private boolean noExtract;
-    private boolean multiple;
+import java.util.List;
 
-    public final void setName(String name) {
-        this.name = name;
+public class DerivedPropertyDescription extends PropertyDescription {
+
+    private List<String> dependentProperties;
+    private List<EvalDescription> evalDescriptions;
+
+    public void setDependentProperties(List<String> dependentProperties) {
+        this.dependentProperties = dependentProperties;
     }
 
-    public final String getName() {
-        return name;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setOverrides(String overrides) {
-        this.overrides = overrides;
-    }
-
-    public String getOverrides() {
-        return overrides;
-    }
-
-    public void setNoExtract(boolean noExtract) {
-        this.noExtract = noExtract;
-    }
-
-    public boolean isNoExtract() {
-        return noExtract;
+    public List<String> getDependentProperties() {
+        return this.dependentProperties;
     }
     
-    public void setMultiple(boolean multiple) {
-        this.multiple = multiple;
-    }
-    
-    public boolean isMultiple() {
-        return this.multiple;
+    public void setEvalDescriptions(List<EvalDescription> evalDescriptions) {
+        this.evalDescriptions = evalDescriptions;
     }
 
-    public String toString() {
-        return this.getClass().getName() + ": " + this.name;
+    public List<EvalDescription> getEvalDescriptions() {
+        return evalDescriptions;
+    }
+
+    public static class EvalDescription {
+        private boolean string;
+        private String value;
+
+        public EvalDescription(boolean string, String value) {
+            this.string = string;
+            this.value = value;
+        }
+
+        public boolean isString() {
+            return string;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

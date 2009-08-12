@@ -3,11 +3,16 @@ lexer grammar ResourcetreeLexer;
 tokens {
   /* Imaginary token used for intermediate handling of AST */
   PARENT;
+  FIELDS;
 }
 
 @header {
 package org.vortikal.repository.resource;
 }
+
+COMMENT
+    : '/*' .* '*/' {$channel=HIDDEN;}
+    ;
 
 INCLUDE	:	'include';
 RESOURCETYPE
@@ -32,10 +37,13 @@ LB	:	'[';
 RB	:	']';
 COLON	:	':';
 COMMA	:	',';
+PLUS	:	'+';
 DQ	:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
+DERIVED:	'derived';
+EVAL:	    'eval';
 MULTIPLE:	'multiple';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS

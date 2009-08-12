@@ -66,12 +66,49 @@ resourceprops
 	;
 
 propertytypedef
+    : (derivedpropertytypedef | plainpropertytypedef)
+    ;
+
+derivedpropertytypedef
+	:	NAME COLON derived (overrides)?
+		-> ^(NAME derived (overrides)?)
+    ;
+
+plainpropertytypedef
 	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
 		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?)
 	;
 
+derived
+    :   DERIVED LP fieldlist RP EVAL LP evallist RP 
+		-> ^(DERIVED ^(FIELDS fieldlist) ^(EVAL evallist))
+    ;
+
+fieldlist
+    :   NAME (COMMA NAME)*
+        ->  NAME+
+    ;
+
+evallist
+    :  nameorqtext (PLUS nameorqtext)*
+       -> nameorqtext+
+    ;
+
+nameorqtext
+    : NAME
+      -> NAME
+    | QTEXT
+      -> DQ QTEXT DQ
+    ;
+
+/*
+nameorqtext
+    : (NAME | QTEXT)
+    ;
+*/
+
 overrides
-	:	LP OVERRIDES COLON NAME RP
+	:	OVERRIDES NAME
 		-> ^(OVERRIDES NAME)
 	;
 

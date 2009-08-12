@@ -34,9 +34,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
 import org.vortikal.repository.resource.ResourcetreeLexer;
+import org.vortikal.resourcemanagement.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
 
 public class PropertyDescriptionParser {
 
@@ -46,16 +50,23 @@ public class PropertyDescriptionParser {
         List<PropertyDescription> props = new ArrayList<PropertyDescription>();
         if (propertyDescriptions != null) {
             for (CommonTree propDesc : propertyDescriptions) {
-                PropertyDescription p = new PropertyDescription();
-                p.setName(propDesc.getText());
-                setPropertyDescription(p, propDesc.getChildren());
-                props.add(p);
+                if (propDesc.getChild(0).getType() == ResourcetreeLexer.DERIVED) {
+                    DerivedPropertyDescription p = new DerivedPropertyDescription();
+                    p.setName(propDesc.getText());
+                    populateDerivedPropertyDescription(p, propDesc.getChildren());
+                    props.add(p);
+                } else {
+                    SimplePropertyDescription p = new SimplePropertyDescription();
+                    p.setName(propDesc.getText());
+                    populateSimplePropertyDescription(p, propDesc.getChildren());
+                    props.add(p);
+                }
             }
             srd.setPropertyDescriptions(props);
         }
     }
 
-    private void setPropertyDescription(PropertyDescription p,
+    private void populateSimplePropertyDescription(SimplePropertyDescription p,
             List<CommonTree> propertyDescription) {
         for (CommonTree descEntry : propertyDescription) {
             switch (descEntry.getType()) {
@@ -75,10 +86,55 @@ public class PropertyDescriptionParser {
                 p.setMultiple(true);
                 break;
             default:
-                throw new IllegalStateException("Unknown token type: "
+                throw new IllegalStateException(
+                        "Unknown token type for simple property description: "
                         + descEntry.getType());
             }
         }
     }
-
+    
+    private void populateDerivedPropertyDescription(DerivedPropertyDescription p,
+            List<CommonTree> propertyDescription) {
+        for (CommonTree descEntry : propertyDescription) {
+            switch (descEntry.getType()) {
+            case ResourcetreeLexer.DERIVED:
+                handleDerivedProperty(p, descEntry);
+                break;
+            case ResourcetreeLexer.OVERRIDES:
+                p.setOverrides(descEntry.getChild(0).getText());
+                break;
+            case ResourcetreeLexer.MULTIPLE:
+                p.setMultiple(true);
+                break;
+            default:
+                throw new IllegalStateException(
+                        "Unknown token type for derived property description: "
+                        + descEntry.getType());
+            }
+        }
+    }
+    
+    private void handleDerivedProperty(DerivedPropertyDescription p, CommonTree descEntry) {
+        List<String> dependentFields = new ArrayList<String>();
+        Tree fields = descEntry.getChild(0);
+        for (int i = 0; i < fields.getChildCount(); i++) {
+            dependentFields.add(fields.getChild(i).getText());
+        }
+        
+        Tree eval = descEntry.getChild(1);
+        boolean quote = false;
+        List<EvalDescription> evalDescriptions = 
+            new ArrayList<EvalDescription>();
+        for (int i = 0; i < eval.getChildCount(); i++) {
+            if (ResourcetreeLexer.DQ == eval.getChild(i).getType()) {
+                quote = !quote;
+                continue;
+            }
+            String value = eval.getChild(i).getText();
+            EvalDescription desc = new EvalDescription(quote, value);
+            evalDescriptions.add(desc);
+        }
+        p.setDependentProperties(dependentFields);
+        p.setEvalDescriptions(evalDescriptions);
+    }
 }

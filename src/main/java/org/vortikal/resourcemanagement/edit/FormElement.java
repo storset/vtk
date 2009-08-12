@@ -34,16 +34,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.IllegalClassException;
-import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.ValidationError;
 
 public class FormElement {
 
-    private PropertyDescription description;
+    private SimplePropertyDescription description;
     private ValidationError error;
     private Object value;
 
-    public FormElement(PropertyDescription description, ValidationError error,
+    public FormElement(SimplePropertyDescription description, ValidationError error,
             Object value) {
         this.description = description;
         this.error = error;
@@ -55,11 +55,11 @@ public class FormElement {
         return this.description.getName();
     }
 
-    public void setDescription(PropertyDescription description) {
+    public void setDescription(SimplePropertyDescription description) {
         this.description = description;
     }
 
-    public PropertyDescription getDescription() {
+    public SimplePropertyDescription getDescription() {
         return description;
     }
 

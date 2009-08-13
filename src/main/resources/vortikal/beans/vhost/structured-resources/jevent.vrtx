@@ -8,17 +8,19 @@ resourcetype jevent : jdocument {
 
   edit-rules {
     image-caption (size[small]),
-    group timeAndPlace (start-date, end-date, location, map-url) (after image-caption) horizontal
+    group introImg (introduction-img, image-caption) (after introduction) vertical,
+    title (size[large]),
+    group timeAndPlace (start-date, end-date, location, map-url) (after introImg) horizontal
   }
 
   view {
     ##
     <html>
       <head>
-        <title><json:field select="title" /></title>
+        <title><comp:title /></title>
       </head>
       <body>
-        <h1><json:field select="title" /></h1>
+        <h1><comp:title /></h1>
 
         <p>Start date: <json:field select="start-date" /></p>
         <p>End date: <json:field select="end-date" /></p>

@@ -7,8 +7,11 @@ resourcetype jarticle : jdocument {
   }
 
   edit-rules {
+    image-caption (size[small]),
+    group introImg (introduction-img, image-caption) (after introduction) vertical,
+    title (size[large]),
+    group timeAndAuthor (published-date, author) (after introImg) horizontal
   }
-
 
   view-components {
 

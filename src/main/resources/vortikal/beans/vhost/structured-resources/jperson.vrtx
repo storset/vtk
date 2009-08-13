@@ -22,7 +22,7 @@ resourcetype jperson : jdocument {
   edit-rules {
     username (before title),
     image-caption (size[small]),
-    group introImg (introduction-image, image-caption) (after surname) horizontal,
+    group introImg (introduction-img, image-caption) (after surname) horizontal,
     tags (after scientificInformation) (size[32]),
     availableHours (size[small]),
     officeNumber (size[5]),

@@ -67,14 +67,16 @@
   border: 1px solid #a9a9a9;
   clear: left;
   float: left;
-  margin:10px;
+  margin:10px 0;
   padding:0 0 10px;
   width:auto;
 }
 
 .vrtx-grouped-vertical {
   /*XXX Temp border to indicate grouped props*/
-  border: 1px solid #a9a9a9;
+  border: 1px solid #a9a9a9; 
+  width: auto;
+  float:left;
 }
 
 #contents {

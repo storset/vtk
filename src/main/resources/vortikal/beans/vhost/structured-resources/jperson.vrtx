@@ -21,14 +21,13 @@ resourcetype jperson : jdocument {
 
   edit-rules {
     username (before title),
-    picture (after surname),
+    image-caption (size[small]),
+    group introImg (introduction-image, image-caption) (after surname) horizontal,
     tags (after scientificInformation) (size[32]),
-    title (size[large]),
     availableHours (size[small]),
     officeNumber (size[5]),
     getExternalScientificInformation (dropdown),
-    group contactInfo (email, officeNumber, availableHours) (after username) horizontal,
-    image-caption (size[small])
+    group contactInfo (email, officeNumber, availableHours) (after username) horizontal
   }
 
   scripts {

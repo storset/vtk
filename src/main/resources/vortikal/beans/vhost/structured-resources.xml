@@ -200,4 +200,7 @@
               ref="structuredResources.resourceManager" />
   </bean>
   
+  <bean id="externalServiceInvoker"
+        class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker"/>
+  
 </beans>

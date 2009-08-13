@@ -160,7 +160,7 @@ public class StructuredResourceManager {
             if (propDesc instanceof SimplePropertyDescription) {
                 if (((SimplePropertyDescription) propDesc).isRequired()) {
                     JSONObjectSelectAssertion propAssertion = this.assertion
-                    .createAssertion("properties." + propDesc.getName());
+                            .createAssertion("properties." + propDesc.getName());
                     assertions.add(propAssertion);
                 }
             }
@@ -183,8 +183,7 @@ public class StructuredResourceManager {
         return result.toArray(new PropertyTypeDefinition[result.size()]);
     }
 
-    private PropertyTypeDefinition createPropDef(
-            PropertyDescription propertyDescription, 
+    private PropertyTypeDefinition createPropDef(PropertyDescription propertyDescription,
             StructuredResourceDescription resourceDescription) throws Exception {
 
         if (propertyDescription.isNoExtract()) {
@@ -203,13 +202,12 @@ public class StructuredResourceManager {
             OverridablePropertyTypeDefinitionImpl overridableDef = (OverridablePropertyTypeDefinitionImpl) original;
             OverridingPropertyTypeDefinitionImpl overridingDef = new OverridingPropertyTypeDefinitionImpl();
             overridingDef.setOverriddenPropDef(overridableDef);
-            overridingDef.setPropertyEvaluator(
-                    createPropertyEvaluator(propertyDescription, resourceDescription));
+            overridingDef.setPropertyEvaluator(createPropertyEvaluator(
+                    propertyDescription, resourceDescription));
             overridingDef.afterPropertiesSet();
             return overridingDef;
         } else {
-            OverridablePropertyTypeDefinitionImpl def = 
-                new OverridablePropertyTypeDefinitionImpl();
+            OverridablePropertyTypeDefinitionImpl def = new OverridablePropertyTypeDefinitionImpl();
 
             def.setName(propertyDescription.getName());
             def.setNamespace(this.namespace);
@@ -217,18 +215,19 @@ public class StructuredResourceManager {
             def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);
             boolean mandatory = false;
             if (propertyDescription instanceof SimplePropertyDescription) {
-                mandatory = ((SimplePropertyDescription) propertyDescription).isRequired();
+                mandatory = ((SimplePropertyDescription) propertyDescription)
+                        .isRequired();
             }
             def.setMandatory(mandatory);
             def.setMultiple(propertyDescription.isMultiple());
             def.setValueFactory(this.valueFactory);
             def.setValueFormatterRegistry(this.valueFormatterRegistry);
-            def.setPropertyEvaluator(
-                    createPropertyEvaluator(propertyDescription, resourceDescription));
+            def.setPropertyEvaluator(createPropertyEvaluator(propertyDescription,
+                    resourceDescription));
 
             if (propertyDescription instanceof SimplePropertyDescription) {
-                Map<String, Object> edithints = 
-                    ((SimplePropertyDescription) propertyDescription).getEdithints();
+                Map<String, Object> edithints = ((SimplePropertyDescription) propertyDescription)
+                        .getEdithints();
                 if (edithints != null) {
                     def.addMetadata("editingHints", edithints);
                 }
@@ -238,12 +237,12 @@ public class StructuredResourceManager {
         }
     }
 
-    private PropertyEvaluator createPropertyEvaluator(PropertyDescription desc, 
+    private PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
             StructuredResourceDescription resourceDesc) {
         if (desc instanceof SimplePropertyDescription) {
             return createSimplePropertyEvaluator((SimplePropertyDescription) desc);
         }
-        return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc);        
+        return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc);
     }
 
     private PropertyEvaluator createSimplePropertyEvaluator(SimplePropertyDescription desc) {
@@ -278,9 +277,10 @@ public class StructuredResourceManager {
             }
         };
     }
-    
-    private PropertyEvaluator createDerivedPropertyEvaluator(final DerivedPropertyDescription desc) {
-        
+
+    private PropertyEvaluator createDerivedPropertyEvaluator(
+            final DerivedPropertyDescription desc) {
+
         return new PropertyEvaluator() {
 
             public boolean evaluate(Property property, PropertyEvaluationContext ctx)
@@ -294,7 +294,7 @@ public class StructuredResourceManager {
                 }
                 try {
                     StringBuilder value = new StringBuilder();
-                    for (EvalDescription evalDescription: desc.getEvalDescriptions()) {
+                    for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
                         if (evalDescription.isString()) {
                             value.append(evalDescription.getValue());
                             continue;
@@ -319,6 +319,7 @@ public class StructuredResourceManager {
             }
         };
     }
+
     private PropertyType.Type mapType(PropertyDescription d) {
         String type = d.getType();
 

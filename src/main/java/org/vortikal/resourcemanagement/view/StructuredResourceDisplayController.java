@@ -221,11 +221,12 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         ValNodeFactory val = new ValNodeFactory();
         val.addValueFormatHandler(PropertyImpl.class, new PropertyValueFormatHandler());
         val.addValueFormatHandler(Value.class, new PropertyValueFormatHandler());
+        val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler());
         directiveHandlers.put("val", val);
 
         directiveHandlers.put("comment", new CommentNodeFactory());
         directiveHandlers.put("list", new ListNodeFactory());
-        
+        directiveHandlers.put("resource-props", new ResourcePropsNodeFactory());
         DefineNodeFactory def = new DefineNodeFactory();
         def.addValueProvider("resource", new RetrieveHandler());
         def.addValueProvider("resource-prop", new ResourcePropHandler());
@@ -282,6 +283,59 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
+    private class ResourcePropsNodeFactory implements DirectiveNodeFactory {
+
+        public Node create(DirectiveParseContext ctx) throws Exception {
+            List<Argument> tokens = ctx.getArguments();
+            if (tokens.size() != 1) {
+                throw new RuntimeException("Wrong number of arguments");
+            }
+            final Argument arg1 = tokens.get(0);
+
+            return new Node() {
+                public void render(Context ctx, Writer out) throws Exception {
+                    Resource resource;
+                    String ref;
+                    if (arg1 instanceof Symbol) {
+                        Object o = ((Symbol) arg1).resolve(ctx);
+                        if (o == null) {
+                            throw new Exception("Unable to resolve: " + arg1.getRawValue());
+                        }
+                        ref = o.toString();
+                    } else {
+                        ref = ((Literal) arg1).getValue().toString();
+                    }
+
+                    if (ref.equals(".")) {
+                        Object o = ctx.get(MVC_MODEL_KEY);
+                        if (o == null) {
+                            throw new Exception("Unable to locate resource: no model: " + MVC_MODEL_KEY);
+                        }
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> model = (Map<String, Object>) o;
+                        resource = (Resource) model.get("resource");
+                    } else {
+                        Path uri = Path.fromString(ref);
+                        String token = SecurityContext.getSecurityContext().getToken();
+                        resource = repository.retrieve(token, uri, true);
+                    }
+                    if (resource == null) {
+                        throw new RuntimeException("Unable to resolve resource");
+                    }
+                    for (Property prop : resource.getProperties()) {
+                        if (prop.getDefinition().isMultiple()) {
+                            ctx.define(prop.getDefinition().getName(), prop.getValues(), false);
+                        } else {
+                            ctx.define(prop.getDefinition().getName(), prop.getValue(), false);
+                        }
+                    }
+                }
+            };
+        }
+
+    }
+    
+    
     private class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
 
         // Supported constructions:
@@ -348,7 +402,11 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             if (property == null) {
                 return null;
             }
-            return property.getValue();
+            if (property.getDefinition().isMultiple()) {
+                return property.getValues();
+            } else {
+                return property.getValue();
+            }
         }
     }
     
@@ -461,19 +519,32 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private class PropertyValueFormatHandler implements ValNodeFactory.ValueFormatHandler {
 
         public Object handleValue(Object val, String format, Context ctx) {
-            Value value;
-            if (val instanceof Property) {
-                value = ((Property) val).getValue();
-            } else if (val instanceof Value) {
-                value = (Value) val;
+            if (val instanceof Value[]) {
+                StringBuilder sb = new StringBuilder();
+                Value[] values = (Value[]) val;
+                for (int i = 0; i < values.length; i++) {
+                    ValueFormatter vf = valueFormatterRegistry.getValueFormatter(values[i].getType());
+                    sb.append(vf.valueToString(values[i], format, ctx.getLocale()));
+                    if (i < values.length - 1) {
+                        sb.append(", ");
+                    }
+                }
+                return sb.toString();
             } else {
-                throw new RuntimeException("Unknown type: " + val.getClass());
+                Value value;
+                if (val instanceof Property) {
+                    value = ((Property) val).getValue();
+                } else if (val instanceof Value) {
+                    value = (Value) val;
+                } else {
+                    throw new RuntimeException("Unknown type: " + val.getClass());
+                }
+                ValueFormatter vf = valueFormatterRegistry.getValueFormatter(value.getType());
+                if (vf == null) {
+                    throw new RuntimeException("Unable to find value formatter for value " + value);
+                }
+                return vf.valueToString(value, format, ctx.getLocale());
             }
-            ValueFormatter vf = valueFormatterRegistry.getValueFormatter(value.getType());
-            if (vf == null) {
-                throw new RuntimeException("Unable to find value formatter for value " + value);
-            }
-            return vf.valueToString(value, format, ctx.getLocale());
         }
     }
     

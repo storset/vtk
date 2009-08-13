@@ -30,6 +30,11 @@
         <ref bean="json.objectHasResourceTypeAssertion" />
       </list>
     </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="introductionMixinResourceTypeDef" />
+      </list>
+    </property>    
   </bean>
 
   <bean id="json.objectParseableAssertion"

@@ -72,6 +72,11 @@
   width:auto;
 }
 
+.vrtx-grouped-vertical {
+  /*XXX Temp border to indicate grouped props*/
+  border: 1px solid #a9a9a9;
+}
+
 #contents {
   overflow: auto;
   background-color: #efefef;

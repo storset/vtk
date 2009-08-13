@@ -57,6 +57,8 @@
     <#assign groupClass = "vrtx-grouped" />
     <#if elementBox.metaData['horizontal']?exists>
       <#assign groupClass = groupClass + "-horizontal" />
+    <#elseif elementBox.metaData['vertical']?exists>
+      <#assign groupClass = groupClass + "-vertical" />
     </#if>	
     <div class=${groupClass}>
   </#if>
@@ -150,7 +152,7 @@
   
 </#list>
 <div class="submit">
-	  <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction"  value="${vrtx.getMsg("editor.saveAndQuit")}" />
+	  <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction" value="${vrtx.getMsg("editor.saveAndQuit")}" />
 	  <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
 	  <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
 </div>

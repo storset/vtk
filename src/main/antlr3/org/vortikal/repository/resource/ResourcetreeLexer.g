@@ -61,8 +61,7 @@ NOEXTRACT
 OVERRIDES
 	:	'overrides';
 GROUP	:	'group';
-ORIANTATION
-	:	HORIZONTAL;
+ORIANTATION :  (HORIZONTAL | VERTICAL);
 BEFORE	:	'before';
 AFTER	:	'after';
 LETTER	:	('a'..'z' | 'A'..'Z');
@@ -122,6 +121,8 @@ fragment LARGE
 	:	'large';
 fragment HORIZONTAL 
 	:	'horizontal';
+fragment VERTICAL
+    :   'vertical';
 
 // Scripting
 fragment ONCLICK

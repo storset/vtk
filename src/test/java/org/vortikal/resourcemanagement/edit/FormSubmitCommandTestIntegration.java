@@ -36,8 +36,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceTestSetup;
-import org.vortikal.resourcemanagement.edit.FormSubmitCommand.Box;
-import org.vortikal.resourcemanagement.edit.FormSubmitCommand.FormElement;
 import org.vortikal.web.service.URL;
 
 public class FormSubmitCommandTestIntegration extends StructuredResourceTestSetup {
@@ -55,15 +53,15 @@ public class FormSubmitCommandTestIntegration extends StructuredResourceTestSetu
 
     private void printForm(FormSubmitCommand fsc) {
         System.out.println(fsc.getResource().getType().getName());
-        List<Box> elements = fsc.getElements();
+        List<FormElementBox> elements = fsc.getElements();
         if (elements != null && elements.size() > 0) {
             System.out.println("  formelements: ");
             printBoxElements(elements);
         }
     }
 
-    private void printBoxElements(List<Box> elements) {
-        for (Box elementBox : elements) {
+    private void printBoxElements(List<FormElementBox> elements) {
+        for (FormElementBox elementBox : elements) {
             System.out.println("    " + elementBox.getName());
             List<FormElement> formElements = elementBox.getFormElements();
             if (formElements.size() > 1) {

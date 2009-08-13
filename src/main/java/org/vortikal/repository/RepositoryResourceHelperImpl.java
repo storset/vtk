@@ -255,7 +255,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     private void evaluateManagedProperty(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
-        Property evaluatedProp = doEvaluate(ctx, propDef);;
+        Property evaluatedProp = doEvaluate(ctx, propDef);
         ResourceImpl newResource = ctx.getNewResource();
 
         if (evaluatedProp == null && propDef.isMandatory()) {
@@ -302,10 +302,22 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                                 + ctx.getNewResource(), e);
                     }
                 }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Property user-modified or added: " + property 
+                            + " for resource " + ctx.getNewResource() 
+                            + ", type " + ctx.getNewResource().getResourceType());
+                }
+                
                 return property;
             }
             // Check for user deletion
             if (checkForUserDeletion(ctx, propDef)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Property user-deleted: " + propDef 
+                            + " for resource " + ctx.getNewResource() 
+                            + ", type " + ctx.getNewResource().getResourceType());
+                }
+                
                 return null;
             }
         }
@@ -334,9 +346,14 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             }
             boolean evaluated = evaluator.evaluate(property, ctx);
             if (!evaluated) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Property not evaluated: " + propDef
+                            + " by evaluator " + evaluator
+                            + " for resource " + ctx.getNewResource() 
+                            + ", type " + ctx.getNewResource().getResourceType());
+                }
                 return null;
             }
-
             if (!property.isValueInitialized()) {
                 throw new InternalRepositoryException("Evaluator " + evaluator + " on resource '"
                         + newResource.getURI() + "' returned un-initialized value: " + propDef);
@@ -353,6 +370,12 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             }
             property = propDef.createProperty();
             property.setValue(defaultValue);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Property evaluated: " + property
+                    + " by evaluator " + evaluator
+                    + " for resource " + ctx.getNewResource() 
+                    + ", type " + ctx.getNewResource().getResourceType());
         }
         return property;
     }

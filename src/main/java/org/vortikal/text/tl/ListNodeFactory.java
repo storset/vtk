@@ -44,7 +44,8 @@ public class ListNodeFactory implements DirectiveNodeFactory {
 
 
     /**
-     * [list x foo]
+     * [list x varname]
+     *   .. do stuff with varname ..
      * [endlist]
      *
      */

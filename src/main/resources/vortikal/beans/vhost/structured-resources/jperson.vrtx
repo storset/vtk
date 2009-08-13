@@ -14,7 +14,7 @@ resourcetype jperson : jdocument {
     officeNumber : string,
     availableHours : string,
     picture : image_ref,
-    tags : string multiple,
+    tags : string multiple overrides tags,
     getExternalScientificInformation : boolean,
     scientificInformation : html
   }
@@ -42,21 +42,39 @@ resourcetype jperson : jdocument {
     getExternalPersonInfo external requires(username) affects(firstName, surname, email) 
   }
 
+  view-components {
+
+    contact-information {
+      ##
+        [resource-props "."]
+        [if postalAddress]
+          <p>Postal address: [val postalAddress]</p>
+        [endif]
+        [if visitingAddress]
+          <p>Visiting address: [val postalAddress]</p>
+        [endif]
+        [if officeNumber]
+          <p>Room: [val officeNumber]</p>
+        [endif]
+        [if email]
+          <p>Email: [val email]</p>
+        [endif]
+        <p>...</p>
+      ##
+    }
+  }
+
   view {
     ##
     <html>
       <head>	
-        <title><json:field select="firstName" /> <json:field select="surname" /></title>
+        <title><comp:title /></title>
       </head>
       <body>
-        <h1><json:field select="firstName" /> <json:field select="surname" /></h1>
-        <p>Postal adress: <json:field select="postalAddress" /></p>
-        <p>Visiting address: <json:field select="postalAddress" /></p>
-        <p>Email: <json:field select="email" /></p>
-        <p>Webpage: <json:field select="webPage" /></p>
-        <p>Office: <json:field select="officeNumber" /></p>
-        <p>Visiting hours: <json:field select="availableHours" /></p>
-        <p>Tags: <json:field select="tags" /></p>
+        <h1><comp:title /></h1>
+        <h2>Contact information</h2>
+        <comp:contact-information />
+        <resource:tags />
         <p>Scientific information: <json:field select="scientificInformation" /></p>
       </body>
     </html>

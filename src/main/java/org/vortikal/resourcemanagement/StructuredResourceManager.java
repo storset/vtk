@@ -31,6 +31,7 @@
 package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,11 @@ import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
+import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
@@ -62,6 +66,18 @@ import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
 
+    private static final Map<String, PropertyType.Type> PROPTYPE_MAP 
+        = new HashMap<String, PropertyType.Type>();
+    static {
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_STRING, PropertyType.Type.STRING);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_HTML, PropertyType.Type.HTML);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_SIMPLEHTML, PropertyType.Type.HTML);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_BOOLEAN, PropertyType.Type.BOOLEAN);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_INT, PropertyType.Type.INT);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_DATETIME, PropertyType.Type.TIMESTAMP);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_IMAGEREF, PropertyType.Type.IMAGE_REF);
+        PROPTYPE_MAP.put(ParserConstants.PROPTYPE_MEDIAREF, PropertyType.Type.IMAGE_REF);
+    }
     private ResourceTypeTree resourceTypeTree;
     private PrimaryResourceTypeDefinition baseType;
     private JSONObjectSelectAssertion assertion;
@@ -183,58 +199,104 @@ public class StructuredResourceManager {
         return result.toArray(new PropertyTypeDefinition[result.size()]);
     }
 
+    private OverridablePropertyTypeDefinitionImpl resolveOverride(
+            PropertyDescription propDesc, 
+            StructuredResourceDescription resourceDesc) {
+        String name = propDesc.getOverrides();
+        // Allow overriding of only "internal" properties for now:
+        Namespace namespace = Namespace.DEFAULT_NAMESPACE;
+        PropertyTypeDefinition target = this.resourceTypeTree
+                .getPropertyTypeDefinition(namespace, name);
+        
+        String typeName = resourceDesc.getInheritsFrom();
+        if (typeName == null) {
+            typeName = this.baseType.getName();
+        }
+        ResourceTypeDefinition startingPoint = 
+            this.resourceTypeTree.getResourceTypeDefinitionByName(typeName);
+        List<PropertyTypeDefinition> allProps = 
+            this.resourceTypeTree.getPropertyTypeDefinitionsForResourceTypeIncludingAncestors(startingPoint);
+        boolean foundDef = false;
+        for (PropertyTypeDefinition propDef: allProps) {
+            if (propDef.getNamespace().equals(target.getNamespace()) 
+                    && propDef.getName().equals(target.getName())) {
+                foundDef = true;
+                break;
+            }
+        }
+        if (!foundDef) {
+            throw new IllegalArgumentException(
+                    "Property " + resourceDesc.getName() + "." 
+                    + propDesc.getName() 
+                    + " cannot override property '" + name 
+                    + "' from an unrelated resource type");
+        }
+      if (!(target instanceof OverridablePropertyTypeDefinitionImpl)) {
+          throw new IllegalArgumentException(
+                  "Property " + resourceDesc.getName() + "." 
+                  + propDesc.getName() 
+                  + " cannot override property '" + name 
+                  + "' (not overridable)");
+      }
+      return (OverridablePropertyTypeDefinitionImpl) target;
+    }
+    
     private PropertyTypeDefinition createPropDef(PropertyDescription propertyDescription,
             StructuredResourceDescription resourceDescription) throws Exception {
-
         if (propertyDescription.isNoExtract()) {
             return null;
         }
-
         if (propertyDescription.getOverrides() != null) {
-            Namespace namespace = Namespace.DEFAULT_NAMESPACE; // XXX
-            String name = propertyDescription.getOverrides();
+            return createOverridingPropDef(propertyDescription, resourceDescription);
+        } 
+        return createRegularPropDef(propertyDescription, resourceDescription);
+    }
+    
+    private PropertyTypeDefinition createOverridingPropDef(PropertyDescription propertyDescription,
+            StructuredResourceDescription resourceDescription) throws Exception {
+        OverridablePropertyTypeDefinitionImpl overridableDef = resolveOverride(propertyDescription, resourceDescription);
 
-            PropertyTypeDefinition original = this.resourceTypeTree
-                    .getPropertyTypeDefinition(namespace, name);
-            if (!(original instanceof OverridablePropertyTypeDefinitionImpl)) {
-                throw new IllegalArgumentException("Cannot override property " + name);
-            }
-            OverridablePropertyTypeDefinitionImpl overridableDef = (OverridablePropertyTypeDefinitionImpl) original;
-            OverridingPropertyTypeDefinitionImpl overridingDef = new OverridingPropertyTypeDefinitionImpl();
-            overridingDef.setOverriddenPropDef(overridableDef);
-            overridingDef.setPropertyEvaluator(createPropertyEvaluator(
-                    propertyDescription, resourceDescription));
-            overridingDef.afterPropertiesSet();
-            return overridingDef;
+        OverridingPropertyTypeDefinitionImpl overridingDef = new OverridingPropertyTypeDefinitionImpl();
+        overridingDef.setOverriddenPropDef(overridableDef);
+        overridingDef.setPropertyEvaluator(createPropertyEvaluator(
+                propertyDescription, resourceDescription));
+        overridingDef.afterPropertiesSet();
+        return overridingDef;
+    }
+    
+    private PropertyTypeDefinition createRegularPropDef(PropertyDescription propertyDescription,
+            StructuredResourceDescription resourceDescription) {
+        OverridablePropertyTypeDefinitionImpl def = new OverridablePropertyTypeDefinitionImpl();
+
+        def.setName(propertyDescription.getName());
+        def.setNamespace(this.namespace);
+        if (propertyDescription instanceof DerivedPropertyDescription) {
+            def.setType(PropertyType.Type.STRING);
         } else {
-            OverridablePropertyTypeDefinitionImpl def = new OverridablePropertyTypeDefinitionImpl();
-
-            def.setName(propertyDescription.getName());
-            def.setNamespace(this.namespace);
             def.setType(mapType(propertyDescription));
-            def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);
-            boolean mandatory = false;
-            if (propertyDescription instanceof SimplePropertyDescription) {
-                mandatory = ((SimplePropertyDescription) propertyDescription)
-                        .isRequired();
-            }
-            def.setMandatory(mandatory);
-            def.setMultiple(propertyDescription.isMultiple());
-            def.setValueFactory(this.valueFactory);
-            def.setValueFormatterRegistry(this.valueFormatterRegistry);
-            def.setPropertyEvaluator(createPropertyEvaluator(propertyDescription,
-                    resourceDescription));
-
-            if (propertyDescription instanceof SimplePropertyDescription) {
-                Map<String, Object> edithints = ((SimplePropertyDescription) propertyDescription)
-                        .getEdithints();
-                if (edithints != null) {
-                    def.addMetadata("editingHints", edithints);
-                }
-            }
-            def.afterPropertiesSet();
-            return def;
         }
+        def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);
+        boolean mandatory = false;
+        if (propertyDescription instanceof SimplePropertyDescription) {
+            mandatory = ((SimplePropertyDescription) propertyDescription)
+                    .isRequired();
+        }
+        def.setMandatory(mandatory);
+        def.setMultiple(propertyDescription.isMultiple());
+        def.setValueFactory(this.valueFactory);
+        def.setValueFormatterRegistry(this.valueFormatterRegistry);
+        def.setPropertyEvaluator(createPropertyEvaluator(propertyDescription,
+                resourceDescription));
+
+        if (propertyDescription instanceof SimplePropertyDescription) {
+            Map<String, Object> edithints = ((SimplePropertyDescription) propertyDescription)
+                    .getEdithints();
+            if (edithints != null) {
+                def.addMetadata("editingHints", edithints);
+            }
+        }
+        def.afterPropertiesSet();
+        return def;
     }
 
     private PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
@@ -245,35 +307,35 @@ public class StructuredResourceManager {
         return createDerivedPropertyEvaluator((DerivedPropertyDescription) desc);
     }
 
-    private PropertyEvaluator createSimplePropertyEvaluator(SimplePropertyDescription desc) {
+    private PropertyEvaluator createSimplePropertyEvaluator(final SimplePropertyDescription desc) {
         return new PropertyEvaluator() {
-
+            public String toString() {
+                return getClass().getName() + ": " + desc.getName();
+            }
             public boolean evaluate(Property property, PropertyEvaluationContext ctx)
                     throws PropertyEvaluationException {
                 if (ctx.getEvaluationType() == PropertyEvaluationContext.Type.Create) {
                     return false;
                 }
-                if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange) {
-                    return ctx.getOriginalResource()
-                            .getProperty(property.getDefinition()) != null;
-                }
+                JSONObject json;
                 try {
-                    JSONObject json = (JSONObject) ctx.getContent()
-                            .getContentRepresentation(JSONObject.class);
-                    String expression = "properties."
-                            + property.getDefinition().getName();
-                    Object value = JSONUtil.select(json, expression);
-                    if (value == null) {
-                        return false;
-                    }
-                    if (value.toString().trim().equals("")) {
-                        return false;
-                    }
-                    property.setStringValue(value.toString());
-                    return true;
+                    json = (JSONObject) ctx.getContent()
+                    .getContentRepresentation(JSONObject.class);
                 } catch (Exception e) {
+                    throw new PropertyEvaluationException(
+                            "Unable to get JSON representation of content", e);
+                }
+                String expression = "properties."
+                    + property.getDefinition().getName();
+                Object value = JSONUtil.select(json, expression);
+                if (value == null) {
                     return false;
                 }
+                if (value.toString().trim().equals("")) {
+                    return false;
+                }
+                setPropValue(property, value);
+                return true;
             }
         };
     }
@@ -311,7 +373,7 @@ public class StructuredResourceManager {
                         }
                         value.append(p.getValue().toString());
                     }
-                    property.setStringValue(value.toString());
+                    setPropValue(property, value);
                     return true;
                 } catch (Exception e) {
                     return false;
@@ -320,34 +382,35 @@ public class StructuredResourceManager {
         };
     }
 
+    private void setPropValue(Property property, Object value) {
+        if (!property.getDefinition().isMultiple()) {
+            Value v = property.getDefinition().getValueFormatter().stringToValue(value.toString(), null, null);
+            property.setValue(v);
+            
+        } else {
+            List<Object> values = new ArrayList<Object>();
+            if (value instanceof Collection<?>) {
+                values.addAll((Collection<?>) value);
+            } else {
+                values.add(value);
+            }
+            ValueFormatter vf = property.getDefinition().getValueFormatter();
+            List<Value> result = new ArrayList<Value>();
+            for (Object object : values) {
+                Value v = vf.stringToValue(object.toString(), null, null);
+                result.add(v);
+            }
+            property.setValues(result.toArray(new Value[result.size()]));
+        }
+    }
+    
     private PropertyType.Type mapType(PropertyDescription d) {
         String type = d.getType();
-
-        if (ParserConstants.PROPTYPE_STRING.equals(type)) {
-            return PropertyType.Type.STRING;
+        Type result = PROPTYPE_MAP.get(type);
+        if (result == null) {
+            throw new IllegalArgumentException("Unmapped property type: " + type);
         }
-        if (ParserConstants.PROPTYPE_HTML.equals(type)) {
-            return PropertyType.Type.HTML;
-        }
-        if (ParserConstants.PROPTYPE_SIMPLEHTML.equals(type)) {
-            return PropertyType.Type.HTML;
-        }
-        if (ParserConstants.PROPTYPE_BOOLEAN.equals(type)) {
-            return PropertyType.Type.BOOLEAN;
-        }
-        if (ParserConstants.PROPTYPE_INT.equals(type)) {
-            return PropertyType.Type.INT;
-        }
-        if (ParserConstants.PROPTYPE_DATETIME.equals(type)) {
-            return PropertyType.Type.TIMESTAMP;
-        }
-        if (ParserConstants.PROPTYPE_IMAGEREF.equals(type)) {
-            return PropertyType.Type.IMAGE_REF;
-        }
-        if (ParserConstants.PROPTYPE_MEDIAREF.equals(type)) {
-            return PropertyType.Type.IMAGE_REF;
-        }
-        return PropertyType.Type.STRING;
+        return result;
     }
 
     public StructuredResourceDescription get(String name) {

@@ -33,7 +33,7 @@
     <property name="mandatory" value="false"/>
   </bean>
   
-  <bean id="introductionImageCaptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="introductionImageCaptionPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="caption"/>
     <property name="type" value="HTML"/>
@@ -41,7 +41,7 @@
     <property name="mandatory" value="false"/>
   </bean>
 
-  <bean id="tagsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="tagsPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="POST_CONTENT" />
     <property name="name" value="tags" /> 
     <property name="type" value="STRING" />

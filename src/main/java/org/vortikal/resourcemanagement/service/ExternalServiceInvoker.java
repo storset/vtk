@@ -44,16 +44,13 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
     // invocation.
     public void invokeService(ServiceDefinition serviceDefinition) {
         String serviceName = serviceDefinition.getServiceName();
-        if (this.applicationContext != null
-                && this.applicationContext.containsBean(serviceName)) {
-            ExternalService externalService = (ExternalService) this.applicationContext
-                    .getBean(serviceName);
+        if (this.applicationContext != null && this.applicationContext.containsBean(serviceName)) {
+            ExternalService externalService = (ExternalService) this.applicationContext.getBean(serviceName);
             externalService.invoke(serviceDefinition);
         }
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext)
-            throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 

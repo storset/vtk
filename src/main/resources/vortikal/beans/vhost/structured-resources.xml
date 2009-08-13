@@ -60,6 +60,7 @@
     <property name="valueFactory" ref="valueFactory" />
     <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
     <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
+    <property name="serviceInvoker" ref="externalServiceInvoker" />
   </bean>
 
   <bean id="structuredResources.displayHandler"

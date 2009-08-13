@@ -38,7 +38,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.python.modules.math;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescription;
 
 public final class StructuredResourceDescription {

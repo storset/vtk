@@ -51,7 +51,7 @@ function setDefaultEndDate(){
 function extractHoursFromDate(datetime){
     var a = new String(datetime);
     var b = a.split(" ");
-    if(b.length > 0){
+    if(b.length > 1){
         var c = b[1].split(":");
         if(c != null){
             return c[0];
@@ -63,7 +63,7 @@ function extractHoursFromDate(datetime){
 function extractMinutesFromDate(datetime){
     var a = new String(datetime);
     var b = a.split(" ");
-    if(b.length > 0){
+    if(b.length > 1){
         var c = b[1].split(":");
         if(c.length > 0){
             return c[1];

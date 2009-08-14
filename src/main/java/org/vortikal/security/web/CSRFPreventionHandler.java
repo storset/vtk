@@ -95,7 +95,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
                     "Missing CSRF prevention token in request");
         }
 
-        String requestURL = URL.create(request).toString();
+        URL requestURL = URL.create(request);
         String computed =  generateToken(requestURL, secret, session.getId());
 
         if (logger.isDebugEnabled()) {
@@ -128,16 +128,17 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         if (!"form".equals(element.getName().toLowerCase())) {
             return NodeResult.keep;
         }
-        String url;
+        URL url;
         HtmlAttribute action = element.getAttribute("action");
         if (action == null || action.getValue() == null 
                 || "".equals(action.getValue().trim())) {
             HttpServletRequest request = 
                 RequestContext.getRequestContext().getServletRequest();
-            url = URL.create(request).toString();
+            url = URL.create(request);
         } else {
-            url = HtmlUtil.unescapeHtmlString(action.getValue());
+            url = URL.parse(HtmlUtil.unescapeHtmlString(action.getValue()));
         }
+        url.setRef(null);
         
         HtmlAttribute method = element.getAttribute("method");
         if (method == null || "".equals(method.getValue().trim()) 
@@ -192,11 +193,11 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         }
     }
     
-    private String generateToken(String url, SecretKey sk, String sessionID) {
+    private String generateToken(URL url, SecretKey sk, String sessionID) {
         try {
             Mac mac = Mac.getInstance(ALGORITHM);
             mac.init(sk);
-            byte[] buffer = (url + sessionID).getBytes("utf-8");
+            byte[] buffer = (url.toString() + sessionID).getBytes("utf-8");
             byte[] hashed = mac.doFinal(buffer);
             return new String(TextUtils.toHex(hashed));
         } catch (Exception e) {

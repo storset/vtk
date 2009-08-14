@@ -9,19 +9,19 @@
   </form>
   <!-- Hide submit button, display a link instead: -->
   <script type="text/javascript" language="Javascript"><!--
-	   	document.getElementById('logoutAction').style.display = 'none';
-		var logoutLink = document.createElement('a');
-		logoutLink.setAttribute('href',"${logoutURL?html}");
-		logoutLink.setAttribute('onclick',"javascript:document.getElementById('logoutForm').submit();");
+	   	document.getElementById("logoutAction").style.display = "none";
+		var logoutLink = document.createElement("a");
+		logoutLink.setAttribute("href","${logoutURL?html}");
+		logoutLink.setAttribute("onclick","javascript:document.getElementById('logoutForm').submit();");
 		logoutLink.innerHTML = "<@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/>"
 		
-		var lp = document.createElement('span');
+		var lp = document.createElement("span");
 		lp.innerHTML = "( ";
-		var rp = document.createElement('span');
+		var rp = document.createElement("span");
 		rp.innerHTML = " )";
-		document.getElementById('vrtx-logout').appendChild(lp);
-		document.getElementById('vrtx-logout').appendChild(logoutLink);
-		document.getElementById('vrtx-logout').appendChild(rp);
+		document.getElementById("vrtx-logout").appendChild(lp);
+		document.getElementById("vrtx-logout").appendChild(logoutLink);
+		document.getElementById("vrtx-logout").appendChild(rp);
 		// -->
   </script>
 </div>

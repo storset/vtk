@@ -82,7 +82,8 @@ public class EditRuleParser {
         CommonTree groupingNameElement = (CommonTree) groupRuleDescription.getChild(0);
         if (ResourcetreeLexer.NAME != groupingNameElement.getType()) {
             throw new IllegalStateException(
-                    "First element in a grouping definition must be a name");
+                    "First element in a grouping definition must be a name. " 
+                    + "Found: '" + groupingNameElement.getText() + "'");
         }
         String groupingName = groupingNameElement.getText();
         List<String> groupedProps = new ArrayList<String>();

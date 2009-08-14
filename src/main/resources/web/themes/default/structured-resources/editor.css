@@ -34,7 +34,6 @@
 .vrtx-grouped-vertical .vrtx-dropdownlist, .vrtx-grouped-vertical .vrtx-radio {
     clear: left; 
     float : left;
-    padding-bottom: 1em;
 }
 
 .vrtx-simple-html textarea{
@@ -77,8 +76,6 @@
   border: 1px solid #a9a9a9;
   clear: left;
   float: left;
-  margin:10px 0;
-  padding:0 0 10px;
   width:auto;
 }
 

@@ -1,0 +1,38 @@
+resourcetype jdisputas : jevent {
+  properties {
+    firstName : string,
+    surname : string,
+    roomNumber : string
+  }
+
+  edit-rules {
+    image-caption (size[small]),
+    group introImg (introduction-img, image-caption) (after introduction) vertical,
+    title (size[large]),
+    group timeAndPlace (start-date, end-date, location, roomNumber, map-url) (after introImg) horizontal,
+    location (size[small]),
+    map-url (size[small]),
+    group name (firstName, surname) (before introduction) horizontal,
+    roomNumber (size[5])
+  }
+
+  view {
+    ##
+    <html>
+      <head>
+        <title><comp:title /></title>
+      </head>
+      <body>       
+        <h1><comp:title /></h1>
+        <comp:introduction />
+      </body>
+    </html>
+    ##
+  }
+  
+  localization {
+    firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
+    surname : (en : "Surname", no : "Etternavn", nn : "Etternamn"),
+    roomNumber : (en : "Room nr", no : "Rom nr", nn : "Rom nr")
+  }
+}

@@ -6,10 +6,7 @@
 <div class="vrtx-logout">
   <span class="vrtx-user">${principal.description?html}</span>
   <form id="logoutForm" action="${logoutURL?html}" method="post" style="display:inline;">
-    <input style="display:inline;"
-           type="submit"
-           value="<@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/>"
-           id="logoutAction" name="logoutAction" />
+    <button type="submit" id="logoutAction" name="logoutAction"><@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/></button>
   </form>
   <#-- Hide submit button, display a link instead: -->
   <script type="text/javascript" language="Javascript"><!--

@@ -66,6 +66,10 @@
   width: 98% !important;
 }
 
+.vrtx-image-ref #introduction-img\.browse {
+  margin-bottom: 10px;
+}
+
 .vrtx-grouped {
   /*XXX Temp border to indicate grouped props*/
   border: 1px solid #a9a9a9;

@@ -62,6 +62,19 @@ function interceptEnterKeyAndReroute(txt, btn) {
       });
 }
 
+function logoutButtonAsLink() {
+    var btn = $('input#logoutAction');
+    if (btn.size() == 0) {
+        return;
+    }
+    btn.hide();
+    btn.after('(&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">' + btn.attr('value') + '</a>&nbsp;)');
+    $('#logoutAction\\.link').click(function() {
+        btn.click();
+        return false;
+    });
+
+}
 
 function copyMoveButtonsAsLinks() {
     var move = $('#vrtx-move-to-selected-folder');
@@ -165,6 +178,7 @@ function toggleAclInheritanceButtonAsLink() {
 
 // Add callbacks for the above methods:
 
+$(document).ready(logoutButtonAsLink);
 $(document).ready(copyMoveButtonsAsLinks);
 $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);

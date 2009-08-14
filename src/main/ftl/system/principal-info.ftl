@@ -8,11 +8,5 @@
     <input style="display:inline;" type="submit" value="<@vrtx.msg code="manage.logout" default="logout"/>"
            id="logoutAction" name="logoutAction" />
   </form>
-  <#-- Hide submit button, display a link instead: -->
-  <script type="text/javascript" language="Javascript"><!--
-    document.getElementById('logoutAction').style.display = 'none';
-    document.write("(&nbsp;<a href=\"${logout.url?html}\" onclick=\"javascript:document.getElementById('logoutForm').submit();\"><@vrtx.msg code="manage.logout" default="logout"/></a>&nbsp;)");
-    //-->
-  </script>
 </#if>
 </span>

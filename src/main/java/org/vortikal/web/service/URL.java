@@ -579,9 +579,13 @@ public class URL {
             collection = true;
         } else {
             int length = path.length();
-            if (path.charAt(length - 1) == '/' && length > 1) {
-                path.delete(length -1, length);
+            if (path.charAt(length - 1) == '/') {
+                collection = true;
+                if (length > 1) {
+                    path.delete(length -1, length);
+                }
             }
+            
             try {
                 p = Path.fromString(path.toString());
             } catch (Exception e) {

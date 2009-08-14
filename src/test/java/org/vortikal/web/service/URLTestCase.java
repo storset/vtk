@@ -63,13 +63,18 @@ public class URLTestCase extends TestCase {
         URL url = URL.parse("http://foo");
         assertEquals(Integer.valueOf(80), url.getPort());
         assertEquals(Path.ROOT, url.getPath());
+        assertTrue(url.isCollection());
+        assertEquals("http://foo/", url.toString());
+
         url = URL.parse("http://foo?param=value");
         assertEquals(Path.ROOT, url.getPath());
         assertEquals("value", url.getParameter("param"));
+        assertTrue(url.isCollection());
         
         url = URL.parse("http://foo/?param=value");
         assertEquals(Path.ROOT, url.getPath());
         assertEquals("value", url.getParameter("param"));
+        assertTrue(url.isCollection());
         
         url = URL.parse("http://foo.bar:8080");
         assertEquals(Path.ROOT, url.getPath());
@@ -85,7 +90,7 @@ public class URLTestCase extends TestCase {
         assertEquals(Integer.valueOf(8080), url.getPort());
         assertEquals("http", url.getProtocol());
         assertEquals(Path.fromString("/baz"), url.getPath());
-        
+        assertFalse(url.isCollection());
         
         url = URL.parse("http://foo.bar:8080/baz/?xyz=abc");
         assertEquals(Integer.valueOf(8080), url.getPort());

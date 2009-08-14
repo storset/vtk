@@ -20,11 +20,21 @@
 }
 
 .vrtx-grouped-horizontal .vrtx-media-ref, .vrtx-grouped-horizontal .vrtx-simple-html-small,
-.vrtx-grouped-horizontal .vrtx-simple-html, .vrtx-grouped-horizontal .vrtx-html,.vrtx-grouped-horizontal  .vrtx-string,.vrtx-grouped-horizontal .vrtx-date,.vrtx-grouped-horizontal .vrtx-image-ref,
-.vrtx-grouped-horizontal .vrtx-checkbox,.vrtx-grouped-horizontal .vrtx-dropdownlist,.vrtx-grouped-horizontal .vrtx-radio {
+.vrtx-grouped-horizontal .vrtx-simple-html, .vrtx-grouped-horizontal .vrtx-html, .vrtx-grouped-horizontal .vrtx-string,
+.vrtx-grouped-horizontal .vrtx-date, .vrtx-grouped-horizontal .vrtx-image-ref, .vrtx-grouped-horizontal .vrtx-checkbox,
+.vrtx-grouped-horizontal .vrtx-dropdownlist, .vrtx-grouped-horizontal .vrtx-radio {
     clear: none; 
     float : left;
     padding-right: 1em;
+}
+
+.vrtx-grouped-vertical .vrtx-media-ref, .vrtx-grouped-vertical .vrtx-simple-html-small,
+.vrtx-grouped-vertical .vrtx-simple-html, .vrtx-grouped-vertical .vrtx-html,.vrtx-grouped-vertical .vrtx-string,
+.vrtx-grouped-vertical .vrtx-date, .vrtx-grouped-vertical .vrtx-image-ref, .vrtx-grouped-vertical .vrtx-checkbox,
+.vrtx-grouped-vertical .vrtx-dropdownlist, .vrtx-grouped-vertical .vrtx-radio {
+    clear: left; 
+    float : left;
+    padding-bottom: 1em;
 }
 
 .vrtx-simple-html textarea{
@@ -74,9 +84,9 @@
 
 .vrtx-grouped-vertical {
   /*XXX Temp border to indicate grouped props*/
-  border: 1px solid #a9a9a9; 
-  width: auto;
+  border: 1px solid #a9a9a9;
   float:left;
+  width: auto;
 }
 
 #contents {

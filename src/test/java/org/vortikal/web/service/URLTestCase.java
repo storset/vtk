@@ -59,11 +59,33 @@ public class URLTestCase extends TestCase {
             URL.parse(s);
             fail("Parsed malformed URL: " + s);
         } catch (Exception e) { }
-        URL url = URL.parse("http://foo.bar:8080/baz");
+
+        URL url = URL.parse("http://foo");
+        assertEquals(Integer.valueOf(80), url.getPort());
+        assertEquals(Path.ROOT, url.getPath());
+        url = URL.parse("http://foo?param=value");
+        assertEquals(Path.ROOT, url.getPath());
+        assertEquals("value", url.getParameter("param"));
+        
+        url = URL.parse("http://foo/?param=value");
+        assertEquals(Path.ROOT, url.getPath());
+        assertEquals("value", url.getParameter("param"));
+        
+        url = URL.parse("http://foo.bar:8080");
+        assertEquals(Path.ROOT, url.getPath());
+        
+        url = URL.parse("http://127.0.0.1:8080?param=val");
+        assertEquals("127.0.0.1", url.getHost());
+        
+        url = URL.parse("http://abc_0-foo.xx0.yy0.zz1:8080?param=val");
+        assertEquals("abc_0-foo.xx0.yy0.zz1", url.getHost());
+
+        url = URL.parse("http://foo.bar:8080/baz");
         assertEquals("foo.bar", url.getHost());
         assertEquals(Integer.valueOf(8080), url.getPort());
         assertEquals("http", url.getProtocol());
         assertEquals(Path.fromString("/baz"), url.getPath());
+        
         
         url = URL.parse("http://foo.bar:8080/baz/?xyz=abc");
         assertEquals(Integer.valueOf(8080), url.getPort());
@@ -72,7 +94,6 @@ public class URLTestCase extends TestCase {
         url = URL.parse("http://foo.bar:8080/baz/?xyz=abc#ref");
         assertEquals(Path.fromString("/baz"), url.getPath());
         assertEquals("ref", url.getRef());
-        
         
     }
 

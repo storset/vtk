@@ -63,8 +63,8 @@ public class URL {
     private boolean pathOnly = false;
     private boolean collection = false;
     
-    private static final Integer PORT_80 = new Integer(80);
-    private static final Integer PORT_443 = new Integer(443);
+    private static final Integer PORT_80 = Integer.valueOf(80);
+    private static final Integer PORT_443 = Integer.valueOf(443);
     
     private static final String PROTOCOL_HTTP = "http";
     private static final String PROTOCOL_HTTPS = "https";
@@ -268,17 +268,14 @@ public class URL {
         return qs.toString();
     }
     
-
     public String getRef() {
         return this.ref;
     }
     
-
     public void setRef(String ref) {
         this.ref = ref;
     }
     
-
     /**
      * Sets the character encoding used when URL-encoding the path.
      */
@@ -471,90 +468,169 @@ public class URL {
                     "UTF-8 encoding not supported on this system");
         }
     }
-    
+
+    private static enum ParseState {
+        PROTOCOL,
+        HOST,
+        PORT,
+        PATH,
+        QUERY,
+        REF
+    }
 
     /**
-     * Parses a URL from a string representation.
-     * @param url
-     * @return
+     * Parses a URL from a string representation. 
+     * Also attempts to decode the URL.
+     * @param url the string representation
+     * @return the parsed URL
      */
-     public static URL parse(String url) {
-         if (url == null || "".equals(url.trim())) {
-             throw new IllegalArgumentException("Malformed URL: " + url);
-         }
-         if (url.indexOf("://") < 1) {
-             throw new IllegalArgumentException("Malformed URL: " + url);
-         }
-         String protocol = url.substring(0, url.indexOf("://"));
-         String host = url.substring(url.indexOf("://") + 3);
-         host = host.substring(0, host.indexOf("/"));
-         Integer port = null;
-         int colonIdx = host.indexOf(":");
-         if (colonIdx > 0) {
-             String portStr = host.substring(colonIdx + 1);
-             try {
-                 port = Integer.parseInt(portStr);
-             } catch (NumberFormatException e) {
-                 throw new IllegalArgumentException("Malformed URL: " + url 
-                         + ": port number must be an integer: " + portStr);
-             }
-             host = host.substring(0, host.indexOf(":"));
-         }
-        
-         int pathStartIdx = url.indexOf("://" + 3);
-         pathStartIdx = url.indexOf("/", pathStartIdx) + 2;
-         pathStartIdx = url.indexOf("/", pathStartIdx);
-         int pathEndIdx = url.indexOf("?");
-         if (pathEndIdx < 0) {
-             pathEndIdx = url.length();
-         }
-         
-         String pathString = url.substring(pathStartIdx, pathEndIdx);
-         boolean collection = false;
-         if (pathString.endsWith("/")) {
-             collection = true;
-             pathString = pathString.substring(0, pathString.length() - 1);
-         }
-         if ("".equals(pathString)) {
-             throw new IllegalArgumentException("Malformed URL: " + url);
-         }
-         Path path = Path.fromString(pathString);
-         Path resultPath = Path.ROOT;
-         for (String elem : path.getElements()) {
+    public static URL parse(String url) {
+        if (url == null || "".equals(url.trim())) {
+            throw new IllegalArgumentException("Malformed URL: " + url);
+        }
+
+        StringBuilder protocol = new StringBuilder();
+        StringBuilder host = new StringBuilder();
+        StringBuilder port = new StringBuilder();
+        StringBuilder path = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        StringBuilder ref = new StringBuilder();
+
+        ParseState state = ParseState.PROTOCOL;
+        for (int i = 0; i < url.length(); i++) {
+            char c = url.charAt(i);
+            switch (state) {
+            case PROTOCOL:
+                if (c == ':') {
+                    state = ParseState.HOST;
+                    i += 2;
+                } else if (!(c >= 'a' && c <= 'z')) {
+                    throw new IllegalArgumentException("Malformed URL: " + url 
+                            + " illegal character in protocol: " + c);
+                } else {
+                    protocol.append(c);
+                }
+                break;
+            case HOST:
+                if (c == ':') {
+                    state = ParseState.PORT;
+                } else if (c == '/') {
+                    state = ParseState.PATH;
+                    i--;
+                } else if (c == '?') {
+                    state = ParseState.QUERY;
+                } else if (!(c >= 'a' && c <= 'z' || c >= '0' && c <= '9') 
+                        && c != '.' && c != '-' && c != '_') {
+                    throw new IllegalArgumentException("Malformed URL: " + url 
+                            + ": illegal character in host name: " + c);
+                } else {
+                    host.append(c);
+                }
+                break;
+            case PORT:
+                if (c == '/') {
+                    state = ParseState.PATH;
+                    i--;
+                } else if (c == '?') {
+                    state = ParseState.QUERY;
+                } else if (c == '#') {
+                    state = ParseState.REF;
+                } else if (!(c >= '0' && c <= '9')) {
+                    throw new IllegalArgumentException("Malformed URL: " + url 
+                            + " illegal port number character: " + c);
+                } else {
+                    port.append(c);
+                }
+                break;
+            case PATH:
+                if (c == '?') {
+                    state = ParseState.QUERY;
+                } else if (c == '#') {
+                    state = ParseState.REF;
+                } else {
+                    path.append(c);
+                }
+                break;
+            case QUERY:
+                if (c == '#') {
+                    state = ParseState.REF;
+                } else {
+                    query.append(c);
+                }
+                break;
+            case REF:
+                ref.append(c);
+                break;
+            default:
+                break;
+            }
+        }
+        if (!(PROTOCOL_HTTP.equals(protocol.toString()) || PROTOCOL_HTTPS.equals(protocol.toString()))) {
+            throw new IllegalArgumentException("Malformed URL: " + url);
+        }
+        if (host.length() == 0) {
+            throw new IllegalArgumentException("Malformed URL: " + url 
+                    + ": contains no hostname");
+        }
+        boolean collection = false;
+        Path p = null;
+        if (path.length() == 0) {
+            p = Path.ROOT;
+            collection = true;
+        } else {
+            int length = path.length();
+            if (path.charAt(length - 1) == '/' && length > 1) {
+                path.delete(length -1, length);
+            }
+            try {
+                p = Path.fromString(path.toString());
+            } catch (Exception e) {
+                throw new IllegalArgumentException(
+                        "Malformed URL: " + url + ": " + e.getMessage());
+            }
+        }
+        Path resultPath = Path.ROOT;
+        for (String elem : p.getElements()) {
             if (!"/".equals(elem)) {
                 String decoded = decode(elem);
                 resultPath = resultPath.expand(decoded);
             }
         }
+        Integer portNumber = null;
+        if (port.length() > 0) {
+            try {
+                portNumber = Integer.parseInt(port.toString());
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Malformed URL: " + e.getMessage());
+            }
+        }
+        URL resultURL = new URL(protocol.toString(), host.toString(), resultPath);
+        if (portNumber != null) {
+            resultURL.setPort(portNumber);
+        } else {
+            if (resultURL.getProtocol().equals(PROTOCOL_HTTP)) {
+                resultURL.setPort(PORT_80);
+            } else {
+                resultURL.setPort(PORT_443);
+            }
+        }
 
-         String ref = null;
-         int refStartIdx = url.indexOf("#");
-         if (refStartIdx > 0) {
-             ref = url.substring(refStartIdx + 1);
-             url = url.substring(0, refStartIdx - 1);
-         }
-         
-         URL resultURL = new URL(protocol, host, resultPath);
-         if (port != null) {
-             resultURL.setPort(port);
-         }
-         
-         Map<String, String[]> queryParams = new LinkedHashMap<String, String[]>();
-         if (url.indexOf("?") > 0) {
-             queryParams = splitQueryString(url.substring(url.indexOf("?")));
-         }
-         for (String param: queryParams.keySet()) {
-             String[] values = queryParams.get(param);
-             for (String value: values) {
-                 resultURL.addParameter(param, decode(value));
-             }
-         }
-         if (ref != null) {
-             resultURL.setRef(ref);
-         }
-         resultURL.setCollection(collection);
-         return resultURL;
-     }
+        Map<String, String[]> queryParams = new LinkedHashMap<String, String[]>();
+        if (query.length() > 0) {
+            queryParams = splitQueryString(query.toString());
+        }
+        for (String param: queryParams.keySet()) {
+            String[] values = queryParams.get(param);
+            for (String value: values) {
+                resultURL.addParameter(param, decode(value));
+            }
+        }
+        if (ref.length() > 0) {
+            resultURL.setRef(ref.toString());
+        }
+        resultURL.setCollection(collection);
+        return resultURL;
+    }
     
      /**
       * Splits a query string into a map of (String, String[]). 

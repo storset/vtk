@@ -10,7 +10,44 @@ resourcetype jevent : jdocument {
     image-caption (size[small]),
     group introImg (introduction-img, image-caption) (after introduction) vertical,
     title (size[large]),
-    group timeAndPlace (start-date, end-date, location, map-url) (after introImg) horizontal
+    group timeAndPlace (start-date, end-date, location, map-url) (after introImg) horizontal,
+    location (size[small]),
+    map-url (size[small])
+  }
+    
+  view-components {
+  
+    time-and-place {
+      ##
+       [resource-props "."]
+       [if start-date]
+         <div class="vevent">
+           <span class="time-and-place">[localized "time-and-place"]:&nbsp;</span>
+           <span class="summary" style="display:none;">[val title]</span>
+           [if start-date]
+             <abbr class="dtstart" title="">[val start-date]</abbr>
+           [endif]
+           [if end-date]
+             [if start-date]
+              &nbsp;-&nbsp;
+             [endif]
+             <abbr class="dtend" title="">[val end-date]</abbr>
+           [endif]
+           [if location]
+             &nbsp;,&nbsp;
+             <span class="location">
+             [if map-url]
+               <a href="[val map-url]" target="_parent">[val location]</a>
+             [else]
+               [val location]
+             [endif]
+             </span>
+           [endif]
+         </div>
+       [endif]
+      ##
+    }
+    
   }
 
   view {
@@ -21,12 +58,10 @@ resourcetype jevent : jdocument {
       </head>
       <body>
         <h1><comp:title /></h1>
-
-        <p>Start date: <json:field select="start-date" /></p>
-        <p>End date: <json:field select="end-date" /></p>
-        <p>Location: <json:field select="location" /></p>
-        <p>Map: <json:field select="map-url" /></p>
-      
+        <div class="vrtx-byline">
+          <comp:time-and-place />
+        </div>
+        
         <json:field select="content" />
       </body>
     </html>
@@ -34,6 +69,7 @@ resourcetype jevent : jdocument {
   }
   
   localization {
+    time-and-place : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
     start-date : (en : "Starts", no : "Starter", nn : "Byrjar"),
     end-date : (en : "Ends", no : "Slutter", nn : "Sluttar"),
     location : (en : "Location", no : "Sted", nn : "Stad"),

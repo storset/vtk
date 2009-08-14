@@ -26,6 +26,14 @@ div.vrtx-comments div#comments-header-left {
   margin-bottom: 1em;
 }
 
+div.vrtx-comments div#comments-header-left form.vrtx-comments-delete-all {
+  display: inline;
+}
+
+div.vrtx-comments form.vrtx-comments-delete { 
+  display: inline;
+}
+
 div.vrtx-comments div#comments-header-feedHref {
   background: url(icons/rss-icon-no-shadow.png) left no-repeat;
   float: right;	

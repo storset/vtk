@@ -51,7 +51,14 @@
 	                   args=[comments?size] />
 	      </#assign>  
 	
-	    <#if deleteAllCommentsURL?exists>(&nbsp;<a onclick="return confirm('${confirmation}')" href="${deleteAllCommentsURL?html}">${message}</a>&nbsp;)</#if>
+	    <#if deleteAllCommentsURL?exists>
+              <form class="vrtx-comments-delete-all" action="${deleteAllCommentsURL?html}" method="post">
+                <button type="submit" name="delete-all-comments-button"
+                        onclick="return confirm('${confirmation}');">
+                        ${message?html}
+                </button>
+              </form>
+            </#if>
 	    
     </div>
     
@@ -100,7 +107,9 @@
             <@vrtx.msg code="commenting.delete.confirmation" 
                        default="Are you sure you want to delete this comment?" />
           </#assign>
-          <span class="comment-delete">(&nbsp;<a onclick="return confirm('${confirmation}');" href="${deleteCommentURLs[comment.ID]?html}">${message}</a>&nbsp;)</span>
+          <form class="vrtx-comments-delete" action="${deleteCommentURLs[comment.ID]?html}" method="post">
+            <button class="comment-delete-button" type="submit" onclick="return confirm('${confirmation}');">${message?html}</button>
+          </form>
         </#if>
       </div>
     </div>
@@ -155,7 +164,7 @@
           // -->
         </script>
       </div>
-      <form action="${postCommentURL?string?html}#comment-form" method="post">
+      <form class="vrtx-comments-post" action="${postCommentURL?string?html}#comment-form" method="post">
         <#if config.titlesEnabled>
         <div class="comments-title">
           <#assign value><#if form?exists && form.title?exists>${form.title}</#if></#assign>

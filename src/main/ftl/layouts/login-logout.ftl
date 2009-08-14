@@ -7,8 +7,8 @@
   <form id="logoutForm" action="${logoutURL?html}" method="post" style="display:inline;">
     <button type="submit" id="logoutAction" name="logoutAction"><@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/></button>
   </form>
-  <#-- Hide submit button, display a link instead: -->
-  <script type="text/javascript" language="Javascript">
+  <!-- Hide submit button, display a link instead: -->
+  <script type="text/javascript" language="Javascript"><!--
 	   	document.getElementById('logoutAction').style.display = 'none';
 		var logoutLink = document.createElement('a');
 		logoutLink.setAttribute('href',"${logoutURL?html}");
@@ -22,6 +22,7 @@
 		document.getElementById('vrtx-logout').appendChild(lp);
 		document.getElementById('vrtx-logout').appendChild(logoutLink);
 		document.getElementById('vrtx-logout').appendChild(rp);
+		// -->
   </script>
 </div>
 </#if>

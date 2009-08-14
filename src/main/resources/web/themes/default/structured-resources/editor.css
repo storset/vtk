@@ -12,7 +12,7 @@
 }
 
 .vrtx-string .hours{
-     margin-right: .2em;
+    margin-right: .2em;
 }
 
 .vrtx-string .minutes{
@@ -24,7 +24,7 @@
 .vrtx-grouped-horizontal .vrtx-date, .vrtx-grouped-horizontal .vrtx-image-ref, .vrtx-grouped-horizontal .vrtx-checkbox,
 .vrtx-grouped-horizontal .vrtx-dropdownlist, .vrtx-grouped-horizontal .vrtx-radio {
     clear: none; 
-    float : left;
+    float: left;
     padding-right: 1em;
 }
 
@@ -33,7 +33,7 @@
 .vrtx-grouped-vertical .vrtx-date, .vrtx-grouped-vertical .vrtx-image-ref, .vrtx-grouped-vertical .vrtx-checkbox,
 .vrtx-grouped-vertical .vrtx-dropdownlist, .vrtx-grouped-vertical .vrtx-radio {
     clear: left; 
-    float : left;
+    float: left;
 }
 
 .vrtx-simple-html textarea{
@@ -55,19 +55,15 @@
 }
 
 .vrtx-simple-html-small {
-    width: 350px;
+  width: 350px;
 }
 
 .vrtx-simple-html-small iframe{
-    height: 100px;
+  height: 100px;
 }
 
 .vrtx-html {
   width: 98% !important;
-}
-
-.vrtx-image-ref #introduction-img\.browse {
-  margin-bottom: 10px;
 }
 
 .vrtx-grouped {
@@ -102,5 +98,5 @@
 }
 
 div.vrtx-multipleinputfield{
-    padding-bottom:5px;
+  padding-bottom:5px;
 }

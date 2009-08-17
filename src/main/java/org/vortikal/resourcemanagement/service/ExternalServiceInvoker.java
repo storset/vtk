@@ -30,24 +30,38 @@
  */
 package org.vortikal.resourcemanagement.service;
 
+import java.util.List;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
 public class ExternalServiceInvoker implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    // XXX We need at least one more parameter, perhaps the entire
-    // evaluationcontext from which to fetch the affected resource upon service
-    // invocation.
-    public void invokeService(ServiceDefinition serviceDefinition) {
+    public void invokeService(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+        if (missingRequired(ctx, serviceDefinition)) {
+            return;
+        }
         String serviceName = serviceDefinition.getServiceName();
         if (this.applicationContext != null && this.applicationContext.containsBean(serviceName)) {
             ExternalService externalService = (ExternalService) this.applicationContext.getBean(serviceName);
-            externalService.invoke(serviceDefinition);
+            externalService.invoke(ctx, serviceDefinition);
         }
+    }
+
+    private boolean missingRequired(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+        List<String> requiredProps = serviceDefinition.getRequires();
+        if (requiredProps == null || requiredProps.size() == 0) {
+            return false;
+        }
+        
+        // XXX implement
+        
+        return false;
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

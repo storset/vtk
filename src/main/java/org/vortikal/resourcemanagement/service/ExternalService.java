@@ -30,11 +30,11 @@
  */
 package org.vortikal.resourcemanagement.service;
 
+import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
 public interface ExternalService {
 
-    // XXX + EvaluationContext as param? Or just the resource?
-    public void invoke(ServiceDefinition serviceDefinition);
+    public void invoke(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
 
 }

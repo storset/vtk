@@ -324,8 +324,7 @@
       </#if>
       
       if (dirty) {
-        // return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
-        return '<@vrtx.localizeMessage code='manage.unsavedChangesConfirmation' default='code' args=[] />';
+        return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
       }
     }
 

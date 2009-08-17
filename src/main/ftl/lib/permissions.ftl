@@ -297,43 +297,6 @@
     </ul>
 
     <ul class="principalList" id="principalList">
-      <li class="groups">
-      <fieldset>
-      <legend><@vrtx.msg code="permissions.groups" default="Groups"/></legend>
-      <ul class="groups">
-      <@spring.bind formName + ".removeGroupURLs" />
-      <#assign removeGroupURLs=spring.status.value />
-      <@spring.bind formName + ".groups" /> 
-      <#list spring.status.value as group>
-        <li>
-          <#compress>
-          ${group.name}&nbsp;(&nbsp;<a href="${removeGroupURLs[group.name]?html}"><#t/>
-            <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
-          </#compress>
-        </li>
-      </#list>
-      </ul>
-      <@spring.bind formName + ".groupNames" /> 
-      <#assign value=""/>
-      <#if spring.status.errorMessages?size &gt; 0>
-        <div class="errorContainer">
-          <ul class="errors">
-            <#list spring.status.errorMessages as error> 
-              <li>${error}</li> 
-            </#list>
-          </ul>
-        </div>
-        <#if spring.status.value?exists>
-          <#assign value=spring.status.value />
-        </#if>
-      </#if>
-      <span class="addGroup">      
-        <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
-        <input class="addGroupButton" type="submit" name="addGroupAction"
-               value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
-      </span>
-    </fieldset>
-    </li>
     <li class="users">
       <fieldset>
       <legend><@vrtx.msg code="permissions.users" default="Users"/></legend>
@@ -395,7 +358,44 @@
                value="<@vrtx.msg code="permissions.addUser" default="Add User"/>"/>
       </span>
       </fieldset>
-      </li>
+    </li>
+    <li class="groups">
+      <fieldset>
+      <legend><@vrtx.msg code="permissions.groups" default="Groups"/></legend>
+      <ul class="groups">
+      <@spring.bind formName + ".removeGroupURLs" />
+      <#assign removeGroupURLs=spring.status.value />
+      <@spring.bind formName + ".groups" /> 
+      <#list spring.status.value as group>
+        <li>
+          <#compress>
+          ${group.name}&nbsp;(&nbsp;<a href="${removeGroupURLs[group.name]?html}"><#t/>
+            <#t/><@vrtx.msg code="permissions.remove" default="remove"/></a>&nbsp;)
+          </#compress>
+        </li>
+      </#list>
+      </ul>
+      <@spring.bind formName + ".groupNames" /> 
+      <#assign value=""/>
+      <#if spring.status.errorMessages?size &gt; 0>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+          </ul>
+        </div>
+        <#if spring.status.value?exists>
+          <#assign value=spring.status.value />
+        </#if>
+      </#if>
+      <span class="addGroup">      
+        <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
+        <input class="addGroupButton" type="submit" name="addGroupAction"
+               value="<@vrtx.msg code="permissions.addGroup" default="Add Group"/>"/>
+      </span>
+    </fieldset>
+    </li>  
     </ul>
     <#-- Disable input if 'everyone' has permission: -->
     <#if grouped><script type="text/javascript">disableInput()</script></#if>

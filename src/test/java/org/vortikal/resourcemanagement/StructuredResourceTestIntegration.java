@@ -30,7 +30,6 @@
  */
 package org.vortikal.resourcemanagement;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,23 +50,20 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
 
     private void printResourceDescription(StructuredResourceDescription srd) {
         String inheritsFrom = srd.getInheritsFrom();
-        System.out.println(srd.getName()
-                + (inheritsFrom != null ? (" > " + srd.getInheritsFrom()) : ""));
+        System.out.println(srd.getName() + (inheritsFrom != null ? (" > " + srd.getInheritsFrom()) : ""));
         List<PropertyDescription> propertyDescriptions = srd.getAllPropertyDescriptions();
         if (propertyDescriptions != null) {
             System.out.println("\tProperties:");
             for (PropertyDescription d : propertyDescriptions) {
                 if (d instanceof DerivedPropertyDescription) {
                     DerivedPropertyDescription dp = (DerivedPropertyDescription) d;
-                    System.out.println("\t\t" + dp.getName() + ": " + dp.getType() + " "
-                            + dp.isMultiple() + " derived from: "
-                            + dp.getDependentProperties() + " " + dp.getOverrides());
+                    System.out.println("\t\t" + dp.getName() + ": " + dp.getType() + " " + dp.isMultiple()
+                            + " derived from: " + dp.getDependentProperties() + " " + dp.getOverrides());
 
                 } else {
                     SimplePropertyDescription sd = (SimplePropertyDescription) d;
-                    System.out.println("\t\t" + sd.getName() + ": " + sd.getType() + " "
-                            + sd.isMultiple() + " " + sd.isRequired() + " "
-                            + sd.isNoExtract() + " " + sd.getOverrides());
+                    System.out.println("\t\t" + sd.getName() + ": " + sd.getType() + " " + sd.isMultiple() + " "
+                            + sd.isRequired() + " " + sd.isNoExtract() + " " + sd.getOverrides());
                     Map<String, Object> edithints = sd.getEdithints();
                     if (edithints != null) {
                         System.out.println("\t\t\tEdithints: " + edithints);
@@ -79,8 +75,7 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
         if (editRules != null) {
             System.out.println("\tEditRules:");
             for (EditRule editRule : editRules) {
-                System.out.println("\t\t" + editRule.getName() + " " + editRule.getType()
-                        + " " + editRule.getValue());
+                System.out.println("\t\t" + editRule.getName() + " " + editRule.getType() + " " + editRule.getValue());
             }
         }
         DisplayTemplate displayTemplate = srd.getDisplayTemplate();
@@ -92,17 +87,15 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
         if (scripts != null) {
             System.out.println("\tScripts:");
             for (ScriptDefinition sd : scripts) {
-                System.out.println("\t\t" + sd.getName() + " " + sd.getType() + " "
-                        + sd.getParams());
+                System.out.println("\t\t" + sd.getName() + " " + sd.getType() + " " + sd.getParams());
             }
         }
-        Map<String, ServiceDefinition> services = srd.getServices();
+        List<ServiceDefinition> services = srd.getServices();
         if (services != null) {
             System.out.println("\tServices:");
-            for (Iterator<String> it = services.keySet().iterator(); it.hasNext();) {
-                ServiceDefinition sd = services.get(it.next());
-                System.out.println("\t\t" + sd.getName() + " " + sd.getServiceName()
-                        + " " + sd.getRequires() + " " + sd.getAffects());
+            for (ServiceDefinition sd : services) {
+                System.out.println("\t\t" + sd.getName() + " " + sd.getServiceName() + " " + sd.getRequires() + " "
+                        + sd.getAffects());
             }
         }
 

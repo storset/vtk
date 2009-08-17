@@ -49,7 +49,7 @@ public final class StructuredResourceDescription {
     private List<EditRule> editRules;
     private DisplayTemplate displayTemplate;
     private List<ScriptDefinition> scripts;
-    private Map<String, ServiceDefinition> services;
+    private List<ServiceDefinition> services;
 
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
@@ -197,12 +197,12 @@ public final class StructuredResourceDescription {
 
     public void addServiceDefinition(ServiceDefinition serviceDefinition) {
         if (this.services == null) {
-            this.services = new HashMap<String, ServiceDefinition>();
+            this.services = new ArrayList<ServiceDefinition>();
         }
-        this.services.put(serviceDefinition.getName(), serviceDefinition);
+        this.services.add(serviceDefinition);
     }
 
-    public Map<String, ServiceDefinition> getServices() {
+    public List<ServiceDefinition> getServices() {
         return this.services;
     }
 
@@ -261,8 +261,7 @@ public final class StructuredResourceDescription {
                         if (!found) {
                             throw new IllegalStateException("Property definition '"
                                     + d.getName()
-                                    + "' is declared to evaluate using property '"
-                                    + eval.getValue()
+                                    + "' is declared to evaluate using property '" + eval.getValue()
                                     + "', which is not listed in the derives clause");
                         }
                     }

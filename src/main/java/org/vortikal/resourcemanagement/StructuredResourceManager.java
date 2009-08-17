@@ -303,8 +303,6 @@ public class StructuredResourceManager {
                     return false;
                 }
 
-                invokeService(desc, resourceDesc);
-
                 JSONObject json;
                 try {
                     json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
@@ -320,6 +318,9 @@ public class StructuredResourceManager {
                     return false;
                 }
                 setPropValue(property, value);
+
+                invokeService(ctx, desc, resourceDesc);
+
                 return true;
             }
         };
@@ -340,8 +341,6 @@ public class StructuredResourceManager {
                     return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
                 }
 
-                invokeService(desc, resourceDesc);
-
                 try {
                     StringBuilder value = new StringBuilder();
                     for (EvalDescription evalDescription : desc.getEvalDescriptions()) {
@@ -361,6 +360,9 @@ public class StructuredResourceManager {
                         value.append(p.getValue().toString());
                     }
                     setPropValue(property, value);
+
+                    invokeService(ctx, desc, resourceDesc);
+
                     return true;
                 } catch (Exception e) {
                     return false;
@@ -369,10 +371,15 @@ public class StructuredResourceManager {
         };
     }
 
-    private void invokeService(PropertyDescription desc, StructuredResourceDescription resourceDesc) {
-        Map<String, ServiceDefinition> services = resourceDesc.getServices();
-        if (services != null && services.containsKey(desc.getName())) {
-            serviceInvoker.invokeService(services.get(desc.getName()));
+    private void invokeService(PropertyEvaluationContext ctx, PropertyDescription desc,
+            StructuredResourceDescription resourceDesc) {
+        List<ServiceDefinition> services = resourceDesc.getServices();
+        if (services != null && services.size() > 0) {
+            for (ServiceDefinition serviceDefinition : services) {
+                if (serviceDefinition.getName().equals(desc.getName())) {
+                    this.serviceInvoker.invokeService(ctx, serviceDefinition);
+                }
+            }
         }
     }
 

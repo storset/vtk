@@ -33,12 +33,12 @@ function addFormField(name, value, removeName, size) {
     }
     var deleteRow = "";
     if (removeName != null) {
-        deleteRow = "<button type='button' id='" + idstr + "remove' onClick='removeFormField(\"#" + 
+        removeButton = "<button type='button' id='" + idstr + "remove' onClick='removeFormField(\"#" + 
         idstr + "row-" + i + "\"); return false;'>" + removeName + "</button>";
     } 
     $("#vrtx-" + name + "-add").before("<div class='vrtx-multipleinputfield' id='"+ idstr + 
             "row-" + i + "'><input value='" + value +  "' type='text'  size='" + size +"' id='" + 
-            idstr + i + "'> " + deleteRow + "</div>");
+            idstr + i + "'> " + removeButton + "</div>");
     
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;
 }
@@ -67,3 +67,4 @@ function saveMultipleInputFields(){
         formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
     }
 }
+

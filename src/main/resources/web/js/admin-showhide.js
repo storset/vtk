@@ -12,14 +12,14 @@ function toggle(name, parameters) {
   $('#' + name + '-true').each( function() {
     if (this.checked) {
       for (i = 0; i < parameters.length; i++) {
-        $('div.' + parameters[i]).hide();
+        $('div.' + parameters[i]).hide("slow");
       }
     }
   });
   $('#' + name + '-false').each( function() {
     if (this.checked) {
       for (i = 0; i < parameters.length; i++) {
-        $('div.' + parameters[i]).show();
+        $('div.' + parameters[i]).show("slow");
       }
     }
   });

@@ -150,8 +150,13 @@ public abstract class AbstractWebdavController implements Controller {
     }
     
     public Path mapToResourceURI(String value) {
-        URL url = URL.parse(value);
-        return url.getPath();
+    	if (value.startsWith("/")) {
+    		Path p = Path.fromString(value);
+    		return p;
+    	} else {
+            URL url = URL.parse(value);
+            return url.getPath();
+    	}
     }
 
     protected void verifyIfHeader(Resource resource, boolean ifHeaderRequiredIfLocked) {

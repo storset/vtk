@@ -275,6 +275,7 @@
     <property name="assertions">
       <list>
         <ref local="delegateOwnershipPermissionAssertion" />
+        <ref local="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="delegate-ownership" />

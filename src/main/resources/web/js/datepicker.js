@@ -25,7 +25,7 @@ function displayDateAsMultipleInputFields(name){
     var date = new Array("");
     var a = $.find("#" + name);  
    
-    if(a[0].value != null){
+    if(a.length > 0){
         hours = extractHoursFromDate(a[0].value);
         minutes = extractMinutesFromDate(a[0].value)
         date = new String(a[0].value).split(" ");
@@ -79,11 +79,11 @@ function saveDateAndTimeFields(){
                 var minutes = $.find("#" + this.name + "-minutes");
                 var date = $.find("#" + this.name + "-date");
 
-                if(date[0] != null){
+                if(date.length > 0){
                     this.value = date[0].value 
-                    if(hours[0] != null){
+                    if(hours.length > 0){
                         this.value += " " + hours[0].value 
-                        if(minutes[0] != null){
+                        if(minutes.length > 0){
                             this.value += ":" + minutes[0].value;
                         }
                     }

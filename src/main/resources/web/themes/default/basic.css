@@ -946,6 +946,11 @@ div.vrtx-confirm-copy-move-explanation {
   
 }
 
-form.vrtx-admin-button { 
-   display: inline;
+form.vrtx-admin-button, form#vrtx-admin-ownership-form { 
+    display: inline;
 }
+
+form#vrtx-admin-ownership-form {
+  font-size: 100%; 
+}
+

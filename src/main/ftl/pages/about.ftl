@@ -105,8 +105,8 @@
                          default="Are you sure you want to take ownership of this resource?" />
             </#assign>
             <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}" method="post">
-              <button type="submit" onclick="return confirm('${warning}')"
-                      name="confirmation">${editAction}</button>
+              <input type="submit" id="vrtx-admin-ownership-button" type="submit" onclick="return confirm('${warning}')"
+                      name="confirmation" value="${editAction}" />
             </form>
           </#if>
         </td>

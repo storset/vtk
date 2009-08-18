@@ -176,6 +176,19 @@ function toggleAclInheritanceButtonAsLink() {
     });
 }
 
+function changeOwnershipButtonAsLink() {
+    var btn = $('#vrtx-admin-ownership-button');
+    if (btn.size() == 0) {
+        return;
+    }
+    btn.hide();
+    btn.after('(&nbsp;<a id="vrtx-admin-ownership-link" href="javascript:void(0);">' + btn.attr('value') + '</a>&nbsp;)');
+    $('#vrtx-admin-ownership-link').click(function() {
+        btn.click();
+        return false;
+    });
+}
+
 // Add callbacks for the above methods:
 
 $(document).ready(logoutButtonAsLink);
@@ -184,4 +197,4 @@ $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
 $(document).ready(unlockButtonAsLink);
 $(document).ready(toggleAclInheritanceButtonAsLink);
-
+$(document).ready(changeOwnershipButtonAsLink);

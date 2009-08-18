@@ -22,7 +22,6 @@ ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confir
 </div>   
 
 <form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">
-  <input type="hidden" value="delete" name="action" id="action" />
   <button tabindex="1" type="submit" value="ok" id="deleteResourceAction" name="deleteResourceAction">
     ${vrtx.getMsg("confirm-delete.ok")}
   </button>

@@ -59,7 +59,12 @@ public class URLTestCase extends TestCase {
             URL.parse(s);
             fail("Parsed malformed URL: " + s);
         } catch (Exception e) { }
-
+        try {
+            String s = "http://localhost/folder///?_SERVER[DOCUMENT_ROOT]=http://malicious.site.example.com/////path/1.txt???";
+            URL.parse(s);
+            fail("Parsed malformed URL: " + s);
+        } catch (Exception e) { }
+ 
         URL url = URL.parse("http://foo");
         assertEquals(Integer.valueOf(80), url.getPort());
         assertEquals(Path.ROOT, url.getPath());

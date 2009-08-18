@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<h1>412 - precondition failed</H1>
+<h1>412 - precondition failed</h1>
 
 <#if debugErrors?exists && debugErrors>
 <hr style="width: 98%;">

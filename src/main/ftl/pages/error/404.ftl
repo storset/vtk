@@ -5,7 +5,7 @@
  <title>404 - Not Found</title>
 </head>
 <body>
-<h1>404 - Page does not exist</H1>
+<h1>404 - Page does not exist</h1>
 <p>
 The web page <strong>${resourceContext.currentURI?html?if_exists}</strong>
 that you seek cannot be found on this web site. Either the link that

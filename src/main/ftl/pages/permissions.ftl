@@ -26,7 +26,7 @@
     
     <script type="text/javascript">
       $(document).ready(function() {
-        interceptEnterKeyAndReroute("input#userNames", "input.addUserButton");
+        interceptEnterKeyAndReroute("input#groupNames", "input.addGroupButton");
         var permissionsAutocompletePrams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
         permissionsAutocomplete('userNames', 'userNames', permissionsAutocompletePrams);
         splitAutocompleteSuggestion('userNames');

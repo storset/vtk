@@ -85,11 +85,11 @@ function copyMoveButtonsAsLinks() {
        btn.hide();
 
        if (method == 'get') {
-          btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-move-to-selected-folder.link" href="' + url + '">' + btn.text() + '</a>&nbsp;)');
+          btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-move-to-selected-folder.link" href="' + url + '">' + $.trim(btn.text()) + '</a>&nbsp;)');
           btn.addClass('thickbox');
           tb_init('#vrtx-move-to-selected-folder\\.link');
        } else {
-          btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-move-to-selected-folder.link" href="javascript:void(0);">' + btn.text() + '</a>&nbsp;)');
+          btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-move-to-selected-folder.link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
           $('#vrtx-move-to-selected-folder\\.link').click(function() {
               btn.click();
               return false;
@@ -105,11 +105,11 @@ function copyMoveButtonsAsLinks() {
        btn.hide();
 
        if (method == 'get') {
-           btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-copy-to-selected-folder.link" href="' + url + '">' + btn.text() + '</a>&nbsp;)');
+           btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-copy-to-selected-folder.link" href="' + url + '">' + $.trim(btn.text()) + '</a>&nbsp;)');
            btn.addClass('thickbox');
            tb_init('#vrtx-copy-to-selected-folder\\.link');
        } else {
-           btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-copy-to-selected-folder.link" href="javascript:void(0);">' + btn.text() + '</a>&nbsp;)');
+           btn.after('(&nbsp;<a title="' + btn.title + '" id="vrtx-copy-to-selected-folder.link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
            $('#vrtx-copy-to-selected-folder\\.link').click(function() {
                btn.click();
                return false;

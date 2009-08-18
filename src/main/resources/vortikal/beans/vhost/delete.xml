@@ -96,7 +96,7 @@
   
   <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
-    <property name="order" value="490" />
+    <property name="order" value="0" />
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />

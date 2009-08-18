@@ -86,17 +86,18 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
         }
         
         public String getRequestURI() {
-            URL url = URL.create(this.request);
-            try {
-                url.setCharacterEncoding(this.characterEncoding);
-            } catch (Exception e) { }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Translated uri: from '" 
-                        + this.request.getRequestURI() 
-                        + "' to '" + url.getPathEncoded() + "'");
+        	try {
+                URL url = URL.create(this.request, this.characterEncoding);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Translated uri: from '" 
+                            + this.request.getRequestURI() 
+                            + "' to '" + url.getPath().toString() + "'");
+                }
+                return url.getPath().toString();
+            } catch (Exception e) {
+            	logger.warn("Unable to decode request URI", e);
+            	return this.request.getRequestURI();
             }
-            return url.getPathEncoded();
         }
     }
     

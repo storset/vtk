@@ -31,6 +31,7 @@
 package org.vortikal.web.filter;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -100,25 +101,20 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
         }
         
         public String getRequestURI() {
-            URL url = URL.create(this.request);
-
             try {
-
-                Path p = url.getPath();
-                p = URL.decode(p, this.fromEncoding);
-                url.setCharacterEncoding(this.toEncoding);
-                url.setPath(p);
-                
+            	String uri = this.request.getRequestURI();
+            	uri = new String(uri.getBytes(this.fromEncoding), this.toEncoding);
+            	if (logger.isDebugEnabled()) {
+            		logger.debug("Translated uri: from '" + uri 
+            				+ "' to '" + uri
+            				+ "' using encoding '" + this.toEncoding + "' (from '"
+            				+ this.fromEncoding + "')");
+            	}
+            	return uri;
             } catch (Exception e) {
-                
+                logger.warn("Unable to translate uri: " + this.request.getRequestURI(), e);
+                return this.request.getRequestURI();
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Translated uri: from '" + this.request.getRequestURI() 
-                        + "' to '" + url.getPathEncoded()
-                             + "' using encoding '" + this.toEncoding + "' (from '"
-                             + this.fromEncoding + "')");
-            }
-            return url.getPathEncoded();
         }
         
         public String toString() {

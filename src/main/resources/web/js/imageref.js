@@ -8,7 +8,7 @@ function previewImage(urlobj) {
                 '<img src="' + url + '?vrtx=thumbnail" alt="preview">';
         } else {
             document.getElementById(previewobj).innerHTML = 
-                '<img src=""  alt="no-image" style="visibility: hidden; width: 10px;">';
+                '<img src="" alt="no-image" style="visibility: hidden; width: 10px;">';
         }
     }
 }

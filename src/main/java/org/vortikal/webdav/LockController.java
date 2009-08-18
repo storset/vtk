@@ -55,6 +55,7 @@ import org.vortikal.repository.Repository.Depth;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 

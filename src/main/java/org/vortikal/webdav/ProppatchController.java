@@ -69,6 +69,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;

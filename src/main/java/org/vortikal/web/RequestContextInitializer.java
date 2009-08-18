@@ -165,7 +165,12 @@ public class RequestContextInitializer implements ContextInitializer {
 
     public void createContext(HttpServletRequest request) throws Exception {
 
-        URL url = URL.create(request);
+        URL url;
+        try {
+        	url = URL.create(request);
+        } catch (Throwable t) {
+        	throw new InvalidRequestException("Invalid request", t);
+        }
         Path uri = url.getPath();
         Resource resource = null;
 

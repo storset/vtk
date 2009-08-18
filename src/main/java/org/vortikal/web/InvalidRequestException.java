@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2009, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,27 +28,18 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.webdav;
+package org.vortikal.web;
 
-/**
- * Exception class for signalling an invalid WebDAV request.
- */
 public class InvalidRequestException extends RuntimeException {
 
-    private static final long serialVersionUID = 3544668464905009464L;
+	private static final long serialVersionUID = 8134053271598725010L;
+	
+	public InvalidRequestException(String message) {
+		super(message);
+	}
+	
+	public InvalidRequestException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    public InvalidRequestException(String message) {
-        super(message);
-    }
-
-    public InvalidRequestException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidRequestException(Throwable cause) {
-        super(cause);
-    }
-
-    
 }
-

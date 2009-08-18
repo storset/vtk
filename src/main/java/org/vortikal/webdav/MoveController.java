@@ -47,6 +47,7 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.webdav.ifheader.IfHeaderImpl;
 

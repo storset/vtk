@@ -58,6 +58,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.util.io.BoundedInputStream;
 import org.vortikal.util.io.SizeLimitException;
 import org.vortikal.util.web.HttpUtil;
+import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.RequestContext;
 
 /**

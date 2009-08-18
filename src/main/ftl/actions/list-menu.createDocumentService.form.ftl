@@ -5,7 +5,7 @@
   <#if createDocumentForm?exists && !createDocumentForm.done>
   <#-- Need this div coz of IEs sucky boxmodel implementation -->
   <div style="clear:both;height:1px;visibility:hidden;"></div>
-  <form class="createDocumentService" name="createDocumentForm" action="${createDocumentForm.submitURL?html}"
+  <form class="createDocumentService vrtx-admin-form"  name="createDocumentForm" action="${createDocumentForm.submitURL?html}"
         method="post" accept-charset="utf-8">
     <h3><@vrtx.msg code="actions.createDocumentService" default="Create Document"/>:</h3>
     <#compress>

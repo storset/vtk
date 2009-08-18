@@ -6,7 +6,7 @@
   <#-- Need this div coz of IEs sucky boxmodel implementation -->
   <div style="clear:both;height:1px;visibility:hidden;"></div>
   
-  <form name="createcollection" action="${createCollectionForm.submitURL?html}" method="post">
+  <form name="createcollection" class="vrtx-admin-form" action="${createCollectionForm.submitURL?html}" method="post">
   <h3 class="nonul"><@vrtx.msg code="actions.createCollectionService" default="Create collection"/>:</h3>
   
     <@spring.bind "createCollectionForm.name" /> 

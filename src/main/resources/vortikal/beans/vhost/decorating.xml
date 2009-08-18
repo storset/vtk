@@ -42,7 +42,7 @@
     </property>
   </bean>
 
-  <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentHandlingNodeFilter">
+  <bean id="decorating.ssiNodeFilter" class="org.vortikal.web.decorating.ComponentInvokingNodeFilter">
     <property name="componentResolver" ref="decorating.defaultComponentResolver" />
     <property name="ssiDirectiveComponentMap">
       <map>

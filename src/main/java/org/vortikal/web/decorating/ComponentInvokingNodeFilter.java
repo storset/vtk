@@ -53,7 +53,7 @@ import org.vortikal.text.html.HtmlText;
 import org.vortikal.web.RequestContext;
 
 
-public class ComponentHandlingNodeFilter implements HtmlNodeFilter, InitializingBean {
+public class ComponentInvokingNodeFilter implements HtmlNodeFilter, InitializingBean {
     
     private static final Pattern SSI_DIRECTIVE_REGEXP = Pattern.compile(
             "#([a-zA-Z]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -62,7 +62,7 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
             "\\s*([a-zA-Z]*)\\s*=\\s*\"([^\"]+)\"",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    private static Log logger = LogFactory.getLog(ComponentHandlingNodeFilter.class);
+    private static Log logger = LogFactory.getLog(ComponentInvokingNodeFilter.class);
 
     private ComponentResolver componentResolver;
     
@@ -113,7 +113,6 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
     
 
     public HtmlContent filterNode(HtmlContent node) {
-
         if (node instanceof HtmlComment) {
             ComponentInvocation ssiInvocation = buildSsiComponentInvocation(node);
             if (ssiInvocation == null) {
@@ -239,7 +238,10 @@ public class ComponentHandlingNodeFilter implements HtmlNodeFilter, Initializing
         StringBuilder sb = new StringBuilder();
 
         for (ComponentInvocation invocation: componentInvocations) {
-
+		    if (invocation instanceof StaticTextFragment) {
+		    	sb.append(((StaticTextFragment) invocation).buffer);
+		    	continue;
+		    }
             Map<String, Object> parameters = invocation.getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                 null, servletRequest, new HashMap<Object, Object>(), 

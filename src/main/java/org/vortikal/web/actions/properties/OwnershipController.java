@@ -47,55 +47,49 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
+
 public class OwnershipController extends SimpleFormController implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(OwnershipController.class);
-
+    
     private Repository repository = null;
     private PrincipalFactory principalFactory;
-
 
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-
     public void afterPropertiesSet() throws Exception {
         if (this.repository == null) {
-            throw new BeanInitializationException("Bean property 'repository' must be set");
+            throw new BeanInitializationException(
+                "Bean property 'repository' must be set");
         }
     }
 
-
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-
-        System.out.println("********************************* about change ownership");
-
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
-
-        Resource resource = this.repository
-                .retrieve(securityContext.getToken(), requestContext.getResourceURI(), false);
+        
+        Resource resource = this.repository.retrieve(securityContext.getToken(),
+                                                requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, securityContext.getPrincipal());
-
-        OwnershipCommand command = new OwnershipCommand(resource.getOwner().getName(), url);
-
+         
+        OwnershipCommand command =
+            new OwnershipCommand(resource.getOwner().getName(), url);
         return command;
     }
 
 
-    protected void doSubmitAction(Object command) throws Exception {
-
-        System.out.println("********************************* about change ownership");
-
+    protected void doSubmitAction(Object command) throws Exception {        
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-
+        
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
 
-        OwnershipCommand ownershipCommand = (OwnershipCommand) command;
+        OwnershipCommand ownershipCommand =
+            (OwnershipCommand) command;
 
         if (ownershipCommand.getCancelAction() != null) {
             ownershipCommand.setDone(true);
@@ -104,10 +98,11 @@ public class OwnershipController extends SimpleFormController implements Initial
 
         Resource resource = this.repository.retrieve(token, uri, false);
         String owner = resource.getOwner().getQualifiedName();
-
+        
         if (!owner.equals(ownershipCommand.getOwner())) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Setting new owner '" + ownershipCommand.getOwner() + "' for resource " + uri);
+                logger.debug("Setting new owner '" + ownershipCommand.getOwner() + 
+                             "' for resource " + uri);
             }
             resource.setOwner(principalFactory.getPrincipal(ownershipCommand.getOwner(), Principal.Type.USER));
             this.repository.store(token, resource);
@@ -115,10 +110,10 @@ public class OwnershipController extends SimpleFormController implements Initial
         ownershipCommand.setDone(true);
     }
 
-
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
 
 }
+

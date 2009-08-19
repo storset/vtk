@@ -10,33 +10,31 @@
 
 <#if tagElements?exists>
 <div id="vrtx-tags">
-    <#if tagElements?has_content>
-	  <#assign i=1 >
-      <ul class="vrtx-tags-${i?html}">
-        <#assign counter=0 >
-        <#assign i = i +1>
-        <#list tagElements as element>     
-	        <#if counter == numberOfTagsInEachColumn>
-		       </ul>
-		       <ul  class="vrtx-tags-${i?html}">
-		       <#if completeColumn == 0 >
-		        	<#assign numberOfTagsInEachColumn = numberOfTagsInEachColumn - 1>
-		       </#if>
-		       <#assign counter=0 >
-		       <#assign i = i +1>
-		       <#if completeColumn &gt; -1 >
-		         <#assign completeColumn = completeColumn - 1>
-		       </#if>
-	        </#if>
-	        <li class="vrtx-tags-element">
-	           <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
-	           <#if showOccurence >
-	         	  (${element.occurences?html})
-	           </#if>
+	<#assign i=1 >
+    <ul class="vrtx-tags-${i?html}">
+     <#assign counter=0 >
+     <#assign i = i +1>
+     <#list tagElements as element>     
+	     <#if counter == numberOfTagsInEachColumn>
+		     </ul>
+		     <ul  class="vrtx-tags-${i?html}">
+		     <#if completeColumn == 0 >
+		     	<#assign numberOfTagsInEachColumn = numberOfTagsInEachColumn - 1>
+		     </#if>
+		     <#assign counter=0 >
+		     <#assign i = i +1>
+		     <#if completeColumn &gt; -1 >
+		     	<#assign completeColumn = completeColumn - 1>
+		     </#if>
+	     </#if>
+	       <li class="vrtx-tags-element">
+	         <a class="tags" href="${element.linkUrl?html}" rel="tags">${element.text?html}</a>
+	         <#if showOccurence >
+	         	(${element.occurences?html})
+	         </#if>
 	       </li>
 	     <#assign counter=counter + 1 >
-       </#list>
-       </ul>
-    </#if>
+     </#list>
+    </ul>
 </div>
 </#if>

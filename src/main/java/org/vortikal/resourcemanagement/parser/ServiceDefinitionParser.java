@@ -41,22 +41,23 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 public class ServiceDefinitionParser {
 
     @SuppressWarnings("unchecked")
-    public void parseServices(StructuredResourceDescription srd, CommonTree serviceDescription) {
+    public void parseServices(StructuredResourceDescription srd,
+            CommonTree serviceDescription) {
         String propName = serviceDescription.getText();
         CommonTree service = (CommonTree) serviceDescription.getChild(0);
         List<CommonTree> serviceParams = service.getChildren();
         List<String> requires = null;
         List<String> affects = null;
         for (CommonTree param : serviceParams) {
-            if (ResourcetreeLexer.REQUIRED == param.getType()) {
+            if (ResourcetreeLexer.REQUIRES == param.getType()) {
                 requires = getList(param.getChildren());
             } else if (ResourcetreeLexer.AFFECTS == param.getType()) {
                 affects = getList(param.getChildren());
             }
         }
-        srd.addServiceDefinition(new ServiceDefinition(propName, service.getText(), requires, affects));
+        srd.addServiceDefinition(new ServiceDefinition(propName, service.getText(),
+                requires, affects));
     }
-
 
     private List<String> getList(List<CommonTree> listParams) {
         List<String> result = new ArrayList<String>();

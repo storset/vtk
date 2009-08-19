@@ -38,32 +38,28 @@ public final class BaseContext {
 
     private static ThreadLocal<Stack<BaseContext>> threadLocal = new ThreadLocal<Stack<BaseContext>>();
 
-    private Map<Object, Object> map = new HashMap<Object, Object>();
-
+    private Map<Object, Object> map = new HashMap<Object, Object>();    
 
     private BaseContext() {
     }
-
 
     public void setAttribute(Object key, Object value) {
         this.map.put(key, value);
     }
 
-
     public Object getAttribute(Object key) {
         return this.map.get(key);
     }
-
-
+    
     public static BaseContext getContext() {
         Stack<BaseContext> s = threadLocal.get();
         if (s == null || s.isEmpty()) {
-            throw new IllegalStateException("Cannot call getContext(): no context exists");
+            throw new IllegalStateException(
+                "Cannot call getContext(): no context exists");
         }
         return s.peek();
     }
-
-
+    
     public static void pushContext() {
         BaseContext ctx = new BaseContext();
         Stack<BaseContext> s = threadLocal.get();
@@ -73,17 +69,18 @@ public final class BaseContext {
         }
         s.push(ctx);
     }
-
-
+    
     public static void popContext() {
         Stack<BaseContext> s = threadLocal.get();
         if (s == null) {
-            throw new IllegalStateException("Cannot call popContext(): no context exists");
+            throw new IllegalStateException(
+                "Cannot call popContext(): no context exists");
         }
         s.pop();
         if (s.isEmpty()) {
             threadLocal.set(null);
         }
     }
+    
 
 }

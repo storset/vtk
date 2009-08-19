@@ -449,6 +449,11 @@ div.activeTab form.vrtx-admin-form h3 {
   padding-bottom: 10px;
 }
 
+div.activeTab form.vrtx-admin-form #file-upload {
+  background-color: #fff;	
+}
+
+
 /* Used to display messages like "This folder contains an index-file etc." */
 div.tabMessage {
   font-size: 75%;

@@ -19,7 +19,6 @@
                 <ref bean="arrangementStarttidspunktPropDef" />
                 <ref bean="arrangementSluttidspunktPropDef" />
                 <ref bean="arrangementStedPropDef" />
-                <ref bean="arrangementStedWebAdressePropDef" />
                 <ref bean="arrangementArrangorPropDef" />
             </list>
         </property>
@@ -134,19 +133,6 @@
     
     <bean id="arrangementStedEvaluator" parent="abstractXPathEvaluator">
         <property name="expression" value="/arrangement/tid-og-sted/sted"  />
-    </bean>
-    
-    <bean id="arrangementStedWebAdressePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-        <property name="name" value="tid-og-sted.sted.webadresse" />
-        <property name="type" value="STRING" />
-        <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-        <property name="mandatory" value="false" />
-        <property name="propertyEvaluator" ref="arrangementStedWebAdresseEvaluator" />
-    </bean>
-    
-     <bean id="arrangementStedWebAdresseEvaluator" parent="abstractXPathEvaluator">
-        <property name="expression" value="/arrangement/tid-og-sted/sted/webadresse"  />
     </bean>
 
     <bean id="arrangementArrangorPropDef"

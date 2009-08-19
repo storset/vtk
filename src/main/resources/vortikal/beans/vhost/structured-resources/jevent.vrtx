@@ -20,7 +20,7 @@ resourcetype jevent : jdocument {
     time-and-place {
       ##
        [resource-props "."]
-       [if start-date]  
+       [if start-date]
          <div class="vevent">
            <span class="time-and-place">[localized "time-and-place"]:&nbsp;</span>
            <span class="summary" style="display:none;">[val title]</span>

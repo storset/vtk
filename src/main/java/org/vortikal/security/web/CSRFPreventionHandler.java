@@ -31,7 +31,9 @@
 package org.vortikal.security.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
@@ -45,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.text.html.AbstractHtmlPageFilter;
@@ -56,6 +59,7 @@ import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
+
 
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
     implements HandlerInterceptor {
@@ -120,6 +124,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             throws Exception {
     }
 
+    
     public NodeResult filter(HtmlContent node) {
         if (!(node instanceof HtmlElement)) {
             return NodeResult.keep;
@@ -128,30 +133,35 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         if (!"form".equals(element.getName().toLowerCase())) {
             return NodeResult.keep;
         }
-        URL url;
-        HtmlAttribute action = element.getAttribute("action");
-        if (action == null || action.getValue() == null 
-                || "".equals(action.getValue().trim())) {
-            HttpServletRequest request = 
-                RequestContext.getRequestContext().getServletRequest();
-            url = URL.create(request);
-        } else {
-            url = URL.parse(HtmlUtil.unescapeHtmlString(action.getValue()));
-        }
-        url.setRef(null);
-        
         HtmlAttribute method = element.getAttribute("method");
         if (method == null || "".equals(method.getValue().trim()) 
                 || "get".equals(method.getValue().toLowerCase())) {
             return NodeResult.keep;
         }
         
+        URL url;
+        HtmlAttribute actionAttr = element.getAttribute("action");
+        if (actionAttr == null || actionAttr.getValue() == null 
+        		|| "".equals(actionAttr.getValue().trim())) {
+        	HttpServletRequest request = 
+        		RequestContext.getRequestContext().getServletRequest();
+        	url = URL.create(request);
+        } else {
+        	try {
+        		url = parseActionURL(actionAttr.getValue());
+        	} catch (Throwable t) {
+        		logger.warn("Unable to find URL in action attribute: " 
+        				+ actionAttr.getValue(), t);
+        		return NodeResult.keep;
+        	}
+        }
+        url.setRef(null);
+        
         RequestContext requestContext = RequestContext.getRequestContext();
         HttpSession session = requestContext.getServletRequest().getSession(false);
 
         
         if (session != null) {
-
             SecretKey secret = (SecretKey) session.getAttribute("csrf-prevention-secret");
             if (secret == null) {
                 secret = generateSecret();
@@ -162,7 +172,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             if (logger.isDebugEnabled()) {
                 logger.debug("Generate token: url: " + url + ", token: " 
                         + csrfPreventionToken + ", secret: " + secret);
-            }            
+            }
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();
             attrs.add(createAttribute("name", "csrf-prevention-token"));
@@ -204,4 +214,47 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             throw new IllegalStateException("Unable to generate token", e);
         }
     }
+
+    private URL parseActionURL(String action) {
+    	if (action.startsWith("http://") || action.startsWith("https://")) {
+            URL url = URL.parse(HtmlUtil.unescapeHtmlString(action));
+    		return url;
+    	}
+    	
+    	HttpServletRequest request = 
+    		RequestContext.getRequestContext().getServletRequest();
+    	URL url = URL.create(request);
+    	url.clearParameters();
+    	Path path = null;
+    	String[] segments = action.split("/");
+    	int startIdx = 0;
+    	if (action.startsWith("/")) {
+    		path = Path.ROOT;
+    		startIdx = 1;
+    	} else {
+    		path = RequestContext.getRequestContext().getCurrentCollection();
+    	}
+
+    	String query = null;
+    	for (int i = startIdx; i < segments.length; i++) {
+    		String elem = segments[i];
+    		if (elem.contains("?")) {
+    			query = elem.substring(elem.indexOf("?"));
+    			elem = elem.substring(0, elem.indexOf("?"));
+    		}
+    		path = path.expand(elem);
+    	}
+
+    	url.setPath(path);
+		if (query != null) {
+			Map<String, String[]> queryMap = URL.splitQueryString(query);
+			for (String key : queryMap.keySet()) {
+				for (String value : queryMap.get(key)) {
+					url.addParameter(key, value);
+				}
+			}
+		}
+        return url;
+    }
+
 }

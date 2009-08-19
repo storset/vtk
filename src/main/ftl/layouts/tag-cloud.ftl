@@ -9,11 +9,15 @@
   -->
 
 <#if tagElements?exists>
-    <ul class="vrtx-tag-cloud">
-     <#list tagElements as element>
-       <li class="tag-magnitude-${element.magnitude}">
-         <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
-       </li>
-     </#list>
-    </ul>
+  <div class="vrtx-tag-cloud"> 
+    <#if tagElements?has_content>
+      <ul class="vrtx-tag-cloud">
+        <#list tagElements as element>
+          <li class="tag-magnitude-${element.magnitude}">
+            <a class="tag" href="${element.linkUrl?html}" rel="tag">${element.text?html}</a>
+          </li>
+        </#list>
+      </ul>
+    </#if>
+  </div>
 </#if>

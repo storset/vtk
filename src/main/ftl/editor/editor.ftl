@@ -369,9 +369,8 @@
       <#elseif type = 'HTML' && name == 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="1" cols="60">${value?html}</textarea>
         <@fck 'resource.${name}' false true />
-        </div><#-- On the fly div STOP caption -->
+        </div>
 
-      <#-- hack for setting collection titles: -->
       <#elseif (type = 'HTML' && name='userTitle') || (type = 'STRING' && name='navigationTitle')
         && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
   

@@ -60,7 +60,7 @@ public abstract class AbstractCSVFactoryBean extends AbstractFactoryBean {
             }
         } 
     }
-
+ 
     public void setTrim(boolean trim) {
         this.trim = trim;
     }

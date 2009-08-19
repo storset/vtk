@@ -84,8 +84,8 @@
       </script>
 
       <div id="submit" class="save-cancel">
-       <input type="submit" name="save" value="${vrtx.getMsg("editor.save")}">
        <input type="submit" name="savequit" value="${vrtx.getMsg("editor.saveAndQuit")}">
+       <input type="submit" name="save" value="${vrtx.getMsg("editor.save")}">
        <input type="submit" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
       </div>
     </form>

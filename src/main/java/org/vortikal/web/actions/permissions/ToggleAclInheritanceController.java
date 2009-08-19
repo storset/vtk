@@ -43,31 +43,33 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 
-
 /**
  * A controller for toggling the inheritance status of an ACL.
  */
-public class ToggleAclInheritanceController  implements Controller {
+public class ToggleAclInheritanceController implements Controller {
 
     private Repository repository;
-    
+
     private String viewName;
-    
+
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
 
+
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-    
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-        throws Exception {
-        
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        System.out.println("********************************* trying to change permission / owner");
+
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
-        
+
         Path uri = requestContext.getResourceURI();
         String token = securityContext.getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
@@ -78,10 +80,8 @@ public class ToggleAclInheritanceController  implements Controller {
         }
         resource.setInheritedAcl(!resource.isInheritedAcl());
         this.repository.storeACL(token, resource);
-        
+
         return new ModelAndView(this.viewName);
     }
-    
 
 }
-

@@ -60,7 +60,7 @@ resourcetype jarticle : jdocument {
       ##
       [def authors resource-prop "." "author"]
       [if authors]
-      <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span> [val authors]</span>
+      <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span>&nbsp;[val authors]</span>
       [endif]
       ##
     }

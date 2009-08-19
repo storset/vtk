@@ -30,8 +30,11 @@
  */
 package org.vortikal.repository.search.query;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Iterator;
 
+import org.apache.lucene.search.SortComparatorSource;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
@@ -47,49 +50,50 @@ import org.vortikal.repository.search.TypedSortField;
  */
 public class SortBuilderImpl implements SortBuilder {
 
-//    private SortComparatorSource sortComparatorSource = null; 
-    
-//    public SortBuilderImpl() throws SortBuilderException {
-//        try {
-//            sortComparatorSource = new CustomSortComparatorSource();
-//        } catch (IOException e) {
-//            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-//        } catch (ParseException e) {
-//            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
-//        }
-//    }
+    private SortComparatorSource sortComparatorSource = null;
 
-    public org.apache.lucene.search.Sort buildSort(Sorting sort)
-            throws SortBuilderException {
+
+    public SortBuilderImpl() throws SortBuilderException {
+        try {
+            sortComparatorSource = new CustomSortComparatorSource();
+        } catch (IOException e) {
+            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+        } catch (ParseException e) {
+            throw new SortBuilderException("Couldn't create custom sort comparator source", e);
+        }
+    }
+
+
+    public org.apache.lucene.search.Sort buildSort(Sorting sort) throws SortBuilderException {
 
         if (sort == null) {
-            return new org.apache.lucene.search.Sort(
-                    new org.apache.lucene.search.SortField[0]);
+            return new org.apache.lucene.search.Sort(new org.apache.lucene.search.SortField[0]);
         }
 
-        org.apache.lucene.search.SortField[] luceneSortFields = 
-            new org.apache.lucene.search.SortField[sort.getSortFields().size()];
+        org.apache.lucene.search.SortField[] luceneSortFields = new org.apache.lucene.search.SortField[sort
+                .getSortFields().size()];
 
         int j = 0;
         for (Iterator<SortField> i = sort.getSortFields().iterator(); i.hasNext(); j++) {
             SortField f = i.next();
             String fieldName = null;
-            boolean direction = (f.getDirection() == SortFieldDirection.ASC ? false
-                    : true);
+            boolean direction = (f.getDirection() == SortFieldDirection.ASC ? false: true);
 
             if (f instanceof TypedSortField) {
                 fieldName = ((TypedSortField) f).getType();
-                
-                // Special fields, do locale-sensitive lexicographic sorting (uri, name or type) 
-                luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                                            fieldName, f.getLocale(), direction);                
-                
+
+                // Special fields, do locale-sensitive lexicographic sorting (uri, name or type)
+                // luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(), direction);
+
+                // Sort Aa, aA, AA, aa together with A, not Å
+                luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
+
             } else if (f instanceof PropertySortField) {
                 PropertyTypeDefinition def = ((PropertySortField) f).getDefinition();
                 fieldName = FieldNameMapping.getSearchFieldName(def, false);
-                
+
                 switch (def.getType()) {
-                
+
                 case DATE:
                 case TIMESTAMP:
                 case BOOLEAN:
@@ -97,24 +101,27 @@ public class SortBuilderImpl implements SortBuilder {
                 case LONG:
                 case PRINCIPAL:
                 case IMAGE_REF:
-                    
+
                     // These types are all encoded as lexicographically sortable strings,
                     // and there is no need to do locale-sensitive sorting on any of them.
-                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, org.apache.lucene.search.SortField.STRING, direction);
+                    luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName,
+                            org.apache.lucene.search.SortField.STRING, direction);
                     break;
 
                 default:
                     // Sort field according to locale, typically STRING properties (slower)
-                    luceneSortFields[j] = new org.apache.lucene.search.SortField(
-                            fieldName, f.getLocale(), direction);
+                    // luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, f.getLocale(),
+                    // direction);
+
+                    // Sort Aa, aA, AA, aa together with A, not Å
+                    luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource,
+                            direction);
                 }
             } else {
-                throw new SortBuilderException("Unknown sorting type "
-                        + f.getClass().getName());
+                throw new SortBuilderException("Unknown sorting type " + f.getClass().getName());
+
             }
 
-            //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);
         }
 
         return new org.apache.lucene.search.Sort(luceneSortFields);

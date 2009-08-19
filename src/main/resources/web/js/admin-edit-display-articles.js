@@ -13,7 +13,7 @@ function showHide()
 {
   if( $( this ).val() ){
 	   $("#vrtx-resource\\.recursive-listing-subfolders").hide();
-  }else {
+  } else {
 	  $("#vrtx-resource\\.recursive-listing-subfolders").show();
   }
 }

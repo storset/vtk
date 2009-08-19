@@ -43,21 +43,18 @@ import org.springframework.web.servlet.View;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 
-
 /**
- * Abstract decorator which takes a
- * view, which is rendered into a string, and the result is merged
- * with the output from the previous view using the abstract {@link
- * #processInternal} method.
- *
- * <p>Configurable properties:
+ * Abstract decorator which takes a view, which is rendered into a string, and the result is merged with the output from
+ * the previous view using the abstract {@link #processInternal} method.
+ * 
+ * <p>
+ * Configurable properties:
  * <ul>
- *   <li>view - the {@link View} to process when filtering
+ * <li>view - the {@link View} to process when filtering
  * </ul>
- *
+ * 
  */
-public abstract class AbstractViewProcessingDecorator 
-    implements Decorator, InitializingBean {
+public abstract class AbstractViewProcessingDecorator implements Decorator, InitializingBean {
 
     protected final Log logger = LogFactory.getLog(this.getClass());
 
@@ -67,16 +64,14 @@ public abstract class AbstractViewProcessingDecorator
     public void setView(View view) {
         this.view = view;
     }
-    
+
 
     public void afterPropertiesSet() throws Exception {
         if (this.view == null) {
-            throw new BeanInitializationException(
-                "Bean property 'view' must be set");
+            throw new BeanInitializationException("Bean property 'view' must be set");
         }
     }
-    
-    
+
 
     public boolean match(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return true;
@@ -84,41 +79,40 @@ public abstract class AbstractViewProcessingDecorator
 
 
     /**
-     * Processes the wrapped view, converts its output to text and
-     * applies the result to the {@link #processInternal} method.
-     *
-     * @param model the MVC model
-     * @param request the servlet request
-     * @param content the textual content from the original view
-     * @return the content as returned from the {@link
-     * #processInternal} method.
-     * @exception Exception if an error occurs
+     * Processes the wrapped view, converts its output to text and applies the result to the {@link #processInternal}
+     * method.
+     * 
+     * @param model
+     *            the MVC model
+     * @param request
+     *            the servlet request
+     * @param content
+     *            the textual content from the original view
+     * @return the content as returned from the {@link #processInternal} method.
+     * @exception Exception
+     *                if an error occurs
      */
     @SuppressWarnings("unchecked")
-    public final PageContent decorate(Map model, HttpServletRequest request,
-                                  PageContent content) throws Exception {
+    public final PageContent decorate(Map model, HttpServletRequest request, PageContent content) throws Exception {
 
         String viewContent = renderView(model, request);
         return processInternal(content, viewContent);
     }
-    
-    
+
 
     /**
-     * Filters (merges) the textual content from the original view
-     * with the content from the wrapped view. Subclasses must
-     * implement this method.
-     *
-     * @param content the content from the original view (the one
-     * specified in {@link WrappingView}
-     * @param viewContent the content rendered by the view in this
-     * class
+     * Filters (merges) the textual content from the original view with the content from the wrapped view. Subclasses
+     * must implement this method.
+     * 
+     * @param content
+     *            the content from the original view (the one specified in {@link WrappingView}
+     * @param viewContent
+     *            the content rendered by the view in this class
      * @return the merged content from the two views
-     * @exception Exception if an error occurs
+     * @exception Exception
+     *                if an error occurs
      */
-    protected abstract PageContent processInternal(PageContent content, String viewContent) 
-        throws Exception;
-    
+    protected abstract PageContent processInternal(PageContent content, String viewContent) throws Exception;
 
 
     @SuppressWarnings("unchecked")
@@ -131,14 +125,14 @@ public abstract class AbstractViewProcessingDecorator
         this.view.render(model, requestWrapper, tmpResponse);
 
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Rendered wrapped view " + this.view + ". "
-                         + "Character encoding was: "
-                         + tmpResponse.getCharacterEncoding() + ", "
-                         + "Content-Length was: " + tmpResponse.getContentLength());
+            this.logger.debug("Rendered wrapped view " + this.view + ". " + "Character encoding was: "
+                    + tmpResponse.getCharacterEncoding() + ", " + "Content-Length was: "
+                    + tmpResponse.getContentLength());
         }
 
         return new String(tmpResponse.getContentBuffer(), tmpResponse.getCharacterEncoding());
     }
+
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -146,5 +140,5 @@ public abstract class AbstractViewProcessingDecorator
         sb.append("view = ").append(this.view).append("]");
         return sb.toString();
     }
-    
+
 }

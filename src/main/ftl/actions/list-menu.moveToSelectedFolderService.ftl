@@ -15,6 +15,7 @@
           id="vrtx-move-to-selected-folder.submit"
           value="move-resources-to-this-folder" name="action">${item.title?html}</button>
 </form>
+
 <#recover>
 ${.error}
 </#recover>

@@ -55,22 +55,26 @@
       <form action="${aclInfo.aclEditURLs.inheritance?html}" method="post"
             id="permissions.toggleInheritance" class="vrtx-admin-button">
         <#if resourceContext.currentResource.inheritedAcl>
+          <p>
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
             <input type="submit" id="permissions.toggleInheritance.submit"
                    name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="edit" />" />
           </#if>
+          </p>
         <#else>
           <#assign warning =
                    vrtx.getMsg("permissions.removeAcl.warning", 
                    "Are you sure you want to set inherited permissions? This cannot be undone.",
                    [resource.name]) />
+          <p>         
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
             <input type="submit"
                    onclick="return confirm('${warning?html?js_string}');" 
                    id="permissions.toggleInheritance.submit"
                    name="confirmation" value="<@vrtx.msg code="permissions.setInherited" default="edit" />" />
+          </p>
           </#if>
         </#if>
       </form>

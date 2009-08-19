@@ -93,7 +93,11 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
                             + this.request.getRequestURI() 
                             + "' to '" + url.getPath().toString() + "'");
                 }
-                return url.getPath().toString();
+                if (url.isCollection()) {
+                	return url.getPath().toString() + "/";
+                } else {
+                	return url.getPath().toString();
+                }
             } catch (Exception e) {
             	logger.warn("Unable to decode request URI", e);
             	return this.request.getRequestURI();

@@ -4,7 +4,7 @@
 
   <#if command?exists && !command.done>
 
-  <form name="form" class="globalMenu" action="${command.submitURL?html}" method="post">
+  <form name="form" class="globalmenu" action="${command.submitURL?html}" method="post">
     <h3 class="nonul"><@vrtx.msg code="actions.createArchive"
     default="Create archive"/>:</h3>
     <@spring.bind "command.name" /> 

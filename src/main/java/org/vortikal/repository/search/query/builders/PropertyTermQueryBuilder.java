@@ -52,7 +52,7 @@ public class PropertyTermQueryBuilder implements QueryBuilder {
     private String fieldName;
     private String fieldValue;
     
-    public PropertyTermQueryBuilder(TermOperator op, String term, String fieldName, String fieldValue) {
+    public PropertyTermQueryBuilder(TermOperator op, String fieldName, String fieldValue) {
         this.op = op;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;

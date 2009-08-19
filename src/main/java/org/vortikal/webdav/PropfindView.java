@@ -628,6 +628,10 @@ public class PropfindView implements View, InitializingBean {
 
     /* EXPERIMENTAL WebDAV ACL STUFF: */
 
+    /**
+     * Build the supported privilege set element.
+     * @param resource the requested resource
+     */
     protected Element buildSupportedPrivilegeSetElement(Resource resource) {
 
         Element supportedPrivilege =
@@ -670,6 +674,10 @@ public class PropfindView implements View, InitializingBean {
     
 
 
+    /**
+     * Builds the current user privilege set element.
+     * @param resource the requested resource
+     */
     protected Element buildCurrentUserPrivilegeSetElement(Resource resource) {
         
         Element e = new Element("current-user-privilege-set", WebdavConstants.DAV_NAMESPACE);

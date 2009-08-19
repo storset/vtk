@@ -130,6 +130,9 @@ public class DisplayResourceView extends AbstractView
     /**
      * Gets the {@link Resource} object being served. Defaults to
      * examining the model for the key <code>resource</code>.
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response
      */
     @SuppressWarnings("unchecked")
     protected Resource getResource(Map model,
@@ -150,6 +153,9 @@ public class DisplayResourceView extends AbstractView
      * <code>resourceStream</code>. Note to overriders: be careful to
      * always close the input stream already present in the model when
      * returning a different input stream.
+     * @param resource the served resource
+     * @param request the servlet request
+     * @param response
      */
     @SuppressWarnings("unchecked")
     protected InputStream getResourceStream(Resource resource, Map model,
@@ -168,7 +174,17 @@ public class DisplayResourceView extends AbstractView
         setContentLengthHeader(resource, model, request, response);
         response.setStatus(HttpServletResponse.SC_OK);
     }
-    
+
+    /**
+     * Write the response.
+     * 
+     * @param resource the served resource
+     * @param resourceStream the content stream
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
     protected void writeResponse(Resource resource, InputStream resourceStream,
                                  Map model, HttpServletRequest request,
@@ -198,7 +214,15 @@ public class DisplayResourceView extends AbstractView
         }
     }
 
-
+    /**
+     * Sets the content type header based on the resource.
+     * 
+     * @param resource the served resource
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
     protected void setContentTypeHeader(Resource resource, Map model,
                                         HttpServletRequest request,
@@ -228,6 +252,15 @@ public class DisplayResourceView extends AbstractView
     }
     
 
+    /**
+     * Sets the content length header based on the resource.
+     * 
+     * @param resource the served resource
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
     protected void setContentLengthHeader(Resource resource, Map model,
                                           HttpServletRequest request,

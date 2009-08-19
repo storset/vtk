@@ -50,8 +50,8 @@ public class SqlQueryAssembler {
     public String getAssembledQuery() throws UnsupportedQueryException {
         
         SqlOrdering ordering = new SqlOrderingImpl(this.search);
-        SqlColumnSelection columns = new SqlColumnSelectionImpl(this.search);
-        SqlSourceType sourceType = new SqlSourceTypeImpl(this.search);
+        SqlColumnSelection columns = new SqlColumnSelectionImpl();
+        SqlSourceType sourceType = new SqlSourceTypeImpl();
         
         String constraints = 
             search.getQuery().accept(this.constraintBuilder, null).toString();

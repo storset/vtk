@@ -67,7 +67,7 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
     }
 
     public Locale resolveLocale(HttpServletRequest request) {
-        LocaleResolver resolver = mapLocaleResolver(request);
+        LocaleResolver resolver = mapLocaleResolver();
         Locale locale = resolver.resolveLocale(request); 
         if (this.localeTranslationMap.containsKey(locale.toString())) {
             locale = this.localeTranslationMap.get(locale.toString());
@@ -77,11 +77,11 @@ public class ServiceDelegatingLocaleResolver implements LocaleResolver {
 
     public void setLocale(HttpServletRequest request,
                           HttpServletResponse response, Locale locale) {
-        LocaleResolver resolver = mapLocaleResolver(request);
+        LocaleResolver resolver = mapLocaleResolver();
         resolver.setLocale(request, response, locale);
     }
 
-    private LocaleResolver mapLocaleResolver(HttpServletRequest request) {
+    private LocaleResolver mapLocaleResolver() {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service currentService = requestContext.getService();
         

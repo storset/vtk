@@ -106,13 +106,13 @@ public class ResourcePropertyComparator implements Comparator<PropertySet> {
                     result = compareAsInt(p1, p2);
                     break;
                 case LONG:
-                    result = compareAsLong(p1, p2);
+                    result = 0;
                     break;
                 case BOOLEAN:
-                    result = compareAsBoolean(p1, p2);
+                    result = 0;
                     break;
                 case PRINCIPAL:
-                    result = compareAsPrincipal(p1, p2);
+                    result = 0;
                     break;
                 default:
                     break;
@@ -159,21 +159,5 @@ public class ResourcePropertyComparator implements Comparator<PropertySet> {
         int i2 = p2.getIntValue();
         return i1 != i2 ? i2 - i1 : 0;
     }
-    
-    private int compareAsLong(Property p1, Property p2) {
-        // TODO Implement as needed
-        return 0;
-    }
-    
-    private int compareAsBoolean(Property p1, Property p2) {
-        // TODO Implement as needed
-        return 0;
-    }
-    
-    private int compareAsPrincipal(Property p1, Property p2) {
-        // TODO Implement as needed
-        return 0;
-    }
-    
 }
 

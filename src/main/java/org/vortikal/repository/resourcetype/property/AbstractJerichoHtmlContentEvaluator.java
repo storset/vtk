@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -78,8 +77,7 @@ public abstract class AbstractJerichoHtmlContentEvaluator
         }
         
         InputStream stream = null;
-        String encoding = determineCharacterEncoding(ctx.getPrincipal(), property, 
-                ctx.getNewResource(), ctx.getContent(), ctx.getTime());
+        String encoding = determineCharacterEncoding(ctx);
         
         try {
             Source source = null;
@@ -103,15 +101,14 @@ public abstract class AbstractJerichoHtmlContentEvaluator
         }
     }
     
-    private String determineCharacterEncoding(Principal principal, Property property,
-                                              PropertySet ancestorPropertySet, Content content, Date time) {
+    private String determineCharacterEncoding(PropertyEvaluationContext ctx) {
         
         String encoding = null;
         if (this.characterEncodingPropDef == null) {
             return java.nio.charset.Charset.defaultCharset().toString().toLowerCase();
         }
 
-        Property encProperty = ancestorPropertySet.getProperty(this.characterEncodingPropDef);
+        Property encProperty = ctx.getNewResource().getProperty(this.characterEncodingPropDef);
         if (encProperty != null) {
             try {
                 encoding = encProperty.getStringValue();

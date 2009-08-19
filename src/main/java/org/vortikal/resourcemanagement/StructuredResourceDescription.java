@@ -176,7 +176,7 @@ public final class StructuredResourceDescription {
     }
 
     // XXX: handle parameters
-    public String getLocalizedMsg(String key, Locale locale, Object[] param) {
+    public String getLocalizedMsg(String key, Locale locale, @SuppressWarnings("unused") Object[] param) {
         HashMap<Locale, String> localizationMap = this.getAllLocalization().get(key);
         if (localizationMap == null) {
             return key;

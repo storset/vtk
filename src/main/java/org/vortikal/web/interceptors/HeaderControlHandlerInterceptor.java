@@ -174,8 +174,18 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     
 
 
+    /**
+     * Sets the content language header based on the resource.
+     * 
+     * @param resource the served resource
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked") 
     protected void setContentLanguageHeader(Resource resource, 
-                                            @SuppressWarnings("unchecked") Map model,
+                                            Map model,
                                             HttpServletRequest request,
                                             HttpServletResponse response) throws Exception {
         // Fix for DispatcherServlet's behavior (always sets the
@@ -194,8 +204,18 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     }
     
 
+    /**
+     * Sets the last modified header based on the resource.
+     * 
+     * @param resource the served resource
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked") 
     protected void setLastModifiedHeader(Resource resource, 
-                                         @SuppressWarnings("unchecked") Map model,
+                                         Map model,
                                          HttpServletRequest request,
                                          HttpServletResponse response) throws Exception {
         
@@ -216,8 +236,19 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     }
 
 
-    protected void setEtagHeader(Resource resource, @SuppressWarnings("unchecked") Map model, 
-                                HttpServletRequest request, HttpServletResponse response) throws Exception {
+    /**
+     * Sets the ETag header based on the resource.
+     * 
+     * @param resource the served resource
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked") 
+    protected void setEtagHeader(Resource resource, Map model, 
+                                HttpServletRequest request, 
+                                HttpServletResponse response) throws Exception {
         if (this.includeEtagHeader) {
             String etag = resource.getEtag();
             if (logger.isDebugEnabled()) {
@@ -228,7 +259,17 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
     }
     
 
-    protected void setCacheControlHeader(Resource resource, @SuppressWarnings("unchecked") Map model, 
+    /**
+     * Sets the cache control header based on the resource.
+     * 
+     * @param resource the served resource
+     * @param model the MVC model
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked") 
+    protected void setCacheControlHeader(Resource resource, Map model, 
                                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (resource == null || this.includeNoCacheHeader) {
             response.setHeader("Cache-Control", "no-cache");
@@ -237,6 +278,13 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
         }
     }
 
+    /**
+     * Sets static headers based on configuration.
+     * 
+     * @param request the servlet request
+     * @param response the servlet response
+     * @throws Exception
+     */
     protected void setStaticHeaders(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (this.staticHeaders == null || this.staticHeaders.size() == 0) {
             return;

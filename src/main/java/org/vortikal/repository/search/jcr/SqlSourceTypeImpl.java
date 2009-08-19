@@ -30,14 +30,10 @@
  */
 package org.vortikal.repository.search.jcr;
 
-import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.jcr.JcrDaoConstants;
 
 public class SqlSourceTypeImpl implements SqlSourceType {
 
-    public SqlSourceTypeImpl(Search search) {
-    }
-    
     public String getSourceType() {
         // XXX: needs fixing, need to determine if any type in collection criterion is present in query tree.
         // or something .. 

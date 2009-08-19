@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,11 +42,8 @@ import org.apache.maven.doxia.sink.SinkAdapter;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
 
 public class DoxiaTitleEvaluator implements PropertyEvaluator {
 
@@ -72,7 +68,7 @@ public class DoxiaTitleEvaluator implements PropertyEvaluator {
             return false;
         }
         InputStream stream = null;
-        String encoding = determineCharacterEncoding(ctx.getPrincipal(), property, ctx.getNewResource(), ctx.getContent(), ctx.getTime());
+        String encoding = determineCharacterEncoding(ctx);
         
         try {
             stream = ctx.getContent().getContentInputStream();
@@ -100,15 +96,13 @@ public class DoxiaTitleEvaluator implements PropertyEvaluator {
         }
     }
     
-    private String determineCharacterEncoding(Principal principal, Property property,
-                                              PropertySet ancestorPropertySet, Content content, Date time) {
-        
+    private String determineCharacterEncoding(PropertyEvaluationContext ctx) {
         String encoding = null;
         if (this.characterEncodingPropDef == null) {
             return java.nio.charset.Charset.defaultCharset().toString().toLowerCase();
         }
 
-        Property encProperty = ancestorPropertySet.getProperty(this.characterEncodingPropDef);
+        Property encProperty = ctx.getNewResource().getProperty(this.characterEncodingPropDef);
         if (encProperty != null) {
             try {
                 encoding = encProperty.getStringValue();

@@ -105,7 +105,7 @@ public class ProppatchController extends AbstractWebdavController  {
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            Document doc = doPropertyUpdate(resource, requestBody, principal, token);
+            Document doc = doPropertyUpdate(resource, requestBody, principal);
             Format format = Format.getPrettyFormat();
             format.setEncoding("utf-8");
 
@@ -317,7 +317,7 @@ public class ProppatchController extends AbstractWebdavController  {
      */
     @SuppressWarnings("unchecked") 
     protected Document doPropertyUpdate(Resource resource, Document requestBody, 
-            Principal principal, String token) 
+            Principal principal)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
         InvalidRequestException {
@@ -346,8 +346,7 @@ public class ProppatchController extends AbstractWebdavController  {
             if (action.equals("set")) {
                 setProperties(propstat, resource, 
                               actionElement.getChild(
-                                  "prop", WebdavConstants.DAV_NAMESPACE).getChildren(), 
-                              token);
+                                  "prop", WebdavConstants.DAV_NAMESPACE).getChildren());
                 
             } else if (action.equals("remove")) {
                 removeProperties(propstat, resource,
@@ -377,8 +376,7 @@ public class ProppatchController extends AbstractWebdavController  {
     @SuppressWarnings("unchecked") 
     protected void setProperties(Element propstat,
                                  Resource resource,  
-                                 List propElements, 
-                                 String token)
+                                 List propElements)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
 
@@ -386,7 +384,7 @@ public class ProppatchController extends AbstractWebdavController  {
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
             Element propElement = (Element) elementIterator.next();
-            setProperty(resultPropElement, resource, propElement, token);
+            setProperty(resultPropElement, resource, propElement);
         }
         propstat.addContent(resultPropElement);
 
@@ -406,8 +404,7 @@ public class ProppatchController extends AbstractWebdavController  {
      * property, or a custom one, although at present only standard
      * DAV properties are supported.
      */
-    protected void setProperty(Element resultElement, Resource resource, Element propertyElement, 
-                               String token)
+    protected void setProperty(Element resultElement, Resource resource, Element propertyElement)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
 

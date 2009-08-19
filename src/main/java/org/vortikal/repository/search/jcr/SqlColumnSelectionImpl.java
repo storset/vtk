@@ -30,11 +30,10 @@
  */
 package org.vortikal.repository.search.jcr;
 
-import org.vortikal.repository.search.Search;
 
 public class SqlColumnSelectionImpl implements SqlColumnSelection {
 
-    public SqlColumnSelectionImpl(Search search) {
+    public SqlColumnSelectionImpl() {
     }
     
     public String getColumnSelection()  {

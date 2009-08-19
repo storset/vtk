@@ -53,7 +53,7 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
         }
     }
 
-    private boolean missingRequired(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+    private boolean missingRequired(@SuppressWarnings("unused") PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
         List<String> requiredProps = serviceDefinition.getRequires();
         if (requiredProps == null || requiredProps.size() == 0) {
             return false;

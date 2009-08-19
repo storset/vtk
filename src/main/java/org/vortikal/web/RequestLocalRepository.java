@@ -83,7 +83,7 @@ public class RequestLocalRepository implements Repository {
                              + " caused throwable: " + t);
             }
 
-            throwAppropriateException(uri, t);
+            throwAppropriateException(t);
         }
 
         r = ctx.getResourceHit(token, uri, forProcessing);
@@ -109,7 +109,7 @@ public class RequestLocalRepository implements Repository {
                              + ": caching throwable: " + retrieveException);
             }
             ctx.addResourceMiss(token, uri, retrieveException, forProcessing);
-            throwAppropriateException(uri, retrieveException);
+            throwAppropriateException(retrieveException);
             return null;
         }
     }
@@ -277,7 +277,7 @@ public class RequestLocalRepository implements Repository {
 
 
     // XXX: Losing stack traces unnecessary
-    private void throwAppropriateException(Path uri, Throwable t) 
+    private void throwAppropriateException(Throwable t) 
         throws AuthenticationException, AuthorizationException,
         FailedDependencyException, IOException, IllegalOperationException,
         ReadOnlyException, ResourceLockedException, ResourceNotFoundException,

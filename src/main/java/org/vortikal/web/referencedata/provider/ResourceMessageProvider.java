@@ -138,7 +138,7 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
-        Resource resource = getResource(model, request);
+        Resource resource = getResource(model);
         String message = null;
         if (resource != null) {
             SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -173,7 +173,7 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     
 
     @SuppressWarnings("unchecked")
-    private Resource getResource(Map model, HttpServletRequest request) {
+    private Resource getResource(Map model) {
         Resource resource = null;
 
         // Try to locate the resource in the model:

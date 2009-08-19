@@ -428,7 +428,7 @@ public class ResourceArchiver {
             
             // We don't break the archiving if something should go wrong with comments
             try {
-            	archiveComments(token, r, path, jarOut);
+            	archiveComments(token, r, jarOut);
             } catch (Throwable t) {
             	t.printStackTrace();
             }
@@ -438,7 +438,7 @@ public class ResourceArchiver {
             listener.archived(r.getURI());
     }
     
-    private void archiveComments(String token, Resource r, String path, JarOutputStream jo) throws IOException {
+    private void archiveComments(String token, Resource r, JarOutputStream jo) throws IOException {
 		List<Comment> comments = this.repository.getComments(token, r);
 		for (Comment comment : comments) {
 	        JarEntry je = new JarEntry(commentPath + comment.getID() + ".txt");

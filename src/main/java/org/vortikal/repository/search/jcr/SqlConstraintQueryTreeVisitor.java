@@ -265,7 +265,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         buffer.append(getBinaryConstraintOperator(op));
         buffer.append(" ");
         
-        buffer.append(getSqlPropertyValueExpression(def, value));
+        buffer.append(getSqlPropertyValueExpression(value));
         
         return buffer;
     }
@@ -439,8 +439,7 @@ public class SqlConstraintQueryTreeVisitor implements QueryTreeVisitor {
         return buffer.toString();
     }
     
-    private String getSqlPropertyValueExpression(PropertyTypeDefinition def, 
-                                                            String termValue) { 
+    private String getSqlPropertyValueExpression(String termValue) { 
 
         // XXX: JcrDao adds all node properties as type strings.
         // Therefore, there is not yet support for sorting on numbers, dates and so on.

@@ -122,7 +122,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
 
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
-        boolean matched = match(request, resource, principal); 
+        boolean matched = match(request); 
         
         if (this.invert) return !matched;
         
@@ -130,8 +130,7 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
 
     }
      
-    private boolean match(HttpServletRequest request, Resource resource,
-            Principal principal) {
+    private boolean match(HttpServletRequest request) {
         String headerValue = request.getHeader(this.header);
         if (headerValue == null) {
             return false;

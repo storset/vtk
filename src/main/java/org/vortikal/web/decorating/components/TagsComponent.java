@@ -104,7 +104,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         String token = SecurityContext.getSecurityContext().getToken();
 
         if (request.getStringParameter(PARAMETER_SCOPE) != null) {
-            scopeUri = buildScopePath(scopeUri, request.getStringParameter(PARAMETER_SCOPE));
+            scopeUri = buildScopePath(request.getStringParameter(PARAMETER_SCOPE));
         }
 
         int limit = PARAMETER_TAG_LIMIT_DEFAULT_VALUE;
@@ -174,7 +174,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
 
     }
 
-    Path buildScopePath(Path base, String href) {
+    Path buildScopePath(String href) {
         if (href.startsWith("/")) {
             return Path.fromString(href);
         }

@@ -149,7 +149,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
         }
         
         if (uri.startsWith("http:") || uri.startsWith("https:")) {
-            handleHttpInclude(uri, request, response);
+            handleHttpInclude(uri, response);
             return;
         }
 
@@ -318,7 +318,7 @@ public class IncludeComponent extends AbstractDecoratorComponent
     }
     
 
-    private void handleHttpInclude(String uri, DecoratorRequest request,
+    private void handleHttpInclude(String uri,
             DecoratorResponse response) throws Exception {
         String result = this.httpIncludeCache.get(uri);
         Writer writer = response.getWriter();

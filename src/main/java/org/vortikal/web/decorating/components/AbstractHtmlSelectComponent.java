@@ -71,6 +71,12 @@ public abstract class AbstractHtmlSelectComponent
         return filtered;
     }
     
+    /**
+     * Output rendered content to the response.
+     * @param content the rendered HTML content  
+     * @param request the decorator request
+     * @param request the decorator response
+     */
     protected void outputContent(List<HtmlContent> content,
             DecoratorRequest request, DecoratorResponse response) throws Exception {
         Writer out = response.getWriter();
@@ -85,6 +91,13 @@ public abstract class AbstractHtmlSelectComponent
         out.close();
     }
 
+    /**
+     * Filter the list of selected HTML elements. 
+     * The default implementation is to keep all elements.
+     * @param elements the HTML content list
+     * @param request the decorator request
+     * @return the filtered HTML content list
+     */
     protected List<HtmlContent> filterElements(List<HtmlElement> elements, DecoratorRequest request) {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         result.addAll(elements);

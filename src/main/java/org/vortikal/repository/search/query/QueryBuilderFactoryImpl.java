@@ -206,7 +206,7 @@ public final class QueryBuilderFactoryImpl implements QueryBuilderFactory {
             boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
             String fieldName = FieldNameMapping.getSearchFieldName(propDef, lowercase);
             String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), lowercase);
-            return new PropertyTermQueryBuilder(op, ptq.getTerm(), fieldName, fieldValue);
+            return new PropertyTermQueryBuilder(op, fieldName, fieldValue);
         }
         
         if (query instanceof PropertyPrefixQuery) {

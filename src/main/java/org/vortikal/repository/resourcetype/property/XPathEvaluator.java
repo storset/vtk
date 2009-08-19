@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -48,13 +47,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.security.Principal;
 import org.vortikal.xml.xpath.XPathFunction;
 
 /**
@@ -106,8 +102,7 @@ public class XPathEvaluator implements PropertyEvaluator {
             return false;
         }
         try {
-            XPath xpath = createXPath(ctx.getPrincipal(), property,
-                                      ctx.getNewResource(), ctx.getContent(), ctx.getTime());
+            XPath xpath = createXPath(ctx);
             Document doc = null;
             doc = (Document) ctx.getContent().getContentRepresentation(Document.class);
             if (doc == null) {
@@ -150,11 +145,7 @@ public class XPathEvaluator implements PropertyEvaluator {
     }
 
 
-    private XPath createXPath(Principal principal,
-                              Property property,
-                              PropertySet ancestorPropertySet,
-                              Content content,
-                              Date time) throws Exception {
+    private XPath createXPath(PropertyEvaluationContext ctx) throws Exception {
 
         XPath xpath = new JDOMXPath(this.expression);
 
@@ -169,7 +160,7 @@ public class XPathEvaluator implements PropertyEvaluator {
         xpath.setNamespaceContext(nc);
 
         SimpleVariableContext vc = new SimpleVariableContext();
-        vc.setVariableValue("vrtx", "resource", ancestorPropertySet);
+        vc.setVariableValue("vrtx", "resource", ctx.getNewResource());
         xpath.setVariableContext(vc);
 
         return xpath;

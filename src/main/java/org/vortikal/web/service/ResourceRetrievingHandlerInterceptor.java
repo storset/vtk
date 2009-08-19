@@ -64,11 +64,16 @@ public class ResourceRetrievingHandlerInterceptor implements InitializingBean, H
         this.repository = repository;
     }
     
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Resource resource = retrieveResource();
         return handleInternal(resource, request);
     }
 
+    /**
+     * Perform handler interception after resource has been retrieved.
+     * @param resource  the resource
+     * @param request the servlet request
+     */
     protected boolean handleInternal(Resource resource, HttpServletRequest request) {
         return true;
     }

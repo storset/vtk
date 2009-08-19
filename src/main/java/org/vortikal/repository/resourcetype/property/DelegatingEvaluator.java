@@ -32,7 +32,6 @@ package org.vortikal.repository.resourcetype.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -54,12 +53,12 @@ public class DelegatingEvaluator implements PropertyEvaluator {
         if (prop != null) {
             property.setStringValue(prop.getStringValue());
         } else {
-            property.setStringValue(getFallback(property, ctx.getNewResource()));
+            property.setStringValue(getFallback(ctx));
         }
         return true;
     }
 
-    protected String getFallback(Property property, PropertySet ancestorPropertySet) throws ValueFormatException {
-        return ancestorPropertySet.getName();
+    protected String getFallback(PropertyEvaluationContext ctx) throws ValueFormatException {
+        return ctx.getNewResource().getName();
     }
 }

@@ -719,7 +719,7 @@ public class JcrDao implements ContentStore, DataAccessor, CommentDAO, Initializ
         return true;
     }
 
-    public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
+    public void addChangeLogEntry(ChangeLogEntry entry, @SuppressWarnings("unused") boolean recurse)
             throws DataAccessException {
         logger.info("## Nicely formatted change log entry for "
                 + entry.getOperation().name() + " on " + entry.getUri());

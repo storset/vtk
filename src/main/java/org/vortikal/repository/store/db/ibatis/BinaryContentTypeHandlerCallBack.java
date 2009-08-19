@@ -69,7 +69,8 @@ public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
             return this.stream.getStream();
         }
 
-        public InputStream getBinaryStream(long pos, long length) throws SQLException {
+        public InputStream getBinaryStream(@SuppressWarnings("unused") long pos, 
+        		@SuppressWarnings("unused") long length) throws SQLException {
             throw new IllegalStateException("TODO: implement getBinaryStream(pos, length)");
         }
 

@@ -474,7 +474,7 @@ public final class EvenStructuredText implements StructuredText {
     }
     
     
-    protected int parseNewline(String text, int startPos, Element root) {
+    protected int parseNewline(int startPos, Element root) {
         Element element = new Element(lookupTag("newline"));
         root.addContent(element);
         // Assuming newline is always represented by the "\n" character 
@@ -638,7 +638,7 @@ public final class EvenStructuredText implements StructuredText {
         } else if (refrenceAtPos(basicText, pos)) {
             nextPos = parseRefrence(basicText, pos, parent);
         } else if (newlineAtPos(basicText, pos)) {
-            nextPos = parseNewline(basicText, pos, parent);
+            nextPos = parseNewline(pos, parent);
         } else {
             nextPos = parsePlainText(basicText, pos, parent);
         }

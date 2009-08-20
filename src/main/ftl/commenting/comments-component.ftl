@@ -53,7 +53,7 @@
 	
 	    <#if deleteAllCommentsURL?exists>
               <form class="vrtx-comments-delete-all" action="${deleteAllCommentsURL?html}" method="post">
-                <button type="submit" name="delete-all-comments-button"
+                <button type="submit" id="vrtx-comments-delete-all" name="delete-all-comments-button"
                         onclick="return confirm('${confirmation}');">
                         ${message?html}
                 </button>

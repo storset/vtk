@@ -3,6 +3,7 @@
   <head>
     <resource:comments-feed-link />
     <article:css />
+    <article:js />
     <title><event:title flatten="true" /></title>
   </head>
   <body>

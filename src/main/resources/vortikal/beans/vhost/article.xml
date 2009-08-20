@@ -28,7 +28,6 @@
     <property name="handler" ref="event.displayHandler" />
   </bean>
 
-
   <bean id="resourceTypeIsDocument" class="org.vortikal.web.service.ResourceTypeAssertion">
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
   </bean>
@@ -59,7 +58,6 @@
     <property name="viewName" value="displayEvent" />
   </bean>
 
-
   <bean id="resourceManager"
         class="org.vortikal.edit.editor.ResourceWrapperManager"
         parent="requestLocalRepositoryAware">
@@ -67,7 +65,6 @@
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="xhtml10TransResourceTypeDefinition" />
   </bean>
-
 
   <bean id="resourceManager.htmlPropsFilter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
     <property name="keepComments" value="false" />
@@ -173,7 +170,6 @@
     <property name="characterEncoding" value="utf-8" />
   </bean>
 
-
   <bean id="article.decoratorTemplateFactory"
         class="org.vortikal.web.decorating.ParsedHtmlDecoratorTemplateFactory">
     <property name="htmlParser" ref="decorating.htmlParser" />
@@ -254,7 +250,6 @@
       </list>
     </property>
   </bean>
-
 
   <bean id="article.introductionComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
@@ -365,6 +360,14 @@
     <property name="description" value="Inserts CSS references for articles" />
     <property name="view" ref="article.cssView" />
   </bean>
+  
+  <bean id="article.jsComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="article.componentNamespace" />
+    <property name="name" value="js" />
+    <property name="description" value="Inserts JS references for articles" />
+    <property name="view" ref="article.jsView" />
+  </bean>
 
   <bean id="article.cssView" parent="freemarkerView">
     <property name="url" value="system/css.ftl" />
@@ -374,6 +377,20 @@
           <list>
             <value>${themeBaseURL}/view-article.css</value>
             <value>${themeBaseURL}/view-container.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="article.jsView" parent="freemarkerView">
+    <property name="url" value="system/javascript.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/jquery-1.3.2.min.js</value>
+            <value>${jsBaseURL}/view-enhancements.js</value>
           </list>
         </entry>
       </map>

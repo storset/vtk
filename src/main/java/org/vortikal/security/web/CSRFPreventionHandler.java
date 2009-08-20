@@ -59,14 +59,40 @@ import org.vortikal.util.text.TextUtils;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
 
-
+/**
+ * Cross Site Request Forgery (CSRF) prevention handler. 
+ * This class performs two tasks: 
+ * <ol> 
+ *   <li>{@link #filter(HtmlContent)Generates tokens} in HTML 
+ * 	 forms on the page being served </li>
+ *   <li>{@link #preHandle(HttpServletRequest, HttpServletResponse, Object) Verifies} 
+ *   that valid tokens are present in POST requests</li>
+ * </ol> 
+ */
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
     implements HandlerInterceptor {
 
-    private static Log logger = LogFactory.getLog(CSRFPreventionHandler.class);
-
+    public static final String TOKEN_REQUEST_PARAMETER = "csrf-prevention-token";
+	private static final String SECRET_SESSION_ATTRIBUTE = "csrf-prevention-secret";
+	private static Log logger = LogFactory.getLog(CSRFPreventionHandler.class);
     private String ALGORITHM = "HmacSHA1";
-
+    
+    /**
+     * Utility method that can be called, e.g. from views
+     * @return a new CSRF prevention token
+     */
+    public String newToken(URL url) throws Exception {
+    	RequestContext requestContext = RequestContext.getRequestContext();
+    	HttpServletRequest servletRequest = requestContext.getServletRequest();
+    	HttpSession session = servletRequest.getSession(false);
+    	if (session == null) {
+    		throw new IllegalStateException("Session does not exist");
+    	}
+    	url = URL.create(url);
+    	url.setRef(null);
+    	return generateToken(url, session);
+    }
+    
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws Exception {
         if (!"POST".equals(request.getMethod())) {
@@ -85,21 +111,21 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             throw new IllegalStateException("A session must be present");
         }
         SecretKey secret = (SecretKey) 
-            session.getAttribute("csrf-prevention-secret");
+            session.getAttribute(SECRET_SESSION_ATTRIBUTE);
         if (secret == null) {
             throw new AuthorizationException(
-                                             "Missing CSRF prevention secret in session");
+            	"Missing CSRF prevention secret in session");
         }
 
-        String suppliedToken = request.getParameter("csrf-prevention-token");
+        String suppliedToken = request.getParameter(TOKEN_REQUEST_PARAMETER);
 
         if (suppliedToken == null) {
             throw new AuthorizationException(
-                                             "Missing CSRF prevention token in request");
+            	"Missing CSRF prevention token in request");
         }
 
         URL requestURL = URL.create(request);
-        String computed =  generateToken(requestURL, secret, session.getId());
+        String computed =  generateToken(requestURL, session);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Check token: url: " + requestURL 
@@ -137,6 +163,14 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
             || "get".equals(method.getValue().toLowerCase())) {
             return NodeResult.keep;
         }
+        
+        HtmlElement[] inputs = element.getChildElements("input");
+        for (HtmlElement input: inputs) {
+        	HtmlAttribute name = input.getAttribute("name");
+        	if (name != null && TOKEN_REQUEST_PARAMETER.equals(name.getValue())) {
+				return NodeResult.keep;
+        	}
+        }
 
         URL url;
         HtmlAttribute actionAttr = element.getAttribute("action");
@@ -159,22 +193,12 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         RequestContext requestContext = RequestContext.getRequestContext();
         HttpSession session = requestContext.getServletRequest().getSession(false);
 
-
         if (session != null) {
-            SecretKey secret = (SecretKey) session.getAttribute("csrf-prevention-secret");
-            if (secret == null) {
-                secret = generateSecret();
-                session.setAttribute("csrf-prevention-secret", secret);
-            }
-
-            String csrfPreventionToken = generateToken(url, secret, session.getId());
-            if (logger.isDebugEnabled()) {
-                logger.debug("Generate token: url: " + url + ", token: " 
-                             + csrfPreventionToken + ", secret: " + secret);
-            }
+        	
+            String csrfPreventionToken = generateToken(url, session);
             HtmlElement input = createElement("input", true, true);
             List<HtmlAttribute> attrs = new ArrayList<HtmlAttribute>();
-            attrs.add(createAttribute("name", "csrf-prevention-token"));
+            attrs.add(createAttribute("name", TOKEN_REQUEST_PARAMETER));
             attrs.add(createAttribute("type", "hidden"));
             attrs.add(createAttribute("value", csrfPreventionToken));
             input.setAttributes(attrs.toArray(new HtmlAttribute[attrs.size()]));
@@ -193,24 +217,34 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter
         return NodeResult.keep;
     }
 
+    private String generateToken(URL url, HttpSession session) {
+        SecretKey secret = (SecretKey) session.getAttribute(SECRET_SESSION_ATTRIBUTE);
+        if (secret == null) {
+            secret = generateSecret();
+            session.setAttribute(SECRET_SESSION_ATTRIBUTE, secret);
+        }
+        try {
+            Mac mac = Mac.getInstance(ALGORITHM);
+            mac.init(secret);
+            byte[] buffer = (url.toString() + session.getId()).getBytes("utf-8");
+            byte[] hashed = mac.doFinal(buffer);
+            String result = new String(TextUtils.toHex(hashed));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Generate token: url: " + url + ", token: " 
+                             + result + ", secret: " + secret);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to generate token", e);
+        }
+    }
+
     private SecretKey generateSecret() {
         try {
             KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM);
             return kg.generateKey();
         } catch (Exception e) {
             throw new IllegalStateException("Failed to generate secret key", e);
-        }
-    }
-
-    private String generateToken(URL url, SecretKey sk, String sessionID) {
-        try {
-            Mac mac = Mac.getInstance(ALGORITHM);
-            mac.init(sk);
-            byte[] buffer = (url.toString() + sessionID).getBytes("utf-8");
-            byte[] hashed = mac.doFinal(buffer);
-            return new String(TextUtils.toHex(hashed));
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to generate token", e);
         }
     }
 

@@ -3,7 +3,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
   <#if createCourseForm?exists && !createCourseForm.done>
-  <form name="createcourse" action="${createCourseForm.submitURL?html}" method="post">
+  <form name="createcourse" class="globalmenu" action="${createCourseForm.submitURL?html}" method="post">
     <h3><@vrtx.msg code="actions.createCourseService" default="Coursecode"/>:</h3>
     <@spring.bind "createCourseForm.name" /> 
       <#if spring.status.errorMessages?size &gt; 0>

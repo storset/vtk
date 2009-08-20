@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.web.service.URL;
 
 
@@ -93,7 +94,7 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
                             + this.request.getRequestURI() 
                             + "' to '" + url.getPath().toString() + "'");
                 }
-                if (url.isCollection()) {
+                if (url.isCollection() && !Path.ROOT.equals(url.getPath())) {
                 	return url.getPath().toString() + "/";
                 } else {
                 	return url.getPath().toString();

@@ -32,34 +32,33 @@
     <div class="comments-header">
     
     <div id="comments-header-left">
-	    <#assign header>
-	      <@vrtx.msg code="commenting.header"
-	                 default="Comments (" + comments?size + ")"
-	                 args=[comments?size] />
-	    </#assign>
-	    <#if baseCommentURL?exists>
-	      <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
-	    <#else>
-	      ${header}
-	    </#if>
-	
-	
-	    <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
-	      <#assign confirmation>
-	        <@vrtx.msg code="commenting.deleteall.confirmation" 
-	                   default="Are you sure you want to delete all ${comments?size} comments?" 
-	                   args=[comments?size] />
-	      </#assign>  
-	
-	    <#if deleteAllCommentsURL?exists>
-              <form class="vrtx-comments-delete-all" action="${deleteAllCommentsURL?html}" method="post">
-                <button type="submit" id="vrtx-comments-delete-all" name="delete-all-comments-button"
-                        onclick="return confirm('${confirmation}');">
-                        ${message?html}
-                </button>
-              </form>
-            </#if>
-	    
+      <#assign header>
+        <@vrtx.msg code="commenting.header"
+                   default="Comments (" + comments?size + ")"
+                   args=[comments?size] />
+      </#assign>
+      <#if baseCommentURL?exists>
+        <a class="header-href" href="${(baseCommentURL + '#comments')?html}">${header}</a>
+      <#else>
+        ${header}
+      </#if>
+  
+        <#assign message><@vrtx.msg code="commenting.deleteall" default="delete all" /></#assign>
+        <#assign confirmation>
+          <@vrtx.msg code="commenting.deleteall.confirmation" 
+                     default="Are you sure you want to delete all ${comments?size} comments?" 
+                     args=[comments?size] />
+        </#assign>  
+  
+      <#if deleteAllCommentsURL?exists>
+        <form class="vrtx-comments-delete-all" action="${deleteAllCommentsURL?html}" method="post">
+          <@vrtx.csrfPreventionToken url=deleteAllCommentsURL />
+          <button type="submit" id="vrtx-comments-delete-all" name="delete-all-comments-button"
+                  onclick="return confirm('${confirmation}');">
+            ${message?html}
+          </button>
+        </form>
+      </#if>
     </div>
     
     <#if feedURL?exists>
@@ -108,6 +107,7 @@
                        default="Are you sure you want to delete this comment?" />
           </#assign>
           <form class="vrtx-comments-delete" action="${deleteCommentURLs[comment.ID]?html}" method="post">
+            <@vrtx.csrfPreventionToken url=deleteCommentURLs[comment.ID] />
             <button class="comment-delete-button" type="submit" onclick="return confirm('${confirmation}');">${message?html}</button>
           </form>
         </#if>
@@ -153,9 +153,8 @@
         </#list>
         </p>
         <script type="text/javascript"><!--
-
           function editor() {
-            if (editorAvailable()){
+            if (editorAvailable()) {
                document.getElementById("comment-syntax-desc").style.display = "none";
                document.getElementById("comments-text-div").style.margin = "0";
                loadEditor();
@@ -165,6 +164,7 @@
         </script>
       </div>
       <form class="vrtx-comments-post" action="${postCommentURL?string?html}#comment-form" method="post">
+        <@vrtx.csrfPreventionToken url=postCommentURL />
         <#if config.titlesEnabled>
         <div class="comments-title">
           <#assign value><#if form?exists && form.title?exists>${form.title}</#if></#assign>
@@ -202,10 +202,8 @@
           (<@vrtx.rawMsg code="commenting.post.comment-as" default="as ${principal.description}" args=[principalStr] />)
         </div> 
       </form>
-
       <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
     </#if>
-
   </div>
 </div>
 </#if>

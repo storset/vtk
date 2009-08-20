@@ -25,11 +25,13 @@
     <property name="decorationResolver" ref="decorating.decorationResolver" />
     <property name="parseFilters" ref="decorating.nodeFilters" />
     <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
+    <!--
     <property name="postFilters">
       <list>
         <ref bean="system.csrfPreventionHandler" />
       </list>
     </property>
+    -->
   </bean>
 
   <bean id="decorating.nodeFilters"

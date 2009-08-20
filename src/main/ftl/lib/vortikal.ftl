@@ -34,10 +34,12 @@
   
   <#--
     VRTX_MESSAGE_SOURCE is a springframework.*.ResourceBundleMessageSource. It requires
-    resourcebundles to be postfixed with the locale used to fetch messages. Therefore, 
+    resourcebundles to be suffixed with the locale used to fetch messages. Therefore, 
     our current solution won't work for nynorsk because we add the contentlocale "*_NY" 
     to these resources and we have no resourcebundle with the postfix "_ny". Hence we 
     hack a fix like so:
+
+    XXX: the mapping  ny:nn should be done in Java code
   -->
   <#if locale?string?contains('NY')>
     <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
@@ -325,29 +327,6 @@
 </#function>
 
 
-<#--macro property resource name prefix="" format="long">
-  <#compress>
-    <#if VRTX_RESOURCE_TYPE_TREE?exists>
-      <#if prefix == "">
-        <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name)?exists>
-          <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(nullArg, name) />
-          <#if resource.getProperty(def)?exists>
-            ${resource.getProperty(def).getValue()}
-          </#if>
-        </#if>
-      <#else>
-        <#if VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name)??>
-          <#local def = VRTX_RESOURCE_TYPE_TREE.getPropertyDefinitionByPrefix(prefix, name) />
-          <#if resource.getProperty(def)?exists>
-            ${resource.getProperty(def).getValue()}
-          </#if>
-        </#if>
-      </#if>
-    </#if>
-  </#compress>
-</#macro-->
-
-
 <#function propResource resource propName>
   <#local prop = resource.getPropertyByPrefix("", propName)?default("") />
   <#if prop != "">
@@ -361,3 +340,15 @@
 </#function>
 
 
+<#--
+ * csrfPreventionToken
+ *
+ * Generate a Cross-Site Request Forgery (CSRF) prevention token for a
+ * given form URL. Produces a hidden form field with the token.
+ *
+-->
+<#macro csrfPreventionToken url>
+  <input type="hidden"
+         name="${statics['org.vortikal.security.web.CSRFPreventionHandler'].TOKEN_REQUEST_PARAMETER}"
+         value="${VRTX_CSRF_PREVENTION_HANDLER.newToken(url)}" />
+</#macro>

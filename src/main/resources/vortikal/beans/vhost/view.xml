@@ -270,6 +270,7 @@
          <entry key="VRTX_RESOURCE_TYPE_TREE" value-ref="resourceTypeTree" />
          <entry key="VRTX_HTML_UTIL" value-ref="htmlUtil" />
          <entry key="VRTX_MESSAGE_SOURCE" value-ref="defaultMessageSource" />
+         <entry key="VRTX_CSRF_PREVENTION_HANDLER" value-ref="system.csrfPreventionHandler" />
        </map>
      </property>
    </bean>

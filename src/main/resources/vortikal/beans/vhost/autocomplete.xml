@@ -60,6 +60,7 @@
     class="org.vortikal.web.display.autocomplete.PrincipalDataProvider">
     <property name="type" value="USER" />
     <property name="principalFactory" ref="principalFactory" />
+    <property name="principalManager" ref="principalManager" />
   </bean>
   
   <bean id="groupNamesAutoCompleteService" class="org.vortikal.web.service.ServiceImpl" parent="autoCompleteService">

@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.Principal.Type;
 
 public class PrincipalDataProvider implements VocabularyDataProvider<Principal> {
@@ -48,18 +49,24 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
 
     private Type type;
     private PrincipalFactory principalFactory;
+    private PrincipalManager principalManager;
 
     public List<Principal> getCompletions(Path scopeUri, String token) {
         return null;
     }
 
-    public List<Principal> getPrefixCompletions(String prefix, Path contextUri,
-            String token) {
+    public List<Principal> getPrefixCompletions(String prefix, Path contextUri, String token) {
 
         List<Principal> result = new ArrayList<Principal>(0);
 
         try {
             List<Principal> searchResult = principalFactory.search(prefix, type);
+            if (Type.USER.equals(type)) {
+                Principal singleUser = this.principalFactory.getPrincipal(prefix, type);
+                if (this.principalManager.validatePrincipal(singleUser)) {
+                    searchResult.add(singleUser);
+                }
+            }
             if (searchResult != null && searchResult.size() > 0) {
                 result.addAll(searchResult);
                 Collections.sort(result, new PrincipalComparator());
@@ -90,6 +97,10 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
+    }
+
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
     }
 
 }

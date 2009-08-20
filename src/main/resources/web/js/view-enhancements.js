@@ -1,4 +1,4 @@
-// Used by articles to remove buttons used for CSRF
+// Used by articles and events
 
 function deleteCommentButtonsAsLink() {
 	$(".comment-delete-button").each(function(i){

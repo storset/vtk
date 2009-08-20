@@ -58,8 +58,10 @@ public class LinkConstructorImpl implements LinkConstructor, ApplicationContextA
                 return url.toString();
             }
 
-            Path uri = RequestContext.getRequestContext().getCurrentCollection();
+            Path uri = RequestContext.getRequestContext().getResourceURI();
             if (isSet(resourceUri)) {
+                uri = RequestContext.getRequestContext().getCurrentCollection();
+
                 if (resourceUri.startsWith("/")) {
                     uri = Path.ROOT.expand(resourceUri.substring(1));
                 } else {

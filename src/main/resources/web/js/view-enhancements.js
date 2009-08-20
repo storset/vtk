@@ -28,5 +28,5 @@ function deleteAllCommentsButtonAsLink() {
 }
 
 // Add callbacks for the above methods:
-$(document).ready(deleteCommentButtonsAsLink);
 $(document).ready(deleteAllCommentsButtonAsLink);
+$(document).ready(deleteCommentButtonsAsLink);

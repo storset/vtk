@@ -182,7 +182,7 @@ function changeOwnershipButtonAsLink() {
         return;
     }
     btn.hide();
-    btn.after('(&nbsp;<a id="vrtx-admin-ownership-link" href="javascript:void(0);">' + btn.attr('value') + '</a>&nbsp;)');
+    btn.after('(&nbsp;<a id="vrtx-admin-ownership-link" href="javascript:void(0);">' + $.trim(btn.text()) + '</a>&nbsp;)');
     $('#vrtx-admin-ownership-link').click(function() {
         btn.click();
         return false;

@@ -176,7 +176,7 @@ function toggleAclInheritanceButtonAsLink() {
     });
 }
 
-function changeOwnershipButtonAsLink() {
+function takeOwnershipButtonAsLink() {
     var btn = $('#vrtx-admin-ownership-button');
     if (btn.size() == 0) {
         return;
@@ -197,4 +197,4 @@ $(document).ready(placeMoveButtonInActiveTab);
 $(document).ready(placeCopyButtonInActiveTab);
 $(document).ready(unlockButtonAsLink);
 $(document).ready(toggleAclInheritanceButtonAsLink);
-$(document).ready(changeOwnershipButtonAsLink);
+$(document).ready(takeOwnershipButtonAsLink);

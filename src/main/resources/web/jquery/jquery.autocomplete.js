@@ -72,8 +72,7 @@
     };
 
     // Create $ object for input element
-    var $input = $(input).attr("autocomplete", "off").addClass(
-        options.inputClass);
+    var $input = $(input).attr("autocomplete", "off").addClass(options.inputClass);
 
     var timeout;
     var previousValue = "";
@@ -97,9 +96,8 @@
 
     // only opera doesn't trigger keydown multiple times while pressed, others
     // don't work with keypress at all
-    $input.bind(($.browser.opera ? "keypress" : "keydown") + ".autocomplete",
-        function(event) {
-          // track last key pressed
+    $input.bind(($.browser.opera ? "keypress" : "keydown") + ".autocomplete", function(event) {
+      // track last key pressed
         lastKeyPressCode = event.keyCode;
         switch (event.keyCode) {
 
@@ -144,23 +142,23 @@
         case KEY.RETURN:
           if (selectCurrent()) {
             // stop default to prevent a form submit, Opera needs special
-            // handling
-            event.preventDefault();
-            blockSubmit = true;
-            return false;
-          }
-          break;
+        // handling
+        event.preventDefault();
+        blockSubmit = true;
+        return false;
+      }
+      break;
 
-        case KEY.ESC:
-          select.hide();
-          break;
+    case KEY.ESC:
+      select.hide();
+      break;
 
-        default:
-          clearTimeout(timeout);
-          timeout = setTimeout(onChange, options.delay);
-          break;
-        }
-      }).focus( function() {
+    default:
+      clearTimeout(timeout);
+      timeout = setTimeout(onChange, options.delay);
+      break;
+    }
+  } ).focus( function() {
       // track whether the field has focus, we shouldn't process any
         // results if the field no longer has focus
         hasFocus++;
@@ -219,8 +217,7 @@
       if (options.multiple) {
         var words = trimWords($input.val());
         if (words.length > 1) {
-          v = words.slice(0, words.length - 1).join(options.multipleSeparator)
-              + options.multipleSeparator + v;
+          v = words.slice(0, words.length - 1).join(options.multipleSeparator) + options.multipleSeparator + v;
         }
         v += options.multipleSeparator;
       }
@@ -292,16 +289,13 @@
       // autofill in the complete box w/the first match as long as the user
       // hasn't entered in more data
       // if the last user key pressed was backspace, don't autofill
-      if (options.autoFill
-          && (lastWord($input.val()).toLowerCase() == q.toLowerCase())
+      if (options.autoFill && (lastWord($input.val()).toLowerCase() == q.toLowerCase())
           && lastKeyPressCode != KEY.BACKSPACE) {
         // fill in the value (keep the case the user has typed)
-        $input.val($input.val()
-            + sValue.substring(lastWord(previousValue).length));
+        $input.val($input.val() + sValue.substring(lastWord(previousValue).length));
         // select the portion of the value not typed by the user (so the next
         // character will erase)
-        $.Autocompleter.Selection(input, previousValue.length,
-            previousValue.length + sValue.length);
+        $.Autocompleter.Selection(input, previousValue.length, previousValue.length + sValue.length);
       }
     }
     ;
@@ -324,8 +318,7 @@
             if (!result) {
               if (options.multiple) {
                 var words = trimWords($input.val()).slice(0, -1);
-                $input.val(words.join(options.multipleSeparator)
-                    + (words.length ? options.multipleSeparator : ""));
+                $input.val(words.join(options.multipleSeparator) + (words.length ? options.multipleSeparator : ""));
               } else
                 $input.val("");
             }
@@ -333,8 +326,7 @@
       }
       if (wasVisible)
         // position cursor at end of input field
-        $.Autocompleter
-            .Selection(input, input.value.length, input.value.length);
+        $.Autocompleter.Selection(input, input.value.length, input.value.length);
     }
     ;
 
@@ -403,8 +395,7 @@
           parsed[parsed.length] = {
             data :row,
             value :row[0],
-            result :options.formatResult && options.formatResult(row, row[0])
-                || row[0]
+            result :options.formatResult && options.formatResult(row, row[0]) || row[0]
           };
         }
       }
@@ -442,24 +433,9 @@
     multiple :false,
     multipleSeparator :", ",
     highlight : function(value, term) {
-      var splitValue = value.split("(");
-      var valueArray = splitValue[0].split(" ");
-      var termArray = term.split(" ");
-      var returnValue = "";
-      for (v in valueArray) {
-        var val = valueArray[v];
-        for (t in termArray) {
-          val = val.replace(new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
-              + termArray[t].replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi,
-                  "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"),
-              "<strong>$1</strong>");
-        }
-        returnValue = (returnValue == "") ? val : (returnValue + " " + val);
-      }
-      if (splitValue.length > 1) {
-        return returnValue + " (" + splitValue[1];
-      }
-      return returnValue;
+      return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)("
+          + term.replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"),
+          "<strong>$1</strong>");
     },
     scroll :true,
     scrollHeight :180
@@ -524,8 +500,7 @@
         var row = {
           value :value,
           data :rawValue,
-          result :options.formatResult && options.formatResult(rawValue)
-              || value
+          result :options.formatResult && options.formatResult(rawValue) || value
         };
 
         // push the current match into the set list
@@ -618,18 +593,14 @@
     function init() {
       if (!needsInit)
         return;
-      element = $("<div/>").hide().addClass(options.resultsClass).css(
-          "position", "absolute").appendTo(document.body);
+      element = $("<div/>").hide().addClass(options.resultsClass).css("position", "absolute").appendTo(document.body);
 
-      list = $("<ul/>").appendTo(element).mouseover(
-          function(event) {
-            if (target(event).nodeName
-                && target(event).nodeName.toUpperCase() == 'LI') {
-              active = $("li", list).removeClass(CLASSES.ACTIVE).index(
-                  target(event));
-              $(target(event)).addClass(CLASSES.ACTIVE);
-            }
-          }).click( function(event) {
+      list = $("<ul/>").appendTo(element).mouseover( function(event) {
+        if (target(event).nodeName && target(event).nodeName.toUpperCase() == 'LI') {
+          active = $("li", list).removeClass(CLASSES.ACTIVE).index(target(event));
+          $(target(event)).addClass(CLASSES.ACTIVE);
+        }
+      }).click( function(event) {
         $(target(event)).addClass(CLASSES.ACTIVE);
         select();
         // TODO provide option to avoid setting focus again after selection?
@@ -661,16 +632,14 @@
     function moveSelect(step) {
       listItems.slice(active, active + 1).removeClass(CLASSES.ACTIVE);
       movePosition(step);
-      var activeItem = listItems.slice(active, active + 1).addClass(
-          CLASSES.ACTIVE);
+      var activeItem = listItems.slice(active, active + 1).addClass(CLASSES.ACTIVE);
       if (options.scroll) {
         var offset = 0;
         listItems.slice(0, active).each( function() {
           offset += this.offsetHeight;
         });
         if ((offset + activeItem[0].offsetHeight - list.scrollTop()) > list[0].clientHeight) {
-          list.scrollTop(offset + activeItem[0].offsetHeight
-              - list.innerHeight());
+          list.scrollTop(offset + activeItem[0].offsetHeight - list.innerHeight());
         } else if (offset < list.scrollTop()) {
           list.scrollTop(offset);
         }
@@ -697,12 +666,11 @@
       for ( var i = 0; i < max; i++) {
         if (!data[i])
           continue;
-        var formatted = options.formatItem(data[i].data, i + 1, max,
-            data[i].value, term);
+        var formatted = options.formatItem(data[i].data, i + 1, max, data[i].value, term);
         if (formatted === false)
           continue;
-        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(
-            i % 2 == 0 ? "ac_even" : "ac_odd").appendTo(list)[0];
+        var li = $("<li/>").html(options.highlight(formatted, term)).addClass(i % 2 == 0 ? "ac_even" : "ac_odd")
+            .appendTo(list)[0];
         $.data(li, "ac_data", data[i]);
       }
       listItems = list.find("li");
@@ -751,20 +719,15 @@
         return element && element.is(":visible");
       },
       current : function() {
-        return this.visible()
-            && (listItems.filter("." + CLASSES.ACTIVE)[0] || options.selectFirst
-                && listItems[0]);
+        return this.visible() && (listItems.filter("." + CLASSES.ACTIVE)[0] || options.selectFirst && listItems[0]);
       },
       show : function() {
         var offset = $(input).offset();
-        element
-            .css(
-                {
-                  width :typeof options.width == "string" || options.width > 0 ? options.width
-                      : $(input).width(),
-                  top :offset.top + input.offsetHeight,
-                  left :offset.left
-                }).show();
+        element.css( {
+          width :typeof options.width == "string" || options.width > 0 ? options.width : $(input).width(),
+          top :offset.top + input.offsetHeight,
+          left :offset.left
+        }).show();
         if (options.scroll) {
           list.scrollTop(0);
           list.css( {
@@ -772,37 +735,32 @@
             overflow :'auto'
           });
 
-          if ($.browser.msie
-              && typeof document.body.style.maxHeight === "undefined") {
+          if ($.browser.msie && typeof document.body.style.maxHeight === "undefined") {
             var listHeight = 0;
             listItems.each( function() {
               listHeight += this.offsetHeight;
             });
             var scrollbarsVisible = listHeight > options.scrollHeight;
-            list.css('height', scrollbarsVisible ? options.scrollHeight
-                : listHeight);
+            list.css('height', scrollbarsVisible ? options.scrollHeight : listHeight);
             if (!scrollbarsVisible) {
               // IE doesn't recalculate width when scrollbar disappears
-              listItems.width(list.width()
-                  - parseInt(listItems.css("padding-left"))
-                  - parseInt(listItems.css("padding-right")));
-            }
-          }
+      listItems
+          .width(list.width() - parseInt(listItems.css("padding-left")) - parseInt(listItems.css("padding-right")));
+    }
+  }
 
-        }
-      },
-      selected : function() {
-        var selected = listItems
-            && listItems.filter("." + CLASSES.ACTIVE).removeClass(
-                CLASSES.ACTIVE);
-        return selected && selected.length && $.data(selected[0], "ac_data");
-      },
-      emptyList : function() {
-        list && list.empty();
-      },
-      unbind : function() {
-        element && element.remove();
-      }
+}
+},
+selected : function() {
+var selected = listItems && listItems.filter("." + CLASSES.ACTIVE).removeClass(CLASSES.ACTIVE);
+return selected && selected.length && $.data(selected[0], "ac_data");
+},
+emptyList : function() {
+list && list.empty();
+},
+unbind : function() {
+element && element.remove();
+}
     };
   };
 

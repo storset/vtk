@@ -12,22 +12,23 @@ function permissionsAutocomplete(id, service, params) {
     },
     highlight : function(value, term) {
       var splitValue = value.split("(");
+      var desc = splitValue[1];
       var valueArray = splitValue[0].split(" ");
       var termArray = term.split(" ");
       var returnValue = "";
       for (v in valueArray) {
         var val = valueArray[v];
         for (t in termArray) {
-          val = val.replace(new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
-              + termArray[t].replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"),
-              "<strong>$1</strong>");
+          var regex = new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
+              + termArray[t].replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi");
+          val = val.replace(regex, "<strong>$1</strong>");
+          if (id == "userNames") {
+            desc = desc.replace(regex, "<strong>$1</strong>");
+          }
         }
         returnValue = (returnValue == "") ? val : (returnValue + " " + val);
       }
-      if (splitValue.length > 1) {
-        return returnValue + " (" + splitValue[1];
-      }
-      return returnValue;
+      return returnValue + " (" + desc;
     }
   };
   if (params) {

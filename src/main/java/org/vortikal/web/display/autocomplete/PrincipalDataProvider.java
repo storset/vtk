@@ -33,7 +33,9 @@ package org.vortikal.web.display.autocomplete;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
@@ -57,25 +59,26 @@ public class PrincipalDataProvider implements VocabularyDataProvider<Principal> 
 
     public List<Principal> getPrefixCompletions(String prefix, Path contextUri, String token) {
 
-        List<Principal> result = new ArrayList<Principal>(0);
+        Set<Principal> result = new HashSet<Principal>(0);
 
         try {
-            List<Principal> searchResult = principalFactory.search(prefix, type);
             if (Type.USER.equals(type)) {
                 Principal singleUser = this.principalFactory.getPrincipal(prefix, type);
                 if (this.principalManager.validatePrincipal(singleUser)) {
-                    searchResult.add(singleUser);
+                    result.add(singleUser);
                 }
             }
+            List<Principal> searchResult = principalFactory.search(prefix, type);
             if (searchResult != null && searchResult.size() > 0) {
                 result.addAll(searchResult);
-                Collections.sort(result, new PrincipalComparator());
             }
         } catch (Exception e) {
             logger.error("An error occured while getting prefixcompilations", e);
         }
 
-        return result;
+        List<Principal> l = new ArrayList<Principal>(result);
+        Collections.sort(l, new PrincipalComparator());
+        return l;
     }
 
     private final class PrincipalComparator implements Comparator<Principal> {

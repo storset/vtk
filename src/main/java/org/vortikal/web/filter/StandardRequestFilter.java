@@ -49,7 +49,8 @@ public class StandardRequestFilter extends AbstractRequestFilter {
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
     
     private static final Pattern URL_ENCODED_SPACE = Pattern.compile("%20");
-
+    private static final Pattern MULTIPLE_SLASH = Pattern.compile("/+");
+    
     public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);
     }
@@ -80,7 +81,7 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                     || "*".equals(requestURI)) {
                 return "/";
             }
-
+            requestURI = MULTIPLE_SLASH.matcher(requestURI).replaceAll("/");
             // Spaces are not always decoded by the container:
             return URL_ENCODED_SPACE.matcher(requestURI).replaceAll(" ");
         }

@@ -2,6 +2,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
   
+  <import resource="mixins/introduction-mixin.xml" />
+  
   <bean id="json.resourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="json-resource"/>
     <property name="namespace" ref="DEFAULT_NAMESPACE" />

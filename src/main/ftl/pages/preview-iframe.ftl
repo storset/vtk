@@ -35,7 +35,9 @@
 	$('iframe').load(function() {
 		$("iframe").contents().find("a").each(function(i, e){
 			this.target = "_parent";	
+                        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'>
 			visualizeDeadLink(this, false, e);
+                        </#if>
 		});	
 	});	
   });	

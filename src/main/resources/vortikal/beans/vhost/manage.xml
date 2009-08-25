@@ -1433,6 +1433,11 @@
 
   <bean id="previewIframeView" parent="freemarkerView">
     <property name="url" value="pages/preview-iframe.ftl" />
+    <property name="attributesMap">
+            <map>
+              <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />
+            </map>
+    </property>
     <property name="referenceDataProviders">
       <list>
         <ref bean="iframeJSProvider" />

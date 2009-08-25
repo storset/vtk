@@ -8,7 +8,7 @@
   - 
   -->
 
-<#if tagElements?exists>
+<#if tagElements?exists && tagElements?size gt 0>
 <div id="vrtx-tags">
 	<#assign i=1 >
     <ul class="vrtx-tags-${i?html}">

@@ -1546,6 +1546,7 @@
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe.js</value>
             <value>${webResources.baseURL}/thickbox-modified/thickbox.js</value>
+            <value>${jsBaseURL}/visualize-links.js</value>
           </list>
         </entry>
       </map>

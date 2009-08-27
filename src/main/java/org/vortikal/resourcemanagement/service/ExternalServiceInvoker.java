@@ -35,17 +35,26 @@ import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
 public class ExternalServiceInvoker implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public void invokeService(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+    public void invokeService(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+
+        if (property.getValue() == null
+                || (Type.BOOLEAN.equals(property.getDefinition().getType()) && property.getBooleanValue() == false)) {
+            return;
+        }
+
         if (missingRequired(ctx, serviceDefinition)) {
             return;
         }
+
         String serviceName = serviceDefinition.getServiceName();
         if (this.applicationContext != null && this.applicationContext.containsBean(serviceName)) {
             ExternalService externalService = (ExternalService) this.applicationContext.getBean(serviceName);
@@ -53,14 +62,15 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
         }
     }
 
-    private boolean missingRequired(@SuppressWarnings("unused") PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
+    private boolean missingRequired(@SuppressWarnings("unused") PropertyEvaluationContext ctx,
+            ServiceDefinition serviceDefinition) {
         List<String> requiredProps = serviceDefinition.getRequires();
         if (requiredProps == null || requiredProps.size() == 0) {
             return false;
         }
-        
+
         // XXX implement
-        
+
         return false;
     }
 

@@ -319,7 +319,7 @@ public class StructuredResourceManager {
                 }
                 setPropValue(property, value);
 
-                invokeService(ctx, desc, resourceDesc);
+                invokeService(property, ctx, desc, resourceDesc);
 
                 return true;
             }
@@ -361,7 +361,7 @@ public class StructuredResourceManager {
                     }
                     setPropValue(property, value);
 
-                    invokeService(ctx, desc, resourceDesc);
+                    invokeService(property, ctx, desc, resourceDesc);
 
                     return true;
                 } catch (Exception e) {
@@ -371,13 +371,13 @@ public class StructuredResourceManager {
         };
     }
 
-    private void invokeService(PropertyEvaluationContext ctx, PropertyDescription desc,
+    private void invokeService(Property property, PropertyEvaluationContext ctx, PropertyDescription desc,
             StructuredResourceDescription resourceDesc) {
         List<ServiceDefinition> services = resourceDesc.getServices();
         if (services != null && services.size() > 0) {
             for (ServiceDefinition serviceDefinition : services) {
                 if (serviceDefinition.getName().equals(desc.getName())) {
-                    this.serviceInvoker.invokeService(ctx, serviceDefinition);
+                    this.serviceInvoker.invokeService(property, ctx, serviceDefinition);
                 }
             }
         }

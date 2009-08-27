@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+    
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,15 +55,15 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
-
+import org.joda.time.DateTimeZone;
 
 public class ICalController implements Controller {
 
     private Repository repository;
     private PropertyTypeDefinition startDatePropDef;
     private PropertyTypeDefinition endDatePropDef;
-    private PropertyTypeDefinition locationPropDef;
-
+    private PropertyTypeDefinition locationPropDef;    
+    
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
@@ -109,17 +111,17 @@ public class ICalController implements Controller {
 
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCALENDAR\n");
-        sb.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
         sb.append("VERSION:2.0\n");
         sb.append("METHOD:PUBLISH\n");
+        sb.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
         sb.append("BEGIN:VEVENT\n");
         sb.append("DTSTAMP:" + getDtstamp() + "\n");
         sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
-        sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "\n");
-
+        sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "Z\n");
+        
         Property endDate = event.getProperty(endDatePropDef);
         if (endDate != null) {
-            sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "\n");
+            sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "Z\n");
         }
 
         Property location = event.getProperty(locationPropDef);
@@ -151,11 +153,12 @@ public class ICalController implements Controller {
     }
 
 
-    private String getICalDate(Date date) {
-        // Local time
+    private String getICalDate(Date date) {  
+        DateTimeZone zone = DateTimeZone.getDefault();
+        Date UTCDate = new Date(zone.convertLocalToUTC(date.getTime(), true));
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
-        return dateFormat.format(date) + "T" + timeFormat.format(date);
+        return dateFormat.format(UTCDate) + "T" + timeFormat.format(UTCDate);
     }
 
 

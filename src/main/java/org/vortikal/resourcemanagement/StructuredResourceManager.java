@@ -303,21 +303,28 @@ public class StructuredResourceManager {
                     return false;
                 }
 
-                JSONObject json;
-                try {
-                    json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
-                } catch (Exception e) {
-                    throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
+                // external value
+                // XXX if (isExternal(property)) -> implement (extend resourcedef syntax)!
+                Object value = ctx.getPropertyValue(property.getDefinition().getName());
+                if (value != null) {
+                    setPropValue(property, value);
+                } else {
+                    JSONObject json;
+                    try {
+                        json = (JSONObject) ctx.getContent().getContentRepresentation(JSONObject.class);
+                    } catch (Exception e) {
+                        throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
+                    }
+                    String expression = "properties." + property.getDefinition().getName();
+                    value = JSONUtil.select(json, expression);
+                    if (value == null) {
+                        return false;
+                    }
+                    if (value.toString().trim().equals("")) {
+                        return false;
+                    }
+                    setPropValue(property, value);
                 }
-                String expression = "properties." + property.getDefinition().getName();
-                Object value = JSONUtil.select(json, expression);
-                if (value == null) {
-                    return false;
-                }
-                if (value.toString().trim().equals("")) {
-                    return false;
-                }
-                setPropValue(property, value);
 
                 invokeService(property, ctx, desc, resourceDesc);
 

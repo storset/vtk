@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.vortikal.repository.resourcetype.Content;
@@ -52,33 +53,31 @@ public class PropertyEvaluationContext {
     private Principal principal;
     private Map<String, Object> propertyValueMap;
 
-
     public static PropertyEvaluationContext propertiesChangeContext(ResourceImpl originalResource,
             ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
-        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, originalResource.isCollection(), principal,
-                content, Type.PropertiesChange);
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
+                originalResource.isCollection(), principal, content, Type.PropertiesChange);
         ctx.suppliedResource = suppliedResource;
         return ctx;
     }
 
     public static PropertyEvaluationContext createResourceContext(ResourceImpl originalResource, boolean collection,
             Principal principal) throws InternalRepositoryException {
-        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, collection, principal,
-                null, Type.Create);
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, collection, principal, null,
+                Type.Create);
         return ctx;
     }
 
-    public static PropertyEvaluationContext contentChangeContext(ResourceImpl originalResource,
-            Principal principal, Content content) throws InternalRepositoryException {
-        return new PropertyEvaluationContext(originalResource, originalResource.isCollection(), principal, content, Type.ContentChange);
+    public static PropertyEvaluationContext contentChangeContext(ResourceImpl originalResource, Principal principal,
+            Content content) throws InternalRepositoryException {
+        return new PropertyEvaluationContext(originalResource, originalResource.isCollection(), principal, content,
+                Type.ContentChange);
     }
 
     public static PropertyEvaluationContext nameChangeContext(ResourceImpl originalResource,
             ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
-        PropertyEvaluationContext ctx = 
-            new PropertyEvaluationContext(originalResource, 
-                    originalResource.isCollection(), principal, 
-                    content, Type.NameChange);
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
+                originalResource.isCollection(), principal, content, Type.NameChange);
         ctx.suppliedResource = suppliedResource;
         ctx.newResource = suppliedResource;
         return ctx;
@@ -86,14 +85,14 @@ public class PropertyEvaluationContext {
 
     public static PropertyEvaluationContext commentsChangeContext(ResourceImpl originalResource,
             ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
-        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, originalResource.isCollection(), principal,
-                content, Type.CommentsChange);
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
+                originalResource.isCollection(), principal, content, Type.CommentsChange);
         ctx.suppliedResource = suppliedResource;
         return ctx;
     }
 
-    private PropertyEvaluationContext(ResourceImpl originalResource, boolean collection,
-            Principal principal, Content content, Type evaluationType) {
+    private PropertyEvaluationContext(ResourceImpl originalResource, boolean collection, Principal principal,
+            Content content, Type evaluationType) {
         this.collection = collection;
         this.originalResource = originalResource;
         this.principal = principal;
@@ -102,8 +101,7 @@ public class PropertyEvaluationContext {
         try {
             this.newResource = originalResource.cloneWithoutProperties();
         } catch (CloneNotSupportedException e) {
-            throw new InternalRepositoryException("Unable to clone resource '"
-                    + originalResource.getURI() + "'", e);
+            throw new InternalRepositoryException("Unable to clone resource '" + originalResource.getURI() + "'", e);
         }
     }
 
@@ -126,7 +124,7 @@ public class PropertyEvaluationContext {
     public Type getEvaluationType() {
         return evaluationType;
     }
-    
+
     public Content getContent() {
         return this.content;
     }
@@ -137,6 +135,13 @@ public class PropertyEvaluationContext {
 
     public Date getTime() {
         return time;
+    }
+
+    public void addPropertyValue(String propertyName, Object value) {
+        if (this.propertyValueMap == null) {
+            this.propertyValueMap = new HashMap<String, Object>();
+        }
+        this.propertyValueMap.put(propertyName, value);
     }
 
     public Object getPropertyValue(String propertyName) {

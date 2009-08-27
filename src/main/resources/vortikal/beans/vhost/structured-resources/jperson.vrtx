@@ -50,13 +50,16 @@ resourcetype jperson : jdocument {
           <p>Postal address: [val postalAddress]</p>
         [endif]
         [if visitingAddress]
-          <p>Visiting address: [val postalAddress]</p>
+          <p>Visiting address: [val visitingAddress]</p>
         [endif]
         [if officeNumber]
           <p>Room: [val officeNumber]</p>
         [endif]
         [if email]
           <p>Email: [val email]</p>
+        [endif]
+        [if webPage]
+          <p>Webpage: [val webPage]</p>
         [endif]
         <p>...</p>
       ##

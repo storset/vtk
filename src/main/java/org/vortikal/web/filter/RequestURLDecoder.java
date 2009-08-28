@@ -76,36 +76,31 @@ public class RequestURLDecoder extends AbstractRequestFilter implements Initiali
     
     private class URLDecodingRequestWrapper extends HttpServletRequestWrapper {
 
-        private HttpServletRequest request;
-        private String characterEncoding;
-
+    	private String uri;
+    	
         public URLDecodingRequestWrapper(HttpServletRequest request,
                                          String characterEncoding) {
             super(request);
-            this.request = request;
-            this.characterEncoding = characterEncoding;
-        }
-        
-        public String getRequestURI() {
         	try {
-                URL url = URL.create(this.request, this.characterEncoding);
+                URL url = URL.create(request, characterEncoding);
+                if (url.isCollection() && !Path.ROOT.equals(url.getPath())) {
+                	this.uri = url.getPath().toString() + "/";
+                } else {
+                	this.uri = url.getPath().toString();
+                }
                 if (logger.isDebugEnabled()) {
                     logger.debug("Translated uri: from '" 
-                            + this.request.getRequestURI() 
+                            + request.getRequestURI() 
                             + "' to '" + url.getPath().toString() + "'");
-                }
-                if (url.isCollection() && !Path.ROOT.equals(url.getPath())) {
-                	return url.getPath().toString() + "/";
-                } else {
-                	return url.getPath().toString();
                 }
             } catch (Exception e) {
             	logger.warn("Unable to decode request URI", e);
-            	return this.request.getRequestURI();
+            	this.uri = request.getRequestURI();
             }
         }
+        
+        public String getRequestURI() {
+        	return this.uri;
+        }
     }
-    
-
-
 }

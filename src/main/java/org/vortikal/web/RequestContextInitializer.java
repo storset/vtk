@@ -58,6 +58,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 /**
  * Request context initializer. On every request the {@link Service}
@@ -164,7 +165,13 @@ public class RequestContextInitializer implements ContextInitializer {
 
     public void createContext(HttpServletRequest request) throws Exception {
 
-        Path uri = getResourceURI(request);
+    	URL url;
+    	try {
+    		url = URL.create(request);
+    	} catch (Throwable t) {
+    		throw new InvalidRequestException("Invalid request", t);
+    	}
+    	Path uri = url.getPath();
         Resource resource = null;
 
         boolean inRepository = true;
@@ -389,19 +396,4 @@ public class RequestContextInitializer implements ContextInitializer {
         }
         return parents;
     }
-    
-    
-    private Path getResourceURI(HttpServletRequest req) throws Exception {
-
-        String uri = req.getRequestURI();
-        if (uri == null || uri.equals("/")) {
-            return Path.fromString("/");
-        }
-        if (uri.endsWith("/")) {
-            uri = uri.substring(0, uri.length() - 1);
-        }
-        return Path.fromString(uri);
-    }
-
-
 }

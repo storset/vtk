@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
-  "http://www.springframework.org/dtd/spring-beans.dtd">
+"http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<import resource="classpath:/vortikal/beans/vhost/config/property-configurer.xml" />
-	<import resource="classpath:/vortikal/beans/vhost/main.xml" />
-	<import resource="extensions.xml" />
-	
-   <!-- Fix for resin 3.0 -->
-	<bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
-		parent="defaultRequestFilterCategoryBean" />
-	
-	<bean id="reqURIEncodingTranslator" class="org.vortikal.web.filter.RequestURIEncodingTranslator"
-		parent="defaultRequestFilterCategoryBean">
-		<property name="order" value="10" />
-		<property name="fromEncoding" value="iso-8859-1" />
-		<property name="toEncoding" value="utf-8" />
-	</bean>
-	
-	<bean id="reqURLDecoder" class="org.vortikal.web.filter.RequestURLDecoder"
-		parent="defaultRequestFilterCategoryBean">
-		<property name="order" value="10" />
-		<property name="characterEncoding" value="utf-8" />
-	</bean>
-	
+  <import resource="classpath:/vortikal/beans/vhost/config/property-configurer.xml" />
+  <import resource="classpath:/vortikal/beans/vhost/main.xml" />
+  <import resource="extensions.xml" />
+  
+  <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
+        parent="defaultRequestFilterCategoryBean">
+    <property name="urlReplacements" ref="stdReqFilter.urlReplacements" />
+  </bean>
+
+  <!-- Fix for resin 3.0 -->
+  <bean id="stdReqFilter.urlReplacements"
+        class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="/+" value="/" />
+        <entry key="\+" value="%2B" />
+        <entry key="%25" value="%" />
+      </map>
+    </property>
+  </bean>
+  
 </beans>

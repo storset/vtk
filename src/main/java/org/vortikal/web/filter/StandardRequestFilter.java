@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.filter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,10 +50,18 @@ public class StandardRequestFilter extends AbstractRequestFilter {
 
     private static Log logger = LogFactory.getLog(StandardRequestFilter.class);
     
-    private static final Pattern URL_ENCODED_SPACE = Pattern.compile("%20");
-    private static final Pattern MULTIPLE_SLASH = Pattern.compile("/+");
+    private Map<Pattern, String> urlReplacements;
     
-    public HttpServletRequest filterRequest(HttpServletRequest request) {
+    public void setUrlReplacements(Map<String, String> urlReplacements) {
+		this.urlReplacements = new HashMap<Pattern, String>();
+		for (String key : urlReplacements.keySet()) {
+			Pattern pattern = Pattern.compile(key);
+			String replacement = urlReplacements.get(key);
+			this.urlReplacements.put(pattern, replacement);
+		}
+	}
+
+	public HttpServletRequest filterRequest(HttpServletRequest request) {
         return new StandardRequestWrapper(request);
     }
     
@@ -81,9 +91,14 @@ public class StandardRequestFilter extends AbstractRequestFilter {
                     || "*".equals(requestURI)) {
                 return "/";
             }
-            requestURI = MULTIPLE_SLASH.matcher(requestURI).replaceAll("/");
-            // Spaces are not always decoded by the container:
-            return URL_ENCODED_SPACE.matcher(requestURI).replaceAll(" ");
+
+            if (urlReplacements != null) {
+            	for (Pattern pattern : urlReplacements.keySet()) {
+            		String replacement = urlReplacements.get(pattern);
+            		requestURI = pattern.matcher(requestURI).replaceAll(replacement);
+            	}
+            }
+            return requestURI;
         }
     }
 

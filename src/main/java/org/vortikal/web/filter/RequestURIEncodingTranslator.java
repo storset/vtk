@@ -86,37 +86,34 @@ public class RequestURIEncodingTranslator extends AbstractRequestFilter
     
     private class TranslatingRequestWrapper extends HttpServletRequestWrapper {
 
-        private HttpServletRequest request;
-        private String fromEncoding, toEncoding;
-
+    	private String uri;
+    	
         public TranslatingRequestWrapper(HttpServletRequest request,
                                          String fromEncoding, String toEncoding) {
             super(request);
-            this.request = request;
-            this.fromEncoding = fromEncoding;
-            this.toEncoding = toEncoding;
-        }
-        
-        public String getRequestURI() {
             try {
-            	String uri = this.request.getRequestURI();
-            	uri = new String(uri.getBytes(this.fromEncoding), this.toEncoding);
+            	String uri = request.getRequestURI();
+            	uri = new String(uri.getBytes(fromEncoding), toEncoding);
             	if (logger.isDebugEnabled()) {
             		logger.debug("Translated uri: from '" + uri 
             				+ "' to '" + uri
-            				+ "' using encoding '" + this.toEncoding + "' (from '"
-            				+ this.fromEncoding + "')");
+            				+ "' using encoding '" + toEncoding + "' (from '"
+            				+ fromEncoding + "')");
             	}
-            	return uri;
+            	this.uri = uri;
             } catch (Exception e) {
-                logger.warn("Unable to translate uri: " + this.request.getRequestURI(), e);
-                return this.request.getRequestURI();
+                logger.warn("Unable to translate uri: " + request.getRequestURI(), e);
+                this.uri = request.getRequestURI();
             }
+        }
+        
+        public String getRequestURI() {
+        	return this.uri;
         }
         
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
-            sb.append(": ").append(this.request.getRequestURL());
+            sb.append(": ").append(this.uri);
             return sb.toString();
         }
     }

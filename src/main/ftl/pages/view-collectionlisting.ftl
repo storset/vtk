@@ -109,13 +109,13 @@
                      <td><ul>
                      <#assign splitList = splitList + interval />
                    </#if>
-                   <#assign navigationTitle = vrtx.propValue(c, "navigationTitle")?html />
+                   <#assign navigationTitle = vrtx.propValue(c.resource, "navigationTitle")?html />
                    <#if navigationTitle?exists && navigationTitle != "">
-                     <li><a href="${c.getURI()?html}">${navigationTitle}</a></li>
+                     <li><a href="${c.URL.pathRepresentation?html}">${navigationTitle}</a></li>
                    <#else>
-                     <li><a href="${c.getURI()?html}">${vrtx.propValue(c, "title")?html}</a></li>
+                     <li><a href="${c.URL.pathRepresentation?html}">${vrtx.propValue(c.resource, "title")?html}</a></li>
                    </#if>
-                 </#list>                                                                                          
+                 </#list>
            </ul></td></tr>
          </table>
        </div>

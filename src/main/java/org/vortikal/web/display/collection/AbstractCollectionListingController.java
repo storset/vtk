@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.collection;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,6 +93,25 @@ public abstract class AbstractCollectionListingController implements Controller 
 
     public static final String USER_DISPLAY_PAGE = "u-page";
 
+   /**
+    * Container class for (resource, URL) for subcollections 
+    */
+    public class CollectionItem {
+    	private PropertySet resource;
+    	private URL url;
+    	
+    	public CollectionItem(PropertySet resource, URL url) {
+			this.resource = resource;
+			this.url = url;
+		}
+		public PropertySet getResource() {
+    		return this.resource;
+    	}
+    	public URL getURL() {
+    		return this.url;
+    	}
+    }
+    
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -110,8 +130,8 @@ public abstract class AbstractCollectionListingController implements Controller 
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
-        model.put("subCollections", subCollections);
-
+        model.put("subCollections", createSubCollections(request, subCollections));
+        
         int pageLimit = getPageLimit(collection);
         if (pageLimit > 0) {
             /* Run the actual search (done in subclasses) */
@@ -143,6 +163,19 @@ public abstract class AbstractCollectionListingController implements Controller 
         return new ModelAndView(this.viewName, model);
     }
 
+    protected List<CollectionItem> createSubCollections(HttpServletRequest request, List<PropertySet> subCollections) {
+    	List<CollectionItem> result = new ArrayList<CollectionItem>();
+    	for (PropertySet propertySet : subCollections) {
+			URL url = URL.create(request);
+			url.clearParameters();
+			url.setRef(null);
+			url.setPath(propertySet.getURI());
+			CollectionItem c = new CollectionItem(propertySet, url);
+			result.add(c);
+		}
+    	return result;
+    }
+    
     protected List<PropertySet> listCollections(Path uri, String token) {
 
         AndQuery query = new AndQuery();

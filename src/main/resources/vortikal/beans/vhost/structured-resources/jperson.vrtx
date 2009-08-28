@@ -16,7 +16,7 @@ resourcetype jperson : jdocument {
     picture : image_ref,
     tags : string multiple overrides tags,
     getExternalScientificInformation : boolean,
-    scientificInformation : html
+    scientificInformation : html external:fridaPublicationsService
   }
 
   edit-rules {
@@ -38,7 +38,8 @@ resourcetype jperson : jdocument {
   }
   
   services {
-    getExternalPersonInfo userMetadataLdapService requires(username)
+    getExternalPersonInfo userMetadataLdapService requires(username),
+    getExternalScientificInformation fridaPublicationsService
   }
 
   view-components {
@@ -61,9 +62,19 @@ resourcetype jperson : jdocument {
         [if webPage]
           <p>Webpage: [val webPage]</p>
         [endif]
-        <p>...</p>
       ##
     }
+    
+    scientific-info {
+      ##
+        [resource-props "."]
+        [if scientificInformation]
+          <p><b>Scientific Information:</b></p>
+          [val scientificInformation]
+        [endif]
+      ##
+    }
+    
   }
 
   view {
@@ -76,8 +87,8 @@ resourcetype jperson : jdocument {
         <h1><comp:title /></h1>
         <h2>Contact information</h2>
         <comp:contact-information />
-        <resource:tags />
-        <p>Scientific information: <json:field select="scientificInformation" /></p>
+        <comp:scientific-info />
+        <p><resource:tags /></p>
       </body>
     </html>
     ##

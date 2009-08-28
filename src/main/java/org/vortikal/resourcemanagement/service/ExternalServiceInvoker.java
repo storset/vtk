@@ -35,6 +35,7 @@ import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -46,8 +47,7 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
 
     public void invokeService(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
 
-        if (property.getValue() == null
-                || (Type.BOOLEAN.equals(property.getDefinition().getType()) && property.getBooleanValue() == false)) {
+        if (invalidProperty(property)) {
             return;
         }
 
@@ -62,16 +62,25 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
         }
     }
 
-    private boolean missingRequired(@SuppressWarnings("unused") PropertyEvaluationContext ctx,
-            ServiceDefinition serviceDefinition) {
+    private boolean missingRequired(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {
         List<String> requiredProps = serviceDefinition.getRequires();
         if (requiredProps == null || requiredProps.size() == 0) {
             return false;
         }
 
-        // XXX implement
+        for (String requiredProp : requiredProps) {
+            Property prop = ctx.getNewResource().getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, requiredProp);
+            if (invalidProperty(prop)) {
+                return true;
+            }
+        }
 
         return false;
+    }
+
+    private boolean invalidProperty(Property property) {
+        return property == null || property.getValue() == null
+                || (Type.BOOLEAN.equals(property.getDefinition().getType()) && property.getBooleanValue() == false);
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

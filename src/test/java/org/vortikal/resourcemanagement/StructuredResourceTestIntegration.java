@@ -31,7 +31,6 @@
 package org.vortikal.resourcemanagement;
 
 import java.util.List;
-import java.util.Map;
 
 public class StructuredResourceTestIntegration extends StructuredResourceTestSetup {
 
@@ -63,11 +62,8 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
                 } else {
                     SimplePropertyDescription sd = (SimplePropertyDescription) d;
                     System.out.println("\t\t" + sd.getName() + ": " + sd.getType() + " " + sd.isMultiple() + " "
-                            + sd.isRequired() + " " + sd.isNoExtract() + " " + sd.getOverrides());
-                    Map<String, Object> edithints = sd.getEdithints();
-                    if (edithints != null) {
-                        System.out.println("\t\t\tEdithints: " + edithints);
-                    }
+                            + sd.isRequired() + " " + sd.isNoExtract() + " " + sd.getOverrides()
+                            + (sd.hasExternalService() ? "(external:" + sd.getExternalService() + ")" : ""));
                 }
             }
         }
@@ -94,8 +90,7 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
         if (services != null) {
             System.out.println("\tServices:");
             for (ServiceDefinition sd : services) {
-                System.out.println("\t\t" + sd.getName() + " " + sd.getServiceName() + " " + sd.getRequires() + " "
-                        + sd.getAffects());
+                System.out.println("\t\t" + sd.getName() + " " + sd.getServiceName() + " " + sd.getRequires());
             }
         }
 

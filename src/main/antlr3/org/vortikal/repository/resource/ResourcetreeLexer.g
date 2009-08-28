@@ -42,13 +42,13 @@ DQ	:	'"';
 
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
+EXTERNAL:	'external';
 DERIVED:	'derived';
-EVAL:	    'eval';
+EVAL	:	'eval';
 MULTIPLE:	'multiple';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';
-
 AUTOCOMPLETE
 	:	'autocomplete';
 SCRIPTTRIGGER 

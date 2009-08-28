@@ -45,8 +45,7 @@ import org.vortikal.resourcemanagement.DerivedPropertyDescription.EvalDescriptio
 public class PropertyDescriptionParser {
 
     @SuppressWarnings("unchecked")
-    public void parsePropertyDescriptions(StructuredResourceDescription srd,
-            List<CommonTree> propertyDescriptions) {
+    public void parsePropertyDescriptions(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
         List<PropertyDescription> props = new ArrayList<PropertyDescription>();
         if (propertyDescriptions != null) {
             for (CommonTree propDesc : propertyDescriptions) {
@@ -66,8 +65,7 @@ public class PropertyDescriptionParser {
         }
     }
 
-    private void populateSimplePropertyDescription(SimplePropertyDescription p,
-            List<CommonTree> propertyDescription) {
+    private void populateSimplePropertyDescription(SimplePropertyDescription p, List<CommonTree> propertyDescription) {
         for (CommonTree descEntry : propertyDescription) {
             switch (descEntry.getType()) {
             case ResourcetreeLexer.PROPTYPE:
@@ -85,16 +83,17 @@ public class PropertyDescriptionParser {
             case ResourcetreeLexer.MULTIPLE:
                 p.setMultiple(true);
                 break;
+            case ResourcetreeLexer.EXTERNAL:
+                p.setExternalService(descEntry.getChild(0).getText());
+                break;
             default:
-                throw new IllegalStateException(
-                        "Unknown token type for simple property description: "
+                throw new IllegalStateException("Unknown token type for simple property description: "
                         + descEntry.getType());
             }
         }
     }
-    
-    private void populateDerivedPropertyDescription(DerivedPropertyDescription p,
-            List<CommonTree> propertyDescription) {
+
+    private void populateDerivedPropertyDescription(DerivedPropertyDescription p, List<CommonTree> propertyDescription) {
         for (CommonTree descEntry : propertyDescription) {
             switch (descEntry.getType()) {
             case ResourcetreeLexer.DERIVED:
@@ -107,24 +106,22 @@ public class PropertyDescriptionParser {
                 p.setMultiple(true);
                 break;
             default:
-                throw new IllegalStateException(
-                        "Unknown token type for derived property description: "
+                throw new IllegalStateException("Unknown token type for derived property description: "
                         + descEntry.getType());
             }
         }
     }
-    
+
     private void handleDerivedProperty(DerivedPropertyDescription p, CommonTree descEntry) {
         List<String> dependentFields = new ArrayList<String>();
         Tree fields = descEntry.getChild(0);
         for (int i = 0; i < fields.getChildCount(); i++) {
             dependentFields.add(fields.getChild(i).getText());
         }
-        
+
         Tree eval = descEntry.getChild(1);
         boolean quote = false;
-        List<EvalDescription> evalDescriptions = 
-            new ArrayList<EvalDescription>();
+        List<EvalDescription> evalDescriptions = new ArrayList<EvalDescription>();
         for (int i = 0; i < eval.getChildCount(); i++) {
             if (ResourcetreeLexer.DQ == eval.getChild(i).getType()) {
                 quote = !quote;

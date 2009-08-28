@@ -1,8 +1,8 @@
 resourcetype person : article {
   properties {
-    username : string required,
-    firstname : string,
-    surname : string,
+    username : string required external:ldap,
+    firstname : string external:ldap,
+    surname : string external:ldap,
     fetchExternal : boolean,
     tags : string multiple
   }
@@ -18,6 +18,6 @@ resourcetype person : article {
     tags multipleinputfields
   }
   services {
-    fetchExternal external requires(firstName, surname) affects(firstName, surname, email) 
+    fetchExternal ldap requires(username)
   }
 }

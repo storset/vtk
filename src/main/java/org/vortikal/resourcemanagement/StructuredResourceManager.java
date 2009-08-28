@@ -303,9 +303,11 @@ public class StructuredResourceManager {
                     return false;
                 }
 
-                // external value
-                // XXX if (isExternal(property)) -> implement (extend resourcedef syntax)!
-                Object value = ctx.getPropertyValue(property.getDefinition().getName());
+                Object value = null;
+                if (desc.hasExternalService()) {
+                    value = ctx.getExternalServicePropertyValue(desc.getExternalService(), property.getDefinition()
+                            .getName());
+                }
                 if (value != null) {
                     setPropValue(property, value);
                 } else {

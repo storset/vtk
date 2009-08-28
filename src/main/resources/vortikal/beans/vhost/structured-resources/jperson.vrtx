@@ -3,13 +3,13 @@ resourcetype jperson : jdocument {
   properties {
     username : string required,
     getExternalPersonInfo : boolean,
-    firstName : string,
-    surname : string,
+    firstName : string external:userMetadataLdapService,
+    surname : string external:userMetadataLdapService,
     title : derived (firstName, surname) 
             eval (firstName + " " + surname) overrides title,
-    postalAddress : string,
-    visitingAddress : string,
-    email : string multiple,
+    postalAddress : string external:userMetadataLdapService,
+    visitingAddress : string external:userMetadataLdapService,
+    email : string multiple external:userMetadataLdapService,
     webPage : string, 
     officeNumber : string,
     availableHours : string,
@@ -38,7 +38,7 @@ resourcetype jperson : jdocument {
   }
   
   services {
-    getExternalPersonInfo external requires(username) affects(firstName, surname, email) 
+    getExternalPersonInfo userMetadataLdapService requires(username)
   }
 
   view-components {

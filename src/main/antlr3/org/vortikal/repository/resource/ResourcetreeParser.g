@@ -66,47 +66,40 @@ resourceprops
 	;
 
 propertytypedef
-    : (derivedpropertytypedef | plainpropertytypedef)
-    ;
+	:	(derivedpropertytypedef | plainpropertytypedef)
+	;
 
 derivedpropertytypedef
 	:	NAME COLON derived (overrides)?
 		-> ^(NAME derived (overrides)?)
-    ;
+	;
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?)
+			(external)?
+		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
+			(external)?)
 	;
 
-derived
-    :   DERIVED LP fieldlist RP EVAL LP evallist RP 
+external
+	:	EXTERNAL COLON NAME -> ^(EXTERNAL NAME);
+
+derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP 
 		-> ^(DERIVED ^(FIELDS fieldlist) ^(EVAL evallist))
-    ;
+	;
 
 fieldlist
     :   NAME (COMMA NAME)*
         ->  NAME+
     ;
 
-evallist
-    :  nameorqtext (PLUS nameorqtext)*
-       -> nameorqtext+
-    ;
+evallist:	nameorqtext (PLUS nameorqtext)* -> nameorqtext+;
 
 nameorqtext
-    : NAME
-      -> NAME
-    | QTEXT
-      -> DQ QTEXT DQ
-    ;
-
-/*
-nameorqtext
-    : (NAME | QTEXT)
-    ;
-*/
-
+	:	NAME -> NAME
+	|	QTEXT -> DQ QTEXT DQ
+	;
+    
 overrides
 	:	OVERRIDES NAME
 		-> ^(OVERRIDES NAME)
@@ -177,13 +170,11 @@ services:	SERVICES LCB
 	;
 
 servicedef
-	:	NAME NAME (requires)? (affects)?
-		-> ^(NAME ^(NAME (requires)? (affects)?))
+	:	NAME NAME (requires)?
+		-> ^(NAME ^(NAME (requires)?))
 	;
 
 requires:	REQUIRES namelist -> ^(REQUIRES namelist);
-
-affects	:	AFFECTS namelist -> ^(AFFECTS namelist);
 
 namevaluepair
 	:	NAME COLON QTEXT

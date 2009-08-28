@@ -152,6 +152,9 @@ public class URLTestCase extends TestCase {
         assertEquals("/%C3%A6%C3%B8%C3%A5", url.getPathEncoded());
         url.setCharacterEncoding("iso-8859-1");
         assertEquals("/%E6%F8%E5", url.getPathEncoded());
+        
+        url = new URL("http", "foo.bar", Path.fromString("/%20"));
+        assertEquals("http://foo.bar/%2520", url.toString());
     }
 
     public void testDecode() {
@@ -159,6 +162,8 @@ public class URLTestCase extends TestCase {
         URL url = URL.parse("http://foo.bar/abc%28def%29?xyz=2%2B2%3D3");
         assertEquals(Path.fromString("/abc(def)"), url.getPath());
         assertEquals("2+2=3", url.getParameter("xyz"));
+        url = URL.parse("http://foo.bar/%2520");
+        assertEquals("/%20", url.getPath().toString());
     }
     
     public void testIsEncoded() {

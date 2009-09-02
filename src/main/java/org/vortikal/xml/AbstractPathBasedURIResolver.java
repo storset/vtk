@@ -174,10 +174,10 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
     }
 
     private String getAbsolutePath(String href, String base) {
-
         String uri = null;
-        
-        if (href.startsWith("/")) {
+		if (href == null || href.trim().equals("")) {
+			return null;
+		} else if (href.startsWith("/")) {
             // hrefs starting with '/' don't care about base
             uri = href;
         } else if (href.matches(".+://.+") || base == null || !base.startsWith(PROTOCOL_PREFIX)) {
@@ -190,7 +190,6 @@ public abstract class AbstractPathBasedURIResolver implements StylesheetURIResol
             base = base.substring(0, base.lastIndexOf("/") + 1);
             uri = base + href;
         }
-
         Path path = Path.ROOT.expand(uri.substring(1));
         return path.toString();
     }

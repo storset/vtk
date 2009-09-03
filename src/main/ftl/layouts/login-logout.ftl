@@ -5,14 +5,14 @@
 <div class="vrtx-logout" id="vrtx-logout">
   <span class="vrtx-user">${principal.description?html}</span>
   <form id="logoutForm" action="${logoutURL?html}" method="post" style="display:inline;">
+    <@vrtx.csrfPreventionToken url=logoutURL />
     <button type="submit" id="logoutAction" name="logoutAction"><@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/></button>
   </form>
   <!-- Hide submit button, display a link instead: -->
   <script type="text/javascript" language="Javascript"><!--
 	   	document.getElementById("logoutAction").style.display = "none";
 		var logoutLink = document.createElement("a");
-		logoutLink.setAttribute("href","${logoutURL?html}");
-		logoutLink.setAttribute("onclick","javascript:document.getElementById('logoutForm').submit();");
+		logoutLink.setAttribute("href","javascript:document.getElementById('logoutForm').submit();");
 		logoutLink.innerHTML = "<@vrtx.msg code="decorating.authenticationComponent.logout" default="logout"/>"
 		
 		var lp = document.createElement("span");

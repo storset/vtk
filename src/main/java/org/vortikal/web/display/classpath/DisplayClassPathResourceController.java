@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -133,19 +134,36 @@ public class DisplayClassPathResourceController
 
         InputStream inStream = null;
         OutputStream outStream = null;
-
+        int contentLength = -1;
+        Date expires = null;
         try {
             if (this.expiresSeconds >= 0) {
                 long expiresMilliseconds = this.expiresSeconds * 1000;
-                Date expires = new Date(System.currentTimeMillis() + expiresMilliseconds);
-                response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+                expires = new Date(System.currentTimeMillis() + expiresMilliseconds);
+            }
+
+            if (resource instanceof ClassPathResource) {
+            	java.net.URL url = resource.getURL();
+            	URLConnection connection = url.openConnection();
+            	contentLength = connection.getContentLength();
+            	inStream = connection.getInputStream();
+            } else if (resource instanceof FileSystemResource) {
+            	File file = resource.getFile();
+            	contentLength = (int) file.length();
+            } else {
+            	inStream = resource.getInputStream();
             }
 
             response.setContentType(MimeHelper.map(request.getRequestURI()));
-
+            if (contentLength != -1) {
+            	response.setContentLength(contentLength);
+            }
+            if (expires != null) {
+            	response.setHeader("Expires", HttpUtil.getHttpDateString(expires));
+            }
+            
             if ("GET".equals(request.getMethod())) {
 
-                inStream = resource.getInputStream();                
                 outStream  = response.getOutputStream();
                 byte[] buffer = new byte[5000];
 
@@ -169,8 +187,12 @@ public class DisplayClassPathResourceController
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
 
         } finally {
-            if (inStream != null) inStream.close();
-            if (outStream != null) outStream.close();
+            if (inStream != null) {
+            	inStream.close();
+            }
+            if (outStream != null) {
+            	outStream.close();
+            }
         }
         return null;
     }

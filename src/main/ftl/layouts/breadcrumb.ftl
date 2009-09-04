@@ -23,4 +23,14 @@
   <#assign downcaseElements = true />
 </#if>
 
-<@brdcrmb.breadCrumb crumbs=breadcrumb downcase=downcaseElements />
+<#assign hide = false />
+<#if .vars['hide-prefix']?exists && .vars['hide-prefix'] = 'true'>
+  <#assign hide = true />
+</#if>
+
+<#assign stop = 0 />
+<#if .vars['stop-at-level']?exists>
+  <#assign stop = .vars['stop-at-level']?number />
+</#if>
+
+<@brdcrmb.breadCrumb crumbs=breadcrumb downcase=downcaseElements hidePrefix=hide stopLevel=stop />

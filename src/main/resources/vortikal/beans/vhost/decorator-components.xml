@@ -210,6 +210,8 @@
       <set>
         <value>downcase</value>
         <value>include-last-element</value>
+        <value>hide-prefix</value>
+        <value>stop-at-level</value>
       </set>
     </property>
     <property name="parameterDescriptions">
@@ -218,6 +220,10 @@
                value="If set to 'true', display breadcrumb elements in lower-case. The default is 'false'." />
         <entry key="include-last-element"
                value="Whether to include the last element in the breadcrumb. The default is 'false'." />
+        <entry key="hide-prefix"
+               value="If set to 'true', the prefix 'You are here:' will be hidden. The default is 'false'." />
+        <entry key="stop-at-level"
+               value="This stops the breadcrumb generation at a certain number of levels. The default is infinity" />
       </map>               
     </property>
   </bean>

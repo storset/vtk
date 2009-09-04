@@ -16,7 +16,7 @@
   <#if feed.entries?size gt 0>
     <#assign entries = feed.entries />
       <#if conf.sortByTitle?exists>
-        <#assign entries = entries?sort_by("title") />
+        <#assign entries =entries?sort_by("title") />
         <#if !conf.sortAscending?exists>
           <#-- Reverse order, descending sort requested, and ascending is default -->
           <#assign entries = entries?reverse />
@@ -37,8 +37,9 @@
       </#if>
 
      <ul class="items">
+       <#assign "counter" = 1>
        <#list entries[0..maxMsgs-1] as entry>
-         <li>
+         <li class="item-${counter}">
           <a class="item-title" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${entry.title?html}</a>
           <#if conf.publishedDate?exists && entry.publishedDate?exists>
           <span class="published-date">
@@ -66,6 +67,7 @@
             <#if conf.publishedDate?exists && entry.publishedDate?exists> - </#if><a href="${feedMapping.getUrl(entry)}" class="channel">${feedMapping.getTitle(entry)?html}</a> 
           </#if>
          </li>
+         <#assign counter = counter+1>
       </#list>
     </ul>
   </#if>

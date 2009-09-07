@@ -123,6 +123,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_DEPTH = "depth";
     private static final String PARAMETER_DEPTH_DESC = "Specifies the number of levels to retrieve subfolders for. The default value is '1' ";
 
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the subfolder-menu";
+
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
     private Service viewService;
@@ -140,6 +143,15 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         MenuRequest menuRequest = new MenuRequest(request);
+
+        int currentLevel = menuRequest.getCurrentCollectionUri().getDepth() + 1;
+
+        if (menuRequest.getDisplayFromLevel() != -1) {
+            if (currentLevel < menuRequest.getDisplayFromLevel()) {
+                return;
+            }
+        }
+
         Search search = buildSearch(menuRequest);
         String token = menuRequest.getToken();
         ResultSet rs = this.searcher.execute(token, search);
@@ -163,7 +175,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         int groupResultSetsBy = menuRequest.getGroupResultSetsBy();
 
-        if (resultSets > allItems.size() || groupResultSetsBy > 0) {
+        if (resultSets > allItems.size()) {
             resultSets = allItems.size();
         }
 
@@ -352,6 +364,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private int groupResultSetsBy = 0;
         private int freezeAtLevel = 0;
         private int depth = 1;
+        private int displayFromLevel = -1;
         private ArrayList<Path> excludeURIs;
         private Locale locale;
         private String token;
@@ -411,8 +424,31 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 }
                 if (this.groupResultSetsBy <= 0 || this.groupResultSetsBy > PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE) {
                     throw new DecoratorComponentException("Illegal value for parameter '"
-                            + PARAMETER_GROUP_RESULT_SETS_BY + "': " + this.resultSets
+                            + PARAMETER_GROUP_RESULT_SETS_BY + "': " + this.groupResultSetsBy
                             + ": must be a positive number between 1 and " + PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE);
+                }
+            }
+
+            if (request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL) != null
+                    && !request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL).trim().equals("")) {
+                try {
+                    this.displayFromLevel = Integer.parseInt(request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL)
+                            .trim());
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("Illegal value for parameter '"
+                            + PARAMETER_DISPLAY_FROM_LEVEL + "': "
+                            + request.getStringParameter(PARAMETER_DISPLAY_FROM_LEVEL));
+                }
+
+                if (this.displayFromLevel <= 0) {
+                    throw new DecoratorComponentException("Illegal value for parameter '"
+                            + PARAMETER_DISPLAY_FROM_LEVEL + "': " + this.displayFromLevel
+                            + ": must be a positive number between larger than 0");
+                }
+
+                if (this.displayFromLevel <= requestContext.getCurrentCollection().getPaths().size()) {
+                    this.currentCollectionUri = requestContext.getCurrentCollection().getPaths().get(
+                            this.displayFromLevel - 1);
                 }
             }
 
@@ -429,6 +465,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 }
             }
 
+            //
             if (this.freezeAtLevel > 0) {
                 if (this.currentCollectionUri.getDepth() > (this.freezeAtLevel - 1)) {
                     List<String> elements = this.currentCollectionUri.getElements();
@@ -512,6 +549,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         public int getGroupResultSetsBy() {
             return this.groupResultSetsBy;
+        }
+
+
+        public int getDisplayFromLevel() {
+            return this.displayFromLevel;
         }
 
 
@@ -690,6 +732,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
         map.put(PARAMETER_GROUP_RESULT_SETS_BY, PARAMETER_GROUP_RESULT_SETS_BY_DESC);
+        map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);
         map.put(PARAMETER_FREEZE_AT_LEVEL, PARAMETER_FREEZE_AT_LEVEL_DESC);
         map.put(PARAMETER_EXCLUDE_FOLDERS, PARAMETER_EXCLUDE_FOLDERS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);

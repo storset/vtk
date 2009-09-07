@@ -37,8 +37,7 @@ public abstract class PropertyDescription {
     private String overrides;
     private boolean noExtract;
     private boolean multiple;
-    private String externalService;
-
+    
     public final void setName(String name) {
         this.name = name;
     }
@@ -63,18 +62,6 @@ public abstract class PropertyDescription {
         return overrides;
     }
 
-    public String getExternalService() {
-        return externalService;
-    }
-
-    public void setExternalService(String externalService) {
-        this.externalService = externalService;
-    }
-    
-    public boolean hasExternalService() {
-        return this.externalService != null;
-    }
-
     public void setNoExtract(boolean noExtract) {
         this.noExtract = noExtract;
     }
@@ -90,7 +77,7 @@ public abstract class PropertyDescription {
     public boolean isMultiple() {
         return this.multiple;
     }
-
+    
     public String toString() {
         return this.getClass().getName() + ": " + this.name;
     }

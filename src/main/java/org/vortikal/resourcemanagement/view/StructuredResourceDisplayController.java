@@ -43,6 +43,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -62,6 +64,7 @@ import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.text.JSONUtil;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Argument;
@@ -125,10 +128,11 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             initComponentDefs(desc);
         }
         
-        StructuredResource res = new StructuredResource(desc);
-        res.parse(source);
 
         Map<String, Object> model = new HashMap<String, Object>();
+        StructuredResource res = new StructuredResource(desc);
+        res.parse(source);
+        model.put("structured-resource", res);
         model.put("resource", r);
         model.put(this.resourceModelKey, res);
 
@@ -178,6 +182,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         final ComponentResolver resolver = execution.getComponentResolver();
         final Map<String, TemplateLanguageDecoratorComponent> components = 
             this.components.get(res.getType());
+        
         execution.setComponentResolver(new ComponentResolver() {
             public List<DecoratorComponent> listComponents() {
                 return null;
@@ -231,6 +236,8 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         def.addValueProvider("resource", new RetrieveHandler());
         def.addValueProvider("resource-prop", new ResourcePropHandler());
         def.addValueProvider("config", new ModelConfigHandler());
+        def.addValueProvider("structured-document", new JSONDocumentProvider());
+        def.addValueProvider("json-attr", new JSONAttributeHandler());
         directiveHandlers.put("def", def);
 
         directiveHandlers.put("localized", new LocalizationNodeFactory());
@@ -367,7 +374,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             if (ref.equals(".")) {
                 Object o = ctx.get(MVC_MODEL_KEY);
                 if (o == null) {
-                    throw new Exception("Unable to locate resource: no model: " + MVC_MODEL_KEY);
+                    throw new Exception("Unable to access MVC model: " + MVC_MODEL_KEY);
                 }
                 @SuppressWarnings("unchecked")
                 Map<String, Object> model = (Map<String, Object>) o;
@@ -408,6 +415,70 @@ public class StructuredResourceDisplayController implements Controller, Initiali
                 return property.getValue();
             }
         }
+    }
+
+    private class JSONDocumentProvider implements DefineNodeFactory.ValueProvider {
+
+		public Object create(List<Argument> tokens, Context ctx)
+				throws Exception {
+            if (tokens.size() != 0) {
+                throw new Exception("Wrong number of arguments");
+            }
+            Object o = ctx.get(MVC_MODEL_KEY);
+            if (o == null) {
+            	throw new Exception("Unable to access MVC model");
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> model = (Map<String, Object>) o;
+            StructuredResource res = (StructuredResource) model.get("structured-resource");
+			if (res == null) {
+				throw new Exception("No structured resource found in MVC model");
+			}
+			return res.toJSON();
+		}
+    }
+
+    private class JSONAttributeHandler implements DefineNodeFactory.ValueProvider {
+
+    	// Supported constructions:
+    	// object "expression"
+    	// object expression (from variable)
+		public Object create(List<Argument> tokens, Context ctx)
+				throws Exception {
+            if (tokens.size() != 2) {
+                throw new Exception("Wrong number of arguments");
+            }
+            
+            final Argument arg1 = tokens.get(0);
+            Object object;
+            if (!(arg1 instanceof Symbol)) {
+            	throw new Exception("First argument must be a symbol");
+            }
+            object = ((Symbol) arg1).resolve(ctx);
+            if (object == null) {
+            	throw new Exception("Unable to resolve: " + arg1.getRawValue());
+            }
+            
+            final Argument arg2 = tokens.get(1);
+            String expression;
+            if (arg2 instanceof Symbol) {
+                Object o = ((Symbol) arg2).resolve(ctx);
+                if (o == null) {
+                    throw new Exception("Unable to resolve: " + arg2.getRawValue());
+                }
+                expression = o.toString();
+            } else {
+                expression = ((Literal) arg2).getValue().toString();
+            }
+	
+			if (! (object instanceof JSONObject)) {
+				throw new Exception("Cannot apply expression '" + expression 
+						+ "' on object: not JSON data: " + object.getClass());
+			}
+			
+			JSONObject json = (JSONObject) object;
+			return JSONUtil.select(json, expression);
+		}
     }
     
     private class ModelConfigHandler implements DefineNodeFactory.ValueProvider {
@@ -515,6 +586,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
 
     }
+    
 
     private class PropertyValueFormatHandler implements ValNodeFactory.ValueFormatHandler {
 

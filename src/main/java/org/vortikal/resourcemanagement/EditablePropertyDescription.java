@@ -28,18 +28,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.parser;
+package org.vortikal.resourcemanagement;
 
-public interface ParserConstants {
+import java.util.HashMap;
+import java.util.Map;
 
-    public static final String PROPTYPE_STRING = "string";
-    public static final String PROPTYPE_HTML = "html";
-    public static final String PROPTYPE_SIMPLEHTML = "simple_html";
-    public static final String PROPTYPE_BOOLEAN = "boolean";
-    public static final String PROPTYPE_INT = "int";
-    public static final String PROPTYPE_DATETIME = "datetime";
-    public static final String PROPTYPE_IMAGEREF = "image_ref";
-    public static final String PROPTYPE_MEDIAREF = "media_ref";
-    public static final String PROPTYPE_JSON = "json";
+public abstract class EditablePropertyDescription extends PropertyDescription {
+    private Map<String, Object> edithints;
+    private String externalService;
+
+    public Map<String, Object> getEdithints() {
+        return edithints;
+    }
+
+    public void addEdithint(String key, Object value) {
+        if (edithints == null) {
+            edithints = new HashMap<String, Object>();
+        }
+        edithints.put(key, value);
+    }
+
+    public String getExternalService() {
+        return externalService;
+    }
+
+    public void setExternalService(String externalService) {
+        this.externalService = externalService;
+    }
+    
+    public boolean hasExternalService() {
+        return this.externalService != null;
+    }
 
 }

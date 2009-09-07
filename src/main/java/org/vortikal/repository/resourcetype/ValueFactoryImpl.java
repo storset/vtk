@@ -101,6 +101,7 @@ public class ValueFactoryImpl implements ValueFactory {
         case STRING:
         case HTML:
         case IMAGE_REF:
+        case JSON:
             if (stringValue.length() == 0) {
                 throw new ValueFormatException("Illegal string value: empty");
             }

@@ -35,8 +35,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.vortikal.resourcemanagement.EditRule;
+import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
-import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.EditRule.EditRuleType;
@@ -54,10 +54,10 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         this.resource = resource;
         StructuredResourceDescription type = resource.getType();
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
-            if (def instanceof SimplePropertyDescription) {
-                SimplePropertyDescription simple = (SimplePropertyDescription) def;
+            if (def instanceof EditablePropertyDescription) {
+                EditablePropertyDescription editable = (EditablePropertyDescription) def;
                 FormElementBox elementBox = new FormElementBox(def.getName());
-                elementBox.addFormElement(new FormElement(simple, null, resource.getProperty(def
+                elementBox.addFormElement(new FormElement(editable, null, resource.getProperty(def
                     .getName())));
                 this.elements.add(elementBox);
             }
@@ -125,7 +125,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
                         .getEditHintValue());
             }
             for (FormElement formElement : elementBox.getFormElements()) {
-                SimplePropertyDescription pd = formElement.getDescription();
+                EditablePropertyDescription pd = formElement.getDescription();
                 if (pd.getName().equals(editRule.getName())) {
                     pd
                             .addEdithint(editRule.getEditHintKey(), editRule
@@ -143,7 +143,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         return this.resource;
     }
 
-    public void bind(String name, String value) throws Exception {
+    public void bind(String name, Object value) throws Exception {
         FormElement elem = findElement(name);
         if (elem == null) {
             throw new IllegalArgumentException("No such element: " + name);
@@ -180,7 +180,7 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         List<PropertyDescription> descriptions = this.resource.getType()
                 .getAllPropertyDescriptions();
         for (PropertyDescription desc : descriptions) {
-            if (desc instanceof SimplePropertyDescription) {
+            if (desc instanceof EditablePropertyDescription) {
                 String name = desc.getName();
                 FormElement elem = findElement(name);
                 Object value = elem.getValue();

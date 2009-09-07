@@ -176,6 +176,7 @@ public final class FieldValueMapper {
         switch (value.getType()) {
         case STRING:
         case HTML:
+        case JSON:
             if (lowercase) {
                 return value.getNativeStringRepresentation().toLowerCase();
             }
@@ -216,6 +217,7 @@ public final class FieldValueMapper {
         switch (type) {
         case STRING:
         case HTML:
+        case JSON:
             if (lowercase) {
                 return stringValue.toLowerCase();
             }
@@ -318,6 +320,7 @@ public final class FieldValueMapper {
         case STRING:
         case IMAGE_REF:
         case HTML:
+        case JSON:
             try {
                 byteValue = value.getNativeStringRepresentation().getBytes(STRING_VALUE_ENCODING);
             } catch (UnsupportedEncodingException ue) {
@@ -369,6 +372,7 @@ public final class FieldValueMapper {
         case IMAGE_REF:
         case HTML:
         case STRING:
+        case JSON:
             try {
                 String stringValue = new String(value, STRING_VALUE_ENCODING);
                 return this.valueFactory.createValue(stringValue, type);

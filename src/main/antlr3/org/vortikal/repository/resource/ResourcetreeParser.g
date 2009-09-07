@@ -66,7 +66,7 @@ resourceprops
 	;
 
 propertytypedef
-	:	(derivedpropertytypedef | plainpropertytypedef)
+	:	(derivedpropertytypedef | jsonpropertytypedef | plainpropertytypedef)
 	;
 
 derivedpropertytypedef
@@ -74,18 +74,8 @@ derivedpropertytypedef
 		-> ^(NAME derived (overrides)?)
 	;
 
-plainpropertytypedef
-	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-			(external)?
-		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
-			(external)?)
-	;
-
-external
-	:	EXTERNAL COLON NAME -> ^(EXTERNAL NAME);
-
-derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP 
-		-> ^(DERIVED ^(FIELDS fieldlist) ^(EVAL evallist))
+derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP (defaultprop)?
+		-> ^(DERIVED ^(FIELDS fieldlist) ^(EVAL evallist) (defaultprop)?)
 	;
 
 fieldlist
@@ -100,6 +90,41 @@ nameorqtext
 	|	QTEXT -> DQ QTEXT DQ
 	;
     
+defaultprop
+    :   DEFAULTPROP NAME
+    ;
+
+jsonpropertytypedef
+	:	NAME COLON JSON jsonspec (MULTIPLE)? (NOEXTRACT)? (external)?
+		-> ^(NAME ^(JSON jsonspec) (MULTIPLE)? (NOEXTRACT)? (external)?)
+	;
+
+jsonspec
+    : LP jsonpropspeclist RP
+        -> jsonpropspeclist
+    ;
+
+jsonpropspeclist
+    :   jsonpropspec (COMMA jsonpropspec)*
+        -> jsonpropspec+
+    ;
+
+jsonpropspec
+    :  NAME COLON PROPTYPE
+        -> ^(NAME PROPTYPE)
+    ;
+
+plainpropertytypedef
+	:	NAME COLON PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
+			(external)?
+		-> ^(NAME PROPTYPE (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?
+			(external)?)
+	;
+
+
+external
+	:	EXTERNAL COLON NAME -> ^(EXTERNAL NAME);
+
 overrides
 	:	OVERRIDES NAME
 		-> ^(OVERRIDES NAME)
@@ -109,8 +134,8 @@ overrides
 editruledef
 	:	NAME (position)? (edithint)?
 		-> ^(NAME ^(position)? ^(edithint)?)
-	|	GROUP NAME namelist (position)? (ORIANTATION)?
-		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIANTATION)?)
+	|	GROUP NAME namelist (position)? (ORIENTATION)?
+		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIENTATION)?)
 	;
 
 editrules
@@ -136,11 +161,16 @@ viewcomponents
 	;
 
 viewcomponent
-	:	NAME LCB
+	:	NAME (LP paramlist RP)? LCB
 		  DEF
 		RCB
-		-> ^(NAME (DEF)?)
+		-> ^(NAME (DEF)? (paramlist)?)
 	;
+
+paramlist
+    :   NAME (COMMA NAME)*
+        ->  NAME+
+    ;
 
 viewdefinition
 	:	VIEW LCB

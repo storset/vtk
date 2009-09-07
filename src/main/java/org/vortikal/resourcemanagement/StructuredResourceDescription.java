@@ -216,8 +216,14 @@ public final class StructuredResourceDescription {
 
             if (d instanceof DerivedPropertyDescription) {
                 DerivedPropertyDescription derived = (DerivedPropertyDescription) d;
-
-                for (String propName : derived.getDependentProperties()) {
+                
+                List<String> dependentProperties = new ArrayList<String>();
+                dependentProperties.addAll(derived.getDependentProperties());
+                if (derived.getDefaultProperty() != null) {
+                	dependentProperties.add(derived.getDefaultProperty());
+                }
+                
+                for (String propName : dependentProperties) {
                     boolean found = false;
                     // Verify that each derived property is defined:
                     for (int j = 0; j < i; j++) {
@@ -266,6 +272,7 @@ public final class StructuredResourceDescription {
                         }
                     }
                 }
+                
             }
         }
 

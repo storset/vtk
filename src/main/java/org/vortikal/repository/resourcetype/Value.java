@@ -153,6 +153,7 @@ public class Value implements Cloneable, Comparable<Value> {
             case STRING:
             case HTML:
             case IMAGE_REF:
+            case JSON:
                 return this.stringValue;
             
             case PRINCIPAL:
@@ -266,6 +267,7 @@ public class Value implements Cloneable, Comparable<Value> {
             case STRING:
             case HTML:
             case IMAGE_REF:
+            case JSON:
                 sb.append(this.stringValue);
                 break;
             case INT:
@@ -323,6 +325,7 @@ public class Value implements Cloneable, Comparable<Value> {
         case STRING:
         case HTML:
         case IMAGE_REF:
+        case JSON:
             representation = this.stringValue;
             break;
         case BINARY:

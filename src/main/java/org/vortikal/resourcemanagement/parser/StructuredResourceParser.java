@@ -205,10 +205,19 @@ public class StructuredResourceParser implements InitializingBean {
         }
         for (CommonTree viewComponentDescription : viewComponentDefinitions) {
 
-            if (viewComponentDescription.getChildren().size() == 1) {
+            if (viewComponentDescription.getChildren().size() >= 1) {
                 String name = viewComponentDescription.getText();
                 String def = viewComponentDescription.getChild(0).getText();
-                srd.addComponentDefinition(new ComponentDefinition(name, def));
+				ComponentDefinition compDef = new ComponentDefinition(name, def);
+                List<String> parameters = new ArrayList<String>();
+				if (viewComponentDescription.getChildCount() > 1) {
+					for (int i = 1; i < viewComponentDescription.getChildCount(); i++) {
+						String param = viewComponentDescription.getChild(i).getText();
+						parameters.add(param);
+					}
+					compDef.setParameters(parameters);
+				}
+                srd.addComponentDefinition(compDef);
             }
         }
     }

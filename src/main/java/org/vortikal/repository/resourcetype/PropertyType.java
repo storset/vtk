@@ -51,7 +51,8 @@ public final class PropertyType {
         DATE, 
         BOOLEAN, 
         PRINCIPAL,
-        BINARY;
+        BINARY,
+        JSON;
     }
     
     

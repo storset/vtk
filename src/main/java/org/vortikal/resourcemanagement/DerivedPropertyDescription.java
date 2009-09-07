@@ -36,6 +36,7 @@ public class DerivedPropertyDescription extends PropertyDescription {
 
     private List<String> dependentProperties;
     private List<EvalDescription> evalDescriptions;
+	private String defaultProperty;
 
     public void setDependentProperties(List<String> dependentProperties) {
         this.dependentProperties = dependentProperties;
@@ -45,7 +46,15 @@ public class DerivedPropertyDescription extends PropertyDescription {
         return this.dependentProperties;
     }
     
-    public void setEvalDescriptions(List<EvalDescription> evalDescriptions) {
+	public void setDefaultProperty(String defaultProperty) {
+		this.defaultProperty = defaultProperty;
+	}
+	
+	public String getDefaultProperty() {
+		return this.defaultProperty;
+	}
+
+	public void setEvalDescriptions(List<EvalDescription> evalDescriptions) {
         this.evalDescriptions = evalDescriptions;
     }
 

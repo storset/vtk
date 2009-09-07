@@ -32,12 +32,16 @@ package org.vortikal.resourcemanagement.edit;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONObject;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -46,8 +50,9 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.resourcemanagement.EditablePropertyDescription;
+import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
-import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
@@ -102,7 +107,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         String token = SecurityContext.getSecurityContext().getToken();
 
         InputStream stream = new ByteArrayInputStream(form.getResource().toJSON()
-                .toString().getBytes("utf-8"));
+                .toString(3).getBytes("utf-8"));
         this.repository.storeContent(token, uri, stream);
 
         if (form.getUpdateQuitAction() != null) {
@@ -146,13 +151,66 @@ public class StructuredResourceEditor extends SimpleFormController {
                     .getAllPropertyDescriptions();
             FormSubmitCommand form = (FormSubmitCommand) getTarget();
             for (PropertyDescription desc : props) {
-                if (desc instanceof SimplePropertyDescription) {
-                    String posted = request.getParameter(desc.getName());
-                    try {
-                        form.bind(desc.getName(), posted);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                if (desc instanceof EditablePropertyDescription) {
+                	if (desc instanceof JSONPropertyDescription) {
+                		// Build JSON from input, invoke form.bind(JSON)
+                		JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
+                		if (jsonDesc.isMultiple()) {
+                    		Enumeration<String> names = request.getParameterNames();
+                    		int maxIndex = 0;
+                    		while (names.hasMoreElements()) {
+                    			String input = names.nextElement();
+                				System.out.println("__input1: " + input);
+                    			for (String attr : jsonDesc.getAttributes()) {
+                    				String prefix = desc.getName() + "." + attr + ".";
+                    				if (input.startsWith(prefix)) {
+                    					int i = Integer.parseInt(input.substring(prefix.length()));
+                    					maxIndex = Math.max(maxIndex, i);
+                    				}
+                    			}
+                    		}
+                    		System.out.println("__max_index: " + maxIndex);
+                    		List<JSONObject> resultList = new ArrayList<JSONObject>();
+                    		for (int i = 0; i <= maxIndex; i++) {
+                				JSONObject obj = new JSONObject();
+                    			for (String attr : jsonDesc.getAttributes()) {
+                    				String input = desc.getName() + "." + attr + "." + i;
+                    				System.out.println("__check_input: " + input);
+                    				obj.put(attr, request.getParameter(input));
+                    			}
+                    			resultList.add(obj);
+							}
+                    		try {
+                    			form.bind(desc.getName(), resultList);
+                    		} catch (Exception e) {
+                    			throw new RuntimeException(e);
+                    		}
+                    		
+                		} else {
+                    		JSONObject obj = new JSONObject();
+                    		for (String attr : jsonDesc.getAttributes()) {
+    							String param = desc.getName() + "." + attr + ".0";
+    							String posted = request.getParameter(param);
+    							if (posted != null) {
+    								obj.put(attr, posted);
+    							}
+    						}
+                    		try {
+                    			form.bind(desc.getName(), obj);
+                    		} catch (Exception e) {
+                    			throw new RuntimeException(e);
+                    		}
+                			
+                		}
+
+                	} else {
+                		String posted = request.getParameter(desc.getName());
+                		try {
+                			form.bind(desc.getName(), posted);
+                		} catch (Exception e) {
+                			throw new RuntimeException(e);
+                		}
+                	}
                 }
             }
             super.bind(request);

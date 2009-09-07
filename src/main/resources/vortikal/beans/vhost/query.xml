@@ -59,7 +59,12 @@
   </bean>
 
   <!-- Document mapper -->
-  <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapperImpl">
+  <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapperImpl"
+        depends-on="structuredResource.parser">
+    <!-- 
+         XXX: This bean depends the structured resource parser being
+         initialized (because it modifies the resource type tree)
+     -->
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
     <!--property name="contextManager" ref="contextManager" /-->
     <property name="fieldValueMapper" ref="fieldValueMapper"/>

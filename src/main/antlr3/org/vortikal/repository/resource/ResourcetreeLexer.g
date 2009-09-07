@@ -45,7 +45,9 @@ EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | 
 EXTERNAL:	'external';
 DERIVED:	'derived';
 EVAL	:	'eval';
+DEFAULTPROP :   'default';
 MULTIPLE:	'multiple';
+JSON:       'json';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';
@@ -61,7 +63,7 @@ NOEXTRACT
 OVERRIDES
 	:	'overrides';
 GROUP	:	'group';
-ORIANTATION :  (HORIZONTAL | VERTICAL);
+ORIENTATION :  (HORIZONTAL | VERTICAL);
 BEFORE	:	'before';
 AFTER	:	'after';
 LETTER	:	('a'..'z' | 'A'..'Z');

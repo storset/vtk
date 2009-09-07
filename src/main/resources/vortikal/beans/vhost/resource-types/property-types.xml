@@ -48,6 +48,9 @@
                         <property name="requireThumbnailService" value="true" />
                     </bean>
                 </entry>
+                <entry key="JSON">
+                    <bean class="org.vortikal.repository.resourcetype.StringValueFormatter" />
+                </entry>
                 <entry key="INT">
                     <bean class="org.vortikal.repository.resourcetype.IntValueFormatter" />
                 </entry>

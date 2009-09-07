@@ -32,6 +32,7 @@ package org.vortikal.resourcemanagement.view;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,10 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
         if (this.modelKey != null) { 
             ctx.define(this.modelKey, request.getMvcModel(), true);
         }
+    	for (String param : this.definition.getParameters()) {
+    		Object value = request.getParameter(param);
+    		ctx.define(param, value, true);
+    	}
         StringWriter writer = new StringWriter();
         this.nodeList.render(ctx, writer);
         HtmlFragment fragment = this.htmlParser.parseFragment(writer.getBuffer().toString());
@@ -96,7 +101,11 @@ public class TemplateLanguageDecoratorComponent extends AbstractDecoratorCompone
 
     @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
-        return null;
+    	Map<String, String> result = new HashMap<String, String>();
+    	for (String param : this.definition.getParameters()) {
+			result.put(param, "#parameter");
+		}
+    	return result;
     }
     
     @Override

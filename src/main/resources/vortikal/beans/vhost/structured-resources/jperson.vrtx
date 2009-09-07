@@ -6,7 +6,8 @@ resourcetype jperson : jdocument {
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,
     title : derived (firstName, surname) 
-            eval (firstName + " " + surname) overrides title,
+            eval (firstName + " " + surname) 
+            default username overrides title,
     postalAddress : string external:userMetadataLdapService,
     visitingAddress : string external:userMetadataLdapService,
     email : string multiple external:userMetadataLdapService,

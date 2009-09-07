@@ -33,34 +33,32 @@ package org.vortikal.resourcemanagement.edit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.IllegalClassException;
-import org.vortikal.resourcemanagement.SimplePropertyDescription;
+import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.ValidationError;
 
 public class FormElement {
 
-    private SimplePropertyDescription description;
+    private EditablePropertyDescription description;
     private ValidationError error;
     private Object value;
 
-    public FormElement(SimplePropertyDescription description, ValidationError error,
+    public FormElement(EditablePropertyDescription description, ValidationError error,
             Object value) {
         this.description = description;
         this.error = error;
         this.value = value;
-
     }
     
     public String getName() {
         return this.description.getName();
     }
 
-    public void setDescription(SimplePropertyDescription description) {
+    public void setDescription(EditablePropertyDescription description) {
         this.description = description;
     }
 
-    public SimplePropertyDescription getDescription() {
-        return description;
+    public EditablePropertyDescription getDescription() {
+        return this.description;
     }
 
     public void setError(ValidationError error) {
@@ -72,27 +70,25 @@ public class FormElement {
     }
 
     public void setValue(Object value) throws Exception {
-        if (this.description.isMultiple()) {
-            if (value instanceof String) {
-                String[] a = value.toString().split(",");
-                ArrayList<String> b = new ArrayList<String>();
-                for (int i = 0; i < a.length; i++) {
-                    b.add(a[i].toString());
-                }
-                this.value = b;
-            } else if (value instanceof List<?>) {
-                this.value = value;
-            } else {
-                throw new IllegalClassException("Unknown value type: " + value.getClass()
-                        + " for multiple-valued property " + this.description.getName());
-            }
+        if (this.description.isMultiple() && (value instanceof String)) {
+        	String[] a = value.toString().split(",");
+        	ArrayList<String> b = new ArrayList<String>();
+        	for (int i = 0; i < a.length; i++) {
+        		b.add(a[i].trim());
+        	}
+        	setValueInternal(b);
         } else {
-            this.value = value;
+        	setValueInternal(value);
         }
+    }
+    
+    private void setValueInternal(Object value) {
+    	// XXX: check for JSON
+    	this.value = value;
     }
 
     public Object getValue() {
-        return value;
+        return this.value;
     }
 
     @SuppressWarnings("unchecked")

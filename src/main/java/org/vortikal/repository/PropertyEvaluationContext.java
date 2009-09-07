@@ -53,7 +53,7 @@ public class PropertyEvaluationContext {
     private Principal principal;
     private Map<String, Object> propertyValueMap;
 
-    private Map<String, Map<String, Object>> externalServicePropertyValueMap;
+    private Map<String, Object> contextAttributes = new HashMap<String, Object>();
 
     public static PropertyEvaluationContext propertiesChangeContext(ResourceImpl originalResource,
             ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
@@ -153,24 +153,11 @@ public class PropertyEvaluationContext {
         return null;
     }
 
-    public void addExternalServicePropertyValues(String serviceName, Map<String, Object> propertyValuesMap) {
-        if (this.externalServicePropertyValueMap == null) {
-            this.externalServicePropertyValueMap = new HashMap<String, Map<String, Object>>();
-        }
-        this.externalServicePropertyValueMap.put(serviceName, propertyValuesMap);
+    public void addEvaluationAttribute(String name, Object value) {
+    	this.contextAttributes.put(name, value);
     }
-
-    public Object getExternalServicePropertyValue(String serviceName, String propertyName) {
-        if (this.externalServicePropertyValueMap != null) {
-            return getExternalServicePropertyValue(this.externalServicePropertyValueMap.get(serviceName), propertyName);
-        }
-        return null;
-    }
-
-    private Object getExternalServicePropertyValue(Map<String, Object> serviceMap, String propertyName) {
-        if (serviceMap != null) {
-            return serviceMap.get(propertyName);
-        }
-        return null;
+    
+    public Object getEvaluationAttribute(String name) {
+    	return this.contextAttributes.get(name);
     }
 }

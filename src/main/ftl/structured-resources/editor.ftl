@@ -9,6 +9,7 @@
 <#import "vrtx-types/vrtx-media-ref.ftl" as vrtxMediaRef />
 <#import "vrtx-types/vrtx-radio.ftl" as vrtxRadio />
 <#import "vrtx-types/vrtx-string.ftl" as vrtxString />
+<#import "vrtx-types/vrtx-json.ftl" as vrtxJSON />
 <#import "include/scripts.ftl" as scripts />
 
 <#import "editor/fck.ftl" as fckEditor />
@@ -19,20 +20,21 @@
   <@fckEditor.addFckScripts />
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
-  <script language="Javascript" type="text/javascript">
-	window.onbeforeunload = checkPropChange;
-	PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
-	function performSave(){
-		saveDateAndTimeFields();
-		if(typeof(MULTIPLE_INPUT_FIELD_NAMES) != "undefined"){
-			saveMultipleInputFields();
-		}
-		NEED_TO_CONFIRM = false;
-	}
-	function cSave() {
-	    document.getElementById("form").setAttribute("action", "#submit");
-	    performSave();
+  <script language="Javascript" type="text/javascript"><!--
+    window.onbeforeunload = checkPropChange;
+    PROP_CHANGE_CONFIRM_MSG = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
+    function performSave() {
+        saveDateAndTimeFields();
+        if (typeof(MULTIPLE_INPUT_FIELD_NAMES) != "undefined") {
+            saveMultipleInputFields();
+        }
+        NEED_TO_CONFIRM = false;
     }
+    function cSave() {
+        document.getElementById("form").setAttribute("action", "#submit");
+        performSave();
+    }
+    //-->
   </script>
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
@@ -69,83 +71,90 @@
   
     <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
     
-	<#switch elem.description.type>
-	  <#case "string">
-	  	<#assign fieldSize="40" />
-	  	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-	  		<#if elem.description.edithints['size'] == "large" >
-	  			<#assign fieldSize="60" />
-	  		<#elseif elem.description.edithints['size'] == "small" >
-	  			<#assign fieldSize="20"/>
-	  		<#else>
-	  			<#assign fieldSize=elem.description.edithints['size'] />
-	  		</#if>
-	  	</#if>
-	 	<@vrtxString.printPropertyEditView 
-	 		title=localizedTitle 
-	 		inputFieldName=elem.name 
-	 		value=elem.getFormatedValue()
-	 		classes=elem.name
-	 		inputFieldSize=fieldSize />
-	    <#break>
-	  <#case "simple_html">
-	  	<#assign cssclass =  elem.name + " vrtx-simple-html" />
-	 	<#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
-	  		<#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
-	  	</#if>
-	    <@vrtxHtml.printPropertyEditView 
-	    	title=localizedTitle 
-	    	inputFieldName=elem.name 
-	    	value=elem.value 
-	    	classes=cssclass />
-	    <@fckEditor.insertEditor elem.name />
-	  	<#break>
-	  <#case "html">
-	  	<#if elem.description.edithints?exists>
-		 		<#list elem.description.edithints?keys as hint>
-		 			${hint} <br />
-		 		</#list>
-	 	</#if>
-	    <@vrtxHtml.printPropertyEditView 
-	    	title=localizedTitle 
-	    	inputFieldName=elem.name 
-	    	value=elem.value 
-	    	classes="vrtx-html " + elem.name  />
-	    <@fckEditor.insertEditor elem.name true false />
-	    <#break>
-	  <#case "boolean">
-	  	<@vrtxBoolean.printPropertyEditView 
-	  		title=localizedTitle
-	  		inputFieldName=elem.name 
-	  		value=elem.value
-	  		classes=elem.name  />
-	  	<#break>
-	  <#case "image_ref">
-	  	<@vrtxImageRef.printPropertyEditView 
-	  		title=localizedTitle
-	  		inputFieldName=elem.name 
-	  		value=elem.value 
-	  		baseFolder=resourceContext.parentURI
-	  		classes=elem.name />
-	  	<#break>          
-	  <#case "media_ref">
-	  	<@vrtxMediaRef.printPropertyEditView 
-	  		title=localizedTitle
-	  		inputFieldName=elem.name 
-	  		value=elem.value 
-	  		baseFolder=resourceContext.parentURI
-	  		classes=elem.name  />
-	  	<#break>
-	  <#case "datetime">
-		 <@vrtxDateTime.printPropertyEditView 
-			title=localizedTitle
-			inputFieldName=elem.name 
-			value=elem.value 
-			classes=elem.name  />
-	  	<#break>
-	  <#default>
-	    ny type property ${elem.description.type}
-	</#switch>
+    <#switch elem.description.type>
+      <#case "string">
+        <#assign fieldSize="40" />
+        <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
+          <#if elem.description.edithints['size'] == "large" >
+            <#assign fieldSize="60" />
+          <#elseif elem.description.edithints['size'] == "small" >
+            <#assign fieldSize="20"/>
+          <#else>
+            <#assign fieldSize=elem.description.edithints['size'] />
+          </#if>
+        </#if>
+       <@vrtxString.printPropertyEditView 
+         title=localizedTitle 
+         inputFieldName=elem.name 
+         value=elem.getFormatedValue()
+         classes=elem.name
+         inputFieldSize=fieldSize />
+        <#break>
+      <#case "simple_html">
+        <#assign cssclass =  elem.name + " vrtx-simple-html" />
+       <#if elem.description.edithints?exists && elem.description.edithints['size']?exists >
+          <#assign cssclass = cssclass + "-" + elem.description.edithints['size'] />
+        </#if>
+        <@vrtxHtml.printPropertyEditView 
+          title=localizedTitle 
+          inputFieldName=elem.name 
+          value=elem.value 
+          classes=cssclass />
+        <@fckEditor.insertEditor elem.name />
+        <#break>
+      <#case "html">
+        <#if elem.description.edithints?exists>
+           <#list elem.description.edithints?keys as hint>
+             ${hint} <br />
+           </#list>
+       </#if>
+        <@vrtxHtml.printPropertyEditView 
+          title=localizedTitle 
+          inputFieldName=elem.name 
+          value=elem.value 
+          classes="vrtx-html " + elem.name  />
+        <@fckEditor.insertEditor elem.name true false />
+        <#break>
+      <#case "boolean">
+        <@vrtxBoolean.printPropertyEditView 
+          title=localizedTitle
+          inputFieldName=elem.name 
+          value=elem.value
+          classes=elem.name  />
+        <#break>
+      <#case "image_ref">
+        <@vrtxImageRef.printPropertyEditView 
+          title=localizedTitle
+          inputFieldName=elem.name 
+          value=elem.value 
+          baseFolder=resourceContext.parentURI
+          classes=elem.name />
+        <#break>          
+      <#case "media_ref">
+        <@vrtxMediaRef.printPropertyEditView 
+          title=localizedTitle
+          inputFieldName=elem.name 
+          value=elem.value 
+          baseFolder=resourceContext.parentURI
+          classes=elem.name  />
+        <#break>
+      <#case "datetime">
+       <@vrtxDateTime.printPropertyEditView 
+        title=localizedTitle
+        inputFieldName=elem.name 
+        value=elem.value 
+        classes=elem.name  />
+        <#break>
+      <#case "json">
+       <@vrtxJSON.printPropertyEditView 
+        title=localizedTitle
+        inputFieldName=elem.name
+        elem=elem
+        classes=elem.name  />
+        <#break>
+      <#default>
+        No editor available for element type ${elem.description.type}
+    </#switch>
   </#list>
   
   <#if elementBox.formElements?size &gt; 1>
@@ -154,9 +163,9 @@
   
 </#list>
 <div class="submit">
-	  <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction" value="${vrtx.getMsg("editor.saveAndQuit")}" />
-	  <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
-	  <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+    <input type="submit" id="updateQuitAction" onClick="performSave();" name="updateQuitAction" value="${vrtx.getMsg("editor.saveAndQuit")}" />
+    <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+    <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
 </div>
 </form>
 </body>

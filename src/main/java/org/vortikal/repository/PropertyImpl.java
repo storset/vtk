@@ -290,9 +290,11 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         	case STRING:
         	case HTML:
         	case IMAGE_REF:
+        	case JSON:
         		if (getType() != Type.HTML 
         		    && getType() != Type.STRING 
-        		    && getType() != Type.IMAGE_REF) {
+        		    && getType() != Type.IMAGE_REF
+        		    && getType() != Type.JSON) {
                     throw new ValueFormatException("Illegal value type " + 
                             value.getType() + 
                             " for value [" + value + "] on property " + this 
@@ -329,6 +331,7 @@ public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
         case STRING:
         case IMAGE_REF:
         case HTML:
+        case JSON:
             if (value.getStringValue() == null) {
                 throw new ValueFormatException(
                     "String value of property '" + this + "' cannot be null");

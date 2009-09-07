@@ -1,0 +1,47 @@
+resourcetype jboxes {
+
+  properties {
+    title : string required overrides title,
+    box-list : json ( title : string, content : html ) multiple,
+    simplebox : json ( foo : string, bar : html) 
+  }
+
+  view-components {
+    box-list (first-param, second-param) {
+      ##
+      Param 1: [val first-param]<br />
+      Param 2: [val second-param]<br />
+      [resource-props "."]
+
+      [if box-list]
+        [def document structured-document]
+        [def boxes json-attr document "properties.box-list"]
+        [list boxes box]
+           JSON: [val box]
+           [def title json-attr box "title"]
+           [def content json-attr box "content"]
+           <div style="border:1px solid black;margin:20px;">
+             [if title]<b>[val title]</b>[endif]
+             [if content][val content unescaped][endif]
+           </div>
+        [endlist]
+      [endif]
+      ##
+    }
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title><resource:property id="title" /></title>
+      </head>
+      <body>
+        <h1><resource:property id="title" /></h1>
+        <comp:box-list first-param="component-param1" second-param="component-param2" />
+      </body>
+    </html>
+    ##
+  }
+}

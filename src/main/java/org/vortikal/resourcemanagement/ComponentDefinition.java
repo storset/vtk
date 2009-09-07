@@ -30,9 +30,14 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class ComponentDefinition {
     private String name;
     private String definition;
+    private List<String> parameters = new ArrayList<String>();
     
     public ComponentDefinition(String name, String definition) {
         this.name = name;
@@ -47,7 +52,16 @@ public class ComponentDefinition {
         return this.definition;
     }
     
-    public String toString() {
+	public void setParameters(List<String> parameters) {
+		this.parameters = new ArrayList<String>();
+		this.parameters.addAll(parameters);
+	}
+
+	public List<String> getParameters() {
+		return Collections.unmodifiableList(this.parameters);
+	}
+
+	public String toString() {
         return this.getClass().getName() + ":" + this.name;
     }
 }

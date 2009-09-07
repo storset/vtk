@@ -28,18 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.parser;
+package org.vortikal.resourcemanagement;
 
-public interface ParserConstants {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-    public static final String PROPTYPE_STRING = "string";
-    public static final String PROPTYPE_HTML = "html";
-    public static final String PROPTYPE_SIMPLEHTML = "simple_html";
-    public static final String PROPTYPE_BOOLEAN = "boolean";
-    public static final String PROPTYPE_INT = "int";
-    public static final String PROPTYPE_DATETIME = "datetime";
-    public static final String PROPTYPE_IMAGEREF = "image_ref";
-    public static final String PROPTYPE_MEDIAREF = "media_ref";
-    public static final String PROPTYPE_JSON = "json";
 
+public class JSONPropertyDescription extends EditablePropertyDescription {
+	private Map<String, String> attributes;
+	
+	public JSONPropertyDescription() {
+		super();
+	}
+	
+	public void setAttributes(LinkedHashMap<String, String> attributes) {
+		this.attributes = Collections.unmodifiableMap(attributes);
+	}
+	
+	public List<String> getAttributes() {
+		List<String> result = new ArrayList<String>();
+		for (String attr : this.attributes.keySet()) {
+			result.add(attr);
+		}
+		return result;
+	}
+	
+	public String getType(String attribute) {
+		return this.attributes.get(attribute);
+	}
 }

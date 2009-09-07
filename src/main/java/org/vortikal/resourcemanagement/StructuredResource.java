@@ -61,18 +61,28 @@ public class StructuredResource {
         }
     }
 
+    // XXX: make recursive:
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("resourcetype", this.desc.getName());
 
         JSONObject props = new JSONObject();
         for (String name : this.properties.keySet()) {
-            props.put(name, this.properties.get(name));
+        	Object value = this.properties.get(name);
+        	if (value != null) {
+        		if (value instanceof String) {
+        			String s = (String) value;
+        			if (s.trim().equals("")) {
+        				continue;
+        			}
+        		}
+        		props.put(name, this.properties.get(name));
+        	}
         }
         json.put("properties", props);
         return json;
     }
-
+    
     private ValidationResult validate(JSONObject json) {
         if (json == null) {
             throw new IllegalStateException("Input is NULL");

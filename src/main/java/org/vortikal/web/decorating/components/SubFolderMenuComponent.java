@@ -108,7 +108,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_GROUP_RESULT_SETS_BY = "group-result-sets-by";
     private static final String PARAMETER_GROUP_RESULT_SETS_BY_DESC = "The number of results-sets in grouping divs";
-    private static final int PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE = 10;
+    private static final int PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE = 30;
 
     private static final String PARAMETER_FREEZE_AT_LEVEL = "freeze-at-level";
     private static final String PARAMETER_FREEZE_AT_LEVEL_DESC = "At which level the subfolder-listing should freeze and show the same listing further down. The default is never or '0'.";
@@ -462,22 +462,14 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 if (this.freezeAtLevel <= 0) {
                     throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_FREEZE_AT_LEVEL
                             + "': " + this.freezeAtLevel + ": must be a positive number larger than 0");
-                }
-            }
+                } else {
+                    if (this.currentCollectionUri.getDepth() > (this.freezeAtLevel - 1)) {
+                        List<String> elements = this.currentCollectionUri.getElements();
 
-            //
-            if (this.freezeAtLevel > 0) {
-                if (this.currentCollectionUri.getDepth() > (this.freezeAtLevel - 1)) {
-                    List<String> elements = this.currentCollectionUri.getElements();
+                        this.currentCollectionUri = requestContext.getCurrentCollection().getPaths().get(
+                                this.freezeAtLevel - 1);
 
-                    String newPath = "";
-
-                    for (int i = 0; i < this.freezeAtLevel; i++) {
-                        String element = elements.get(i);
-                        newPath += element;
                     }
-
-                    this.currentCollectionUri = Path.fromString(newPath);
                 }
             }
 

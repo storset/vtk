@@ -109,6 +109,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_GROUP_RESULT_SETS_BY_DESC = "The number of results-sets in grouping divs";
     private static final int PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE = 10;
 
+    private static final String PARAMETER_FREEZE_AT_LEVEL = "freeze-at-level";
+    private static final String PARAMETER_FREEZE_AT_LEVEL_DESC = "At which level the component should freeze the subfolder-listing and showing the same further down. The default is never or '0'.";
+
     private static final String PARAMETER_EXCLUDE_FOLDERS = "exclude-folders";
     private static final String PARAMETER_EXCLUDE_FOLDERS_DESC = "Commma-separated list with relative paths to folders which should not be displayed in the list";
 
@@ -118,6 +121,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_DEPTH = "depth";
     private static final String PARAMETER_DEPTH_DESC = "Specifies the number of levels to retrieve subfolders for. The default value is '1' ";
+
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
+    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the subfolder-menu";
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
@@ -231,7 +237,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
 
     private Search buildSearch(MenuRequest menuRequest) {
+
         Path uri = menuRequest.getCurrentCollectionUri();
+
         int depth = uri.getDepth() + 1;
 
         AndQuery mainQuery = new AndQuery();
@@ -344,6 +352,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private boolean ascendingSort = true;
         private int resultSets = 1;
         private int groupResultSetsBy = 0;
+        private int freezeAtLevel = 0;
         private int depth = 1;
         private ArrayList<Path> excludeURIs;
         private Locale locale;
@@ -379,6 +388,20 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 }
             }
 
+            if (request.getStringParameter(PARAMETER_RESULT_SETS) != null) {
+                try {
+                    this.resultSets = Integer.parseInt(request.getStringParameter(PARAMETER_RESULT_SETS));
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_RESULT_SETS
+                            + "': " + request.getStringParameter(PARAMETER_RESULT_SETS));
+                }
+                if (this.resultSets <= 0 || this.resultSets > PARAMETER_RESULT_SETS_MAX_VALUE) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_RESULT_SETS
+                            + "': " + this.resultSets + ": must be a positive number between 1 and "
+                            + PARAMETER_RESULT_SETS_MAX_VALUE);
+                }
+            }
+
             if (request.getStringParameter(PARAMETER_GROUP_RESULT_SETS_BY) != null) {
                 try {
                     this.groupResultSetsBy = Integer.parseInt(request
@@ -395,17 +418,31 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
                 }
             }
 
-            if (request.getStringParameter(PARAMETER_RESULT_SETS) != null) {
+            if (request.getStringParameter(PARAMETER_FREEZE_AT_LEVEL) != null) {
                 try {
-                    this.resultSets = Integer.parseInt(request.getStringParameter(PARAMETER_RESULT_SETS));
+                    this.freezeAtLevel = Integer.parseInt(request.getStringParameter(PARAMETER_FREEZE_AT_LEVEL));
                 } catch (Throwable t) {
-                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_RESULT_SETS
-                            + "': " + request.getStringParameter(PARAMETER_RESULT_SETS));
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_FREEZE_AT_LEVEL
+                            + "': " + request.getStringParameter(PARAMETER_FREEZE_AT_LEVEL));
                 }
-                if (this.resultSets <= 0 || this.resultSets > PARAMETER_RESULT_SETS_MAX_VALUE) {
-                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_RESULT_SETS
-                            + "': " + this.resultSets + ": must be a positive number between 1 and "
-                            + PARAMETER_RESULT_SETS_MAX_VALUE);
+                if (this.freezeAtLevel <= 0) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_FREEZE_AT_LEVEL
+                            + "': " + this.freezeAtLevel + ": must be a positive number larger than 1");
+                }
+            }
+
+            if (this.freezeAtLevel > 0) {
+                if (this.currentCollectionUri.getDepth() > (this.freezeAtLevel - 1)) {
+                    List<String> elements = this.currentCollectionUri.getElements();
+
+                    String newPath = "";
+
+                    for (int i = 0; i < this.freezeAtLevel; i++) {
+                        String element = elements.get(i);
+                        newPath += element;
+                    }
+
+                    this.currentCollectionUri = Path.fromString(newPath);
                 }
             }
 
@@ -477,6 +514,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         public int getGroupResultSetsBy() {
             return this.groupResultSetsBy;
+        }
+
+
+        public int getFreezeAtLevel() {
+            return this.freezeAtLevel;
         }
 
 
@@ -650,6 +692,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
         map.put(PARAMETER_GROUP_RESULT_SETS_BY, PARAMETER_GROUP_RESULT_SETS_BY_DESC);
+        map.put(PARAMETER_FREEZE_AT_LEVEL, PARAMETER_FREEZE_AT_LEVEL_DESC);
         map.put(PARAMETER_EXCLUDE_FOLDERS, PARAMETER_EXCLUDE_FOLDERS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);

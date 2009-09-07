@@ -3,12 +3,12 @@ var INITIAL_INPUT_FIELDS = new Array();
 var NEED_TO_CONFIRM = true;
 var PROP_CHANGE_CONFIRM_MSG;
 
-$(document).ready(function() {
+function initPropChange(){
     var i = 0;
     $("input").each(function() {
         INITIAL_INPUT_FIELDS[i++] = this.value;
     });
-});
+}
 
 function checkPropChange(){
     if(!NEED_TO_CONFIRM)
@@ -22,9 +22,11 @@ function checkPropChange(){
         }
     }
     $("textarea").each(function() {
-        if(FCKeditorAPI.GetInstance(this.name).IsDirty()){
-            dirtyState = true;
-            return;
+        if(typeof(FCKeditorAPI) != "undefined"){
+            if(FCKeditorAPI.GetInstance(this.name).IsDirty()){
+                dirtyState = true;
+                return;
+            }
         }
      });
      if(dirtyState)

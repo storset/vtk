@@ -5,6 +5,8 @@ $(document).ready(function() {
             displayDateAsMultipleInputFields(this.name);
         }
     );
+    // TODO !spageti 
+    initPropChange();
     if($("#resource\\.start-date").length == 0 || $("#resource\\.end-date").length == 0){
         return;
     }

@@ -7,10 +7,6 @@
   -   subFolderMenu
   -
   -->
-<#if !subFolderMenu?exists>
-  <#stop "Unable to render model: required submodel
-  'subFolderMenu' missing">
-</#if>
 
 <#macro displayItem item>
   <#if item.menu?exists>
@@ -51,25 +47,27 @@
   </ul>
 </#macro>
 
-<#if subFolderMenu.size &gt; 0>
-  <#assign "counter" = 0>
-  <#assign "counter2" = 0>
-     
-  <#if subFolderMenu.resultSets?exists>
-    <div class="vrtx-subfolder-menu">
-      <#if subFolderMenu.title?exists>
-        <div class="menu-title">${subFolderMenu.title?html}</div>
+<#if subFolderMenu?exists>
+    <#if subFolderMenu.size &gt; 0>
+      <#assign "counter" = 0>
+      <#assign "counter2" = 0>
+         
+      <#if subFolderMenu.resultSets?exists>
+        <div class="vrtx-subfolder-menu">
+          <#if subFolderMenu.title?exists>
+            <div class="menu-title">${subFolderMenu.title?html}</div>
+          </#if>
+          <#list subFolderMenu.resultSets as resultSet>
+            <#assign counter = counter+1>
+            <#assign counter2 = counter2+1>
+            <#if subFolderMenu.groupResultSetsBy?exists && (subFolderMenu.groupResultSetsBy?number = counter2 || counter = 1)>
+               <#assign "counter2" = 0>
+               <@displayParentMenu menu=resultSet currentCount=counter newDiv=true />
+            <#else>
+               <@displayParentMenu menu=resultSet currentCount=counter newDiv=false />
+            </#if>
+          </#list>
+        </div>
       </#if>
-      <#list subFolderMenu.resultSets as resultSet>
-        <#assign counter = counter+1>
-        <#assign counter2 = counter2+1>
-        <#if subFolderMenu.groupResultSetsBy?exists && (subFolderMenu.groupResultSetsBy?number = counter2 || counter = 1)>
-           <#assign "counter2" = 0>
-           <@displayParentMenu menu=resultSet currentCount=counter newDiv=true />
-        <#else>
-           <@displayParentMenu menu=resultSet currentCount=counter newDiv=false />
-        </#if>
-      </#list>
-    </div>
-  </#if>
+    </#if>
 </#if>

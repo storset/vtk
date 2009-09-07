@@ -63,12 +63,12 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.DecoratorRequest;
+import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.components.menu.ListMenu;
 import org.vortikal.web.view.components.menu.MenuItem;
-import org.vortikal.web.decorating.DecoratorRequest;
-import org.vortikal.web.decorating.DecoratorResponse;
 
 /**
  * <p>
@@ -79,6 +79,7 @@ import org.vortikal.web.decorating.DecoratorResponse;
  * <li>sort - the property to sort results by</li>
  * <li>direction - the sort direction (ascending / descending)</li>
  * <li>result-sets - the number of &lt;ul&gt; lists to split the result into</li>
+ * <li>group-result-sets-by - the number of results-sets in grouping divs</li>
  * <li>exclude-folders - comma-separated list with relative paths to folders which should be excluded</li>
  * <li>authenticated - default is listing only read-for-all resources</li>
  * <li>depth - specifies number of levels to retrieve subfolders from</li>
@@ -103,6 +104,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private static final String PARAMETER_RESULT_SETS = "result-sets";
     private static final String PARAMETER_RESULT_SETS_DESC = "The number of result sets to split the result into. The default value is '1'";
     private static final int PARAMETER_RESULT_SETS_MAX_VALUE = 30;
+
+    private static final String PARAMETER_GROUP_RESULT_SETS_BY = "group-result-sets-by";
+    private static final String PARAMETER_GROUP_RESULT_SETS_BY_DESC = "The number of results-sets in grouping divs";
+    private static final int PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE = 10;
 
     private static final String PARAMETER_EXCLUDE_FOLDERS = "exclude-folders";
     private static final String PARAMETER_EXCLUDE_FOLDERS_DESC = "Commma-separated list with relative paths to folders which should not be displayed in the list";
@@ -152,7 +157,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         int resultSets = menuRequest.getResultSets();
         List<MenuItem<PropertySet>> allItems = menu.getItemsSorted();
 
-        if (resultSets > allItems.size()) {
+        int groupResultSetsBy = menuRequest.getGroupResultSetsBy();
+
+        if (resultSets > allItems.size() || groupResultSetsBy > 0) {
             resultSets = allItems.size();
         }
 
@@ -162,7 +169,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         // Moving startIdx and endIdx when remainder > 0
         int startMov = 0;
         int endMov = 0;
-        // Because of for-loop, could be solved with do-while
+
         boolean lastOne = false;
 
         for (int i = 0; i < resultSets; i++) {
@@ -205,7 +212,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
             ListMenu<PropertySet> m = new ListMenu<PropertySet>();
-            m.setComparator(new SubFolderMenuComparator(menuRequest,this.navigationTitlePropDef));
+            m.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
             m.setTitle(menu.getTitle());
             m.setLabel(menu.getLabel());
             m.addAllItems(subList);
@@ -214,6 +221,9 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resultSets", resultList);
+        if (groupResultSetsBy > 0) {
+            model.put("groupResultSetsBy", groupResultSetsBy);
+        }
         model.put("size", new Integer(menu.getItems().size()));
         model.put("title", menu.getTitle());
         return model;
@@ -291,7 +301,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         }
 
         ListMenu<PropertySet> menu = new ListMenu<PropertySet>();
-        menu.setComparator(new SubFolderMenuComparator(menuRequest,this.navigationTitlePropDef));
+        menu.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
         menu.addAllItems(toplevelItems);
         menu.setTitle(menuRequest.getTitle());
         menu.setLabel(this.modelName);
@@ -304,10 +314,10 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         Path uri = resource.getURI();
         URL url = this.viewService.constructURL(uri);
         url.setCollection(true);
-        
+
         Property titleProperty = resource.getProperty(this.navigationTitlePropDef);
-        titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef) : titleProperty;
-        Value title = titleProperty != null ? titleProperty.getValue() : new Value(resource.getName());
+        titleProperty = titleProperty == null ? resource.getProperty(this.titlePropDef): titleProperty;
+        Value title = titleProperty != null ? titleProperty.getValue(): new Value(resource.getName());
 
         MenuItem<PropertySet> item = new MenuItem<PropertySet>(resource);
         item.setUrl(url);
@@ -318,7 +328,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         List<PropertySet> children = childMap.get(resource.getURI());
         if (children != null) {
             ListMenu<PropertySet> subMenu = new ListMenu<PropertySet>();
-            subMenu.setComparator(new SubFolderMenuComparator(menuRequest,this.navigationTitlePropDef));
+            subMenu.setComparator(new SubFolderMenuComparator(menuRequest, this.navigationTitlePropDef));
             for (PropertySet child : children) {
                 subMenu.addItem(buildItem(child, childMap, menuRequest));
             }
@@ -333,6 +343,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         private PropertyTypeDefinition sortProperty;
         private boolean ascendingSort = true;
         private int resultSets = 1;
+        private int groupResultSetsBy = 0;
         private int depth = 1;
         private ArrayList<Path> excludeURIs;
         private Locale locale;
@@ -353,6 +364,36 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             this.title = request.getStringParameter(PARAMETER_TITLE);
 
             initSortField(request);
+
+            if (request.getStringParameter(PARAMETER_RESULT_SETS) != null) {
+                try {
+                    this.resultSets = Integer.parseInt(request.getStringParameter(PARAMETER_RESULT_SETS));
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_RESULT_SETS
+                            + "': " + request.getStringParameter(PARAMETER_RESULT_SETS));
+                }
+                if (this.resultSets <= 0 || this.resultSets > PARAMETER_RESULT_SETS_MAX_VALUE) {
+                    throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_RESULT_SETS
+                            + "': " + this.resultSets + ": must be a positive number between 1 and "
+                            + PARAMETER_RESULT_SETS_MAX_VALUE);
+                }
+            }
+
+            if (request.getStringParameter(PARAMETER_GROUP_RESULT_SETS_BY) != null) {
+                try {
+                    this.groupResultSetsBy = Integer.parseInt(request
+                            .getStringParameter(PARAMETER_GROUP_RESULT_SETS_BY));
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("Illegal value for parameter '"
+                            + PARAMETER_GROUP_RESULT_SETS_BY + "': "
+                            + request.getStringParameter(PARAMETER_GROUP_RESULT_SETS_BY));
+                }
+                if (this.groupResultSetsBy <= 0 || this.groupResultSetsBy > PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE) {
+                    throw new DecoratorComponentException("Illegal value for parameter '"
+                            + PARAMETER_GROUP_RESULT_SETS_BY + "': " + this.resultSets
+                            + ": must be a positive number between 1 and " + PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE);
+                }
+            }
 
             if (request.getStringParameter(PARAMETER_RESULT_SETS) != null) {
                 try {
@@ -431,6 +472,11 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
         public int getResultSets() {
             return this.resultSets;
+        }
+
+
+        public int getGroupResultSetsBy() {
+            return this.groupResultSetsBy;
         }
 
 
@@ -522,21 +568,21 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             if (!this.ascending) {
                 return collator.compare(value2, value1);
             }
-            
+
             String x1 = null, x2 = null;
-            if(item1.getValue().getProperty(this.navigationTitlePropDef) != null) {
+            if (item1.getValue().getProperty(this.navigationTitlePropDef) != null) {
                 x1 = item1.getValue().getProperty(navigationTitlePropDef).getStringValue();
-                if(x1 != null){
+                if (x1 != null) {
                     value1 = x1;
                 }
             }
-            if(item2.getValue().getProperty(this.navigationTitlePropDef) != null) {
+            if (item2.getValue().getProperty(this.navigationTitlePropDef) != null) {
                 x2 = item2.getValue().getProperty(navigationTitlePropDef).getStringValue();
-                if(x2 != null){
+                if (x2 != null) {
                     value2 = x2;
                 }
             }
-            
+
             return collator.compare(value1, value2);
         }
     }
@@ -570,13 +616,13 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     public void setCollectionResourceType(ResourceTypeDefinition collectionResourceType) {
         this.collectionResourceType = collectionResourceType;
     }
-    
-	
-    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
-		this.navigationTitlePropDef = navigationTitlePropDef;
-	}
 
-	
+
+    public void setNavigationTitlePropDef(PropertyTypeDefinition navigationTitlePropDef) {
+        this.navigationTitlePropDef = navigationTitlePropDef;
+    }
+
+
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -603,6 +649,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         map.put(PARAMETER_SORT_DIRECTION, PARAMETER_SORT_DIRECTION_DESC);
         map.put(PARAMETER_RESULT_SETS, PARAMETER_RESULT_SETS_DESC);
+        map.put(PARAMETER_GROUP_RESULT_SETS_BY, PARAMETER_GROUP_RESULT_SETS_BY_DESC);
         map.put(PARAMETER_EXCLUDE_FOLDERS, PARAMETER_EXCLUDE_FOLDERS_DESC);
         map.put(PARAMETER_AS_CURRENT_USER, PARAMETER_AS_CURRENT_USER_DESC);
         map.put(PARAMETER_DEPTH, PARAMETER_DEPTH_DESC);
@@ -632,5 +679,5 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
             throw new BeanInitializationException("JavaBean property '" + searchLimit + "' must be a positive integer");
         }
     }
-	
+
 }

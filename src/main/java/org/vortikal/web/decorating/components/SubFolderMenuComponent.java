@@ -80,6 +80,7 @@ import org.vortikal.web.view.components.menu.MenuItem;
  * <li>direction - the sort direction (ascending / descending)</li>
  * <li>result-sets - the number of &lt;ul&gt; lists to split the result into</li>
  * <li>group-result-sets-by - the number of results-sets in grouping divs</li>
+ * <li>freeze-at-level - at which level the subfolder-listing should freeze</li>
  * <li>exclude-folders - comma-separated list with relative paths to folders which should be excluded</li>
  * <li>authenticated - default is listing only read-for-all resources</li>
  * <li>depth - specifies number of levels to retrieve subfolders from</li>
@@ -121,9 +122,6 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_DEPTH = "depth";
     private static final String PARAMETER_DEPTH_DESC = "Specifies the number of levels to retrieve subfolders for. The default value is '1' ";
-
-    private static final String PARAMETER_DISPLAY_FROM_LEVEL = "display-from-level";
-    private static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the subfolder-menu";
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 

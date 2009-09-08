@@ -1,41 +1,37 @@
-resourcetype jperson : jdocument {
+resourcetype jperson {
 
   properties {
     username : string required,
     getExternalPersonInfo : boolean,
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,
-    title : derived (firstName, surname) 
-            eval (firstName + " " + surname) 
-            default username overrides title,
-    postalAddress : string external:userMetadataLdapService,
-    visitingAddress : string external:userMetadataLdapService,
+    title : string external:userMetadataLdapService,
+    postalAddress : string multiple external:userMetadataLdapService,
+    visitingAddress : string multiple external:userMetadataLdapService,
     email : string multiple external:userMetadataLdapService,
-    webPage : string, 
-    officeNumber : string,
+    phone : string multiple external:userMetadataLdapService,
+    picture : image_ref, 
+    pressPhoto : image_ref,
     availableHours : string,
-    picture : image_ref,
-    tags : string multiple overrides tags,
-    getExternalScientificInformation : boolean,
-    scientificInformation : html external:fridaPublicationsService
+    room : string,
+    rssFeeds : string multiple,
+    tags : string multiple,
+    content : html,
+    getExternalScientificInformation : boolean
   }
 
   edit-rules {
-    username (before title),
-    image-caption (size[small]),
-    group introImg (introduction-img, image-caption) (after surname) horizontal,
-    tags (after scientificInformation) (size[32]),
-    availableHours (size[small]),
-    officeNumber (size[5]),
-    getExternalScientificInformation (dropdown),
-    group contactInfo (email, officeNumber, availableHours) (after username) horizontal
+	group images (picture, pressPhoto) (after phone) horizontal 
   }
 
   scripts {
-    getExternalPersonInfo show-hide onclick (firstName, surname, email),
-    getExternalScientificInformation show-hide onclick (scientificInformation),
+    getExternalPersonInfo show-hide onclick (firstName, surname, title, postalAddress, visitingAddress, phone, email),
     tags autocomplete (minChars : "1"),
-    email multipleinputfields
+    email multipleinputfields,
+    phone multipleinputfields,
+    postalAddress multipleinputfields,
+    visitingAddress multipleinputfields,
+    rssFeeds multipleinputfields
   }
   
   services {
@@ -108,7 +104,10 @@ resourcetype jperson : jdocument {
     availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
     getExternalScientificInformation : (en : "Get external scientific information (frida)", no : "Hent ekstern vitenskapelig informasjon (frida)", nn : "Hent ekstern vitenskapelig informasjon (frida)"),
-    scientificInformation : (en : "Scientific information", no : "Vitenskapelig informasjon", nn : "Vitenskapelig informasjon"),
-    tags : (en : "Tags", no : "Emneord", nn : "Emneord")
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    content : (en : "Content", no :"Innhold",nn:"Innhold"),
+    rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),
+    pressPhoto : (en : "Press photo", no : "Presse bilde", nn : "Presse bilde"),
+    room : (en : "Room", no : "Rom", nn : "Rom")
   }
 }

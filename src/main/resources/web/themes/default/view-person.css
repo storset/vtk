@@ -1,0 +1,61 @@
+/* Global CSS - to be moved in global CSS */
+
+@import url(boxes.css);
+
+#content {
+  width: 100%;
+  float: left;
+}
+
+#left-content {
+   float: left;
+   width:555px;
+}
+
+#right-content {
+  float: right;
+  width: 260px
+}
+
+/* ********************************** */
+
+table {
+  border-collapse:collapse;
+}
+
+table.contact-info {
+  width: 100%;
+  float: left;
+}
+
+table.contact-info tr {
+  float:left;
+  margin-bottom:10px;
+  width: 100%;
+}
+
+table.contact-info tr td {
+  font-weight: bold;
+  vertical-align:top;
+  width: auto;
+}
+
+table.contact-info tr td.desc {
+  width: 130px;  	
+}
+/*
+.vrtx-tags {
+  display: block;
+  clear: left;
+  float: left;  
+  margin: 15px;
+}*/
+
+/* Person bilde */
+img.vrtx-person-image {
+  float: left;
+  margin: 0 15px 15px 0;
+}
+
+div.vrtx-person-image img {
+}

@@ -40,25 +40,68 @@ resourcetype jperson {
   }
 
   view-components {
+  
+    title {
+      ##
+      [def v resource-prop "." "title"]
+      [val v]
+      ##
+    }
 
     contact-information {
       ##
+        <table class="contact-info" summary="Contact-info">
+        <body>
+            [resource-props "."]
+            [if email]
+              <tr><td class="desc">E-post: </td><td>[val email]</td></tr>
+            [endif]
+            [if phone]
+              <tr><td class="desc">Telefon: </td><td>[val phone]</td></tr>
+            [endif]
+            [if visitingAddress]
+              <tr><td class="desc">Besoksadresse: </td><td>[val visitingAddress]</td></tr>
+            [endif]
+            [if availableHours]
+              <tr><td class="desc">Besoekstider: </td><td>[val availableHours]</td></tr>
+            [endif]
+            [if postalAddress]
+              <tr><td class="desc">Postadresse: </td><td>[val postalAddress]</td></tr>
+            [endif]
+        </tbody>
+        </table>
+      ##
+    }
+    
+    box-feeds {
+      ##
         [resource-props "."]
-        [if postalAddress]
-          <p>Postal address: [val postalAddress]</p>
+        [def document structured-document]
+        [def feeds json-attr document "properties.rssFeeds"]
+        [list feeds url]
+            [val url]
+        [endlist]
+      ##
+    }
+    
+    person-image {
+      ##
+      [def img-uri resource-prop "." "picture"]
+      [if img-uri]
+        [def img resource img-uri]
+        [def pixel-width resource-prop img-uri "pixelWidth"]
+
+        [if pixel-width]
+          [def style concat "width:" pixel-width "px"]
         [endif]
-        [if visitingAddress]
-          <p>Visiting address: [val visitingAddress]</p>
+
+        [if !img]
+          <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [else]
+          <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [endif]
-        [if officeNumber]
-          <p>Room: [val officeNumber]</p>
-        [endif]
-        [if email]
-          <p>Email: [val email]</p>
-        [endif]
-        [if webPage]
-          <p>Webpage: [val webPage]</p>
-        [endif]
+      [endif]
+      <br/>
       ##
     }
     
@@ -66,7 +109,7 @@ resourcetype jperson {
       ##
         [resource-props "."]
         [if scientificInformation]
-          <p><b>Scientific Information:</b></p>
+          <h2>Publikasjoner registrert i Frida</h2>
           [val scientificInformation]
         [endif]
       ##
@@ -75,17 +118,31 @@ resourcetype jperson {
   }
 
   view {
-    ##
-    <html>
-      <head>	
+    ##    
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <!-- begin css -->
+        <person:css />
+        <!-- end css -->
         <title><comp:title /></title>
       </head>
       <body>
-        <h1><comp:title /></h1>
-        <h2>Contact information</h2>
-        <comp:contact-information />
-        <comp:scientific-info />
-        <p><resource:tags /></p>
+      <div id="content">
+       <div id="left-content">
+          <h1><comp:title /></h1>
+          <div class="box">
+            <div class="box-thirds"><comp:person-image /></div>
+            <div class="box-two-thirds"><comp:contact-information /></div>
+          </div>
+          <json:field select="content" />
+          <resource:tags />
+          <comp:scientific-info />
+        </div>
+        <div id="right-content">
+          <comp:box-feeds /> 
+        </div>
+      </div>
       </body>
     </html>
     ##

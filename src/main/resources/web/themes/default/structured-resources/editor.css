@@ -100,3 +100,8 @@
 div.vrtx-multipleinputfield{
   padding-bottom:5px;
 }
+
+.vrtx-image-ref img{
+       max-height:150px;
+       padding:5px;
+}

@@ -180,6 +180,10 @@
   <bean id="article.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="article" />
   </bean>
+  
+  <bean id="person.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="person" />
+  </bean>
 
   <bean id="event.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="event" />
@@ -198,7 +202,6 @@
     <property name="namespace" ref="event.componentNamespace" />
     <property name="name" value="content" />
   </bean>
-
 
   <bean id="article.titleComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
@@ -368,6 +371,28 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/view-article.css</value>
+            <value>${themeBaseURL}/view-container.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+    <bean id="person.cssComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="person.componentNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts CSS references for persons" />
+    <property name="view" ref="person.cssView" />
+  </bean>
+
+  <bean id="person.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-person.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>

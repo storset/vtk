@@ -1,0 +1,51 @@
+resourcetype jproject {
+  properties {
+	name : string,
+	introduction : simple_html,
+	status : string,
+	picture : image_ref,
+	projectLeader : string,
+	participants :  string multiple,
+	homepage : string,
+	rssFeeds : string multiple,
+	tags : string multiple,
+	content : html
+  }
+
+  scripts {
+  	tags autocomplete (minChars : "1"),
+	participants multipleinputfields,
+	rssFeeds multipleinputfields
+  }
+    
+  view-components {
+    
+  }
+
+  view {
+    ##
+    <html>
+      <head>
+        <title></title>
+      </head>
+      <body>
+        <h1></h1>      
+        <json:field select="content" />
+      </body>
+    </html>
+    ##
+  }
+  
+  localization {
+    name : (en : "Name", no : "Navn", nn : "Navn"),
+    introduction : (en : "Introduction",no : "Introduksjon", nn : "Introduksjon"),
+    status : (en : "Status", no : "Status", nn : "Status"),
+    picture : (en : "Picture or logo", no : "Bilde eller logo", nn : "Bilde eller logo"),
+    projectLeader : (en : "Project leader", no : "Prosjekt leder", nn : "Prosjekt leiar"),
+    participants : (en : "Participants", no : "Deltakere", nn : "Deltakere"),
+    homepage : (en : "Homepage", no : "Hjemmeside", nn : "Hjemmeside"),
+    rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    content : (en : "Content", no :"Innhold",nn:"Innhold")
+  }
+}

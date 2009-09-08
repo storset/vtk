@@ -43,8 +43,8 @@ cd src/main/ext/FCKeditor
 wget http://.../FCKeditor_<version>.tar.gz
 tar zcvf FCKeditor_<version>.tar.gz
 mv -r fckeditor fckeditor-org/fckeditor-<version>
-rsync -r --exclude .svn\*  --exclude fckpackager.php --exclude custom-fckconfig.js --delete -ptv fckeditor-org/fckeditor-<version>/ fckeditor-build
-rsync -r --exclude .svn\*  --exclude fckpackager.php --exclude custom-fckconfig.js -ptv fckeditor-modifications/ fckeditor-build
+rsync -r --exclude .svn\*  --exclude fckpackager.php --exclude custom-fckconfig.js --delete -ptv fckeditor-org/fckeditor-<version>/ fckeditor-build-<version>
+rsync -r --exclude .svn\*  --exclude fckpackager.php -ptv fckeditor-modifications/ fckeditor-build-<version>
 
 for f in $(svn status fckeditor-build | grep \! | awk '{print $2}'); do svn rm "$f"; done
 

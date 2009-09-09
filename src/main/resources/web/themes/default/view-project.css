@@ -1,0 +1,40 @@
+/* Global CSS - to be moved in global CSS */
+
+@import url(boxes.css);
+
+#content {
+  width: 100%;
+  float: left;
+}
+
+#left-content {
+   float: left;
+   width:555px;
+}
+
+#right-content {
+  float: right;
+  width: 260px
+}
+
+/* ********************************** */
+
+/* Prosjekt bilde */
+div.vrtx-project-image {
+  float: left;
+  width: 100%;
+  margin: 0 0 15px 0;
+}
+
+div.vrtx-project-image img {
+}
+
+ul#vrtx-project-participants {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+ul#vrtx-project-participants li {
+  margin:0 0 10px;
+}

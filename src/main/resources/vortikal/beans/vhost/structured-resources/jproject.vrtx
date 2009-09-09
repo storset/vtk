@@ -19,18 +19,97 @@ resourcetype jproject {
   }
     
   view-components {
+  
+    introduction {
+      ##
+      [def intro resource-prop "." "introduction"]
+      [if intro]
+        <div class="vrtx-introduction">[val intro unescaped]</div>
+      [endif]
+      ##
+    }
+    
+    project-image {
+      ##
+      [def img-uri resource-prop "." "picture"]
+      [if img-uri]
+        [def img resource img-uri]
+        [def pixel-width resource-prop img-uri "pixelWidth"]
+
+        [if pixel-width]
+          [def style concat "width:" pixel-width "px"]
+        [endif]
+        <div class="vrtx-project-image">
+        [if !img]
+          <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [else]
+          <img class="vrtx-project-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [endif]
+        </div>
+      [endif]
+      ##
+    }
+    
+    box-leader-participants {
+      ##
+       <div class="narrow-box-borders">
+         <h2>Deltakere</h2>
+         <ul id="vrtx-project-participants">
+         [def leader resource-prop "." "projectLeader"]
+         [if leader]
+           <li>[val leader] (prosjektleder)</li>
+         [endif]
+       
+         [def document structured-document]
+         [def participants json-attr document "properties.participants"]
+         [list participants participant]
+           <li>[val participant]</li>
+         [endlist]
+         </ul>
+       </div>
+      ##
+    }
+    
+   box-feeds {
+      ##
+        [resource-props "."]
+        [def document structured-document]
+        [def feeds json-attr document "properties.rssFeeds"]
+        [list feeds url]
+            <div class="narrow-box-borders">
+               <h2>Feed tittel<h2>
+               [val url]
+            </div>
+        [endlist]
+      ##
+    }
     
   }
 
   view {
-    ##
-    <html>
+    ##    
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title></title>
+        <!-- begin css -->
+        <project:css>
+        <!-- end css -->
+        <title><json:field select="name" /></title>
       </head>
       <body>
-        <h1></h1>      
-        <json:field select="content" />
+      <div id="content">
+       <div id="left-content">
+          <h1><json:field select="name" /></h1>
+          <comp:project-image />
+          <comp:introduction />
+          <json:field select="content" />
+          <resource:tags />
+        </div>
+        <div id="right-content">
+            <comp:box-leader-participants />
+            <comp:box-feeds />
+        </div>
+      </div>
       </body>
     </html>
     ##

@@ -184,6 +184,10 @@
   <bean id="person.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="person" />
   </bean>
+  
+  <bean id="project.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="project" />
+  </bean>
 
   <bean id="event.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="event" />
@@ -399,6 +403,28 @@
       </map>
     </property>
   </bean>
+
+  <bean id="project.cssComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="project.componentNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts CSS references for projects" />
+    <property name="view" ref="project.cssView" />
+  </bean>
+
+  <bean id="project.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-project.css</value>
+            <value>${themeBaseURL}/view-container.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+   </bean>
 
   <bean name="article.commentsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />

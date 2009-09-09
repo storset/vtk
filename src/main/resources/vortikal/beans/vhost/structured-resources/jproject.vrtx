@@ -77,7 +77,7 @@ resourcetype jproject {
         [def feeds json-attr document "properties.rssFeeds"]
         [list feeds url]
             <div class="narrow-box-borders">
-               <h2>Feed tittel<h2>
+               <h2>Feed tittel</h2>
                [val url]
             </div>
         [endlist]

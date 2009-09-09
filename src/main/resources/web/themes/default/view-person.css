@@ -43,19 +43,18 @@ table.contact-info tr td {
 table.contact-info tr td.desc {
   width: 130px;  	
 }
-/*
+
 .vrtx-tags {
-  display: block;
-  clear: left;
-  float: left;  
-  margin: 15px;
-}*/
+  width: 100%;
+  margin: 15px 0;
+}
 
 /* Person bilde */
-img.vrtx-person-image {
+div.vrtx-person-image {
   float: left;
   margin: 0 15px 15px 0;
 }
 
 div.vrtx-person-image img {
+	
 }

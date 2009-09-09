@@ -79,7 +79,10 @@ resourcetype jperson {
         [def document structured-document]
         [def feeds json-attr document "properties.rssFeeds"]
         [list feeds url]
-            [val url]
+            <div class="narrow-box-borders">
+               <h2>Feed tittel</h2>
+               [val url]
+            </div>
         [endlist]
       ##
     }
@@ -94,14 +97,14 @@ resourcetype jperson {
         [if pixel-width]
           [def style concat "width:" pixel-width "px"]
         [endif]
-
+        <div class="vrtx-person-image">
         [if !img]
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [else]
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [endif]
+        </div>
       [endif]
-      <br/>
       ##
     }
     
@@ -110,7 +113,7 @@ resourcetype jperson {
         [resource-props "."]
         [if scientificInformation]
           <h2>Publikasjoner registrert i Frida</h2>
-          [val scientificInformation]
+          [val scientificInformation unescaped]
         [endif]
       ##
     }
@@ -140,7 +143,7 @@ resourcetype jperson {
           <comp:scientific-info />
         </div>
         <div id="right-content">
-          <comp:box-feeds /> 
+            <comp:box-feeds /> 
         </div>
       </div>
       </body>

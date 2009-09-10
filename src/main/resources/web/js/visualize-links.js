@@ -11,9 +11,8 @@ function visualizeDeadLink(that, doExternalLink, e) {
 		}
 		
 		var cssRedLink = {
-				'color' :'red',
-				'text-decoration' : 'blink'
-			}
+			'color' :'red'
+		}
 
 		var cssGreenBlinkingLink = {
 			'color' :'green',
@@ -21,7 +20,7 @@ function visualizeDeadLink(that, doExternalLink, e) {
 		}
 		
 		var cssGreenLink = {
-			'color' :'green',
+			'color' :'green'
 		}
 		
 		// Internal link
@@ -51,7 +50,7 @@ function visualizeDeadLink(that, doExternalLink, e) {
 			$.getJSON(url, function(json) {
 				// returns nothing in JSON-object if 404
 					if (typeof json.status_code == "undefined") {
-						$(that).append(" - Broken(404) - EXT").css(cssDeadLink);
+						$(that).append(" - BROKEN (404) - EXT").css(cssDeadLink);
 					}
 				});
 		}

@@ -30,13 +30,13 @@ function visualizeDeadLink(that, doExternalLink, e) {
 				url :filteredURL,
 				complete : function(xhr, textStatus) {
 					if (xhr.status == "404") {
-						$(that).append(" - BROKEN (404)").css(cssRedBlinkingLink); //broken
+						$(that).append(" - BRUTT (404)").css(cssRedBlinkingLink); //broken
 					} else if(xhr.status == "500" || xhr.status == "503") { 
-						$(that).append(" - SERVICE DOWN / UNAVAILABLE").css(cssRedBlinkingLink); //internal service error or service unavailable
+						$(that).append(" - TJENESTE NEDE / UTILGJENGELIG").css(cssRedBlinkingLink); //internal service error or service unavailable
 					} else if (xhr.status == "401" || xhr.status == "403") {
-						$(that).append(" - RESTRICTED / FORBIDDEN").css(cssRedLink); //unauthorized or forbidden (Opera) - visRestrictedResources
+						$(that).append(" - ADGANGSBEGRENSET / FORBUDT").css(cssRedLink); //unauthorized or forbidden (Opera) - visRestrictedResources
 					} else if(xhr.status == "301") {
-						$(that).append(" - MOVED PERMANENTLY").css(cssGreenLink); //redirects
+						$(that).append(" - PERMANENT FLYTTET/VIDERESENDT").css(cssGreenLink); //redirects
 					}
 				}
 			});
@@ -50,7 +50,7 @@ function visualizeDeadLink(that, doExternalLink, e) {
 			$.getJSON(url, function(json) {
 				// returns nothing in JSON-object if 404
 					if (typeof json.status_code == "undefined") {
-						$(that).append(" - BROKEN (404) - EXT").css(cssDeadLink);
+						$(that).append(" - BRUTT (404) - EXT").css(cssDeadLink);
 					}
 				});
 		}

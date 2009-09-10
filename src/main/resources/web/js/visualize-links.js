@@ -5,11 +5,25 @@ function visualizeDeadLink(that, doExternalLink, e) {
 
 	if (filteredURL != "") {
 
-		var cssDeadLink = {
+		var cssRedBlinkingLink = {
 			'color' :'red',
 			'text-decoration' : 'blink'
 		}
+		
+		var cssRedLink = {
+				'color' :'red',
+				'text-decoration' : 'blink'
+			}
 
+		var cssGreenBlinkingLink = {
+			'color' :'green',
+			'text-decoration' : 'blink'
+		}
+		
+		var cssGreenLink = {
+			'color' :'green',
+		}
+		
 		// Internal link
 		if (e.hostname && e.hostname == location.hostname) {
 			$.ajax( {
@@ -17,7 +31,13 @@ function visualizeDeadLink(that, doExternalLink, e) {
 				url :filteredURL,
 				complete : function(xhr, textStatus) {
 					if (xhr.status == "404") {
-						$(that).append(" - 404").css(cssDeadLink);
+						$(that).append(" - BROKEN (404)").css(cssRedBlinkingLink); //broken
+					} else if(xhr.status == "503" || xhr.status == "503") { 
+						$(that).append(" - SERVICE DOWN / UNAVAILABLE").css(cssRedBlinkingLink); //internal service error or service unavailable
+					} else if (xhr.status == "401" || xhr.status == "403") {
+						$(that).append(" - RESTRICTED / FORBIDDEN").css(cssRedLink); //unauthorized or forbidden (Opera) - visRestrictedResources
+					} else if(xhr.status == "301") {
+						$(that).append(" - MOVED PERMANENTLY").css(cssGreenLink); //redirects
 					}
 				}
 			});
@@ -31,7 +51,7 @@ function visualizeDeadLink(that, doExternalLink, e) {
 			$.getJSON(url, function(json) {
 				// returns nothing in JSON-object if 404
 					if (typeof json.status_code == "undefined") {
-						$(that).append(" - 404 - EXT").css(cssDeadLink);
+						$(that).append(" - Broken(404) - EXT").css(cssDeadLink);
 					}
 				});
 		}

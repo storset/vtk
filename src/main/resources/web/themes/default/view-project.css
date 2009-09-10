@@ -17,6 +17,13 @@
   width: 260px
 }
 
+.vrtx-tags {
+  float: left;
+  clear: left;
+  width: 100%;
+  margin: 15px 0;
+}
+
 /* ********************************** */
 
 /* Prosjekt bilde */

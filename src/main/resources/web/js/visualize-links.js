@@ -32,7 +32,7 @@ function visualizeDeadLink(that, doExternalLink, e) {
 				complete : function(xhr, textStatus) {
 					if (xhr.status == "404") {
 						$(that).append(" - BROKEN (404)").css(cssRedBlinkingLink); //broken
-					} else if(xhr.status == "503" || xhr.status == "503") { 
+					} else if(xhr.status == "500" || xhr.status == "503") { 
 						$(that).append(" - SERVICE DOWN / UNAVAILABLE").css(cssRedBlinkingLink); //internal service error or service unavailable
 					} else if (xhr.status == "401" || xhr.status == "403") {
 						$(that).append(" - RESTRICTED / FORBIDDEN").css(cssRedLink); //unauthorized or forbidden (Opera) - visRestrictedResources

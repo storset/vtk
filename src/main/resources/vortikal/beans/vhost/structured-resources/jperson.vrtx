@@ -50,32 +50,25 @@ resourcetype jperson {
       ##
     }
 
-	  title {
-	      ##
-	      [def v resource-prop "." "title"]
-	      [val v]
-	      ##
-	    }
-
     contact-information {
       ##
         <table class="contact-info" summary="Contact-info">
-        <body>
+        <tbody>
             [resource-props "."]
             [if email]
-              <tr><td class="desc">E-post: </td><td>[val email]</td></tr>
+              <tr><td>E-post: </td><td>[val email]</td></tr>
             [endif]
             [if phone]
-              <tr><td class="desc">Telefon: </td><td>[val phone]</td></tr>
+              <tr><td>Telefon: </td><td>[val phone]</td></tr>
             [endif]
             [if visitingAddress]
-              <tr><td class="desc">Besoksadresse: </td><td>[val visitingAddress]</td></tr>
+              <tr><td>Besoksadresse: </td><td>[val visitingAddress]</td></tr>
             [endif]
             [if availableHours]
-              <tr><td class="desc">Besoekstider: </td><td>[val availableHours]</td></tr>
+              <tr><td>Besoekstider: </td><td>[val availableHours]</td></tr>
             [endif]
             [if postalAddress]
-              <tr><td class="desc">Postadresse: </td><td>[val postalAddress]</td></tr>
+              <tr><td>Postadresse: </td><td>[val postalAddress]</td></tr>
             [endif]
         </tbody>
         </table>

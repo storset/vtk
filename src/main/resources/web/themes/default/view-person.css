@@ -17,6 +17,13 @@
   width: 260px
 }
 
+.vrtx-tags {
+  float: left;
+  clear: left;
+  width: 100%;
+  margin: 15px 0;
+}
+
 /* ********************************** */
 
 table {
@@ -25,28 +32,6 @@ table {
 
 table.contact-info {
   width: 100%;
-  float: left;
-}
-
-table.contact-info tr {
-  float:left;
-  margin-bottom:10px;
-  width: 100%;
-}
-
-table.contact-info tr td {
-  font-weight: bold;
-  vertical-align:top;
-  width: auto;
-}
-
-table.contact-info tr td.desc {
-  width: 130px;  	
-}
-
-.vrtx-tags {
-  width: 100%;
-  margin: 15px 0;
 }
 
 /* Person bilde */

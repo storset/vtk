@@ -80,12 +80,14 @@ resourcetype jperson {
         [resource-props "."]
         [def document structured-document]
         [def feeds json-attr document "properties.rssFeeds"]
+        [if feeds]
         [list feeds url]
             <div class="narrow-box-borders">
                <h2>Feed tittel</h2>
                [val url]
             </div>
         [endlist]
+        [endif]
       ##
     }
     
@@ -108,6 +110,22 @@ resourcetype jperson {
         </div>
       [endif]
       ##
+    }
+
+    foo {
+       ##
+       [def query "uri = /json/* AND type IN file"]
+       [def result search query]
+       [if result]
+       <ul>
+       [list result res]
+         [def title resource-prop res "title"]
+         [def uri view-url res]
+         <li><a href="[val uri]">[val title]</a></li>
+       [endlist]
+       </ul>
+       [endif]
+       ##
     }
     
     scientific-info {
@@ -148,6 +166,7 @@ resourcetype jperson {
             <comp:box-feeds /> 
         </div>
       </div>
+      <comp:foo />
       </body>
     </html>
     ##

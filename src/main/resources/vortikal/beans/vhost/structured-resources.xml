@@ -72,6 +72,9 @@
     parent="requestLocalRepositoryAware"
     depends-on="structuredResource.parser">
     <property name="viewName" value="structuredResources.displayView" />
+    <property name="viewService" ref="viewService" />
+    <property name="queryParserFactory" ref="queryParserFactory" />
+    <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceManager" ref="structuredResources.resourceManager" />
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="templateManager" ref="structuredResources.templateManager" />

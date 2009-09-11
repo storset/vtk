@@ -54,11 +54,17 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyImpl;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
+import org.vortikal.repository.search.QueryParserFactory;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.query.Query;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
@@ -68,7 +74,6 @@ import org.vortikal.text.JSONUtil;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Argument;
-import org.vortikal.text.tl.CommentNodeFactory;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DefineNodeFactory;
 import org.vortikal.text.tl.DirectiveNodeFactory;
@@ -88,6 +93,7 @@ import org.vortikal.web.decorating.ParsedHtmlDecoratorTemplate;
 import org.vortikal.web.decorating.Template;
 import org.vortikal.web.decorating.TemplateManager;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
+import org.vortikal.web.service.Service;
 
 
 public class StructuredResourceDisplayController implements Controller, InitializingBean {
@@ -95,7 +101,10 @@ public class StructuredResourceDisplayController implements Controller, Initiali
     private static final String MVC_MODEL_KEY = "__mvc_model__";
     
     private Repository repository;
+    private QueryParserFactory queryParserFactory;
+    private Searcher searcher;
     private String viewName;
+    private Service viewService;
     private StructuredResourceManager resourceManager;
     private TemplateManager templateManager;
     private HtmlPageParser htmlParser;
@@ -231,7 +240,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         val.addValueFormatHandler(Value[].class, new PropertyValueFormatHandler());
         directiveHandlers.put("val", val);
 
-        directiveHandlers.put("comment", new CommentNodeFactory());
         directiveHandlers.put("list", new ListNodeFactory());
         directiveHandlers.put("resource-props", new ResourcePropsNodeFactory());
         DefineNodeFactory def = new DefineNodeFactory();
@@ -240,10 +248,12 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         def.addValueProvider("config", new ModelConfigHandler());
         def.addValueProvider("structured-document", new JSONDocumentProvider());
         def.addValueProvider("json-attr", new JSONAttributeHandler());
+        def.addValueProvider("search", new SearchResultValueProvider());
+        def.addValueProvider("view-url", new ViewURLValueProvider());
         directiveHandlers.put("def", def);
-
-        directiveHandlers.put("localized", new LocalizationNodeFactory());
         
+        directiveHandlers.put("localized", new LocalizationNodeFactory());
+
         this.directiveHandlers = directiveHandlers;
         
         List<StructuredResourceDescription> allDescriptions = 
@@ -264,7 +274,15 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.repository = repository;
     }
 
-    public void setViewName(String viewName) {
+    public void setQueryParserFactory(QueryParserFactory queryParserFactory) {
+		this.queryParserFactory = queryParserFactory;
+	}
+
+    public void setSearcher(Searcher searcher) {
+		this.searcher = searcher;
+	}
+
+	public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
@@ -272,7 +290,11 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.resourceManager = resourceManager;
     }
     
-    @Required public void setTemplateManager(TemplateManager templateManager) {
+    public void setViewService(Service viewService) {
+		this.viewService = viewService;
+	}
+
+	@Required public void setTemplateManager(TemplateManager templateManager) {
         this.templateManager = templateManager;
     }
 
@@ -292,12 +314,13 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
+    
     private class ResourcePropsNodeFactory implements DirectiveNodeFactory {
 
         public Node create(DirectiveParseContext ctx) throws Exception {
             List<Argument> tokens = ctx.getArguments();
             if (tokens.size() != 1) {
-                throw new RuntimeException("Wrong number of arguments");
+                throw new Exception("Wrong number of arguments");
             }
             final Argument arg1 = tokens.get(0);
 
@@ -343,7 +366,56 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
 
     }
+
+    private class SearchResultValueProvider implements DefineNodeFactory.ValueProvider {
+
+    	public Object create(List<Argument> tokens, Context ctx)
+    	throws Exception {
+            if (tokens.size() != 1) {
+            	throw new Exception("Illegal number of arguments");
+            }
+            Argument arg = tokens.get(0);
+            String queryString;
+            if (arg instanceof Symbol) {
+            	Object o = ((Symbol) arg).resolve(ctx);
+            	if (o == null) {
+            		throw new Exception("Unable to resolve: " + arg.getRawValue());
+            	}
+            	queryString = o.toString();
+            } else {
+            	queryString = ((Literal) arg).getValue().toString();
+            }
+            String token = SecurityContext.getSecurityContext().getToken();
+            Query query = queryParserFactory.getParser().parse(queryString);
+            Search search = new Search();
+            search.setQuery(query);
+            ResultSet resultSet = searcher.execute(token, search);
+            return resultSet.iterator();
+    	}
+    }
     
+    private class ViewURLValueProvider implements DefineNodeFactory.ValueProvider {
+
+		public Object create(List<Argument> tokens, Context ctx)
+				throws Exception {
+            if (tokens.size() != 1) {
+            	throw new Exception("Illegal number of arguments");
+            }
+            Argument arg = tokens.get(0);
+            if (!(arg instanceof Symbol)) {
+            	throw new Exception("Argument must be a resource object: " + arg.getRawValue());
+            }
+            Object o = ((Symbol) arg).resolve(ctx);
+            if (o == null) {
+            	throw new Exception("Unable to resolve argument: " + arg.getRawValue());
+            }
+            if (!(o instanceof PropertySet)) {
+            	throw new Exception("Argument must be a resource object: " + arg.getRawValue());
+            }
+            return viewService.constructLink(((PropertySet) o).getURI());
+		}
+    	
+    }
     
     private class ResourcePropHandler implements DefineNodeFactory.ValueProvider {
 
@@ -361,32 +433,37 @@ public class StructuredResourceDisplayController implements Controller, Initiali
             final Argument arg1 = tokens.get(0);
             final Argument arg2 = tokens.get(1);
 
-            Resource resource;
-            String ref;
+            PropertySet resource = null;
+            String ref = null;
             if (arg1 instanceof Symbol) {
                 Object o = ((Symbol) arg1).resolve(ctx);
-                if (o == null) {
-                    throw new Exception("Unable to resolve: " + arg1.getRawValue());
+                if (o instanceof PropertySet) {
+                	resource = (PropertySet) o;
+                } else {
+                	if (o == null) {
+                		throw new Exception("Unable to resolve: " + arg1.getRawValue());
+                	}
+                	ref = o.toString();
                 }
-                ref = o.toString();
             } else {
                 ref = ((Literal) arg1).getValue().toString();
             }
 
-            if (ref.equals(".")) {
-                Object o = ctx.get(MVC_MODEL_KEY);
-                if (o == null) {
-                    throw new Exception("Unable to access MVC model: " + MVC_MODEL_KEY);
-                }
-                @SuppressWarnings("unchecked")
-                Map<String, Object> model = (Map<String, Object>) o;
-                resource = (Resource) model.get("resource");
-            } else {
-                Path uri = Path.fromString(ref);
-                String token = SecurityContext.getSecurityContext().getToken();
-                resource = repository.retrieve(token, uri, true);
+            if (resource == null) {
+            	if (ref.equals(".")) {
+            		Object o = ctx.get(MVC_MODEL_KEY);
+            		if (o == null) {
+            			throw new Exception("Unable to access MVC model: " + MVC_MODEL_KEY);
+            		}
+            		@SuppressWarnings("unchecked")
+            		Map<String, Object> model = (Map<String, Object>) o;
+            		resource = (Resource) model.get("resource");
+            	} else {
+            		Path uri = Path.fromString(ref);
+            		String token = SecurityContext.getSecurityContext().getToken();
+            		resource = repository.retrieve(token, uri, true);
+            	}
             }
-
             String propName;
             if (arg2 instanceof Symbol) {
                 Object o = ((Symbol) arg2).resolve(ctx);

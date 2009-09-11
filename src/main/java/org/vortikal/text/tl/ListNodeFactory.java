@@ -33,6 +33,7 @@ package org.vortikal.text.tl;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -95,23 +96,34 @@ public class ListNodeFactory implements DirectiveNodeFactory {
             if (var == null) {
                 throw new RuntimeException("List: No such variable: " + this.listVar);
             }
-            if (!(var instanceof List<?>)) {
+            
+            if (!(var instanceof List<?>) && !(var instanceof Iterator<?>)) {
                 throw new RuntimeException("List: Cannot iterate variable: "
                                            + this.listVar + ": not a list");
             }
-            
-            List<?> list = (List<?>) var;
-            for (Object o: list) {
-                ctx.push();
-                ctx.define(this.defVar.getSymbol(), o, false);
-                this.nodeList.render(ctx, out);
-                ctx.pop();
+            if (var instanceof List<?>) {
+                List<?> list = (List<?>) var;
+                for (Object o: list) {
+                	executeBody(o, ctx, out);
+                }
+            } else {
+                Iterator<?> iter = (Iterator<?>) var;
+                while (iter.hasNext()) {
+                	Object o = iter.next();
+                	executeBody(o, ctx, out);
+                }
             }
         }
 
+        private void executeBody(Object o, Context ctx, Writer out) throws Exception {
+            ctx.push();
+            ctx.define(this.defVar.getSymbol(), o, false);
+            this.nodeList.render(ctx, out);
+            ctx.pop();
+        }
+        
         public String toString() {
             return "[list-node]";
         }
-        
     }
 }

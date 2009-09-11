@@ -46,4 +46,8 @@ public class ValidationError {
     public String getMessage() {
         return this.message;
     }
+    
+    public String toString() {
+    	return this.propertyName + ": " + this.message;
+    }
 }

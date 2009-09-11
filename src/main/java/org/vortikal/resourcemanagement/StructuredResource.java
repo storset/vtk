@@ -41,19 +41,27 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.vortikal.text.JSONUtil;
+
 public class StructuredResource {
 
     private StructuredResourceDescription desc;
     private Map<String, Object> properties = new HashMap<String, Object>();
 
     public StructuredResource(StructuredResourceDescription desc) {
+    	if (desc == null) {
+    		throw new IllegalArgumentException("Description cannot be null");
+    	}
         this.desc = desc;
     }
 
     @SuppressWarnings("unchecked")
     public void parse(String source) {
         JSONObject json = JSONObject.fromObject(source);
-        validate(json);
+        ValidationResult validation = validate(json);
+        if (!validation.isValid()) {
+        	throw new RuntimeException("Invalid document: " + validation.getErrors());
+        }
         JSONObject object = json.getJSONObject("properties");
         for (Iterator<String> iter = object.keys(); iter.hasNext();) {
             String name = iter.next();
@@ -98,6 +106,19 @@ public class StructuredResource {
                     "Unable to validate: missing 'properties' element");
         }
         List<ValidationError> errors = new ArrayList<ValidationError>();
+        for (PropertyDescription propDesc : this.desc.getPropertyDescriptions()) {
+			if (propDesc instanceof SimplePropertyDescription) {
+				if (((SimplePropertyDescription) propDesc).isRequired()) {
+
+					Object value = JSONUtil.select(json, "properties." + propDesc.getName());
+					if (value == null) {
+						errors.add(new ValidationError(propDesc.getName(), 
+								"property is required"));
+					}
+					// TODO: validate types and multiple properties
+				}
+			}
+		}
         ValidationResult result = new ValidationResult(errors);
         return result;
     }

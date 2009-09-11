@@ -328,6 +328,15 @@ public class StructuredResourceManager {
     private void setPropValue(Property property, Object value) {
 
         if (!property.getDefinition().isMultiple()) {
+        	// If value is collection, pick first element
+        	if (value instanceof Collection<?>) {
+        		Collection<?> c = (Collection<?>) value;
+        		if (c.isEmpty()) {
+        			value = null;
+        		} else {
+        			value = c.toArray()[0];
+        		}
+        	}
             Value v = property.getDefinition().getValueFormatter().stringToValue(value.toString(), null, null);
             property.setValue(v);
 
@@ -359,9 +368,6 @@ public class StructuredResourceManager {
 
     public StructuredResourceDescription get(String name) {
         StructuredResourceDescription description = this.types.get(name);
-        if (description == null) {
-            throw new IllegalArgumentException("No resource type definition found for name '" + name + "'");
-        }
         return description;
     }
 

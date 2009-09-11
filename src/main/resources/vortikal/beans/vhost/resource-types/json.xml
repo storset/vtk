@@ -30,6 +30,7 @@
       <list>
         <ref bean="json.objectParseableAssertion" />
         <ref bean="json.objectHasResourceTypeAssertion" />
+        <ref bean="json.validDocumentAssertion" />
       </list>
     </property>
     <property name="mixinTypeDefinitions">
@@ -50,6 +51,11 @@
         parent="requestLocalRepositoryAware">
     <property name="token" ref="trustedToken" />
     <property name="expression" value="resourcetype" />
+  </bean>
+
+  <bean id="json.validDocumentAssertion"
+        class="org.vortikal.resourcemanagement.ValidDocumentAssertion" parent="requestLocalRepositoryAware">
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
 
 </beans>

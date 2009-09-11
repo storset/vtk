@@ -123,7 +123,9 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         String source = new String(buff, encoding);
         
         StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
-        
+        if (desc == null) {
+        	throw new IllegalStateException("Unable to find description '" + r.getResourceType() + "' for resource " + r.getURI());
+        }
         if (!desc.getComponentDefinitions().isEmpty() && !this.components.containsKey(desc)) {
             initComponentDefs(desc);
         }

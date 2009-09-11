@@ -2,11 +2,15 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
   
+  <bean id="structuredResources.typeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
+  </bean>
+
   <bean id="structuredResources.displayService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="displayResourceService" />
     <property name="assertions">
       <list>
-        <ref bean="json.contentTypeAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
       </list>
     </property>
     <property name="handlerInterceptors">
@@ -21,7 +25,7 @@
     <property name="parent" ref="previewService" />
     <property name="assertions">
       <list>
-        <ref bean="json.contentTypeAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
       </list>
     </property>
     <property name="handler" ref="previewIframeHandler" />
@@ -33,10 +37,10 @@
     <property name="order" value="-9800" />
     <property name="assertions">
       <list>
-        <ref bean="editor.modeParameterAssertion" />
+        <ref bean="structuredResources.typeAssertion" />
         <ref bean="requiresWritePermissionAssertion" />
+        <ref bean="editor.modeParameterAssertion" />
         <ref bean="editor.parameterEqualsEdit" />
-        <ref bean="json.contentTypeAssertion" />
       </list>
     </property>
     <property name="categories">

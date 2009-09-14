@@ -20,6 +20,7 @@ resourcetype jperson {
     tags : string multiple,
     content : html,
     getExternalScientificInformation : boolean
+    
   }
 
   edit-rules {

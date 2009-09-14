@@ -38,7 +38,7 @@ resourcetype jperson {
   
   services {
     getExternalPersonInfo userMetadataLdapService requires(username),
-    getExternalScientificInformation fridaPublicationsService
+    getExternalScientificInformation fridaPublicationsService requires(username)
   }
 
   view-components {
@@ -52,14 +52,18 @@ resourcetype jperson {
 
     contact-information {
       ##
-        <table class="contact-info" summary="Contact-info">
+        <table class="contact-info" summary="contact-info">
         <tbody>
             [resource-props "."]
             [if email]
               <tr><td>E-post: </td><td>[val email]</td></tr>
             [endif]
             [if phone]
-              <tr><td>Telefon: </td><td>[val phone]</td></tr>
+             <tr><td>Telefon: </td><td>
+             [list phone singlePhone]
+               [val singlePhone]
+             [endlist]
+              </td></tr>
             [endif]
             [if visitingAddress]
               <tr><td>Besoksadresse: </td><td>[val visitingAddress]</td></tr>
@@ -68,7 +72,7 @@ resourcetype jperson {
               <tr><td>Besoekstider: </td><td>[val availableHours]</td></tr>
             [endif]
             [if postalAddress]
-              <tr><td>Postadresse: </td><td>[val postalAddress]</td></tr>
+                <tr><td>Postadresse: </td><td>[val postalAddress]</td></tr>
             [endif]
         </tbody>
         </table>

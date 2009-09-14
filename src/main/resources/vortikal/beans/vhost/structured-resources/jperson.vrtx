@@ -19,16 +19,18 @@ resourcetype jperson {
     rssFeeds : string multiple,
     tags : string multiple,
     content : html,
-    getExternalScientificInformation : boolean
-    
+    getExternalScientificInformation : boolean,
+    scientificInformation: string multiple external:fridaPublicationsService
   }
 
   edit-rules {
-	group images (picture, pressPhoto) (after phone) horizontal 
+	group images (picture, pressPhoto) (after phone) horizontal,
+	group hoursRoom (availableHours, room) (after images) horizontal 
   }
 
   scripts {
     getExternalPersonInfo show-hide onclick (firstName, surname, title, postalAddress, phone, email),
+    getExternalScientificInformation show-hide onclick (scientificInformation),
     tags autocomplete (minChars : "1"),
     email multipleinputfields,
     phone multipleinputfields,
@@ -61,9 +63,7 @@ resourcetype jperson {
             [endif]
             [if phone]
              <tr><td>Telefon: </td><td>
-             [list phone singlePhone]
-               [val singlePhone]
-             [endlist]
+               [val phone]
               </td></tr>
             [endif]
             [if visitingAddress]
@@ -73,7 +73,9 @@ resourcetype jperson {
               <tr><td>Besoekstider: </td><td>[val availableHours]</td></tr>
             [endif]
             [if postalAddress]
-                <tr><td>Postadresse: </td><td>[val postalAddress]</td></tr>
+              <tr><td>Postadresse:</td><td> 
+                [val postalAddress]
+              </td></tr>
             [endif]
         </tbody>
         </table>
@@ -137,8 +139,8 @@ resourcetype jperson {
       ##
         [resource-props "."]
         [if scientificInformation]
-          <h2>Publikasjoner registrert i Frida</h2>
-          [val scientificInformation unescaped]
+        <h2>Publikasjoner registrert i Frida</h2>
+          [val scientificInformation]
         [endif]
       ##
     }
@@ -185,7 +187,9 @@ resourcetype jperson {
     postalAddress : (en : "Address", no : "Adresse", nn : "Adresse"),
     visitingAddress : (en : "Visiting address", no : "Besøksadresse", nn : "Besøksadresse"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
+    position : (en : "Position", no : "Stilling", nn : "Stilling"), 
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),
+    phone : (en : "Telephone", no : "Telefon", nn : "Telefon"),
     officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
     availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),

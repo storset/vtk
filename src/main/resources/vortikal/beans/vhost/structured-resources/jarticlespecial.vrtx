@@ -4,7 +4,7 @@ resourcetype jarticlespecial : jdocument {
     media-ref : media_ref,
     author : string,
     published-date : datetime,
-    fields : string muliple
+    fields : string multiple
   }
 
   edit-rules {
@@ -12,6 +12,10 @@ resourcetype jarticlespecial : jdocument {
     group introImg (introduction-img, image-caption) (after introduction) vertical,
     title (size[large]),
     group timeAndAuthor (published-date, author) (after introImg) horizontal
+  }
+  
+  scripts {
+    fields multipleinputfields
   }
 
   view-components {
@@ -77,6 +81,8 @@ resourcetype jarticlespecial : jdocument {
     
      box-fields {
       ##
+       [resource-props "."]
+       [if fields]
        <div class="narrow-box-borders">
          <ul id="vrtx-right-column">       
          [def document structured-document]
@@ -86,6 +92,7 @@ resourcetype jarticlespecial : jdocument {
          [endlist]
          </ul>
        </div>
+       [endif]
       ##
     }
   }

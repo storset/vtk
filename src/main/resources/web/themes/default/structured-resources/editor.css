@@ -7,6 +7,10 @@
   overflow: auto;
 }
 
+.vrtx-grouped-vertical {
+  clear: none;	
+}
+
 .vrtx-string .date{
     margin-right: 1em;
 }

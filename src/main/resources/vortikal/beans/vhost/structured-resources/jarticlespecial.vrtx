@@ -116,7 +116,7 @@ resourcetype jarticlespecial : jdocument {
             <resource:tags />
             <resource:comments />
         </div>
-        <div id="left-content">
+        <div id="right-content">
            <comp:box-fields />
         </div>
        </div>

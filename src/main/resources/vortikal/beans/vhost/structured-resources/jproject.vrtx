@@ -11,6 +11,11 @@ resourcetype jproject {
 	tags : string multiple,
 	content : html
   }
+  
+  edit-rules {
+    group introImage (introduction, picture) (after name) horizontal,
+    group theParticipants (projectLeader, participants) (after status) horizontal
+  }
 
   scripts {
   	tags autocomplete (minChars : "1"),

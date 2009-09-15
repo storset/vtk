@@ -13,6 +13,7 @@
     <#if subFolderMenu.size &gt; 0>
       <#assign "counter" = 0>
       <#assign "counter2" = 0>
+      <#assign "c" = 0>
          
       <#if subFolderMenu.resultSets?exists>
         <div class="vrtx-subfolder-menu">
@@ -24,9 +25,10 @@
             <#assign counter2 = counter2+1>
             <#if subFolderMenu.groupResultSetsBy?exists && (subFolderMenu.groupResultSetsBy?number = counter2 || counter = 1)>
                <#assign "counter2" = 0>
-               <@displayParentMenu menu=resultSet currentCount=counter newDiv=true />
+               <#assign c = c+1>
+               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=true />
             <#else>
-               <@displayParentMenu menu=resultSet currentCount=counter newDiv=false />
+               <@displayParentMenu menu=resultSet currentCount=counter groupCount=c newDiv=false />
             </#if>
           </#list>
         </div>
@@ -44,12 +46,12 @@
   </#if>
 </#macro>
 
-<#macro displayParentMenu menu currentCount newDiv>
+<#macro displayParentMenu menu currentCount groupCount newDiv>
   <#if newDiv>
        <#if currentCount != 1>
           </div>
        </#if>  
-          <div class="vrtx-group-${subFolderMenu.groupResultSetsBy?html}">
+          <div class="vrtx-group-${groupCount?html}">
   </#if>
   <ul class="resultset-${currentCount?html}">
     <#list menu.itemsSorted as item>

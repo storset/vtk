@@ -9,7 +9,7 @@ resourcetype jperson {
            eval (firstName + " " + surname) overrides title,
     position : string external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
-    visitingAddress : string,
+    visitingAddress : string multiple,
     email : string multiple external:userMetadataLdapService,
     phone : string multiple external:userMetadataLdapService,
     picture : image_ref, 
@@ -58,16 +58,33 @@ resourcetype jperson {
         <table class="contact-info" summary="contact-info">
         <tbody>
             [resource-props "."]
+            [def document structured-document]
             [if email]
-              <tr><td>E-post: </td><td>[val email]</td></tr>
+              [def emails json-attr document "properties.email"]
+              [list emails theemail]
+               <tr><td>E-post: </td>
+               <td>
+                [val theemail]
+               </td></tr>
+              [endlist]
             [endif]
             [if phone]
-             <tr><td>Telefon: </td><td>
-               [val phone]
+             [def phones json-attr document "properties.phone"]
+             [list phones thephone]
+              <tr><td>Telefon: </td>
+              <td>
+               [val thephone]
               </td></tr>
+             [endlist]
             [endif]
             [if visitingAddress]
-              <tr><td>Besoksadresse: </td><td>[val visitingAddress]</td></tr>
+             [def visitingAddresses json-attr document "properties.visitingAddress"]
+             [list visitingAddresses visitingAddressesLine]
+              <tr><td>Besoksadresse: </td>
+              <td>
+               [val visitingAddressesLine]
+              </td></tr>
+             [endlist]
             [endif]
             [if room]
               <tr><td>Romnr: </td><td>[val room]</td></tr>
@@ -76,9 +93,13 @@ resourcetype jperson {
               <tr><td>Besoekstider: </td><td>[val availableHours]</td></tr>
             [endif]
             [if postalAddress]
-              <tr><td>Postadresse:</td><td> 
-                [val postalAddress]
-              </td></tr>
+              [def postalAddresses json-attr document "properties.postalAddress"]
+              [list postalAddresses postalAddressesLine]
+                <tr><td>Postadresse:</td>
+                <td> 
+                  [val postalAddressesLine]
+                </td></tr>
+              [endlist]
             [endif]
         </tbody>
         </table>
@@ -108,7 +129,7 @@ resourcetype jperson {
       [if img-uri]
         [def img resource img-uri]
         [def pixel-width resource-prop img-uri "pixelWidth"]
-
+        
         [if pixel-width]
           [def style concat "width:" pixel-width "px"]
         [endif]

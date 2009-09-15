@@ -34,6 +34,10 @@ table.contact-info {
   width: 100%;
 }
 
+table.contact-info tr td{
+  vertical-align: top;
+}
+
 /* Person bilde */
 div.vrtx-person-image {
   float: left;
@@ -41,5 +45,5 @@ div.vrtx-person-image {
 }
 
 div.vrtx-person-image img {
-	
+  margin: 0 0 10px 0;
 }

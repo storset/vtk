@@ -69,6 +69,9 @@ resourcetype jperson {
             [if visitingAddress]
               <tr><td>Besoksadresse: </td><td>[val visitingAddress]</td></tr>
             [endif]
+            [if room]
+              <tr><td>Romnr: </td><td>[val room]</td></tr>
+            [endif]
             [if availableHours]
               <tr><td>Besoekstider: </td><td>[val availableHours]</td></tr>
             [endif]
@@ -116,7 +119,7 @@ resourcetype jperson {
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [endif]
         [if img-press-uri]
-          <a href="[val img-press-uri]">(lenke til pressebilde)</a> 
+          <a id="vrtx-press-image-link" href="[val img-press-uri]">(lenke til pressebilde)</a> 
         [endif]
         </div>
       [endif]

@@ -20,7 +20,8 @@ resourcetype jperson {
     tags : string multiple,
     content : html,
     getExternalScientificInformation : boolean,
-    scientificInformation: string multiple external:fridaPublicationsService
+    scientificInformation: string multiple external:fridaPublicationsService,
+    selectedPublications: simple_html
   }
 
   edit-rules {
@@ -168,7 +169,8 @@ resourcetype jperson {
         [resource-props "."]
         [if scientificInformation]
         <h2>[localized "fridaPublications"]</h2>
-          [val scientificInformation]
+          [if selectedPublications][val selectedPublications][endif]
+          [if scientificInformation][val scientificInformation][endif]
         [endif]
       ##
     }
@@ -225,6 +227,7 @@ resourcetype jperson {
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
     getExternalScientificInformation : (en : "Get external scientific information (frida)", no : "Hent ekstern vitenskapelig informasjon (frida)", nn : "Hent ekstern vitenskapelig informasjon (frida)"),
     fridaPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
+    selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),

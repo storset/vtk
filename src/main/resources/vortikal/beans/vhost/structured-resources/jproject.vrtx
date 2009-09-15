@@ -57,7 +57,7 @@ resourcetype jproject {
          <ul id="vrtx-project-participants">
          [def leader resource-prop "." "projectLeader"]
          [if leader]
-           <li>[val leader] ([localized "projectLeader"])</li>
+           <li>[val leader] ([localized "projectLeaderComp"])</li>
          [endif]
        
          [def document structured-document]
@@ -120,7 +120,8 @@ resourcetype jproject {
     introduction : (en : "Introduction",no : "Introduksjon", nn : "Introduksjon"),
     status : (en : "Status", no : "Status", nn : "Status"),
     picture : (en : "Picture or logo", no : "Bilde eller logo", nn : "Bilde eller logo"),
-    projectLeader : (en : "projectleader", no : "prosjektleder", nn : "prosjektleiar"),
+    projectLeaderComp : (en : "projectleader", no : "prosjektleder", nn : "prosjektleiar"),
+    projectLeader : (en : "Projectleader", no : "Prosjektleder", nn : "Prosjektleiar"),
     participants : (en : "Participants", no : "Deltakere", nn : "Deltakere"),
     homepage : (en : "Homepage", no : "Hjemmeside", nn : "Hjemmeside"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),

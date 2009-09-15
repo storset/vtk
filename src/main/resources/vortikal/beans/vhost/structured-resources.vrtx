@@ -6,3 +6,4 @@ include structured-resources/jdisputas.vrtx
 include structured-resources/jproject.vrtx
 include structured-resources/jboxes.vrtx
 include structured-resources/jplain.vrtx
+include structured-resources/jfrontpage.vrtx

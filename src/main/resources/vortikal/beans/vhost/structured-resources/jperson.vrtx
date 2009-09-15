@@ -169,7 +169,7 @@ resourcetype jperson {
         [resource-props "."]
         [if scientificInformation]
         <h2>[localized "fridaPublications"]</h2>
-          [if selectedPublications][val selectedPublications][endif]
+          [if selectedPublications][val selectedPublications unescaped][endif]
           [if scientificInformation][val scientificInformation][endif]
         [endif]
       ##

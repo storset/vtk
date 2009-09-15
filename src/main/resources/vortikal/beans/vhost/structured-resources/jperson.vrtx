@@ -101,6 +101,7 @@ resourcetype jperson {
     person-image {
       ##
       [def img-uri resource-prop "." "picture"]
+      [def img-press-uri resource-prop "." "pressPhoto"]
       [if img-uri]
         [def img resource img-uri]
         [def pixel-width resource-prop img-uri "pixelWidth"]
@@ -113,6 +114,9 @@ resourcetype jperson {
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [else]
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+        [endif]
+        [if img-press-uri]
+          <a href="[val img-press-uri]">(lenke til pressebilde)</a> 
         [endif]
         </div>
       [endif]
@@ -162,7 +166,9 @@ resourcetype jperson {
        <div id="left-content">
           <h1><comp:title /></h1>
           <div class="box">
-            <div class="box-thirds"><comp:person-image /></div>
+            <div class="box-thirds">
+                <comp:person-image />   
+            </div>
             <div class="box-two-thirds"><comp:contact-information /></div>
           </div>
           <json:field select="content" />

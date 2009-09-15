@@ -30,8 +30,8 @@ resourcetype jplain {
       </head>
       <body>
       <div id="content">
-        <div id="left-content">
-            <h1><comp:title /></h1>
+        <h1><comp:title /></h1>
+        <div id="left-content">   
             <json:field select="content" />
         </div>
       </div>

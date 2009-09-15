@@ -90,7 +90,7 @@ resourcetype jdocument {
     </html>
     ##
   }
-
+  
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     introduction : (en : "Introduction", no : "Ingress", nn : "Ingress"),

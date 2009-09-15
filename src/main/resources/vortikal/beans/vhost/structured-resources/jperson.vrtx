@@ -189,8 +189,8 @@ resourcetype jperson {
       </head>
       <body>
       <div id="content">
+       <h1><comp:title /></h1>
        <div id="left-content">
-          <h1><comp:title /></h1>
           <div class="box">
             <div class="box-thirds">
                 <comp:person-image />   

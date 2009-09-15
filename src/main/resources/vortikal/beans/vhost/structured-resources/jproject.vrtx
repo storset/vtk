@@ -103,8 +103,8 @@ resourcetype jproject {
       </head>
       <body>
       <div id="content">
+       <h1><json:field select="name" /></h1>
        <div id="left-content">
-          <h1><json:field select="name" /></h1>
           <comp:project-image />
           <comp:introduction />
           <json:field select="content" />

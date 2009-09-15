@@ -97,8 +97,8 @@ resourcetype jarticle : jdocument {
       </head>
       <body>
       <div id="content">
+        <h1><comp:title /></h1>
         <div id="left-content">
-            <h1><comp:title /></h1>
             <comp:introduction-image />
             <comp:introduction />
             <comp:media-refs />

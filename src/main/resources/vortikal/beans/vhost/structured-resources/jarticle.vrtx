@@ -60,7 +60,7 @@ resourcetype jarticle : jdocument {
       ##
       [def authors resource-prop "." "author"]
       [if authors]
-      <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span> [val authors]</span>
+        <span class="vrtx-authors"><span class="vrtx-authors-prefix">[localized "by-line"]</span> [val authors]</span>
       [endif]
       ##
     }
@@ -71,6 +71,15 @@ resourcetype jarticle : jdocument {
       [if published-date]
         <span class="vrtx-published-date">[localized "published"]&nbsp;[val published]</span>
       [endif]
+      ##
+    }
+    
+    box-fields {
+      ##
+       [resource-props "."]
+       <div class="narrow-box-borders">
+
+       </div>
       ##
     }
   }
@@ -87,17 +96,23 @@ resourcetype jarticle : jdocument {
         <title><comp:title /></title>
       </head>
       <body>
-        <h1><comp:title /></h1>
-        <comp:introduction-image />
-        <comp:introduction />
-        <comp:media-refs />
-        <div class="vrtx-byline">
-          <comp:author />
-          <comp:published-date />
+      <div id="content">
+        <div id="left-content">
+            <h1><comp:title /></h1>
+            <comp:introduction-image />
+            <comp:introduction />
+            <comp:media-refs />
+            <div class="vrtx-byline">
+              <comp:author />
+              <comp:published-date />
+            </div>
+            <json:field select="content" />
+            <resource:tags />
+            <resource:comments />
         </div>
-        <json:field select="content" />
-        <resource:tags />
-        <resource:comments />
+        <div id="right-content">
+           <comp:box-fields />
+         </div>
       </body>
     </html>
     ##

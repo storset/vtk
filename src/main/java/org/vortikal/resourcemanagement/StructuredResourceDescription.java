@@ -181,7 +181,8 @@ public final class StructuredResourceDescription {
         if (localizationMap == null) {
             return key;
         }
-        return localizationMap.get(locale);
+        String localizedMessage = localizationMap.get(new Locale(locale.getLanguage()));
+        return localizedMessage != null ? localizedMessage : key;
     }
 
     public void addScriptDefinition(ScriptDefinition scriptDefinition) {
@@ -216,13 +217,13 @@ public final class StructuredResourceDescription {
 
             if (d instanceof DerivedPropertyDescription) {
                 DerivedPropertyDescription derived = (DerivedPropertyDescription) d;
-                
+
                 List<String> dependentProperties = new ArrayList<String>();
                 dependentProperties.addAll(derived.getDependentProperties());
                 if (derived.getDefaultProperty() != null) {
-                	dependentProperties.add(derived.getDefaultProperty());
+                    dependentProperties.add(derived.getDefaultProperty());
                 }
-                
+
                 for (String propName : dependentProperties) {
                     boolean found = false;
                     // Verify that each derived property is defined:
@@ -235,23 +236,21 @@ public final class StructuredResourceDescription {
                     if (!found) {
                         // If not found in this definition, check parent:
                         if (this.inheritsFrom != null) {
-                            StructuredResourceDescription parent = this.manager
-                                    .get(this.inheritsFrom);
+                            StructuredResourceDescription parent = this.manager.get(this.inheritsFrom);
                             if (parent.getPropertyDescription(propName) != null) {
                                 found = true;
                             }
                         }
                         if (!found) {
-                            throw new IllegalStateException("Property definition '"
-                                    + d.getName()
-                                    + "' is declared to be derived from property '"
-                                    + propName + "', which is not defined");
+                            throw new IllegalStateException("Property definition '" + d.getName()
+                                    + "' is declared to be derived from property '" + propName
+                                    + "', which is not defined");
                         }
                     }
                     // Verify that properties do not derive from themselves:
                     if (propName.equals(d.getName())) {
-                        throw new IllegalStateException("Property definition '"
-                                + d.getName() + "' is declared to be derived from itself");
+                        throw new IllegalStateException("Property definition '" + d.getName()
+                                + "' is declared to be derived from itself");
                     }
                 }
                 // Verify that derived properties evaluate using only
@@ -265,14 +264,13 @@ public final class StructuredResourceDescription {
                             }
                         }
                         if (!found) {
-                            throw new IllegalStateException("Property definition '"
-                                    + d.getName()
+                            throw new IllegalStateException("Property definition '" + d.getName()
                                     + "' is declared to evaluate using property '" + eval.getValue()
                                     + "', which is not listed in the derives clause");
                         }
                     }
                 }
-                
+
             }
         }
 

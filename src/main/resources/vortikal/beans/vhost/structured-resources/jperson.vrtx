@@ -62,7 +62,7 @@ resourcetype jperson {
             [if email]
               [def emails json-attr document "properties.email"]
               [list emails theemail]
-               <tr><td>E-post: </td>
+               <tr><td>[localized "email"]:&nbsp;</td>
                <td>
                 [val theemail]
                </td></tr>
@@ -71,7 +71,7 @@ resourcetype jperson {
             [if phone]
              [def phones json-attr document "properties.phone"]
              [list phones thephone]
-              <tr><td>Telefon: </td>
+              <tr><td>[localized "phone"]:&nbsp;</td>
               <td>
                [val thephone]
               </td></tr>
@@ -80,22 +80,22 @@ resourcetype jperson {
             [if visitingAddress]
              [def visitingAddresses json-attr document "properties.visitingAddress"]
              [list visitingAddresses visitingAddressesLine]
-              <tr><td>Besoksadresse: </td>
+              <tr><td>[localized "visitingAddress"]:&nbsp;</td>
               <td>
                [val visitingAddressesLine]
               </td></tr>
              [endlist]
             [endif]
             [if room]
-              <tr><td>Romnr: </td><td>[val room]</td></tr>
+              <tr><td>[localized "room"]:&nbsp;</td><td>[val room]</td></tr>
             [endif]
             [if availableHours]
-              <tr><td>Besoekstider: </td><td>[val availableHours]</td></tr>
+              <tr><td>[localized "availableHours"]:&nbsp;</td><td>[val availableHours]</td></tr>
             [endif]
             [if postalAddress]
               [def postalAddresses json-attr document "properties.postalAddress"]
               [list postalAddresses postalAddressesLine]
-                <tr><td>Postadresse:</td>
+                <tr><td>[localized "postalAddress"]:&nbsp;</td>
                 <td> 
                   [val postalAddressesLine]
                 </td></tr>
@@ -167,7 +167,7 @@ resourcetype jperson {
       ##
         [resource-props "."]
         [if scientificInformation]
-        <h2>Publikasjoner registrert i Frida</h2>
+        <h2>[localized "fridaPublications"]</h2>
           [val scientificInformation]
         [endif]
       ##
@@ -224,6 +224,7 @@ resourcetype jperson {
     availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
     getExternalScientificInformation : (en : "Get external scientific information (frida)", no : "Hent ekstern vitenskapelig informasjon (frida)", nn : "Hent ekstern vitenskapelig informasjon (frida)"),
+    fridaPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),

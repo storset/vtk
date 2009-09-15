@@ -50,4 +50,6 @@ for f in $(svn status fckeditor-build | grep \! | awk '{print $2}'); do svn rm "
 
 for f in $(svn status fckeditor-build | grep \? | awk '{print $2}'); do svn add "$f"; done
 
+Update 'editor.fck.version' in vortikal.properties and default.properties (hosts setup) to the correct version.
+
 <merge files from fckeditor-modifications into fckeditor-build>

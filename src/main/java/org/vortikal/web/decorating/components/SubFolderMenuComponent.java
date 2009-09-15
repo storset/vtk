@@ -111,7 +111,7 @@ public class SubFolderMenuComponent extends ViewRenderingDecoratorComponent {
     private static final int PARAMETER_GROUP_RESULT_SETS_BY_MAX_VALUE = 30;
 
     private static final String PARAMETER_FREEZE_AT_LEVEL = "freeze-at-level";
-    private static final String PARAMETER_FREEZE_AT_LEVEL_DESC = "At which level the subfolder-listing should freeze and show the same listing further down. The default is never or '0'.";
+    private static final String PARAMETER_FREEZE_AT_LEVEL_DESC = "At which level the subfolder-listing should freeze and show the same listing further down. The default is none.";
 
     private static final String PARAMETER_EXCLUDE_FOLDERS = "exclude-folders";
     private static final String PARAMETER_EXCLUDE_FOLDERS_DESC = "Commma-separated list with relative paths to folders which should not be displayed in the list";

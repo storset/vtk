@@ -223,7 +223,7 @@
         <entry key="hide-prefix"
                value="If set to 'true', the prefix 'You are here:' will be hidden. The default is 'false'." />
         <entry key="stop-at-level"
-               value="This stops the breadcrumb generation at a certain number of levels. The default is never or '0'." />
+               value="This stops the breadcrumb generation at a certain number of levels. The default is none." />
       </map>               
     </property>
   </bean>

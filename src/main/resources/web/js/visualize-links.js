@@ -31,13 +31,15 @@ function visualizeDeadLink(that, doExternalLink, e) {
 				complete : function(xhr, textStatus) {
 					if (xhr.status == "404") {
 						$(that).append(" - BRUTT (404)").css(cssRedBlinkingLink); //broken
-					} else if(xhr.status == "500" || xhr.status == "503") { 
+					} 
+					/* If we want to vizualize other responses
+					else if(xhr.status == "500" || xhr.status == "503") { 
 						$(that).append(" - TJENESTE NEDE / UTILGJENGELIG").css(cssRedBlinkingLink); //internal service error or service unavailable
 					} else if (xhr.status == "401" || xhr.status == "403") {
 						$(that).append(" - ADGANGSBEGRENSET / FORBUDT").css(cssRedLink); //unauthorized or forbidden (Opera) - visRestrictedResources
 					} else if(xhr.status == "301") {
 						$(that).append(" - PERMANENT FLYTTET/VIDERESENDT").css(cssGreenLink); //redirects
-					}
+					} */
 				}
 			});
 		}
@@ -61,8 +63,8 @@ function visualizeDeadLink(that, doExternalLink, e) {
 // Remove "?vrtx=" URL and extract URL in anchor
 function filterURL(rawURL) {
 
-	if (rawURL.indexOf("?vrtx=") != -1) {
-		return "";
+	if ((rawURL.indexOf("?") != -1) || (rawURL.indexOf("&") != -1)) {
+		return ""; //do nothing
 	}
 	if (rawURL.indexOf("#") != -1) { // anchor
 		if (rawURL.indexOf("http://") != -1) {

@@ -1,6 +1,6 @@
-<#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/ping.ftl" as ping />
 
+<#import "/lib/vortikal.ftl" as vrtx />
 <#import "vrtx-types/vrtx-boolean.ftl" as vrtxBoolean />
 <#import "vrtx-types/vrtx-datetime.ftl" as vrtxDateTime />
 <#import "vrtx-types/vrtx-file-ref.ftl" as vrtxFileRef />
@@ -13,11 +13,13 @@
 <#import "include/scripts.ftl" as scripts />
 
 <#import "editor/fck.ftl" as fckEditor />
+<#import "editor/vrtx-json-javascript.ftl" as vrtxJSONJavascript />
 <html>
 <head>
   <title>Edit structured resource</title>
   
   <@fckEditor.addFckScripts />
+  <@vrtxJSONJavascript.script />
   
   <script language="Javascript" type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
   <script language="Javascript" type="text/javascript"><!--
@@ -43,7 +45,9 @@
   <script type="text/javascript" src="${webResources?html}/jquery-ui-1.7.1.custom/js/jquery-ui-1.7.1.custom.min.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/datepicker.js"></script>
 
+  
   <link type="text/css" href="${themeBaseURL?html}/structured-resources/editor.css" rel="stylesheet" />
+	
   
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />
@@ -52,7 +56,7 @@
 </head>
 <body>
 
-<form action="${form.submitURL?html}" method="POST">
+<form action="${form.submitURL?html}" method="post">
 <#assign locale = springMacroRequestContext.getLocale() />
 
 <#list form.elements as elementBox>
@@ -150,7 +154,7 @@
         title=localizedTitle
         inputFieldName=elem.name
         elem=elem
-        classes=elem.name  />
+        id=elem.name  />
         <#break>
       <#default>
         No editor available for element type ${elem.description.type}

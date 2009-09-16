@@ -25,8 +25,10 @@ function displayDateAsMultipleInputFields(name){
     var hours = "";
     var minutes="";
     var date = new Array("");
-    var a = $.find("#" + name);  
-   
+    var fieldName = name.replace(/\./g,'\\.');
+
+    var a = $.find("#" + fieldName);  
+    
     if(a.length > 0){
         hours = extractHoursFromDate(a[0].value);
         minutes = extractMinutesFromDate(a[0].value)
@@ -36,9 +38,9 @@ function displayDateAsMultipleInputFields(name){
     dateField = "<input type='text' size='12' id='" + name  + "-date' name='" + name  + "-date' value='" + date[0] + "' class='date' />"; 
     hoursField = "<input type='text' size='2' id='" + name  + "-hours' name='" + name  + "-hours' value='" + hours + "' class='hours' />";  
     minutesField = "<input type='text' size='2' id='" + name  + "-minutes' name='" + name  + "-minutes' value='" + minutes + "' class='minutes' />"; 
-    $("#" + name).hide();
-    $("#" + name).after(dateField + hoursField + ":" + minutesField);
-    $("#" + name + "-date").datepicker({dateFormat: 'yy-mm-dd'});
+    $("#" + fieldName).hide();
+    $("#" + fieldName).after(dateField + hoursField + ":" + minutesField);
+    $("#" + fieldName + "-date").datepicker({dateFormat: 'yy-mm-dd'});
 }
 
 function setDefaultEndDate(){
@@ -77,9 +79,12 @@ function extractMinutesFromDate(datetime){
 function saveDateAndTimeFields(){
     $(".date").each(
             function(){
-                var hours = $.find("#" + this.name + "-hours"); 
-                var minutes = $.find("#" + this.name + "-minutes");
-                var date = $.find("#" + this.name + "-date");
+                if(!this.name)
+                    return;
+                var fieldName = this.name.replace(/\./g,'\\.');
+                var hours = $.find("#" + fieldName + "-hours"); 
+                var minutes = $.find("#" + fieldName + "-minutes");
+                var date = $.find("#" + fieldName + "-date");
 
                 if(date.length > 0){
                     this.value = date[0].value 
@@ -90,6 +95,12 @@ function saveDateAndTimeFields(){
                         }
                     }
                 }
+                
+                // Hack.. .must be fixed!!!
+                $("#" + fieldName + "-hours").remove();
+                $("#" + fieldName + "-minutes").remove();
+                $("#" + fieldName + "-date").remove();
+
             }
     );
 }

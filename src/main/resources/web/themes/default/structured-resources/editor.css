@@ -109,3 +109,34 @@ div.vrtx-multipleinputfield{
        max-height:150px;
        padding:5px;
 }
+
+div.vrtx-json-element {
+    border: 1px solid #a9a9a9;
+    clear: left;
+    float: left;
+    overflow: auto;   
+    width:80%;
+}
+
+h2.vrtx-title{
+	clear:left;
+	float:left;
+	overflow:hidden;
+}
+
+div.vrtx-json-element{
+	 border : 1px solid #ccc;
+	 margin:0.2em;
+}
+
+input.vrtx-add-button {
+	 clear:left;
+	 display:block;
+	 float:left;
+	 margin:10px;
+}
+
+input.vrtx-remove-button {
+	float:right;
+	margin:10px;
+}

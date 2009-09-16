@@ -106,5 +106,9 @@ public class FormElement {
         }
         return value;
     }
+    
+    public boolean valueIsList(){
+        return this.value instanceof List;
+    }
 
 }

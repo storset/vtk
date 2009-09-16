@@ -1,6 +1,6 @@
 <#macro printPropertyEditView title inputFieldName value="true" tooltip="" classes="">
 <div class="vrtx-radio ${classes}">
-  <div><label for="${inputFieldName}">${title}</label></div>
+  <div><label>${title}</label></div>
   <div>
       <input name="${inputFieldName}" id="${inputFieldName}-true" type="radio" value="true" <#if value == "true"> checked="checked" </#if> />
       <label for="${inputFieldName}-true">True</label> 

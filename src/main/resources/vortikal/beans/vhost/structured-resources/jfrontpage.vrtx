@@ -97,6 +97,8 @@ resourcetype jfrontpage {
   
   localization {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
-     content : (en : "Content", no : "Innhold", nn : "Innhald")     
+     content : (en : "Content", no : "Innhold", nn : "Innhald"),
+     box-list-main : (en : "Main-column", no : "Hovedspalte", nn : "Hovedspalte"),
+     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte")
   }
 }

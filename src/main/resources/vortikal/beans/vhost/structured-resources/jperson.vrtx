@@ -16,7 +16,7 @@ resourcetype jperson {
     visitingAddress : string multiple,
     availableHours : string,
     room : string,
-    rssFeeds : string multiple,
+    rssFeeds : json ( title : string, url : string ) multiple,
     tags : string multiple,
     content : html,
     getExternalScientificInformation : boolean,
@@ -45,8 +45,7 @@ resourcetype jperson {
     email multipleinputfields,
     phone multipleinputfields,
     postalAddress multipleinputfields,
-    visitingAddress multipleinputfields,
-    rssFeeds multipleinputfields
+    visitingAddress multipleinputfields
   }
   
   services {
@@ -122,10 +121,12 @@ resourcetype jperson {
         [def document structured-document]
         [def feeds json-attr document "properties.rssFeeds"]
         [if feeds]
-        [list feeds url]
+        [list feeds feed]
             <div class="narrow-box-borders">
-               <h2>Feed tittel</h2>
-               [val url]
+               [def title json-attr feed "title"]
+               <h2>[if title][val title][endif]</h2>
+               [def url json-attr feed "url"]
+               [if url]TODO: invoke RSS component ... [val url][endif]
             </div>
         [endlist]
         [endif]

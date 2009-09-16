@@ -19,6 +19,7 @@
         <ref bean="schemaPropDef" />
         <ref bean="xmlOverriddenGuessedCharacterEncodingPropDef" />
         <ref bean="xmlOverriddenCharacterEncodingPropDef" />
+        <ref bean="overriddenPublishedPropDef" />
       </list>
     </property>
   </bean>

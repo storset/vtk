@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="publish.publishResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="writePermissionAssertion" />
+        <ref bean="publishableResourceTypeAssertion" />
+        <ref bean="resourceIsNotPublishedAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="publish" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="publishResourceHandler" />
+    <property name="categories">
+      <set>
+        <value>globalMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="globalMenuOrder">
+          <value type="java.lang.Integer">300</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="resourceIsNotPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="published" />    
+    <property name="value" value="false" />
+  </bean>
+
+  <bean id="publishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+  
+  <bean id="publish.unpublishResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="writePermissionAssertion" />
+        <ref bean="publishableResourceTypeAssertion" />
+        <ref bean="resourceIsPublishedAssertion" /> 
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="unpublish" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="unpublishResourceHandler" />
+    <property name="categories">
+      <set>
+        <value>globalMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="globalMenuOrder">
+          <value type="java.lang.Integer">300</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="unpublishResourceHandler" class="org.vortikal.web.actions.publish.UnPublishResourceController"
+    parent="requestLocalRepositoryAware">
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+
+  <bean id="resourceIsPublishedAssertion" class="org.vortikal.web.service.ResourcePropertyAssertion">
+    <property name="namespace" ref="DEFAULT_NAMESPACE" />
+    <property name="name" value="published" />    
+    <property name="value" value="true" />
+  </bean>
+
+  <bean id="htmlResourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
+  </bean>
+  
+  <bean id="xmlResourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="xmlResource" />
+  </bean>
+  
+  <bean id="jsonResourceTypeAssertion" class="org.vortikal.web.service.ResourceTypeAssertion">
+    <property name="resourceTypeDefinition" ref="json.resourceType" />
+  </bean>
+  
+  <bean id="publishableResourceTypeAssertion" class="org.vortikal.web.service.OrAssertion">
+    <property name="assertions">
+      <list>
+        <ref bean="htmlResourceTypeAssertion" />
+        <ref bean="xmlResourceTypeAssertion" />
+        <ref bean="jsonResourceTypeAssertion" />
+      </list>
+    </property>
+  </bean>
+  
+</beans>

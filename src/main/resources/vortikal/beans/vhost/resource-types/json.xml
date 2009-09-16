@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  
+
   <import resource="mixins/introduction-mixin.xml" />
-  
+
   <bean id="json.resourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="json-resource"/>
+    <property name="name" value="json-resource" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions">
@@ -13,17 +13,19 @@
         <ref bean="json.contentTypeAssertion" />
       </list>
     </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="overriddenPublishedPropDef" />
+      </list>
+    </property>
   </bean>
 
-  <bean id="json.contentTypeAssertion" 
-        class="org.vortikal.web.service.ResourceContentTypeAssertion">
+  <bean id="json.contentTypeAssertion" class="org.vortikal.web.service.ResourceContentTypeAssertion">
     <property name="contentType" value="application/json" />
   </bean>
 
-
-  <bean id="json.managedObjectResourceType"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="managed-json-resource"/>
+  <bean id="json.managedObjectResourceType" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="managed-json-resource" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="json.resourceType" />
     <property name="assertions">
@@ -37,25 +39,23 @@
       <list>
         <ref bean="introductionMixinResourceTypeDef" />
       </list>
-    </property>    
+    </property>
   </bean>
-
-  <bean id="json.objectParseableAssertion"
-        class="org.vortikal.web.service.JSONObjectParseableAssertion"
-        parent="requestLocalRepositoryAware">
+  
+  <bean id="json.objectParseableAssertion" class="org.vortikal.web.service.JSONObjectParseableAssertion"
+    parent="requestLocalRepositoryAware">
     <property name="token" ref="trustedToken" />
   </bean>
-
-  <bean id="json.objectHasResourceTypeAssertion"
-        class="org.vortikal.web.service.JSONObjectSelectAssertion"
-        parent="requestLocalRepositoryAware">
+  
+  <bean id="json.objectHasResourceTypeAssertion" class="org.vortikal.web.service.JSONObjectSelectAssertion"
+    parent="requestLocalRepositoryAware">
     <property name="token" ref="trustedToken" />
     <property name="expression" value="resourcetype" />
   </bean>
-
-  <bean id="json.validDocumentAssertion"
-        class="org.vortikal.resourcemanagement.ValidDocumentAssertion" parent="requestLocalRepositoryAware">
+  
+  <bean id="json.validDocumentAssertion" class="org.vortikal.resourcemanagement.ValidDocumentAssertion"
+    parent="requestLocalRepositoryAware">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
-
+  
 </beans>

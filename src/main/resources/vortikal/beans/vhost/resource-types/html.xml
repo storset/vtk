@@ -28,6 +28,7 @@
         <ref bean="htmlTitlePropDef" />
         <ref bean="htmlOverriddenTitlePropDef" />
         <ref bean="htmlHasBodyContentPropDef" />
+        <ref bean="overriddenPublishedPropDef" />
       </list>
     </property>
   </bean>

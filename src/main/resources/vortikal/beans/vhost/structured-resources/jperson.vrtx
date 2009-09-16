@@ -17,6 +17,7 @@ resourcetype jperson {
     availableHours : string,
     room : string,
     rssFeeds : json ( title : string, url : string ) multiple,
+    projects : json ( name : string, url : string ) multiple, 
     tags : string multiple,
     content : html,
     getExternalScientificInformation : boolean,
@@ -34,6 +35,7 @@ resourcetype jperson {
 	visitingAddress (after images),
 	content (after hoursRoom),
 	tags (after content),
+	projects (after rssFeeds),
 	selectedPublications (after tags),
 	getExternalScientificInformation (after selectedPublications)
   }
@@ -167,8 +169,37 @@ resourcetype jperson {
       [endif]
       ##
     }
-
+    
     projects {
+      ##
+        [resource-props "."]
+        [if projects]
+            [def document structured-document]
+            [def theprojects json-attr document "properties.projects"]
+            [if theprojects]
+                [list theprojects aproject]
+                    <div class="narrow-box-borders">
+                       
+                       <h2>[localized "projects"]</h2>
+                       
+                       [def thename json-attr aproject "name"]
+                       [def theurl json-attr aproject "url"]
+
+                       [if thename]
+                           [if theurl]
+                             <li><a href="[val theurl]">[val thename]</a></li>
+                           [else]
+                             <li>[val thename]</li>
+                       [endif]
+             [endif]
+                    </div>
+                [endlist]
+            [endif]
+        [endif]
+      ##
+    }
+
+    projects-foo {
        ##
        [def query "uri = /* AND type IN jproject"]
        [def result search query]
@@ -223,6 +254,7 @@ resourcetype jperson {
         </div>
         <div id="right-content">
             <comp:box-feeds />  
+            <comp:projects />
         </div>
       </div>
       </body>
@@ -250,7 +282,8 @@ resourcetype jperson {
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
-    rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),
+    rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmar"),
+    projects : (en : "Projects",no : "Prosjekter", nn :"Prosjekter"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilde"),
     room : (en : "Room", no : "Rom", nn : "Rom")
   }

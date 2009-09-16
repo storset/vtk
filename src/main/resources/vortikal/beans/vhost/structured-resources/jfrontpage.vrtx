@@ -2,19 +2,14 @@ resourcetype jfrontpage {
 
   properties {
     title : string required overrides title,
-    box-list-main : json ( title : string, type : string, boxcontent : simple_html, url : string, urlText : string ) multiple,
-    box-list-side : json ( title : string, type : string, boxcontent : simple_html, url : string, urlText : string ) multiple
+    box-list-main : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple,
+    box-list-side : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple
   }
 
   edit-rules {
-    group boxLists (box-list-main, box-list-side) (after title) vertical
-  }
 
-  scripts {
-    box-list-main multipleinputfields,
-    box-list-side multipleinputfields
   }
-
+  
   view-components {
   
     box-list-main {

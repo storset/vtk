@@ -1,0 +1,28 @@
+/* Global CSS - to be moved in global CSS */
+
+@import url(boxes.css);
+
+#content {
+  width: 100%;
+  float: left;
+}
+
+#left-content {
+   float: left;
+   width:555px;
+}
+
+#right-content {
+  float: right;
+  width: 260px
+}
+
+.vrtx-tags {
+  float: left;
+  clear: left;
+  width: 100%;
+  margin: 15px 0;
+}
+
+/* ********************************** */
+

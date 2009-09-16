@@ -192,6 +192,10 @@
   <bean id="event.componentNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="event" />
   </bean>
+  
+   <bean id="frontpage.componentNamespace" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="frontpage" />
+  </bean>
 
   <bean id="article.contentComponent"
         class="org.vortikal.web.decorating.components.ElementInModelDecoratorComponent">
@@ -375,6 +379,28 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/view-article.css</value>
+            <value>${themeBaseURL}/view-container.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+      <bean id="frontpage.cssComponent"
+        class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="frontpage.componentNamespace" />
+    <property name="name" value="css" />
+    <property name="description" value="Inserts CSS references for frontpages" />
+    <property name="view" ref="frontpage.cssView" />
+  </bean>
+  
+    <bean id="frontpage.cssView" parent="freemarkerView">
+    <property name="url" value="system/css.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/view-frontpage.css</value>
             <value>${themeBaseURL}/view-container.css</value>
           </list>
         </entry>

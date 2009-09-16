@@ -3,7 +3,8 @@ resourcetype jevent : jdocument {
     start-date : datetime,
     end-date : datetime,
     location : string,
-    map-url : string
+    map-url : string,
+    tags : string multiple
   }
 
   edit-rules {
@@ -34,7 +35,7 @@ resourcetype jevent : jdocument {
              <abbr class="dtend" title="">[val end-date]</abbr>
            [endif]
            [if location]
-             &nbsp;,&nbsp;
+             ,&nbsp;
              <span class="location">
              [if map-url]
                <a href="[val map-url]" target="_parent">[val location]</a>
@@ -52,17 +53,28 @@ resourcetype jevent : jdocument {
 
   view {
     ##
-    <html>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
+        <resource:comments-feed-link />
+        <!-- begin css -->
+        <article:css />
+        <!-- end css -->
         <title><comp:title /></title>
       </head>
       <body>
+       <div id="content">
         <h1><comp:title /></h1>
-        <div class="vrtx-byline">
-          <comp:time-and-place />
+         <div id="left-content">
+            <comp:introduction-image />
+            <comp:introduction />
+            <div class="vrtx-byline">
+              <comp:time-and-place />
+            </div>
+            <json:field select="content" />
+            <resource:tags />
         </div>
-        
-        <json:field select="content" />
+       </div>
       </body>
     </html>
     ##
@@ -73,6 +85,7 @@ resourcetype jevent : jdocument {
     start-date : (en : "Starts", no : "Starter", nn : "Byrjar"),
     end-date : (en : "Ends", no : "Slutter", nn : "Sluttar"),
     location : (en : "Location", no : "Sted", nn : "Stad"),
-    map-url : (en : "Link to map", no : "Lenke til kart", nn : "Lenke til kart")
+    map-url : (en : "Link to map", no : "Lenke til kart", nn : "Lenke til kart"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord")
   }
 }

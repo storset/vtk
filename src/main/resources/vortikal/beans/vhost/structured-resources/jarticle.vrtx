@@ -3,7 +3,9 @@ resourcetype jarticle : jdocument {
   properties {
     media-ref : media_ref,
     author : string,
-    published-date : datetime
+    published-date : datetime,
+    tags : string multiple,
+    box-list-side : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple
   }
 
   edit-rules {
@@ -74,12 +76,27 @@ resourcetype jarticle : jdocument {
       ##
     }
     
-    box-fields {
+    box-list-side {
       ##
-       [resource-props "."]
-       <div class="narrow-box-borders">
-
-       </div>
+      [resource-props "."]
+      [if box-list-side]
+        [def document structured-document]
+        [def boxes json-attr document "properties.box-list-side"]
+        [list boxes box]
+           [def type json-attr box "type"]
+           [def title json-attr box "title"]
+           [def content json-attr box "boxcontent"]
+           [def url json-attr box "url"]
+           [def urlText json-attr box "urlText"]
+           
+           <div class="frontpage-box [val type]"> 
+            <h2><a href="[val url]">[val title]</a></h2>
+             [val content unescaped]
+             <a href="[val url]" class="more">[val urlText]</a>
+           </div>
+           
+        [endlist]
+      [endif]
       ##
     }
   }
@@ -111,7 +128,7 @@ resourcetype jarticle : jdocument {
             <resource:comments />
         </div>
         <div id="right-content">
-           <comp:box-fields />
+           <comp:box-list-side />
          </div>
       </body>
     </html>
@@ -125,6 +142,8 @@ resourcetype jarticle : jdocument {
     download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),
     media-ref: (en : "Media file", no : "Mediefil", nn : "Mediefil"),
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
-    published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt")
+    published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte")
   }
 }

@@ -168,16 +168,16 @@ resourcetype jperson {
       ##
     }
 
-    foo {
+    projects {
        ##
-       [def query "uri = /json/* AND type IN file"]
+       [def query "uri = /* AND type IN jproject"]
        [def result search query]
        [if result]
        <ul>
        [list result res]
-         [def title resource-prop res "title"]
+         [def name resource-prop res "participants"]
          [def uri view-url res]
-         <li><a href="[val uri]">[val title]</a></li>
+         <li><a href="[val uri]">[val name]</a></li>
        [endlist]
        </ul>
        [endif]

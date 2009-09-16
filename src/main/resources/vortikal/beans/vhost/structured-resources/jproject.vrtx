@@ -1,20 +1,25 @@
 resourcetype jproject {
+
   properties {
 	name : string,
 	introduction : simple_html,
-	status : string,
 	picture : image_ref,
-	projectLeader : string,
-	participants :  string multiple,
-	homepage : string,
-	rssFeeds : string multiple,
+	status : string,
+	content : html,
 	tags : string multiple,
-	content : html
+    contactInfo : simple_html,
+	projectLeader : string,
+	participants : string multiple,
+	homepage : string,
+	rssFeeds : string multiple
   }
   
   edit-rules {
     group introImage (introduction, picture) (after name) horizontal,
-    group theParticipants (projectLeader, participants) (after status) horizontal
+    group theParticipants (projectLeader, participants) (after status) horizontal,
+    content (after status),
+    tags (after content),
+    contactInfo (after tags)
   }
 
   scripts {
@@ -111,6 +116,7 @@ resourcetype jproject {
           <resource:tags />
         </div>
         <div id="right-content">
+            <json:field select="contactInfo" />
             <comp:box-leader-participants />
             <comp:box-feeds />
         </div>
@@ -131,6 +137,7 @@ resourcetype jproject {
     homepage : (en : "Homepage", no : "Hjemmeside", nn : "Hjemmeside"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    content : (en : "Content", no :"Innhold",nn:"Innhold")
+    content : (en : "Content", no :"Innhold",nn : "Innhold"),
+    contactInfo : (en : "Contact info", no : "Kontakt info", nn : "Kontakt info")
   }
 }

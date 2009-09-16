@@ -9,11 +9,11 @@ resourcetype jperson {
            eval (firstName + " " + surname) overrides title,
     position : string external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
-    visitingAddress : string multiple,
-    email : string multiple external:userMetadataLdapService,
     phone : string multiple external:userMetadataLdapService,
+    email : string multiple external:userMetadataLdapService,
     picture : image_ref, 
     pressPhoto : image_ref,
+    visitingAddress : string multiple,
     availableHours : string,
     room : string,
     rssFeeds : string multiple,
@@ -25,8 +25,17 @@ resourcetype jperson {
   }
 
   edit-rules {
-	group images (picture, pressPhoto) (after phone) horizontal,
-	group hoursRoom (availableHours, room) (after images) horizontal 
+	group images (picture, pressPhoto) (after email) horizontal,
+	group hoursRoom (availableHours, room) (after images) horizontal,
+	position (after username),
+	postalAddress (after surname),
+	phone (after postalAddress),
+	email (after phone),
+	visitingAddress (after images),
+	content (after hoursRoom),
+	tags (after content),
+	selectedPublications (after tags),
+	getExternalScientificInformation (after selectedPublications)
   }
 
   scripts {
@@ -202,10 +211,9 @@ resourcetype jperson {
           <comp:scientific-info />
         </div>
         <div id="right-content">
-            <comp:box-feeds /> 
+            <comp:box-feeds />  
         </div>
       </div>
-      <comp:foo />
       </body>
     </html>
     ##

@@ -70,30 +70,36 @@ resourcetype jperson {
             [def document structured-document]
             [if email]
               [def emails json-attr document "properties.email"]
+              [if emails]
               [list emails theemail]
                <tr><td>[localized "email"]:&nbsp;</td>
                <td>
                 [val theemail]
                </td></tr>
               [endlist]
+              [endif]
             [endif]
             [if phone]
              [def phones json-attr document "properties.phone"]
+             [if phones]
              [list phones thephone]
               <tr><td>[localized "phone"]:&nbsp;</td>
               <td>
                [val thephone]
               </td></tr>
              [endlist]
+             [endif]
             [endif]
             [if visitingAddress]
              [def visitingAddresses json-attr document "properties.visitingAddress"]
+             [if visitingAddresses]
              [list visitingAddresses visitingAddressesLine]
               <tr><td>[localized "visitingAddress"]:&nbsp;</td>
               <td>
                [val visitingAddressesLine]
               </td></tr>
              [endlist]
+             [endif]
             [endif]
             [if room]
               <tr><td>[localized "room"]:&nbsp;</td><td>[val room]</td></tr>
@@ -103,12 +109,14 @@ resourcetype jperson {
             [endif]
             [if postalAddress]
               [def postalAddresses json-attr document "properties.postalAddress"]
+              [if postalAddresses]
               [list postalAddresses postalAddressesLine]
                 <tr><td>[localized "postalAddress"]:&nbsp;</td>
                 <td> 
                   [val postalAddressesLine]
                 </td></tr>
               [endlist]
+              [endif]
             [endif]
         </tbody>
         </table>
@@ -118,17 +126,19 @@ resourcetype jperson {
     box-feeds {
       ##
         [resource-props "."]
-        [def document structured-document]
-        [def feeds json-attr document "properties.rssFeeds"]
-        [if feeds]
-        [list feeds feed]
-            <div class="narrow-box-borders">
-               [def title json-attr feed "title"]
-               <h2>[if title][val title][endif]</h2>
-               [def url json-attr feed "url"]
-               [if url]TODO: invoke RSS component ... [val url][endif]
-            </div>
-        [endlist]
+        [if rssFeeds]
+            [def document structured-document]
+            [def feeds json-attr document "properties.rssFeeds"]
+            [if feeds]
+                [list feeds feed]
+                    <div class="narrow-box-borders">
+                       [def thetitle json-attr feed "title"]
+                       <h2>[if thetitle][val thetitle][endif]</h2>
+                       [def theurl json-attr feed "url"]
+                       [if theurl]TODO: invoke RSS component ... [val theurl][endif]
+                    </div>
+                [endlist]
+            [endif]
         [endif]
       ##
     }

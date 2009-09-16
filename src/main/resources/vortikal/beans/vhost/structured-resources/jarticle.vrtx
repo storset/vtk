@@ -3,7 +3,6 @@ resourcetype jarticle : jdocument {
   properties {
     media-ref : media_ref,
     author : string,
-    published-date : datetime,
     tags : string multiple,
     box-list-side : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple
   }
@@ -121,7 +120,6 @@ resourcetype jarticle : jdocument {
             <comp:media-refs />
             <div class="vrtx-byline">
               <comp:author />
-              <comp:published-date />
             </div>
             <json:field select="content" />
             <resource:tags />

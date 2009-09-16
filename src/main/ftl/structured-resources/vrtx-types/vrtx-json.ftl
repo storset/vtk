@@ -1,15 +1,16 @@
 <#macro printPropertyEditView title inputFieldName elem tooltip="" id="" inputFieldSize=20>
-<div class="vrtx-json" id="${id}">
-  <h2 class="vrtx-title">${title}</h2>
+<div class="vrtx-json" >
+  <fieldset id="${id}">
+  <legend>${title}</legend>
     <#local counter = 0 />
 
     <#if !elem.value?exists>
-    	  <div class="vrtx-json-element">
-	      <#list elem.description.attributes as jsonAttr>
-			<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  	 
-			<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName "" elem />                              
-	      </#list>      
-      	</div>
+	  <div class="vrtx-json-element">
+      <#list elem.description.attributes as jsonAttr>
+		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  	 
+		<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName "" elem />                              
+      </#list>      
+  	  </div>
     <#elseif !elem.valueIsList() >
     	<div class="vrtx-json-element">
         <#list elem.value?keys as jsonAttr >	
@@ -18,11 +19,10 @@
         </#list>
       	</div>    
     <#else>
-    	
       	<#list elem.value as map>
       	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
       	  	<input type="button" class="vrtx-remove-button" value="Slett" onClick="$('#vrtx-json-element-${counter}').remove()" />
-        <#list elem.description.attributes as jsonAttr>
+        	<#list elem.description.attributes as jsonAttr>
 	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  
 	          <#if map[jsonAttr]?exists >
 				<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName map[jsonAttr] elem />          
@@ -30,13 +30,12 @@
 	          	<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName "" elem />    
 	          </#if>
 	        </#list>
-        
         </div>
         <#local counter = counter + 1 />
       </#list>
       </#if>
   <div class="tooltip">${tooltip}</div>
-</div>
+</fieldset>
 </#macro>
 <#macro jizz type jsonAttr tmpName value elem >
 	<#switch type >

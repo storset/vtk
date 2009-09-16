@@ -7,30 +7,28 @@
   	LIST_OF_JSON_ELEMENTS = new Array();
   
   	$(document).ready(function() {   
-	   	<#assign i = 0 />
-		<#list form.elements as elementBox>	
-		  <#assign j = 0 />
-		  <#list elementBox.formElements as elem>
-		      <#if elem.description.type == "json" >
-		      	
-		LIST_OF_JSON_ELEMENTS[${i}] = new Object();
-		LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
-		LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
-		LIST_OF_JSON_ELEMENTS[${i}].a = new Array();
+<#assign i = 0 />
+<#list form.elements as elementBox>	
+  <#assign j = 0 />
+  <#list elementBox.formElements as elem>
+      <#if elem.description.type == "json" && elem.valueIsList()  >
+			LIST_OF_JSON_ELEMENTS[${i}] = new Object();
+			LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
+			LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
+			LIST_OF_JSON_ELEMENTS[${i}].a = new Array();
 
-			    <#list elem.description.attributes as jsonAttr>
-		LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
-		LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr}";	      
-		LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.getType(jsonAttr)}";
-				    <#assign j = j + 1 />	
-		  	    </#list>
-		  		<#assign i = i + 1 />	
-		  	   </#if>      
-		 	 </#list>
-		  </#list>
-		
+		<#list elem.description.attributes as jsonAttr>
+			LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
+			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr}";	      
+			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.getType(jsonAttr)}";
+		    <#assign j = j + 1 />	
+  	    </#list>
+  		<#assign i = i + 1 />	
+  	   </#if>      
+ 	 </#list>
+  </#list>	
 		for(i in LIST_OF_JSON_ELEMENTS){
-  			$("#" + LIST_OF_JSON_ELEMENTS[i].name).after("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonShit(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"Flere\" />");  		
+  			$("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonShit(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"Flere\" />");  		
   		}		
   	});
   	
@@ -70,7 +68,7 @@
 	   } 
 	   
 	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"Slett\" onClick=\"$('#vrtx-json-element-" + counter + "').remove()\" \/>"
-	   $("#" + j.name).append("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + counter + "\">" + deleteButton +  htmlTemplate + "<\/div>");
+	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + counter + "\">" + deleteButton +  htmlTemplate + "<\/div>");
 	   
 	   // Bootstrap f*@!ck.........
 	   

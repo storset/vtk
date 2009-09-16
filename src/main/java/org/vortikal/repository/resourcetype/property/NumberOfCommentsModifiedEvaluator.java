@@ -39,25 +39,8 @@ import org.vortikal.repository.store.CommentDAO;
 public class NumberOfCommentsModifiedEvaluator implements PropertyEvaluator {
 
     private CommentDAO commentDAO;
-    
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
-//        if (value == null) {
-//            return false;
-//        }
-//
-//        if (!(value instanceof Integer)) {
-//            throw new PropertyEvaluationException("Value must be of type INTEGER, "
-//                    + "was instead " + value.getClass());
-//        }
-//
-//        Integer numberOfComments = (Integer) value;
-//
-//        if (numberOfComments < 1) {
-//            return false;
-//        }
-//
-//        property.setIntValue(numberOfComments.intValue());
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
         int numberOfComments = commentDAO.getNumberOfComments(ctx.getNewResource());
         if (numberOfComments < 1) {
             return false;
@@ -65,8 +48,9 @@ public class NumberOfCommentsModifiedEvaluator implements PropertyEvaluator {
         property.setIntValue(numberOfComments);
         return true;
     }
-    
-    @Required public void setCommentDAO(CommentDAO commentDAO) {
+
+    @Required
+    public void setCommentDAO(CommentDAO commentDAO) {
         this.commentDAO = commentDAO;
     }
 

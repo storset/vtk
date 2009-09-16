@@ -1,4 +1,5 @@
 resourcetype jdisputas : jevent {
+
   properties {
     firstName : string,
     surname : string,
@@ -18,13 +19,26 @@ resourcetype jdisputas : jevent {
 
   view {
     ##
-    <html>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
+        <!-- begin css -->
+        <!-- end css -->
         <title><comp:title /></title>
       </head>
       <body>       
+        <div id="content">
         <h1><comp:title /></h1>
-        <comp:introduction />
+         <div id="left-content">
+            <comp:introduction-image />
+            <comp:introduction />
+            <div class="vrtx-byline">
+              <comp:time-and-place />
+            </div>
+            <json:field select="content" />
+            <resource:tags />
+        </div>
+       </div>
       </body>
     </html>
     ##

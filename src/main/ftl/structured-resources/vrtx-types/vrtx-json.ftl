@@ -3,17 +3,20 @@
   <h2 class="vrtx-title">${title}</h2>
     <#local counter = 0 />
 
-    <#if !elem.value?exists || !elem.valueIsList() >
+    <#if !elem.value?exists>
     	  <div class="vrtx-json-element">
-    	<#if !elem.valueIsList() >
-    		blash!
-    	</#if>
-      <#list elem.description.attributes as jsonAttr>
-        ${jsonAttr} : 
-        <input type="text" name="${inputFieldName}.${jsonAttr}.${counter}"
-               id="${inputFieldName}.${jsonAttr}.${counter}" />
-      </#list>      
+	      <#list elem.description.attributes as jsonAttr>
+			<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  	 
+			<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName "" elem />                              
+	      </#list>      
       	</div>
+    <#elseif !elem.valueIsList() >
+    	<div class="vrtx-json-element">
+        <#list elem.value?keys as jsonAttr >	
+        	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  	             
+               <@jizz elem.description.getType(jsonAttr) jsonAttr tmpName elem.value[jsonAttr] elem /> 
+        </#list>
+      	</div>    
     <#else>
     	
       	<#list elem.value as map>

@@ -1,7 +1,7 @@
 <#-- 
 	Evil hack(s) alert! 
 -->
-<#macro script>
+<#macro script >
 <script language="Javascript" type="text/javascript">
   
   	LIST_OF_JSON_ELEMENTS = new Array();
@@ -11,8 +11,8 @@
 		<#list form.elements as elementBox>	
 		  <#assign j = 0 />
 		  <#list elementBox.formElements as elem>
-		      <#if elem.description.type == "json">
-		      
+		      <#if elem.description.type == "json" >
+		      	
 		LIST_OF_JSON_ELEMENTS[${i}] = new Object();
 		LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
 		LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";

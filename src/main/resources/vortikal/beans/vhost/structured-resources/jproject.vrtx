@@ -8,24 +8,23 @@ resourcetype jproject {
 	content : html,
 	tags : string multiple,
     contactInfo : simple_html,
-	projectLeader : string,
-	participants : string multiple,
+	projectLeader : json ( name : string, url : string ),
+	participants : json ( name : string, url : string ) multiple,
 	homepage : string,
-	rssFeeds : string multiple
+	rssFeeds : json ( title : string, url : string ) multiple
   }
   
   edit-rules {
     group introImage (introduction, picture) (after name) horizontal,
-    group theParticipants (projectLeader, participants) (after status) horizontal,
+    projectLeader (after contactInfo),
+    participants (after projectLeader),
     content (after status),
     tags (after content),
     contactInfo (after tags)
   }
 
   scripts {
-  	tags autocomplete (minChars : "1"),
-	participants multipleinputfields,
-	rssFeeds multipleinputfields
+  	tags autocomplete (minChars : "1")
   }
     
   view-components {
@@ -62,35 +61,61 @@ resourcetype jproject {
     
     box-leader-participants {
       ##
+      [resource-props "."]
+       [if participants]
        <div class="narrow-box-borders">
          <h2>[localized "participants"]</h2>
          <ul id="vrtx-project-participants">
-         [def leader resource-prop "." "projectLeader"]
-         [if leader]
-           <li>[val leader] ([localized "projectLeaderComp"])</li>
-         [endif]
-       
-         [def document structured-document]
-         [def participants json-attr document "properties.participants"]
-         [list participants participant]
-           <li>[val participant]</li>
-         [endlist]
+         
+             [def document structured-document]
+             [def leader json-attr document "properties.projectLeader"]
+             [def participants json-attr document "properties.participants"]
+             
+             [def theleadername json-attr leader "name"]
+             [def theleaderurl json-attr leader "url"]
+             
+             [if theleadername]
+                   [if theleaderurl]
+                     <li><a href="[val theleaderurl]">[val theleadername]</a>&nbsp;([localized "projectLeaderComp"])</li>
+                   [else]
+                     <li>[val theleadername]</li>
+                   [endif]
+             [endif]
+
+             [list participants participant]
+               [def thename json-attr participant "name"]
+               [def theurl json-attr participant "url"]
+               [if thename]
+                   [if theurl]
+                     <li><a href="[val theurl]">[val thename]</a></li>
+                   [else]
+                     <li>[val thename]</li>
+                   [endif]
+               [endif]
+             [endlist]
          </ul>
        </div>
+       [endif]
       ##
     }
     
-   box-feeds {
+    box-feeds {
       ##
         [resource-props "."]
-        [def document structured-document]
-        [def feeds json-attr document "properties.rssFeeds"]
-        [list feeds url]
-            <div class="narrow-box-borders">
-               <h2>Feed tittel</h2>
-               [val url]
-            </div>
-        [endlist]
+        [if rssFeeds]
+            [def document structured-document]
+            [def feeds json-attr document "properties.rssFeeds"]
+            [if feeds]
+                [list feeds feed]
+                    <div class="narrow-box-borders">
+                       [def thetitle json-attr feed "title"]
+                       <h2>[if thetitle][val thetitle][endif]</h2>
+                       [def theurl json-attr feed "url"]
+                       [if theurl]TODO: invoke RSS component ... [val theurl][endif]
+                    </div>
+                [endlist]
+            [endif]
+        [endif]
       ##
     }
     

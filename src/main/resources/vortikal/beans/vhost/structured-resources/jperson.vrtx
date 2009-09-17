@@ -28,6 +28,7 @@ resourcetype jperson {
   edit-rules {
 	group images (picture, pressPhoto) (after email) horizontal,
 	group hoursRoom (availableHours, room) (after images) horizontal,
+	username (size[8]),
 	position (after username),
 	postalAddress (after surname),
 	phone (after postalAddress),

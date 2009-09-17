@@ -151,15 +151,8 @@
   </bean>
   
   <bean id="structuredResources.displayView" class="org.vortikal.web.decorating.TemplateView">
-    <!--
-    <property name="templateManager" ref="structuredResources.templateManager" />
-    -->
     <property name="templateRef" value="structured-resources.template" />
-
     <property name="templateManager" ref="article.templateManager" />
-    <!--
-    <property name="templateRef" value="article.template" />
-    -->
   </bean>
   
   <bean id="structuredResources.editView" parent="freemarkerView">

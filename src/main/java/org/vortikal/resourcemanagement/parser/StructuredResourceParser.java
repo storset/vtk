@@ -30,11 +30,8 @@
  */
 package org.vortikal.resourcemanagement.parser;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +43,6 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.lang.LocaleUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
@@ -60,7 +56,6 @@ import org.vortikal.resourcemanagement.StructuredResourceManager;
 @SuppressWarnings("unchecked")
 public class StructuredResourceParser implements InitializingBean {
 
-    private String resourceDescriptionFileLocation;
     private Resource defaultResourceTypeDefinitions;
     private StructuredResourceManager structuredResourceManager;
     private List<ParsedResourceDescription> parsedResourceDescriptions;
@@ -116,8 +111,7 @@ public class StructuredResourceParser implements InitializingBean {
             for (String m : messages) {
                 mainMessage.append(m);
             }
-            throw new IllegalStateException("Unable to parse resource tree description: "
-                    + resourceDescriptionFileLocation + ": " + mainMessage.toString());
+            throw new IllegalStateException("Unable to parse resource tree description: " + mainMessage.toString());
         }
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
@@ -208,15 +202,15 @@ public class StructuredResourceParser implements InitializingBean {
             if (viewComponentDescription.getChildren().size() >= 1) {
                 String name = viewComponentDescription.getText();
                 String def = viewComponentDescription.getChild(0).getText();
-				ComponentDefinition compDef = new ComponentDefinition(name, def);
+                ComponentDefinition compDef = new ComponentDefinition(name, def);
                 List<String> parameters = new ArrayList<String>();
-				if (viewComponentDescription.getChildCount() > 1) {
-					for (int i = 1; i < viewComponentDescription.getChildCount(); i++) {
-						String param = viewComponentDescription.getChild(i).getText();
-						parameters.add(param);
-					}
-					compDef.setParameters(parameters);
-				}
+                if (viewComponentDescription.getChildCount() > 1) {
+                    for (int i = 1; i < viewComponentDescription.getChildCount(); i++) {
+                        String param = viewComponentDescription.getChild(i).getText();
+                        parameters.add(param);
+                    }
+                    compDef.setParameters(parameters);
+                }
                 srd.addComponentDefinition(compDef);
             }
         }
@@ -241,30 +235,17 @@ public class StructuredResourceParser implements InitializingBean {
      */
     private InputStream getResourceTypeDefinitionAsStream(String filename) throws IOException {
         InputStream in = null;
-        if (!StringUtils.isBlank(this.resourceDescriptionFileLocation)) {
-            if (this.resourceDescriptionFileLocation.matches("^(http(s?)\\:\\/\\/|www)\\S*")) {
-                URL url = new URL(this.resourceDescriptionFileLocation);
-                in = url.openStream();
-            } else {
-                in = new BufferedInputStream(new FileInputStream(this.resourceDescriptionFileLocation));
-            }
+        if (filename != null) {
+            Resource relativeResource = this.defaultResourceTypeDefinitions.createRelative(filename);
+            in = relativeResource.getInputStream();
         } else {
-            if (filename != null) {
-                Resource relativeResource = this.defaultResourceTypeDefinitions.createRelative(filename);
-                in = relativeResource.getInputStream();
-            } else {
-                in = this.defaultResourceTypeDefinitions.getInputStream();
-            }
+            in = this.defaultResourceTypeDefinitions.getInputStream();
         }
         return in;
     }
 
     public StructuredResourceDescription getResourceDescription(String name) {
         return this.structuredResourceManager.get(name);
-    }
-
-    public void setResourceDescriptionFileLocation(String resourceDescriptionFileLocation) {
-        this.resourceDescriptionFileLocation = resourceDescriptionFileLocation;
     }
 
     @Required

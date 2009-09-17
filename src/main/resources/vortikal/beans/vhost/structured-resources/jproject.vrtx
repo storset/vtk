@@ -8,10 +8,10 @@ resourcetype jproject {
 	content : html,
 	tags : string multiple,
     contactInfo : simple_html,
-	projectLeader : json ( name : string, url : string ),
-	participants : json ( name : string, url : string ) multiple,
+	projectLeader : json ( participantName : string, participantUrl : string ),
+	participants : json ( participantName : string, participantUrl : string ) multiple,
 	homepage : string,
-	rssFeeds : json ( title : string, url : string ) multiple
+	rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple
   }
   
   edit-rules {
@@ -71,8 +71,8 @@ resourcetype jproject {
              [def leader json-attr document "properties.projectLeader"]
              [def participants json-attr document "properties.participants"]
              
-             [def theleadername json-attr leader "name"]
-             [def theleaderurl json-attr leader "url"]
+             [def theleadername json-attr leader "participantName"]
+             [def theleaderurl json-attr leader "participantUrl"]
              
              [if theleadername]
                    [if theleaderurl]
@@ -83,8 +83,8 @@ resourcetype jproject {
              [endif]
 
              [list participants participant]
-               [def thename json-attr participant "name"]
-               [def theurl json-attr participant "url"]
+               [def thename json-attr participant "participantName"]
+               [def theurl json-attr participant "participantUrl"]
                [if thename]
                    [if theurl]
                      <li><a href="[val theurl]">[val thename]</a></li>
@@ -120,8 +120,8 @@ resourcetype jproject {
             [if feeds]
                 [list feeds feed]
                     <div class="narrow-box-borders">
-                       [def thetitle json-attr feed "title"]
-                       [def theurl json-attr feed "url"]
+                     [def thetitle json-attr feed "rssTitle"]
+                     [def theurl json-attr feed "rssUrl"]
                        
                      [if thetitle]  
                        [if theurl]
@@ -179,8 +179,12 @@ resourcetype jproject {
     projectLeaderComp : (en : "projectleader", no : "prosjektleder", nn : "prosjektleiar"),
     projectLeader : (en : "Projectleader", no : "Prosjektleder", nn : "Prosjektleiar"),
     participants : (en : "Participants", no : "Deltakere", nn : "Deltakere"),
-    homepage : (en : "Homepage", no : "Hjemmeside", nn : "Hjemmeside"),
+    participantName : (en : "Name",no : "Navn", nn :"Namn"),
+    participantUrl : (en : "Link",no : "Lenke", nn :"Lenke"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmer"),
+    rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
+    rssUrl : (en : "RSS link",no : "RSS lenke", nn :"RSS lenke"),
+    homepage : (en : "Homepage", no : "Hjemmeside", nn : "Hjemmeside"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
     contactInfo : (en : "Contact information", no : "Kontaktinformasjon", nn : "Kontaktinformasjon")

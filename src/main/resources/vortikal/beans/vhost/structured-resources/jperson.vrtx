@@ -16,8 +16,8 @@ resourcetype jperson {
     visitingAddress : string multiple,
     availableHours : string,
     room : string,
-    rssFeeds : json ( title : string, url : string ) multiple,
-    projects : json ( name : string, url : string ) multiple, 
+    rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple,
+    projects : json ( projectName : string, projectUrl : string ) multiple, 
     tags : string multiple,
     content : html,
     getExternalScientificInformation : boolean,
@@ -138,8 +138,8 @@ resourcetype jperson {
             [if feeds]
                 [list feeds feed]
                     <div class="narrow-box-borders">
-                       [def thetitle json-attr feed "title"]
-                       [def theurl json-attr feed "url"]
+                       [def thetitle json-attr feed "rssTitle"]
+                       [def theurl json-attr feed "rssUrl"]
                        
                      [if thetitle]  
                        [if theurl]
@@ -302,7 +302,11 @@ resourcetype jperson {
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmar"),
+    rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
+    rssUrl : (en : "RSS link",no : "RSS lenke", nn :"RSS lenke"),
     projects : (en : "Projects",no : "Prosjekter", nn :"Prosjektar"),
+    projectName : (en : "Project name",no : "Prosjektnavn", nn :"Prosjektnamn"), 
+    projectUrl : (en : "Project link",no : "Prosjektlenke", nn :"Prosjeklenke"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilde"),
     room : (en : "Room", no : "Rom", nn : "Rom")
   }

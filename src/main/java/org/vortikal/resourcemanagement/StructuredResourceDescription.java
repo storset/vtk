@@ -53,6 +53,7 @@ public final class StructuredResourceDescription {
 
     private List<ComponentDefinition> componentDefinitions = new ArrayList<ComponentDefinition>();
     private HashMap<String, HashMap<Locale, String>> localization = new HashMap<String, HashMap<Locale, String>>();
+    private HashMap<String, HashMap<Locale, String>> tooltips = new HashMap<String, HashMap<Locale, String>>();
 
     public StructuredResourceDescription(StructuredResourceManager manager) {
         this.manager = manager;
@@ -163,6 +164,10 @@ public final class StructuredResourceDescription {
 
     public void addLocalization(String name, Map<Locale, String> m) {
         localization.put(name, (HashMap<Locale, String>) m);
+    }
+    
+    public void addTooltips(String name, Map<Locale, String> m) {
+        tooltips.put(name, (HashMap<Locale, String>) m);
     }
 
     public Map<String, HashMap<Locale, String>> getAllLocalization() {

@@ -2,6 +2,7 @@
 	Evil hack(s) alert! 
 -->
 <#macro script >
+<#local locale = springMacroRequestContext.getLocale() />
 <script language="Javascript" type="text/javascript">
   
   	LIST_OF_JSON_ELEMENTS = new Array();
@@ -21,6 +22,7 @@
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr}";	      
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.getType(jsonAttr)}";
+			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr, locale, null)}";
 		    <#assign j = j + 1 />	
   	    </#list>
   		<#assign i = i + 1 />	
@@ -98,7 +100,7 @@
 		htmlTemplate +=	'<div class=\"tooltip\">{tooltip}<\/div>';
 		htmlTemplate +=	'<\/div>';
 		
-		return processHtmlTemplate(elem.name,"vrtx-string",htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.title,"vrtx-string",htmlTemplate,inputFieldName);
 	}
 	
 	function addHtmlField(elem,inputFieldName,counter){
@@ -116,7 +118,7 @@
 			var classes = "vrtx-html";
 		}
 		
-		return processHtmlTemplate(elem.name,classes,htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.title,classes,htmlTemplate,inputFieldName);
 	}
 	
 	function addBooleanField(elem,inputFieldName,counter){
@@ -130,7 +132,7 @@
       	htmlTemplate +=	'<label for=\"{inputFieldName}-false\">False<\/label>';
   		htmlTemplate += '<\/div><\/div>';
   		
-  		return processHtmlTemplate(elem.name,"vrtx-radio",htmlTemplate,inputFieldName);
+  		return processHtmlTemplate(elem.title,"vrtx-radio",htmlTemplate,inputFieldName);
 	}
 	
 	function addImageRef(elem,inputFieldName,counter){
@@ -146,7 +148,7 @@
 		htmlTemplate += '<img src=\"{value}?vrtx=thumbnail\" alt=\"Preview image\" \/>';
 		htmlTemplate += '<\/div><\/div>';
 		
-		return processHtmlTemplate(elem.name,"vrtx-image-ref",htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.title,"vrtx-image-ref",htmlTemplate,inputFieldName);
 	}
 	
 	function addDateField(elem,inputFieldName,counter){
@@ -159,7 +161,7 @@
 		htmlTemplate += '<div class=\"tooltip\">{tooltip}<\/div>';
 		htmlTemplate += '<\/div>';
 		
-		return processHtmlTemplate(elem.name,"vrtx-string date",htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.title,"vrtx-string date",htmlTemplate,inputFieldName);
 	}
 
 	function addMediaRef(elem,inputFieldName,counter){
@@ -173,7 +175,7 @@
 		htmlTemplate += '<img src=\"\" \/>';
 		htmlTemplate += '<\/div><\/div>'
 		
-		return processHtmlTemplate(elem.name,"vrtx-media-ref",htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.title,"vrtx-media-ref",htmlTemplate,inputFieldName);
 	}
 
 	function processHtmlTemplate(name,classes,template,inputFieldName){

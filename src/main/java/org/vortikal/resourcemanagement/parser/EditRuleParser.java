@@ -31,9 +31,13 @@
 package org.vortikal.resourcemanagement.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.apache.commons.lang.LocaleUtils;
 import org.vortikal.repository.resource.ResourcetreeLexer;
 import org.vortikal.resourcemanagement.EditRule;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
@@ -67,6 +71,8 @@ public class EditRuleParser {
                             srd.addEditRule(new EditRule(propName, EditRuleType.EDITHINT,
                                     editRule.getText()));
                             break;
+                        case ResourcetreeLexer.TOOLTIP:
+                            handleTooltip(srd,editRuleDescriptions);
                         default:
                             break;
                         }
@@ -113,6 +119,10 @@ public class EditRuleParser {
             srd.addEditRule(new EditRule(groupingName, EditRuleType.EDITHINT,
                     oriantationElement.getText()));
         }
+    }
+    
+    private void handleTooltip(StructuredResourceDescription srd, List<CommonTree> tooltipDescriptions) {
+        
     }
 
 }

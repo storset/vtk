@@ -136,6 +136,8 @@ editruledef
 		-> ^(NAME ^(position)? ^(edithint)?)
 	|	GROUP NAME namelist (position)? (ORIENTATION)?
 		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIENTATION)?)
+	|	NAME TOOLTIP LP (namevaluepair (COMMA namevaluepair)*) RP
+		-> ^(NAME ^(TOOLTIP (namevaluepair)*))
 	;
 
 editrules

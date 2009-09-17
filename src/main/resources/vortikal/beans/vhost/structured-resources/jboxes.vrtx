@@ -5,6 +5,13 @@ resourcetype jboxes {
     box-list : json ( title : string, content : html ) multiple,
     simplebox : json ( foo : string, bar : html) 
   }
+	
+	
+  edit-rules {
+  	simplebox tooltip (en : "Tooltip", no : "Tips", nn : "Taps"),
+    title tooltip (en : "Title", no : "Tittel", nn : "Tittel"),
+    box-list tooltip (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser")
+  }
 
   view-components {
     box-list (first-param, second-param) {
@@ -48,6 +55,7 @@ resourcetype jboxes {
     localization {
     	title : (en : "Title", no : "Tittel", nn : "Tittel"),
     	box-list : (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser"),
-    	simplebox : (en : "Simple box", no : "Enkel boks", nn : "Enkel boks")
+    	simplebox : (en : "Simple box", no : "Enkel boks", nn : "Enkel boks"),
+    	content : (en : "Content", no : "Innhold", nn : "Innhold")
     }
 }

@@ -149,6 +149,7 @@ public class DisplayClassPathResourceController
             	inStream = connection.getInputStream();
             } else if (resource instanceof FileSystemResource) {
             	File file = resource.getFile();
+            	inStream = resource.getInputStream();
             	contentLength = (int) file.length();
             } else {
             	inStream = resource.getInputStream();

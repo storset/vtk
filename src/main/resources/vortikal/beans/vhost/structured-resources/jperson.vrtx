@@ -67,65 +67,78 @@ resourcetype jperson {
 
     contact-information {
       ##
-        <table class="contact-info" summary="contact-info">
-        <tbody>
-            [resource-props "."]
+          [resource-props "."]
+            <div id="contact-info">
             [def document structured-document]
             [if email]
               [def emails resource-prop "." "email"]
               [if emails]
-                  <tr><td>[localized "email"]:&nbsp;</td></tr>
-                  [list emails theemail]
-                  <tr>
-                   <td>&nbsp;</td>
-                   <td>
-                    [val theemail]
-                   </td>
-                  </tr>
-                  [endlist]
+                 <div class="box">
+                  <div class="box-thirds">[localized "email"]:&nbsp;</div>
+                  <div class="box-two-thirds">
+                    [list emails theemail]            
+                      [if theemail][val theemail]<br />[endif]
+                    [endlist]
+                   </div>
+                 </div>
               [endif]
             [endif]
             [if phone]
              [def phones resource-prop "." "phone"]
              [if phones]
-             <tr><td>[localized "phone"]:&nbsp;</td></tr>
-             [list phones thephone]            
-              <tr><td>&nbsp;</td><td>
-               [val thephone]
-              </td></tr>
-             [endlist]
+               <div class="box">
+                  <div class="box-thirds">[localized "phone"]:&nbsp;</div>
+                  <div class="box-two-thirds">
+                    [list phones thephone]            
+                      [if thephone][val thephone]<br />[endif]
+                    [endlist]
+                   </div>
+                 </div>
              [endif]
             [endif]
             [if visitingAddress]
              [def visitingAddresses resource-prop "." "visitingAddress"]
              [if visitingAddresses]
-             <tr><td>[localized "visitingAddress"]:&nbsp;</td></tr>
-             [list visitingAddresses visitingAddressesLine]
-              <tr><td>&nbsp;</td><td>
-               [val visitingAddressesLine]
-              </td></tr>
-             [endlist]
+              <div class="box">
+                  <div class="box-thirds">[localized "visitingAddress"]:&nbsp;</div>
+                  <div class="box-two-thirds">
+                    [list visitingAddresses thevisitingAddress]            
+                      [if thevisitingAddress][val thevisitingAddress]<br />[endif]
+                    [endlist]
+                   </div>
+                 </div>
              [endif]
             [endif]
             [if room]
-              <tr><td>[localized "room"]:&nbsp;</td><td>[val room]</td></tr>
+              <div class="box">
+                  <div class="box-thirds">[localized "room"]:&nbsp;</div>
+                  <div class="box-two-thirds">      
+                      [if room][val room][endif]
+                  </div>
+              </div>
             [endif]
             [if availableHours]
-              <tr><td>[localized "availableHours"]:&nbsp;</td><td>[val availableHours]</td></tr>
+              <div class="box">
+                  <div class="box-thirds">[localized "availableHours"]:&nbsp;</div>
+                  <div class="box-two-thirds">      
+                      [if availableHours][val availableHours][endif]
+                  </div>
+              </div>
             [endif]
             [if postalAddress]
               [def postalAddresses resource-prop "." "postalAddress"]
               [if postalAddresses]
-                  <tr><td>[localized "postalAddress"]:&nbsp;</td></tr>
-                  [list postalAddresses postalAddressesLine]
-                    <tr><td>&nbsp;</td><td> 
-                      [val postalAddressesLine]
-                    </td></tr>
-                  [endlist]
+                 <div class="box">
+                  <div class="box-thirds">[localized "postalAddress"]:&nbsp;</div>
+                  <div class="box-two-thirds">
+                    [list postalAddresses thepostalAddress]            
+                      [if thepostalAddress][val thepostalAddress]<br />[endif]
+                    [endlist]
+                   </div>
+                 </div>
               [endif]
             [endif]
-        </tbody>
-        </table>
+          </div>  
       ##
     }
     
@@ -237,8 +250,17 @@ resourcetype jperson {
         [resource-props "."]
         [if scientificInformation]
         <h2>[localized "fridaPublications"]</h2>
-          [if selectedPublications][val selectedPublications unescaped][endif]
-          [if scientificInformation][val scientificInformation][endif]
+             <ul>     
+             [def publications resource-prop "." "scientificInformation"]
+
+             [list publications publication]
+
+               [if publication]
+                  <li>[val publication]</li>
+               [endif]
+               
+             [endlist]
+             </ul>
         [endif]
       ##
     }
@@ -282,6 +304,7 @@ resourcetype jperson {
   }
   
   localization {
+  
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
     getExternalPersonInfo : (en : "Get external information (ldap)", no : "Hent ekstern informasjon (ldap)", nn : "Hent ekstern informasjon (ldap)"),
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),

@@ -180,10 +180,10 @@ public final class StructuredResourceDescription {
     public String getLocalizedTooltip(String key, Locale locale){
         HashMap<Locale, String> tooltipMap = this.getAllLocalizedTooltips().get(key);
         if (tooltipMap == null) {
-            return key;
+            return "";
         }
         String localizedMessage = tooltipMap.get(new Locale(locale.getLanguage()));
-        return localizedMessage != null ? localizedMessage : key;
+        return localizedMessage != null ? localizedMessage : "";
     }
     
     public void addLocalization(String name, Map<Locale, String> m) {

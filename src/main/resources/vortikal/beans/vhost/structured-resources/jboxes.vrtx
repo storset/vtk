@@ -8,9 +8,9 @@ resourcetype jboxes {
 	
 	
   edit-rules {
-  	simplebox tooltip (en : "Tooltip", no : "Tips", nn : "Taps"),
-    title tooltip (en : "Title", no : "Tittel", nn : "Tittel"),
-    box-list tooltip (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser")
+  	simplebox tooltip (en : "Tooltip for simple box", no : "Tips for enkel boks", nn : "Taps for enekl boks"),
+    title tooltip (en : "Tooltip for title", no : "Tooltip for tittel", nn : "Tooltip for tittel"),
+    box-list tooltip (en : "Tooltip for box list", no : "Tooltip for liste med bokser", nn : "Tooltip for liste med bokser")
   }
 
   view-components {

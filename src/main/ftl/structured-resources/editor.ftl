@@ -85,7 +85,9 @@
          inputFieldName=elem.name 
          value=elem.getFormatedValue()
          classes=elem.name
-         inputFieldSize=fieldSize />
+         inputFieldSize=fieldSize 
+         tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+         />
         <#break>
       <#case "simple_html">
         <#assign cssclass =  elem.name + " vrtx-simple-html" />
@@ -96,7 +98,9 @@
           title=localizedTitle 
           inputFieldName=elem.name 
           value=elem.value 
-          classes=cssclass />
+          classes=cssclass 
+          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          />
         <@fckEditor.insertEditor elem.name />
         <#break>
       <#case "html">
@@ -109,7 +113,9 @@
           title=localizedTitle 
           inputFieldName=elem.name 
           value=elem.value 
-          classes="vrtx-html " + elem.name  />
+          classes="vrtx-html " + elem.name  
+          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          />
         <@fckEditor.insertEditor elem.name true false />
         <#break>
       <#case "boolean">
@@ -117,7 +123,9 @@
           title=localizedTitle
           inputFieldName=elem.name 
           value=elem.value
-          classes=elem.name  />
+          classes=elem.name  
+          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          />
         <#break>
       <#case "image_ref">
         <@vrtxImageRef.printPropertyEditView 
@@ -125,7 +133,9 @@
           inputFieldName=elem.name 
           value=elem.value 
           baseFolder=resourceContext.parentURI
-          classes=elem.name />
+          classes=elem.name 
+          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          />
         <#break>          
       <#case "media_ref">
         <@vrtxMediaRef.printPropertyEditView 
@@ -133,21 +143,27 @@
           inputFieldName=elem.name 
           value=elem.value 
           baseFolder=resourceContext.parentURI
-          classes=elem.name  />
+          classes=elem.name  
+          tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+          />
         <#break>
       <#case "datetime">
        <@vrtxDateTime.printPropertyEditView 
         title=localizedTitle
         inputFieldName=elem.name 
         value=elem.value 
-        classes=elem.name  />
+        classes=elem.name  
+        tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+        />
         <#break>
       <#case "json">
        <@vrtxJSON.printPropertyEditView 
         title=localizedTitle
         inputFieldName=elem.name
         elem=elem
-        id=elem.name  />
+        id=elem.name  
+        tooltip=form.resource.getLocalizedTooltip(elem.name,locale)
+        />
         <#break>
       <#default>
         No editor available for element type ${elem.description.type}

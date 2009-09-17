@@ -4,7 +4,7 @@
 <div class="vrtx-json">
   <fieldset id="${id}">
   <legend>${title}</legend>
-    
+    <div class="tooltip">${tooltip}</div>
     <#local counter = 0 />
     <#local locale = springMacroRequestContext.getLocale() />
 
@@ -41,7 +41,6 @@
         <#local counter = counter + 1 />
       </#list>
       </#if>
-   <div class="tooltip">${tooltip}</div>
 </fieldset>
 
 </#macro>

@@ -72,7 +72,7 @@ public class EditRuleParser {
                                     editRule.getText()));
                             break;
                         case ResourcetreeLexer.TOOLTIP:
-                            handleTooltip(srd,editRuleDescriptions);
+                            handleTooltip(srd,editRuleDescription,propName);
                         default:
                             break;
                         }
@@ -121,8 +121,17 @@ public class EditRuleParser {
         }
     }
     
-    private void handleTooltip(StructuredResourceDescription srd, List<CommonTree> tooltipDescriptions) {
-        
+    private void handleTooltip(StructuredResourceDescription srd, CommonTree tooltipDescriptions, String propName) {
+        Map<Locale, String> tooltipMap = new HashMap<Locale, String>();
+        for (CommonTree tooltip : (List<CommonTree>) tooltipDescriptions.getChildren()) {
+            for(CommonTree lang : (List<CommonTree>) tooltip.getChildren()){
+                for(CommonTree tip : (List<CommonTree>) lang.getChildren()){
+                    Locale locale = LocaleUtils.toLocale(lang.getText());
+                    tooltipMap.put(locale, tip.getText());
+                }
+            }
+        }
+        srd.addTooltips(propName, tooltipMap);
     }
 
 }

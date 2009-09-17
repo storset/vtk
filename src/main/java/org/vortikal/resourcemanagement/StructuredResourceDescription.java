@@ -162,14 +162,35 @@ public final class StructuredResourceDescription {
         this.displayTemplate = displayTemplate;
     }
 
+
+    public void addTooltips(String name, Map<Locale, String> m) {
+        tooltips.put(name, (HashMap<Locale, String>) m);
+    }
+    
+    public Map<String, HashMap<Locale, String>> getAllLocalizedTooltips() {
+        Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
+        if (this.inheritsFrom != null) {
+            StructuredResourceDescription parent = this.manager.get(this.inheritsFrom);
+            locales.putAll(parent.getAllLocalizedTooltips());
+        }
+        locales.putAll(this.tooltips);
+        return locales;
+    }
+    
+    public String getLocalizedTooltip(String key, Locale locale){
+        HashMap<Locale, String> tooltipMap = this.getAllLocalizedTooltips().get(key);
+        if (tooltipMap == null) {
+            return key;
+        }
+        String localizedMessage = tooltipMap.get(new Locale(locale.getLanguage()));
+        return localizedMessage != null ? localizedMessage : key;
+    }
+    
     public void addLocalization(String name, Map<Locale, String> m) {
         localization.put(name, (HashMap<Locale, String>) m);
     }
     
-    public void addTooltips(String name, Map<Locale, String> m) {
-        tooltips.put(name, (HashMap<Locale, String>) m);
-    }
-
+    
     public Map<String, HashMap<Locale, String>> getAllLocalization() {
         Map<String, HashMap<Locale, String>> locales = new HashMap<String, HashMap<Locale, String>>();
         if (this.inheritsFrom != null) {
@@ -179,6 +200,7 @@ public final class StructuredResourceDescription {
         locales.putAll(this.localization);
         return locales;
     }
+
 
     // XXX: handle parameters
     public String getLocalizedMsg(String key, Locale locale, @SuppressWarnings("unused") Object[] param) {

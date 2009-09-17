@@ -150,5 +150,9 @@ public class StructuredResource {
     public String getLocalizedMsg(String key, Locale locale, Object[] param) {
         return this.desc.getLocalizedMsg(key, locale, param);
     }
+    
+    public String getLocalizedTooltip(String key, Locale locale) {
+        return this.desc.getLocalizedTooltip(key, locale);
+    }
 
 }

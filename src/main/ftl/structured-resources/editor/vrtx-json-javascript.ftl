@@ -2,7 +2,7 @@
 	Evil hack(s) alert! 
 -->
 <#macro script >
-<#local locale = springMacroRequestContext.getLocale() />
+<#assign locale = springMacroRequestContext.getLocale() />
 <script language="Javascript" type="text/javascript">
   
   	LIST_OF_JSON_ELEMENTS = new Array();
@@ -22,7 +22,7 @@
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr}";	      
 			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${elem.description.getType(jsonAttr)}";
-			LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr, locale, null)}";
+		LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr, locale, null)}"; 
 		    <#assign j = j + 1 />	
   	    </#list>
   		<#assign i = i + 1 />	
@@ -100,7 +100,7 @@
 		htmlTemplate +=	'<div class=\"tooltip\">{tooltip}<\/div>';
 		htmlTemplate +=	'<\/div>';
 		
-		return processHtmlTemplate(elem.title,"vrtx-string",htmlTemplate,inputFieldName);
+		return processHtmlTemplate(elem.name,"vrtx-string",htmlTemplate,inputFieldName);
 	}
 	
 	function addHtmlField(elem,inputFieldName,counter){

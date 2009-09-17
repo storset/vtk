@@ -44,4 +44,10 @@ resourcetype jboxes {
     </html>
     ##
   }
+  
+    localization {
+    	title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    	box-list : (en : "Box list", no : "Liste med bokser", nn : "Liste med bokser"),
+    	simplebox : (en : "Simple box", no : "Enkel boks", nn : "Enkel boks")
+    }
 }

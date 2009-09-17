@@ -13,7 +13,7 @@
       <#list elem.description.attributes as jsonAttr>
 		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 		<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-		<@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
+		<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
       </#list>      
   	  </div>
     <#elseif !elem.valueIsList() >
@@ -21,20 +21,20 @@
         <#list elem.value?keys as jsonAttr >	
         	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
         	   <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
-               <@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName elem.value[jsonAttr] elem /> 
+               <@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName elem.value[jsonAttr] elem /> 
         </#list>
       	</div>    
     <#else>
       	<#list elem.value as map>
       	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
-      	  	<input type="button" class="vrtx-remove-button" value="Slett" onClick="$('#vrtx-json-element-${counter}').remove()" />
+      	  	<input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" onClick="$('#vrtx-json-element-${counter}').remove()" />
         	<#list elem.description.attributes as jsonAttr>
 	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
 	  		  <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
 	          <#if map[jsonAttr]?exists >
-				<@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem />          
+				<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem />          
 	          <#else>
-	          	<@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
+	          	<@printJsonProperyEditView elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
 	          </#if>
 	        </#list>
         </div>
@@ -46,7 +46,8 @@
 
 </#macro>
 
-<#macro jizz type jsonAttr tmpName value elem >
+<#-- TODO: Duplicates some functionality in editor.ftl. Clean up later -->
+<#macro printJsonProperyEditView type jsonAttr tmpName value elem >
 	<#switch type >
 	 <#case "string">
         <#assign fieldSize="40" />

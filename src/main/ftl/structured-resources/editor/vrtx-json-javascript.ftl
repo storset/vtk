@@ -28,7 +28,7 @@
  	 </#list>
   </#list>	
 		for(i in LIST_OF_JSON_ELEMENTS){
-  			$("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonShit(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"Flere\" />");  		
+  			$("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonShit(LIST_OF_JSON_ELEMENTS[" + i + "])\" value=\"${vrtx.getMsg("editor.add")}\" />");  		
   		}		
   	});
   	
@@ -67,7 +67,7 @@
 	   		}
 	   } 
 	   
-	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"Slett\" onClick=\"$('#vrtx-json-element-" + counter + "').remove()\" \/>"
+	   var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" onClick=\"$('#vrtx-json-element-" + counter + "').remove()\" \/>"
 	   $("#" + j.name +" .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"vrtx-json-element-" + counter + "\">" + deleteButton +  htmlTemplate + "<\/div>");
 	   
 	   // Bootstrap f*@!ck.........

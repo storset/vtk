@@ -150,4 +150,9 @@ div.vrtx-json-element {
     clear: left;
     float: left;
 }
+
+.tooltip {
+	display: inline;
+	font-size:0.8em;	
+}
 	

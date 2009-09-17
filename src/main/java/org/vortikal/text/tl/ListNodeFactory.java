@@ -37,48 +37,39 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.vortikal.repository.resourcetype.Value;
 
 public class ListNodeFactory implements DirectiveNodeFactory {
 
-    private static final Set<String> LIST_TERM =
-        new HashSet<String>(Arrays.asList("endlist"));
-
+    private static final Set<String> LIST_TERM = new HashSet<String>(Arrays.asList("endlist"));
 
     /**
-     * [list x varname]
-     *   .. do stuff with varname ..
-     * [endlist]
-     *
+     * [list x varname] .. do stuff with varname .. [endlist]
+     * 
      */
     public Node create(DirectiveParseContext ctx) throws Exception {
         List<Argument> args = ctx.getArguments();
         if (args.size() != 2) {
-            throw new RuntimeException("List directive: " 
-                    + ctx.getNodeText() 
-                    + ": wrong number of arguments");
+            throw new RuntimeException("List directive: " + ctx.getNodeText() + ": wrong number of arguments");
         }
 
         Argument arg1 = args.remove(0);
         Argument arg2 = args.remove(0);
         if (!(arg1 instanceof Symbol)) {
-            throw new RuntimeException("Expected symbol: " 
-                    + arg1.getRawValue());
+            throw new RuntimeException("Expected symbol: " + arg1.getRawValue());
         }
         if (!(arg2 instanceof Symbol)) {
-            throw new RuntimeException("Expected symbol: " 
-                    + arg2.getRawValue());
+            throw new RuntimeException("Expected symbol: " + arg2.getRawValue());
         }
         ParseResult listBlock = ctx.getParser().parse(LIST_TERM);
 
         String terminator = listBlock.getTerminator();
         if (terminator == null) {
-            throw new RuntimeException("Unterminated directive: " 
-                    + ctx.getNodeText());
-        } 
+            throw new RuntimeException("Unterminated directive: " + ctx.getNodeText());
+        }
         NodeList nodeList = listBlock.getNodeList();
         return new ListNode((Symbol) arg1, (Symbol) arg2, nodeList);
     }
-
 
     private class ListNode extends Node {
         private Symbol listVar;
@@ -96,21 +87,19 @@ public class ListNodeFactory implements DirectiveNodeFactory {
             if (var == null) {
                 throw new RuntimeException("List: No such variable: " + this.listVar);
             }
-            
-            if (!(var instanceof List<?>) && !(var instanceof Iterator<?>)) {
-                throw new RuntimeException("List: Cannot iterate variable: "
-                                           + this.listVar + ": not a list");
+
+            if (!(var instanceof List<?>) && !(var instanceof Iterator<?>) && !(var instanceof Value[])) {
+                throw new RuntimeException("List: Cannot iterate variable: " + this.listVar + ": not a list");
             }
             if (var instanceof List<?>) {
                 List<?> list = (List<?>) var;
-                for (Object o: list) {
-                	executeBody(o, ctx, out);
+                for (Object o : list) {
+                    executeBody(o, ctx, out);
                 }
-            } else {
-                Iterator<?> iter = (Iterator<?>) var;
-                while (iter.hasNext()) {
-                	Object o = iter.next();
-                	executeBody(o, ctx, out);
+            } else if (var instanceof Value[]) {
+                Value[] vals = (Value[]) var;
+                for (Value val : vals) {
+                    executeBody(val, ctx, out);
                 }
             }
         }
@@ -121,7 +110,7 @@ public class ListNodeFactory implements DirectiveNodeFactory {
             this.nodeList.render(ctx, out);
             ctx.pop();
         }
-        
+
         public String toString() {
             return "[list-node]";
         }

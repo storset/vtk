@@ -13,7 +13,7 @@ resourcetype jperson {
     email : string multiple external:userMetadataLdapService,
     picture : image_ref, 
     pressPhoto : image_ref,
-    visitingAddress : string multiple,
+    visitingAddress : string multiple external:userMetadataLdapService,
     availableHours : string,
     room : string,
     rssFeeds : json ( rssTitle : string, rssUrl : string ) multiple,
@@ -72,7 +72,7 @@ resourcetype jperson {
             [resource-props "."]
             [def document structured-document]
             [if email]
-              [def emails json-attr document "properties.email"]
+              [def emails resource-prop "." "email"]
               [if emails]
                   <tr><td>[localized "email"]:&nbsp;</td></tr>
                   [list emails theemail]
@@ -86,7 +86,7 @@ resourcetype jperson {
               [endif]
             [endif]
             [if phone]
-             [def phones json-attr document "properties.phone"]
+             [def phones resource-prop "." "phone"]
              [if phones]
              <tr><td>[localized "phone"]:&nbsp;</td></tr>
              [list phones thephone]            
@@ -97,7 +97,7 @@ resourcetype jperson {
              [endif]
             [endif]
             [if visitingAddress]
-             [def visitingAddresses json-attr document "properties.visitingAddress"]
+             [def visitingAddresses resource-prop "." "visitingAddress"]
              [if visitingAddresses]
              <tr><td>[localized "visitingAddress"]:&nbsp;</td></tr>
              [list visitingAddresses visitingAddressesLine]
@@ -114,7 +114,7 @@ resourcetype jperson {
               <tr><td>[localized "availableHours"]:&nbsp;</td><td>[val availableHours]</td></tr>
             [endif]
             [if postalAddress]
-              [def postalAddresses json-attr document "properties.postalAddress"]
+              [def postalAddresses resource-prop "." "postalAddress"]
               [if postalAddresses]
                   <tr><td>[localized "postalAddress"]:&nbsp;</td></tr>
                   [list postalAddresses postalAddressesLine]

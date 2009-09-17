@@ -47,7 +47,7 @@ div.vrtx-person-image {
 
 div.vrtx-person-image img {
   margin: 0 0 10px 0; /* margin to pressPhoto link */
-  width: auto;
+  max-width: 100%;
 }
 
 ul.list {

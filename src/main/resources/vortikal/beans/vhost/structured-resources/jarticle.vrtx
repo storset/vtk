@@ -4,7 +4,7 @@ resourcetype jarticle : jdocument {
     media-ref : media_ref,
     author : string,
     tags : string multiple,
-    box-list-side : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple
+    box-list-side : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple
   }
 
   edit-rules {
@@ -143,10 +143,10 @@ resourcetype jarticle : jdocument {
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte")
-    title : (en : "Title", no : "Tittel", nn : "Tittel")
-    type : (en : "Type", no : "Type", nn : "Type")
-    boxcontent : (en : "Content", no : "Innhold", nn : "Innhold")
-    url : (en : "Url", no : "Url", nn : "Url")
-    urlText : (en : "Url text", no : "Url text", nn : "Url text")
+    boxTitle : (en : "Box title", no : "Bokstittel", nn : "Bokstittel"),
+    boxType : (en : "Box type", no : "Bokstype", nn : "Bokstype"),
+    boxContent : (en : "Box content", no : "Boksinnhold", nn : "Boksinnhold"),
+    boxUrl : (en : "Link", no : "Lenke", nn : "Lenke"),
+    boxUrlText : (en : "Link text", no : "Lenke tekst", nn : "Lenke tekst")
   }
 }

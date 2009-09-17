@@ -44,9 +44,9 @@
         <ref bean="titlePropDef" />
         <ref bean="contentLocalePropDef" />
         <ref bean="numberOfCommentsPropDef" />
-        <ref bean="publishedPropDef" />
+        <!--  ref bean="publishedPropDef" />
         <ref bean="publishDatePropDef" />
-        <ref bean="unPublishDatePropDef" />
+        <ref bean="unPublishDatePropDef" / -->
       </list>
     </property>
   </bean>

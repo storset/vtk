@@ -13,11 +13,11 @@
         <ref bean="json.contentTypeAssertion" />
       </list>
     </property>
-    <property name="propertyTypeDefinitions">
+    <!--  property name="propertyTypeDefinitions">
       <list>
         <ref bean="overriddenPublishedPropDef" />
       </list>
-    </property>
+    </property -->
   </bean>
 
   <bean id="json.contentTypeAssertion" class="org.vortikal.web.service.ResourceContentTypeAssertion">

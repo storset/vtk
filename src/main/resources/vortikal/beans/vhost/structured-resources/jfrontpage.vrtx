@@ -2,8 +2,8 @@ resourcetype jfrontpage {
 
   properties {
     title : string required overrides title,
-    box-list-main : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple,
-    box-list-side : json ( title : string, type : string, boxcontent : html, url : string, urlText : string ) multiple
+    box-list-main : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple,
+    box-list-side : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple
   }
 
   edit-rules {
@@ -19,11 +19,11 @@ resourcetype jfrontpage {
         [def document structured-document]
         [def boxes json-attr document "properties.box-list-main"]
         [list boxes box]
-           [def type json-attr box "type"]
-           [def title json-attr box "title"]
-           [def content json-attr box "boxcontent"]
-           [def url json-attr box "url"]
-           [def urlText json-attr box "urlText"]
+           [def type json-attr box "boxType"]
+           [def title json-attr box "boxTitle"]
+           [def content json-attr box "boxContent"]
+           [def url json-attr box "boxUrl"]
+           [def urlText json-attr box "boxUrlText"]
            
            <div class="frontpage-box [val type]"> 
             <h2><a href="[val url]">[val title]</a></h2>
@@ -43,11 +43,11 @@ resourcetype jfrontpage {
         [def document structured-document]
         [def boxes json-attr document "properties.box-list-side"]
         [list boxes box]
-           [def type json-attr box "type"]
-           [def title json-attr box "title"]
-           [def content json-attr box "boxcontent"]
-           [def url json-attr box "url"]
-           [def urlText json-attr box "urlText"]
+           [def type json-attr box "boxType"]
+           [def title json-attr box "boxTitle"]
+           [def content json-attr box "boxContent"]
+           [def url json-attr box "boxUrl"]
+           [def urlText json-attr box "boxUrlText"]
            
            <div class="frontpage-box [val type]"> 
             <h2><a href="[val url]">[val title]</a></h2>
@@ -99,6 +99,11 @@ resourcetype jfrontpage {
      title : (en : "Title", no : "Tittel", nn : "Tittel"),
      content : (en : "Content", no : "Innhold", nn : "Innhald"),
      box-list-main : (en : "Main-column", no : "Hovedspalte", nn : "Hovedspalte"),
-     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte")
+     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte"),
+     boxTitle : (en : "Box title", no : "Bokstittel", nn : "Bokstittel"),
+     boxType : (en : "Box type", no : "Bokstype", nn : "Bokstype"),
+     boxContent : (en : "Box content", no : "Boksinnhold", nn : "Boksinnhold"),
+     boxUrl : (en : "Link", no : "Lenke", nn : "Lenke"),
+     boxUrlText : (en : "Link text", no : "Lenke tekst", nn : "Lenke tekst")
   }
 }

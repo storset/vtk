@@ -121,9 +121,17 @@ resourcetype jproject {
                 [list feeds feed]
                     <div class="narrow-box-borders">
                        [def thetitle json-attr feed "title"]
-                       <h2>[if thetitle][val thetitle][endif]</h2>
                        [def theurl json-attr feed "url"]
-                       [if theurl]TODO: invoke RSS component ... [val theurl][endif]
+                       
+                     [if thetitle]  
+                       [if theurl]
+                         <h2><a href="[val theurl]">[val thetitle]</a></h2>
+                       [else]  
+                         <h2>[val thetitle]</h2>
+                       [endif]
+                     [endif]
+                     
+                     [if theurl]TODO: invoke RSS component ... [val theurl][endif]  
                     </div>
                 [endlist]
             [endif]

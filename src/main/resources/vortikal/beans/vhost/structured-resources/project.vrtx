@@ -20,7 +20,8 @@ resourcetype jproject {
     participants (after projectLeader),
     content (after status),
     tags (after content),
-    contactInfo (after tags)
+    contactInfo (after tags),
+    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 
   scripts {

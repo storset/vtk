@@ -11,7 +11,9 @@ resourcetype jarticle : jdocument {
     image-caption (size[small]),
     group introImg (introduction-img, image-caption) (after introduction) vertical,
     title (size[large]),
-    group timeAndAuthor (published-date, author) (after introImg) horizontal
+    group timeAndAuthor (published-date, author) (after introImg) horizontal,
+    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)"),
+    author tooltip (en : "(author1, author2, ...)", no : "(forfatter1, forfatter2, ...)", nn : "(forfatter1, forfatter2, ...)")
   }
 
   view-components {

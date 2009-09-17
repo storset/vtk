@@ -38,7 +38,8 @@ resourcetype jperson {
 	tags (after content),
 	projects (after rssFeeds),
 	selectedPublications (after tags),
-	getExternalScientificInformation (after selectedPublications)
+	getExternalScientificInformation (after selectedPublications),
+	tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 
   scripts {

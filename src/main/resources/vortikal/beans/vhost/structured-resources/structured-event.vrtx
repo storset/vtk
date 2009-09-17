@@ -13,7 +13,8 @@ resourcetype jevent : jdocument {
     title (size[large]),
     group timeAndPlace (start-date, end-date, location, map-url) (after introImg) horizontal,
     location (size[small]),
-    map-url (size[small])
+    map-url (size[small]),
+    tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
     
   view-components {

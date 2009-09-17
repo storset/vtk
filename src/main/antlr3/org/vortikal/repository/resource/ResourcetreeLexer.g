@@ -43,11 +43,12 @@ DQ	:	'"';
 PROPTYPE:	(STRING | HTML | SIMPLEHTML | BOOLEAN | INT | DATETIME | IMAGEREF | MEDIAREF);
 EDITHINT:	(SIZE LB (NUMBER | SMALL | LARGE) RB | TEXTFIELD | TEXTAREA | RADIO | DROPDOWN);
 EXTERNAL:	'external';
-DERIVED:	'derived';
+DERIVED	:	'derived';
 EVAL	:	'eval';
-DEFAULTPROP :   'default';
+DEFAULTPROP
+	:	'default';
 MULTIPLE:	'multiple';
-JSON:       'json';
+JSON	:	'json';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';
@@ -63,7 +64,8 @@ NOEXTRACT
 OVERRIDES
 	:	'overrides';
 GROUP	:	'group';
-ORIENTATION :  (HORIZONTAL | VERTICAL);
+ORIENTATION
+	:	(HORIZONTAL | VERTICAL);
 BEFORE	:	'before';
 AFTER	:	'after';
 LETTER	:	('a'..'z' | 'A'..'Z');

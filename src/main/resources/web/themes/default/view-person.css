@@ -41,9 +41,22 @@ table.contact-info tr td{
 /* Person bilde */
 div.vrtx-person-image {
   float: left;
+  width: 100%;
   margin: 0 15px 15px 0;
 }
 
 div.vrtx-person-image img {
+  margin: 0 0 10px 0; /* margin to pressPhoto link */
+  width: auto;
+}
+
+ul.list {
+  margin: 0;
+  padding: 0;	
+  list-style: none;
+}
+
+ul.list li {
   margin: 0 0 10px 0;
+  padding: 0;
 }

@@ -6,7 +6,7 @@ resourcetype jperson {
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,
     title : derived (firstName, surname) 
-           eval (firstName + " " + surname) overrides title,
+           eval (firstName + " " + surname),
     position : string external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
     phone : string multiple external:userMetadataLdapService,
@@ -73,20 +73,23 @@ resourcetype jperson {
             [if email]
               [def emails json-attr document "properties.email"]
               [if emails]
-              [list emails theemail]
-               <tr><td>[localized "email"]:&nbsp;</td>
-               <td>
-                [val theemail]
-               </td></tr>
-              [endlist]
+                  <tr><td>[localized "email"]:&nbsp;</td></tr>
+                  [list emails theemail]
+                  <tr>
+                   <td>&nbsp;</td>
+                   <td>
+                    [val theemail]
+                   </td>
+                  </tr>
+                  [endlist]
               [endif]
             [endif]
             [if phone]
              [def phones json-attr document "properties.phone"]
              [if phones]
-             [list phones thephone]
-              <tr><td>[localized "phone"]:&nbsp;</td>
-              <td>
+             <tr><td>[localized "phone"]:&nbsp;</td></tr>
+             [list phones thephone]            
+              <tr><td>&nbsp;</td><td>
                [val thephone]
               </td></tr>
              [endlist]
@@ -95,9 +98,9 @@ resourcetype jperson {
             [if visitingAddress]
              [def visitingAddresses json-attr document "properties.visitingAddress"]
              [if visitingAddresses]
+             <tr><td>[localized "visitingAddress"]:&nbsp;</td></tr>
              [list visitingAddresses visitingAddressesLine]
-              <tr><td>[localized "visitingAddress"]:&nbsp;</td>
-              <td>
+              <tr><td>&nbsp;</td><td>
                [val visitingAddressesLine]
               </td></tr>
              [endlist]
@@ -112,12 +115,12 @@ resourcetype jperson {
             [if postalAddress]
               [def postalAddresses json-attr document "properties.postalAddress"]
               [if postalAddresses]
-              [list postalAddresses postalAddressesLine]
-                <tr><td>[localized "postalAddress"]:&nbsp;</td>
-                <td> 
-                  [val postalAddressesLine]
-                </td></tr>
-              [endlist]
+                  <tr><td>[localized "postalAddress"]:&nbsp;</td></tr>
+                  [list postalAddresses postalAddressesLine]
+                    <tr><td>&nbsp;</td><td> 
+                      [val postalAddressesLine]
+                    </td></tr>
+                  [endlist]
               [endif]
             [endif]
         </tbody>
@@ -158,7 +161,7 @@ resourcetype jperson {
         [endif]
         <div class="vrtx-person-image">
         [if !img]
-          <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
+          <img class="vrtx-person-image" src="#" alt="[localized "introduction-image-alt"]" />
         [else]
           <img class="vrtx-person-image" src="[val img-uri]" alt="[localized "introduction-image-alt"]" />
         [endif]
@@ -177,10 +180,11 @@ resourcetype jperson {
             [def document structured-document]
             [def theprojects json-attr document "properties.projects"]
             [if theprojects]
+            
+            <div class="narrow-box-borders">
+              <h2>[localized "projects"]</h2>
+                <ul class="list">
                 [list theprojects aproject]
-                    <div class="narrow-box-borders">
-                       
-                       <h2>[localized "projects"]</h2>
                        
                        [def thename json-attr aproject "name"]
                        [def theurl json-attr aproject "url"]
@@ -190,10 +194,11 @@ resourcetype jperson {
                              <li><a href="[val theurl]">[val thename]</a></li>
                            [else]
                              <li>[val thename]</li>
+                           [endif]
                        [endif]
-             [endif]
-                    </div>
                 [endlist]
+                </ul>
+               </div>
             [endif]
         [endif]
       ##
@@ -243,10 +248,12 @@ resourcetype jperson {
        <h1><comp:title /></h1>
        <div id="left-content">
           <div class="box">
-            <div class="box-thirds">
+             <div class="box-thirds">
                 <comp:person-image />   
-            </div>
-            <div class="box-two-thirds"><comp:contact-information /></div>
+             </div>
+             <div class="box-two-thirds">
+                <comp:contact-information />
+             </div>
           </div>
           <json:field select="content" />
           <resource:tags />
@@ -272,7 +279,7 @@ resourcetype jperson {
     email : (en : "Email", no : "E-post", nn : "E-post"),
     position : (en : "Position", no : "Stilling", nn : "Stilling"), 
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),
-    phone : (en : "Telephone", no : "Telefon", nn : "Telefon"),
+    phone : (en : "Phone", no : "Telefon", nn : "Telefon"),
     officeNumber : (en : "Office number", no : "Kontor", nn : "Kontor"),
     availableHours : (en : "Available hours", no : "Kontortid", nn : "Kontortid"),
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
@@ -283,7 +290,7 @@ resourcetype jperson {
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
     rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmar"),
-    projects : (en : "Projects",no : "Prosjekter", nn :"Prosjekter"),
+    projects : (en : "Projects",no : "Prosjekter", nn :"Prosjektar"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilde"),
     room : (en : "Room", no : "Rom", nn : "Rom")
   }

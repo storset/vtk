@@ -203,23 +203,27 @@ resourcetype jperson {
         [endif]
       ##
     }
-
-    projects-foo {
+    
+     projects-automatic {
        ##
-       [def query "uri = /* AND type IN jproject"]
+       [resource-props "."]
+       [def query "uri = /* type IN jproject"]
        [def result search query]
        [if result]
-       <ul>
-       [list result res]
-         [def name resource-prop res "participants"]
-         [def uri view-url res]
-         <li><a href="[val uri]">[val name]</a></li>
-       [endlist]
-       </ul>
+           <ul>
+            [list result res]
+              [def url view-url res]
+                  [if url]
+                     <li><a href="[val url]"></a></li>
+                  [else]
+                     <li>[val name]</li>
+                  [endif]
+           [endlist]
+           </ul>
        [endif]
        ##
     }
-    
+   
     scientific-info {
       ##
         [resource-props "."]

@@ -1,21 +1,27 @@
+
 <#macro printPropertyEditView title inputFieldName elem tooltip="" id="" inputFieldSize=20>
-<div class="vrtx-json" >
+
+<div class="vrtx-json">
   <fieldset id="${id}">
   <legend>${title}</legend>
+    
     <#local counter = 0 />
+    <#local locale = springMacroRequestContext.getLocale() />
 
     <#if !elem.value?exists>
 	  <div class="vrtx-json-element">
       <#list elem.description.attributes as jsonAttr>
-		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  	 
-		<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName "" elem />                              
+		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
+		<#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
+		<@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />                              
       </#list>      
   	  </div>
     <#elseif !elem.valueIsList() >
     	<div class="vrtx-json-element">
         <#list elem.value?keys as jsonAttr >	
-        	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  	             
-               <@jizz elem.description.getType(jsonAttr) jsonAttr tmpName elem.value[jsonAttr] elem /> 
+        	   <#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
+        	   <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
+               <@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName elem.value[jsonAttr] elem /> 
         </#list>
       	</div>    
     <#else>
@@ -23,20 +29,23 @@
       	  <div class="vrtx-json-element" id="vrtx-json-element-${counter}">
       	  	<input type="button" class="vrtx-remove-button" value="Slett" onClick="$('#vrtx-json-element-${counter}').remove()" />
         	<#list elem.description.attributes as jsonAttr>
-	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />  
+	  		<#assign tmpName = inputFieldName + "." + jsonAttr + "." + counter />
+	  		  <#assign jsonAttrLocalizedTitle = form.resource.getLocalizedMsg(jsonAttr, locale, null) />
 	          <#if map[jsonAttr]?exists >
-				<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName map[jsonAttr] elem />          
+				<@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName map[jsonAttr] elem />          
 	          <#else>
-	          	<@jizz elem.description.getType(jsonAttr) jsonAttr tmpName "" elem />    
+	          	<@jizz elem.description.getType(jsonAttr) jsonAttrLocalizedTitle tmpName "" elem />    
 	          </#if>
 	        </#list>
         </div>
         <#local counter = counter + 1 />
       </#list>
       </#if>
-  <div class="tooltip">${tooltip}</div>
+   <div class="tooltip">${tooltip}</div>
 </fieldset>
+
 </#macro>
+
 <#macro jizz type jsonAttr tmpName value elem >
 	<#switch type >
 	 <#case "string">

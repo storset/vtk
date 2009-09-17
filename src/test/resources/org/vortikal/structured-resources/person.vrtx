@@ -4,7 +4,8 @@ resourcetype person : article {
     firstname : string external:ldap,
     surname : string external:ldap,
     fetchExternal : boolean,
-    tags : string multiple
+    tags : string multiple,
+    publications : json ( publicationsTitle : string, publicationsUrl : string ) multiple
   }
   edit-rules {
     username (size[8]),
@@ -19,5 +20,9 @@ resourcetype person : article {
   }
   services {
     fetchExternal ldap requires(username)
+  }
+  localization {
+    username : (en : "Username", no : "Brukernavn", nn : "Brukernamn"),
+    publicationsTitle : (en : "Title", no : "Tittel", nn : "Tittel")
   }
 }

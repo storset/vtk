@@ -143,5 +143,10 @@ resourcetype jarticle : jdocument {
     published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     box-list-side : (en : "Side-column", no : "Sidespalte", nn : "Sidespalte")
+    title : (en : "Title", no : "Tittel", nn : "Tittel")
+    type : (en : "Type", no : "Type", nn : "Type")
+    boxcontent : (en : "Content", no : "Innhold", nn : "Innhold")
+    url : (en : "Url", no : "Url", nn : "Url")
+    urlText : (en : "Url text", no : "Url text", nn : "Url text")
   }
 }

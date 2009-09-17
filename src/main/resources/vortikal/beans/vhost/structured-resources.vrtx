@@ -1,8 +1,7 @@
-include structured-resources/jperson.vrtx
-include structured-resources/jarticle.vrtx
-include structured-resources/jevent.vrtx
-include structured-resources/jdocument.vrtx
-include structured-resources/jdisputas.vrtx
-include structured-resources/jproject.vrtx
-include structured-resources/jboxes.vrtx
-include structured-resources/jfrontpage.vrtx
+include structured-resources/person.vrtx
+include structured-resources/structured-article.vrtx
+include structured-resources/structured-event.vrtx
+include structured-resources/document.vrtx
+include structured-resources/project.vrtx
+include structured-resources/boxes.vrtx
+include structured-resources/frontpage.vrtx

@@ -1,4 +1,4 @@
-resourcetype jfrontpage {
+resourcetype frontpage {
 
   properties {
     title : string required overrides title,

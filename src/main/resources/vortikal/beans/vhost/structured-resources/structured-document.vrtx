@@ -1,4 +1,4 @@
-resourcetype jdocument {
+resourcetype structured-document {
 
   properties {
     title : string overrides title,

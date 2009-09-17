@@ -1,4 +1,4 @@
-resourcetype jboxes {
+resourcetype boxes {
 
   properties {
     title : string required overrides title,

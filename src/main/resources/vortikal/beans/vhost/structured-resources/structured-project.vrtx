@@ -1,4 +1,4 @@
-resourcetype jproject {
+resourcetype structured-project {
 
   properties {
 	name : string,

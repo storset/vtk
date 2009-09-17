@@ -1,4 +1,4 @@
-resourcetype jperson {
+resourcetype person {
 
   properties {
     username : string required,

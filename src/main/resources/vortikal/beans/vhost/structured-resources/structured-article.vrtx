@@ -1,4 +1,4 @@
-resourcetype jarticle : jdocument {
+resourcetype structured-article : structured-document {
 
   properties {
     media-ref : media_ref,

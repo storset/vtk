@@ -1,4 +1,4 @@
-resourcetype jevent : jdocument {
+resourcetype structured-event : structured-document {
   properties {
     start-date : datetime,
     end-date : datetime,

@@ -1,7 +1,7 @@
 include structured-resources/person.vrtx
 include structured-resources/structured-article.vrtx
 include structured-resources/structured-event.vrtx
-include structured-resources/document.vrtx
-include structured-resources/project.vrtx
+include structured-resources/structured-document.vrtx
+include structured-resources/structured-project.vrtx
 include structured-resources/boxes.vrtx
 include structured-resources/frontpage.vrtx

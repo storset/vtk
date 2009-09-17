@@ -194,8 +194,8 @@ resourcetype jperson {
                 <ul class="list">
                 [list theprojects aproject]
                        
-                       [def thename json-attr aproject "name"]
-                       [def theurl json-attr aproject "url"]
+                       [def thename json-attr aproject "projectName"]
+                       [def theurl json-attr aproject "projectUrl"]
 
                        [if thename]
                            [if theurl]

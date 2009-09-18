@@ -2,43 +2,35 @@ resourcetype person {
 
   properties {
     username : string required,
+    position : string external:userMetadataLdapService,
     getExternalPersonInfo : boolean,
     firstName : string external:userMetadataLdapService,
     surname : string external:userMetadataLdapService,
-    title : derived (firstName, surname) 
-           eval (firstName + " " + surname),
-    position : string external:userMetadataLdapService,
     postalAddress : string multiple external:userMetadataLdapService,
     phone : string multiple external:userMetadataLdapService,
     email : string multiple external:userMetadataLdapService,
+    title : derived (firstName, surname) eval (firstName + " " + surname),
     picture : image_ref, 
     pressPhoto : image_ref,
     visitingAddress : string multiple external:userMetadataLdapService,
     availableHours : string,
     room : string,
-    rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
-    projects : json (projectName:string, projectUrl:string) multiple, 
-    tags : string multiple,
     content : html,
+    tags : string multiple,
+    selectedPublications: simple_html,
     getExternalScientificInformation : boolean,
-    scientificInformation: string multiple external:fridaPublicationsService,
-    selectedPublications: simple_html
+    scientificInformation: json (publicationTitle:string, publicationUrl:string) multiple external:fridaPublicationsService,
+    projects : json (projectName:string, projectUrl:string) multiple,
+    rssFeeds : json (rssTitle:string, rssUrl:string) multiple
   }
 
   edit-rules {
 	group images (picture, pressPhoto) (after email) horizontal,
 	group hoursRoom (availableHours, room) (after images) horizontal,
 	username (size[8]),
-	position (after username),
-	postalAddress (after surname),
-	phone (after postalAddress),
-	email (after phone),
 	visitingAddress (after images),
 	content (after hoursRoom),
 	tags (after content),
-	projects (after rssFeeds),
-	selectedPublications (after tags),
-	getExternalScientificInformation (after selectedPublications),
 	tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 
@@ -61,27 +53,27 @@ resourcetype person {
   
     title {
       ##
-      [def v resource-prop "." "title"]
-      [val v]
+        [def v resource-prop "." "title"]
+        [val v]
       ##
     }
 
     contact-information {
       ##
-          [resource-props "."]
-            <div id="contact-info">
-            [def document structured-document]
-            [if email]
-              [def emails resource-prop "." "email"]
-              [if emails]
-                 <div class="box">
-                  <div class="box-thirds">[localized "email"]:&nbsp;</div>
+        [resource-props "."]
+        <div id="contact-info">
+          [def document structured-document]
+          [if email]
+            [def emails resource-prop "." "email"]
+            [if emails]
+              <div class="box">
+                <div class="box-thirds">[localized "email"]:&nbsp;</div>
                   <div class="box-two-thirds">
                     [list emails theemail]            
                       [if theemail][val theemail]<br />[endif]
                     [endlist]
-                   </div>
-                 </div>
+                  </div>
+                </div>
               [endif]
             [endif]
             [if phone]
@@ -250,7 +242,8 @@ resourcetype person {
              [def publications resource-prop "." "scientificInformation"]
              [list publications publication]
                [if publication]
-                  <li>[val publication]</li>
+                  [def thetitle json-attr publication "publicationTitle"]
+                  [if thetitle]<li>[val thetitle]</li>[endif]
                [endif]
              [endlist]
              </ul>
@@ -296,7 +289,6 @@ resourcetype person {
   }
   
   localization {
-  
     username : (en : "Username", no : "Brukernavn", nn : "Brukarnamn"),
     getExternalPersonInfo : (en : "Get external information (ldap)", no : "Hent ekstern informasjon (ldap)", nn : "Hent ekstern informasjon (ldap)"),
     firstName : (en : "First name", no : "Fornavn", nn : "Fornamn"),
@@ -312,17 +304,20 @@ resourcetype person {
     picture : (en : "Picture", no : "Bilde", nn : "Bilete"),
     linkPressPhoto : (en : "link to press photo", no : "lenke til pressebilde", nn : "lenke til pressebilde"),
     getExternalScientificInformation : (en : "Get external scientific information (frida)", no : "Hent ekstern vitenskapelig informasjon (frida)", nn : "Hent ekstern vitenskapelig informasjon (frida)"),
+    scientificInformation : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner");
     fridaPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjoner"),
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalgte publikasjoner"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold",nn:"Innhold"),
-    rssFeeds : (en : "Links to RSS",no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmar"),
+    rssFeeds : (en : "Links to RSS", no : "Lenker til RSS-strømmer", nn :"Lenker til RSS-strømmar"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
-    rssUrl : (en : "RSS link",no : "RSS lenke", nn :"RSS lenke"),
+    rssUrl : (en : "RSS link", no : "RSS lenke", nn :"RSS lenke"),
     projects : (en : "Projects",no : "Prosjekter", nn :"Prosjektar"),
-    projectName : (en : "Project name",no : "Prosjektnavn", nn :"Prosjektnamn"), 
-    projectUrl : (en : "Project link",no : "Prosjektlenke", nn :"Prosjeklenke"),
+    projectName : (en : "Project name", no : "Prosjektnavn", nn :"Prosjektnamn"), 
+    projectUrl : (en : "Project link", no : "Prosjektlenke", nn :"Prosjektlenke"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilde"),
-    room : (en : "Room", no : "Rom", nn : "Rom")
+    room : (en : "Room", no : "Rom", nn : "Rom"),
+    publicationTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    publicationUrl : (en : "Publication link", no : "Publikasjonlenke", nn : "Publikasjonlenke")
   }
 }

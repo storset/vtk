@@ -77,8 +77,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
-        StructuredResourceDescription description = this.resourceManager.get(resource
-                .getResourceType());
+        StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
 
         InputStream stream = this.repository.getInputStream(token, uri, true);
         byte[] buff = StreamUtil.readInputStream(stream);
@@ -106,8 +105,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
-        InputStream stream = new ByteArrayInputStream(form.getResource().toJSON()
-                .toString(3).getBytes("utf-8"));
+        InputStream stream = new ByteArrayInputStream(form.getResource().toJSON().toString(3).getBytes("utf-8"));
         this.repository.storeContent(token, uri, stream);
 
         if (form.getUpdateQuitAction() != null) {
@@ -126,11 +124,9 @@ public class StructuredResourceEditor extends SimpleFormController {
     }
 
     @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request,
-            Object command) throws Exception {
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
         FormSubmitCommand form = (FormSubmitCommand) command;
-        FormDataBinder binder = new FormDataBinder(command, getCommandName(), form
-                .getResource().getType());
+        FormDataBinder binder = new FormDataBinder(command, getCommandName(), form.getResource().getType());
         prepareBinder(binder);
         initBinder(request, binder);
         return binder;
@@ -139,75 +135,74 @@ public class StructuredResourceEditor extends SimpleFormController {
     private class FormDataBinder extends ServletRequestDataBinder {
         private StructuredResourceDescription description;
 
-        public FormDataBinder(Object target, String objectName,
-                StructuredResourceDescription description) {
+        public FormDataBinder(Object target, String objectName, StructuredResourceDescription description) {
             super(target, objectName);
             this.description = description;
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void bind(ServletRequest request) {
-            List<PropertyDescription> props = this.description
-                    .getAllPropertyDescriptions();
+            List<PropertyDescription> props = this.description.getAllPropertyDescriptions();
             FormSubmitCommand form = (FormSubmitCommand) getTarget();
             for (PropertyDescription desc : props) {
                 if (desc instanceof EditablePropertyDescription) {
-                	if (desc instanceof JSONPropertyDescription) {
-                		// Build JSON from input, invoke form.bind(JSON)
-                		JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
-                		if (jsonDesc.isMultiple()) {
-                    		Enumeration<String> names = request.getParameterNames();
-                    		int maxIndex = 0;
-                    		while (names.hasMoreElements()) {
-                    			String input = names.nextElement();
-                    			for (String attr : jsonDesc.getAttributes()) {
-                    				String prefix = desc.getName() + "." + attr + ".";
-                    				if (input.startsWith(prefix)) {
-                    					int i = Integer.parseInt(input.substring(prefix.length()));
-                    					maxIndex = Math.max(maxIndex, i);
-                    				}
-                    			}
-                    		}
-                    		List<JSONObject> resultList = new ArrayList<JSONObject>();
-                    		for (int i = 0; i <= maxIndex; i++) {
-                				JSONObject obj = new JSONObject();
-                    			for (String attr : jsonDesc.getAttributes()) {
-                    				String input = desc.getName() + "." + attr + "." + i;
-                    				obj.put(attr, request.getParameter(input));
-                    			}
-                    			resultList.add(obj);
-							}
-                    		try {
-                    			form.bind(desc.getName(), resultList);
-                    		} catch (Exception e) {
-                    			throw new RuntimeException(e);
-                    		}
-                    		
-                		} else {
-                    		JSONObject obj = new JSONObject();
-                    		for (String attr : jsonDesc.getAttributes()) {
-    							String param = desc.getName() + "." + attr + ".0";
-    							String posted = request.getParameter(param);
-    							if (posted != null) {
-    								obj.put(attr, posted);
-    							}
-    						}
-                    		try {
-                    			form.bind(desc.getName(), obj);
-                    		} catch (Exception e) {
-                    			throw new RuntimeException(e);
-                    		}
-                			
-                		}
+                    if (desc instanceof JSONPropertyDescription) {
+                        // Build JSON from input, invoke form.bind(JSON)
+                        JSONPropertyDescription jsonDesc = (JSONPropertyDescription) desc;
+                        if (jsonDesc.isMultiple()) {
+                            Enumeration<String> names = request.getParameterNames();
+                            int maxIndex = 0;
+                            while (names.hasMoreElements()) {
+                                String input = names.nextElement();
+                                for (String attr : jsonDesc.getAttributes()) {
+                                    String prefix = desc.getName() + "." + attr + ".";
+                                    if (input.startsWith(prefix)) {
+                                        int i = Integer.parseInt(input.substring(prefix.length()));
+                                        maxIndex = Math.max(maxIndex, i);
+                                    }
+                                }
+                            }
+                            List<JSONObject> resultList = new ArrayList<JSONObject>();
+                            for (int i = 0; i <= maxIndex; i++) {
+                                JSONObject obj = new JSONObject();
+                                for (String attr : jsonDesc.getAttributes()) {
+                                    String input = desc.getName() + "." + attr + "." + i;
+                                    obj.put(attr, request.getParameter(input));
+                                }
+                                resultList.add(obj);
+                            }
+                            try {
+                                form.bind(desc.getName(), resultList);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
 
-                	} else {
-                		String posted = request.getParameter(desc.getName());
-                		try {
-                			form.bind(desc.getName(), posted);
-                		} catch (Exception e) {
-                			throw new RuntimeException(e);
-                		}
-                	}
+                        } else {
+                            JSONObject obj = new JSONObject();
+                            for (String attr : jsonDesc.getAttributes()) {
+                                String param = desc.getName() + "." + attr + ".0";
+                                String posted = request.getParameter(param);
+                                if (posted != null) {
+                                    obj.put(attr, posted);
+                                }
+                            }
+                            try {
+                                form.bind(desc.getName(), obj);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }
+
+                    } else {
+                        String posted = request.getParameter(desc.getName());
+                        try {
+                            form.bind(desc.getName(), posted);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             }
             super.bind(request);
@@ -224,8 +219,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         String token = SecurityContext.getSecurityContext().getToken();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
-        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600,
-                null);
+        this.repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
     }
 
 }

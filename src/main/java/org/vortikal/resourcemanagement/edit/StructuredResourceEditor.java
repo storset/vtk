@@ -160,7 +160,6 @@ public class StructuredResourceEditor extends SimpleFormController {
                     		int maxIndex = 0;
                     		while (names.hasMoreElements()) {
                     			String input = names.nextElement();
-                				System.out.println("__input1: " + input);
                     			for (String attr : jsonDesc.getAttributes()) {
                     				String prefix = desc.getName() + "." + attr + ".";
                     				if (input.startsWith(prefix)) {
@@ -169,13 +168,11 @@ public class StructuredResourceEditor extends SimpleFormController {
                     				}
                     			}
                     		}
-                    		System.out.println("__max_index: " + maxIndex);
                     		List<JSONObject> resultList = new ArrayList<JSONObject>();
                     		for (int i = 0; i <= maxIndex; i++) {
                 				JSONObject obj = new JSONObject();
                     			for (String attr : jsonDesc.getAttributes()) {
                     				String input = desc.getName() + "." + attr + "." + i;
-                    				System.out.println("__check_input: " + input);
                     				obj.put(attr, request.getParameter(input));
                     			}
                     			resultList.add(obj);

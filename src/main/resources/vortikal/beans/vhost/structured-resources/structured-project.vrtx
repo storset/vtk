@@ -16,11 +16,6 @@ resourcetype structured-project {
   
   edit-rules {
     group introImage (introduction, picture) (after name) horizontal,
-    projectLeader (after contactInfo),
-    participants (after projectLeader),
-    content (after status),
-    tags (after content),
-    contactInfo (after tags),
     tags tooltip (en : "(tag1, tag2, ...)", no : "(emneord1, emneord2, ...)", nn : "(emneord1, emneord2, ...)")
   }
 

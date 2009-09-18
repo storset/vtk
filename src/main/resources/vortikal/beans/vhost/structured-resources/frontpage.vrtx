@@ -5,10 +5,6 @@ resourcetype frontpage {
     box-list-main : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple,
     box-list-side : json ( boxTitle : string, boxType : string, boxContent : html, boxUrl : string, boxUrlText : string ) multiple
   }
-
-  edit-rules {
-
-  }
   
   view-components {
   
